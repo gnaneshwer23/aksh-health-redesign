@@ -15,6 +15,7 @@ Single monorepo for the Aksh Health UK/EU platform, India app and marketing site
 │   ├── platform-uk/               # Aksh Health UK/EU clinical proof platform (Phase A/B)
 │   ├── platform-india-app/      # Aksh Health India Phase 0 app
 │   ├── marketing-india/         # Aksh Health India marketing site
+│   ├── marketing-os/            # Aksh Health public marketing site (Healthcare OS)
 │   └── akeno/                     # Akeno Health L0–L10 services, contracts, web dashboard
 ```
 
@@ -24,6 +25,7 @@ Single monorepo for the Aksh Health UK/EU platform, India app and marketing site
 | UK/EU platform | `packages/platform-uk` | [akshhealth-uk-eu-platform](https://github.com/gnaneshwer23/akshhealth-uk-eu-platform) |
 | India app | `packages/platform-india-app` | [akshhealth-india-app](https://github.com/gnaneshwer23/akshhealth-india-app) |
 | India marketing | `packages/marketing-india` | [akshhealth-india-web](https://github.com/gnaneshwer23/akshhealth-india-web) |
+| Marketing OS | `packages/marketing-os` | (this monorepo) |
 | Akeno platform | `packages/akeno` | [akenohealth](https://github.com/gnaneshwer23/akenohealth) |
 
 Each package keeps its own `README.md` with product-specific detail.
@@ -73,6 +75,18 @@ cd packages/marketing-india
 npm install
 npm run dev
 ```
+
+### `packages/marketing-os`
+
+Aksh Health public marketing site — AI Healthcare Operating System positioning for NHS/ICS, hospitals, clinicians, and patients (Next.js 14, Tailwind, shadcn/ui).
+
+```bash
+cd packages/marketing-os
+npm install
+npm run dev
+```
+
+Runs on http://localhost:3010 by default.
 
 ### `packages/akeno`
 
