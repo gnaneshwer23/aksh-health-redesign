@@ -1,0 +1,122 @@
+import { notFound } from "next/navigation";
+
+import {
+  CaseEvidenceClinicalConcernsSection,
+  CaseEvidenceDraftActionsSection,
+  CaseEvidenceLinkedFeedbackSection,
+  CaseEvidenceReviewerChecklistSection,
+  CaseEvidenceReviewerGuidanceSection,
+  CaseEvidenceSafetyAcceptanceSection
+} from "@/components/review/case-evidence-clinical-sections";
+import {
+  CaseEvidenceFhirExportBundleSection,
+  CaseEvidenceFhirJsonSections,
+  CaseEvidenceFieldChangesSection,
+  CaseEvidenceGenerationTraceSection,
+  CaseEvidenceSourceTraceSection,
+  CaseEvidenceValidationReportSection
+} from "@/components/review/case-evidence-export-sections";
+import { CaseEvidenceHeader } from "@/components/review/case-evidence-header";
+import {
+  CaseEvidenceDataCollectionSection,
+  CaseEvidenceDecisionSummarySection,
+  CaseEvidenceHumanGateSection,
+  CaseEvidenceOutcomeCaptureSection,
+  CaseEvidenceStreamTransitionSection,
+  CaseEvidenceValidationHistorySection,
+  CaseEvidenceValidationProtocolSection,
+  CaseEvidenceValidationReadinessSection
+} from "@/components/review/case-evidence-validation-sections";
+import { readFeedbackEntriesForCase } from "@/lib/feedback-repository";
+import { deriveHumanGates } from "@/lib/human-gates";
+import { readReviewCaseById } from "@/lib/review-case-repository";
+import { readUserScopeFromServerContext } from "@/lib/user-scope";
+import {
+  buildEvidencePayload,
+  deriveReviewerChecklist,
+  deriveReviewerConfirmedActionDrafts,
+  deriveReviewerDraftActions,
+  deriveReviewerGuidance
+} from "@/lib/workflow";
+
+function buildEvidenceQuery(demoMode: boolean, recordingMode: boolean) {
+  return `${demoMode || recordingMode ? "?" : ""}${demoMode ? "demo=1" : ""}${demoMode && recordingMode ? "&" : ""}${recordingMode ? "recording=1" : ""}`;
+}
+
+export default async function CaseEvidencePage({
+  params,
+  searchParams
+}: {
+  params: { id: string };
+  searchParams?: { demo?: string; recording?: string };
+}) {
+  const scopeKey = await readUserScopeFromServerContext();
+  const reviewCase = await readReviewCaseById(params.id, scopeKey);
+  const demoMode = searchParams?.demo === "1";
+  const recordingMode = searchParams?.recording === "1";
+
+  if (!reviewCase) {
+    notFound();
+  }
+
+  const evidence = buildEvidencePayload(reviewCase);
+  const humanGates = deriveHumanGates(reviewCase);
+  const reviewerDraftActions = [...deriveReviewerDraftActions(reviewCase), ...deriveReviewerConfirmedActionDrafts(reviewCase)];
+  const reviewerChecklist = deriveReviewerChecklist(reviewCase);
+  const reviewerGuidance = deriveReviewerGuidance(reviewCase);
+  const linkedFeedback = await readFeedbackEntriesForCase(params.id, scopeKey);
+  const openFeedback = linkedFeedback.filter((entry) => entry.resolutionStatus !== "resolved");
+  const resolvedFeedback = linkedFeedback.filter((entry) => entry.resolutionStatus === "resolved");
+  const strongestFeedback = linkedFeedback.find((entry) => entry.strongestMoment.trim());
+  const topConcern = openFeedback.find((entry) => (entry.objections || entry.confusionPoint).trim());
+  const nextAction = openFeedback.find((entry) => entry.nextActions.trim());
+  const nextOwner = openFeedback.find((entry) => entry.followUpOwner.trim());
+  const nextDueDate = openFeedback.find((entry) => entry.dueDate.trim());
+  const query = buildEvidenceQuery(demoMode, recordingMode);
+  const showTechnicalDetail = !demoMode && !recordingMode;
+
+  return (
+    <div className="stack">
+      <CaseEvidenceHeader
+        caseId={params.id}
+        demoMode={demoMode}
+        evidence={evidence}
+        query={query}
+        recordingMode={recordingMode}
+        sourceProfile={reviewCase.input.sourceProfile}
+      />
+
+      <div className="grid">
+        <CaseEvidenceDecisionSummarySection evidence={evidence} />
+        <CaseEvidenceValidationReadinessSection evidence={evidence} />
+        <CaseEvidenceHumanGateSection humanGates={humanGates} />
+        <CaseEvidenceOutcomeCaptureSection evidence={evidence} />
+        <CaseEvidenceValidationProtocolSection evidence={evidence} />
+        <CaseEvidenceValidationHistorySection evidence={evidence} />
+        <CaseEvidenceStreamTransitionSection evidence={evidence} />
+        <CaseEvidenceDataCollectionSection evidence={evidence} />
+        <CaseEvidenceLinkedFeedbackSection
+          linkedFeedback={linkedFeedback}
+          nextAction={nextAction}
+          nextDueDate={nextDueDate}
+          nextOwner={nextOwner}
+          openFeedback={openFeedback}
+          resolvedFeedback={resolvedFeedback}
+          strongestFeedback={strongestFeedback}
+          topConcern={topConcern}
+        />
+        <CaseEvidenceSafetyAcceptanceSection evidence={evidence} />
+        <CaseEvidenceClinicalConcernsSection evidence={evidence} />
+        <CaseEvidenceReviewerGuidanceSection reviewerGuidance={reviewerGuidance} />
+        <CaseEvidenceDraftActionsSection humanGates={humanGates} reviewerDraftActions={reviewerDraftActions} />
+        <CaseEvidenceReviewerChecklistSection reviewerChecklist={reviewerChecklist} />
+        <CaseEvidenceValidationReportSection evidence={evidence} />
+        <CaseEvidenceFhirExportBundleSection evidence={evidence} />
+        {showTechnicalDetail ? <CaseEvidenceFieldChangesSection evidence={evidence} /> : null}
+        <CaseEvidenceSourceTraceSection evidence={evidence} />
+        <CaseEvidenceGenerationTraceSection evidence={evidence} />
+        {showTechnicalDetail ? <CaseEvidenceFhirJsonSections evidence={evidence} /> : null}
+      </div>
+    </div>
+  );
+}

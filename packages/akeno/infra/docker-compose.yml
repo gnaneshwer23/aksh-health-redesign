@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: akeno
+      POSTGRES_PASSWORD: akeno
+      POSTGRES_DB: akeno
+    ports:
+      - "5433:5432"
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: neo4j/akeno1234
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+
+  kafka:
+    image: redpandadata/redpanda:v24.1.10
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://kafka:9092
+    ports:
+      - "9092:9092"
+
+  identity-consent:
+    build:
+      context: ../services/identity-consent
+    environment:
+      POSTGRES_DSN: postgresql://akeno:akeno@postgres:5432/akeno
+    depends_on:
+      - postgres
+    ports:
+      - "8003:8003"
+
+  l0-l2-ingestion:
+    build:
+      context: ../services/l0-l2-ingestion
+    environment:
+      POSTGRES_DSN: postgresql://akeno:akeno@postgres:5432/akeno
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: akeno1234
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      IDENTITY_CONSENT_URL: http://identity-consent:8003
+    depends_on:
+      - postgres
+      - neo4j
+      - kafka
+      - identity-consent
+    ports:
+      - "8001:8001"
+
+  l3-l4-ai-safety:
+    build:
+      context: ../services/l3-l4-ai-safety
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - kafka
+    ports:
+      - "8002:8002"

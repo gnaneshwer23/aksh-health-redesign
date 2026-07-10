@@ -1,0 +1,80 @@
+{
+  "userId": "benchmark-concurrency-user",
+  "archive": [
+    {
+      "artifactSchemaVersion": "2026.05.1",
+      "artifactType": "aksh-uk-eu-evidence-readiness",
+      "artifactVersion": "1.1.0",
+      "generatedAt": "30/05/2026, 00:24:14",
+      "generatedBy": "Aksh Health UK/EU synthetic proof system",
+      "syntheticOnly": true,
+      "productionClinicalSoftware": false,
+      "liveNhsIntegration": false,
+      "realPatientData": false,
+      "gate": {
+        "status": "ready",
+        "label": "Ready for internal evidence",
+        "summary": "Benchmark, sign-off, data health, and operating queues are ready for internal evidence use.",
+        "blockers": [],
+        "followUps": [],
+        "checks": {
+          "benchmarkPassRate": 100,
+          "benchmarkFailed": 0,
+          "openBenchmarkActions": 0,
+          "stalledRemediationActions": 0,
+          "benchmarkSignoffStatus": "accepted_for_internal_evidence",
+          "dataHealthState": "clean_seed",
+          "buildGate": "npm run verify + npm run build passing"
+        }
+      },
+      "dataHealth": {
+        "seedCaseCount": 8,
+        "presentSeedCount": 8,
+        "missingSeedCount": 0,
+        "extraCaseCount": 0,
+        "openBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0,
+        "stalledRemediationActions": 0,
+        "openFeedbackItems": 0,
+        "benchmarkSignoffStatus": "accepted_for_internal_evidence",
+        "benchmarkSignedAt": "30/05/2026, 00:24:14",
+        "benchmarkSignedBy": "Concurrent Reviewer",
+        "state": "clean_seed"
+      },
+      "benchmarkSummary": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "passRate": 100
+      },
+      "actionSummary": {
+        "openBenchmarkActions": 0,
+        "highBenchmarkActions": 0,
+        "mediumBenchmarkActions": 0,
+        "lowBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0
+      },
+      "signoff": {
+        "reviewerName": "Concurrent Reviewer",
+        "decision": "accepted_for_internal_evidence",
+        "followUpOwner": "",
+        "dueDate": "",
+        "notes": "Concurrent final save should keep the JSON store valid.",
+        "signedAt": "30/05/2026, 00:24:14",
+        "id": "benchmark-signoff-oqy6m6x0",
+        "userId": "benchmark-concurrency-user",
+        "generatedAt": "2026-05-30 00:24",
+        "benchmarkedCases": 7,
+        "passedCases": 7,
+        "failedCases": 0,
+        "openBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0
+      },
+      "blockers": [],
+      "followUps": [],
+      "id": "readiness-6e0jmy3o",
+      "userId": "benchmark-concurrency-user",
+      "savedAt": "30/05/2026, 00:24:14"
+    }
+  ]
+}

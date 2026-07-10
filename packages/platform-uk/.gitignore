@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.next-build/
+.tmp-tests/
+*.tsbuildinfo
+.env.local
+.DS_Store
+
+.next-build-active/
+.next-dev/
+.next-dev-active/

@@ -1,0 +1,29 @@
+{
+  "userId": "benchmark-concurrency-user",
+  "draft": {
+    "reviewerName": "Concurrent Reviewer",
+    "decision": "accepted_for_internal_evidence",
+    "followUpOwner": "",
+    "dueDate": "",
+    "notes": "Concurrent final save should keep the JSON store valid.",
+    "signedAt": "30/05/2026, 00:24:14"
+  },
+  "archive": [
+    {
+      "reviewerName": "Concurrent Reviewer",
+      "decision": "accepted_for_internal_evidence",
+      "followUpOwner": "",
+      "dueDate": "",
+      "notes": "Concurrent final save should keep the JSON store valid.",
+      "signedAt": "30/05/2026, 00:24:14",
+      "id": "benchmark-signoff-oqy6m6x0",
+      "userId": "benchmark-concurrency-user",
+      "generatedAt": "2026-05-30 00:24",
+      "benchmarkedCases": 7,
+      "passedCases": 7,
+      "failedCases": 0,
+      "openBenchmarkActions": 0,
+      "resolvedBenchmarkActions": 0
+    }
+  ]
+}

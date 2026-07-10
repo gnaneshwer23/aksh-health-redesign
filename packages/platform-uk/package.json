@@ -1,0 +1,40 @@
+{
+  "name": "akshhealth-uk-project",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:diagnose": "node scripts/diagnose-next-build.mjs",
+    "data:health": "node scripts/data-health.mjs",
+    "data:seed": "node scripts/data-seed.mjs",
+    "data:reset": "node scripts/data-reset.mjs --with-auxiliary",
+    "data:audit-integrity": "npx tsx scripts/data-audit-cli.ts",
+    "seed:demo-evidence": "node scripts/seed-demo-evidence-scope.mjs",
+    "smoke:browser": "node scripts/smoke-browser-loop.mjs",
+    "smoke:loop": "node scripts/smoke-mutation-loop.mjs",
+    "smoke:public": "node scripts/smoke-public-pages.mjs",
+    "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",
+    "start": "next start",
+    "lint": "npm run typecheck",
+    "typecheck": "tsc -p tsconfig.verify.json --pretty false",
+    "verify": "npm run test:workflow && npm run typecheck",
+    "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.test.js && node .tmp-tests/tests/api-contracts.test.js && node .tmp-tests/tests/integration-boundary.test.js && node .tmp-tests/tests/readonly-route-contracts.test.js && node .tmp-tests/tests/repository-parity.test.js && node .tmp-tests/tests/export-mapping.test.js && node .tmp-tests/tests/route-smoke.test.js"
+  },
+  "dependencies": {
+    "@types/pg": "^8.20.0",
+    "bcryptjs": "^3.0.3",
+    "next": "^14.2.5",
+    "next-auth": "^4.24.14",
+    "pg": "^8.22.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "playwright": "^1.59.1",
+    "typescript": "^5.5.3"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "userId": "readiness-contract-user",
+  "draft": {
+    "reviewerName": "Readiness Contract Reviewer",
+    "decision": "accepted_for_internal_evidence",
+    "followUpOwner": "",
+    "dueDate": "",
+    "notes": "Saving benchmark sign-off should also persist a readiness snapshot.",
+    "signedAt": "30/05/2026, 00:11:09"
+  },
+  "archive": [
+    {
+      "reviewerName": "Readiness Contract Reviewer",
+      "decision": "accepted_for_internal_evidence",
+      "followUpOwner": "",
+      "dueDate": "",
+      "notes": "Saving benchmark sign-off should also persist a readiness snapshot.",
+      "signedAt": "30/05/2026, 00:11:09",
+      "id": "benchmark-signoff-sfqkql5d",
+      "userId": "readiness-contract-user",
+      "generatedAt": "2026-05-30 00:11",
+      "benchmarkedCases": 7,
+      "passedCases": 7,
+      "failedCases": 0,
+      "openBenchmarkActions": 0,
+      "resolvedBenchmarkActions": 0
+    }
+  ]
+}

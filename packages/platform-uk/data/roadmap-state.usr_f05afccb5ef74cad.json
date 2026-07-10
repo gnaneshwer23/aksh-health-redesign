@@ -1,0 +1,233 @@
+{
+  "userId": "usr_f05afccb5ef74cad",
+  "updatedAt": "2026-04-30",
+  "items": [
+    {
+      "id": "1A",
+      "owner": "CTO + CEO",
+      "dueDate": "2026-04-30",
+      "buildStatus": "partial",
+      "risk": "critical",
+      "evidenceLink": "/review/roadmap",
+      "notes": "Current app proves synthetic FHIR-shaped evidence. AWS EKS, RDS, Medplum sandbox deployment, and CSO hire remain open.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "1B",
+      "owner": "AI/ML + Frontend",
+      "dueDate": "2026-05-31",
+      "buildStatus": "partial",
+      "risk": "high",
+      "evidenceLink": "/intake",
+      "notes": "Deterministic synthetic generation exists; LangGraph/DrASSIST orchestration is not built.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "1C",
+      "owner": "Frontend + AI/ML",
+      "dueDate": "2026-06-30",
+      "buildStatus": "partial",
+      "risk": "medium",
+      "evidenceLink": "/intake",
+      "notes": "Transcription fallback exists. Vendor NLP/voice accuracy evidence is not complete.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "1D",
+      "owner": "AI/ML + CSO",
+      "dueDate": "2026-07-31",
+      "buildStatus": "partial",
+      "risk": "high",
+      "evidenceLink": "/review/benchmarks",
+      "notes": "Safety flags and benchmark coverage exist. Named SHIELD/EQUITY agents and graph DB are not built.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "1E",
+      "owner": "QA + Clinical",
+      "dueDate": "2026-08-31",
+      "buildStatus": "partial",
+      "risk": "high",
+      "evidenceLink": "/review/benchmarks/report",
+      "notes": "Synthetic benchmarks pass. Formal clinical F1/triage studies are not complete.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "1F",
+      "owner": "CSO + CEO",
+      "dueDate": "2026-09-30",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "/review/readiness",
+      "notes": "Evidence readiness exists. DCB0129 safety case draft and DTAC pre-submission are not complete.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2A",
+      "owner": "CTO + NHS BD",
+      "dueDate": "2026-10-31",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "No EMIS sandbox or GP pilot-site selection is complete.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2B",
+      "owner": "AI/ML + Frontend",
+      "dueDate": "2026-11-30",
+      "buildStatus": "not_started",
+      "risk": "high",
+      "evidenceLink": "",
+      "notes": "VOICE agent and SystmOne preparation are future roadmap items.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2C",
+      "owner": "Frontend + Product",
+      "dueDate": "2026-12-31",
+      "buildStatus": "not_started",
+      "risk": "medium",
+      "evidenceLink": "",
+      "notes": "IntelliProve, mental health bundle, and biomarker schema validation are not started.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2D",
+      "owner": "NHS BD + AI/ML",
+      "dueDate": "2027-01-31",
+      "buildStatus": "blocked",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "Real-patient pilots remain blocked until safety, privacy, infrastructure, and partner governance are ready.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2E",
+      "owner": "AI/ML + DevOps",
+      "dueDate": "2027-02-28",
+      "buildStatus": "not_started",
+      "risk": "medium",
+      "evidenceLink": "",
+      "notes": "Federated learning and RWE pipeline are not started.",
+      "lastUpdated": "2026-04-29"
+    },
+    {
+      "id": "2F",
+      "owner": "CSO + CTO",
+      "dueDate": "2027-03-31",
+      "buildStatus": "blocked",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "DCB0129 submission, DTAC approval, MHRA pathway, and NHS App prep are not complete.",
+      "lastUpdated": "2026-04-29"
+    }
+  ],
+  "m1Checklist": [
+    {
+      "id": "m1-cso-hire",
+      "week": "Week 1",
+      "title": "CSO job spec finalized + RCGP/NMC/GPhC reach-out",
+      "owner": "CEO",
+      "dueDate": "2026-04-05",
+      "doneWhen": "Clinical Safety Officer candidate pipeline identified and interview process scheduled.",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "This is a real-world hiring/governance blocker, not an app feature.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-emis-application",
+      "week": "Week 1",
+      "title": "EMIS Web Partner Programme application submitted",
+      "owner": "CTO",
+      "dueDate": "2026-04-05",
+      "doneWhen": "Formal acknowledgement or next-step email from EMIS is captured.",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "Do not claim EMIS integration until partner/sandbox pathway is confirmed.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-reg-consultant",
+      "week": "Week 1",
+      "title": "DTAC/DCB0129 regulatory consultant engaged",
+      "owner": "CEO",
+      "dueDate": "2026-04-05",
+      "doneWhen": "Consultant contract signed and kickoff booked.",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "",
+      "notes": "Current product evidence can support the conversation but is not a safety case.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-infra-decision",
+      "week": "Week 1",
+      "title": "AWS London EKS/RDS decision and implementation plan",
+      "owner": "CTO + DevOps",
+      "dueDate": "2026-04-12",
+      "doneWhen": "Architecture decision record exists with environment, cost, security, and migration assumptions.",
+      "buildStatus": "partial",
+      "risk": "high",
+      "evidenceLink": "/review/roadmap/report",
+      "notes": "The app remains JSON-backed proof-stage; production-style infrastructure is not deployed.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-synthetic-validation-scope",
+      "week": "Week 2",
+      "title": "Synthetic validation scope locked",
+      "owner": "QA + Clinical",
+      "dueDate": "2026-04-12",
+      "doneWhen": "Scenario classes, expected outcomes, benchmark gates, and evidence exports are documented.",
+      "buildStatus": "partial",
+      "risk": "high",
+      "evidenceLink": "/review/benchmarks/report",
+      "notes": "The synthetic benchmark suite exists; formal validation scope still needs sign-off.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-medplum-fhir-plan",
+      "week": "Week 2",
+      "title": "Medplum/FHIR sandbox plan",
+      "owner": "CTO + AI/ML",
+      "dueDate": "2026-04-12",
+      "doneWhen": "FHIR resource plan and sandbox boundaries are documented without enabling live sync by default.",
+      "buildStatus": "partial",
+      "risk": "medium",
+      "evidenceLink": "/cases/case-005/evidence",
+      "notes": "Current FHIR output is evidence-shaped; Medplum sync remains gated off.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-hazard-log-template",
+      "week": "Week 3",
+      "title": "Hazard log template aligned to DCB0129/clinical safety work",
+      "owner": "CSO + Regulatory Consultant",
+      "dueDate": "2026-04-19",
+      "doneWhen": "Hazard log framework exists with owners, mitigations, evidence links, and open assumptions.",
+      "buildStatus": "partial",
+      "risk": "critical",
+      "evidenceLink": "/review/readiness",
+      "notes": "A regulatory folder exists, but this still needs accountable clinical safety review.",
+      "lastUpdated": "2026-04-30"
+    },
+    {
+      "id": "m1-safety-board",
+      "week": "Week 4",
+      "title": "Safety committee and first review board scheduled",
+      "owner": "CSO + CEO",
+      "dueDate": "2026-04-26",
+      "doneWhen": "Meeting date, attendees, agenda, and evidence pack are captured.",
+      "buildStatus": "not_started",
+      "risk": "critical",
+      "evidenceLink": "/review/meeting-packet",
+      "notes": "Keep this as planned until a named safety owner is accountable.",
+      "lastUpdated": "2026-04-30"
+    }
+  ],
+  "history": []
+}

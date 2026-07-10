@@ -1,0 +1,29 @@
+{
+  "userId": "usr_demo_evidence_loop",
+  "draft": {
+    "reviewerName": "Demo Evidence Reviewer",
+    "decision": "accepted_for_internal_evidence",
+    "followUpOwner": "",
+    "dueDate": "",
+    "notes": "Durable seeded sign-off for data-health and evidence-loop rehearsal.",
+    "signedAt": "03/05/2026, 12:30:00"
+  },
+  "archive": [
+    {
+      "id": "benchmark-signoff-demo-evidence",
+      "userId": "usr_demo_evidence_loop",
+      "reviewerName": "Demo Evidence Reviewer",
+      "decision": "accepted_for_internal_evidence",
+      "followUpOwner": "",
+      "dueDate": "",
+      "notes": "Durable seeded sign-off for data-health and evidence-loop rehearsal.",
+      "signedAt": "03/05/2026, 12:30:00",
+      "generatedAt": "03/05/2026, 12:30:00",
+      "benchmarkedCases": 3,
+      "passedCases": 3,
+      "failedCases": 0,
+      "openBenchmarkActions": 0,
+      "resolvedBenchmarkActions": 0
+    }
+  ]
+}

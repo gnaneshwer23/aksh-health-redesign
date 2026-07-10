@@ -1,0 +1,19 @@
+{
+  "userId": "usr_demo_evidence_loop",
+  "draft": {
+    "audience": "",
+    "sessionType": "",
+    "relatedCaseId": "",
+    "followUpOwner": "",
+    "dueDate": "",
+    "nextCheckpoint": "",
+    "overdueNote": "",
+    "readinessScore": "",
+    "strongestMoment": "",
+    "confusionPoint": "",
+    "objections": "",
+    "nextActions": "",
+    "savedAt": null
+  },
+  "archive": []
+}

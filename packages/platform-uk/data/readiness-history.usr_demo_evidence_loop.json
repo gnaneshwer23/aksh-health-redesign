@@ -1,0 +1,75 @@
+{
+  "userId": "usr_demo_evidence_loop",
+  "archive": [
+    {
+      "id": "readiness-demo-evidence",
+      "userId": "usr_demo_evidence_loop",
+      "savedAt": "03/05/2026, 12:30:00",
+      "artifactType": "aksh-uk-eu-evidence-readiness",
+      "generatedAt": "03/05/2026, 12:30:00",
+      "generatedBy": "Aksh Health UK/EU seeded demo evidence scope",
+      "syntheticOnly": true,
+      "gate": {
+        "status": "ready",
+        "label": "Ready for internal evidence",
+        "summary": "Benchmark, sign-off, data health, and operating queues are ready for internal evidence use.",
+        "blockers": [],
+        "followUps": [],
+        "checks": {
+          "benchmarkPassRate": 100,
+          "benchmarkFailed": 0,
+          "openBenchmarkActions": 0,
+          "stalledRemediationActions": 0,
+          "benchmarkSignoffStatus": "accepted_for_internal_evidence",
+          "dataHealthState": "clean_seed",
+          "buildGate": "npm run verify + npm run build passing"
+        }
+      },
+      "dataHealth": {
+        "seedCaseCount": 8,
+        "presentSeedCount": 8,
+        "missingSeedCount": 0,
+        "extraCaseCount": 0,
+        "openBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0,
+        "stalledRemediationActions": 0,
+        "openFeedbackItems": 0,
+        "benchmarkSignoffStatus": "accepted_for_internal_evidence",
+        "benchmarkSignedAt": "03/05/2026, 12:30:00",
+        "benchmarkSignedBy": "Demo Evidence Reviewer",
+        "state": "clean_seed"
+      },
+      "benchmarkSummary": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "passRate": 100
+      },
+      "actionSummary": {
+        "openBenchmarkActions": 0,
+        "highBenchmarkActions": 0,
+        "mediumBenchmarkActions": 0,
+        "lowBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0
+      },
+      "signoff": {
+        "id": "benchmark-signoff-demo-evidence",
+        "userId": "usr_demo_evidence_loop",
+        "reviewerName": "Demo Evidence Reviewer",
+        "decision": "accepted_for_internal_evidence",
+        "followUpOwner": "",
+        "dueDate": "",
+        "notes": "Durable seeded sign-off for data-health and evidence-loop rehearsal.",
+        "signedAt": "03/05/2026, 12:30:00",
+        "generatedAt": "03/05/2026, 12:30:00",
+        "benchmarkedCases": 3,
+        "passedCases": 3,
+        "failedCases": 0,
+        "openBenchmarkActions": 0,
+        "resolvedBenchmarkActions": 0
+      },
+      "blockers": [],
+      "followUps": []
+    }
+  ]
+}

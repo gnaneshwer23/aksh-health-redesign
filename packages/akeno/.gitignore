@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+web/node_modules
+web/.next
+.vercel

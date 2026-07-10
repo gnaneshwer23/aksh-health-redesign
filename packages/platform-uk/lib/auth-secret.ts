@@ -1,0 +1,1 @@
+export const nextAuthSecret = process.env.NEXTAUTH_SECRET || "dev-secret-akshhealth-2031";

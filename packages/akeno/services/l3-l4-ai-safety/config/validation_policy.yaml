@@ -1,0 +1,13 @@
+policy_id: validation_policy_v1
+requirements:
+  xai_required: true
+  confidence_min: 0.50
+  fairness_parity_gap_max: 0.07
+  drift_threshold_sigma: 4.0
+actions:
+  on_block:
+    - route_to_clinician_override
+    - emit_audit_event
+  on_warn:
+    - annotate_case_for_review
+    - schedule_model_monitoring_job

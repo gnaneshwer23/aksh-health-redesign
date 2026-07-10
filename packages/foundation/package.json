@@ -1,0 +1,29 @@
+{
+  "name": "@akshhealth/foundation",
+  "version": "0.1.0",
+  "description": "Shared clinical workflow types, validation helpers, and synthetic fixtures for Aksh Health UK and India platforms.",
+  "private": true,
+  "type": "commonjs",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./types": "./lib/types.ts",
+    "./workflow": "./lib/workflow.ts",
+    "./mock-data": "./lib/mock-data.ts"
+  },
+  "files": [
+    "index.ts",
+    "lib",
+    "data"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --pretty false",
+    "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.reference.test.js",
+    "verify": "npm run test:workflow && npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.3"
+  }
+}

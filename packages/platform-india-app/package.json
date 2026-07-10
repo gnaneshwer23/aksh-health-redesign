@@ -1,0 +1,26 @@
+{
+  "name": "akshhealth-india-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test:nlp": "npx tsx tests/vin1-harness.test.ts",
+    "verify": "npm run typecheck && npm run test:nlp && npm run build"
+  },
+  "dependencies": {
+    "@akshhealth/foundation": "file:../akshhealth-shared-uk-india-foundation",
+    "next": "15.5.19",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".tmp-tests",
+    "rootDir": ".",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "lib": ["es2020"],
+    "isolatedModules": false,
+    "jsx": "react-jsx",
+    "incremental": false,
+    "plugins": []
+  },
+  "include": ["tests/**/*.ts", "types/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    ".next",
+    ".next-build",
+    ".next-dev",
+    ".next-build-active",
+    ".next-dev-active",
+    "components/review/ops-dashboard-sections 2.tsx"
+  ]
+}
