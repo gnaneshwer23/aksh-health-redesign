@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoleSelector } from "@/components/shared/RoleSelector";
 import { signupRoles, type SignupRoleId } from "@/lib/content";
+import { getPlatformOnboardingUrl } from "@/lib/platform-url";
 
 function SignupForm() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ function SignupForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRole) return;
-    router.push(`/onboarding?role=${selectedRole}`);
+    window.location.href = getPlatformOnboardingUrl(selectedRole);
   };
 
   if (!selectedRole) {

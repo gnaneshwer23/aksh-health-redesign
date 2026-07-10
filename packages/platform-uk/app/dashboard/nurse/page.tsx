@@ -1,65 +1,136 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { useReviewCases } from "@/lib/use-review-cases";
+import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { GuardianAlert } from "@/components/dashboard/GuardianAlert";
+import { HitlActions } from "@/components/dashboard/SOAPEditor";
+import { PatientCard } from "@/components/dashboard/PatientCard";
+import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
+import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/toaster";
+import { CURRENT_GP, patients, reviewQueueItems } from "@/lib/mock-data";
+import { useDashboardStore } from "@/lib/zustand/dashboardStore";
+import { cn } from "@/lib/utils";
 
-const VITALS_STUB = [
-  { patient: "Margaret T.", observation: "HbA1c", value: "58 mmol/mol", status: "review" },
-  { patient: "Synthetic Patient B", observation: "Blood pressure", value: "Pending entry", status: "draft" },
-  { patient: "Synthetic Patient C", observation: "Temperature", value: "36.8°C", status: "final" }
-];
+const HANDOVER_DRAFT = `Night shift handover — Ward 3A
+3 patients with elevated ORACLE scores. Mrs Johnson (P001) — breathlessness reported via Voice Care Agent, requires same-day review. Mr Green (P008) — polypharmacy alert pending pharmacist review. All vital signs documented. 2 EQUITY flags raised for review.`;
 
 export default function NurseDashboardPage() {
-  const { cases, isLoaded } = useReviewCases();
-  const patients = isLoaded ? cases.slice(0, 5).map((item) => item.patientLabel) : [];
+  const { nurseFilter, setNurseFilter, selectedPatientId, setSelectedPatient, addAuditEvent } = useDashboardStore();
+  const [handoverOpen, setHandoverOpen] = useState(false);
+  const [handoverAccepted, setHandoverAccepted] = useState(false);
+  const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
+  const [vitals, setVitals] = useState({ bpSys: "", bpDia: "", hr: "", rr: "", spo2: "", temp: "", weight: "" });
+
+  const filtered = patients.filter((p) => {
+    if (nurseFilter === "alerts") return p.flags.includes("GUARDIAN") || p.flags.includes("URGENT");
+    if (nurseFilter === "observations") return !p.lastObsTime?.startsWith("2026-07-10");
+    if (nurseFilter === "completed") return p.lastObsTime?.startsWith("2026-07-10");
+    return true;
+  });
+
+  const patient = patients.find((p) => p.id === (selectedPatientId ?? "P001")) ?? patients[0];
+  const guardianItems = reviewQueueItems.filter((r) => r.patientId === patient.id && r.agentType === "GUARDIAN");
+
+  const saveVitals = () => {
+    addAuditEvent({ user: "Nurse Davies", agent: "Nurse", action: "Saved vital signs", resource: `${patient.name} — BP ${vitals.bpSys}/${vitals.bpDia}` });
+    toast({ title: "Observations saved", description: "Mock FHIR Observation created" });
+  };
 
   return (
-    <DashboardLayout
-      description="Patient list, vital-sign capture, and handover queue — synthetic data only."
-      role="nurse"
-      title="Nurse Dashboard"
-    >
-      <div className="dashboard-grid">
-        <section className="panel stack">
-          <p className="gp-panel__eyebrow">Patient panel</p>
-          <h2>Assigned patients</h2>
-          <ul className="list">
-            {patients.length ? (
-              patients.map((label) => (
-                <li key={label}>
-                  <strong>{label}</strong>
-                  <span className="pill">Observation due</span>
-                </li>
-              ))
-            ) : (
-              <li>Loading synthetic patients…</li>
-            )}
-          </ul>
-        </section>
-
-        <section className="panel stack">
-          <p className="gp-panel__eyebrow">Vitals review queue</p>
-          <h2>Observations awaiting nurse review</h2>
-          <div className="list">
-            {VITALS_STUB.map((row) => (
-              <article className="gp-queue-item" key={`${row.patient}-${row.observation}`}>
-                <strong>{row.patient}</strong>
-                <p>
-                  {row.observation}: {row.value}
-                </p>
-                <span className="pill">{row.status}</span>
-              </article>
+    <DashboardShell role="nurse" title="Nurse Dashboard">
+      <div className="flex h-full overflow-hidden">
+        <aside className="w-72 shrink-0 overflow-y-auto border-r border-border bg-card p-3">
+          <ConsentBanner className="mb-3" />
+          <Tabs value={nurseFilter} onValueChange={(v) => setNurseFilter(v as typeof nurseFilter)}>
+            <TabsList className="w-full grid grid-cols-2 h-auto">
+              <TabsTrigger value="all" className="text-[10px]">All</TabsTrigger>
+              <TabsTrigger value="alerts" className="text-[10px]">🔴 Alerts</TabsTrigger>
+              <TabsTrigger value="observations" className="text-[10px]">Obs Due</TabsTrigger>
+              <TabsTrigger value="completed" className="text-[10px]">Done</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className="mt-3 space-y-1">
+            {filtered.map((p) => (
+              <PatientCard key={p.id} patient={p} selected={patient.id === p.id} onClick={() => setSelectedPatient(p.id)} />
             ))}
           </div>
-          <div className="actions">
-            <Link className="button secondary" href="/intake">
-              Capture new observation
-            </Link>
-          </div>
-        </section>
+        </aside>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <header className="rounded-sm border border-border bg-card p-4 shadow-sm">
+            <h1 className="text-lg font-semibold">{patient.name}</h1>
+            <p className="text-xs text-muted">DOB {patient.dob} · NHS {patient.nhsNumber} · GP: {patient.supervisingGp}</p>
+            <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} className="mt-2" />
+          </header>
+
+          {patient.equityFlag && (
+            <div className="rounded-sm bg-teal-50 border border-teal-200 px-4 py-3 text-sm text-teal-800" role="alert">
+              Disparity flag — consider GP review
+            </div>
+          )}
+
+          <Card className="shadow-sm">
+            <CardHeader><CardTitle className="text-base">Vital Signs Entry</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-2">
+                <Button size="sm" variant={entryMode === "manual" ? "default" : "outline"} onClick={() => setEntryMode("manual")}>Manual Entry</Button>
+                <Button size="sm" variant={entryMode === "voice" ? "default" : "outline"} onClick={() => setEntryMode("voice")}>VOICE Dictation</Button>
+              </div>
+              {entryMode === "voice" ? <VoiceRecorder /> : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="flex gap-2"><Input placeholder="Systolic" value={vitals.bpSys} onChange={(e) => setVitals({ ...vitals, bpSys: e.target.value })} aria-label="Systolic BP" /><Input placeholder="Diastolic" value={vitals.bpDia} onChange={(e) => setVitals({ ...vitals, bpDia: e.target.value })} aria-label="Diastolic BP" /></div>
+                  <Input placeholder="Heart rate (bpm)" value={vitals.hr} onChange={(e) => setVitals({ ...vitals, hr: e.target.value })} />
+                  <Input placeholder="Resp rate (/min)" value={vitals.rr} onChange={(e) => setVitals({ ...vitals, rr: e.target.value })} />
+                  <Input placeholder="SpO2 (%)" value={vitals.spo2} onChange={(e) => setVitals({ ...vitals, spo2: e.target.value })} />
+                  <Input placeholder="Temperature (°C)" value={vitals.temp} onChange={(e) => setVitals({ ...vitals, temp: e.target.value })} />
+                  <Input placeholder="Weight (kg)" value={vitals.weight} onChange={(e) => setVitals({ ...vitals, weight: e.target.value })} />
+                </div>
+              )}
+              <Button variant="accent" onClick={saveVitals}>Save Observations</Button>
+            </CardContent>
+          </Card>
+
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold">GUARDIAN Alerts</h2>
+            {guardianItems.length > 0 ? guardianItems.map((g) => (
+              <GuardianAlert key={g.id} severity="high" title={g.title} description={g.content.slice(0, 120)} bnfRef="BNF 2.9" />
+            )) : <p className="text-sm text-muted">No active alerts</p>}
+          </section>
+
+          <Card className="shadow-sm">
+            <CardContent className="p-4">
+              <Button onClick={() => setHandoverOpen(true)}>Generate Handover Summary</Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </DashboardLayout>
+
+      <Dialog open={handoverOpen} onOpenChange={setHandoverOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>AI Handover Summary — {handoverAccepted ? "Shared" : "Draft — Not Sent"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm whitespace-pre-line">{HANDOVER_DRAFT}</p>
+          {!handoverAccepted ? (
+            <HitlActions
+              status="Pending"
+              onAccept={() => { setHandoverAccepted(true); addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Approved handover summary", resource: "Night shift" }); toast({ title: "Handover shared" }); }}
+              onEdit={() => {}}
+              onReject={() => setHandoverOpen(false)}
+            />
+          ) : (
+            <p className="text-xs text-accent">Shared at {new Date().toLocaleTimeString("en-GB")}</p>
+          )}
+        </DialogContent>
+      </Dialog>
+    </DashboardShell>
   );
 }

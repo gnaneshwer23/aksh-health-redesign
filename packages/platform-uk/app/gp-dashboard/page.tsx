@@ -1,7 +1,5 @@
-import { GpDashboardClient } from "@/components/gp/gp-dashboard";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default function GpDashboardPage() {
-  return <GpDashboardClient />;
+export default function GpDashboardLegacyRedirect() {
+  redirect("/dashboard/gp");
 }

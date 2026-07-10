@@ -1,0 +1,28 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { Suspense } from "react";
+
+import { ToasterProvider } from "@/components/ui/use-toast";
+
+import "./onboarding.css";
+
+export const metadata: Metadata = {
+  title: "Onboarding | Aksh Health",
+  description: "Personalised onboarding for NHS clinicians, administrators, and patients.",
+};
+
+export const dynamic = "force-dynamic";
+
+export default function OnboardingLayout({ children }: { children: ReactNode }) {
+  return (
+    <ToasterProvider>
+      <div className="onboarding-shell">
+        <main className="px-4 py-10">
+          <Suspense fallback={<p className="text-center text-muted">Loading onboarding…</p>}>
+            {children}
+          </Suspense>
+        </main>
+      </div>
+    </ToasterProvider>
+  );
+}
