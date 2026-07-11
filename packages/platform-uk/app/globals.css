@@ -4766,6 +4766,10 @@ input:focus, textarea:focus {
 }
 
 /* Belt-and-suspenders: nav brand must stay readable over navy heroes */
+.marketing-site nav {
+  overflow: visible !important;
+}
+
 .marketing-site nav[data-over-dark-hero="true"] a.navbar-brand,
 .marketing-site nav[data-over-dark-hero="true"] a.navbar-brand .navbar-brand-title {
   color: #ffffff !important;

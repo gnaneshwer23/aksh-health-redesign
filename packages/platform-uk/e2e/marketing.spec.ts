@@ -110,6 +110,16 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Evaluate outcomes with governed data access/i })).toBeVisible();
   });
 
+  test("platform page loads with cohesive sections", async ({ page }) => {
+    await page.goto("/platform");
+
+    await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Human-in-the-loop/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "See it in action" }).first()).toBeVisible();
+  });
+
   test("security and integrations pages load with expected headings", async ({ page }) => {
     await page.goto("/security");
     await expect(

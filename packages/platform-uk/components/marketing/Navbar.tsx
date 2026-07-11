@@ -64,6 +64,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const solutionsMenuId = useId();
   const solutionsButtonRef = useRef<HTMLButtonElement>(null);
   const solutionsPanelRef = useRef<HTMLDivElement>(null);
+  const solutionsOpenedByKeyboardRef = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -83,7 +84,11 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     );
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    first?.focus();
+
+    // Only move focus when opened via keyboard/click — hover must not scroll the nav.
+    if (solutionsOpenedByKeyboardRef.current) {
+      first?.focus();
+    }
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -133,14 +138,14 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     <nav
       data-over-dark-hero={onDarkHero ? "true" : "false"}
       className={cn(
-        "fixed top-0 z-50 w-full overflow-x-hidden transition-all duration-200",
+        "fixed top-0 z-50 w-full overflow-visible transition-all duration-200",
         scrolled ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md" : "bg-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className={cn("navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl transition-colors", focusRing)}
+          className={cn("navbar-brand flex min-w-0 shrink-0 items-center gap-2.5 rounded-xl transition-colors", focusRing)}
           style={{ color: onDarkHero ? "#ffffff" : "#003D7A" }}
         >
           <div
@@ -157,7 +162,12 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             </span>
           </div>
           <div className="flex min-w-0 flex-col leading-tight">
-            <span className="navbar-brand-title truncate text-base font-bold leading-none">Aksh Health</span>
+            <span
+              className="navbar-brand-title truncate text-base font-bold leading-none"
+              style={{ color: onDarkHero ? "#ffffff" : "#003D7A" }}
+            >
+              Aksh Health
+            </span>
             <span
               className="navbar-brand-subtitle text-xs font-semibold uppercase tracking-wide"
               style={{ color: onDarkHero ? "#00A86B" : "#006B4F" }}
@@ -176,7 +186,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
 
           <div
             className="relative"
-            onMouseEnter={() => setSolutionsOpen(true)}
+            onMouseEnter={() => {
+              solutionsOpenedByKeyboardRef.current = false;
+              setSolutionsOpen(true);
+            }}
             onMouseLeave={() => setSolutionsOpen(false)}
           >
             <button
@@ -189,10 +202,14 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               aria-expanded={solutionsOpen}
               aria-haspopup="true"
               aria-controls={solutionsMenuId}
-              onClick={() => setSolutionsOpen((open) => !open)}
+              onClick={() => {
+                solutionsOpenedByKeyboardRef.current = true;
+                setSolutionsOpen((open) => !open);
+              }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
+                  solutionsOpenedByKeyboardRef.current = true;
                   setSolutionsOpen((open) => !open);
                 }
                 if (event.key === "Escape") {
@@ -208,7 +225,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
                 id={solutionsMenuId}
                 ref={solutionsPanelRef}
                 role="menu"
-                className="absolute left-0 top-full z-50 min-w-[13rem] pt-2"
+                className="absolute left-0 top-full z-[60] min-w-[13rem] pt-2"
               >
                 <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
                   {solutionSections.map((section, sectionIndex) => (
