@@ -12,7 +12,7 @@ type MarketingShellProps = {
 
 export function MarketingShell({ children, className }: MarketingShellProps) {
   return (
-    <div className={cn("marketing-site flex min-h-screen flex-col overflow-x-hidden bg-surface", className)}>
+    <div className={cn("marketing-site flex min-h-screen flex-col bg-surface", className)}>
       <Navbar />
       <div className="flex-1 pt-16">{children}</div>
       <Footer />

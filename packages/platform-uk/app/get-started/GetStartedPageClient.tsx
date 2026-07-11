@@ -103,9 +103,9 @@ export default function GetStartedPageClient() {
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
               <span className="text-4xl text-emerald">✓</span>
             </div>
-            <h1 className="mb-3 text-2xl font-bold text-navy">Application received</h1>
+            <h1 className="mb-3 text-2xl font-bold text-navy">Enquiry Received</h1>
             <p className="mb-6 text-steel">
-              We will contact you within 3 working days to discuss onboarding your organisation.
+              Our team will contact you within three working days to discuss onboarding your organisation.
             </p>
             {referenceLabel ? (
               <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-slate">

@@ -1,16 +1,13 @@
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 
 const pages = [
-  { path: "/", text: "Clinical workflow. AI-structured. Clinician-owned." },
-  { path: "/for-clinicians", text: "Spend time with patients, not paperwork." },
-  { path: "/for-administrators", text: "Governance, tenancy, and integration readiness." },
+  { path: "/", text: "Clinical workflows, one platform." },
   { path: "/platform", text: "The AI Healthcare Operating System" },
   { path: "/signup", text: "Choose your role" },
   { path: "/get-started", text: "Get your organisation set up" },
   { path: "/onboarding", text: "Choose your role. Start with the right work." },
   { path: "/dashboards", text: "One product, three professional operating views." },
-  { path: "/demo", text: "A 7-minute walkthrough for a professional product review." },
-  { path: "/docs", text: "Compliance-aware clinical AI architecture." },
+  { path: "/demo", text: "A 7-minute walkthrough for a professional product review." }
 ];
 
 const assets = [

@@ -3,33 +3,34 @@ import Link from "next/link";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 const trustBadges = [
-  "NHS-ready",
-  "FHIR R4",
-  "GDPR Art. 9",
-  "MHRA-aware",
+  "NHS GP Connect Architecture",
+  "FHIR R4 Evidence Shape",
+  "GDPR Article 9 Boundary",
+  "MHRA SaMD-Aware Design",
+  "21 CFR Part 11 Audit Trail",
   "Synthetic-Safe Environment",
 ];
 
 const proofStats = [
   {
     value: "56",
-    label: "surfaces",
-    detail: "Review flows, evidence reports, ops views, roadmap, readiness, governance, and export routes."
+    label: "Product surfaces",
+    detail: "Review flows, evidence reports, ops views, roadmap, readiness, governance, and export routes: all built."
   },
   {
     value: "7",
-    label: "scenarios",
+    label: "Benchmark scenarios",
     detail: "UK clinical workflow scenarios with expected outcomes, sign-off discipline, and pass/fail gates."
   },
   {
     value: "4",
-    label: "layers",
-    detail: "Intake, clinician review, operations dashboards, and evidence governance, fully separated."
+    label: "Operating layers",
+    detail: "Intake, clinician review, operations dashboards, and evidence governance: fully separated."
   },
   {
     value: "3",
-    label: "roles",
-    detail: "Clinical reviewer, operations lead, and leadership, each with a distinct workflow path and controls."
+    label: "Clinical roles",
+    detail: "Clinical reviewer, operations lead, and leadership: each with a distinct workflow path and controls."
   }
 ];
 
@@ -154,7 +155,7 @@ export function ProductLanding() {
             <Link className="product-button product-button--primary" href="/demo">
               See it in action
             </Link>
-            <Link className="product-button product-button--secondary" href="/dashboard/gp">
+            <Link className="product-button product-button--secondary" href="/dashboards">
               Open operator view
             </Link>
           </div>
@@ -268,7 +269,7 @@ export function ProductLanding() {
           <p className="product-kicker">Built for your role</p>
           <h2 id="roles-heading">Each role gets the workflow it needs.</h2>
           <p>
-            Aksh Health adapts to clinical reviewers, operations leads, and leadership, each with
+            Aksh Health adapts to clinical reviewers, operations leads, and leadership | each with
             a distinct path, purpose, and set of controls.
           </p>
         </div>
@@ -305,7 +306,7 @@ export function ProductLanding() {
           <Link className="product-button product-button--primary" href="/demo">
             Open demo path
           </Link>
-          <Link className="product-button product-button--secondary" href="/dashboard/gp">
+          <Link className="product-button product-button--secondary" href="/dashboards">
             Operator dashboards
           </Link>
           <Link className="product-button product-button--secondary" href="/onboarding">
