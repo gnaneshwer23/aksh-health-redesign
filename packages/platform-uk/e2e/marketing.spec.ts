@@ -113,6 +113,14 @@ test.describe("Marketing smoke", () => {
   test("platform page loads with cohesive sections", async ({ page }) => {
     await page.goto("/platform");
 
+    const nav = page.locator("nav");
+    await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
+
+    const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
+    await expect(platformLink).toBeVisible();
+    const platformColor = await platformLink.evaluate((element) => window.getComputedStyle(element).color);
+    expect(platformColor).toBe("rgb(255, 255, 255)");
+
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();

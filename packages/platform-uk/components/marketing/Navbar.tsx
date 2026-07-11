@@ -122,41 +122,43 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     }
   }, [mobileOpen]);
 
-  const onDarkHero = overDarkHero && !scrolled;
+  // Transparent nav + white text only when hero actually sits behind the navbar.
+  const transparentOverHero = overDarkHero && !scrolled;
+  // White navbar + dark text whenever background is light (scrolled or non-hero pages).
+  const solidNavbar = scrolled || !overDarkHero;
 
   const linkClass = cn(
     "text-sm font-medium transition-colors rounded-lg",
     focusRing,
-    scrolled
-      ? "text-steel hover:text-navy"
-      : onDarkHero
-        ? "text-white/90 hover:text-white"
-        : "text-steel hover:text-navy"
+    transparentOverHero ? "text-white/90 hover:text-white" : "text-steel hover:text-navy"
   );
 
   return (
     <nav
-      data-over-dark-hero={onDarkHero ? "true" : "false"}
+      data-over-dark-hero={transparentOverHero ? "true" : "false"}
+      data-solid-navbar={solidNavbar ? "true" : "false"}
       className={cn(
         "fixed top-0 z-50 w-full overflow-visible transition-all duration-200",
-        scrolled ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md" : "bg-transparent"
+        solidNavbar
+          ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md"
+          : "bg-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
           className={cn("navbar-brand flex min-w-0 shrink-0 items-center gap-2.5 rounded-xl transition-colors", focusRing)}
-          style={{ color: onDarkHero ? "#ffffff" : "#003D7A" }}
+          style={{ color: transparentOverHero ? "#ffffff" : "#003D7A" }}
         >
           <div
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
-              onDarkHero ? "border border-white/40 bg-white/20 backdrop-blur-sm" : "bg-navy"
+              transparentOverHero ? "border border-white/40 bg-white/20 backdrop-blur-sm" : "bg-navy"
             )}
           >
             <span
               className="text-sm font-bold"
-              style={{ color: onDarkHero ? "#003D7A" : "#ffffff" }}
+              style={{ color: transparentOverHero ? "#003D7A" : "#ffffff" }}
             >
               A
             </span>
@@ -164,13 +166,13 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           <div className="flex min-w-0 flex-col leading-tight">
             <span
               className="navbar-brand-title truncate text-base font-bold leading-none"
-              style={{ color: onDarkHero ? "#ffffff" : "#003D7A" }}
+              style={{ color: transparentOverHero ? "#ffffff" : "#003D7A" }}
             >
               Aksh Health
             </span>
             <span
               className="navbar-brand-subtitle text-xs font-semibold uppercase tracking-wide"
-              style={{ color: onDarkHero ? "#00A86B" : "#006B4F" }}
+              style={{ color: transparentOverHero ? "#00A86B" : "#006B4F" }}
             >
               Healthcare OS
             </span>
@@ -261,11 +263,9 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             className={cn(
               "rounded-xl border px-4 py-2 text-sm font-medium transition-all",
               focusRing,
-              scrolled
-                ? "border-navy/20 text-navy hover:border-navy hover:bg-navy hover:text-white"
-                : onDarkHero
-                  ? "border-white/50 text-white hover:border-white hover:bg-white/10"
-                  : "border-navy/20 text-navy hover:border-navy hover:bg-navy/5"
+              transparentOverHero
+                ? "border-white/50 text-white hover:border-white hover:bg-white/10"
+                : "border-navy/20 text-navy hover:border-navy hover:bg-navy hover:text-white"
             )}
           >
             Sign In
@@ -286,11 +286,9 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
             focusRing,
-            scrolled
-              ? "border-navy/20 text-navy hover:bg-navy/5"
-              : onDarkHero
-                ? "border-white/40 text-white hover:bg-white/10"
-                : "border-navy/20 text-navy hover:bg-navy/5"
+            transparentOverHero
+              ? "border-white/40 text-white hover:bg-white/10"
+              : "border-navy/20 text-navy hover:bg-navy/5"
           )}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-menu"

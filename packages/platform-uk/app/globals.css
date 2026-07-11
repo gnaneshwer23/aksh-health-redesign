@@ -4792,6 +4792,36 @@ input:focus, textarea:focus {
 .marketing-site nav[data-over-dark-hero="true"] button {
   background-color: transparent !important;
   box-shadow: none !important;
+  color: rgb(255 255 255 / 0.9) !important;
+}
+
+.marketing-site nav[data-over-dark-hero="true"] button:hover {
+  color: #ffffff !important;
+}
+
+/* Nav links must contrast with navbar background */
+.marketing-site nav[data-solid-navbar="true"] a:not(.navbar-brand):not([class*="bg-emerald"]) {
+  color: #4a6fa5 !important;
+}
+
+.marketing-site nav[data-solid-navbar="true"] a:not(.navbar-brand):not([class*="bg-emerald"]):hover {
+  color: #003d7a !important;
+}
+
+.marketing-site nav[data-solid-navbar="true"] button {
+  color: #4a6fa5 !important;
+}
+
+.marketing-site nav[data-solid-navbar="true"] button:hover {
+  color: #003d7a !important;
+}
+
+.marketing-site nav[data-over-dark-hero="true"] a:not(.navbar-brand):not([class*="bg-emerald"]) {
+  color: rgb(255 255 255 / 0.9) !important;
+}
+
+.marketing-site nav[data-over-dark-hero="true"] a:not(.navbar-brand):not([class*="bg-emerald"]):hover {
+  color: #ffffff !important;
 }
 
 .marketing-site input,
