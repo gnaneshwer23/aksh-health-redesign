@@ -131,9 +131,14 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Ready to get started/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Get Started" }).first()).toBeVisible();
     await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+    await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
 
     await page.goto("/for-practices");
     await expect(page.getByRole("heading", { name: /From practice setup to team governance/i })).toBeVisible();
+
+    await page.goto("/for-hospitals");
+    await expect(page.getByRole("heading", { name: /From connected systems to executive action/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Agents for hospital operations/i })).toBeVisible();
   });
 
   test("platform page loads with cohesive sections", async ({ page }) => {

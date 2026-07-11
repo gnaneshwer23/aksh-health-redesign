@@ -9,7 +9,7 @@ export type {
   AudiencePageContent,
   AudiencePageKey,
   AudiencePain,
+  AudienceSectionHeader,
   AudienceWorkflow,
   AudienceWorkflowStep,
-  WorkflowIconName,
 } from "./audience-content";

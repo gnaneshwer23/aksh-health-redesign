@@ -2,16 +2,20 @@ import {
   Activity,
   BarChart3,
   Building2,
+  CheckSquare,
   ClipboardList,
+  Database,
   FileText,
   HeartPulse,
   Link2,
   Phone,
   Scale,
   Send,
+  Settings,
   Shield,
   Stethoscope,
   TrendingUp,
+  UserPlus,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -26,8 +30,6 @@ export type AudienceCapability = {
   title: string;
   body: string;
   icon: LucideIcon;
-  iconBg: string;
-  iconColor: string;
 };
 
 export type AudienceAgent = {
@@ -35,8 +37,12 @@ export type AudienceAgent = {
   tag: string;
   desc: string;
   icon: LucideIcon;
-  iconBg: string;
-  iconColor: string;
+};
+
+export type AudienceSectionHeader = {
+  label: string;
+  title: string;
+  description?: string;
 };
 
 export type AudienceCta = {
@@ -44,52 +50,18 @@ export type AudienceCta = {
   href: string;
 };
 
-export type WorkflowMockRow = {
-  label: string;
-  detail?: string;
-  badge?: string;
-  tone?: string;
-  status?: string;
-  statusTone?: "success" | "warning" | "danger";
-};
-
-export type WorkflowMockStat = {
-  label: string;
-  value: string;
-  tone?: string;
-};
-
-export type WorkflowIconName =
-  | "UserPlus"
-  | "Settings"
-  | "Database"
-  | "Stethoscope"
-  | "CheckSquare"
-  | "FileText"
-  | "Shield"
-  | "Users"
-  | "BarChart3";
-
 export type AudienceWorkflowStep = {
-  number: number;
   title: string;
   description: string;
-  iconName: WorkflowIconName;
-  mockTitle: string;
-  mockSubtitle?: string;
-  mockStats?: WorkflowMockStat[];
-  mockRows: WorkflowMockRow[];
-  mockFooter?: string;
+  icon: LucideIcon;
+  label?: string;
 };
 
 export type AudienceWorkflow = {
   sectionLabel: string;
   sectionTitle: string;
   sectionDescription: string;
-  disclaimer: string;
-  architecture?: {
-    stages: string[];
-  };
+  disclaimer?: string;
   steps: AudienceWorkflowStep[];
 };
 
@@ -98,11 +70,12 @@ export type AudiencePageContent = {
   headline: string;
   subline: string;
   roles?: string[];
+  painSection: AudienceSectionHeader;
   pains: [AudiencePain, AudiencePain, AudiencePain];
+  capabilitiesSection: AudienceSectionHeader;
   capabilities: AudienceCapability[];
-  endToEndWorkflow?: AudienceWorkflow;
-  workflowTitle: string;
-  workflowDescription: string;
+  workflow: AudienceWorkflow;
+  agentsSection: AudienceSectionHeader;
   agents: AudienceAgent[];
   ctaPrimary: AudienceCta;
   ctaSecondary: AudienceCta;
@@ -116,6 +89,11 @@ export const audiencePages = {
     subline:
       "Aksh Health is designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate care. You approve every output before it reaches the record. Demo uses synthetic data.",
     roles: ["GP", "Nurse", "Pharmacist"],
+    painSection: {
+      label: "The challenge",
+      title: "Challenges we hear every day",
+      description: "Built for NHS workflows with clinician approval on every output.",
+    },
     pains: [
       {
         title: "Admin overload",
@@ -133,203 +111,130 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "How Aksh Health helps",
+      description: "FHIR R4 ready outputs staged for review. Demo uses synthetic data.",
+    },
     capabilities: [
       {
         title: "Clinical copilot",
         body: "Pre-consultation briefing, in-consultation decision support, and post-consultation task management within your existing workflow.",
         icon: Stethoscope,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "SYNTHESIS documentation",
         body: "Ambient note generation produces FHIR DocumentReference SOAP notes. You review, edit, and approve before anything is staged for the record.",
         icon: FileText,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-700",
       },
       {
         title: "One review queue",
         body: "GUARDIAN safety checks, ORACLE risk scores, and referral drafts in one place. Accept, edit, or reject. Nothing proceeds without your approval.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
       {
         title: "Voice-to-note workflow",
         body: "Dictate naturally during consultation. VOICE transcribes in real time and SYNTHESIS structures the SOAP note for your review.",
         icon: Activity,
-        iconBg: "bg-accent/10",
-        iconColor: "text-accent",
       },
       {
         title: "Referral coordination",
         body: "REFERRAL AGENT drafts packages with criteria checks, missing investigations, and urgency prediction. You approve before send.",
         icon: Send,
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-600",
       },
       {
         title: "Risk scoring at point of care",
         body: "ORACLE surfaces CVD, T2D, and frailty scores plus 14-day admission prediction from the clinical knowledge graph.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
     ],
-    endToEndWorkflow: {
-      sectionLabel: "End-to-end workflow",
+    workflow: {
+      sectionLabel: "Your workflow",
       sectionTitle: "From sign-up to staged FHIR draft",
       sectionDescription:
         "Six steps from role selection through clinician review. Every AI output stays a draft until you approve it. Demo uses synthetic patients only.",
       disclaimer: "Synthetic demo data. No outputs are written to the EHR without clinician approval.",
-      architecture: {
-        stages: ["EMIS / SystmOne", "Aksh Health", "Review Queue", "FHIR staging"],
-      },
       steps: [
         {
-          number: 1,
+          label: "Register",
           title: "Sign up and role",
           description:
             "Choose GP, nurse, or pharmacist at registration. Your dashboard, permissions, and review queue adapt to your clinical role.",
-          iconName: "UserPlus",
-          mockTitle: "Account setup",
-          mockSubtitle: "Select your clinical role",
-          mockRows: [
-            { badge: "GP", label: "General practice clinician", tone: "bg-navy" },
-            { badge: "Nurse", label: "Practice nurse", tone: "bg-emerald" },
-            { badge: "Rx", label: "Clinical pharmacist", tone: "bg-purple-600" },
-          ],
-          mockFooter: "Role determines dashboard layout and review permissions",
+          icon: UserPlus,
         },
         {
-          number: 2,
+          label: "Onboard",
           title: "Practice onboarding",
           description:
             "Link your practice and EHR context. EMIS Web and SystmOne integration paths are configured during setup.",
-          iconName: "Settings",
-          mockTitle: "Practice onboarding",
-          mockSubtitle: "Riverside Medical Centre",
-          mockRows: [
-            { label: "EHR system", detail: "EMIS Web", status: "Connected", statusTone: "success" },
-            { label: "Practice ODS", detail: "A12345", status: "Verified", statusTone: "success" },
-            { label: "FHIR pipeline", detail: "R4 ready", status: "Staging", statusTone: "warning" },
-          ],
+          icon: Settings,
         },
         {
-          number: 3,
+          label: "Context",
           title: "Patient context loads",
           description:
             "Synthetic patient records load into your clinician view with conditions, medications, and appointment context ready for consultation.",
-          iconName: "Database",
-          mockTitle: "Patient context",
-          mockSubtitle: "Mr James Patel · NHS 943 476 5919",
-          mockStats: [
-            { label: "Active conditions", value: "4", tone: "text-navy" },
-            { label: "Medications", value: "7", tone: "text-emerald" },
-            { label: "ORACLE risk", value: "Med", tone: "text-warning" },
-          ],
-          mockRows: [
-            { badge: "T2D", label: "Type 2 diabetes mellitus", tone: "bg-navy" },
-            { badge: "HTN", label: "Essential hypertension", tone: "bg-navy" },
-            { badge: "Rx", label: "Metformin 500mg BD", tone: "bg-emerald" },
-          ],
-          mockFooter: "Synthetic patient · Demo data only",
+          icon: Database,
         },
         {
-          number: 4,
+          label: "Consult",
           title: "Consultation and agent drafts",
           description:
             "During consultation, SYNTHESIS drafts your SOAP note while GUARDIAN checks interactions and ORACLE scores risk in parallel.",
-          iconName: "Stethoscope",
-          mockTitle: "Agent activity",
-          mockSubtitle: "Consultation in progress",
-          mockRows: [
-            { badge: "SYNTHESIS", label: "SOAP note draft ready", tone: "bg-navy", status: "Draft" },
-            { badge: "GUARDIAN", label: "Amlodipine + simvastatin check", tone: "bg-danger", status: "Amber" },
-            { badge: "ORACLE", label: "CVD risk score 18.4%", tone: "bg-warning", status: "Review" },
-          ],
+          icon: Stethoscope,
         },
         {
-          number: 5,
+          label: "Review",
           title: "Review queue (HITL)",
           description:
             "All agent outputs appear in one review queue. Accept, edit, or reject each draft. Nothing proceeds without your explicit decision.",
-          iconName: "CheckSquare",
-          mockTitle: "GP Review Queue",
-          mockSubtitle: "3 items awaiting approval",
-          mockStats: [
-            { label: "Pending", value: "3", tone: "text-navy" },
-            { label: "Approved today", value: "12", tone: "text-emerald" },
-            { label: "Rejected", value: "1", tone: "text-steel" },
-          ],
-          mockRows: [
-            { badge: "SYNTHESIS", label: "SOAP note draft", tone: "bg-navy", status: "Accept / Edit / Reject" },
-            { badge: "GUARDIAN", label: "Drug interaction flag", tone: "bg-danger", status: "Accept / Edit / Reject" },
-            { badge: "ORACLE", label: "CVD risk score", tone: "bg-warning", status: "Accept / Edit / Reject" },
-          ],
-          mockFooter: "Human-in-the-loop on every clinical output",
+          icon: CheckSquare,
         },
         {
-          number: 6,
+          label: "Stage",
           title: "FHIR draft staged",
           description:
             "Approved outputs are staged as FHIR DocumentReference drafts. They are not auto-written to the EHR record until you confirm.",
-          iconName: "FileText",
-          mockTitle: "FHIR staging queue",
-          mockSubtitle: "DocumentReference · Pending write",
-          mockRows: [
-            { label: "SOAP note", detail: "DocumentReference", status: "Staged", statusTone: "warning" },
-            { label: "Condition code", detail: "SNOMED-CT E11.9", status: "Staged", statusTone: "warning" },
-            { label: "EHR write", detail: "EMIS Web", status: "Awaiting confirm", statusTone: "warning" },
-          ],
-          mockFooter: "Zero auto-writes. Clinician confirms before record update.",
+          icon: FileText,
         },
       ],
     },
-    workflowTitle: "Agents and dashboards for clinical teams",
-    workflowDescription:
-      "GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety. Synthetic patients only in this build.",
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents and dashboards for clinical teams",
+      description:
+        "GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety. Synthetic patients only in this build.",
+    },
     agents: [
       {
         name: "SYNTHESIS",
         tag: "Clinical",
         desc: "Structured SOAP notes from consultation input in seconds, staged for clinician approval.",
         icon: FileText,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         name: "GUARDIAN",
         tag: "Safety",
         desc: "Drug interaction, allergy, and contraindication checking with BNF-validated red, amber, and green flags.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
       {
         name: "ORACLE",
         tag: "Risk",
         desc: "CVD, T2D, and frailty risk scoring with 14-day admission prediction for proactive review.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         name: "DrASSIST",
         tag: "Clinical",
         desc: "Differential diagnosis and SNOMED-CT coding with confidence scores. GP overrides freely.",
         icon: Stethoscope,
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-700",
       },
       {
         name: "REFERRAL AGENT",
         tag: "Coordination",
         desc: "Auto-generates referral packages with criteria checks and urgency prediction.",
         icon: Send,
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-600",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=gp" },
@@ -343,6 +248,11 @@ export const audiencePages = {
     subline:
       "Aksh Health gives hospital executives and operational leads a single view across wards, emergency demand, and workforce pressure. Designed for Epic, Oracle Health, and NHS Spine-connected environments. Synthetic data in this build.",
     roles: ["Hospital Executive", "Medical Director", "Chief Operating Officer"],
+    painSection: {
+      label: "The challenge",
+      title: "Operational pressure without a single view",
+      description: "Built for trust leadership with governed AI recommendations and full audit trails.",
+    },
     pains: [
       {
         title: "Fragmented operational data",
@@ -360,78 +270,105 @@ export const audiencePages = {
         icon: Users,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "Command centre for trust operations",
+      description: "Ward status, capacity forecasts, and staffing ratios for hospital executives. Synthetic data in this build.",
+    },
     capabilities: [
       {
         title: "Hospital command centre",
         body: "Real-time ED waiting times, bed occupancy, staff shortage alerts, and AI recommendations in one operational view for your trust.",
         icon: Building2,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         title: "Capacity prediction",
         body: "Admission forecasts and winter planning powered by the Capacity Prediction agent. Know bed demand up to 14 days ahead.",
         icon: BarChart3,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "Workforce intelligence",
         body: "Agency staff triggers, theatre utilisation optimisation, and elective scheduling aligned to ED demand patterns.",
         icon: Users,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Clinical risk at system level",
         body: "ORACLE admission prediction aggregated across wards helps medical directors prioritise flow and escalation pathways.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         title: "Governance and audit",
         body: "SHIELD immutable audit trail for operational recommendations and executive actions across connected systems.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
     ],
-    workflowTitle: "Command centre for trust operations",
-    workflowDescription:
-      "Ward status, capacity forecasts, and staffing ratios for hospital executives. Synthetic patients only in this build.",
+    workflow: {
+      sectionLabel: "Your workflow",
+      sectionTitle: "From connected systems to executive action",
+      sectionDescription:
+        "Four steps for hospital executives to monitor operations, forecast demand, and govern AI-assisted decisions across the trust.",
+      disclaimer: "Synthetic demo data. Production deployment requires trust governance sign-off.",
+      steps: [
+        {
+          label: "Connect",
+          title: "Link operational systems",
+          description:
+            "Connect ED, ward, theatre, and workforce data sources into a single Aksh Health command view for trust leadership.",
+          icon: Link2,
+        },
+        {
+          label: "Monitor",
+          title: "Real-time command centre",
+          description:
+            "Track ED waits, bed occupancy, staffing gaps, and pressure signals in one operational dashboard updated in real time.",
+          icon: Building2,
+        },
+        {
+          label: "Forecast",
+          title: "Capacity and demand planning",
+          description:
+            "Use 14-day admission forecasts and winter surge models to plan beds, theatres, and agency triggers before pressure builds.",
+          icon: BarChart3,
+        },
+        {
+          label: "Govern",
+          title: "Audit executive actions",
+          description:
+            "SHIELD logs every operational recommendation and executive decision with immutable audit trails for medical directors and CIOs.",
+          icon: Shield,
+        },
+      ],
+    },
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents for hospital operations",
+      description:
+        "Operational intelligence, capacity forecasting, and governance for trust-wide decision making. Synthetic patients only in this build.",
+    },
     agents: [
       {
         name: "HOSPITAL COMMAND",
         tag: "Operational",
         desc: "ED waiting times, bed occupancy, theatres, and pressure signals in one trust-wide operational view.",
         icon: Building2,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         name: "CAPACITY PREDICTION",
         tag: "Operational",
         desc: "14-day admission and discharge forecast with winter surge planning and discharge bottleneck detection.",
         icon: BarChart3,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         name: "ORACLE",
         tag: "Risk",
         desc: "Aggregated admission risk across wards for medical director review and flow prioritisation.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         name: "SHIELD",
         tag: "Compliance",
         desc: "Immutable audit trail for operational AI recommendations and executive actions.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=hospital-executive" },
@@ -445,6 +382,11 @@ export const audiencePages = {
     subline:
       "Researchers and clinical informatics analysts study cohort metrics, AI-assisted care outcomes, and safety signals with clear governance boundaries. Pseudonymised synthetic cohorts in this build.",
     roles: ["Researcher", "Clinical Informatics", "Health Economist"],
+    painSection: {
+      label: "The challenge",
+      title: "Evaluation data without clear governance",
+      description: "Built for researchers with aggregate access by default and explicit ethics boundaries.",
+    },
     pains: [
       {
         title: "Fragmented evaluation data",
@@ -462,78 +404,105 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "Governed research and evaluation",
+      description: "Cohort metrics, evaluation charts, and data access controls for clinical informatics research.",
+    },
     capabilities: [
       {
         title: "Cohort evaluation dashboards",
         body: "Outcome metrics, evaluation charts, and study-level KPIs for AI-assisted care pathways across defined patient cohorts.",
         icon: BarChart3,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "Governed data access",
         body: "Aggregate access by default with explicit ethics reference tracking. Individual-level access requires governance sign-off.",
         icon: Shield,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Authenticated export",
         body: "Download evaluation summaries as JSON authenticated to your researcher session for reproducible analysis workflows.",
         icon: FileText,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-700",
       },
       {
         title: "Equity and disparity analysis",
         body: "EQUITY agent surfaces health disparities by IMD quintile and ethnicity for outcome studies and ICS reporting.",
         icon: Scale,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Safety signal monitoring",
         body: "Track GUARDIAN and ORACLE outputs across cohorts with SHIELD audit trails for pharmacovigilance-style review.",
         icon: Activity,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
     ],
-    workflowTitle: "Research cohort overview",
-    workflowDescription:
-      "Cohort metrics, evaluation charts, and data access controls for clinical informatics research. Synthetic patients only in this build.",
+    workflow: {
+      sectionLabel: "Your workflow",
+      sectionTitle: "From cohort definition to outcome evaluation",
+      sectionDescription:
+        "Four steps for researchers to define study scope, access governed data, evaluate outcomes, and monitor safety signals.",
+      disclaimer: "All cohort metrics in this build use pseudonymised synthetic patients.",
+      steps: [
+        {
+          label: "Define",
+          title: "Set cohort and ethics scope",
+          description:
+            "Define study parameters, cohort inclusion criteria, and ethics reference boundaries before any data access is granted.",
+          icon: ClipboardList,
+        },
+        {
+          label: "Access",
+          title: "Governed aggregate data",
+          description:
+            "Access population-level metrics and evaluation dashboards with aggregate views by default and audit logging on every query.",
+          icon: Shield,
+        },
+        {
+          label: "Evaluate",
+          title: "Outcome analysis and export",
+          description:
+            "Study AI-assisted care outcomes with cohort dashboards and authenticated JSON exports for reproducible analysis.",
+          icon: BarChart3,
+        },
+        {
+          label: "Monitor",
+          title: "Safety signal tracking",
+          description:
+            "Track GUARDIAN and ORACLE outputs across cohorts with SHIELD audit trails for pharmacovigilance-style review.",
+          icon: Activity,
+        },
+      ],
+    },
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents for research and evaluation",
+      description:
+        "Cohort analytics, equity analysis, and safety monitoring for clinical informatics research. Synthetic patients only in this build.",
+    },
     agents: [
       {
         name: "EQUITY",
         tag: "Population",
         desc: "Health disparity detection by IMD quintile and ethnicity for cohort outcome studies.",
         icon: Scale,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         name: "ORACLE",
         tag: "Risk",
         desc: "Cohort-level risk scoring and admission prediction for real-world evidence analysis.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         name: "SHIELD",
         tag: "Compliance",
         desc: "Immutable audit trail for data access, exports, and governance approvals.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         name: "GUARDIAN",
         tag: "Safety",
         desc: "Safety signal aggregation across cohorts for pharmacovigilance-style monitoring.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=researcher" },
@@ -547,6 +516,11 @@ export const audiencePages = {
     subline:
       "The Health Companion keeps you connected to your care team between appointments. Check-ins, reminders, and secure messaging with clinician oversight. Demo uses synthetic data.",
     roles: ["Patient", "Carer"],
+    painSection: {
+      label: "The challenge",
+      title: "Care gaps between appointments",
+      description: "Built for patients with clinician oversight on every AI interaction.",
+    },
     pains: [
       {
         title: "Gaps between appointments",
@@ -564,70 +538,99 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "Your Health Companion",
+      description: "Check-ins, medications, and care plan visibility with clinician oversight on every interaction.",
+    },
     capabilities: [
       {
         title: "Daily health check-ins",
         body: "Track symptoms and wellbeing between visits. Responses are reviewed by your care team when clinical action is needed.",
         icon: HeartPulse,
-        iconBg: "bg-accent/10",
-        iconColor: "text-accent",
       },
       {
         title: "Medication support",
         body: "Reminders and adherence support tailored to your conditions, with escalation to clinicians when concerns arise.",
         icon: ClipboardList,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Care plan in plain English",
         body: "See upcoming tasks, appointments, and lifestyle coaching in one companion view. You control what the AI can access.",
         icon: FileText,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-700",
       },
       {
         title: "Post-discharge follow-up",
         body: "VOICE CARE AGENT makes outbound check-in calls after hospital discharge. Symptoms are escalated to your GP when needed.",
         icon: Phone,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-600",
       },
       {
         title: "Clinician oversight always",
         body: "Every AI interaction is reviewed by your care team. You can opt out of AI-assisted features at any time.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
     ],
-    workflowTitle: "Health Companion preview",
-    workflowDescription:
-      "Patient-facing companion for check-ins, medications, and care plan visibility. Ask your GP practice if they use Aksh Health.",
+    workflow: {
+      sectionLabel: "Your workflow",
+      sectionTitle: "Stay connected to your care team",
+      sectionDescription:
+        "Four steps for patients to register, check in daily, receive care team review, and manage medications and care plans.",
+      disclaimer: "Demo uses synthetic data. Ask your GP practice if they use Aksh Health.",
+      steps: [
+        {
+          label: "Register",
+          title: "Access your companion",
+          description:
+            "Sign up through your GP practice to access the Health Companion with secure, NHS-aligned patient authentication.",
+          icon: UserPlus,
+        },
+        {
+          label: "Check in",
+          title: "Daily health updates",
+          description:
+            "Log symptoms, wellbeing, and medication adherence between appointments. Responses are reviewed when clinical action is needed.",
+          icon: HeartPulse,
+        },
+        {
+          label: "Review",
+          title: "Care team oversight",
+          description:
+            "Your GP or nurse reviews AI-assisted check-in responses and escalates concerns. You are never left without clinical support.",
+          icon: Stethoscope,
+        },
+        {
+          label: "Plan",
+          title: "Care plan visibility",
+          description:
+            "See upcoming tasks, appointments, and lifestyle goals in plain English. Control what the AI can access at any time.",
+          icon: ClipboardList,
+        },
+      ],
+    },
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents that support your care",
+      description:
+        "Patient-facing companions with clinician oversight on every interaction. Ask your GP practice if they use Aksh Health.",
+    },
     agents: [
       {
         name: "HEALTH COMPANION",
         tag: "Patient",
         desc: "Daily check-ins, medication reminders, and care plan guidance in plain English.",
         icon: HeartPulse,
-        iconBg: "bg-accent/10",
-        iconColor: "text-accent",
       },
       {
         name: "VOICE CARE AGENT",
         tag: "Patient",
         desc: "Outbound post-discharge calls that collect symptoms and escalate deterioration to your GP.",
         icon: Phone,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-600",
       },
       {
         name: "GUARDIAN",
         tag: "Safety",
         desc: "Medication safety checks with escalation to clinicians when concerns are flagged.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=patient" },
@@ -640,6 +643,11 @@ export const audiencePages = {
     subline:
       "Practice managers and administrators get tenancy controls, integration health views, and compliance evidence scaffolding. Designed for EMIS Web and SystmOne environments. Demo uses synthetic data.",
     roles: ["Practice Manager", "Practice Administrator"],
+    painSection: {
+      label: "The challenge",
+      title: "Practice operations without clear oversight",
+      description: "Built for practice managers with tenancy controls and compliance evidence scaffolding.",
+    },
     pains: [
       {
         title: "Limited integration visibility",
@@ -657,178 +665,113 @@ export const audiencePages = {
         icon: Shield,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "Practice management and governance",
+      description: "Integration health, tenant configuration, and SHIELD compliance views for practice administrators.",
+    },
     capabilities: [
       {
         title: "Practice-level tenancy",
         body: "Configure sites, roles, and access boundaries for your organisation. Multi-site scaffolding for growing practices.",
         icon: Building2,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "Integration health",
         body: "Monitor EMIS and Mirth integration status with FHIR R4 ready pathways. Production interoperability is on the roadmap.",
         icon: Link2,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-700",
       },
       {
         title: "SHIELD audit views",
         body: "Immutable audit trail for AI recommendations and clinician actions. Governance dashboards for practice leadership.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         title: "Review queue oversight",
         body: "Practice managers see queue clearance rates, AI adoption, and safety outcomes across clinical teams.",
         icon: ClipboardList,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Staff onboarding",
         body: "Role-based access for GPs, nurses, pharmacists, and admin staff with consistent permissions across sites.",
         icon: Users,
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-700",
       },
     ],
-    endToEndWorkflow: {
-      sectionLabel: "End-to-end workflow",
+    workflow: {
+      sectionLabel: "Your workflow",
       sectionTitle: "From practice setup to team governance",
       sectionDescription:
-        "Six steps for practice managers to configure tenancy, monitor team performance, and maintain compliance evidence. Demo uses synthetic data.",
+        "Six steps for practice managers to configure tenancy, monitor team performance, and maintain compliance evidence.",
       disclaimer: "Synthetic demo data. Production tenancy requires practice administrator sign-off.",
-      architecture: {
-        stages: ["EMIS / SystmOne", "Aksh Health", "Review Queue", "FHIR staging"],
-      },
       steps: [
         {
-          number: 1,
+          label: "Register",
           title: "Practice manager sign-up",
           description:
             "Register as practice manager or administrator. You receive tenancy controls and oversight dashboards for your organisation.",
-          iconName: "UserPlus",
-          mockTitle: "Administrator registration",
-          mockSubtitle: "Practice manager account",
-          mockRows: [
-            { label: "Organisation", detail: "Riverside Medical Centre", status: "New", statusTone: "warning" },
-            { label: "Role", detail: "Practice Manager", status: "Assigned", statusTone: "success" },
-            { label: "Sites", detail: "1 primary site", status: "Pending", statusTone: "warning" },
-          ],
+          icon: UserPlus,
         },
         {
-          number: 2,
-          title: "Configure practice and roles",
+          label: "Configure",
+          title: "Practice and role setup",
           description:
             "Set up sites, invite clinicians, and assign role-based access for GPs, nurses, pharmacists, and admin staff.",
-          iconName: "Settings",
-          mockTitle: "Tenancy configuration",
-          mockSubtitle: "Roles and access boundaries",
-          mockRows: [
-            { badge: "GP", label: "Dr Sarah Chen", tone: "bg-navy", status: "Active", statusTone: "success" },
-            { badge: "Nurse", label: "Lisa Okonkwo", tone: "bg-emerald", status: "Active", statusTone: "success" },
-            { badge: "Admin", label: "James Wright", tone: "bg-purple-600", status: "Invited", statusTone: "warning" },
-          ],
+          icon: Settings,
         },
         {
-          number: 3,
+          label: "Monitor",
           title: "Team dashboards",
           description:
             "Monitor GP, nurse, and admin views from a practice-level overview. See queue clearance, agent adoption, and daily activity.",
-          iconName: "Users",
-          mockTitle: "Team overview",
-          mockSubtitle: "Today's activity across roles",
-          mockStats: [
-            { label: "Clinicians active", value: "8", tone: "text-navy" },
-            { label: "Queue items", value: "24", tone: "text-emerald" },
-            { label: "Clearance rate", value: "94%", tone: "text-emerald" },
-          ],
-          mockRows: [
-            { badge: "GP", label: "Review queue · 3 pending", tone: "bg-navy" },
-            { badge: "Nurse", label: "Handover notes · 2 drafts", tone: "bg-emerald" },
-            { badge: "Admin", label: "Integration health · OK", tone: "bg-purple-600" },
-          ],
+          icon: Users,
         },
         {
-          number: 4,
+          label: "Audit",
           title: "Compliance and audit",
           description:
             "SHIELD provides an immutable audit trail of AI recommendations and clinician actions for CQC, DSPT, and clinical safety reviews.",
-          iconName: "Shield",
-          mockTitle: "SHIELD audit trail",
-          mockSubtitle: "Last 24 hours",
-          mockRows: [
-            { label: "AI recommendation logged", detail: "SYNTHESIS", status: "14:32", statusTone: "success" },
-            { label: "Clinician approval", detail: "Dr Chen", status: "14:35", statusTone: "success" },
-            { label: "FHIR staging event", detail: "DocumentReference", status: "14:35", statusTone: "success" },
-          ],
-          mockFooter: "Immutable audit log for compliance evidence",
+          icon: Shield,
         },
         {
-          number: 5,
+          label: "Population",
           title: "Population oversight",
           description:
             "Practice-level population view shows risk distribution, queue trends, and operational metrics across your registered list.",
-          iconName: "BarChart3",
-          mockTitle: "Population view",
-          mockSubtitle: "Practice operational metrics",
-          mockStats: [
-            { label: "List size", value: "12.4k", tone: "text-navy" },
-            { label: "High risk", value: "342", tone: "text-warning" },
-            { label: "Reviews due", value: "28", tone: "text-emerald" },
-          ],
-          mockRows: [
-            { label: "CVD screening gap", status: "18 patients", statusTone: "warning" },
-            { label: "Diabetes review overdue", status: "12 patients", statusTone: "warning" },
-            { label: "Queue clearance trend", status: "+6% this week", statusTone: "success" },
-          ],
+          icon: BarChart3,
         },
         {
-          number: 6,
+          label: "Govern",
           title: "HITL governance across team",
           description:
             "Set practice-wide policies for human-in-the-loop review. Monitor that no AI output bypasses clinician approval before the record.",
-          iconName: "CheckSquare",
-          mockTitle: "HITL governance",
-          mockSubtitle: "Team approval policy",
-          mockRows: [
-            { label: "Auto-write to EHR", status: "Disabled", statusTone: "success" },
-            { label: "Pending without approval", status: "0 items", statusTone: "success" },
-            { label: "Rejected outputs (7d)", status: "3 logged", statusTone: "warning" },
-          ],
-          mockFooter: "Every AI output requires explicit clinician approval",
+          icon: CheckSquare,
         },
       ],
     },
-    workflowTitle: "Admin dashboard for practice operations",
-    workflowDescription:
-      "Integration health, tenant configuration, and SHIELD compliance views for practice administrators. Synthetic data in this build.",
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents for practice operations",
+      description:
+        "Compliance, safety monitoring, and documentation metrics for practice administrators. Synthetic data in this build.",
+    },
     agents: [
       {
         name: "SHIELD",
         tag: "Compliance",
         desc: "Immutable audit trail for AI recommendations and practice administrator actions.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         name: "GUARDIAN",
         tag: "Safety",
         desc: "Practice-wide safety signal monitoring across clinical review queues.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
       {
         name: "SYNTHESIS",
         tag: "Clinical",
         desc: "Documentation throughput and queue metrics for practice performance review.",
         icon: FileText,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=practice-manager" },
@@ -842,6 +785,11 @@ export const audiencePages = {
     subline:
       "ICS leads and clinical informatics teams get equity metrics, practice benchmarking, and admission forecasts across connected primary and secondary care. Synthetic cohorts in this build.",
     roles: ["ICS Lead", "Clinical Informatics", "Population Health"],
+    painSection: {
+      label: "The challenge",
+      title: "Population health without a system view",
+      description: "Built for ICS leads with aggregate access by default and governed individual-level access.",
+    },
     pains: [
       {
         title: "Uneven practice performance",
@@ -859,78 +807,105 @@ export const audiencePages = {
         icon: TrendingUp,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "ICS population intelligence",
+      description: "Population charts, equity deep-dives, and 14-day admission forecasts for integrated care leads.",
+    },
     capabilities: [
       {
         title: "Population health dashboards",
         body: "Risk distribution and deprivation-linked condition prevalence across practices in your ICS, powered by the clinical knowledge graph.",
         icon: BarChart3,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "EQUITY intelligence",
         body: "Health disparity flags by IMD quintile and ethnicity with recommended actions and monthly equity reporting.",
         icon: Scale,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Practice benchmarking",
         body: "Sortable practice scorecards for AI adoption, review queue clearance, and overall performance across your footprint.",
         icon: Building2,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         title: "Admission forecasting",
         body: "ICS-wide 14-day admission predictions from CAPACITY PREDICTION for winter planning and flow coordination.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         title: "Governed aggregate access",
         body: "Population views by default. Individual patient access requires explicit ICS governance approval.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
     ],
-    workflowTitle: "ICS population intelligence",
-    workflowDescription:
-      "Population charts, equity deep-dives, and 14-day admission forecasts for integrated care leads. Synthetic data in this build.",
+    workflow: {
+      sectionLabel: "Your workflow",
+      sectionTitle: "From population data to system planning",
+      sectionDescription:
+        "Four steps for ICS leads to aggregate population metrics, benchmark practices, surface equity gaps, and plan system-wide capacity.",
+      disclaimer: "Aggregate views only by default. Synthetic cohorts in this build.",
+      steps: [
+        {
+          label: "Aggregate",
+          title: "Population health overview",
+          description:
+            "View risk distribution, condition prevalence, and deprivation-linked metrics across all practices in your ICS footprint.",
+          icon: BarChart3,
+        },
+        {
+          label: "Benchmark",
+          title: "Practice performance scorecards",
+          description:
+            "Compare AI adoption, queue clearance rates, and safety outcomes across practices with sortable benchmarking dashboards.",
+          icon: Building2,
+        },
+        {
+          label: "Equity",
+          title: "Disparity analysis",
+          description:
+            "Surface health disparities by IMD quintile and ethnicity with EQUITY intelligence and recommended actions for ICS reporting.",
+          icon: Scale,
+        },
+        {
+          label: "Plan",
+          title: "System-wide forecasting",
+          description:
+            "Use ICS-wide 14-day admission predictions for winter planning, flow coordination, and proactive capacity management.",
+          icon: TrendingUp,
+        },
+      ],
+    },
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents for population health",
+      description:
+        "Equity analysis, capacity forecasting, and governance for integrated care system leads. Synthetic data in this build.",
+    },
     agents: [
       {
         name: "EQUITY",
         tag: "Population",
         desc: "Health disparity detection by IMD quintile and ethnicity with monthly ICS equity reports.",
         icon: Scale,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         name: "CAPACITY PREDICTION",
         tag: "Operational",
         desc: "ICS-wide admission and discharge forecasts for system-level winter planning.",
         icon: BarChart3,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         name: "ORACLE",
         tag: "Risk",
         desc: "Aggregated risk distribution across practices for population health prioritisation.",
         icon: TrendingUp,
-        iconBg: "bg-warning/10",
-        iconColor: "text-warning",
       },
       {
         name: "SHIELD",
         tag: "Compliance",
         desc: "Governance audit trail for ICS-level data access and population reporting.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=ics-lead" },
@@ -944,6 +919,11 @@ export const audiencePages = {
     subline:
       "System administrators and clinical informatics leads monitor FHIR pipelines, tenancy boundaries, and SHIELD evidence across connected organisations. Designed for EMIS Web, SystmOne, and Mirth environments. Synthetic data in this build.",
     roles: ["System Administrator", "Clinical Informatics", "Integration Lead"],
+    painSection: {
+      label: "The challenge",
+      title: "Integration and governance without visibility",
+      description: "Built for system administrators with FHIR pipeline monitoring and immutable audit trails.",
+    },
     pains: [
       {
         title: "Opaque integration status",
@@ -961,70 +941,99 @@ export const audiencePages = {
         icon: Shield,
       },
     ],
+    capabilitiesSection: {
+      label: "How we help",
+      title: "System operations and governance",
+      description: "Integration health, tenant configuration, and SHIELD compliance views for technical administrators.",
+    },
     capabilities: [
       {
         title: "Integration health monitoring",
         body: "Track EMIS, Mirth, and FHIR R4 ready pipeline status from a single admin view. Production interoperability is on the roadmap.",
         icon: Link2,
-        iconBg: "bg-sky-100",
-        iconColor: "text-sky-700",
       },
       {
         title: "Multi-tenant configuration",
         body: "Manage organisation boundaries, role mappings, and access policies across practices and connected systems.",
         icon: Building2,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
       {
         title: "SHIELD audit infrastructure",
         body: "Immutable audit trail for AI recommendations and administrator actions. Governance scaffolding for compliance reviews.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         title: "FHIR pipeline visibility",
         body: "Monitor DocumentReference, Condition, and MedicationRequest staging queues across connected EHR environments.",
         icon: FileText,
-        iconBg: "bg-emerald/10",
-        iconColor: "text-emerald",
       },
       {
         title: "Role and access management",
         body: "Consistent RBAC across sites with audit logging for every permission change and tenancy boundary update.",
         icon: Users,
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-700",
       },
     ],
-    workflowTitle: "Admin dashboard for system operations",
-    workflowDescription:
-      "Integration health, tenant configuration, and SHIELD compliance views for technical administrators. Synthetic data in this build.",
+    workflow: {
+      sectionLabel: "Your workflow",
+      sectionTitle: "From tenancy setup to governed operations",
+      sectionDescription:
+        "Four steps for system administrators to configure tenancy, monitor integrations, manage access, and maintain audit evidence.",
+      disclaimer: "Synthetic demo data. Production deployment requires organisation governance sign-off.",
+      steps: [
+        {
+          label: "Configure",
+          title: "Tenancy and organisation setup",
+          description:
+            "Configure organisation boundaries, sites, and role mappings with consistent RBAC across connected practices and systems.",
+          icon: Settings,
+        },
+        {
+          label: "Monitor",
+          title: "Integration health dashboard",
+          description:
+            "Track EMIS feeds, Mirth channels, and FHIR R4 pipeline status from a single admin view with proactive alerting.",
+          icon: Link2,
+        },
+        {
+          label: "Manage",
+          title: "Access and permissions",
+          description:
+            "Manage role-based access across sites with audit logging for every permission change and tenancy boundary update.",
+          icon: Users,
+        },
+        {
+          label: "Audit",
+          title: "SHIELD governance evidence",
+          description:
+            "Maintain immutable audit trails of administrator actions, integration events, and AI governance for DSPT and clinical safety reviews.",
+          icon: Shield,
+        },
+      ],
+    },
+    agentsSection: {
+      label: "AI agents",
+      title: "Agents for system administration",
+      description:
+        "Compliance, safety configuration, and FHIR pipeline monitoring for technical administrators. Synthetic data in this build.",
+    },
     agents: [
       {
         name: "SHIELD",
         tag: "Compliance",
         desc: "Immutable audit trail for administrator actions, integration events, and AI governance.",
         icon: Shield,
-        iconBg: "bg-surface-muted",
-        iconColor: "text-slate",
       },
       {
         name: "GUARDIAN",
         tag: "Safety",
         desc: "System-wide safety configuration and alert routing across connected clinical environments.",
         icon: Shield,
-        iconBg: "bg-danger/10",
-        iconColor: "text-danger",
       },
       {
         name: "SYNTHESIS",
         tag: "Clinical",
         desc: "FHIR DocumentReference pipeline monitoring and staging queue health metrics.",
         icon: FileText,
-        iconBg: "bg-navy/10",
-        iconColor: "text-navy",
       },
     ],
     ctaPrimary: { label: "Get Started", href: "/signup?role=practice-manager" },

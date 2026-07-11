@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
 
 import type { AudiencePageContent } from "@/components/marketing/audience/audience-content";
 import { AudienceWorkflowSection } from "@/components/marketing/audience/AudienceWorkflowSection";
@@ -15,11 +14,12 @@ export function AudiencePageLayout({
   headline,
   subline,
   roles,
+  painSection,
   pains,
+  capabilitiesSection,
   capabilities,
-  endToEndWorkflow,
-  workflowTitle,
-  workflowDescription,
+  workflow,
+  agentsSection,
   agents,
   ctaPrimary,
   ctaSecondary,
@@ -84,9 +84,9 @@ export function AudiencePageLayout({
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <MarketingSectionHeader
             align="left"
-            label="The challenge"
-            title="Challenges we hear every day"
-            description="Built for NHS workflows with clinician approval on every output."
+            label={painSection.label}
+            title={painSection.title}
+            description={painSection.description}
           />
           <div className="grid gap-6 md:grid-cols-3">
             {pains.map((pain, index) => (
@@ -96,6 +96,7 @@ export function AudiencePageLayout({
                 icon={pain.icon}
                 title={pain.title}
                 description={pain.body}
+                compact
               />
             ))}
           </div>
@@ -107,9 +108,9 @@ export function AudiencePageLayout({
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <MarketingSectionHeader
             align="left"
-            label="How we help"
-            title="How Aksh Health helps"
-            description="FHIR R4 ready outputs staged for review. Demo uses synthetic data."
+            label={capabilitiesSection.label}
+            title={capabilitiesSection.title}
+            description={capabilitiesSection.description}
           />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {capabilities.map((feature, index) => (
@@ -126,40 +127,30 @@ export function AudiencePageLayout({
         </div>
       </section>
 
-      {endToEndWorkflow && <AudienceWorkflowSection workflow={endToEndWorkflow} />}
+      <AudienceWorkflowSection workflow={workflow} />
 
-      {/* Workflow / agents */}
-      <section className="bg-surface py-20 md:py-24">
+      {/* Agents */}
+      <section className="bg-white py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <MarketingSectionHeader
             align="left"
-            label="Your workflow"
-            title={workflowTitle}
-            description={workflowDescription}
+            label={agentsSection.label}
+            title={agentsSection.title}
+            description={agentsSection.description}
           />
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {agents.map((agent) => {
-              const Icon = agent.icon;
-              return (
-                <article
-                  key={agent.name}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
-                >
-                  <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${agent.iconBg}`}>
-                    <Icon className={`h-5 w-5 ${agent.iconColor}`} aria-hidden />
-                  </div>
-                  <div className={`mb-2 text-xs font-bold uppercase tracking-wide ${agent.iconColor}`}>
-                    {agent.name}
-                  </div>
-                  <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-steel">
-                    <Users className="h-3 w-3" aria-hidden />
-                    {agent.tag}
-                  </div>
-                  <p className="text-sm leading-relaxed text-slate">{agent.desc}</p>
-                </article>
-              );
-            })}
+            {agents.map((agent, index) => (
+              <PastelCapabilityCard
+                key={agent.name}
+                variant={pastelVariantAt(index)}
+                icon={agent.icon}
+                label={agent.tag}
+                title={agent.name}
+                description={agent.desc}
+                compact
+              />
+            ))}
           </div>
 
           <div className="mt-10 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center">
