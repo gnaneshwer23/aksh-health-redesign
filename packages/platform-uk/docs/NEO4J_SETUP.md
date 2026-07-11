@@ -13,6 +13,58 @@ Phase 11 wires ORACLE, GUARDIAN, and ICS population dashboards to a Neo4j graph.
    - **Username** — usually `neo4j`
    - **Password** — generated once; store securely
 
+## Aura console (instance `5982f4dd` — akeno health)
+
+Use the Neo4j Aura console for **akeno health** when you need the live connection string or to confirm seed data.
+
+### Copy the connection URI
+
+1. Open [Neo4j Aura](https://console.neo4j.io/) → **My instance** (`5982f4dd`) — AuraDB Professional, region **europe-west2**.
+2. Click **Connect**.
+3. Copy **URI** (`neo4j+s://5982f4dd.databases.neo4j.io`) into local `.env.local` and Vercel as `NEO4J_URI` (see tables below). Copy **username** (`neo4j`) and **password** only into secrets — never commit them.
+
+### Verify seed data in the Query tab
+
+1. In the instance, open **Query** (or **Explore** → run Cypher).
+2. Run:
+
+```cypher
+MATCH (p:Patient) RETURN count(p)
+```
+
+Expected after `npm run data:seed:neo4j`: **12** patients (P001–P012).
+
+### Vercel production checklist (3 steps)
+
+1. **Vercel →** project **0ne-health** → **Settings → Environment Variables** → **Production**.
+2. Add:
+
+| Variable | Value |
+|----------|--------|
+| `NEO4J_URI` | `neo4j+s://5982f4dd.databases.neo4j.io` |
+| `NEO4J_USERNAME` | `neo4j` |
+| `NEO4J_PASSWORD` | *(same as Aura / `.env.local` — paste in UI only)* |
+| `NEO4J_DATABASE` | `neo4j` *(optional)* |
+
+CLI (optional, password prompted interactively — do not paste into shell history in shared sessions):
+
+```bash
+cd packages/platform-uk
+vercel env add NEO4J_URI production
+vercel env add NEO4J_USERNAME production
+vercel env add NEO4J_PASSWORD production
+```
+
+3. **Redeploy** Production (Deployments → … → Redeploy). Env changes do not apply until a new deployment.
+
+Confirm:
+
+```bash
+curl -s https://0ne-health.vercel.app/api/health
+```
+
+`neo4j.mode` should be `"live"` and `neo4j.configured` / `neo4j.connected` should be `true`. Until then you will see `"mode":"mock"`.
+
 ## 2. Configure environment variables
 
 ### Local development
@@ -32,7 +84,7 @@ In **Vercel → Project → Settings → Environment Variables**, add these vari
 
 | Variable | Required | Example value |
 |----------|----------|---------------|
-| `NEO4J_URI` | Yes | `neo4j+s://xxxx.databases.neo4j.io` |
+| `NEO4J_URI` | Yes | `neo4j+s://5982f4dd.databases.neo4j.io` |
 | `NEO4J_USERNAME` | Yes | `neo4j` |
 | `NEO4J_PASSWORD` | Yes | *(Aura-generated password — store only in Vercel)* |
 | `NEO4J_DATABASE` | No | `neo4j` (AuraDB Free always uses the default `neo4j` database, so this is normally unset) |
