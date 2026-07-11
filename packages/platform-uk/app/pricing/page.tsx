@@ -4,6 +4,15 @@ import { Building2, CheckCircle2, Hospital, Stethoscope } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import {
+  bandPrimaryCta,
+  bandSecondaryCta,
+  btnPrimary,
+  btnSecondary,
+  container,
+  heroPrimaryCta,
+  heroSecondaryCta,
+} from "@/components/marketing/marketing-ui";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { cn } from "@/lib/utils";
@@ -83,27 +92,21 @@ export default function PricingPage() {
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
           <p className="marketing-section-label mb-4">How we price</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
             Pricing scales with your organisation, not per patient record
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
             Aksh Health is priced per organisation, based on the number of sites, roles, and integration paths you
             need. There are no per-patient fees. Speak to us for a quote tailored to your practice, trust, or ICS.
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/get-started"
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-            >
+            <Link href="/get-started" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
               Request organisation access
             </Link>
-            <Link
-              href="/contact"
-              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-            >
+            <Link href="/contact" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
               Talk to us
             </Link>
           </div>
@@ -115,7 +118,7 @@ export default function PricingPage() {
       </div>
 
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Three tiers"
@@ -157,12 +160,7 @@ export default function PricingPage() {
 
                   <Link
                     href={tier.cta.href}
-                    className={cn(
-                      "mt-8 inline-block rounded-xl px-6 py-3 text-center text-sm font-semibold transition-all",
-                      tier.highlighted
-                        ? "bg-emerald text-white hover:-translate-y-0.5 hover:bg-emerald/90"
-                        : "border border-navy/25 text-navy hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03]"
-                    )}
+                    className={cn("mt-8 w-full", tier.highlighted ? btnPrimary : btnSecondary)}
                   >
                     {tier.cta.label}
                   </Link>
@@ -178,23 +176,17 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="bg-emerald py-16 text-center text-white md:py-20">
-        <div className="mx-auto max-w-2xl px-6">
+      <section className="marketing-section-tight bg-emerald text-center text-white">
+        <div className={`${container} max-w-2xl`}>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to talk pricing?</h2>
           <p className="mt-4 text-lg leading-relaxed text-white/80">
             Tell us about your organisation and we will scope a tier and quote that fits.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/get-started"
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
-            >
+            <Link href="/get-started" className={`${bandPrimaryCta} min-w-[11rem]`}>
               Request organisation access
             </Link>
-            <Link
-              href="/contact"
-              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-            >
+            <Link href="/contact" className={`${bandSecondaryCta} min-w-[11rem]`}>
               Talk to us
             </Link>
           </div>

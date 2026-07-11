@@ -12,6 +12,13 @@ import {
 } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import {
+  bandPrimaryCta,
+  bandSecondaryCta,
+  container,
+  heroPrimaryCta,
+  heroSecondaryCta,
+} from "@/components/marketing/marketing-ui";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
@@ -227,27 +234,21 @@ export default function ResourcesPage() {
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
           <p className="marketing-section-label mb-4">Resources</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
             Architecture, compliance, and integration documentation
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
             Technical reference for NHS procurement, clinical safety review, and integration planning. FHIR R4 staging,
             human-in-the-loop review, and compliance design pathways for primary and secondary care.
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/signup"
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-            >
+            <Link href="/signup" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
               Create account
             </Link>
-            <Link
-              href="/get-started"
-              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-            >
+            <Link href="/get-started" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
               Request organisation access
             </Link>
           </div>
@@ -259,7 +260,7 @@ export default function ResourcesPage() {
       </div>
 
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Browse by topic"
@@ -282,7 +283,7 @@ export default function ResourcesPage() {
       </section>
 
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Technical reference"
@@ -297,7 +298,7 @@ export default function ResourcesPage() {
       </section>
 
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Governance & interoperability"
@@ -314,7 +315,7 @@ export default function ResourcesPage() {
       </section>
 
       <section id="api" className="scroll-mt-28 bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="API contracts"
@@ -351,7 +352,7 @@ export default function ResourcesPage() {
       </section>
 
       <section className="border-t border-border-subtle bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Related pages"
@@ -380,24 +381,18 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      <section className="bg-emerald py-16 text-center text-white md:py-20">
-        <div className="mx-auto max-w-2xl px-6">
+      <section className="marketing-section-tight bg-emerald text-center text-white">
+        <div className={`${container} max-w-2xl`}>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to evaluate Aksh Health?</h2>
           <p className="mt-4 text-lg leading-relaxed text-white/80">
             Create an individual account to explore the platform, or request organisation access for NHS deployment
             conversations.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
-            >
+            <Link href="/signup" className={`${bandPrimaryCta} min-w-[11rem]`}>
               Create account
             </Link>
-            <Link
-              href="/get-started"
-              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-            >
+            <Link href="/get-started" className={`${bandSecondaryCta} min-w-[11rem]`}>
               Request organisation access
             </Link>
           </div>

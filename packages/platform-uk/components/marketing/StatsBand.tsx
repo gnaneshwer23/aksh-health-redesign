@@ -1,3 +1,4 @@
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelStatChip, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 
 const stats = [
@@ -10,8 +11,8 @@ const stats = [
 export default function StatsBand() {
   return (
     <section className="relative z-10 border-y border-border-subtle bg-white py-12 md:py-14" aria-label="Platform capabilities at a glance">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={container}>
+        <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
           {stats.map((stat, index) => (
             <PastelStatChip
               key={stat.label}

@@ -1,6 +1,7 @@
 import { Activity, Clock, ShieldCheck, Sparkles } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard } from "@/components/marketing/PastelCapabilityCard";
 import type { PastelVariant } from "@/components/marketing/PastelCapabilityCard";
 
@@ -30,8 +31,8 @@ const maxValue = Math.max(...activity.map((a) => a.value));
 
 export default function PlatformMetricsSection() {
   return (
-    <section className="marketing-soft-surface py-20 md:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="marketing-section marketing-soft-surface">
+      <div className={container}>
         <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <div>
             <MarketingSectionHeader
@@ -56,7 +57,7 @@ export default function PlatformMetricsSection() {
             </div>
           </div>
 
-          <div className="marketing-hero-card rounded-2xl border border-border-subtle bg-white p-6 shadow-xl shadow-navy/10 sm:p-8">
+          <div className="marketing-hero-card rounded-2xl border border-border-subtle bg-white p-6 shadow-card sm:p-8">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-steel/70">This week</p>

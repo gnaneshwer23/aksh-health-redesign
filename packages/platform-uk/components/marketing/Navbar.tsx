@@ -201,7 +201,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           <Link
             href="/signin"
             className={cn(
-              "rounded-xl border px-4 py-2 text-sm font-medium transition-all",
+              "inline-flex min-h-[40px] items-center rounded-full border px-4 py-2 text-sm font-medium transition-all",
               focusRing,
               transparentOverHero
                 ? "border-white/50 text-white hover:border-white hover:bg-white/10"
@@ -213,7 +213,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           <Link
             href="/get-started"
             className={cn(
-              "rounded-xl bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90",
+              "inline-flex min-h-[40px] items-center rounded-full bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90",
               focusRing
             )}
           >
@@ -224,7 +224,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         <button
           type="button"
           className={cn(
-            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
+            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
             focusRing,
             transparentOverHero
               ? "border-white/40 text-white hover:bg-white/10"
@@ -336,7 +336,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               <Link
                 href="/signin"
                 className={cn(
-                  "rounded-xl border border-navy/20 px-4 py-3 text-center text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white",
+                  "inline-flex min-h-[44px] items-center justify-center rounded-full border border-navy/20 px-4 py-3 text-center text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white",
                   focusRing
                 )}
               >
@@ -347,7 +347,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               <Link
                 href="/get-started"
                 className={cn(
-                  "rounded-xl bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90",
+                  "inline-flex min-h-[44px] items-center justify-center rounded-full bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90",
                   focusRing
                 )}
               >

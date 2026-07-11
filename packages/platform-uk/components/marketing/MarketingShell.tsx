@@ -14,7 +14,7 @@ type MarketingShellProps = {
 
 export function MarketingShell({ children, className, overDarkHero = false }: MarketingShellProps) {
   return (
-    <div className={cn("marketing-site flex min-h-screen flex-col bg-surface", className)}>
+    <div className={cn("marketing-site flex min-h-screen flex-col overflow-x-hidden bg-surface", className)}>
       <SkipToMain />
       <Navbar overDarkHero={overDarkHero} />
       <main id="main-content" className={cn("flex-1", !overDarkHero && "pt-16")}>

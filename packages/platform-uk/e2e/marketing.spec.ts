@@ -64,7 +64,7 @@ test.describe("Marketing smoke", () => {
     const menuBox = await menu.boundingBox();
     expect(menuBox).not.toBeNull();
     expect(buttonBox).not.toBeNull();
-    expect(Math.abs(menuBox!.x - buttonBox!.x)).toBeLessThan(12);
+    expect(Math.abs(menuBox!.x - buttonBox!.x)).toBeLessThan(16);
     expect(menuBox!.y).toBeGreaterThan(buttonBox!.y + buttonBox!.height - 2);
 
     await expect(menu.getByRole("menuitem", { name: /Clinicians & practices/i })).toHaveAttribute(

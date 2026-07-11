@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckCircle2, Shield, Sparkles } from "lucide-react";
 
 import TrustStrip from "@/components/marketing/TrustStrip";
+import { container, heroPrimaryCta, heroSecondaryCta } from "@/components/marketing/marketing-ui";
 
 const queueItems = [
   { agent: "SYNTHESIS", label: "SOAP note draft", tone: "bg-navy" },
@@ -12,7 +13,7 @@ const queueItems = [
 function HeroDashboardMock() {
   return (
     <div className="marketing-hero-card relative mx-auto w-full max-w-md lg:max-w-none">
-      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-white shadow-xl shadow-navy/10">
+      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-white shadow-card">
         <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-steel/70">GP Review Queue</p>
@@ -84,7 +85,7 @@ export default function HeroSection() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-7xl px-6 pb-16 pt-16 lg:pb-20 lg:pt-20">
+      <div className={`relative ${container} pb-16 pt-16 lg:pb-20 lg:pt-20`}>
         <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <div className="text-center lg:text-left">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-4 py-1.5 shadow-sm">
@@ -92,34 +93,25 @@ export default function HeroSection() {
               <span className="text-sm font-medium text-steel">AI-native Healthcare OS for the NHS</span>
             </div>
 
-            <h1 className="mb-6 max-w-2xl text-[2.75rem] font-bold leading-[1.05] tracking-tight text-navy sm:text-6xl md:text-[4.25rem] lg:mx-0 lg:max-w-none">
+            <h1 className="mb-6 max-w-2xl text-4xl font-bold leading-[1.05] tracking-tight text-navy sm:text-5xl md:text-6xl lg:mx-0 lg:max-w-none lg:text-[4.25rem]">
               Clinical workflows,
               <span className="block text-emerald">one platform.</span>
             </h1>
 
-            <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-steel md:text-xl lg:mx-0">
+            <p className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-steel sm:text-lg md:text-xl lg:mx-0">
               Designed for EMIS Web and SystmOne with FHIR R4 ready integration paths. Specialist AI agents draft
               notes, check safety, and coordinate care. Every output needs clinician approval before it reaches the
               record.
             </p>
 
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:justify-start">
-              <Link
-                href="/signup"
-                className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-              >
+              <Link href="/signup" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
                 Create account
               </Link>
-              <Link
-                href="/get-started"
-                className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-              >
+              <Link href="/get-started" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
                 Request organisation access
               </Link>
-              <Link
-                href="/demo/patel"
-                className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-              >
+              <Link href="/demo/patel" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
                 See it in action
               </Link>
             </div>

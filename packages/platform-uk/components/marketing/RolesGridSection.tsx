@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 
 const roles: Array<{ label: string; description: string; href: string; icon: LucideIcon }> = [
@@ -27,8 +28,8 @@ const roles: Array<{ label: string; description: string; href: string; icon: Luc
 
 export default function RolesGridSection() {
   return (
-    <section id="roles" className="bg-white py-20 md:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="roles" className="marketing-section bg-white">
+      <div className={container}>
         <MarketingSectionHeader
           align="center"
           label="Every role, one platform"

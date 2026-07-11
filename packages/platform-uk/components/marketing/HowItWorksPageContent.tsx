@@ -19,6 +19,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import type { PastelVariant } from "@/components/marketing/PastelCapabilityCard";
 import { PlatformFlowDiagram } from "@/components/marketing/PlatformFlowDiagram";
@@ -195,7 +196,7 @@ export function HowItWorksPageContent() {
     <>
       {/* Main pipeline diagram */}
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="End-to-end flow"
@@ -203,7 +204,7 @@ export function HowItWorksPageContent() {
             description="A single pipeline connects your EHR, knowledge graph, specialist agents, and clinician review. No autonomous write-back."
           />
 
-          <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-gradient-to-br from-pastel-blue/40 via-white to-pastel-mint/30 p-8 md:p-12 lg:p-14">
+          <div className="relative overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br from-pastel-blue/40 via-white to-pastel-mint/30 p-8 md:p-12 lg:p-14">
             <div
               className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-16 -top-16 h-48 w-48 opacity-20"
               aria-hidden
@@ -221,7 +222,7 @@ export function HowItWorksPageContent() {
 
       {/* Four pillars */}
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="center"
             label="Platform pillars"
@@ -247,8 +248,8 @@ export function HowItWorksPageContent() {
 
       {/* HITL callout */}
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="overflow-hidden rounded-3xl border-2 border-emerald/25 bg-gradient-to-br from-emerald/5 via-white to-emerald/[0.03]">
+        <div className={container}>
+          <div className="overflow-hidden rounded-2xl border-2 border-emerald/25 bg-gradient-to-br from-emerald/5 via-white to-emerald/[0.03]">
             <div className="grid gap-0 lg:grid-cols-[1fr_1.4fr]">
               <div className="border-b border-emerald/15 p-8 md:p-10 lg:border-b-0 lg:border-r">
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/10">
@@ -290,7 +291,7 @@ export function HowItWorksPageContent() {
 
       {/* Role journeys */}
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="center"
             label="By role"
@@ -300,7 +301,7 @@ export function HowItWorksPageContent() {
 
           <div className="mb-10 flex justify-center">
             <div
-              className="inline-flex rounded-xl border border-navy/10 bg-white p-1 shadow-sm"
+              className="inline-flex rounded-full border border-navy/10 bg-white p-1 shadow-sm"
               role="tablist"
               aria-label="Select role journey"
             >
@@ -318,7 +319,7 @@ export function HowItWorksPageContent() {
                     aria-controls={`role-panel-${key}`}
                     onClick={() => setActiveRole(key)}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2",
+                      "inline-flex min-h-[44px] items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2",
                       isActive
                         ? "bg-navy text-white shadow-md"
                         : "text-navy hover:bg-navy/[0.04]"
@@ -355,7 +356,7 @@ export function HowItWorksPageContent() {
 
       {/* Architecture layer */}
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Architecture"
@@ -363,7 +364,7 @@ export function HowItWorksPageContent() {
             description="A compact view of how clinical systems connect to Aksh, pass through clinician review, and write back as FHIR R4."
           />
 
-          <div className="marketing-pastel-card rounded-3xl border border-white/60 bg-gradient-to-br from-navy-light/30 via-white to-pastel-lavender/20 p-8 md:p-12">
+          <div className="marketing-pastel-card rounded-2xl border border-white/60 bg-gradient-to-br from-navy-light/30 via-white to-pastel-lavender/20 p-8 md:p-12">
             <PlatformFlowDiagram variant="architecture" />
           </div>
         </div>

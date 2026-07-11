@@ -3,6 +3,13 @@ import Link from "next/link";
 import type { AudiencePageContent } from "@/components/marketing/audience/audience-content";
 import { AudienceWorkflowSection } from "@/components/marketing/audience/AudienceWorkflowSection";
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import {
+  bandPrimaryCta,
+  bandSecondaryCta,
+  container,
+  heroPrimaryCta,
+  heroSecondaryCta,
+} from "@/components/marketing/marketing-ui";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
@@ -38,12 +45,12 @@ export function AudiencePageLayout({
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
           <p className="marketing-section-label mb-4">{eyebrow}</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
             {headline}
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">{subline}</p>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">{subline}</p>
 
           {roles && roles.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">
@@ -59,16 +66,10 @@ export function AudiencePageLayout({
           )}
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href={ctaPrimary.href}
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-            >
+            <Link href={ctaPrimary.href} className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
               {ctaPrimary.label}
             </Link>
-            <Link
-              href={ctaSecondary.href}
-              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-            >
+            <Link href={ctaSecondary.href} className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
               {ctaSecondary.label}
             </Link>
           </div>
@@ -81,7 +82,7 @@ export function AudiencePageLayout({
 
       {/* Pain points */}
       <section className="bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label={painSection.label}
@@ -105,7 +106,7 @@ export function AudiencePageLayout({
 
       {/* Capabilities */}
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label={capabilitiesSection.label}
@@ -131,7 +132,7 @@ export function AudiencePageLayout({
 
       {/* Agents */}
       <section className="bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label={agentsSection.label}
@@ -164,21 +165,15 @@ export function AudiencePageLayout({
       </section>
 
       {/* CTA band */}
-      <section className="bg-emerald py-16 text-center text-white md:py-20">
-        <div className="mx-auto max-w-2xl px-6">
+      <section className="marketing-section-tight bg-emerald text-center text-white">
+        <div className={`${container} max-w-2xl`}>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to get started?</h2>
           {complianceNote && <p className="mt-4 text-sm leading-relaxed text-white/80">{complianceNote}</p>}
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href={ctaPrimary.href}
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
-            >
+            <Link href={ctaPrimary.href} className={`${bandPrimaryCta} min-w-[11rem]`}>
               {ctaPrimary.label}
             </Link>
-            <Link
-              href={ctaSecondary.href}
-              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-            >
+            <Link href={ctaSecondary.href} className={`${bandSecondaryCta} min-w-[11rem]`}>
               {ctaSecondary.label}
             </Link>
           </div>

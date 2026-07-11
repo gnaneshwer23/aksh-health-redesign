@@ -88,7 +88,10 @@ export default function Footer() {
           </p>
           <div className="flex flex-wrap gap-2">
             {["DCB0129", "DTAC", "FHIR R4", "NHS CIS2", "UK GDPR"].map((badge) => (
-              <span key={badge} className="rounded border border-white/10 px-2.5 py-1 text-xs text-white/40">
+              <span
+                key={badge}
+                className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/40"
+              >
                 {badge}
               </span>
             ))}

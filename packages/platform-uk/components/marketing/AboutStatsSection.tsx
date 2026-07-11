@@ -1,6 +1,7 @@
 import { CheckCircle2, FileStack, ShieldCheck } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard } from "@/components/marketing/PastelCapabilityCard";
 import type { PastelVariant } from "@/components/marketing/PastelCapabilityCard";
 
@@ -29,8 +30,8 @@ const previewPanels: Array<{
 
 export default function AboutStatsSection() {
   return (
-    <section className="marketing-soft-surface py-20 md:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="marketing-section marketing-soft-surface">
+      <div className={container}>
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
           <div>
             <MarketingSectionHeader

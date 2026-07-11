@@ -7,6 +7,7 @@ import HeroSection from "@/components/marketing/HeroSection";
 import StatsBand from "@/components/marketing/StatsBand";
 import AboutStatsSection from "@/components/marketing/AboutStatsSection";
 import PlatformMetricsSection from "@/components/marketing/PlatformMetricsSection";
+import { bandPrimaryCta, bandSecondaryCta, container, sectionTight } from "@/components/marketing/marketing-ui";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 const PlatformFlowSection = dynamic(() => import("@/components/marketing/PlatformFlowSection"), {
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <MarketingShell className="overflow-x-hidden">
+    <MarketingShell>
       <HeroSection />
       <PlatformMetricsSection />
       <StatsBand />
@@ -32,8 +33,8 @@ export default function HomePage() {
       <PlatformFlowSection />
       <RolesGridSection />
 
-      <section className="bg-emerald py-20 text-center text-white md:py-24">
-        <div className="mx-auto max-w-2xl px-6">
+      <section className={`${sectionTight} bg-emerald text-center text-white`}>
+        <div className={`${container} max-w-2xl`}>
           <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
             Ready to deploy across your organisation?
           </h2>
@@ -42,16 +43,10 @@ export default function HomePage() {
             in from day one.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/get-started"
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
-            >
+            <Link href="/get-started" className={`${bandPrimaryCta} min-w-[11rem]`}>
               Request organisation access
             </Link>
-            <Link
-              href="/signup"
-              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-            >
+            <Link href="/signup" className={`${bandSecondaryCta} min-w-[11rem]`}>
               Create account
             </Link>
           </div>

@@ -2,12 +2,13 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { container } from "@/components/marketing/marketing-ui";
 import { PlatformFlowDiagram } from "@/components/marketing/PlatformFlowDiagram";
 
 export default function PlatformFlowSection() {
   return (
-    <section className="bg-surface-muted py-16 md:py-20">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="marketing-section-tight bg-surface-muted">
+      <div className={container}>
         <MarketingSectionHeader
           align="center"
           label="The journey"
@@ -16,7 +17,7 @@ export default function PlatformFlowSection() {
           className="mb-8 md:mb-10"
         />
 
-        <div className="marketing-pastel-card rounded-3xl border border-white/60 bg-white p-6 shadow-sm md:p-10">
+        <div className="marketing-pastel-card rounded-2xl border border-white/60 bg-white p-6 shadow-sm md:p-10">
           <PlatformFlowDiagram variant="compact" />
         </div>
 

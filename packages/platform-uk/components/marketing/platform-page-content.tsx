@@ -21,6 +21,13 @@ import type { LucideIcon } from "lucide-react";
 
 import AgentGrid from "@/components/marketing/AgentGrid";
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import {
+  bandPrimaryCta,
+  bandSecondaryCta,
+  container,
+  heroPrimaryCta,
+  heroSecondaryCta,
+} from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
@@ -110,27 +117,21 @@ export function PlatformPageContent() {
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
           <p className="marketing-section-label mb-4">Platform</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
             One platform, eight roles, clinician-owned AI
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
             Designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate
             care. Every output needs clinician approval before it reaches the record. Demo uses synthetic data.
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/signup"
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-            >
+            <Link href="/signup" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
               Create account
             </Link>
-            <Link
-              href="/get-started"
-              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-            >
+            <Link href="/get-started" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
               Request organisation access
             </Link>
           </div>
@@ -154,7 +155,7 @@ export function PlatformPageContent() {
       </div>
 
       <section id="layers" className="scroll-mt-24 bg-surface-muted py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Platform layers"
@@ -179,7 +180,7 @@ export function PlatformPageContent() {
       <AgentGrid />
 
       <section id="roles" className="scroll-mt-24 bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Role dashboards"
@@ -209,8 +210,8 @@ export function PlatformPageContent() {
       </section>
 
       <section id="hitl" className="scroll-mt-24 bg-white py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="overflow-hidden rounded-3xl border-2 border-emerald/25 bg-gradient-to-br from-emerald/5 via-white to-emerald/[0.03]">
+        <div className={container}>
+          <div className="overflow-hidden rounded-2xl border-2 border-emerald/25 bg-gradient-to-br from-emerald/5 via-white to-emerald/[0.03]">
             <div className="grid gap-0 lg:grid-cols-[1fr_1.4fr]">
               <div className="border-b border-emerald/15 p-8 md:p-10 lg:border-b-0 lg:border-r">
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/10">
@@ -242,24 +243,18 @@ export function PlatformPageContent() {
         </div>
       </section>
 
-      <section className="bg-emerald py-16 text-center text-white md:py-20">
-        <div className="mx-auto max-w-2xl px-6">
+      <section className="marketing-section-tight bg-emerald text-center text-white">
+        <div className={`${container} max-w-2xl`}>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to explore the platform?</h2>
           <p className="mt-4 text-lg leading-relaxed text-white/80">
             FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one. Demo uses synthetic
             data.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
-            >
+            <Link href="/signup" className={`${bandPrimaryCta} min-w-[11rem]`}>
               Create account
             </Link>
-            <Link
-              href="/get-started"
-              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-            >
+            <Link href="/get-started" className={`${bandSecondaryCta} min-w-[11rem]`}>
               Request organisation access
             </Link>
           </div>

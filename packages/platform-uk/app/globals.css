@@ -29,6 +29,17 @@
   box-sizing: border-box;
 }
 
+/* Tailwind Preflight is disabled (see tailwind.config.ts) to protect legacy
+   dashboard/report CSS below, but that also drops Preflight's border reset —
+   so every Tailwind `border`/`border-*` utility renders width-only with the
+   browser's default border-style: none (invisible). Restore just the style,
+   leaving width/color untouched so nothing else here is affected. */
+*,
+::before,
+::after {
+  border-style: solid;
+}
+
 html,
 body {
   margin: 0;
@@ -373,7 +384,7 @@ input:focus, textarea:focus {
   .shell {
     padding: 20px;
   }
-  .grid,
+  .layout-grid,
   .two-col {
     grid-template-columns: 1fr;
   }
@@ -4771,12 +4782,16 @@ input:focus, textarea:focus {
   text-decoration: none;
 }
 
-/* Content links only — navbar sets its own palette via Tailwind text-* utilities */
-.marketing-site main a:not([class*="text-"]):not([class*="bg-"]) {
+/* Content links only — navbar sets its own palette via Tailwind text-* utilities.
+   Excludes .btn-marketing-* pills: those set their own text color via @apply, but the
+   compiled class name doesn't literally contain "text-"/"bg-", so without this exclusion
+   this rule would win on specificity and silently override their colour (e.g. invisible
+   white-on-white text on .btn-marketing-inverse). */
+.marketing-site main a:not([class*="text-"]):not([class*="bg-"]):not([class*="btn-marketing"]) {
   color: inherit;
 }
 
-.marketing-site main a[class*="bg-"]:not([class*="text-"]) {
+.marketing-site main a[class*="bg-"]:not([class*="text-"]):not([class*="btn-marketing"]) {
   color: #003d7a;
 }
 
@@ -4858,10 +4873,10 @@ input:focus, textarea:focus {
 /* Dental-landing inspired marketing utilities (Aksh navy/emerald) */
 .marketing-section-label {
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #00915d;
 }
 
 .marketing-hero-blob {
@@ -4999,6 +5014,73 @@ input:focus, textarea:focus {
 
   .marketing-pill-btn:hover,
   .marketing-pastel-card:hover {
+    transform: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MARKETING DESIGN SYSTEM — buttons, layout rhythm, corner hierarchy
+   Single source of truth for CTA buttons, section padding, and containers
+   across the marketing site. See components/marketing/marketing-ui.ts for
+   the TS-side class name exports used by components.
+   ══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* Layout rhythm */
+  .marketing-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .marketing-section {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+
+  .marketing-section-tight {
+    @apply py-16 md:py-20;
+  }
+
+  /* Pill CTA buttons — one shape, one hover/focus language, everywhere.
+     Base size matches nav/inline use; add .btn-marketing-lg for hero/CTA-band prominence. */
+  .btn-marketing-primary,
+  .btn-marketing-secondary,
+  .btn-marketing-inverse,
+  .btn-marketing-ghost {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+
+  .btn-marketing-primary {
+    @apply bg-emerald text-white shadow-card hover:-translate-y-0.5 hover:bg-emerald/90 hover:shadow-card-hover focus-visible:ring-emerald;
+  }
+
+  .btn-marketing-secondary {
+    @apply border border-navy/20 bg-white text-navy shadow-sm hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] focus-visible:ring-emerald;
+  }
+
+  .btn-marketing-inverse {
+    @apply bg-white text-emerald shadow-lg hover:-translate-y-0.5 hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-emerald;
+  }
+
+  .btn-marketing-ghost {
+    @apply border border-white/40 bg-transparent text-white hover:-translate-y-0.5 hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-emerald;
+  }
+
+  .btn-marketing-lg {
+    @apply px-8 py-3.5 text-base;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-marketing-primary,
+  .btn-marketing-secondary,
+  .btn-marketing-inverse,
+  .btn-marketing-ghost {
+    transition: none;
+  }
+
+  .btn-marketing-primary:hover,
+  .btn-marketing-secondary:hover,
+  .btn-marketing-inverse:hover,
+  .btn-marketing-ghost:hover {
     transform: none;
   }
 }
