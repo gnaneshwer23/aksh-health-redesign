@@ -19,27 +19,67 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
 
   return (
     <DashboardShell role="gp" title={patient.name}>
-      <div className="overflow-y-auto p-4 space-y-6">
-        <Button variant="outline" size="sm" asChild><Link href="/dashboard/gp/patients">← Back to patients</Link></Button>
+      <div className="space-y-6 overflow-y-auto p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/gp/patients">← Back to patients</Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/review-queue?patient=${patient.id}`}>Open review queue</Link>
+          </Button>
+        </div>
 
-        <header className="rounded-sm border border-border bg-card p-6 shadow-sm">
+        <header className="dashboard-card border-border-subtle p-6 shadow-sm">
           <div className="flex flex-wrap justify-between gap-4">
             <div>
               <h1 className="text-xl font-semibold">{patient.name}</h1>
-              <p className="text-sm text-muted">NHS {patient.nhsNumber} · {patient.gender} · Age {patient.age}</p>
-              <p className="text-sm text-muted mt-1">{patient.postcode} · Last encounter: {patient.lastEncounterDate}</p>
+              <p className="text-sm text-muted">
+                NHS {patient.nhsNumber} · {patient.gender} · Age {patient.age}
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                {patient.postcode} · Last encounter: {patient.lastEncounterDate}
+              </p>
             </div>
-            <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} size="lg" />
+            <div className="flex flex-col items-center gap-1">
+              <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} size="lg" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">ORACLE</span>
+            </div>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            <div><p className="text-xs font-semibold text-muted">Conditions</p><ul className="text-sm mt-1">{patient.activeConditions.map((c) => <li key={c}>{c}</li>)}</ul></div>
-            <div><p className="text-xs font-semibold text-muted">Medications</p><ul className="text-sm mt-1">{patient.activeMedications.map((m) => <li key={m}>{m}</li>)}</ul></div>
-            <div><p className="text-xs font-semibold text-muted">Allergies</p><ul className="text-sm mt-1">{patient.allergies.map((a) => <li key={a}>{a}</li>)}</ul></div>
+            <div>
+              <p className="text-xs font-semibold text-muted">Conditions</p>
+              <ul className="mt-1 text-sm">
+                {patient.activeConditions.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-muted">Medications</p>
+              <ul className="mt-1 text-sm">
+                {patient.activeMedications.map((m) => (
+                  <li key={m}>{m}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-muted">Allergies</p>
+              <ul className="mt-1 text-sm">
+                {patient.allergies.length > 0 ? (
+                  patient.allergies.map((a) => <li key={a}>{a}</li>)
+                ) : (
+                  <li className="text-muted">None recorded</li>
+                )}
+              </ul>
+            </div>
           </div>
         </header>
 
         <ReviewQueue patientId={patient.id} />
-        <section><h2 className="text-base font-semibold mb-3">Care Pathways</h2><CarePathwayTracker pathways={pathways} /></section>
+        <section>
+          <h2 className="mb-3 text-base font-semibold">Care Pathways</h2>
+          <CarePathwayTracker pathways={pathways} />
+        </section>
         <DigitalTwinPanel patient={patient} />
       </div>
     </DashboardShell>

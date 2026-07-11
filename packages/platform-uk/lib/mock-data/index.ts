@@ -1,5 +1,7 @@
 export * from "./types";
 export { patients, getPatientById, searchPatients, todaysAppointments } from "./patients";
+export { DEFAULT_GP_PREFERENCES, GP_PREFERENCE_LABELS } from "./gp-preferences";
+export type { GpPreferences } from "./gp-preferences";
 export { reviewQueueItems } from "./review-queue";
 export { carePathways, getPathwaysForPatient, countAwaitingApproval } from "./care-pathways";
 export { auditEvents } from "./audit-events";

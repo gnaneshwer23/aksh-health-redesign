@@ -35,9 +35,8 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
-    { href: "/dashboard/gp?section=population", label: "Population", icon: BarChart3 },
-    { href: "/dashboard/gp?section=reports", label: "Reports", icon: BarChart3 },
-    { href: "/dashboard/gp?section=settings", label: "Settings", icon: Settings },
+    { href: "/dashboard/gp/reports", label: "Reports", icon: BarChart3 },
+    { href: "/dashboard/gp/settings", label: "Settings", icon: Settings },
   ],
   nurse: [
     { href: "/dashboard/nurse", label: "Dashboard", icon: LayoutDashboard },
