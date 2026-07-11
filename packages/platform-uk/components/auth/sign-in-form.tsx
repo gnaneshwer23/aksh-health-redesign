@@ -145,7 +145,12 @@ function SignInFormInner() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
                 <FormControl>
                   <Input
                     {...field}
@@ -160,6 +165,18 @@ function SignInFormInner() {
               </FormItem>
             )}
           />
+
+          <p className="text-xs leading-relaxed text-muted">
+            By signing in you agree to our{" "}
+            <Link href="/terms" className="font-medium text-primary hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="font-medium text-primary hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
 
           <Button
             data-testid="signin-submit"

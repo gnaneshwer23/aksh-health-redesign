@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthCardLayout } from "@/components/auth/auth-card-layout";
 import { RoleTile } from "@/components/onboarding/RoleTile";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -44,6 +45,7 @@ function SignUpFormInner() {
       confirmPassword: "",
       role: initialRole,
       fullName: "",
+      acceptedTerms: undefined,
     },
   });
 
@@ -172,6 +174,37 @@ function SignUpFormInner() {
                   <Input {...field} type="password" autoComplete="new-password" className="rounded-xl" />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="acceptedTerms"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-start gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3">
+                  <FormControl>
+                    <Checkbox
+                      data-testid="signup-accept-terms"
+                      checked={field.value === true}
+                      onCheckedChange={(checked) => field.onChange(checked === true ? true : undefined)}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="text-sm font-normal text-steel">
+                      I agree to the{" "}
+                      <Link href="/terms" className="font-medium text-primary hover:underline">
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link href="/privacy" className="font-medium text-primary hover:underline">
+                        Privacy Policy
+                      </Link>
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
+                </div>
               </FormItem>
             )}
           />

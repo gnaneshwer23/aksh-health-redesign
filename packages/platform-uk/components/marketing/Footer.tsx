@@ -30,8 +30,14 @@ const footerColumns = [
     title: "Company",
     links: [
       { label: "Get Started", href: "/get-started" },
-      { label: "Privacy Policy", href: "/privacy" },
       { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
     ],
   },
 ] as const;
@@ -40,7 +46,7 @@ export default function Footer() {
   return (
     <footer className="bg-navy-dark py-16 text-white">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           <div className="md:col-span-2">
             <div className="mb-5 flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">

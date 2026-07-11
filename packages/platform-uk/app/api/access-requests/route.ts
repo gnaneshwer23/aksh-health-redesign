@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { insertAccessRequest } from "@/lib/access-requests/access-request-repository";
 import { formatAccessRequestReferenceId } from "@/lib/access-requests/reference-id";
 import { accessRequestSchema } from "@/lib/access-requests/validation";
+import { notifyAccessRequestSubmitted } from "@/lib/email/notify-access-request";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -17,6 +18,15 @@ export async function POST(request: Request) {
 
   try {
     const record = await insertAccessRequest(parsed.data);
+
+    try {
+      await notifyAccessRequestSubmitted(record);
+    } catch (notifyError) {
+      console.error(
+        "[access-request] Notification failed:",
+        notifyError instanceof Error ? notifyError.message : notifyError
+      );
+    }
 
     return NextResponse.json({
       ok: true,

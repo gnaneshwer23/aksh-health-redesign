@@ -13,9 +13,13 @@ function getDatabaseUrl() {
 }
 
 async function ensureSchema(pool) {
-  const migrationPath = path.join(process.cwd(), "db/migrations/002_users_profiles.sql");
-  const migrationSql = await readFile(migrationPath, "utf8");
-  await pool.query(migrationSql);
+  const migrations = ["002_users_profiles.sql", "005_password_reset.sql"];
+
+  for (const file of migrations) {
+    const migrationPath = path.join(process.cwd(), "db/migrations", file);
+    const migrationSql = await readFile(migrationPath, "utf8");
+    await pool.query(migrationSql);
+  }
 }
 
 async function run() {
@@ -23,7 +27,7 @@ async function run() {
 
   try {
     await ensureSchema(pool);
-    console.log("Auth schema ready (aksh.users, aksh.profiles).");
+    console.log("Auth schema ready (aksh.users, aksh.profiles, aksh.password_reset_tokens).");
     console.log("Demo account seeding was removed — users must sign up via /signup.");
   } finally {
     await pool.end();

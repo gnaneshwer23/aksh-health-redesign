@@ -33,6 +33,7 @@ export async function signUpViaApi(
       confirmPassword: input.password,
       role: input.role,
       fullName: input.fullName ?? "E2E Test User",
+      acceptedTerms: true,
     },
   });
 

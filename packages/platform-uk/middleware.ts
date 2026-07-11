@@ -13,6 +13,8 @@ const publicRoutePrefixes = [
   "/",
   "/signin",
   "/signup",
+  "/forgot-password",
+  "/reset-password",
   "/auth/error",
   "/api/auth",
   "/demo",
@@ -53,7 +55,13 @@ function matchesPrefix(pathname: string, prefixes: string[]) {
 }
 
 function isAuthEntryPath(pathname: string) {
-  return pathname === "/signin" || pathname === "/signup" || pathname === "/auth/signin";
+  return (
+    pathname === "/signin" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password" ||
+    pathname === "/auth/signin"
+  );
 }
 
 export async function middleware(request: NextRequest) {

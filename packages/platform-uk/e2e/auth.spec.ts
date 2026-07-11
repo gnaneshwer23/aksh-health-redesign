@@ -28,6 +28,10 @@ test.describe("Auth flow", () => {
 
     const roleTiles = page.locator('button[aria-pressed]');
     await expect(roleTiles).toHaveCount(8);
+
+    await expect(page.getByTestId("signup-accept-terms")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Terms of Service" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Privacy Policy" })).toBeVisible();
   });
 
   test("signin with onboarded GP reaches GP dashboard", async ({ page, request, baseURL }) => {

@@ -19,6 +19,9 @@ export const signUpSchema = z
     confirmPassword: z.string().min(1, "Confirm your password"),
     role: z.enum(roleValues, { message: "Select a valid role" }),
     fullName: z.string().trim().optional(),
+    acceptedTerms: z.literal(true, {
+      message: "You must accept the Terms of Service and Privacy Policy",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
