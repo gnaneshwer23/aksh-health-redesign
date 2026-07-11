@@ -92,6 +92,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
 
   return (
     <nav
+      data-over-dark-hero={onDarkHero ? "true" : "false"}
       className={cn(
         "fixed top-0 z-50 w-full overflow-x-hidden transition-all duration-200",
         scrolled ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md" : "bg-transparent"
@@ -101,9 +102,9 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         <Link
           href="/"
           className={cn(
-            "navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl",
+            "navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl transition-colors",
             focusRing,
-            onDarkHero ? "navbar-brand !text-white" : "navbar-brand navbar-brand--light text-navy"
+            onDarkHero ? "text-white" : "text-navy"
           )}
         >
           <div
@@ -115,14 +116,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             <span className="text-sm font-bold text-white">A</span>
           </div>
           <div className="flex min-w-0 flex-col leading-tight">
-            <span
-              className={cn(
-                "truncate text-base font-bold leading-none transition-colors",
-                onDarkHero ? "!text-white" : "text-navy"
-              )}
-            >
-              Aksh Health
-            </span>
+            <span className="truncate text-base font-bold leading-none">Aksh Health</span>
             <span
               className={cn(
                 "text-[10px] font-semibold uppercase tracking-wide",

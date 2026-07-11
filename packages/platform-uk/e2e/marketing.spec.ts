@@ -4,6 +4,11 @@ test.describe("Marketing smoke", () => {
   test("homepage loads with nav links and visible get started CTA", async ({ page }) => {
     await page.goto("/");
 
+    const nav = page.locator("nav");
+    await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
+    const brandColor = await page.locator("nav a.navbar-brand").evaluate((element) => window.getComputedStyle(element).color);
+    expect(brandColor).toBe("rgb(255, 255, 255)");
+
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Demo" })).toBeVisible();
