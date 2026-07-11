@@ -1,5 +1,5 @@
-import StubPage from "@/components/marketing/StubPage"
+import { redirect } from "next/navigation"
 
 export default function SignupPage() {
-  return <StubPage title="Sign In" />
+  redirect("https://0ne-health.vercel.app/onboarding")
 }
