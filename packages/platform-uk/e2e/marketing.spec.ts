@@ -6,8 +6,14 @@ test.describe("Marketing smoke", () => {
 
     const nav = page.locator("nav");
     await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
-    const brandColor = await page.locator("nav a.navbar-brand").evaluate((element) => window.getComputedStyle(element).color);
+    const brandTitle = page.locator("nav a.navbar-brand .navbar-brand-title");
+    const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
     expect(brandColor).toBe("rgb(255, 255, 255)");
+
+    const subtitleColor = await page
+      .locator("nav a.navbar-brand .navbar-brand-subtitle")
+      .evaluate((element) => window.getComputedStyle(element).color);
+    expect(subtitleColor).toBe("rgb(0, 168, 107)");
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();

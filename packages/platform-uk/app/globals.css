@@ -4767,8 +4767,27 @@ input:focus, textarea:focus {
 
 /* Belt-and-suspenders: nav brand must stay readable over navy heroes */
 .marketing-site nav[data-over-dark-hero="true"] a.navbar-brand,
-.marketing-site nav[data-over-dark-hero="true"] a.navbar-brand span {
-  color: #ffffff;
+.marketing-site nav[data-over-dark-hero="true"] a.navbar-brand .navbar-brand-title {
+  color: #ffffff !important;
+}
+
+.marketing-site nav[data-over-dark-hero="true"] a.navbar-brand .navbar-brand-subtitle {
+  color: #00a86b !important;
+}
+
+.marketing-site nav[data-over-dark-hero="false"] a.navbar-brand,
+.marketing-site nav[data-over-dark-hero="false"] a.navbar-brand .navbar-brand-title {
+  color: #003d7a !important;
+}
+
+.marketing-site nav[data-over-dark-hero="false"] a.navbar-brand .navbar-brand-subtitle {
+  color: #006b4f !important;
+}
+
+/* Solutions trigger must not leak a white box over dark heroes */
+.marketing-site nav[data-over-dark-hero="true"] button {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .marketing-site input,

@@ -101,27 +101,27 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className={cn(
-            "navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl transition-colors",
-            focusRing,
-            onDarkHero ? "text-white" : "text-navy"
-          )}
+          className={cn("navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl transition-colors", focusRing)}
+          style={{ color: onDarkHero ? "#ffffff" : "#003D7A" }}
         >
           <div
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
-              onDarkHero ? "border border-white/30 bg-white/15" : "bg-navy"
+              onDarkHero ? "border border-white/40 bg-white/20 backdrop-blur-sm" : "bg-navy"
             )}
           >
-            <span className="text-sm font-bold text-white">A</span>
+            <span
+              className="text-sm font-bold"
+              style={{ color: onDarkHero ? "#003D7A" : "#ffffff" }}
+            >
+              A
+            </span>
           </div>
           <div className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate text-base font-bold leading-none">Aksh Health</span>
+            <span className="navbar-brand-title truncate text-base font-bold leading-none">Aksh Health</span>
             <span
-              className={cn(
-                "text-[10px] font-semibold uppercase tracking-wide",
-                onDarkHero ? "text-emerald-light" : "text-emerald"
-              )}
+              className="navbar-brand-subtitle text-xs font-semibold uppercase tracking-wide"
+              style={{ color: onDarkHero ? "#00A86B" : "#006B4F" }}
             >
               Healthcare OS
             </span>
@@ -142,14 +142,17 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           >
             <button
               type="button"
-              className={cn("inline-flex items-center gap-1 rounded-lg", linkClass)}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
+                linkClass
+              )}
               aria-expanded={solutionsOpen}
               aria-haspopup="true"
             >
               Solutions
               <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
             </button>
-            {solutionsOpen && (
+            {solutionsOpen ? (
               <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2">
                 <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
                   {solutionSections.map((section, sectionIndex) => (
@@ -174,7 +177,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
