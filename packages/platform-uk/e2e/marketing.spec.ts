@@ -17,6 +17,7 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
 
@@ -40,9 +41,27 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(mobileNav.getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
+  });
+
+  test("solutions dropdown exposes grouped audience links", async ({ page }) => {
+    await page.goto("/");
+
+    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
+    await solutionsButton.click();
+
+    const menu = page.getByRole("menu");
+    await expect(menu.getByRole("menuitem", { name: /Clinicians & practices/i })).toHaveAttribute(
+      "href",
+      "/for-clinicians"
+    );
+    await expect(menu.getByRole("menuitem", { name: /Hospitals & ICS/i })).toHaveAttribute("href", "/for-hospitals");
+    await expect(menu.getByRole("menuitem", { name: /Pharma & research/i })).toHaveAttribute("href", "/for-research");
+    await expect(menu.getByRole("menuitem", { name: /Patients & carers/i })).toHaveAttribute("href", "/for-patients");
+    await expect(menu.getByRole("menuitem", { name: "View all roles" })).toHaveAttribute("href", "/platform#roles");
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {

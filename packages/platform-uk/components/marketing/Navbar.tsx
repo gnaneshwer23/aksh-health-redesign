@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,29 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   ["Platform", "/platform"],
   ["Resources", "/resources"],
+] as const;
+
+const solutionGroups = [
+  {
+    label: "Clinicians & practices",
+    href: "/for-clinicians",
+    description: "GPs, nurses, pharmacists, and practice managers",
+  },
+  {
+    label: "Hospitals & ICS",
+    href: "/for-hospitals",
+    description: "Trust executives, operational leads, and ICS population health",
+  },
+  {
+    label: "Pharma & research",
+    href: "/for-research",
+    description: "Clinical informatics, outcome evaluation, and governed data access",
+  },
+  {
+    label: "Patients & carers",
+    href: "/for-patients",
+    description: "Health companion and support between appointments",
+  },
 ] as const;
 
 type NavbarProps = {
@@ -23,6 +46,11 @@ const focusRing =
 export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const solutionsMenuId = useId();
+  const solutionsButtonRef = useRef<HTMLButtonElement>(null);
+  const solutionsPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -32,12 +60,49 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
   }, []);
 
   useEffect(() => {
+    if (!solutionsOpen) return;
+
+    const panel = solutionsPanelRef.current;
+    if (!panel) return;
+
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setSolutionsOpen(false);
+        solutionsButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || focusable.length === 0) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [solutionsOpen]);
+
+  useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = "";
       };
     }
+    setMobileSolutionsOpen(false);
   }, [mobileOpen]);
 
   const transparentOverHero = overDarkHero && !scrolled;
@@ -96,7 +161,82 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          {navLinks.map(([label, href]) => (
+          {navLinks.slice(0, 1).map(([label, href]) => (
+            <Link key={label} href={href} className={linkClass}>
+              {label}
+            </Link>
+          ))}
+
+          <div
+            className="relative"
+            onMouseEnter={() => setSolutionsOpen(true)}
+            onMouseLeave={() => setSolutionsOpen(false)}
+          >
+            <button
+              ref={solutionsButtonRef}
+              type="button"
+              className={cn(
+                "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
+                linkClass
+              )}
+              aria-expanded={solutionsOpen}
+              aria-haspopup="true"
+              aria-controls={solutionsMenuId}
+              onClick={() => setSolutionsOpen((open) => !open)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setSolutionsOpen((open) => !open);
+                }
+                if (event.key === "Escape") {
+                  setSolutionsOpen(false);
+                }
+              }}
+            >
+              Solutions
+              <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
+            </button>
+            {solutionsOpen ? (
+              <div
+                id={solutionsMenuId}
+                ref={solutionsPanelRef}
+                role="menu"
+                className="absolute left-0 top-full z-50 min-w-[18rem] pt-2"
+              >
+                <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
+                  {solutionGroups.map((group) => (
+                    <Link
+                      key={group.label}
+                      href={group.href}
+                      role="menuitem"
+                      className={cn(
+                        "block px-4 py-2.5 transition-colors hover:bg-navy/5",
+                        focusRing
+                      )}
+                      onClick={() => setSolutionsOpen(false)}
+                    >
+                      <span className="block text-sm font-semibold text-navy">{group.label}</span>
+                      <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
+                    </Link>
+                  ))}
+                  <div className="my-1 border-t border-border-subtle" />
+                  <Link
+                    href="/platform#roles"
+                    role="menuitem"
+                    className={cn(
+                      "block px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
+                      focusRing
+                    )}
+                    onClick={() => setSolutionsOpen(false)}
+                  >
+                    View all roles
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {navLinks.slice(1).map(([label, href]) => (
             <Link key={label} href={href} className={linkClass}>
               {label}
             </Link>
@@ -157,19 +297,72 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           </div>
 
           <nav className="flex flex-1 flex-col gap-1 px-4 py-4" aria-label="Mobile navigation">
-            {navLinks.map(([label, href]) => (
-              <SheetClose key={label} asChild>
-                <Link
-                  href={href}
-                  className={cn(
-                    "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                    focusRing
-                  )}
-                >
-                  {label}
-                </Link>
-              </SheetClose>
-            ))}
+            <SheetClose asChild>
+              <Link
+                href="/platform"
+                className={cn(
+                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                  focusRing
+                )}
+              >
+                Platform
+              </Link>
+            </SheetClose>
+
+            <button
+              type="button"
+              className={cn(
+                "flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                focusRing
+              )}
+              aria-expanded={mobileSolutionsOpen}
+              onClick={() => setMobileSolutionsOpen((open) => !open)}
+            >
+              Solutions
+              <ChevronDown className={cn("h-4 w-4 transition-transform", mobileSolutionsOpen && "rotate-180")} />
+            </button>
+
+            {mobileSolutionsOpen ? (
+              <div className="ml-2 flex flex-col gap-1 border-l border-border-subtle pl-3">
+                {solutionGroups.map((group) => (
+                  <SheetClose key={group.label} asChild>
+                    <Link
+                      href={group.href}
+                      className={cn(
+                        "rounded-xl px-4 py-2.5 text-sm text-navy transition-colors hover:bg-navy/5",
+                        focusRing
+                      )}
+                    >
+                      <span className="block font-semibold">{group.label}</span>
+                      <span className="mt-0.5 block text-xs text-steel">{group.description}</span>
+                    </Link>
+                  </SheetClose>
+                ))}
+                <SheetClose asChild>
+                  <Link
+                    href="/platform#roles"
+                    className={cn(
+                      "rounded-xl px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
+                      focusRing
+                    )}
+                  >
+                    View all roles
+                  </Link>
+                </SheetClose>
+              </div>
+            ) : null}
+
+            <SheetClose asChild>
+              <Link
+                href="/resources"
+                className={cn(
+                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                  focusRing
+                )}
+              >
+                Resources
+              </Link>
+            </SheetClose>
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-border-subtle p-4">
