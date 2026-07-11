@@ -19,6 +19,7 @@
     "smoke:public": "node scripts/smoke-public-pages.mjs",
     "smoke:gp": "node scripts/smoke-gp-dashboard.mjs",
     "smoke:nurse": "node scripts/smoke-nurse-dashboard.mjs",
+    "smoke:pharmacist": "node scripts/smoke-pharmacist-dashboard.mjs",
     "smoke:admin": "node scripts/smoke-admin-dashboard.mjs",
     "smoke:patient": "node scripts/smoke-patient-dashboard.mjs",
     "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",

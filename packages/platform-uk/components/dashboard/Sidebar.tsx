@@ -48,9 +48,9 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   pharmacist: [
     { href: "/dashboard/pharmacist", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/pharmacist?panel=med-review", label: "Med Review", icon: Pill },
-    { href: "/dashboard/pharmacist?panel=interactions", label: "Interactions", icon: Shield },
-    { href: "/dashboard/pharmacist?panel=bnf", label: "BNF Reference", icon: ClipboardList },
+    { href: "/dashboard/pharmacist/reviews", label: "Med Review", icon: Pill },
+    { href: "/dashboard/pharmacist/interactions", label: "Interactions", icon: Shield },
+    { href: "/dashboard/pharmacist/bnf", label: "BNF Reference", icon: ClipboardList },
     { href: "/dashboard/pharmacist?section=settings", label: "Settings", icon: Settings },
   ],
   admin: [

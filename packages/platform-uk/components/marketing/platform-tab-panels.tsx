@@ -178,6 +178,12 @@ export function PlatformCliniciansPanel() {
           >
             Nurse dashboard — vitals & handover
           </Link>
+          <Link
+            href="/signup?role=pharmacist"
+            className="rounded-xl border border-[#6B46C1] bg-[#6B46C1]/5 px-6 py-3 font-bold text-[#6B46C1] hover:bg-[#6B46C1]/10"
+          >
+            Pharmacist dashboard — med review & interactions
+          </Link>
         </div>
       </div>
     </section>
