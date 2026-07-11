@@ -28,6 +28,7 @@ jobs:
       DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
       E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
       SKIP_EMAIL_SEND: "true"
+      DISABLE_RATE_LIMIT: "true"
 
     steps:
       - name: Checkout

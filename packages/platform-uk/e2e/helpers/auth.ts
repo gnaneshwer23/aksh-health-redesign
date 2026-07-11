@@ -1,6 +1,6 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
-export const E2E_TEST_PASSWORD = process.env.E2E_TEST_PASSWORD ?? "E2eTestPass1!";
+export const E2E_TEST_PASSWORD = process.env.E2E_TEST_PASSWORD?.trim() || "E2eTestPass1!";
 
 export type E2eSignupRole =
   | "gp"

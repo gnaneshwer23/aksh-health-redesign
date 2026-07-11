@@ -39,6 +39,8 @@ export default defineConfig({
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ?? "local-e2e-nextauth-secret",
       NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? baseURL,
       SKIP_EMAIL_SEND: "true",
+      DISABLE_RATE_LIMIT: process.env.DISABLE_RATE_LIMIT ?? "true",
+      CI: process.env.CI ?? "",
     },
   },
 });
