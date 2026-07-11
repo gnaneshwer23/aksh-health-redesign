@@ -1,23 +1,13 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 
-import { ProductDemoScript } from "@/components/product/product-demo-script";
+import { DemoHub } from "@/components/marketing/demo-hub";
+
+export const metadata: Metadata = {
+  title: "Product Demonstrations | Aksh Health",
+  description:
+    "Synthetic-safe walkthroughs of Aksh Health clinical workflows, review queues, and Voice Care monitoring. Clinician-in-the-loop demonstrations with no live patient data.",
+};
 
 export default function DemoPage() {
-  return (
-    <main className="stack">
-      <section className="panel stack" style={{ margin: "1rem" }}>
-        <p className="gp-panel__eyebrow">Phase C · Overview Demo</p>
-        <h1>Demo entry points</h1>
-        <div className="actions">
-          <Link className="button primary" href="/demo/patel">
-            Patel walkthrough launcher (~25 min)
-          </Link>
-          <Link className="button secondary" href="/demo/voice-care-day3">
-            Voice Care Day 3
-          </Link>
-        </div>
-      </section>
-      <ProductDemoScript />
-    </main>
-  );
+  return <DemoHub />;
 }

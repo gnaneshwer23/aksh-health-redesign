@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
+  ["Demo", "/demo"],
   ["Docs", "/docs"],
 ] as const;
 

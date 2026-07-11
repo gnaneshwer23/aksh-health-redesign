@@ -46,7 +46,7 @@ export default function ForCliniciansPage() {
       previewTitle="Role dashboards for clinical teams"
       previewDescription="GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety. Synthetic patients only in this build."
       ctaPrimary={{ label: "Create account", href: "/signup?role=gp" }}
-      ctaSecondary={{ label: "Book a demo", href: "/get-started" }}
+      ctaSecondary={{ label: "See it in action", href: "/demo" }}
       complianceNote="Human-in-the-loop on every clinical output. NHS DCB0129 safety case in progress. See documentation for architecture and compliance pathways."
     />
   );

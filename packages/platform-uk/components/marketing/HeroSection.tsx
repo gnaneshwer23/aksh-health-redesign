@@ -31,10 +31,16 @@ export default function HeroSection() {
             Get Started
           </Link>
           <Link
-            href="/get-started"
+            href="/demo"
             className="rounded-2xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
           >
-            Book a Demo
+            See it in action
+          </Link>
+          <Link
+            href="/get-started"
+            className="rounded-2xl border border-white/40 px-8 py-4 text-lg font-semibold text-white/90 transition-all hover:-translate-y-0.5 hover:bg-white/10"
+          >
+            Book a demo
           </Link>
         </div>
 

@@ -6,6 +6,7 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Demo" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Docs" })).toBeVisible();
 
@@ -29,6 +30,7 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Demo" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Clinicians" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Practices" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Patients" })).toBeVisible();
@@ -79,5 +81,26 @@ test.describe("Marketing smoke", () => {
       page.getByRole("heading", { name: /Integration-ready architecture for NHS care settings/i })
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: /FHIR R4 resources/i })).toBeVisible();
+  });
+
+  test("demo hub loads with demo cards linking to valid routes", async ({ page }) => {
+    await page.goto("/demo");
+
+    await expect(page.getByRole("heading", { name: /See Aksh Health in action/i })).toBeVisible();
+    await expect(page.getByText("Synthetic-safe only.")).toBeVisible();
+
+    const patelCard = page.getByRole("link", { name: /Open demo/i }).first();
+    await expect(patelCard).toBeVisible();
+    await expect(patelCard).toHaveAttribute("href", "/demo/patel");
+
+    const voiceCareLink = page.getByRole("link", { name: /Open demo/i }).nth(1);
+    await expect(voiceCareLink).toHaveAttribute("href", "/demo/voice-care-day3");
+
+    await patelCard.click();
+    await expect(page).toHaveURL(/\/demo\/patel/);
+    await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
+
+    await page.goto("/demo/voice-care-day3");
+    await expect(page.getByRole("heading", { name: /Post-consult check-in: Mr James Patel/i })).toBeVisible();
   });
 });

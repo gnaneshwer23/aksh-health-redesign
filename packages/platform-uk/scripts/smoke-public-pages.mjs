@@ -12,7 +12,7 @@ const pages = [
   { path: "/get-started", text: "Get your organisation set up" },
   { path: "/onboarding", text: "Choose your role. Start with the right work." },
   { path: "/dashboards", text: "One product, three professional operating views." },
-  { path: "/demo", text: "A 7-minute walkthrough for a professional product review." }
+  { path: "/demo", text: "See Aksh Health in action" }
 ];
 
 const assets = [

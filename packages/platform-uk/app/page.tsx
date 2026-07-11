@@ -39,8 +39,14 @@ export default function HomePage() {
               Create your account
             </Link>
             <Link
-              href="/get-started"
+              href="/demo"
               className="inline-block rounded-full border-2 border-white/80 px-10 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
+            >
+              See it in action
+            </Link>
+            <Link
+              href="/get-started"
+              className="inline-block rounded-full border border-white/50 px-10 py-4 text-lg font-semibold text-white/90 transition-colors hover:bg-white/10"
             >
               Book a demo
             </Link>

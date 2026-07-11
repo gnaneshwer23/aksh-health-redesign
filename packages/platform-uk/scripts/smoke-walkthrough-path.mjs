@@ -23,7 +23,7 @@ const publicPages = [
   {
     label: "Product tour",
     path: "/demo",
-    expectedText: ["A 7-minute walkthrough for a professional product review."]
+    expectedText: ["See Aksh Health in action"]
   }
 ];
 
