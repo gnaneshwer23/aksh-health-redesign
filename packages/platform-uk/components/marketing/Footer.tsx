@@ -7,6 +7,7 @@ const footerColumns = [
     title: "Product",
     links: [
       { label: "Platform", href: "/platform" },
+      { label: "How it works", href: "/how-it-works" },
       { label: "Resources", href: "/resources" },
       { label: "See demo", href: "/demo/patel" },
     ],

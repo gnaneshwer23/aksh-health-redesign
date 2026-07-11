@@ -12,8 +12,8 @@ const HowItWorks = dynamic(() => import("@/components/marketing/HowItWorks"), {
   loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
 });
 
-const ProcessStepsSection = dynamic(() => import("@/components/marketing/ProcessStepsSection"), {
-  loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
+const PlatformFlowSection = dynamic(() => import("@/components/marketing/PlatformFlowSection"), {
+  loading: () => <div className="min-h-[20rem] bg-surface-muted" aria-hidden />,
 });
 
 const RolesGridSection = dynamic(() => import("@/components/marketing/RolesGridSection"), {
@@ -36,7 +36,7 @@ export default function HomePage() {
       <StatsBand />
       <AboutStatsSection />
       <HowItWorks />
-      <ProcessStepsSection />
+      <PlatformFlowSection />
       <RolesGridSection />
       <PlatformMetricsSection />
 

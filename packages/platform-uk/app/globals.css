@@ -1499,6 +1499,21 @@ input:focus, textarea:focus {
   }
 }
 
+@keyframes flow-pulse {
+  0%, 100% {
+    stroke-opacity: 0.2;
+  }
+  50% {
+    stroke-opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe\:animate-\[flow-pulse_2\.4s_ease-in-out_infinite\] {
+    animation: none !important;
+  }
+}
+
 /* Landing page wrapper */
 .landing-page {
   position: relative;

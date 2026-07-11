@@ -54,7 +54,7 @@ export default function HowItWorks() {
           align="split"
           label="Popular capabilities"
           title="From fragmented data to coordinated care"
-          link={{ href: "/platform", label: "Explore platform" }}
+          link={{ href: "/how-it-works", label: "See how it works" }}
         />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

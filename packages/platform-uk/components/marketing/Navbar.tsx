@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
+  ["How it works", "/how-it-works"],
   ["Resources", "/resources"],
 ] as const;
 
@@ -133,7 +134,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          {navLinks.slice(0, 1).map(([label, href]) => (
+          {navLinks.slice(0, 2).map(([label, href]) => (
             <Link key={label} href={href} className={linkClass}>
               {label}
             </Link>
@@ -189,7 +190,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {navLinks.slice(1).map(([label, href]) => (
+          {navLinks.slice(2).map(([label, href]) => (
             <Link key={label} href={href} className={linkClass}>
               {label}
             </Link>
@@ -259,6 +260,18 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
                 )}
               >
                 Platform
+              </Link>
+            </SheetClose>
+
+            <SheetClose asChild>
+              <Link
+                href="/how-it-works"
+                className={cn(
+                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                  focusRing
+                )}
+              >
+                How it works
               </Link>
             </SheetClose>
 

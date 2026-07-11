@@ -18,6 +18,7 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "How it works" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
@@ -43,6 +44,7 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "How it works" })).toBeVisible();
     await expect(mobileNav.getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
@@ -142,6 +144,29 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Agents for hospital operations/i })).toBeVisible();
   });
 
+  test("homepage shows platform flow diagram with link to full journey", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { name: /From EHR systems to governed record/i })).toBeVisible();
+    await expect(page.getByRole("figure", { name: /Platform flow/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /See full journey/i })).toHaveAttribute("href", "/how-it-works");
+  });
+
+  test("how-it-works page loads with diagram and platform stages", async ({ page }) => {
+    await page.goto("/how-it-works");
+
+    await expect(page.getByRole("heading", { name: /From fragmented data to coordinated care/i })).toBeVisible();
+    await expect(
+      page.getByRole("figure", { name: /End-to-end journey/i })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Connect, understand, act, and learn/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /How it works for your team/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Clinician" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Practice manager" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Human-in-the-loop on every output/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Ready to see it in your organisation/i })).toBeVisible();
+  });
+
   test("platform page loads with cohesive sections", async ({ page }) => {
     await page.goto("/platform");
 
@@ -229,6 +254,7 @@ test.describe("Marketing smoke", () => {
     await page.goto("/");
 
     const footer = page.locator("footer");
+    await expect(footer.getByRole("link", { name: "How it works" })).toHaveAttribute("href", "/how-it-works");
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
     await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
