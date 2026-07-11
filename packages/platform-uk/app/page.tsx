@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="marketing-site overflow-x-hidden">
-      <Navbar />
+      <Navbar overDarkHero />
       <HeroSection />
       <ProblemSection />
       <HowItWorks />

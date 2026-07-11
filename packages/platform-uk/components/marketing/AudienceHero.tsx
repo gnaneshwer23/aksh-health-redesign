@@ -16,7 +16,7 @@ type AudienceHeroProps = {
 export function AudiencePage({ kicker, title, description, ctaHref, ctaLabel, children }: AudienceHeroProps) {
   return (
     <div className="marketing-site flex min-h-screen flex-col bg-surface">
-      <Navbar />
+      <Navbar overDarkHero />
       <section className="bg-navy-dark pb-16 pt-28 text-white lg:pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">{kicker}</p>

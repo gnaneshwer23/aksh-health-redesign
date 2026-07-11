@@ -7,7 +7,7 @@ import { PUBLIC_DEMOS } from "@/lib/demo-catalog";
 
 export function DemoHub() {
   return (
-    <MarketingShell>
+    <MarketingShell overDarkHero>
       <section className="relative overflow-hidden bg-medicom-navy pb-12 pt-8 text-white">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:48px_48px] opacity-50" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8">

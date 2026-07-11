@@ -49,7 +49,12 @@ const solutionLinks: SolutionLink[] = [
   ["Integrations", "/integrations"],
 ];
 
-export default function Navbar() {
+type NavbarProps = {
+  /** Transparent navbar sits over a dark navy hero at page top */
+  overDarkHero?: boolean;
+};
+
+export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
@@ -71,7 +76,11 @@ export default function Navbar() {
 
   const linkClass = cn(
     "text-sm font-medium transition-colors",
-    scrolled ? "text-steel hover:text-navy" : "text-white/90 hover:text-white"
+    scrolled
+      ? "text-steel hover:text-navy"
+      : overDarkHero
+        ? "text-white/90 hover:text-white"
+        : "text-steel hover:text-navy"
   );
 
   return (
@@ -87,7 +96,14 @@ export default function Navbar() {
             <span className="text-sm font-bold text-white">A</span>
           </div>
           <div className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate text-base font-bold leading-none text-navy">Aksh Health</span>
+            <span
+              className={cn(
+                "truncate text-base font-bold leading-none transition-colors",
+                scrolled ? "text-navy" : overDarkHero ? "text-white" : "text-navy"
+              )}
+            >
+              Aksh Health
+            </span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald">Healthcare OS</span>
           </div>
         </Link>
@@ -146,7 +162,9 @@ export default function Navbar() {
               "rounded-xl border px-4 py-2 text-sm font-medium transition-all",
               scrolled
                 ? "border-navy/20 text-navy hover:border-navy hover:bg-navy hover:text-white"
-                : "border-white/50 text-white hover:border-white hover:bg-white/10"
+                : overDarkHero
+                  ? "border-white/50 text-white hover:border-white hover:bg-white/10"
+                  : "border-navy/20 text-navy hover:border-navy hover:bg-navy/5"
             )}
           >
             Sign In
@@ -165,7 +183,9 @@ export default function Navbar() {
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
             scrolled
               ? "border-navy/20 text-navy hover:bg-navy/5"
-              : "border-white/40 text-white hover:bg-white/10"
+              : overDarkHero
+                ? "border-white/40 text-white hover:bg-white/10"
+                : "border-navy/20 text-navy hover:bg-navy/5"
           )}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-menu"
