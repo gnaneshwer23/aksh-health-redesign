@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://0ne-health.vercel.app/$1",
+      "permanent": true
+    }
+  ]
+}

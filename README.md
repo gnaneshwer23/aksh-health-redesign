@@ -2,7 +2,11 @@
 
 Single monorepo for the Aksh Health UK/EU platform, India app and marketing site, shared foundation library, and the Akeno Health full-stack platform (services + web).
 
+**Production:** https://0ne-health.vercel.app — single deploy from `packages/platform-uk` (Neon Postgres backend).
+
 **Remote:** https://github.com/gnaneshwer23/0ne-Health
+
+See `docs/DEPLOYMENT_CONSOLIDATION.md` for Vercel project retirement and route map.
 
 ## Repository layout
 
@@ -15,7 +19,7 @@ Single monorepo for the Aksh Health UK/EU platform, India app and marketing site
 │   ├── platform-uk/               # Aksh Health UK/EU clinical proof platform (Phase A/B)
 │   ├── platform-india-app/      # Aksh Health India Phase 0 app
 │   ├── marketing-india/         # Aksh Health India marketing site
-│   ├── marketing-os/            # Aksh Health public marketing site (Healthcare OS)
+│   ├── marketing-os/            # Legacy marketing site (retired — content merged into platform-uk)
 │   └── akeno/                     # Akeno Health L0–L10 services, contracts, web dashboard
 ```
 
@@ -44,7 +48,7 @@ npm test   # if defined in package.json
 
 ### `packages/platform-uk`
 
-Synthetic-data UK/EU clinical workflow proof (Next.js).
+UK/EU clinical workflow platform and **unified production app** (marketing + onboarding + dashboards + demo). Deployed to https://0ne-health.vercel.app.
 
 ```bash
 cd packages/platform-uk
@@ -78,15 +82,13 @@ npm run dev
 
 ### `packages/marketing-os`
 
-Aksh Health public marketing site — AI Healthcare Operating System positioning for NHS/ICS, hospitals, clinicians, and patients (Next.js 14, Tailwind, shadcn/ui).
+**Retired** — marketing content merged into `packages/platform-uk`. Kept in monorepo for reference only.
 
 ```bash
 cd packages/marketing-os
 npm install
-npm run dev
+npm run dev   # localhost:3010 — do not deploy separately
 ```
-
-Runs on http://localhost:3010 by default.
 
 ### `packages/akeno`
 

@@ -3,11 +3,8 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./app/onboarding/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/dashboard/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/onboarding/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/dashboard/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/ui/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   corePlugins: {
     preflight: false,
@@ -27,8 +24,20 @@ const config: Config = {
           DEFAULT: "#00A86B",
           foreground: "#FFFFFF",
         },
+        navy: {
+          DEFAULT: "#003D7A",
+          dark: "#001A3D",
+          light: "#EBF4FF",
+        },
+        emerald: {
+          DEFAULT: "#006B4F",
+          light: "#E8F5F0",
+        },
         danger: "#E53E3E",
         warning: "#E67E22",
+        steel: "#4A6FA5",
+        slate: "#2D3748",
+        surface: "#F7F8FA",
         background: "#F7F8FA",
         card: "#FFFFFF",
         border: "#E2E8F0",

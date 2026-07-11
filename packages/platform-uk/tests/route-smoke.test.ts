@@ -12,7 +12,7 @@ async function assertFileIncludes(relativePath: string, expectedText: string) {
 
 async function run() {
   const criticalRoutes = [
-    ["app/page.tsx", "ProductLanding"],
+    ["app/page.tsx", "HomePage"],
     ["app/onboarding/page.tsx", "OnboardingPage"],
     ["app/dashboards/page.tsx", "DashboardsPage"],
     ["app/review/page.tsx", "ReviewPageClient"],

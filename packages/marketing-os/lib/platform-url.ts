@@ -1,6 +1,4 @@
-const PLATFORM_URL =
-  process.env.NEXT_PUBLIC_PLATFORM_URL ?? "https://0ne-health.vercel.app";
-
+/** @deprecated marketing-os is retired — use packages/platform-uk same-origin routes */
 export function getPlatformOnboardingUrl(role: string): string {
-  return `${PLATFORM_URL}/onboarding?role=${encodeURIComponent(role)}`;
+  return `/onboarding?role=${encodeURIComponent(role)}`;
 }
