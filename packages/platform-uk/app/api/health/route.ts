@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getPgPool, isPostgresConfigured } from "../../../lib/db/client";
 import { checkNeo4jHealth, isNeo4jConfigured } from "../../../lib/neo4j";
 
+export const dynamic = "force-dynamic";
+
 type ServiceHealth = {
   configured: boolean;
   connected: boolean;
