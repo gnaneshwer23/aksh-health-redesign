@@ -4,6 +4,7 @@ import { Mic, Square } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
 export function VoiceRecorder({
@@ -51,10 +52,15 @@ export function VoiceRecorder({
           const response = await fetch("/api/transcribe", {
             method: "POST",
             body: formData,
+            credentials: "include",
           });
 
+          if (response.status === 401) {
+            throw new Error("sign_in_required");
+          }
+
           if (!response.ok) {
-            throw new Error("Transcription failed");
+            throw new Error("transcription_failed");
           }
 
           const data = (await response.json()) as { transcript?: string };
@@ -64,6 +70,17 @@ export function VoiceRecorder({
           onRecordingComplete?.();
         } catch (error) {
           console.error("Voice transcription failed:", error);
+          if (error instanceof Error && error.message === "sign_in_required") {
+            toast({
+              title: "Sign in required",
+              description: "Voice transcription requires an authenticated session.",
+            });
+          } else {
+            toast({
+              title: "Transcription failed",
+              description: "Check microphone access and that DEEPGRAM_API_KEY is configured in production.",
+            });
+          }
         } finally {
           setProcessing(false);
         }
@@ -73,6 +90,10 @@ export function VoiceRecorder({
       setRecording(true);
     } catch (error) {
       console.error("Microphone access failed:", error);
+      toast({
+        title: "Microphone unavailable",
+        description: "Allow microphone access in your browser and try again.",
+      });
       stopStream();
     }
   };

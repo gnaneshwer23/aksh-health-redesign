@@ -1,15 +1,19 @@
 "use client";
 
-import { Mic } from "lucide-react";
+import { useState } from "react";
 
 import { AgentBadge } from "@/components/dashboard/AgentBadge";
 import { GuardianAlert } from "@/components/dashboard/GuardianAlert";
 import { RiskGauge } from "@/components/dashboard/RiskScoreBadge";
+import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/components/ui/toaster";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import type { Patient } from "@/lib/mock-data/types";
 import type { Neo4jGuardianResponse, Neo4jPatientResponse } from "@/lib/neo4j/types";
 import { cn } from "@/lib/utils";
+import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function PanelSkeleton() {
   return (
@@ -42,12 +46,40 @@ export function AgentControlPanel({
   guardianLoading?: boolean;
   className?: string;
 }) {
+  const stageVoiceTranscript = useDashboardStore((state) => state.stageVoiceTranscript);
+  const { profile } = useUserProfile();
+  const [lastDictationAt, setLastDictationAt] = useState<string | null>(null);
+
   const oracleScore = oracleData?.oracleScore ?? patient?.oracleScore ?? 0;
   const oracleRisk = oracleData?.oracleRisk ?? patient?.oracleRisk ?? "Low";
   const riskFactors =
     oracleData?.riskFactors ??
     patient?.digitalTwinPrediction.deteriorationSignals ??
     [];
+
+  function handleVoiceTranscript(transcript: string) {
+    if (!patient) {
+      toast({
+        title: "Select a patient",
+        description: "Choose a patient before starting dictation.",
+      });
+      return;
+    }
+
+    stageVoiceTranscript({
+      patientId: patient.id,
+      patientName: patient.name,
+      patientNhsNumber: patient.nhsNumber,
+      transcript,
+      reviewerName: profile?.fullName ?? "Clinician",
+    });
+    setLastDictationAt(new Date().toLocaleString("en-GB"));
+    toast({
+      title: "Transcript staged",
+      description: "VOICE transcript added to your review queue.",
+    });
+  }
+
   return (
     <aside
       className={cn(
@@ -58,11 +90,12 @@ export function AgentControlPanel({
       <Card className="shadow-sm">
         <CardHeader className="p-3 pb-0"><CardTitle className="text-sm flex items-center gap-2"><AgentBadge agent="VOICE" /> VOICE</CardTitle></CardHeader>
         <CardContent className="p-3 flex flex-col items-center gap-2">
-          <button type="button" aria-label="Start dictation" className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-            <Mic className="h-7 w-7" />
-          </button>
-          <p className="text-xs text-muted text-center">Click to start dictation</p>
-          <p className="text-[10px] text-muted">Last dictation: 2h ago. Pending approval.</p>
+          <VoiceRecorder onTranscript={handleVoiceTranscript} />
+          <p className="text-[10px] text-muted text-center">
+            {lastDictationAt
+              ? `Last dictation: ${lastDictationAt}. Pending approval.`
+              : "Dictation feeds the VOICE agent and stages a transcript for review."}
+          </p>
         </CardContent>
       </Card>
 

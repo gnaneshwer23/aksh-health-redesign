@@ -39,9 +39,14 @@ export function AudioRecorder({
           const response = await fetch("/api/transcribe", {
             method: "POST",
             body: formData,
+            credentials: "include",
           });
-          
-          if (!response.ok) throw new Error("Transcription failed");
+
+          if (response.status === 401) {
+            throw new Error("sign_in_required");
+          }
+
+          if (!response.ok) throw new Error("transcription_failed");
           
           const data = await response.json();
           if (data.transcript) {
@@ -49,7 +54,11 @@ export function AudioRecorder({
           }
         } catch (error) {
           console.error("Error transcribing audio:", error);
-          alert("Failed to transcribe audio. Check microphone access, sign in, and configure DEEPGRAM_API_KEY for live transcription.");
+          if (error instanceof Error && error.message === "sign_in_required") {
+            alert("Sign in is required for live transcription.");
+          } else {
+            alert("Failed to transcribe audio. Check microphone access, sign in, and configure DEEPGRAM_API_KEY for live transcription.");
+          }
         } finally {
           setIsProcessing(false);
         }

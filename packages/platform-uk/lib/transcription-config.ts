@@ -43,22 +43,23 @@ export async function transcribeAudioBlob(audioFile: Blob) {
   }
 
   const deepgramApiKey = process.env.DEEPGRAM_API_KEY?.trim() ?? "";
-  const { createClient } = await import(/* webpackIgnore: true */ "@deepgram/sdk");
-  const deepgram = createClient(deepgramApiKey);
+  const { DeepgramClient } = await import(/* webpackIgnore: true */ "@deepgram/sdk");
+  const deepgram = new DeepgramClient({ apiKey: deepgramApiKey });
   const buffer = Buffer.from(await audioFile.arrayBuffer());
-  const { result, error } = await deepgram.listen.prerecorded.transcribeFile(buffer, {
+  const result = await deepgram.listen.v1.media.transcribeFile(buffer, {
     model: "nova-2",
     language: "en-GB",
     smart_format: true
   });
 
-  if (error) {
-    throw error;
-  }
+  const transcript =
+    "results" in result
+      ? result.results?.channels?.[0]?.alternatives?.[0]?.transcript || ""
+      : "";
 
   return {
     mode,
-    transcript: result?.results?.channels?.[0]?.alternatives?.[0]?.transcript || "",
+    transcript,
     dependencyStatus: {
       deepgramApiKeyConfigured: true,
       deepgramSdkInstalled: true

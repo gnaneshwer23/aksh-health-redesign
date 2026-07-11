@@ -54,6 +54,13 @@ interface DashboardState {
     title: string;
     content: string;
   }) => void;
+  stageVoiceTranscript: (payload: {
+    patientId: string;
+    patientName: string;
+    patientNhsNumber: string;
+    transcript: string;
+    reviewerName: string;
+  }) => void;
   markMedicationReviewed: (patientId: string) => void;
 }
 
@@ -230,6 +237,34 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       user: "Pharmacist Lee",
       agent: "GUARDIAN",
       action: "Staged interaction check for review",
+      resource: `${id} / ${payload.patientName}`,
+    });
+  },
+
+  stageVoiceTranscript: (payload) => {
+    const id = `RQ${Date.now()}`;
+    const item: ReviewQueueItem = {
+      id,
+      patientId: payload.patientId,
+      patientName: payload.patientName,
+      patientNhsNumber: payload.patientNhsNumber,
+      agentType: "VOICE",
+      title: "Consultation transcript",
+      content: payload.transcript,
+      confidenceScore: null,
+      evidenceSources: [],
+      createdAt: new Date().toISOString(),
+      priority: "Normal",
+      status: "Pending",
+      editedContent: null,
+      rejectionReason: null,
+      auditEventId: null,
+    };
+    set((s) => ({ reviewQueueItems: [item, ...s.reviewQueueItems] }));
+    get().addAuditEvent({
+      user: payload.reviewerName,
+      agent: "VOICE",
+      action: "Staged consultation transcript for review",
       resource: `${id} / ${payload.patientName}`,
     });
   },
