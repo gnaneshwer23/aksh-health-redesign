@@ -87,6 +87,13 @@ export const DEMO_USER_SEEDS: DemoUserSeed[] = [
     role: "gp",
     onboardingComplete: true,
   },
+  {
+    id: "user-onboarding",
+    email: "onboarding@demo.akshhealth.com",
+    name: "Onboarding Test User",
+    role: "gp",
+    onboardingComplete: false,
+  },
 ];
 
 export const DEMO_PASSWORD = "demo123";

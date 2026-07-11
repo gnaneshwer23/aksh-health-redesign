@@ -138,6 +138,18 @@ npm run smoke:browser
 
 This signs in through the UI, creates a synthetic intake case, accepts it through the reviewer decision panel, saves benchmark sign-off, and verifies the readiness page updates.
 
+### Playwright E2E (Phase E)
+
+Browser end-to-end tests cover marketing, auth, onboarding redirect, GP/patient dashboards, API health, and route protection.
+
+```bash
+npm run dev          # terminal 1 (optional — Playwright can start dev automatically)
+npm run test:e2e     # terminal 2
+npm run test:e2e:ui  # interactive UI mode
+```
+
+See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
+
 Demo auth uses bcrypt-hashed fixtures. Override them with `AKSH_DEMO_PASSWORD_HASH` for a shared demo password hash, or with per-user values via `AKSH_DEMO_DOCTOR_PASSWORD_HASH`, `AKSH_DEMO_REVIEWER_PASSWORD_HASH`, and `AKSH_DEMO_SMOKE_PASSWORD_HASH`.
 
 The current build uses separate Next outputs:
