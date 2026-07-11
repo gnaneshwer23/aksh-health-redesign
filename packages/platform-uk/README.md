@@ -152,6 +152,8 @@ See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
 
 E2E and authenticated smoke tests require `DATABASE_URL`. Playwright creates fresh users via `/api/auth/signup` each run (`e2e/helpers/auth.ts`). Smoke scripts require real credentials via env vars (see `.env.example`).
 
+**CI:** GitHub Actions requires the `E2E_DATABASE_URL` secret (Neon pooled connection string). Optional: `E2E_TEST_PASSWORD`. See `docs/DEPLOYMENT_CONSOLIDATION.md`.
+
 The current build uses separate Next outputs:
 
 - `.next-dev-active` for `npm run dev`

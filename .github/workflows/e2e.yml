@@ -42,6 +42,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate E2E database secret
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::E2E_DATABASE_URL secret is not set in GitHub repository settings."
+            echo "Add a Neon pooled connection string as E2E_DATABASE_URL under Settings → Secrets and variables → Actions."
+            echo "See packages/platform-uk/docs/DEPLOYMENT_CONSOLIDATION.md for details."
+            exit 1
+          fi
+
       - name: Verify and build
         run: npm run verify && npm run build
 

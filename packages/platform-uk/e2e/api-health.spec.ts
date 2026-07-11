@@ -7,6 +7,17 @@ test.describe("API health", () => {
     const unauthHealth = await request.get("/api/neo4j/health");
     expect(unauthHealth.status()).toBe(401);
 
+    const publicHealth = await request.get("/api/health");
+    expect(publicHealth.ok()).toBeTruthy();
+    const publicHealthBody = (await publicHealth.json()) as {
+      status: string;
+      database: { configured: boolean; connected: boolean; mode: string };
+      neo4j: { configured: boolean; connected: boolean; mode: string };
+    };
+    expect(["ok", "degraded"]).toContain(publicHealthBody.status);
+    expect(typeof publicHealthBody.database.connected).toBe("boolean");
+    expect(["live", "mock", "unconfigured"]).toContain(publicHealthBody.neo4j.mode);
+
     const unauthProfile = await request.get("/api/profile");
     expect(unauthProfile.status()).toBe(401);
 

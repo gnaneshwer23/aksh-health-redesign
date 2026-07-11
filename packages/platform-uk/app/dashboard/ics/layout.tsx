@@ -5,13 +5,14 @@ import type { ReactNode } from "react";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IcsDataProvider, useIcsData } from "@/components/dashboard/ics/IcsDataContext";
+import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function IcsLayoutHeader({ children }: { children: ReactNode }) {
   const { icsDateRange, setIcsDateRange } = useDashboardStore();
-  const { data } = useIcsData();
+  const { data, source, loading } = useIcsData();
   const { profile } = useUserProfile();
   const icsTitle = profile?.organisation ?? data.icsName;
 
@@ -31,6 +32,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
             </SelectContent>
           </Select>
         </div>
+        <Neo4jMockModeBanner source={source} loading={loading} />
         {children}
       </div>
     </DashboardShell>

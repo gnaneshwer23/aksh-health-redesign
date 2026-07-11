@@ -113,7 +113,10 @@ async function run() {
   await assertFileIncludes("components/review/governance-pack-page.tsx", "Role And Action Permission Matrix");
   await assertFileIncludes("package.json", "\"data:seed\"");
   await assertFileIncludes("package.json", "\"data:seed:neo4j\"");
+  await assertFileIncludes("package.json", "\"auth:cleanup-demo\"");
   await assertFileIncludes("app/api/neo4j/health/route.ts", "checkNeo4jHealth");
+  await assertFileIncludes("app/api/health/route.ts", "checkNeo4jHealth");
+  await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-mock-mode-banner");
   await assertFileIncludes("app/api/profile/route.ts", "buildUserProfile");
   await assertFileIncludes("lib/hooks/use-user-profile.ts", "useUserProfile");
   await assertFileIncludes("components/dashboard/TopBar.tsx", "useUserProfile");

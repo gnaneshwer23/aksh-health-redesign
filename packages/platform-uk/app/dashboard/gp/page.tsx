@@ -8,6 +8,7 @@ import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
+import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { PatientCard } from "@/components/dashboard/PatientCard";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
@@ -47,7 +48,7 @@ export default function GpDashboardPage() {
     [profile?.fullName]
   );
   const patient = getPatientById(selectedPatientId ?? scopedAppointments[0]?.id ?? "P002");
-  const { data: oracleData, loading: oracleLoading } = useNeo4jPatient(selectedPatientId ?? patient?.id);
+  const { data: oracleData, loading: oracleLoading, source: oracleSource } = useNeo4jPatient(selectedPatientId ?? patient?.id);
   const { data: guardianData, loading: guardianLoading } = useNeo4jGuardian(selectedPatientId ?? patient?.id);
 
   const searchResults = useMemo(() => {
@@ -127,6 +128,7 @@ export default function GpDashboardPage() {
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
           <div className="flex-1 space-y-5 overflow-y-auto bg-background p-4 sm:p-5">
+          <Neo4jMockModeBanner source={oracleSource} loading={oracleLoading} />
           {patient && (
             <header className="dashboard-card p-5">
               {clinicalLoading ? (

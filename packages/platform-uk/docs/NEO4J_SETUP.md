@@ -1,6 +1,6 @@
 # Neo4j AuraDB Setup — Aksh Health Clinical Graph
 
-Phase 11 wires ORACLE, GUARDIAN, and ICS population dashboards to a Neo4j graph. Without credentials, APIs fall back to mock data (`X-Data-Source: mock`).
+Phase 11 wires ORACLE, GUARDIAN, and ICS population dashboards to a Neo4j graph. Without credentials, APIs fall back to mock data (`X-Data-Source: mock`) and dashboards show a **mock mode** banner.
 
 ## 1. Create AuraDB Free instance
 
@@ -13,6 +13,8 @@ Phase 11 wires ORACLE, GUARDIAN, and ICS population dashboards to a Neo4j graph.
 
 ## 2. Configure environment variables
 
+### Local development
+
 Add to `packages/platform-uk/.env.local`:
 
 ```bash
@@ -21,7 +23,19 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-generated-password
 ```
 
-For Vercel production, add the same three variables in the project settings (see [DEPLOYMENT_CONSOLIDATION.md](./DEPLOYMENT_CONSOLIDATION.md)). Until they are set, production uses mock fallback automatically.
+### Vercel production (`0ne-health` project)
+
+In **Vercel → Project → Settings → Environment Variables**, add these three variables for **Production** (and Preview if needed):
+
+| Variable | Example value |
+|----------|---------------|
+| `NEO4J_URI` | `neo4j+s://xxxx.databases.neo4j.io` |
+| `NEO4J_USERNAME` | `neo4j` |
+| `NEO4J_PASSWORD` | *(Aura-generated password — store only in Vercel)* |
+
+Redeploy after saving. Until all three are set, production uses mock fallback automatically.
+
+See also [DEPLOYMENT_CONSOLIDATION.md](./DEPLOYMENT_CONSOLIDATION.md) for the full env var checklist.
 
 ### Health check
 
@@ -39,6 +53,20 @@ Response:
 
 When credentials are missing or Aura is unreachable, `connected` is `false` and `mode` is `mock`. Clinical APIs continue to serve mock data with `X-Data-Source: mock`.
 
+Public monitoring probe (no auth, no secrets in body):
+
+```http
+GET /api/health
+```
+
+```json
+{
+  "status": "ok",
+  "database": { "configured": true, "connected": true, "mode": "live" },
+  "neo4j": { "configured": true, "connected": true, "mode": "live" }
+}
+```
+
 ## 3. Seed the graph
 
 From `packages/platform-uk`:
@@ -53,6 +81,15 @@ The script is idempotent (`MERGE`) and loads:
 - Patel **P002** with DVT + T2D, aspirin + apixaban, and `INTERACTS_WITH` (GUARDIAN)
 - Medication interaction edges from `lib/mock-data/medications.ts`
 - ICS aggregates and 5 practice benchmarks from `lib/mock-data/population.ts`
+
+### Post-deploy seeding (Aura)
+
+After adding Neo4j env vars to Vercel and redeploying:
+
+1. Copy the three `NEO4J_*` values into local `.env.local` (do not commit).
+2. From `packages/platform-uk`, run `npm run data:seed:neo4j` against the Aura instance.
+3. Sign in to production and confirm `GET /api/neo4j/health` returns `{ "connected": true, "mode": "live" }`.
+4. GP and ICS dashboards should no longer show the mock mode banner.
 
 ## 4. Verify
 
@@ -92,3 +129,4 @@ Response header `X-Data-Source` is `neo4j` or `mock`.
 | Auth failed | Regenerate password in Aura console |
 | Empty guardian for P002 | Re-run `npm run data:seed:neo4j` |
 | APIs return mock | Confirm all three `NEO4J_*` env vars are set |
+| Mock mode banner visible | Neo4j unreachable or not configured — check Vercel env vars and Aura status |
