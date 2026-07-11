@@ -333,4 +333,26 @@ test.describe("Marketing smoke", () => {
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", "/resources#integration");
   });
+
+  test("cookie consent banner appears on first visit", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem("aksh_cookie_consent");
+    });
+    await page.goto("/");
+
+    const banner = page.getByRole("dialog", { name: /Cookies on Aksh Health/i });
+    await expect(banner).toBeVisible();
+    await expect(banner.getByRole("button", { name: "Accept all" })).toBeVisible();
+    await expect(banner.getByRole("button", { name: "Essential only" })).toBeVisible();
+    await expect(banner.getByRole("button", { name: "Manage preferences" })).toBeVisible();
+    await expect(banner.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
+  });
+
+  test("footer exposes cookie policy link", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.locator("footer");
+    await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
+    const response = await page.request.get("/cookies");
+    expect(response.status()).toBeLessThan(400);
+  });
 });

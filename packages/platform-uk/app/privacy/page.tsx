@@ -91,13 +91,21 @@ export default function PrivacyPage() {
           ),
         },
         {
+          id: "cookies",
           title: "Cookies and similar technologies",
           content: (
             <>
               <p>
-                We use essential cookies to keep you signed in and to protect the platform. Optional analytics
-                cookies, if enabled in future, will only run with your consent. You can manage cookie preferences
-                using the banner on this site. See our cookie notice for details.
+                We use essential cookies to keep you signed in and to protect the platform. We do not currently use
+                analytics cookies. Optional analytics, if enabled in future, will only run with your consent. You can
+                manage preferences using the banner on this site.
+              </p>
+              <p>
+                For a full list of cookies and storage we use, see our{" "}
+                <a href="/cookies" className="font-medium text-primary hover:underline">
+                  Cookie Policy
+                </a>
+                .
               </p>
             </>
           ),

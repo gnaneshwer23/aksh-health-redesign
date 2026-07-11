@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 export type LegalSection = {
+  id?: string;
   title: string;
   content: ReactNode;
 };
@@ -26,7 +27,7 @@ export function LegalPageLayout({ title, description, lastUpdated, sections }: L
 
           <div className="mt-12 space-y-10">
             {sections.map((section) => (
-              <article key={section.title}>
+              <article key={section.id ?? section.title} id={section.id}>
                 <h2 className="text-xl font-bold text-navy">{section.title}</h2>
                 <div className="mt-3 space-y-3 text-sm leading-relaxed text-steel">{section.content}</div>
               </article>
