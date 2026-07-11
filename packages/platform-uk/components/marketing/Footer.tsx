@@ -5,17 +5,23 @@ const footerColumns = [
     title: "Platform",
     links: [
       { label: "How It Works", href: "/#how-it-works" },
-      { label: "For Clinicians", href: "/for-clinicians" },
-      { label: "For Hospitals", href: "/for-hospitals" },
-      { label: "For Patients", href: "/for-patients" },
-      { label: "For Administrators", href: "/for-administrators" },
+      { label: "Architecture", href: "/platform" },
+      { label: "Documentation", href: "/docs" },
+    ],
+  },
+  {
+    title: "Solutions",
+    links: [
+      { label: "For Clinicians", href: "/platform#clinicians" },
+      { label: "For Hospitals", href: "/platform#hospitals" },
+      { label: "For Patients", href: "/platform#patients" },
+      { label: "For Administrators", href: "/platform#administrators" },
     ],
   },
   {
     title: "Company",
     links: [
       { label: "ICS Pilot", href: "/pilot" },
-      { label: "Documentation", href: "/docs" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Contact", href: "/contact" },
     ],
@@ -46,10 +52,7 @@ export default function Footer() {
               <ul className="list-none space-y-3 p-0">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-white/55 transition-colors hover:text-white"
-                    >
+                    <Link href={link.href} className="text-sm text-white/55 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   </li>

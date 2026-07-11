@@ -36,11 +36,8 @@ export default function DocsPage() {
               </p>
             </div>
             <div className="space-y-3 text-sm">
-              <Link href="/dashboard/gp" className="block font-medium text-navy hover:underline">
-                Clinician dashboard demo
-              </Link>
-              <Link href="/review" className="block font-medium text-navy hover:underline">
-                Review queue
+              <Link href="/platform" className="block font-medium text-navy hover:underline">
+                Platform architecture
               </Link>
               <Link href="/api/system/database-contract" className="block font-medium text-navy hover:underline">
                 Database adapter contract

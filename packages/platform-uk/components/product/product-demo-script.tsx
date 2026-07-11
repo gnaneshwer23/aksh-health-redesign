@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { PublicProductNav } from "@/components/product/public-product-nav";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 const demoStops = [
   {
@@ -89,9 +89,9 @@ const demoRules = {
 
 export function ProductDemoScript() {
   return (
+    <MarketingShell>
     <main className="product-page product-page--demo">
       <div className="product-sky" aria-hidden="true" />
-      <PublicProductNav ctaHref="/review/presenter?demo=1" ctaLabel="Presenter guide" />
 
       <section className="product-simple-hero">
         <p className="product-kicker">Controlled demo walkthrough</p>
@@ -180,5 +180,6 @@ export function ProductDemoScript() {
         </aside>
       </section>
     </main>
+    </MarketingShell>
   );
 }

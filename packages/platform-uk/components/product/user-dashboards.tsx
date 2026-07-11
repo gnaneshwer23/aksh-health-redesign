@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { PublicProductNav } from "@/components/product/public-product-nav";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 import type { DashboardSummary } from "@/lib/dashboard-summary";
 
 type EvidenceSnapshot = {
@@ -99,9 +99,9 @@ export function UserDashboards({ clinical, operations, evidence }: UserDashboard
   const platformHealthy = urgentTotal === 0 && evidence.benchmarkFailed === 0;
 
   return (
+    <MarketingShell>
     <main className="product-page product-page--dashboards">
       <div className="product-sky" aria-hidden="true" />
-      <PublicProductNav ctaHref="/workspace" ctaLabel="Open workspace" />
 
       {/* ── PAGE HEADER ── */}
       <section className="db-page-header">
@@ -245,5 +245,6 @@ export function UserDashboards({ clinical, operations, evidence }: UserDashboard
         </div>
       </section>
     </main>
+    </MarketingShell>
   );
 }

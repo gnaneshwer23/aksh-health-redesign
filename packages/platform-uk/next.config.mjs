@@ -7,6 +7,15 @@ const createNextConfig = (phase) => ({
     (process.env.VERCEL ? ".next" : phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev-active" : ".next-build-active"),
   experimental: {
     typedRoutes: false
+  },
+  async redirects() {
+    return [
+      {
+        source: "/product",
+        destination: "/",
+        permanent: true
+      }
+    ];
   }
 });
 

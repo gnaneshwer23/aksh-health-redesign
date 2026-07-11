@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { PublicProductNav } from "@/components/product/public-product-nav";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 const trustBadges = [
   "NHS GP Connect Architecture",
@@ -131,9 +131,9 @@ const cockpitRows = [
 
 export function ProductLanding() {
   return (
+    <MarketingShell>
     <main className="product-page product-page--landing">
       <div className="product-sky" aria-hidden="true" />
-      <PublicProductNav />
 
       {/* ── HERO ── */}
       <section className="product-hero product-hero--split">
@@ -315,5 +315,6 @@ export function ProductLanding() {
         </div>
       </section>
     </main>
+    </MarketingShell>
   );
 }

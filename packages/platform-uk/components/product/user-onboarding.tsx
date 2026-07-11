@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { PublicProductNav } from "@/components/product/public-product-nav";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 import {
   COMPLIANCE_BADGES,
   COMPLIANCE_DISCLAIMER,
@@ -91,12 +91,16 @@ export function UserOnboarding() {
   }
 
   if (!hydrated) {
-    return <main className="product-page"><PublicProductNav /></main>;
+    return (
+      <MarketingShell>
+        <main className="product-page" />
+      </MarketingShell>
+    );
   }
 
   return (
+    <MarketingShell>
     <main className="product-page">
-      <PublicProductNav ctaHref="/signin" ctaLabel="Sign in" />
 
       <section className="product-simple-hero onboarding-hero">
         <p className="product-kicker">Role onboarding · Phase B</p>
@@ -233,5 +237,6 @@ export function UserOnboarding() {
         ) : null}
       </section>
     </main>
+    </MarketingShell>
   );
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import { PublicProductNav } from "@/components/product/public-product-nav";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { GOLDEN_SCENARIO_PATEL_DEMO_ID } from "@/lib/agents";
 
 const DEMO_STEPS = [
@@ -89,9 +89,9 @@ export function OverviewDemoLauncher() {
   }
 
   return (
+    <MarketingShell>
     <main className="product-page product-page--demo">
       <div className="product-sky" aria-hidden="true" />
-      <PublicProductNav ctaHref="/dashboard/gp" ctaLabel="Open clinician dashboard" />
 
       <section className="product-simple-hero">
         <p className="product-kicker">Overview Demo · ~25 min investor script</p>
@@ -160,5 +160,6 @@ export function OverviewDemoLauncher() {
         </div>
       </section>
     </main>
+    </MarketingShell>
   );
 }
