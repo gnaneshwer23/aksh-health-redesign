@@ -45,10 +45,10 @@ export function OnboardingCard({
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+      <div className="onboarding-card-surface">
         <StepIndicator role={role} currentStepId={stepId} />
-        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-        {description ? <p className="mt-2 text-sm text-muted">{description}</p> : null}
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {description ? <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p> : null}
         <div className="mt-6">{children}</div>
       </div>
     </div>

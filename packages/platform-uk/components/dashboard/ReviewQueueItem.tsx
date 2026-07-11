@@ -24,22 +24,21 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
   const needsApproval = item.status === "Pending" || item.status === "Edited";
 
   return (
-    <Card className="shadow-sm">
-      <CardContent className="p-4 space-y-3">
+    <Card className="dashboard-card border-border-subtle">
+      <CardContent className="space-y-4 p-5">
         <div className="flex flex-wrap items-center gap-2">
           <AgentBadge agent={item.agentType} />
-          <span className="text-sm font-medium">{item.patientName}</span>
+          <span className="text-sm font-semibold text-foreground">{item.patientName}</span>
           <Badge
-            variant="outline"
-            className={cn(
-              item.priority === "Urgent" && "border-danger text-danger",
-              item.priority === "High" && "border-warning text-warning"
-            )}
+            variant={item.priority === "Urgent" ? "danger" : item.priority === "High" ? "warning" : "outline"}
           >
             {item.priority}
           </Badge>
+          <Badge variant="outline" className="ml-auto capitalize">
+            {item.status}
+          </Badge>
         </div>
-        <p className="text-xs font-medium text-muted">{item.title}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted">{item.title}</p>
         {editing ? (
           <SOAPEditor
             value={editContent}
@@ -54,12 +53,14 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
             }}
           />
         ) : (
-          <p className={cn("text-sm whitespace-pre-line", !expanded && "line-clamp-3")}>{displayContent}</p>
+          <p className={cn("rounded-xl bg-surface-muted px-4 py-3 text-sm leading-relaxed text-foreground", !expanded && "line-clamp-3")}>
+            {displayContent}
+          </p>
         )}
         {!editing && (
           <button
             type="button"
-            className="text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             onClick={() => setExpanded(!expanded)}
           >
             {expanded ? (
@@ -74,12 +75,12 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
           </button>
         )}
         {item.confidenceScore !== null && (
-          <div className="space-y-1">
-            <div className="flex justify-between text-xs">
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-medium text-muted">
               <span>Confidence</span>
-              <span>{item.confidenceScore}%</span>
+              <span className="text-foreground">{item.confidenceScore}%</span>
             </div>
-            <Progress value={item.confidenceScore} />
+            <Progress value={item.confidenceScore} className="h-2" />
           </div>
         )}
         {item.evidenceSources.length > 0 && (
@@ -89,7 +90,7 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
               {item.evidenceSources.map((e, i) => (
                 <Tooltip key={e.resourceId}>
                   <TooltipTrigger asChild>
-                    <button type="button" className="text-primary underline-offset-2 hover:underline">
+                    <button type="button" className="font-medium text-primary underline-offset-2 hover:underline">
                       {e.resourceType}/{e.resourceId}
                       {i < item.evidenceSources.length - 1 ? ", " : ""}
                     </button>

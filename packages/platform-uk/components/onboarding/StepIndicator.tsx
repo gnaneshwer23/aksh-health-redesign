@@ -47,11 +47,10 @@ export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
             <div
               key={stepId}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold transition-all duration-200",
-                isComplete &&
-                  "border-accent bg-accent text-accent-foreground",
-                isActive && !isComplete && "border-primary bg-primary text-primary-foreground",
-                !isComplete && !isActive && "border-border bg-card text-muted"
+                "flex h-9 w-9 items-center justify-center rounded-full border text-xs font-semibold transition-all duration-200 shadow-sm",
+                isComplete && "border-accent bg-accent text-accent-foreground",
+                isActive && !isComplete && "border-primary bg-primary text-primary-foreground ring-4 ring-primary/10",
+                !isComplete && !isActive && "border-border-subtle bg-card text-muted"
               )}
               title={ONBOARDING_STEP_LABELS[stepId]}
             >

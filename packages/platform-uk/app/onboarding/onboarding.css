@@ -5,5 +5,13 @@
 @layer base {
   .onboarding-shell {
     @apply min-h-screen bg-background font-sans text-foreground antialiased;
+    background-image: radial-gradient(circle at 100% 0%, rgb(0 168 107 / 0.05), transparent 40%),
+      radial-gradient(circle at 0% 100%, rgb(0 61 122 / 0.04), transparent 36%);
+  }
+}
+
+@layer components {
+  .onboarding-card-surface {
+    @apply rounded-2xl border border-border-subtle bg-card p-8 shadow-card;
   }
 }

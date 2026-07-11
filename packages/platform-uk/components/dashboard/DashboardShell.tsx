@@ -23,7 +23,7 @@ export function DashboardShell({
   hideSidebar?: boolean;
 }) {
   return (
-    <div className={cn("dashboard-root flex h-screen flex-col overflow-hidden bg-background")}>
+    <div className={cn("dashboard-root dashboard-surface flex h-screen flex-col overflow-hidden")}>
       <TopBar role={role} title={title} />
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar role={role} />}

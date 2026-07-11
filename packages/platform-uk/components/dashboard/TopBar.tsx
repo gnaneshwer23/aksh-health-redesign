@@ -8,7 +8,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PRACTICE_NAME, searchPatients } from "@/lib/mock-data";
+import { searchPatients } from "@/lib/mock-data";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
@@ -24,30 +24,38 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
 
   return (
     <>
-      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-card px-4 shadow-sm">
-        <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
+      <header className="flex h-[60px] shrink-0 items-center gap-4 border-b border-border-subtle bg-card/95 px-4 shadow-sm backdrop-blur-sm">
+        <Button variant="ghost" size="sm" className="rounded-lg lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
           <Menu className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="sm" className="hidden xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
+        <Button variant="ghost" size="sm" className="hidden rounded-lg xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <span className="font-bold text-primary">Aksh</span>
-          {title && <span className="hidden sm:inline text-sm text-muted">· {title}</span>}
+          <span className="text-base font-bold text-primary">Aksh</span>
+          {title && <span className="hidden text-sm text-muted sm:inline">· {title}</span>}
         </div>
         <div className="relative mx-auto hidden max-w-md flex-1 md:block">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <Input
-            className="pl-9"
+            className="rounded-xl border-border-subtle bg-surface-muted pl-9 shadow-none focus-visible:ring-primary/20"
             placeholder="Search patients, records..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
             aria-label="Global search"
           />
           {results.length > 0 && (
-            <div className="absolute top-full z-50 mt-1 w-full rounded-sm border border-border bg-card shadow-sm">
+            <div className="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-border-subtle bg-card shadow-card-hover">
               {results.map((p) => (
-                <Link key={p.id} href={`/dashboard/gp/patients/${p.id}`} className="block px-3 py-2 text-sm hover:bg-background" onClick={() => { setSearch(""); setResults([]); }}>
+                <Link
+                  key={p.id}
+                  href={`/dashboard/gp/patients/${p.id}`}
+                  className="block px-4 py-2.5 text-sm transition-colors hover:bg-surface-muted"
+                  onClick={() => {
+                    setSearch("");
+                    setResults([]);
+                  }}
+                >
                   {p.name} · {p.nhsNumber}
                 </Link>
               ))}
@@ -55,20 +63,30 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
           )}
         </div>
         <div className="ml-auto flex items-center gap-3">
-          <button type="button" className="relative rounded-sm p-1 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={`${notificationCount} notifications`}>
-            <Bell className="h-5 w-5" />
-            {notificationCount > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[10px] text-white">{notificationCount}</span>}
+          <button
+            type="button"
+            className="relative rounded-xl p-2 transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={`${notificationCount} notifications`}
+          >
+            <Bell className="h-5 w-5 text-steel" />
+            {notificationCount > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[10px] font-semibold text-white">
+                {notificationCount}
+              </span>
+            )}
           </button>
-          <div className="hidden sm:flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs text-white">DM</span>
-            <span className="text-sm">Dr Morgan</span>
+          <div className="hidden items-center gap-2 sm:flex">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white shadow-sm">DM</span>
+            <span className="text-sm font-medium">Dr Morgan</span>
           </div>
-          <Link href="/" className="text-xs text-muted hover:text-primary">Sign Out</Link>
+          <Link href="/" className="rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-muted hover:text-primary">
+            Sign Out
+          </Link>
         </div>
       </header>
 
       <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
-        <SheetContent side="left" className="p-0 w-60">
+        <SheetContent side="left" className="w-sidebar p-0">
           <Sidebar role={role} />
         </SheetContent>
       </Sheet>

@@ -34,7 +34,7 @@ export default function GpDashboardPage() {
   return (
     <DashboardShell role="gp" title="Clinician Dashboard">
       <div className="flex h-full overflow-hidden">
-        <div className="flex w-60 shrink-0 flex-col border-r border-border bg-card">
+        <div className="flex w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card">
           <div className="p-3">
             <ConsentBanner />
           </div>
@@ -49,19 +49,21 @@ export default function GpDashboardPage() {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto bg-background p-4 space-y-4">
+        <div className="flex-1 space-y-5 overflow-y-auto bg-background p-5">
           {patient && (
-            <header className="rounded-sm border border-border bg-card p-4 shadow-sm">
+            <header className="dashboard-card p-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h1 className="text-lg font-semibold">{patient.name}</h1>
+                  <h1 className="text-xl font-semibold tracking-tight text-foreground">{patient.name}</h1>
                   <p className="text-xs text-muted">NHS {patient.nhsNumber} · DOB {patient.dob} · Age {patient.age}</p>
-                  <div className="mt-2 flex flex-wrap gap-1">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {patient.activeConditions.map((c) => (
-                      <span key={c} className="rounded-sm bg-primary/10 px-2 py-0.5 text-[10px] text-primary">{c}</span>
+                      <span key={c} className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">
+                        {c}
+                      </span>
                     ))}
                   </div>
-                  <p className="mt-2 text-xs text-muted">
+                  <p className="mt-3 text-xs text-muted">
                     {patient.activeMedications.length} medications · Last seen: {patient.lastEncounterDate}
                     {patient.nextAppointmentDate && ` · Next: ${patient.nextAppointmentDate}`}
                   </p>
@@ -83,7 +85,7 @@ export default function GpDashboardPage() {
             {showWritten && writtenToRecordToday.length > 0 && (
               <div className="mt-2 space-y-2">
                 {writtenToRecordToday.map((item) => (
-                  <div key={item.id} className="rounded-sm border border-accent/30 bg-accent/5 p-3 text-xs">
+                  <div key={item.id} className="rounded-xl border border-accent/25 bg-accent/5 p-4 text-xs shadow-sm">
                     <p className="font-medium text-accent">✓ {item.title}</p>
                     <p className="text-muted">{item.acceptedBy} · {item.acceptedAt && new Date(item.acceptedAt).toLocaleString("en-GB")}</p>
                   </div>

@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import type { Patient } from "@/lib/mock-data/types";
 import { cn } from "@/lib/utils";
@@ -22,27 +20,28 @@ export function PatientCard({
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        "flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-        selected && "bg-primary/5 border-l-4 border-accent"
-      )}
+      className={cn("dashboard-patient-row", selected && "dashboard-patient-row--selected")}
       aria-label={`Select patient ${patient.name}`}
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{initial}</span>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary ring-2 ring-white">
+        {initial}
+      </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="font-medium truncate">{patient.name}</span>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="truncate font-medium text-foreground">{patient.name}</span>
           <span className="text-xs text-muted">{patient.age}</span>
-          {showTime && patient.appointmentTime && <span className="text-xs text-muted ml-auto">{patient.appointmentTime}</span>}
+          {showTime && patient.appointmentTime && (
+            <span className="ml-auto text-xs font-medium text-steel">{patient.appointmentTime}</span>
+          )}
         </div>
-        <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
           <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} />
           {patient.openAiItems > 0 && (
-            <span className="rounded-full bg-danger px-1.5 text-[10px] text-white">{patient.openAiItems}</span>
+            <span className="rounded-full bg-danger px-1.5 py-0.5 text-[10px] font-bold text-white">{patient.openAiItems}</span>
           )}
-          {guardian && <span aria-label="Guardian alert">🔴</span>}
-          {patient.flags.includes("URGENT") && <span aria-label="Urgent">🔴</span>}
-          {patient.flags.includes("EQUITY") && <span aria-label="Equity flag">🟡</span>}
+          {guardian && <span className="dashboard-status-badge bg-danger/10 text-danger">Guardian</span>}
+          {patient.flags.includes("URGENT") && <span className="dashboard-status-badge bg-danger/10 text-danger">Urgent</span>}
+          {patient.flags.includes("EQUITY") && <span className="dashboard-status-badge bg-warning/10 text-warning">Equity</span>}
         </div>
       </div>
     </button>
