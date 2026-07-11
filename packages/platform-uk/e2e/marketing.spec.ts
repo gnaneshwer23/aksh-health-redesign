@@ -201,12 +201,12 @@ test.describe("Marketing smoke", () => {
     const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
     await expect(platformLink).toBeVisible();
     const platformColor = await platformLink.evaluate((element) => window.getComputedStyle(element).color);
-    expect(platformColor).toBe("rgb(0, 61, 122)");
+    expect(platformColor).toBe("rgb(74, 111, 165)");
 
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Human-in-the-loop/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Human-in-the-loop\. Always\./i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
     await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
