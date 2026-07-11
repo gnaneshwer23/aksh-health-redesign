@@ -57,7 +57,7 @@ const ROLE_ICONS: Record<UserRole, LucideIcon> = {
 const platformLayers = [
   {
     title: "Intake",
-    body: "Connect patient context from EMIS Web and SystmOne via FHIR R4 ready integration paths. Demo uses synthetic data.",
+    body: "Connect patient context from EMIS Web and SystmOne via FHIR R4 ready integration paths.",
     icon: Inbox,
   },
   {
@@ -124,7 +124,7 @@ export function PlatformPageContent() {
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
             Designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate
-            care. Every output needs clinician approval before it reaches the record. Demo uses synthetic data.
+            care. Every output needs clinician approval before it reaches the record.
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -185,7 +185,7 @@ export function PlatformPageContent() {
             align="left"
             label="Role dashboards"
             title="Eight role dashboards"
-            description="Each role gets a purpose-built view. Clinical teams share one review queue. Demo uses synthetic data."
+            description="Each role gets a purpose-built view. Clinical teams share one review queue."
           />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {ROLES.map((role, index) => (
@@ -247,8 +247,7 @@ export function PlatformPageContent() {
         <div className={`${container} max-w-2xl`}>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to explore the platform?</h2>
           <p className="mt-4 text-lg leading-relaxed text-white/80">
-            FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one. Demo uses synthetic
-            data.
+            FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/signup" className={`${bandPrimaryCta} min-w-[11rem]`}>

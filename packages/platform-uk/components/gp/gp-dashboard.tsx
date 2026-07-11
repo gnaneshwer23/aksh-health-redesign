@@ -37,7 +37,7 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
       <div className="panel stack">
         <h2>GP dashboard</h2>
         <p>
-          Golden Patel demo case not found. Seed synthetic data with <code>npm run data:seed</code> or{" "}
+          Golden Patel case not found. Seed patient data with <code>npm run data:seed</code> or{" "}
           <code>npm run data:seed:postgres</code>.
         </p>
         <Link className="button primary" href="/review">
@@ -96,8 +96,8 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           <p className="gp-panel__eyebrow">Clinician three-column layout</p>
           <h1>Clinician Dashboard</h1>
           <p>
-            Patient context, AI review queue, and agent control panel for synthetic HITL workflow.
-            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong> (synthetic proof only).
+            Patient context, AI review queue, and agent control panel with human-in-the-loop review.
+            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong>.
           </p>
         </div>
         <div className="actions">

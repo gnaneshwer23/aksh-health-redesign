@@ -171,7 +171,7 @@ export default function PricingPage() {
 
           <p className="mt-10 max-w-3xl text-sm leading-relaxed text-steel">
             Pricing conversations happen with your practice manager, ICS lead, or trust procurement team once we
-            understand your integration scope. Demo access with synthetic data is free to explore at any tier.
+            understand your integration scope. Platform access is available to explore at any tier while procurement is underway.
           </p>
         </div>
       </section>

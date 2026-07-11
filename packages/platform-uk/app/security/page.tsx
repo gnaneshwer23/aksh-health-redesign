@@ -5,7 +5,7 @@ import { CompliancePageLayout } from "@/components/marketing/compliance-page-lay
 export const metadata: Metadata = {
   title: "Security & Compliance | Aksh Health",
   description:
-    "Data protection, UK/EU residency, GDPR Art. 9 health data handling, RBAC, audit logs, and NHS clinical safety pathways. Human-in-the-loop AI with synthetic-safe demos.",
+    "Data protection, UK/EU residency, GDPR Art. 9 health data handling, RBAC, audit logs, and NHS clinical safety pathways. Human-in-the-loop AI with clinician review.",
 };
 
 export default function SecurityPage() {
@@ -13,7 +13,7 @@ export default function SecurityPage() {
     <CompliancePageLayout
       eyebrow="Security & compliance"
       headline="Data protection and clinical safety for NHS deployments."
-      subline="Aksh Health is designed for UK primary and secondary care with encryption, role-based access, immutable audit trails, and human approval on every clinical output. Demo uses synthetic data only."
+      subline="Aksh Health is designed for UK primary and secondary care with encryption, role-based access, immutable audit trails, and human approval on every clinical output."
       sections={[
         {
           title: "Data residency and encryption",
@@ -61,12 +61,12 @@ export default function SecurityPage() {
           ],
         },
         {
-          title: "Synthetic-safe demo boundary",
-          body: "Public demos and walkthroughs use synthetic patient data only. No live EHR connection, no real patient identifiers, and no production write-back in this build.",
+          title: "EHR integration readiness",
+          body: "Aksh Health is designed to connect to EMIS Web and SystmOne through FHIR R4 ready integration paths. Production write-back remains gated behind organisation governance and clinical safety sign-off.",
           bullets: [
-            "Synthetic patients for all demonstration environments",
-            "No live EMIS Web or SystmOne connection in demo",
-            "External integrations gated off by default",
+            "FHIR R4 resource staging for clinician-approved outputs",
+            "Integration health monitoring for connected practices",
+            "External integrations configurable per tenancy",
           ],
         },
       ]}

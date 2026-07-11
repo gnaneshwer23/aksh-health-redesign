@@ -5,7 +5,7 @@ const trustBadges = [
   "FHIR R4",
   "GDPR Art. 9",
   "MHRA-aware",
-  "Synthetic-safe demo",
+  "Human-in-the-loop",
 ] as const;
 
 type TrustStripProps = {

@@ -47,8 +47,8 @@ export default function PrivacyPage() {
                 <li>Organisation enquiry details submitted via our access request form</li>
               </ul>
               <p>
-                Public demonstrations use synthetic data only. Demo environments do not process real patient
-                identifiers or live electronic health record connections.
+                Production deployments process patient data under organisation agreements, with role-based access,
+                audit logging, and UK GDPR Article 9 safeguards for special category health data.
               </p>
             </>
           ),

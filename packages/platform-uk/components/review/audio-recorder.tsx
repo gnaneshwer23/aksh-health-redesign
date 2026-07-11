@@ -49,7 +49,7 @@ export function AudioRecorder({
           }
         } catch (error) {
           console.error("Error transcribing audio:", error);
-          alert("Failed to transcribe audio. Please ensure Deepgram is configured or try again.");
+          alert("Failed to transcribe audio. Check microphone access, sign in, and configure DEEPGRAM_API_KEY for live transcription.");
         } finally {
           setIsProcessing(false);
         }

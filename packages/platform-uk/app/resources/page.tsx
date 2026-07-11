@@ -91,7 +91,7 @@ const resourceSections = [
     body: "Aksh Health organises clinical AI into five layers: intake, agent orchestration, synthesis, review queue, and export. Consultation data flows through named clinical agents. Outputs land in a draft review queue. No autonomous write-back to active clinical records.",
     bullets: [
       "Five layers: intake, agents, synthesis, review, export",
-      "Seven agents: VOICE, SYNTHESIS, DrASSIST, GUARDIAN, ORACLE, EQUITY, SHIELD",
+      "Seven agents: VOICE, SYNTHESIS, Dr.Assist, GUARDIAN, ORACLE, EQUITY, SHIELD",
       "FHIR R4 resources staged as DRAFT until named reviewer approval",
       "Human-in-the-loop on every clinical output before record impact",
     ],
@@ -118,7 +118,7 @@ const resourceSections = [
       "DTAC-aligned evidence scaffolding for NHS procurement",
       "GDPR Art. 9 special category health data handling",
       "MHRA-aware positioning: decision support, not autonomous diagnosis",
-      "Synthetic-safe demo: no live EHR connection in public builds",
+    "Human-in-the-loop review on every clinical output",
     ],
   },
   {

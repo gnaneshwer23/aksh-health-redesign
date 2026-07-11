@@ -5,7 +5,7 @@ import { LegalPageLayout } from "@/components/marketing/legal-page-layout";
 export const metadata: Metadata = {
   title: "Terms of Service | Aksh Health",
   description:
-    "Terms governing use of the Aksh Health clinical AI platform, including acceptable use, account responsibilities, and synthetic demo boundaries.",
+    "Terms governing use of the Aksh Health clinical AI platform, including acceptable use, account responsibilities, and clinical data governance.",
 };
 
 const COMPANY = "Aksh Health Ltd";
@@ -55,17 +55,17 @@ export default function TermsPage() {
           ),
         },
         {
-          title: "Synthetic demo boundary",
+          title: "Clinical data governance",
           content: (
             <>
               <p>
-                Public demonstrations, walkthroughs, and unconfigured environments use synthetic data only. In
-                those contexts:
+                Aksh Health processes health data only under appropriate lawful basis and organisation agreements. In
+                production deployments:
               </p>
               <ul className="list-disc space-y-2 pl-5">
-                <li>No real patient identifiers are processed</li>
-                <li>No live electronic health record write-back occurs</li>
-                <li>Outputs must not be used for real clinical decisions</li>
+                <li>Access is limited by role and tenancy</li>
+                <li>Clinical outputs require named reviewer approval before write-back</li>
+                <li>Audit trails record every agent suggestion and clinician decision</li>
               </ul>
               <p>
                 Production deployments with live clinical data require appropriate organisational agreements,

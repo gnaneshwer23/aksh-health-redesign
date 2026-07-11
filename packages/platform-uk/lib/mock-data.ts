@@ -744,7 +744,7 @@ export const reviewCases: ReviewCase[] = [
       {
         "id": "evt-vuk1-3",
         "category": "system",
-        "label": "DrASSIST: codes suggested",
+        "label": "Dr.Assist: codes suggested",
         "actor": "system",
         "timestamp": "14:16"
       },

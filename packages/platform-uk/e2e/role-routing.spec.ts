@@ -4,7 +4,7 @@ test.describe("Role routing", () => {
   test("unauthenticated users can access public GP demo dashboard", async ({ page }) => {
     await page.goto("/dashboard/gp");
     await expect(page).toHaveURL(/\/dashboard\/gp/);
-    await expect(page.getByTestId("demo-data-banner")).toBeVisible();
+    await expect(page.getByTestId("demo-data-banner")).toHaveCount(0);
     await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
   });
 

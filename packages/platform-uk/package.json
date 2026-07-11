@@ -40,6 +40,7 @@
     "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.test.js && node .tmp-tests/tests/api-contracts.test.js && node .tmp-tests/tests/integration-boundary.test.js && node .tmp-tests/tests/readonly-route-contracts.test.js && node .tmp-tests/tests/repository-parity.test.js && node .tmp-tests/tests/export-mapping.test.js && node .tmp-tests/tests/phase-d-api.test.js && node .tmp-tests/tests/route-smoke.test.js"
   },
   "dependencies": {
+    "@deepgram/sdk": "^5.5.0",
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-checkbox": "^1.3.7",
     "@radix-ui/react-dialog": "^1.1.19",

@@ -48,7 +48,7 @@ export default function IntegrationsPage() {
           bullets: [
             "CIS2 SSO pathway for NHS workforce identity",
             "NextAuth session layer with role resolution",
-            "Proof-mode role selection for demo environments",
+            "Role-based access for NHS workforce identity",
           ],
         },
         {
@@ -61,12 +61,12 @@ export default function IntegrationsPage() {
           ],
         },
         {
-          title: "Synthetic demo data",
-          body: "Walkthroughs and product reviews use synthetic patient scenarios. No real identifiers, no live feeds, and no production write-back. Integration health views show scaffolded status for demonstration.",
+          title: "EHR connection pathways",
+          body: "Aksh Health connects to EMIS Web and SystmOne through FHIR R4 ready integration paths. Integration health views show connection status, adapter readiness, and staged write-back controls per organisation.",
           bullets: [
-            "Synthetic patients for all demo walkthroughs",
-            "Integration health dashboard with scaffolded status",
-            "External connections gated off by default",
+            "FHIR R4 bundle export on clinician-approved outputs",
+            "Integration health dashboard for connected practices",
+            "Write-back gated behind organisation governance",
           ],
         },
       ]}

@@ -10,12 +10,8 @@ test.describe("GP dashboard", () => {
     await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
   });
 
-  test("dashboard shows persistent synthetic data banner", async ({ page }) => {
-    const banner = page.getByTestId("demo-data-banner");
-    await expect(banner).toBeVisible();
-    await expect(banner).toContainText("Demo environment");
-    await expect(banner).toContainText("All patients are synthetic");
-    await expect(banner).toContainText("No real NHS data");
+  test("dashboard loads without demo data banner", async ({ page }) => {
+    await expect(page.getByTestId("demo-data-banner")).toHaveCount(0);
   });
 
   test("dashboard loads with working sidebar navigation", async ({ page }) => {

@@ -87,7 +87,7 @@ export const audiencePages = {
     eyebrow: "For clinicians",
     headline: "Spend time with patients, not paperwork.",
     subline:
-      "Aksh Health is designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate care. You approve every output before it reaches the record. Demo uses synthetic data.",
+      "Aksh Health is designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate care. You approve every output before it reaches the record.",
     roles: ["GP", "Nurse", "Pharmacist"],
     painSection: {
       label: "The challenge",
@@ -114,7 +114,7 @@ export const audiencePages = {
     capabilitiesSection: {
       label: "How we help",
       title: "How Aksh Health helps",
-      description: "FHIR R4 ready outputs staged for review. Demo uses synthetic data.",
+      description: "FHIR R4 ready outputs staged for review.",
     },
     capabilities: [
       {
@@ -152,8 +152,8 @@ export const audiencePages = {
       sectionLabel: "Your workflow",
       sectionTitle: "From sign-up to staged FHIR draft",
       sectionDescription:
-        "Seven steps from role selection through EHR write-back. Every AI output stays a draft until you approve it. Demo uses synthetic patients only.",
-      disclaimer: "Synthetic demo data. No outputs are written to the EHR without clinician approval.",
+        "Seven steps from role selection through EHR write-back. Every AI output stays a draft until you approve it.",
+      disclaimer: "No outputs are written to the EHR without clinician approval.",
       steps: [
         {
           label: "Register",
@@ -173,7 +173,7 @@ export const audiencePages = {
           label: "Context",
           title: "Patient context loads",
           description:
-            "Synthetic patient records load into your clinician view with conditions, medications, and appointment context ready for consultation.",
+            "Patient records load into your clinician view with conditions, medications, and appointment context ready for consultation.",
           icon: Database,
         },
         {
@@ -210,7 +210,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents and dashboards for clinical teams",
       description:
-        "GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety. Synthetic patients only in this build.",
+        "GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety.",
     },
     agents: [
       {
@@ -232,7 +232,7 @@ export const audiencePages = {
         icon: TrendingUp,
       },
       {
-        name: "DrASSIST",
+        name: "Dr.Assist",
         tag: "Clinical",
         desc: "Differential diagnosis and SNOMED-CT coding with confidence scores. GP overrides freely.",
         icon: Stethoscope,
@@ -253,7 +253,7 @@ export const audiencePages = {
     eyebrow: "For hospitals",
     headline: "Command your hospital, not just your dashboard.",
     subline:
-      "Aksh Health gives hospital executives and operational leads a single view across wards, emergency demand, and workforce pressure. Designed for Epic, Oracle Health, and NHS Spine-connected environments. Synthetic data in this build.",
+      "Aksh Health gives hospital executives and operational leads a single view across wards, emergency demand, and workforce pressure. Designed for Epic, Oracle Health, and NHS Spine-connected environments.",
     roles: ["Hospital Executive", "Medical Director", "Chief Operating Officer"],
     painSection: {
       label: "The challenge",
@@ -280,7 +280,7 @@ export const audiencePages = {
     capabilitiesSection: {
       label: "How we help",
       title: "Command centre for trust operations",
-      description: "Ward status, capacity forecasts, and staffing ratios for hospital executives. Synthetic data in this build.",
+      description: "Ward status, capacity forecasts, and staffing ratios for hospital executives.",
     },
     capabilities: [
       {
@@ -314,7 +314,7 @@ export const audiencePages = {
       sectionTitle: "From connected systems to executive action",
       sectionDescription:
         "Four steps for hospital executives to monitor operations, forecast demand, and govern AI-assisted decisions across the trust.",
-      disclaimer: "Synthetic demo data. Production deployment requires trust governance sign-off.",
+      disclaimer: "Production deployment requires trust governance sign-off.",
       steps: [
         {
           label: "Connect",
@@ -350,7 +350,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents for hospital operations",
       description:
-        "Operational intelligence, capacity forecasting, and governance for trust-wide decision making. Synthetic patients only in this build.",
+        "Operational intelligence, capacity forecasting, and governance for trust-wide decision making.",
     },
     agents: [
       {
@@ -387,7 +387,7 @@ export const audiencePages = {
     eyebrow: "For research",
     headline: "Evaluate outcomes with governed data access.",
     subline:
-      "Researchers and clinical informatics analysts study cohort metrics, AI-assisted care outcomes, and safety signals with clear governance boundaries. Pseudonymised synthetic cohorts in this build.",
+      "Researchers and clinical informatics analysts study cohort metrics, AI-assisted care outcomes, and safety signals with clear governance boundaries.",
     roles: ["Researcher", "Clinical Informatics", "Health Economist"],
     painSection: {
       label: "The challenge",
@@ -448,7 +448,7 @@ export const audiencePages = {
       sectionTitle: "From cohort definition to outcome evaluation",
       sectionDescription:
         "Four steps for researchers to define study scope, access governed data, evaluate outcomes, and monitor safety signals.",
-      disclaimer: "All cohort metrics in this build use pseudonymised synthetic patients.",
+      disclaimer: "Production research access requires ethics approval and governance sign-off.",
       steps: [
         {
           label: "Define",
@@ -484,7 +484,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents for research and evaluation",
       description:
-        "Cohort analytics, equity analysis, and safety monitoring for clinical informatics research. Synthetic patients only in this build.",
+        "Cohort analytics, equity analysis, and safety monitoring for clinical informatics research.",
     },
     agents: [
       {
@@ -515,13 +515,13 @@ export const audiencePages = {
     ctaPrimary: { label: "Get Started", href: "/signup?role=researcher" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
-      "All cohort metrics in this build use pseudonymised synthetic patients. Production research access requires ethics approval and governance sign-off.",
+      "Production research access requires ethics approval and governance sign-off.",
   },
   patients: {
     eyebrow: "For patients",
     headline: "Your health, understood and supported.",
     subline:
-      "The Health Companion keeps you connected to your care team between appointments. Check-ins, reminders, and secure messaging with clinician oversight. Demo uses synthetic data.",
+      "The Health Companion keeps you connected to your care team between appointments. Check-ins, reminders, and secure messaging with clinician oversight.",
     roles: ["Patient", "Carer"],
     painSection: {
       label: "The challenge",
@@ -582,7 +582,7 @@ export const audiencePages = {
       sectionTitle: "Stay connected to your care team",
       sectionDescription:
         "Four steps for patients to register, check in daily, receive care team review, and manage medications and care plans.",
-      disclaimer: "Demo uses synthetic data. Ask your GP practice if they use Aksh Health.",
+      disclaimer: "Ask your GP practice if they use Aksh Health.",
       steps: [
         {
           label: "Register",
@@ -648,7 +648,7 @@ export const audiencePages = {
     eyebrow: "For practices",
     headline: "Run the practice with clear oversight.",
     subline:
-      "Practice managers and administrators get tenancy controls, integration health views, and compliance evidence scaffolding. Designed for EMIS Web and SystmOne environments. Demo uses synthetic data.",
+      "Practice managers and administrators get tenancy controls, integration health views, and compliance evidence scaffolding. Designed for EMIS Web and SystmOne environments.",
     roles: ["Practice Manager", "Practice Administrator"],
     painSection: {
       label: "The challenge",
@@ -709,7 +709,7 @@ export const audiencePages = {
       sectionTitle: "From practice setup to team governance",
       sectionDescription:
         "Six steps for practice managers to configure tenancy, monitor team performance, and maintain compliance evidence.",
-      disclaimer: "Synthetic demo data. Production tenancy requires practice administrator sign-off.",
+      disclaimer: "Production tenancy requires practice administrator sign-off.",
       steps: [
         {
           label: "Register",
@@ -759,7 +759,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents for practice operations",
       description:
-        "Compliance, safety monitoring, and documentation metrics for practice administrators. Synthetic data in this build.",
+        "Compliance, safety monitoring, and documentation metrics for practice administrators.",
     },
     agents: [
       {
@@ -790,7 +790,7 @@ export const audiencePages = {
     eyebrow: "For ICS",
     headline: "See population health across your integrated care system.",
     subline:
-      "ICS leads and clinical informatics teams get equity metrics, practice benchmarking, and admission forecasts across connected primary and secondary care. Synthetic cohorts in this build.",
+      "ICS leads and clinical informatics teams get equity metrics, practice benchmarking, and admission forecasts across connected primary and secondary care.",
     roles: ["ICS Lead", "Clinical Informatics", "Population Health"],
     painSection: {
       label: "The challenge",
@@ -851,7 +851,7 @@ export const audiencePages = {
       sectionTitle: "From population data to system planning",
       sectionDescription:
         "Four steps for ICS leads to aggregate population metrics, benchmark practices, surface equity gaps, and plan system-wide capacity.",
-      disclaimer: "Aggregate views only by default. Synthetic cohorts in this build.",
+      disclaimer: "Aggregate views only by default.",
       steps: [
         {
           label: "Aggregate",
@@ -887,7 +887,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents for population health",
       description:
-        "Equity analysis, capacity forecasting, and governance for integrated care system leads. Synthetic data in this build.",
+        "Equity analysis, capacity forecasting, and governance for integrated care system leads.",
     },
     agents: [
       {
@@ -924,7 +924,7 @@ export const audiencePages = {
     eyebrow: "For administrators",
     headline: "Keep integrations healthy and governance auditable.",
     subline:
-      "System administrators and clinical informatics leads monitor FHIR pipelines, tenancy boundaries, and SHIELD evidence across connected organisations. Designed for EMIS Web, SystmOne, and Mirth environments. Synthetic data in this build.",
+      "System administrators and clinical informatics leads monitor FHIR pipelines, tenancy boundaries, and SHIELD evidence across connected organisations. Designed for EMIS Web, SystmOne, and Mirth environments.",
     roles: ["System Administrator", "Clinical Informatics", "Integration Lead"],
     painSection: {
       label: "The challenge",
@@ -985,7 +985,7 @@ export const audiencePages = {
       sectionTitle: "From tenancy setup to governed operations",
       sectionDescription:
         "Four steps for system administrators to configure tenancy, monitor integrations, manage access, and maintain audit evidence.",
-      disclaimer: "Synthetic demo data. Production deployment requires organisation governance sign-off.",
+      disclaimer: "Production deployment requires organisation governance sign-off.",
       steps: [
         {
           label: "Configure",
@@ -1021,7 +1021,7 @@ export const audiencePages = {
       label: "AI agents",
       title: "Agents for system administration",
       description:
-        "Compliance, safety configuration, and FHIR pipeline monitoring for technical administrators. Synthetic data in this build.",
+        "Compliance, safety configuration, and FHIR pipeline monitoring for technical administrators.",
     },
     agents: [
       {

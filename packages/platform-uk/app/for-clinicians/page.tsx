@@ -6,7 +6,7 @@ import { audiencePages } from "@/components/marketing/audience/audience-content"
 export const metadata: Metadata = {
   title: "For Clinicians | Aksh Health",
   description:
-    "Clinical copilot for GPs, nurses, and pharmacists. FHIR R4 ready documentation, safety checks, and a single review queue. Demo uses synthetic data.",
+    "Clinical copilot for GPs, nurses, and pharmacists. FHIR R4 ready documentation, safety checks, and a single review queue.",
 };
 
 export default function ForCliniciansPage() {

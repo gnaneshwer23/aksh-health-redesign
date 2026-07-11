@@ -87,7 +87,7 @@ test.describe("Marketing smoke", () => {
     await expect(trustStrip).toBeVisible();
     await expect(trustStrip.getByText("NHS-ready")).toBeVisible();
     await expect(trustStrip.getByText("FHIR R4")).toBeVisible();
-    await expect(trustStrip.getByText("Synthetic-safe demo")).toBeVisible();
+    await expect(trustStrip.getByText("Human-in-the-loop")).toBeVisible();
   });
 
   test("custom 404 page renders branded message", async ({ page }) => {

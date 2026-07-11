@@ -35,10 +35,10 @@ export function VoiceMicPanel({
         <h3>VOICE · consultation capture</h3>
         <span className="pill">SYNTHESIS path</span>
       </div>
-      <p className="meta">Microphone feeds VOICE agent → SYNTHESIS SOAP draft (synthetic ASR).</p>
+      <p className="meta">Microphone feeds VOICE agent, then SYNTHESIS drafts SOAP notes for clinician review.</p>
       <div className="actions" style={{ flexWrap: "wrap" }}>
         <button className="button primary" onClick={injectStubTranscript} type="button">
-          Simulate mic transcript
+          Load sample transcript
         </button>
       </div>
       <AudioRecorder onTranscriptionComplete={handleTranscript} />

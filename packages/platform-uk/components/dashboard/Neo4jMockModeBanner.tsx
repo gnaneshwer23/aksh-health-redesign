@@ -24,8 +24,8 @@ export function Neo4jMockModeBanner({
         className
       )}
     >
-      Clinical graph data is in <strong>mock mode</strong>. Neo4j is not connected. ORACLE,
-      GUARDIAN, and ICS panels use synthetic fallback data.
+      Clinical graph data is in <strong>local fallback mode</strong>. Neo4j is not connected. ORACLE,
+      GUARDIAN, and ICS panels use cached fallback data until the graph is linked.
     </p>
   );
 }

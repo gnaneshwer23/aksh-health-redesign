@@ -25,7 +25,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
         <div className="space-y-2 rounded-md border border-border p-4 text-sm">
           {[
             "[SYNTHESIS] SOAP note: Mrs Johnson, T2D review",
-            "[DrASSIST] I82.4 DVT, 94% confidence",
+            "[Dr.Assist] I82.4 DVT, 94% confidence",
             "[GUARDIAN] 🔴 Aspirin + Apixaban interaction",
           ].map((item) => (
             <div key={item} className="flex items-center justify-between rounded border border-border p-2">
@@ -106,7 +106,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
             "HbA1c threshold triggered → AI detected",
             "Review appointment → Voice agent books",
             "Retinal screening → Referral created",
-            "Medication review → DrASSIST prepared",
+            "Medication review → Dr.Assist prepared",
             "GP approval → Approve All / Review Each",
           ].map((step) => (
             <li key={step}>{step}</li>
@@ -121,7 +121,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
         <ul className="space-y-1 text-sm text-accent">
           {[
             "SYNTHESIS: encounter summarisation active",
-            "DrASSIST: clinical coding active",
+            "Dr.Assist: clinical coding active",
             "GUARDIAN: drug safety active",
             "ORACLE: risk scoring active",
             "VOICE: dictation active",

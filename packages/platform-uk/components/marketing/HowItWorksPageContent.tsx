@@ -55,7 +55,7 @@ const platformStages: Array<{
     icon: ShieldCheck,
     label: "Act",
     title: "Twelve AI agents. One review queue.",
-    body: "SYNTHESIS writes your SOAP note. DrASSIST codes the diagnosis. GUARDIAN checks drug interactions. ORACLE scores patient risk. Everything appears as a draft in your review queue. Nothing writes to the FHIR record until you click Accept.",
+    body: "SYNTHESIS writes your SOAP note. Dr.Assist codes the diagnosis. GUARDIAN checks drug interactions. ORACLE scores patient risk. Everything appears as a draft in your review queue. Nothing writes to the FHIR record until you click Accept.",
   },
   {
     num: "04",

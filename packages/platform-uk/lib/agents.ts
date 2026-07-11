@@ -37,7 +37,7 @@ export const CLINICAL_AGENT_META: Record<
     description: "Encounter narrative → SOAP DocumentReference (draft)."
   },
   DrASSIST: {
-    label: "DrASSIST",
+    label: "Dr.Assist",
     function: "SNOMED / ICD-10 coding",
     description: "Diagnosis suggestions with confidence for GP review."
   },
