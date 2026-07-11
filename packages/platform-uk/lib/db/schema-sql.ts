@@ -1,0 +1,78 @@
+// Auth schema DDL, embedded as string constants rather than read from disk at
+// runtime. Vercel's serverless bundler traces static imports, not dynamic
+// `fs.readFile(path.join(process.cwd(), ...))` calls, so the previous
+// approach (reading db/migrations/*.sql at request time) worked locally but
+// threw ENOENT in production because the .sql files were never bundled into
+// the Lambda.
+//
+// These strings MUST stay in sync with the corresponding files under
+// db/migrations/, which remain the canonical, human-run source (via
+// `psql -f`) and the historical record of each phase's schema change.
+
+export const USERS_PROFILES_SQL = `
+CREATE SCHEMA IF NOT EXISTS aksh;
+
+CREATE TABLE IF NOT EXISTS aksh.users (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON aksh.users (email);
+
+CREATE TABLE IF NOT EXISTS aksh.profiles (
+  user_id TEXT PRIMARY KEY REFERENCES aksh.users (id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'gp',
+  full_name TEXT,
+  onboarding_complete BOOLEAN NOT NULL DEFAULT FALSE,
+  practice_ods TEXT,
+  preferences JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON aksh.profiles (role);
+CREATE INDEX IF NOT EXISTS idx_profiles_onboarding ON aksh.profiles (onboarding_complete);
+`;
+
+export const PASSWORD_RESET_SQL = `
+CREATE SCHEMA IF NOT EXISTS aksh;
+
+CREATE TABLE IF NOT EXISTS aksh.password_reset_tokens (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES aksh.users (id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id
+  ON aksh.password_reset_tokens (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires_at
+  ON aksh.password_reset_tokens (expires_at);
+`;
+
+export const EMAIL_VERIFICATION_SQL = `
+CREATE SCHEMA IF NOT EXISTS aksh;
+
+ALTER TABLE aksh.users
+  ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS aksh.email_verification_tokens (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES aksh.users (id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_user_id
+  ON aksh.email_verification_tokens (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_expires_at
+  ON aksh.email_verification_tokens (expires_at);
+`;

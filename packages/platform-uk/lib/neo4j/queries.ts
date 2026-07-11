@@ -63,6 +63,18 @@ export async function fetchPatientFromGraph(id: string): Promise<Neo4jPatientRes
       ? riskFactorsRaw.split("|").map((s) => s.trim()).filter(Boolean)
       : [];
 
+  const vitals =
+    patient.bloodPressure && patient.heartRate !== undefined && patient.heartRate !== null
+      ? {
+          bloodPressure: asString(patient.bloodPressure),
+          heartRate: asNumber(patient.heartRate),
+          temperature: asNumber(patient.temperature),
+          spo2: asNumber(patient.spo2),
+          respiratoryRate: asNumber(patient.respiratoryRate),
+          recordedAt: asString(patient.vitalsRecordedAt),
+        }
+      : null;
+
   return {
     id: asString(patient.id, id),
     name: asString(patient.name),
@@ -76,6 +88,7 @@ export async function fetchPatientFromGraph(id: string): Promise<Neo4jPatientRes
     medications,
     riskFactors,
     admissionRisk14Days: asNumber(patient.admissionRisk14Days),
+    vitals,
   };
 }
 

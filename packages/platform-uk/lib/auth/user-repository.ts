@@ -1,6 +1,7 @@
 import { hash } from "bcryptjs";
 
 import { getPgPool, isPostgresConfigured } from "@/lib/db/client";
+import { EMAIL_VERIFICATION_SQL, PASSWORD_RESET_SQL, USERS_PROFILES_SQL } from "@/lib/db/schema-sql";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 export type DbUser = {
@@ -221,13 +222,8 @@ export async function completeOnboarding(input: {
 export async function ensureAuthSchema() {
   if (!isPostgresConfigured()) return;
 
-  const { readFile } = await import("node:fs/promises");
-  const path = await import("node:path");
-  const migrations = ["002_users_profiles.sql", "005_password_reset.sql", "006_email_verification.sql"];
-
-  for (const file of migrations) {
-    const migrationPath = path.join(process.cwd(), "db/migrations", file);
-    const sql = await readFile(migrationPath, "utf8");
-    await getPgPool().query(sql);
+  const pool = getPgPool();
+  for (const sql of [USERS_PROFILES_SQL, PASSWORD_RESET_SQL, EMAIL_VERIFICATION_SQL]) {
+    await pool.query(sql);
   }
 }

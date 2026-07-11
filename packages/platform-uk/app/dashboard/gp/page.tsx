@@ -158,6 +158,20 @@ export default function GpDashboardPage() {
                     <p className="mt-1 text-xs font-medium text-warning">
                       14-day admission risk: {oracleData?.admissionRisk14Days ?? patient.digitalTwinPrediction.admissionRisk14Days}%. {(oracleData?.riskFactors ?? patient.digitalTwinPrediction.deteriorationSignals)[0]}
                     </p>
+                    {(() => {
+                      const vitals = oracleData?.vitals ?? patient.vitals ?? null;
+                      if (!vitals) return null;
+                      return (
+                        <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted">
+                          <span>BP {vitals.bloodPressure}</span>
+                          <span>HR {vitals.heartRate} bpm</span>
+                          <span>SpO₂ {vitals.spo2}%</span>
+                          <span>RR {vitals.respiratoryRate}/min</span>
+                          <span>Temp {vitals.temperature}°C</span>
+                          <span className="text-muted/70">Recorded {vitals.recordedAt}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   <RiskScoreBadge score={oracleScore} risk={oracleRisk} size="lg" />
                 </div>

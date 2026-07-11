@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 
 import { getPgPool, isPostgresConfigured } from "@/lib/db/client";
+import { EMAIL_VERIFICATION_SQL } from "@/lib/db/schema-sql";
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -15,11 +16,7 @@ function hashToken(token: string) {
 export async function ensureEmailVerificationSchema() {
   if (!isPostgresConfigured()) return;
 
-  const { readFile } = await import("node:fs/promises");
-  const path = await import("node:path");
-  const migrationPath = path.join(process.cwd(), "db/migrations/006_email_verification.sql");
-  const sql = await readFile(migrationPath, "utf8");
-  await getPgPool().query(sql);
+  await getPgPool().query(EMAIL_VERIFICATION_SQL);
 }
 
 export async function isEmailVerified(userId: string): Promise<boolean> {

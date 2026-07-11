@@ -3,6 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { hash } from "bcryptjs";
 
 import { getPgPool, isPostgresConfigured } from "@/lib/db/client";
+import { PASSWORD_RESET_SQL } from "@/lib/db/schema-sql";
 
 const TOKEN_TTL_MS = 60 * 60 * 1000;
 
@@ -17,11 +18,7 @@ function hashToken(token: string) {
 export async function ensurePasswordResetSchema() {
   if (!isPostgresConfigured()) return;
 
-  const { readFile } = await import("node:fs/promises");
-  const path = await import("node:path");
-  const migrationPath = path.join(process.cwd(), "db/migrations/005_password_reset.sql");
-  const sql = await readFile(migrationPath, "utf8");
-  await getPgPool().query(sql);
+  await getPgPool().query(PASSWORD_RESET_SQL);
 }
 
 export async function createPasswordResetToken(userId: string): Promise<{ token: string; expiresAt: Date }> {

@@ -22,6 +22,16 @@ export type PathwayAutomation = "FullyAutomated" | "SupervisedAutomation" | "Man
 
 export type WardStatus = "Normal" | "Pressured" | "Critical";
 
+export interface PatientVitals {
+  bloodPressure: string;
+  heartRate: number;
+  temperature: number;
+  spo2: number;
+  respiratoryRate: number;
+  recordedAt: string;
+  recordedBy: string;
+}
+
 export interface Patient {
   id: string;
   name: string;
@@ -50,6 +60,7 @@ export interface Patient {
   organisation?: string;
   room?: string;
   lastObsTime?: string;
+  vitals?: PatientVitals;
   equityFlag?: boolean;
 }
 

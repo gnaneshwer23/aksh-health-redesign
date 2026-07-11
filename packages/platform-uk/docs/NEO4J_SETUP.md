@@ -2,6 +2,8 @@
 
 Phase 11 wires ORACLE, GUARDIAN, and ICS population dashboards to a Neo4j graph. Without credentials, APIs fall back to mock data (`X-Data-Source: mock`) and dashboards show a **mock mode** banner.
 
+> **Scope note:** this wires the demo dashboards to a real Neo4j graph database seeded with richer *synthetic* patients — it does not connect to real NHS patient records. Production-grade "real" clinical data requires an EMIS Web / SystmOne FHIR integration, which is a roadmap item, not a config flag. See [`app/integrations/page.tsx`](../app/integrations/page.tsx) and the "Data And Safety Boundary" section of [`README.md`](../README.md).
+
 ## 1. Create AuraDB Free instance
 
 1. Sign in at [https://neo4j.com/cloud/aura/](https://neo4j.com/cloud/aura/)
@@ -21,19 +23,21 @@ Add to `packages/platform-uk/.env.local`:
 NEO4J_URI=neo4j+s://YOUR_INSTANCE.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-generated-password
+# NEO4J_DATABASE=neo4j   # optional — only needed if you use a non-default database name
 ```
 
 ### Vercel production (`0ne-health` project)
 
-In **Vercel → Project → Settings → Environment Variables**, add these three variables for **Production** (and Preview if needed):
+In **Vercel → Project → Settings → Environment Variables**, add these variables for **Production** (and Preview if needed):
 
-| Variable | Example value |
-|----------|---------------|
-| `NEO4J_URI` | `neo4j+s://xxxx.databases.neo4j.io` |
-| `NEO4J_USERNAME` | `neo4j` |
-| `NEO4J_PASSWORD` | *(Aura-generated password — store only in Vercel)* |
+| Variable | Required | Example value |
+|----------|----------|---------------|
+| `NEO4J_URI` | Yes | `neo4j+s://xxxx.databases.neo4j.io` |
+| `NEO4J_USERNAME` | Yes | `neo4j` |
+| `NEO4J_PASSWORD` | Yes | *(Aura-generated password — store only in Vercel)* |
+| `NEO4J_DATABASE` | No | `neo4j` (AuraDB Free always uses the default `neo4j` database, so this is normally unset) |
 
-Redeploy after saving. Until all three are set, production uses mock fallback automatically.
+Redeploy after saving. Until `NEO4J_URI`, `NEO4J_USERNAME`, and `NEO4J_PASSWORD` are all set, production uses mock fallback automatically.
 
 See also [DEPLOYMENT_CONSOLIDATION.md](./DEPLOYMENT_CONSOLIDATION.md) for the full env var checklist.
 
@@ -75,12 +79,14 @@ From `packages/platform-uk`:
 npm run data:seed:neo4j
 ```
 
-The script is idempotent (`MERGE`) and loads:
+The script is idempotent (`MERGE`) and loads, all sourced from `lib/mock-data/` so the graph always mirrors the dashboard fixtures:
 
-- 12 patients (P001–P012) with conditions and medications
+- 12 synthetic patients (P001–P012) with conditions, medications, and observations (BP, heart rate, temperature, SpO₂, respiratory rate) — realistic UK primary-care presentations (heart failure, T2D + DVT, COPD/frailty, antenatal care, etc.), never real patient data
 - Patel **P002** with DVT + T2D, aspirin + apixaban, and `INTERACTS_WITH` (GUARDIAN)
-- Medication interaction edges from `lib/mock-data/medications.ts`
+- Medication interaction edges from `lib/mock-data/medications.ts` (BNF section references and dosing)
 - ICS aggregates and 5 practice benchmarks from `lib/mock-data/population.ts`
+
+If you edit `lib/mock-data/patients.ts` (e.g. to add more synthetic patients), re-run `npm run data:seed:neo4j` to keep the graph in sync — the seed always reads from that file, so there is a single source of truth for demo data whether Neo4j is connected or not.
 
 ### Post-deploy seeding (Aura)
 

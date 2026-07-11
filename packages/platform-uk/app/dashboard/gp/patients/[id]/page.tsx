@@ -39,6 +39,18 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
               <p className="mt-1 text-sm text-muted">
                 {patient.postcode} · Last encounter: {patient.lastEncounterDate}
               </p>
+              {patient.vitals && (
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted">
+                  <span>BP {patient.vitals.bloodPressure}</span>
+                  <span>HR {patient.vitals.heartRate} bpm</span>
+                  <span>SpO₂ {patient.vitals.spo2}%</span>
+                  <span>RR {patient.vitals.respiratoryRate}/min</span>
+                  <span>Temp {patient.vitals.temperature}°C</span>
+                  <span className="text-muted/70">
+                    Recorded {patient.vitals.recordedAt} · {patient.vitals.recordedBy}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex flex-col items-center gap-1">
               <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} size="lg" />

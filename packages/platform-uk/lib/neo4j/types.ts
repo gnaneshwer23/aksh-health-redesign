@@ -2,6 +2,15 @@ import type { OracleRisk, PopulationData } from "@/lib/mock-data/types";
 
 export type GuardianSeverity = "red" | "amber" | "green";
 
+export interface Neo4jPatientVitals {
+  bloodPressure: string;
+  heartRate: number;
+  temperature: number;
+  spo2: number;
+  respiratoryRate: number;
+  recordedAt: string;
+}
+
 export interface Neo4jPatientResponse {
   id: string;
   name: string;
@@ -15,6 +24,7 @@ export interface Neo4jPatientResponse {
   medications: string[];
   riskFactors: string[];
   admissionRisk14Days: number;
+  vitals: Neo4jPatientVitals | null;
 }
 
 export interface Neo4jGuardianInteraction {

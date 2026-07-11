@@ -61,7 +61,13 @@ async function seedPatients(session: Session) {
            p.oracleScore = $oracleScore,
            p.oracleRisk = $oracleRisk,
            p.admissionRisk14Days = $admissionRisk14Days,
-           p.riskFactors = $riskFactors`,
+           p.riskFactors = $riskFactors,
+           p.bloodPressure = $bloodPressure,
+           p.heartRate = $heartRate,
+           p.temperature = $temperature,
+           p.spo2 = $spo2,
+           p.respiratoryRate = $respiratoryRate,
+           p.vitalsRecordedAt = $vitalsRecordedAt`,
       {
         id: patient.id,
         name: patient.name,
@@ -74,6 +80,12 @@ async function seedPatients(session: Session) {
         oracleRisk: patient.oracleRisk,
         admissionRisk14Days: neo4j.int(patient.digitalTwinPrediction.admissionRisk14Days),
         riskFactors: patient.digitalTwinPrediction.deteriorationSignals,
+        bloodPressure: patient.vitals?.bloodPressure ?? null,
+        heartRate: patient.vitals ? neo4j.int(patient.vitals.heartRate) : null,
+        temperature: patient.vitals?.temperature ?? null,
+        spo2: patient.vitals ? neo4j.int(patient.vitals.spo2) : null,
+        respiratoryRate: patient.vitals ? neo4j.int(patient.vitals.respiratoryRate) : null,
+        vitalsRecordedAt: patient.vitals?.recordedAt ?? null,
       }
     );
 
@@ -256,8 +268,9 @@ async function seedPopulationAggregates(session: Session) {
 
 async function run() {
   const { uri, username, password } = getNeo4jConfig();
+  const database = process.env.NEO4J_DATABASE?.trim();
   const driver = neo4j.driver(uri, neo4j.auth.basic(username, password));
-  const session = driver.session();
+  const session = driver.session(database ? { database } : undefined);
 
   try {
     await ensureConstraints(session);

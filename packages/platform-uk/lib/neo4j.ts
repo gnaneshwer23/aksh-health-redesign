@@ -33,7 +33,8 @@ export async function runQuery(
     throw new Error("Neo4j is not configured");
   }
 
-  const session = activeDriver.session();
+  const database = process.env.NEO4J_DATABASE?.trim();
+  const session = activeDriver.session(database ? { database } : undefined);
   try {
     return await session.run(cypher, params);
   } finally {

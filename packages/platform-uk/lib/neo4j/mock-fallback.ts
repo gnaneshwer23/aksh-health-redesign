@@ -38,6 +38,16 @@ export function getMockPatientResponse(id: string): Neo4jPatientResponse | null 
     medications: patient.activeMedications,
     riskFactors: patient.digitalTwinPrediction.deteriorationSignals,
     admissionRisk14Days: patient.digitalTwinPrediction.admissionRisk14Days,
+    vitals: patient.vitals
+      ? {
+          bloodPressure: patient.vitals.bloodPressure,
+          heartRate: patient.vitals.heartRate,
+          temperature: patient.vitals.temperature,
+          spo2: patient.vitals.spo2,
+          respiratoryRate: patient.vitals.respiratoryRate,
+          recordedAt: patient.vitals.recordedAt,
+        }
+      : null,
   };
 }
 
