@@ -33,12 +33,14 @@ export function AgentControlPanel({
   guardianData,
   oracleLoading,
   guardianLoading,
+  className,
 }: {
   patient: Patient | null;
   oracleData?: Neo4jPatientResponse | null;
   guardianData?: Neo4jGuardianResponse | null;
   oracleLoading?: boolean;
   guardianLoading?: boolean;
+  className?: string;
 }) {
   const oracleScore = oracleData?.oracleScore ?? patient?.oracleScore ?? 0;
   const oracleRisk = oracleData?.oracleRisk ?? patient?.oracleRisk ?? "Low";
@@ -47,7 +49,12 @@ export function AgentControlPanel({
     patient?.digitalTwinPrediction.deteriorationSignals ??
     [];
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col gap-3 overflow-y-auto border-l border-border bg-card p-3">
+    <aside
+      className={cn(
+        "flex h-full shrink-0 flex-col gap-3 overflow-y-auto bg-card p-3 lg:w-72 lg:border-l lg:border-border",
+        className
+      )}
+    >
       <Card className="shadow-sm">
         <CardHeader className="p-3 pb-0"><CardTitle className="text-sm flex items-center gap-2"><AgentBadge agent="VOICE" /> VOICE</CardTitle></CardHeader>
         <CardContent className="p-3 flex flex-col items-center gap-2">

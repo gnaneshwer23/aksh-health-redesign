@@ -13,6 +13,7 @@ export function PatientPanel({
   onSearchChange,
   pathwayApprovalCount,
   guardianAlertCount,
+  embedded = false,
 }: {
   patients: Patient[];
   selectedId: string | null;
@@ -21,10 +22,11 @@ export function PatientPanel({
   onSearchChange: (q: string) => void;
   pathwayApprovalCount: number;
   guardianAlertCount: number;
+  /** When true, omit outer aside chrome (parent provides sidebar shell). */
+  embedded?: boolean;
 }) {
-  return (
-    <aside className="flex h-full w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card">
-      <div className="flex-1 space-y-5 overflow-y-auto p-4">
+  const content = (
+    <div className="flex-1 space-y-5 overflow-y-auto p-4">
         <section>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -73,6 +75,15 @@ export function PatientPanel({
           </div>
         </section>
       </div>
+  );
+
+  if (embedded) {
+    return <div className="flex min-h-0 flex-1 flex-col">{content}</div>;
+  }
+
+  return (
+    <aside className="flex h-full w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card">
+      {content}
     </aside>
   );
 }

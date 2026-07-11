@@ -48,13 +48,16 @@ export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
               key={stepId}
               className={cn(
                 "flex h-9 w-9 items-center justify-center rounded-full border text-xs font-semibold transition-all duration-200 shadow-sm",
-                isComplete && "border-accent bg-accent text-accent-foreground",
-                isActive && !isComplete && "border-primary bg-primary text-primary-foreground ring-4 ring-primary/10",
+                isComplete &&
+                  "border-medicom-emerald bg-medicom-emerald text-white",
+                isActive &&
+                  !isComplete &&
+                  "border-medicom-navy bg-medicom-navy text-white ring-4 ring-medicom-navy/15",
                 !isComplete && !isActive && "border-border-subtle bg-card text-muted"
               )}
               title={ONBOARDING_STEP_LABELS[stepId]}
             >
-              {isComplete ? <Check className="h-4 w-4" /> : stepNumber}
+              {isComplete ? <Check className="h-4 w-4" aria-hidden /> : stepNumber}
             </div>
           );
         })}

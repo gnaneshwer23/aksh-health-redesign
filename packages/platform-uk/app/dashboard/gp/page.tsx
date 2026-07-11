@@ -1,16 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { AgentControlPanel } from "@/components/dashboard/AgentControlPanel";
 import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
+import { PatientCard } from "@/components/dashboard/PatientCard";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
+import { Input } from "@/components/ui/input";
 import { useNeo4jGuardian, useNeo4jPatient } from "@/lib/hooks/use-neo4j-clinical";
 import {
   countAwaitingApproval,
@@ -35,6 +37,7 @@ export default function GpDashboardPage() {
   const { selectedPatientId, setSelectedPatient, writtenToRecordToday, reviewQueueItems } = useDashboardStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWritten, setShowWritten] = useState(true);
+  const [mobilePatientsOpen, setMobilePatientsOpen] = useState(true);
 
   const patient = getPatientById(selectedPatientId ?? "P002");
   const { data: oracleData, loading: oracleLoading } = useNeo4jPatient(selectedPatientId ?? patient?.id);
@@ -52,8 +55,51 @@ export default function GpDashboardPage() {
 
   return (
     <DashboardShell role="gp" title="Clinician Dashboard">
-      <div className="flex h-full overflow-hidden">
-        <div className="flex w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card">
+      <div className="flex h-full flex-col overflow-hidden lg:flex-row">
+        {/* Mobile patient strip — collapsible, horizontal scroll */}
+        <div className="shrink-0 border-b border-border-subtle bg-card lg:hidden">
+          <div className="p-3">
+            <ConsentBanner />
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center justify-between border-t border-border-subtle px-4 py-2.5 text-left text-sm font-semibold text-foreground"
+            onClick={() => setMobilePatientsOpen((open) => !open)}
+            aria-expanded={mobilePatientsOpen}
+          >
+            <span>Today&apos;s patients ({displayPatients.length})</span>
+            {mobilePatientsOpen ? (
+              <ChevronUp className="h-4 w-4 text-muted" aria-hidden />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-muted" aria-hidden />
+            )}
+          </button>
+          {mobilePatientsOpen ? (
+            <div className="space-y-3 border-t border-border-subtle p-3">
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none">
+                {displayPatients.map((p) => (
+                  <div key={p.id} className="w-56 shrink-0">
+                    <PatientCard
+                      patient={p}
+                      selected={selectedPatientId === p.id}
+                      onClick={() => setSelectedPatient(p.id)}
+                      showTime
+                    />
+                  </div>
+                ))}
+              </div>
+              <Input
+                className="rounded-xl border-border-subtle bg-surface-muted shadow-none"
+                placeholder="Search by name or NHS number"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        {/* Desktop sidebar */}
+        <div className="hidden w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card lg:flex">
           <div className="p-3">
             <ConsentBanner />
           </div>
@@ -65,10 +111,12 @@ export default function GpDashboardPage() {
             onSearchChange={setSearchQuery}
             pathwayApprovalCount={countAwaitingApproval()}
             guardianAlertCount={guardianCount}
+            embedded
           />
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto bg-background p-5">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+          <div className="flex-1 space-y-5 overflow-y-auto bg-background p-4 sm:p-5">
           {patient && (
             <header className="dashboard-card p-5">
               {clinicalLoading ? (
@@ -123,15 +171,19 @@ export default function GpDashboardPage() {
           </section>
 
           <DigitalTwinPanel patient={patient ?? null} />
-        </div>
+          </div>
 
-        <AgentControlPanel
-          patient={patient ?? null}
-          oracleData={oracleData}
-          guardianData={guardianData}
-          oracleLoading={oracleLoading}
-          guardianLoading={guardianLoading}
-        />
+          <div className="shrink-0 overflow-x-auto bg-card lg:w-72 lg:overflow-y-auto">
+            <AgentControlPanel
+              patient={patient ?? null}
+              oracleData={oracleData}
+              guardianData={guardianData}
+              oracleLoading={oracleLoading}
+              guardianLoading={guardianLoading}
+              className="w-full min-w-[280px] lg:w-72"
+            />
+          </div>
+        </div>
       </div>
     </DashboardShell>
   );

@@ -12,6 +12,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Medicom design reference (Dribbble): navy hero, emerald accents, soft surfaces.
+        // Use medicom.* in marketing/onboarding for brand-consistent polish.
+        medicom: {
+          navy: "#003D7A",
+          emerald: "#006B4F",
+          accent: "#00A86B",
+          surface: "#F7F8FA",
+        },
         primary: {
           DEFAULT: "#003D7A",
           foreground: "#FFFFFF",

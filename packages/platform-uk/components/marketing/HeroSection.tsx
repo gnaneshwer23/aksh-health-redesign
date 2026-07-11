@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-navy-dark">
+    <section className="relative flex min-h-screen items-center overflow-hidden bg-medicom-navy">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:60px_60px] opacity-60" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(0_168_107/0.18),transparent_45%),radial-gradient(circle_at_80%_0%,rgb(0_61_122/0.35),transparent_40%)]" />
 
@@ -13,7 +13,7 @@ export default function HeroSection() {
         </div>
 
         <h1 className="mb-4 text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl">Healthcare Has Data.</h1>
-        <h1 className="mb-8 text-5xl font-bold leading-tight tracking-tight text-emerald md:text-7xl">Now It Has Intelligence.</h1>
+        <h1 className="mb-8 text-5xl font-bold leading-tight tracking-tight text-medicom-accent md:text-7xl">Now It Has Intelligence.</h1>
 
         <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-white/75">
           Aksh Health connects your existing EHR systems — EMIS, SystmOne, Epic — to a network of AI agents
@@ -54,7 +54,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-surface to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-medicom-surface to-transparent" />
     </section>
   );
 }

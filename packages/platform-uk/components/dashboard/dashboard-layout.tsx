@@ -1,3 +1,7 @@
+/**
+ * @deprecated Legacy Phase B shell — superseded by `DashboardShell` + role layouts.
+ * No active imports remain; kept for reference during migration. Do not use in new code.
+ */
 import Link from "next/link";
 import type { ReactNode } from "react";
 

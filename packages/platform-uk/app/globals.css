@@ -254,6 +254,7 @@ input:focus, textarea:focus {
 }
 
 .button.secondary {
+  /* Legacy review/demo routes only — shadcn Button uses variant="secondary" instead */
   background: var(--panel-alt);
   color: var(--ink);
   border: var(--glass-border);
@@ -4755,8 +4756,13 @@ input:focus, textarea:focus {
   text-decoration: none;
 }
 
-.marketing-site a:not([class*="text-"]) {
+/* Preserve explicit link/button colors — avoids white-on-white CTAs on navy heroes */
+.marketing-site a:not([class*="text-"]):not([class*="bg-"]) {
   color: inherit;
+}
+
+.marketing-site a[class*="bg-"]:not([class*="text-"]) {
+  color: #003d7a;
 }
 
 .marketing-site input,

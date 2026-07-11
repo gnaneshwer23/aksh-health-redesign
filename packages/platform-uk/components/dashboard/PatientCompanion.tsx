@@ -90,7 +90,7 @@ export function PatientCompanion() {
   return (
     <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} className="w-full">
-        <TabsList className="flex h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl bg-muted/40 p-1 scrollbar-none lg:grid lg:grid-cols-5 lg:overflow-visible">
+        <TabsList className="flex h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto rounded-xl bg-muted/40 p-1 scrollbar-none lg:grid lg:grid-cols-5 lg:overflow-visible">
           <TabsTrigger value="health" className="shrink-0 min-w-[4.75rem] text-xs sm:text-sm">
             My Health
           </TabsTrigger>

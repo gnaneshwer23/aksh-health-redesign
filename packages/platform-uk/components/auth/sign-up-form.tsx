@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { AuthCardLayout } from "@/components/auth/auth-card-layout";
+import { RoleTile } from "@/components/onboarding/RoleTile";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,13 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { signUpSchema, type SignUpInput } from "@/lib/auth/schemas";
 import { ROLES, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
 
@@ -89,7 +83,7 @@ function SignUpFormInner() {
       footer={
         <p className="text-center text-sm text-muted">
           Already have an account?{" "}
-          <Link href="/signin" className="font-semibold text-primary hover:underline">
+          <Link href="/signin" className="font-semibold text-medicom-navy hover:underline">
             Sign in
           </Link>
         </p>
@@ -136,21 +130,19 @@ function SignUpFormInner() {
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
+                <FormLabel>Your role</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-2 gap-3">
                     {ROLES.map((role) => (
-                      <SelectItem key={role.id} value={role.id}>
-                        {role.label}
-                      </SelectItem>
+                      <RoleTile
+                        key={role.id}
+                        role={role}
+                        selected={field.value === role.id}
+                        onSelect={() => field.onChange(role.id)}
+                      />
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -186,7 +178,8 @@ function SignUpFormInner() {
 
           <Button
             type="submit"
-            className="w-full rounded-xl bg-accent hover:bg-accent/90"
+            variant="accent"
+            className="w-full rounded-xl"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? "Creating account…" : "Create account"}

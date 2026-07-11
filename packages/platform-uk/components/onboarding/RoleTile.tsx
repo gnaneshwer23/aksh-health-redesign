@@ -3,6 +3,7 @@
 import {
   BarChart3,
   Building2,
+  Check,
   HeartPulse,
   Microscope,
   Network,
@@ -38,13 +39,21 @@ export function RoleTile({ role, selected, onSelect }: RoleTileProps) {
     <button
       type="button"
       onClick={onSelect}
+      aria-pressed={selected}
       className={cn(
-        "flex w-full flex-col items-start gap-3 rounded-lg border bg-card p-4 text-left shadow-sm transition-all duration-200 hover:border-primary/40",
-        selected ? "border-primary ring-2 ring-primary/20" : "border-border"
+        "relative flex w-full flex-col items-start gap-3 rounded-2xl border bg-card p-4 text-left shadow-sm transition-all duration-200 hover:border-medicom-navy/40",
+        selected
+          ? "border-medicom-navy ring-2 ring-medicom-navy/20"
+          : "border-border"
       )}
     >
+      {selected ? (
+        <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-medicom-emerald text-white">
+          <Check className="h-3 w-3" aria-hidden />
+        </span>
+      ) : null}
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-md text-white"
+        className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
         style={{ backgroundColor: role.color }}
       >
         <Icon className="h-5 w-5" />
