@@ -4,18 +4,19 @@ const footerColumns = [
   {
     title: "Platform",
     links: [
-      { label: "How It Works", href: "/#how-it-works" },
+      { label: "Home", href: "/" },
       { label: "Architecture", href: "/platform" },
       { label: "Documentation", href: "/docs" },
+      { label: "Demo", href: "/demo" },
     ],
   },
   {
     title: "Solutions",
     links: [
-      { label: "For Clinicians", href: "/platform#clinicians" },
+      { label: "For Clinicians", href: "/for-clinicians" },
+      { label: "For Administrators", href: "/for-administrators" },
       { label: "For Hospitals", href: "/platform#hospitals" },
       { label: "For Patients", href: "/platform#patients" },
-      { label: "For Administrators", href: "/platform#administrators" },
     ],
   },
   {
@@ -24,6 +25,7 @@ const footerColumns = [
       { label: "Get Started", href: "/get-started" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Contact", href: "/contact" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ] as const;
@@ -41,8 +43,8 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">Aksh Health</span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-white/60">
-              Clinical AI for NHS primary and secondary care. Connects your existing systems to specialist agents with
-              clinician approval on every output.
+              Clinical AI workflow for UK primary and secondary care. Synthetic-safe proof environment
+              with FHIR R4 staging and clinician approval on every output.
             </p>
           </div>
 
@@ -67,7 +69,7 @@ export default function Footer() {
             © 2026 Aksh Health Ltd · Registered in England & Wales · NHS DCB0129 Safety Case In Progress
           </p>
           <div className="flex flex-wrap gap-2">
-            {["DCB0129", "DTAC", "FHIR R4", "NHS CIS2", "UK GDPR"].map((badge) => (
+            {["NHS-ready", "FHIR R4", "GDPR Art. 9", "MHRA-aware", "UK GDPR"].map((badge) => (
               <span key={badge} className="rounded border border-white/10 px-2.5 py-1 text-xs text-white/40">
                 {badge}
               </span>

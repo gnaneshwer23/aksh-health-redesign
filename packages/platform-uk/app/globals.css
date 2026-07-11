@@ -403,6 +403,7 @@ input:focus, textarea:focus {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+  overflow-x: hidden;
   padding: 28px;
   color: #171012;
   background:
@@ -4750,6 +4751,7 @@ input:focus, textarea:focus {
   color: #2d3748;
   font-family: Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 .marketing-site a {

@@ -101,6 +101,37 @@ Onboarding-only test user: `onboarding@demo.akshhealth.com`.
 
 ---
 
+## F01 Homepage & Landing Pages (akshhealth 2031)
+
+Source: `F01_QA_Homepage_Landing_Pages.docx` (18 checks). Live-product positioning; `/pilot` redirects to `/get-started`.
+
+| Check | Requirement | Status | Automation |
+|---|---|---|---|
+| F01-01 | Homepage performance (lean bundle, lazy sections) | Pass | `app/page.tsx` dynamic `ProductLanding`; manual Lighthouse |
+| F01-02 | Hero headline + CTAs (`/demo`, `/dashboard/gp`) | Pass | `e2e/marketing.spec.ts`, `product-landing.tsx` |
+| F01-03 | Navbar links (no 404) | Pass | `Navbar.tsx`, `e2e/marketing.spec.ts` |
+| F01-04 | **Open app** → `/dashboard` | Pass | `Navbar.tsx`, middleware auth redirect |
+| F01-05 | Trust strip: NHS-ready · FHIR R4 · GDPR Art. 9 · MHRA-aware | Pass | `product-landing.tsx` hero pills + trust strip |
+| F01-06 | Synthetic-Safe Environment; soften live EHR claims on homepage | Pass | `product-landing.tsx`, `Footer.tsx` |
+| F01-07 | Cockpit widget rows (DOAC, Benchmark, High-Risk, Evidence) | Pass | `product-landing.tsx` `cockpitRows` |
+| F01-08 | Stats: 56 surfaces, 7 scenarios, 4 layers, 3 roles | Pass | `product-landing.tsx` `proofStats` |
+| F01-09 | Four capabilities section | Pass | `product-landing.tsx` `capabilities` |
+| F01-10 | `/for-clinicians` dedicated page | Pass | `app/for-clinicians/page.tsx`, `smoke:public` |
+| F01-11 | `/for-administrators` dedicated page | Pass | `app/for-administrators/page.tsx`, `smoke:public` |
+| F01-12 | `/get-started` organisation onboarding | Pass | `app/get-started/`, redirect `/pilot` |
+| F01-13 | 3-step form + success copy (3 working days) | Pass | `GetStartedPageClient.tsx` |
+| F01-14 | `/docs` works | Pass | `smoke:public`, `app/docs/page.tsx` |
+| F01-15 | Footer compliance + working links | Pass | `Footer.tsx` |
+| F01-16 | Unique title + meta on `/`, `/for-clinicians`, `/get-started` | Pass | page `metadata` exports |
+| F01-17 | Custom `app/not-found.tsx` | Pass | `e2e/marketing.spec.ts` |
+| F01-18 | Mobile hamburger @ 390px, no horizontal scroll | Pass | `e2e/marketing.spec.ts` mobile viewport |
+
+**Nav structure (desktop):** Product · Clinicians · Administrators · Organisations · Docs · (xl) Roles · Clinician Dashboard · Demo · Sign in · Open app
+
+**Sample URLs:** `/`, `/for-clinicians`, `/for-administrators`, `/get-started`, `/docs`, `/demo`, `/dashboard/gp`
+
+---
+
 ## CI
 
 GitHub Actions workflow: `.github/workflows/e2e.yml`
