@@ -21,7 +21,23 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-generated-password
 ```
 
-For Vercel production, add the same three variables in the project settings. Until they are set, production uses mock fallback automatically.
+For Vercel production, add the same three variables in the project settings (see [DEPLOYMENT_CONSOLIDATION.md](./DEPLOYMENT_CONSOLIDATION.md)). Until they are set, production uses mock fallback automatically.
+
+### Health check
+
+Authenticated clients can verify connectivity:
+
+```http
+GET /api/neo4j/health
+```
+
+Response:
+
+```json
+{ "connected": true, "mode": "live" }
+```
+
+When credentials are missing or Aura is unreachable, `connected` is `false` and `mode` is `mock`. Clinical APIs continue to serve mock data with `X-Data-Source: mock`.
 
 ## 3. Seed the graph
 

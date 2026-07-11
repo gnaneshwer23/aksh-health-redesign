@@ -112,6 +112,11 @@ async function run() {
   await assertFileIncludes("components/review/governance-pack-page.tsx", "DCB0129-Style Safety File Placeholders");
   await assertFileIncludes("components/review/governance-pack-page.tsx", "Role And Action Permission Matrix");
   await assertFileIncludes("package.json", "\"data:seed\"");
+  await assertFileIncludes("package.json", "\"data:seed:neo4j\"");
+  await assertFileIncludes("app/api/neo4j/health/route.ts", "checkNeo4jHealth");
+  await assertFileIncludes("app/api/profile/route.ts", "buildUserProfile");
+  await assertFileIncludes("lib/hooks/use-user-profile.ts", "useUserProfile");
+  await assertFileIncludes("components/dashboard/TopBar.tsx", "useUserProfile");
   await assertFileIncludes("package.json", "\"data:reset\"");
   await assertFileIncludes("package.json", "\"data:audit-integrity\"");
   await assertFileIncludes("app/api/system/audit-integrity/route.ts", "deriveAuditIntegrityReport");

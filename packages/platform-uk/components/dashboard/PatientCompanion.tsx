@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
   getPatientCompanionProfile,
   getPatientFirstName,
@@ -45,13 +46,15 @@ const MOCK_RESPONSES: Record<string, string> = {
 
 export function PatientCompanion() {
   const { data: session } = useSession();
+  const { profile: userProfile } = useUserProfile();
   const identity = useOnboardingStore((state) => state.identity);
-  const profile = useMemo(
-    () => getPatientCompanionProfile(session, identity),
-    [session, identity]
+  const profileIdentity = userProfile?.identity ?? identity;
+  const companionProfile = useMemo(
+    () => getPatientCompanionProfile(session, profileIdentity, userProfile?.fullName),
+    [session, profileIdentity, userProfile?.fullName]
   );
-  const firstName = getPatientFirstName(session, identity);
-  const greeting = getPatientGreeting(session, identity);
+  const firstName = getPatientFirstName(session, profileIdentity, userProfile?.fullName);
+  const greeting = getPatientGreeting(session, profileIdentity, userProfile?.fullName);
 
   const [activeTab, setActiveTab] = useState<TabValue>("health");
   const [checkInStep, setCheckInStep] = useState(0);
@@ -115,7 +118,7 @@ export function PatientCompanion() {
               <p className="mt-1 text-sm text-muted">Here&apos;s your health today.</p>
             </CardContent>
           </Card>
-          {profile.conditions.map((condition) => (
+          {companionProfile.conditions.map((condition) => (
             <Card key={condition.title} className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-base">{condition.title}</CardTitle>
@@ -134,7 +137,7 @@ export function PatientCompanion() {
               <CardTitle className="text-base">Your medications today</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {profile.medications.map((med) => {
+              {companionProfile.medications.map((med) => {
                 const medKey = `${med.label} — ${med.schedule}`;
                 return (
                   <div key={medKey} className="flex items-center justify-between gap-2 text-sm">
@@ -156,7 +159,7 @@ export function PatientCompanion() {
               <CardTitle className="text-base">My Care Team</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              {profile.careTeam.map((member) => (
+              {companionProfile.careTeam.map((member) => (
                 <p key={member.role}>
                   {member.role}: {member.name}
                 </p>
@@ -188,7 +191,7 @@ export function PatientCompanion() {
                 </div>
               ))}
               <p className="text-xs text-accent">
-                Shared with care team — reviewed by {profile.nurseReviewer} at 10:32
+                Shared with care team — reviewed by {companionProfile.nurseReviewer} at 10:32
               </p>
             </CardContent>
           </Card>
@@ -239,7 +242,7 @@ export function PatientCompanion() {
 
         <TabsContent value="medications" className="mt-4">
           <Card className="space-y-4 p-4 shadow-sm">
-            {profile.medications.map((med) => (
+            {companionProfile.medications.map((med) => (
               <div key={med.label}>
                 <p className="text-sm font-medium">{med.label}</p>
                 <p className="text-xs text-muted">{med.purpose}</p>
@@ -270,11 +273,11 @@ export function PatientCompanion() {
         <TabsContent value="appointments" className="mt-4 space-y-4">
           <Card className="p-4 shadow-sm">
             <p className="text-sm font-medium">Upcoming</p>
-            <p className="mt-2 text-sm">{profile.upcomingAppointment}</p>
+            <p className="mt-2 text-sm">{companionProfile.upcomingAppointment}</p>
           </Card>
           <Card className="p-4 shadow-sm">
             <p className="text-sm font-medium">Past appointments</p>
-            <p className="mt-2 text-xs text-muted">{profile.pastAppointmentSummary}</p>
+            <p className="mt-2 text-xs text-muted">{companionProfile.pastAppointmentSummary}</p>
           </Card>
         </TabsContent>
 

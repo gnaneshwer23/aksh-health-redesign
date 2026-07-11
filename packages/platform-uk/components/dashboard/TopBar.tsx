@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Bell, Menu, Search } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -10,6 +10,7 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { searchPatients } from "@/lib/mock-data";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
@@ -39,20 +40,23 @@ export function TopBar({
   role,
   title,
   hideSearch,
+  organisation,
 }: {
   role: DashboardRole;
   title?: string;
   hideSearch?: boolean;
+  organisation?: string | null;
 }) {
-  const { data: session } = useSession();
+  const { profile, loading, greeting } = useUserProfile();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ReturnType<typeof searchPatients>>([]);
   const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } = useDashboardStore();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const isPatientView = role === "patient";
   const showSearch = !hideSearch && !isPatientView;
+  const resolvedOrganisation = organisation ?? profile?.organisation ?? null;
   const headerTitle = isPatientView ? title ?? "My Health" : title;
-  const displayName = session?.user?.name ?? session?.user?.email ?? "Aksh user";
+  const displayName = profile?.fullName?.trim() || "Aksh user";
   const initials = displayName
     .split(" ")
     .map((part) => part[0])
@@ -79,9 +83,15 @@ export function TopBar({
           {headerTitle && (
             <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
               {isPatientView ? headerTitle : `· ${headerTitle}`}
+              {!isPatientView && resolvedOrganisation ? ` — ${resolvedOrganisation}` : ""}
             </span>
           )}
         </div>
+        {!isPatientView && (
+          <p className="hidden text-xs text-muted lg:block">
+            {loading ? <span className="inline-block h-3 w-40 animate-pulse rounded bg-muted/30" /> : greeting}
+          </p>
+        )}
         {showSearch ? (
           <div className="relative mx-auto hidden max-w-md flex-1 md:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -133,9 +143,11 @@ export function TopBar({
           </button>
           <div className="hidden items-center gap-2 sm:flex">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white shadow-sm">
-              {initials}
+              {loading ? "…" : initials}
             </span>
-            <span className="text-sm font-medium">{displayName}</span>
+            <span className="text-sm font-medium">
+              {loading ? <span className="inline-block h-4 w-24 animate-pulse rounded bg-muted/30" /> : displayName}
+            </span>
           </div>
           <button
             type="button"

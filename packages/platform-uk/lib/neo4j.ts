@@ -47,3 +47,26 @@ export async function closeNeo4jDriver(): Promise<void> {
     driver = null;
   }
 }
+
+export type Neo4jHealthStatus = {
+  connected: boolean;
+  mode: "live" | "mock";
+};
+
+/** Verify Aura connectivity when env vars are present; otherwise report mock mode. */
+export async function checkNeo4jHealth(): Promise<Neo4jHealthStatus> {
+  if (!isNeo4jConfigured()) {
+    return { connected: false, mode: "mock" };
+  }
+
+  try {
+    const activeDriver = getNeo4jDriver();
+    if (!activeDriver) {
+      return { connected: false, mode: "mock" };
+    }
+    await activeDriver.verifyConnectivity();
+    return { connected: true, mode: "live" };
+  } catch {
+    return { connected: false, mode: "mock" };
+  }
+}

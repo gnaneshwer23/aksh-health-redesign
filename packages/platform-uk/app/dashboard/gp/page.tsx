@@ -14,6 +14,7 @@ import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Input } from "@/components/ui/input";
 import { useNeo4jGuardian, useNeo4jPatient } from "@/lib/hooks/use-neo4j-clinical";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
   countAwaitingApproval,
   getPatientById,
@@ -21,6 +22,7 @@ import {
   searchPatients,
   todaysAppointments,
 } from "@/lib/mock-data";
+import { filterGpPatients } from "@/lib/profile/personalization";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function HeaderSkeleton() {
@@ -35,16 +37,24 @@ function HeaderSkeleton() {
 
 export default function GpDashboardPage() {
   const { selectedPatientId, setSelectedPatient, writtenToRecordToday, reviewQueueItems } = useDashboardStore();
+  const { profile } = useUserProfile();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWritten, setShowWritten] = useState(true);
   const [mobilePatientsOpen, setMobilePatientsOpen] = useState(true);
 
-  const patient = getPatientById(selectedPatientId ?? "P002");
+  const scopedAppointments = useMemo(
+    () => filterGpPatients(todaysAppointments, profile?.fullName),
+    [profile?.fullName]
+  );
+  const patient = getPatientById(selectedPatientId ?? scopedAppointments[0]?.id ?? "P002");
   const { data: oracleData, loading: oracleLoading } = useNeo4jPatient(selectedPatientId ?? patient?.id);
   const { data: guardianData, loading: guardianLoading } = useNeo4jGuardian(selectedPatientId ?? patient?.id);
 
-  const searchResults = useMemo(() => (searchQuery ? searchPatients(searchQuery) : []), [searchQuery]);
-  const displayPatients = searchResults.length > 0 ? searchResults : todaysAppointments;
+  const searchResults = useMemo(() => {
+    const results = searchQuery ? searchPatients(searchQuery) : [];
+    return results.length > 0 ? filterGpPatients(results, profile?.fullName) : [];
+  }, [searchQuery, profile?.fullName]);
+  const displayPatients = searchResults.length > 0 ? searchResults : scopedAppointments;
   const pathways = patient ? getPathwaysForPatient(patient.id) : [];
   const guardianCount = reviewQueueItems.filter((r) => r.agentType === "GUARDIAN" && (r.status === "Pending" || r.status === "Edited")).length;
 

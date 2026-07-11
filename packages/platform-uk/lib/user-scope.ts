@@ -136,18 +136,25 @@ export async function requireAuthenticatedUserScope(request?: Request) {
     };
   }
 
-  const session = await getServerSession(authOptions);
-  const context = resolveAuthenticatedUserScopeFromSession(session);
+  try {
+    const session = await getServerSession(authOptions);
+    const context = resolveAuthenticatedUserScopeFromSession(session);
 
-  if (!context) {
+    if (!context) {
+      return {
+        context: null,
+        response: ServerNextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      };
+    }
+
+    return {
+      context,
+      response: null,
+    };
+  } catch {
     return {
       context: null,
       response: ServerNextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
-
-  return {
-    context,
-    response: null,
-  };
 }

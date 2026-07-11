@@ -31,7 +31,7 @@
     "lint": "npm run typecheck",
     "typecheck": "tsc -p tsconfig.verify.json --pretty false",
     "verify": "npm run test:workflow && npm run typecheck",
-    "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.test.js && node .tmp-tests/tests/api-contracts.test.js && node .tmp-tests/tests/integration-boundary.test.js && node .tmp-tests/tests/readonly-route-contracts.test.js && node .tmp-tests/tests/repository-parity.test.js && node .tmp-tests/tests/export-mapping.test.js && node .tmp-tests/tests/route-smoke.test.js"
+    "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.test.js && node .tmp-tests/tests/api-contracts.test.js && node .tmp-tests/tests/integration-boundary.test.js && node .tmp-tests/tests/readonly-route-contracts.test.js && node .tmp-tests/tests/repository-parity.test.js && node .tmp-tests/tests/export-mapping.test.js && node .tmp-tests/tests/phase-d-api.test.js && node .tmp-tests/tests/route-smoke.test.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

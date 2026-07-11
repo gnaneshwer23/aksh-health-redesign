@@ -17,16 +17,18 @@ export function DashboardShell({
   children,
   hideSidebar,
   hideSearch,
+  organisation,
 }: {
   role: DashboardRole;
   title?: string;
   children: ReactNode;
   hideSidebar?: boolean;
   hideSearch?: boolean;
+  organisation?: string | null;
 }) {
   return (
     <div className={cn("dashboard-root dashboard-surface flex h-screen flex-col overflow-hidden")}>
-      <TopBar role={role} title={title} hideSearch={hideSearch} />
+      <TopBar role={role} title={title} hideSearch={hideSearch} organisation={organisation} />
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar role={role} />}
         <main className="flex flex-1 flex-col overflow-hidden">{children}</main>

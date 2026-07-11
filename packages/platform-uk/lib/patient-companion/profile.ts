@@ -40,10 +40,21 @@ function readIdentityString(identity: IdentityData | undefined, key: string) {
 
 export function getPatientFirstName(
   session: Session | null,
-  identity?: IdentityData
+  identity?: IdentityData,
+  profileFullName?: string | null
 ): string {
   const onboardingFirst = readIdentityString(identity, "firstName");
   if (onboardingFirst) return onboardingFirst;
+
+  const profileName = profileFullName?.trim();
+  if (profileName) {
+    const parts = profileName.split(/\s+/);
+    const honorifics = new Set(["mr", "mrs", "ms", "miss", "dr", "prof"]);
+    if (parts.length > 1 && honorifics.has(parts[0].toLowerCase().replace(/\./g, ""))) {
+      return parts[1];
+    }
+    return parts[0];
+  }
 
   const sessionName = session?.user?.name?.trim();
   if (sessionName) {
@@ -58,23 +69,29 @@ export function getPatientFirstName(
   return "there";
 }
 
-export function getPatientGreeting(session: Session | null, identity?: IdentityData) {
-  const firstName = getPatientFirstName(session, identity);
+export function getPatientGreeting(
+  session: Session | null,
+  identity?: IdentityData,
+  profileFullName?: string | null
+) {
+  const firstName = getPatientFirstName(session, identity, profileFullName);
   return `${getTimeGreeting()}, ${firstName}.`;
 }
 
 export function getPatientCompanionProfile(
   session: Session | null,
-  identity?: IdentityData
+  identity?: IdentityData,
+  profileFullName?: string | null
 ): PatientCompanionProfile {
-  const firstName = getPatientFirstName(session, identity);
+  const firstName = getPatientFirstName(session, identity, profileFullName);
   const sessionName = session?.user?.name?.trim();
+  const profileName = profileFullName?.trim();
   const onboardingFirst = readIdentityString(identity, "firstName");
   const onboardingLast = readIdentityString(identity, "lastName");
   const displayName =
     onboardingFirst && onboardingLast
       ? `${onboardingFirst} ${onboardingLast}`
-      : sessionName ?? firstName;
+      : profileName ?? sessionName ?? firstName;
 
   const linkedRecord =
     session?.user?.email?.toLowerCase() === DEMO_PATIENT_EMAIL

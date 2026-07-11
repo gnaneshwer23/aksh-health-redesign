@@ -6,14 +6,17 @@ import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IcsDataProvider, useIcsData } from "@/components/dashboard/ics/IcsDataContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function IcsLayoutHeader({ children }: { children: ReactNode }) {
   const { icsDateRange, setIcsDateRange } = useDashboardStore();
   const { data } = useIcsData();
+  const { profile } = useUserProfile();
+  const icsTitle = profile?.organisation ?? data.icsName;
 
   return (
-    <DashboardShell role="ics" title={data.icsName}>
+    <DashboardShell role="ics" title={icsTitle} organisation={profile?.organisation}>
       <div className="overflow-y-auto p-4 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <ConsentBanner className="flex-1" />

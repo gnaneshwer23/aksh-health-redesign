@@ -6,6 +6,8 @@ import { authConfig, isClinicalOAuthConfigured } from "./auth/config";
 import { DEMO_USER_SEEDS } from "./auth/demo-users";
 import { nextAuthSecret } from "./auth-secret";
 import type { UserRole } from "./onboarding/roles";
+import type { IdentityData, OrganisationData } from "./onboarding/validation";
+import { resolveOrganisationName } from "./profile/personalization";
 
 const defaultDemoPasswordHash = "$2b$10$6iKQv2GujEgJKB9Auy8dK.clvty6jJfEGd.lZHML8BrjngJYLF7M6";
 
@@ -102,6 +104,32 @@ async function resolveCredentialsUser(email: string, password: string) {
   };
 }
 
+async function enrichTokenFromProfile(
+  userId: string,
+  role: UserRole,
+  fallbackName?: string | null
+): Promise<{ name: string | null; organisation: string | null }> {
+  try {
+    const { findProfileByUserId } = await import("./auth/user-repository");
+    const { getOnboardingProgress } = await import("./onboarding/onboarding-progress-repository");
+    const profile = await findProfileByUserId(userId);
+    const onboarding = await getOnboardingProgress(userId);
+    const identity = (onboarding?.identity ?? {}) as IdentityData;
+    const organisationDetails = (onboarding?.organisation ?? {}) as OrganisationData;
+    const resolvedRole = profile?.role ?? onboarding?.role ?? role;
+
+    return {
+      name: profile?.fullName ?? fallbackName ?? null,
+      organisation: resolveOrganisationName(resolvedRole, profile, identity, organisationDetails),
+    };
+  } catch {
+    return {
+      name: fallbackName ?? null,
+      organisation: null,
+    };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     ...oauthProviders,
@@ -144,6 +172,10 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.role = user.role;
         token.onboardingComplete = user.onboardingComplete ?? false;
+
+        const enriched = await enrichTokenFromProfile(user.id, user.role, user.name);
+        token.name = enriched.name ?? user.name;
+        token.organisation = enriched.organisation;
       }
 
       if (trigger === "update" && session) {
@@ -152,6 +184,12 @@ export const authOptions: NextAuthOptions = {
         }
         if (typeof session.onboardingComplete === "boolean") {
           token.onboardingComplete = session.onboardingComplete;
+        }
+        if (session.name) {
+          token.name = session.name;
+        }
+        if (session.organisation) {
+          token.organisation = session.organisation;
         }
       }
 
@@ -164,6 +202,8 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string;
         session.user.role = token.role as UserRole;
         session.user.onboardingComplete = Boolean(token.onboardingComplete);
+        session.user.name = (token.name as string | null | undefined) ?? session.user.name;
+        session.user.organisation = (token.organisation as string | null | undefined) ?? null;
       }
       return session;
     },

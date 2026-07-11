@@ -12,13 +12,19 @@ import { PilotApplicationsPanel } from "@/components/dashboard/PilotApplications
 import { UrgentGuardianAlertsPanel, getUrgentGuardianAlertCount } from "@/components/dashboard/UrgentGuardianAlertsPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { countAwaitingApproval } from "@/lib/mock-data";
 
 export default function AdminDashboardPage() {
   const guardianCount = getUrgentGuardianAlertCount();
+  const { profile } = useUserProfile();
 
   return (
-    <DashboardShell role="admin" title="Practice Manager">
+    <DashboardShell
+      role="admin"
+      title="Practice Manager"
+      organisation={profile?.organisation}
+    >
       <div className="space-y-6 overflow-y-auto p-4">
         <ConsentBanner />
 

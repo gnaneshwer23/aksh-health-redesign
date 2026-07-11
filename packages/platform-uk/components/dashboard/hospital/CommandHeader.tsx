@@ -5,9 +5,16 @@ import { useEffect, useState } from "react";
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
 import type { HospitalData } from "@/lib/mock-data/types";
 
-export function CommandHeader({ data }: { data: HospitalData }) {
+export function CommandHeader({
+  data,
+  hospitalName,
+}: {
+  data: HospitalData;
+  hospitalName?: string;
+}) {
   const [time, setTime] = useState(new Date());
   const bedPct = calcBedOccupancyPct(data);
+  const displayName = hospitalName ?? data.hospitalName;
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 60000);
@@ -18,7 +25,7 @@ export function CommandHeader({ data }: { data: HospitalData }) {
     <div className="bg-primary text-white px-4 py-3 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold">Hospital Command Centre — {data.hospitalName}</h1>
+          <h1 className="text-lg font-semibold">Hospital Command Centre — {displayName}</h1>
           <p className="text-xs opacity-80">{time.toLocaleString("en-GB")}</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
