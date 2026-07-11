@@ -32,6 +32,8 @@ test.describe("Marketing smoke", () => {
     await expect(mobileNav.getByRole("link", { name: "Clinicians" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Practices" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Patients" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Security" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Integrations" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Docs" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
@@ -63,5 +65,19 @@ test.describe("Marketing smoke", () => {
 
     await page.goto("/for-patients");
     await expect(page.getByRole("heading", { name: /Your health, understood and supported/i })).toBeVisible();
+  });
+
+  test("security and integrations pages load with expected headings", async ({ page }) => {
+    await page.goto("/security");
+    await expect(
+      page.getByRole("heading", { name: /Data protection and clinical safety for NHS deployments/i })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /GDPR Art\. 9 special category data/i })).toBeVisible();
+
+    await page.goto("/integrations");
+    await expect(
+      page.getByRole("heading", { name: /Integration-ready architecture for NHS care settings/i })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /FHIR R4 resources/i })).toBeVisible();
   });
 });

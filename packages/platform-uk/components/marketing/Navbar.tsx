@@ -16,6 +16,8 @@ const solutionLinks = [
   ["Clinicians", "/for-clinicians"],
   ["Practices", "/for-practices"],
   ["Patients", "/for-patients"],
+  ["Security", "/security"],
+  ["Integrations", "/integrations"],
 ] as const;
 
 export default function Navbar() {

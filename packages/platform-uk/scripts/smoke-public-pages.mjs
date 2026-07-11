@@ -6,6 +6,8 @@ const pages = [
   { path: "/for-clinicians", text: "Spend time with patients, not paperwork." },
   { path: "/for-practices", text: "Run the practice with clear oversight." },
   { path: "/for-patients", text: "Your health, understood and supported." },
+  { path: "/security", text: "Data protection and clinical safety for NHS deployments." },
+  { path: "/integrations", text: "Integration-ready architecture for NHS care settings." },
   { path: "/signup", text: "Choose your role" },
   { path: "/get-started", text: "Get your organisation set up" },
   { path: "/onboarding", text: "Choose your role. Start with the right work." },
