@@ -154,6 +154,18 @@ export const authOptions: NextAuthOptions = {
         if (typeof session.isEmailVerified === "boolean") {
           token.isEmailVerified = session.isEmailVerified;
         }
+
+        if (session.onboardingComplete === true && token.id) {
+          const { findProfileByUserId } = await import("./auth/user-repository");
+          const profile = await findProfileByUserId(token.id as string);
+          if (profile) {
+            token.onboardingComplete = profile.onboardingComplete;
+            token.role = profile.role;
+            if (profile.fullName) {
+              token.name = profile.fullName;
+            }
+          }
+        }
       }
 
       return token;

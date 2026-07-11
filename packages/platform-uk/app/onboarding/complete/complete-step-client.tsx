@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -8,12 +7,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { SandboxPreview } from "@/components/onboarding/SandboxPreview";
-import { getRoleDefinition, resolveDashboardPath } from "@/lib/onboarding/roles";
+import { useToast } from "@/components/ui/use-toast";
+import { resolvePostAuthRedirect } from "@/lib/auth/redirects";
+import { getRoleDefinition } from "@/lib/onboarding/roles";
 import { markOnboardingComplete, useOnboardingStore } from "@/lib/onboarding/store";
 
 export function CompleteStepClient() {
   const router = useRouter();
   const { update } = useSession();
+  const { toast } = useToast();
   const role = useOnboardingStore((s) => s.role);
   const identity = useOnboardingStore((s) => s.identity);
   const organisation = useOnboardingStore((s) => s.organisation);
@@ -22,7 +24,6 @@ export function CompleteStepClient() {
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!role) {
@@ -41,12 +42,14 @@ export function CompleteStepClient() {
     def?.label;
 
   async function handleComplete() {
-    if (!role) return;
+    if (!role || submitting) return;
     setSubmitting(true);
+
     try {
       const response = await fetch("/api/onboarding/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
           role,
           identity,
@@ -58,20 +61,47 @@ export function CompleteStepClient() {
         }),
       });
 
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        onboardingComplete?: boolean;
+      };
+
       if (!response.ok) {
-        throw new Error("Failed to complete onboarding");
+        throw new Error(body.error ?? "Failed to complete onboarding");
       }
 
-      await update({ onboardingComplete: true, role });
+      const updatedSession = await update({ onboardingComplete: true, role });
+      const sessionReady =
+        updatedSession?.user?.onboardingComplete === true ||
+        (await fetch("/api/auth/session")
+          .then((res) => res.json())
+          .then(
+            (session: { user?: { onboardingComplete?: boolean } }) =>
+              session.user?.onboardingComplete === true
+          ));
+
+      if (!sessionReady) {
+        throw new Error("Your session could not be updated. Please sign in again.");
+      }
+
       markStepComplete(def?.steps.indexOf("complete") ?? def?.steps.length ?? 0);
       markOnboardingComplete(role);
-      setDone(true);
-    } finally {
+
+      const destination = resolvePostAuthRedirect({
+        onboardingComplete: true,
+        role,
+      });
+      window.location.assign(destination);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to complete onboarding";
+      toast({
+        title: "Could not complete onboarding",
+        description: message,
+      });
       setSubmitting(false);
     }
   }
-
-  const dashboardPath = resolveDashboardPath(role);
 
   return (
     <OnboardingCard
@@ -81,22 +111,9 @@ export function CompleteStepClient() {
     >
       <SandboxPreview />
       <div className="mt-6 space-y-4">
-        {!done ? (
-          <Button type="button" onClick={handleComplete} disabled={submitting}>
-            {submitting ? "Saving…" : "Complete onboarding"}
-          </Button>
-        ) : (
-          <div className="flex flex-wrap gap-3">
-            <Button asChild>
-              <Link href={dashboardPath}>Go to dashboard</Link>
-            </Button>
-            {def?.alternateDashboardPaths?.map((path) => (
-              <Button key={path} variant="outline" asChild>
-                <Link href={path}>Open regional view</Link>
-              </Button>
-            ))}
-          </div>
-        )}
+        <Button type="button" onClick={handleComplete} disabled={submitting}>
+          {submitting ? "Completing…" : "Complete onboarding"}
+        </Button>
       </div>
     </OnboardingCard>
   );

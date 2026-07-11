@@ -14,6 +14,11 @@ declare module "next-auth" {
       organisation?: string | null;
       image?: string | null;
     };
+    role?: UserRole;
+    onboardingComplete?: boolean;
+    name?: string | null;
+    organisation?: string | null;
+    isEmailVerified?: boolean;
   }
 
   interface User {
