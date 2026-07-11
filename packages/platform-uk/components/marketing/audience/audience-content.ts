@@ -96,13 +96,13 @@ export const audiencePages = {
     },
     pains: [
       {
-        title: "Admin overload",
-        body: "Clinicians spend too much time on documentation and referral coordination instead of direct patient care.",
+        title: "Notes typing eats the evening",
+        body: "You know the patient, the plan, and the code before you finish the consultation. Then you spend the next twenty minutes typing it all up instead of seeing the next patient.",
         icon: ClipboardList,
       },
       {
-        title: "Fragmented safety checks",
-        body: "Drug interactions, allergies, and risk scores sit in separate systems with no unified review path.",
+        title: "One more interaction check away from missing one",
+        body: "A new prescription for warfarin lands on a patient already on amiodarone. GUARDIAN flags the interaction the moment it appears, not after you have switched between the BNF, the record, and memory.",
         icon: Shield,
       },
       {
@@ -152,7 +152,7 @@ export const audiencePages = {
       sectionLabel: "Your workflow",
       sectionTitle: "From sign-up to staged FHIR draft",
       sectionDescription:
-        "Six steps from role selection through clinician review. Every AI output stays a draft until you approve it. Demo uses synthetic patients only.",
+        "Seven steps from role selection through EHR write-back. Every AI output stays a draft until you approve it. Demo uses synthetic patients only.",
       disclaimer: "Synthetic demo data. No outputs are written to the EHR without clinician approval.",
       steps: [
         {
@@ -196,6 +196,13 @@ export const audiencePages = {
           description:
             "Approved outputs are staged as FHIR DocumentReference drafts. They are not auto-written to the EHR record until you confirm.",
           icon: FileText,
+        },
+        {
+          label: "Write back",
+          title: "EHR write-back on confirm",
+          description:
+            "On confirmation, the staged draft writes to EMIS Web or SystmOne. A short undo window lets you reverse the write-back before it is final.",
+          icon: CheckSquare,
         },
       ],
     },
@@ -1036,8 +1043,8 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
-    ctaPrimary: { label: "Request organisation access", href: "/get-started" },
-    ctaSecondary: { label: "See platform", href: "/platform" },
+    ctaPrimary: { label: "Download integration architecture brief", href: "/resources#integration" },
+    ctaSecondary: { label: "Request organisation access", href: "/get-started" },
     complianceNote:
       "Compliance badges describe aligned design pathways, not certification. See documentation for architecture and compliance pathways.",
   },

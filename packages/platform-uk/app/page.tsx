@@ -6,11 +6,8 @@ import { MarketingShell } from "@/components/marketing/MarketingShell";
 import HeroSection from "@/components/marketing/HeroSection";
 import StatsBand from "@/components/marketing/StatsBand";
 import AboutStatsSection from "@/components/marketing/AboutStatsSection";
+import PlatformMetricsSection from "@/components/marketing/PlatformMetricsSection";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
-
-const HowItWorks = dynamic(() => import("@/components/marketing/HowItWorks"), {
-  loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
-});
 
 const PlatformFlowSection = dynamic(() => import("@/components/marketing/PlatformFlowSection"), {
   loading: () => <div className="min-h-[20rem] bg-surface-muted" aria-hidden />,
@@ -18,10 +15,6 @@ const PlatformFlowSection = dynamic(() => import("@/components/marketing/Platfor
 
 const RolesGridSection = dynamic(() => import("@/components/marketing/RolesGridSection"), {
   loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
-});
-
-const PlatformMetricsSection = dynamic(() => import("@/components/marketing/PlatformMetricsSection"), {
-  loading: () => <div className="min-h-[20rem] bg-surface" aria-hidden />,
 });
 
 export const metadata: Metadata = {
@@ -33,12 +26,11 @@ export default function HomePage() {
   return (
     <MarketingShell className="overflow-x-hidden">
       <HeroSection />
+      <PlatformMetricsSection />
       <StatsBand />
       <AboutStatsSection />
-      <HowItWorks />
       <PlatformFlowSection />
       <RolesGridSection />
-      <PlatformMetricsSection />
 
       <section className="bg-emerald py-20 text-center text-white md:py-24">
         <div className="mx-auto max-w-2xl px-6">

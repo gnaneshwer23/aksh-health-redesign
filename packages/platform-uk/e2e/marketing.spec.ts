@@ -152,6 +152,26 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("link", { name: /See full journey/i })).toHaveAttribute("href", "/how-it-works");
   });
 
+  test("homepage surfaces the platform cockpit above the fold with outcome stats", async ({ page }) => {
+    await page.goto("/");
+
+    const hero = page.getByRole("heading", { name: /Clinical workflows, one platform/i });
+    const cockpit = page.getByRole("heading", { name: /Visibility into every agent, every review/i });
+    await expect(hero).toBeVisible();
+    await expect(cockpit).toBeVisible();
+
+    const heroBox = await hero.boundingBox();
+    const cockpitBox = await cockpit.boundingBox();
+    expect(heroBox).not.toBeNull();
+    expect(cockpitBox).not.toBeNull();
+    // Cockpit should render immediately after the hero, well above the roles grid further down the page.
+    expect(cockpitBox!.y).toBeGreaterThan(heroBox!.y);
+
+    await expect(page.getByText("4 sec")).toBeVisible();
+    await expect(page.getByText("14 days")).toBeVisible();
+    await expect(page.getByText("Auto-writes without approval")).toBeVisible();
+  });
+
   test("how-it-works page loads with diagram and platform stages", async ({ page }) => {
     await page.goto("/how-it-works");
 
@@ -186,7 +206,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Human-in-the-loop/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "See it in action" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
   });
 
   test("resources page loads with expected sections", async ({ page }) => {
@@ -261,8 +281,52 @@ test.describe("Marketing smoke", () => {
     await expect(footer.getByRole("link", { name: "How it works" })).toHaveAttribute("href", "/how-it-works");
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
     await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
+    await expect(footer.getByRole("link", { name: "How we price" })).toHaveAttribute("href", "/pricing");
     await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
+  });
+
+  test("audience footer links all render without 404", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.locator("footer");
+    const audienceHrefs = [
+      "/for-clinicians",
+      "/for-practices",
+      "/for-patients",
+      "/for-hospitals",
+      "/for-administrators",
+      "/for-ics",
+      "/for-research",
+    ];
+
+    for (const href of audienceHrefs) {
+      const link = footer.locator(`a[href="${href}"]`);
+      await expect(link).toHaveCount(1);
+      const response = await page.request.get(href);
+      expect(response.status(), `${href} should not 404`).toBeLessThan(400);
+    }
+  });
+
+  test("pricing page loads with three tiers and no nav clutter", async ({ page }) => {
+    await page.goto("/pricing");
+
+    await expect(
+      page.getByRole("heading", { name: /Pricing scales with your organisation, not per patient record/i })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Practice", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Organisation", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Trust & ICS" })).toBeVisible();
+
+    // Pricing is intentionally not in the primary nav.
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Pricing", exact: true })).toHaveCount(0);
+  });
+
+  test("for-administrators offers the integration architecture brief as primary CTA", async ({ page }) => {
+    await page.goto("/for-administrators");
+
+    const cta = page.getByRole("link", { name: /Download integration architecture brief/i }).first();
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", "/resources#integration");
   });
 });

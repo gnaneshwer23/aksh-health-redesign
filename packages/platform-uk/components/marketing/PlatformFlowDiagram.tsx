@@ -14,13 +14,50 @@ import {
 
 import { cn } from "@/lib/utils";
 
+export type FlowLayer = "intake" | "agents" | "review" | "output";
+
 export type FlowNode = {
   id: string;
   label: string;
   description: string;
   icon: LucideIcon;
+  layer: FlowLayer;
   highlight?: boolean;
 };
+
+const layerStyles: Record<FlowLayer, { border: string; bg: string; icon: string; ring: string }> = {
+  intake: {
+    border: "border-steel/25",
+    bg: "bg-steel/[0.06]",
+    icon: "text-steel",
+    ring: "shadow-steel/10",
+  },
+  agents: {
+    border: "border-pastel-lavender-ink/25",
+    bg: "bg-pastel-lavender/60",
+    icon: "text-pastel-lavender-ink",
+    ring: "shadow-pastel-lavender-ink/10",
+  },
+  review: {
+    border: "border-emerald",
+    bg: "bg-emerald/10",
+    icon: "text-emerald",
+    ring: "shadow-emerald/15",
+  },
+  output: {
+    border: "border-navy/20",
+    bg: "bg-navy/[0.05]",
+    icon: "text-navy",
+    ring: "shadow-navy/10",
+  },
+};
+
+export const FLOW_LAYER_LEGEND: Array<{ layer: FlowLayer; label: string }> = [
+  { layer: "intake", label: "Intake" },
+  { layer: "agents", label: "AI agents" },
+  { layer: "review", label: "Clinician review" },
+  { layer: "output", label: "Governed output" },
+];
 
 const FULL_FLOW_NODES: FlowNode[] = [
   {
@@ -28,30 +65,35 @@ const FULL_FLOW_NODES: FlowNode[] = [
     label: "EMIS / SystmOne",
     description: "EHR intake via FHIR R4 and HL7 v2",
     icon: MonitorSmartphone,
+    layer: "intake",
   },
   {
     id: "data",
     label: "Data layer",
     description: "Normalised clinical data pipeline",
     icon: Layers,
+    layer: "intake",
   },
   {
     id: "graph",
     label: "Neo4j graph",
     description: "Connected patient knowledge model",
     icon: Network,
+    layer: "agents",
   },
   {
     id: "agents",
     label: "12 AI agents",
     description: "Parallel specialist drafts",
     icon: Bot,
+    layer: "agents",
   },
   {
     id: "review",
     label: "Review queue",
     description: "Clinician Accept, Edit, or Reject",
     icon: ClipboardCheck,
+    layer: "review",
     highlight: true,
   },
   {
@@ -59,12 +101,14 @@ const FULL_FLOW_NODES: FlowNode[] = [
     label: "FHIR staging",
     description: "Draft resources before write-back",
     icon: FileCheck2,
+    layer: "output",
   },
   {
     id: "write",
     label: "EHR write",
     description: "Approved content to the record",
     icon: Server,
+    layer: "output",
   },
 ];
 
@@ -74,18 +118,21 @@ const COMPACT_FLOW_NODES: FlowNode[] = [
     label: "Systems",
     description: "EMIS / SystmOne",
     icon: MonitorSmartphone,
+    layer: "intake",
   },
   {
     id: "aksh",
     label: "Aksh",
     description: "Data layer and agents",
     icon: Layers,
+    layer: "agents",
   },
   {
     id: "review",
     label: "Review",
     description: "Human approval required",
     icon: ClipboardCheck,
+    layer: "review",
     highlight: true,
   },
   {
@@ -93,6 +140,7 @@ const COMPACT_FLOW_NODES: FlowNode[] = [
     label: "Record",
     description: "FHIR write on approval",
     icon: FileCheck2,
+    layer: "output",
   },
 ];
 
@@ -102,18 +150,21 @@ const ARCHITECTURE_FLOW_NODES: FlowNode[] = [
     label: "EMIS Web",
     description: "Primary care record",
     icon: MonitorSmartphone,
+    layer: "intake",
   },
   {
     id: "aksh",
     label: "Aksh platform",
     description: "Graph, agents, governance",
     icon: ShieldCheck,
+    layer: "agents",
   },
   {
     id: "review",
     label: "Clinician review",
     description: "Accept, Edit, or Reject",
     icon: ClipboardCheck,
+    layer: "review",
     highlight: true,
   },
   {
@@ -121,6 +172,7 @@ const ARCHITECTURE_FLOW_NODES: FlowNode[] = [
     label: "FHIR R4",
     description: "Governed write-back",
     icon: FileCheck2,
+    layer: "output",
   },
 ];
 
@@ -156,6 +208,7 @@ function FlowNodeCircle({
   showDescription: boolean;
 }) {
   const Icon = node.icon;
+  const styles = layerStyles[node.layer];
 
   return (
     <div className="group flex flex-col items-center text-center">
@@ -167,18 +220,15 @@ function FlowNodeCircle({
         ) : null}
         <div
           className={cn(
-            "flex items-center justify-center rounded-full border-2 transition-shadow motion-safe:duration-300",
+            "flex items-center justify-center rounded-full border-2 shadow-sm transition-shadow motion-safe:duration-300 motion-safe:group-hover:shadow-md",
             compact ? "h-12 w-12 sm:h-14 sm:w-14" : "h-14 w-14 sm:h-16 sm:w-16 md:h-[4.5rem] md:w-[4.5rem]",
-            node.highlight
-              ? "border-emerald bg-emerald/10 shadow-lg shadow-emerald/15 motion-safe:group-hover:shadow-xl motion-safe:group-hover:shadow-emerald/20"
-              : "border-navy/15 bg-white shadow-sm motion-safe:group-hover:border-navy/25 motion-safe:group-hover:shadow-md"
+            styles.border,
+            styles.bg,
+            node.highlight && "shadow-lg motion-safe:group-hover:shadow-xl"
           )}
         >
           <Icon
-            className={cn(
-              compact ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7",
-              node.highlight ? "text-emerald" : "text-navy"
-            )}
+            className={cn(compact ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7", styles.icon)}
             aria-hidden
           />
         </div>
@@ -300,10 +350,29 @@ function TabletFlow({ nodes, compact, showDescription }: { nodes: FlowNode[]; co
   );
 }
 
+function FlowLayerLegend({ layers }: { layers: FlowLayer[] }) {
+  const activeLegend = FLOW_LAYER_LEGEND.filter((entry) => layers.includes(entry.layer));
+
+  return (
+    <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 p-0 lg:mt-10" aria-hidden>
+      {activeLegend.map((entry) => {
+        const styles = layerStyles[entry.layer];
+        return (
+          <li key={entry.layer} className="flex items-center gap-2 text-xs font-medium text-steel">
+            <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full border", styles.border, styles.bg)} />
+            {entry.label}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function PlatformFlowDiagram({ variant, className, showDescriptions = true }: PlatformFlowDiagramProps) {
   const nodes = getNodes(variant);
   const ariaLabel = getAriaLabel(variant);
   const isCompact = variant === "compact" || variant === "architecture";
+  const layersPresent = Array.from(new Set(nodes.map((node) => node.layer)));
 
   return (
     <figure className={cn("relative", className)} aria-label={ariaLabel}>
@@ -329,6 +398,8 @@ export function PlatformFlowDiagram({ variant, className, showDescriptions = tru
       <div className="sm:hidden">
         <MobileTimeline nodes={nodes} showDescription={showDescriptions} />
       </div>
+
+      {showDescriptions ? <FlowLayerLegend layers={layersPresent} /> : null}
     </figure>
   );
 }

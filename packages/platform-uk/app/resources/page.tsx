@@ -37,6 +37,18 @@ const resourceCategories = [
     description: "NHS clinical safety, DTAC alignment, and GDPR Art. 9 design pathways.",
   },
   {
+    id: "dcb0129",
+    icon: ShieldCheck,
+    title: "DCB0129 hazard log",
+    description: "Safety case in progress, with hazard log structure outlined.",
+  },
+  {
+    id: "dtac",
+    icon: ShieldCheck,
+    title: "DTAC checklist",
+    description: "Alignment status across the five DTAC assessment domains.",
+  },
+  {
     id: "integration",
     icon: Link2,
     title: "Integration",
@@ -103,6 +115,32 @@ const resourceSections = [
     ],
   },
   {
+    id: "dcb0129",
+    label: "DCB0129 hazard log",
+    title: "Safety case in progress: hazard log structure",
+    body: "The clinical safety case for Aksh Health follows the DCB0129 hazard log structure. This build has not completed a signed-off safety case; the outline below describes the working structure our clinical safety officer maintains internally.",
+    bullets: [
+      "Hazard identification: catalogue where an agent output could cause patient harm if acted on unreviewed",
+      "Risk evaluation: likelihood and severity scoring per hazard, aligned to NHS clinical risk grading",
+      "Mitigation: control measures, including the human-in-the-loop review gate on every clinical output",
+      "Residual risk sign-off: named clinical safety officer approval before any production deployment",
+      "Status: safety case in progress. No production EHR write-back is enabled until sign-off completes",
+    ],
+  },
+  {
+    id: "dtac",
+    label: "DTAC checklist",
+    title: "DTAC alignment checklist status",
+    body: "The NHS Digital Technology Assessment Criteria covers five domains. Status below reflects design alignment work completed in this build, not a submitted or approved DTAC assessment.",
+    bullets: [
+      "Clinical safety: DCB0129 hazard log in progress (see above)",
+      "Data protection: GDPR Art. 9 handling and RBAC design in place",
+      "Technical assurance: FHIR R4 staging and audit trail architecture documented",
+      "Interoperability: EMIS Web and SystmOne integration paths designed, not yet live",
+      "Usability and accessibility: WCAG 2.1 AA target across dashboards, ongoing review",
+    ],
+  },
+  {
     id: "integration",
     label: "FHIR & interoperability",
     title: "FHIR R4 staging above existing EHR systems",
@@ -139,6 +177,12 @@ const relatedLinks = [
     href: "/get-started",
   },
 ] as const;
+
+function getSection(id: (typeof resourceSections)[number]["id"]) {
+  const section = resourceSections.find((entry) => entry.id === id);
+  if (!section) throw new Error(`Unknown resource section: ${id}`);
+  return section;
+}
 
 function ResourceDetailCard({ section }: { section: (typeof resourceSections)[number] }) {
   return (
@@ -246,8 +290,8 @@ export default function ResourcesPage() {
             description={`${COMPLIANCE_DISCLAIMER} Resources below describe design alignment, not certification or regulatory approval.`}
           />
           <div className="grid gap-8 lg:grid-cols-2">
-            <ResourceDetailCard section={resourceSections[0]} />
-            <ResourceDetailCard section={resourceSections[1]} />
+            <ResourceDetailCard section={getSection("architecture")} />
+            <ResourceDetailCard section={getSection("hitl")} />
           </div>
         </div>
       </section>
@@ -257,12 +301,14 @@ export default function ResourcesPage() {
           <MarketingSectionHeader
             align="left"
             label="Governance & interoperability"
-            title="Compliance frameworks and FHIR staging"
-            description="Design alignment for NHS clinical safety, DTAC evidence, and EHR integration pathways."
+            title="Compliance, safety case, and FHIR staging"
+            description="Design alignment for NHS clinical safety, DCB0129 hazard log status, DTAC evidence, and EHR integration pathways."
           />
           <div className="grid gap-8 lg:grid-cols-2">
-            <ResourceDetailCard section={resourceSections[2]} />
-            <ResourceDetailCard section={resourceSections[3]} />
+            <ResourceDetailCard section={getSection("compliance")} />
+            <ResourceDetailCard section={getSection("dcb0129")} />
+            <ResourceDetailCard section={getSection("dtac")} />
+            <ResourceDetailCard section={getSection("integration")} />
           </div>
         </div>
       </section>
