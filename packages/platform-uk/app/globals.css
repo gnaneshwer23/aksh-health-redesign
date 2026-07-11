@@ -4752,8 +4752,11 @@ input:focus, textarea:focus {
 }
 
 .marketing-site a {
-  color: inherit;
   text-decoration: none;
+}
+
+.marketing-site a:not([class*="text-"]) {
+  color: inherit;
 }
 
 .marketing-site input,

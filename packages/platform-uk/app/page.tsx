@@ -33,7 +33,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/pilot/apply"
-            className="inline-block rounded-xl bg-white px-10 py-4 text-lg font-bold text-emerald shadow-lg transition-colors hover:bg-white/90"
+            className="inline-block rounded-full bg-white px-10 py-4 text-lg font-bold text-emerald shadow-lg transition-colors hover:bg-white/90"
           >
             Apply for Pilot Cohort
           </Link>
