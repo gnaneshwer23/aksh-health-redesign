@@ -8,11 +8,44 @@ import { RiskGauge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Patient } from "@/lib/mock-data/types";
+import type { Neo4jGuardianResponse, Neo4jPatientResponse } from "@/lib/neo4j/types";
 import { cn } from "@/lib/utils";
 
-const AGENT_FILTERS = ["VOICE", "DrASSIST", "ORACLE", "GUARDIAN", "SYNTHESIS"] as const;
+function PanelSkeleton() {
+  return (
+    <div className="space-y-2 animate-pulse">
+      <div className="h-3 w-3/4 rounded bg-muted/40" />
+      <div className="h-3 w-full rounded bg-muted/30" />
+      <div className="h-3 w-2/3 rounded bg-muted/20" />
+    </div>
+  );
+}
 
-export function AgentControlPanel({ patient }: { patient: Patient | null }) {
+function guardianSeverity(severity: "red" | "amber" | "green"): "high" | "medium" | "low" {
+  if (severity === "red") return "high";
+  if (severity === "amber") return "medium";
+  return "low";
+}
+
+export function AgentControlPanel({
+  patient,
+  oracleData,
+  guardianData,
+  oracleLoading,
+  guardianLoading,
+}: {
+  patient: Patient | null;
+  oracleData?: Neo4jPatientResponse | null;
+  guardianData?: Neo4jGuardianResponse | null;
+  oracleLoading?: boolean;
+  guardianLoading?: boolean;
+}) {
+  const oracleScore = oracleData?.oracleScore ?? patient?.oracleScore ?? 0;
+  const oracleRisk = oracleData?.oracleRisk ?? patient?.oracleRisk ?? "Low";
+  const riskFactors =
+    oracleData?.riskFactors ??
+    patient?.digitalTwinPrediction.deteriorationSignals ??
+    [];
   return (
     <aside className="flex h-full w-72 shrink-0 flex-col gap-3 overflow-y-auto border-l border-border bg-card p-3">
       <Card className="shadow-sm">
@@ -41,22 +74,40 @@ export function AgentControlPanel({ patient }: { patient: Patient | null }) {
       <Card className="shadow-sm">
         <CardHeader className="p-3 pb-0"><CardTitle className="text-sm flex items-center gap-2"><AgentBadge agent="ORACLE" /> ORACLE Risk</CardTitle></CardHeader>
         <CardContent className="p-3">
-          {patient ? (
+          {!patient ? (
+            <p className="text-xs text-muted">Select a patient</p>
+          ) : oracleLoading ? (
+            <PanelSkeleton />
+          ) : (
             <>
-              <RiskGauge score={patient.oracleScore} risk={patient.oracleRisk} />
+              <RiskGauge score={oracleScore} risk={oracleRisk} />
               <ul className="mt-3 space-y-1 text-[10px] text-muted">
-                {patient.digitalTwinPrediction.deteriorationSignals.slice(0, 4).map((s) => <li key={s}>• {s}</li>)}
+                {riskFactors.slice(0, 4).map((s) => <li key={s}>• {s}</li>)}
               </ul>
               <p className="mt-2 text-[10px] text-muted">Updated: {new Date().toLocaleString("en-GB")}</p>
             </>
-          ) : <p className="text-xs text-muted">Select a patient</p>}
+          )}
         </CardContent>
       </Card>
 
       <Card className="shadow-sm">
         <CardHeader className="p-3 pb-0"><CardTitle className="text-sm flex items-center gap-2"><AgentBadge agent="GUARDIAN" /> GUARDIAN</CardTitle></CardHeader>
         <CardContent className="p-3 space-y-2">
-          {patient?.flags.includes("GUARDIAN") ? (
+          {!patient ? (
+            <p className="text-xs text-muted">Select a patient</p>
+          ) : guardianLoading ? (
+            <PanelSkeleton />
+          ) : guardianData && guardianData.interactions.length > 0 ? (
+            guardianData.interactions.map((interaction) => (
+              <GuardianAlert
+                key={`${interaction.drugA}-${interaction.drugB}`}
+                severity={guardianSeverity(interaction.severity)}
+                title={`${interaction.drugA} + ${interaction.drugB}`}
+                description={interaction.recommendation}
+                bnfRef={interaction.bnfRef}
+              />
+            ))
+          ) : patient.flags.includes("GUARDIAN") ? (
             <GuardianAlert severity="high" title="Drug interaction flagged" description="Review current medications for bleeding risk." bnfRef="BNF 2.9" />
           ) : (
             <p className="text-xs text-muted">No active alerts</p>

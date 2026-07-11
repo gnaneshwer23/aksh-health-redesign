@@ -11,16 +11,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toaster";
+import { useNeo4jIcsPopulation } from "@/lib/hooks/use-neo4j-clinical";
 import { metricSparklines, populationData } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
 const RISK_COLORS = ["#00A86B", "#E67E22", "#E53E3E", "#7B2D8B"];
 
+function ChartSkeleton({ height = "h-64" }: { height?: string }) {
+  return <div className={cn("animate-pulse rounded bg-muted/20", height)} />;
+}
+
 export default function IcsDashboardPage() {
   const { icsDateRange, setIcsDateRange, icsSortColumn, icsSortAsc, setIcsSort } = useDashboardStore();
   const [equityOpen, setEquityOpen] = useState(false);
-  const data = populationData;
+  const { data: liveData, loading } = useNeo4jIcsPopulation();
+  const data = liveData ?? populationData;
 
   const pieData = [
     { name: "Low", value: data.riskDistribution.low },
@@ -71,33 +77,41 @@ export default function IcsDashboardPage() {
           <Card className="shadow-sm">
             <CardHeader><CardTitle className="text-sm">Patient Risk Profile Across ICS</CardTitle></CardHeader>
             <CardContent className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                    {pieData.map((_, i) => <Cell key={i} fill={RISK_COLORS[i]} />)}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              {loading && !liveData ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                      {pieData.map((_, i) => <Cell key={i} fill={RISK_COLORS[i]} />)}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
 
           <Card className="shadow-sm">
             <CardHeader><CardTitle className="text-sm">Condition Prevalence vs Deprivation</CardTitle></CardHeader>
             <CardContent className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.conditionPrevalenceByIMD}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="quintile" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="t2d" fill="#003D7A" name="T2D" />
-                  <Bar dataKey="hypertension" fill="#006B4F" name="Hypertension" />
-                  <Bar dataKey="copd" fill="#38BDF8" name="COPD" />
-                </BarChart>
-              </ResponsiveContainer>
+              {loading && !liveData ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.conditionPrevalenceByIMD}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="quintile" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="t2d" fill="#003D7A" name="T2D" />
+                    <Bar dataKey="hypertension" fill="#006B4F" name="Hypertension" />
+                    <Bar dataKey="copd" fill="#38BDF8" name="COPD" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
             <p className="px-6 pb-4 text-xs text-muted">T2D prevalence 3.2× higher in Q1 vs Q5</p>
           </Card>
@@ -106,19 +120,23 @@ export default function IcsDashboardPage() {
         <Card className="shadow-sm">
           <CardHeader><CardTitle className="text-sm">ICS Admission Forecast — Digital Twin</CardTitle></CardHeader>
           <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.admissionForecast}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="upper" stroke="none" fill="#003D7A" fillOpacity={0.1} />
-                <Area type="monotone" dataKey="lower" stroke="none" fill="#FFFFFF" fillOpacity={1} />
-                <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Digital Twin" />
-                <Line type="monotone" dataKey="historical" stroke="#718096" strokeDasharray="4 4" name="Historical" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {loading && !liveData ? (
+              <ChartSkeleton height="h-72" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.admissionForecast}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Area type="monotone" dataKey="upper" stroke="none" fill="#003D7A" fillOpacity={0.1} />
+                  <Area type="monotone" dataKey="lower" stroke="none" fill="#FFFFFF" fillOpacity={1} />
+                  <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Digital Twin" />
+                  <Line type="monotone" dataKey="historical" stroke="#718096" strokeDasharray="4 4" name="Historical" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -128,36 +146,40 @@ export default function IcsDashboardPage() {
             <Button variant="outline" size="sm" onClick={() => toast({ title: "Generating PDF report..." })}>Download Board Report</Button>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {[
-                    ["name", "Practice"],
-                    ["listSize", "List Size"],
-                    ["aiAdoption", "AI Adoption %"],
-                    ["queueClearance", "Queue Clearance"],
-                    ["guardianAlerts", "GUARDIAN"],
-                    ["equityFlags", "EQUITY"],
-                    ["overallScore", "Score"],
-                  ].map(([key, label]) => (
-                    <TableHead key={key} className="cursor-pointer" onClick={() => setIcsSort(key)}>{label}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedPractices.map((p) => (
-                  <TableRow key={p.name}>
-                    <TableCell className="sticky left-0 bg-card">{p.name}</TableCell>
-                    <TableCell>{p.listSize.toLocaleString()}</TableCell>
-                    <TableCell className={cellColor(p.aiAdoption, 85)}>{p.aiAdoption}%</TableCell>
-                    <TableCell className={cellColor(p.queueClearance, 80)}>{p.queueClearance}%</TableCell>
-                    <TableCell>{p.guardianAlerts}</TableCell>
-                    <TableCell className={p.equityFlags > 5 ? "text-danger" : ""}>{p.equityFlags}</TableCell>
-                    <TableCell className={cn("font-semibold", cellColor(p.overallScore, 80))}>{p.overallScore}</TableCell>
+            {loading && !liveData ? (
+              <ChartSkeleton height="h-40" />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[
+                      ["name", "Practice"],
+                      ["listSize", "List Size"],
+                      ["aiAdoption", "AI Adoption %"],
+                      ["queueClearance", "Queue Clearance"],
+                      ["guardianAlerts", "GUARDIAN"],
+                      ["equityFlags", "EQUITY"],
+                      ["overallScore", "Score"],
+                    ].map(([key, label]) => (
+                      <TableHead key={key} className="cursor-pointer" onClick={() => setIcsSort(key)}>{label}</TableHead>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {sortedPractices.map((p) => (
+                    <TableRow key={p.name}>
+                      <TableCell className="sticky left-0 bg-card">{p.name}</TableCell>
+                      <TableCell>{p.listSize.toLocaleString()}</TableCell>
+                      <TableCell className={cellColor(p.aiAdoption, 85)}>{p.aiAdoption}%</TableCell>
+                      <TableCell className={cellColor(p.queueClearance, 80)}>{p.queueClearance}%</TableCell>
+                      <TableCell>{p.guardianAlerts}</TableCell>
+                      <TableCell className={p.equityFlags > 5 ? "text-danger" : ""}>{p.equityFlags}</TableCell>
+                      <TableCell className={cn("font-semibold", cellColor(p.overallScore, 80))}>{p.overallScore}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 

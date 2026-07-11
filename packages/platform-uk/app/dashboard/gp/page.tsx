@@ -11,6 +11,7 @@ import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
+import { useNeo4jGuardian, useNeo4jPatient } from "@/lib/hooks/use-neo4j-clinical";
 import {
   countAwaitingApproval,
   getPatientById,
@@ -20,16 +21,34 @@ import {
 } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
+function HeaderSkeleton() {
+  return (
+    <div className="animate-pulse space-y-3">
+      <div className="h-6 w-48 rounded bg-muted/40" />
+      <div className="h-3 w-64 rounded bg-muted/30" />
+      <div className="h-16 w-20 rounded-full bg-muted/20" />
+    </div>
+  );
+}
+
 export default function GpDashboardPage() {
   const { selectedPatientId, setSelectedPatient, writtenToRecordToday, reviewQueueItems } = useDashboardStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWritten, setShowWritten] = useState(true);
 
   const patient = getPatientById(selectedPatientId ?? "P002");
+  const { data: oracleData, loading: oracleLoading } = useNeo4jPatient(selectedPatientId ?? patient?.id);
+  const { data: guardianData, loading: guardianLoading } = useNeo4jGuardian(selectedPatientId ?? patient?.id);
+
   const searchResults = useMemo(() => (searchQuery ? searchPatients(searchQuery) : []), [searchQuery]);
   const displayPatients = searchResults.length > 0 ? searchResults : todaysAppointments;
   const pathways = patient ? getPathwaysForPatient(patient.id) : [];
   const guardianCount = reviewQueueItems.filter((r) => r.agentType === "GUARDIAN" && (r.status === "Pending" || r.status === "Edited")).length;
+
+  const oracleScore = oracleData?.oracleScore ?? patient?.oracleScore ?? 0;
+  const oracleRisk = oracleData?.oracleRisk ?? patient?.oracleRisk ?? "Low";
+  const displayConditions = oracleData?.conditions ?? patient?.activeConditions ?? [];
+  const clinicalLoading = oracleLoading && !oracleData;
 
   return (
     <DashboardShell role="gp" title="Clinician Dashboard">
@@ -52,27 +71,31 @@ export default function GpDashboardPage() {
         <div className="flex-1 space-y-5 overflow-y-auto bg-background p-5">
           {patient && (
             <header className="dashboard-card p-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <h1 className="text-xl font-semibold tracking-tight text-foreground">{patient.name}</h1>
-                  <p className="text-xs text-muted">NHS {patient.nhsNumber} · DOB {patient.dob} · Age {patient.age}</p>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {patient.activeConditions.map((c) => (
-                      <span key={c} className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">
-                        {c}
-                      </span>
-                    ))}
+              {clinicalLoading ? (
+                <HeaderSkeleton />
+              ) : (
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h1 className="text-xl font-semibold tracking-tight text-foreground">{patient.name}</h1>
+                    <p className="text-xs text-muted">NHS {patient.nhsNumber} · DOB {patient.dob} · Age {patient.age}</p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {displayConditions.map((c) => (
+                        <span key={c} className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-xs text-muted">
+                      {(oracleData?.medications ?? patient.activeMedications).length} medications · Last seen: {patient.lastEncounterDate}
+                      {patient.nextAppointmentDate && ` · Next: ${patient.nextAppointmentDate}`}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-warning">
+                      14-day admission risk: {oracleData?.admissionRisk14Days ?? patient.digitalTwinPrediction.admissionRisk14Days}% — {(oracleData?.riskFactors ?? patient.digitalTwinPrediction.deteriorationSignals)[0]}
+                    </p>
                   </div>
-                  <p className="mt-3 text-xs text-muted">
-                    {patient.activeMedications.length} medications · Last seen: {patient.lastEncounterDate}
-                    {patient.nextAppointmentDate && ` · Next: ${patient.nextAppointmentDate}`}
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-warning">
-                    14-day admission risk: {patient.digitalTwinPrediction.admissionRisk14Days}% — {patient.digitalTwinPrediction.deteriorationSignals[0]}
-                  </p>
+                  <RiskScoreBadge score={oracleScore} risk={oracleRisk} size="lg" />
                 </div>
-                <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} size="lg" />
-              </div>
+              )}
             </header>
           )}
 
@@ -102,7 +125,13 @@ export default function GpDashboardPage() {
           <DigitalTwinPanel patient={patient ?? null} />
         </div>
 
-        <AgentControlPanel patient={patient ?? null} />
+        <AgentControlPanel
+          patient={patient ?? null}
+          oracleData={oracleData}
+          guardianData={guardianData}
+          oracleLoading={oracleLoading}
+          guardianLoading={guardianLoading}
+        />
       </div>
     </DashboardShell>
   );
