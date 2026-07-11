@@ -43,6 +43,10 @@ const MOCK_APPLICATIONS: PilotApplicationRow[] = [
   },
 ];
 
+function mockFallbackEnabled() {
+  return process.env.NEXT_PUBLIC_AKSH_PILOT_MOCK_FALLBACK === "true";
+}
+
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -51,11 +55,51 @@ function formatDate(value: string) {
   });
 }
 
-export function PilotApplicationsPanel() {
+function ApplicationsTable({ applications, limit }: { applications: PilotApplicationRow[]; limit?: number }) {
+  const rows = limit ? applications.slice(0, limit) : applications;
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Reference</TableHead>
+          <TableHead>Organisation</TableHead>
+          <TableHead>Region</TableHead>
+          <TableHead>Contact</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Submitted</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((application) => (
+          <TableRow key={application.id}>
+            <TableCell className="font-mono text-xs">
+              {application.referenceLabel ?? formatPilotReferenceId(application.id)}
+            </TableCell>
+            <TableCell>
+              <div className="font-medium">{application.orgName}</div>
+              <div className="text-xs text-muted">{application.orgType}</div>
+            </TableCell>
+            <TableCell>{application.region ?? "—"}</TableCell>
+            <TableCell>
+              <div>{application.contactName}</div>
+              <div className="text-xs text-muted">{application.contactEmail}</div>
+            </TableCell>
+            <TableCell className="capitalize">{application.status}</TableCell>
+            <TableCell>{formatDate(application.createdAt)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+export function PilotApplicationsPanel({ compact = false, limit }: { compact?: boolean; limit?: number }) {
   const [applications, setApplications] = useState<PilotApplicationRow[]>([]);
   const [usingMock, setUsingMock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [empty, setEmpty] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,6 +107,7 @@ export function PilotApplicationsPanel() {
     async function loadApplications() {
       setLoading(true);
       setError(null);
+      setEmpty(false);
 
       try {
         const response = await fetch("/api/admin/pilot-applications");
@@ -80,14 +125,22 @@ export function PilotApplicationsPanel() {
         if (payload.applications?.length) {
           setApplications(payload.applications);
           setUsingMock(false);
-        } else {
+        } else if (mockFallbackEnabled()) {
           setApplications(MOCK_APPLICATIONS);
           setUsingMock(true);
+        } else {
+          setApplications([]);
+          setUsingMock(false);
+          setEmpty(true);
         }
       } catch (loadError) {
         if (cancelled) return;
-        setApplications(MOCK_APPLICATIONS);
-        setUsingMock(true);
+        if (mockFallbackEnabled()) {
+          setApplications(MOCK_APPLICATIONS);
+          setUsingMock(true);
+        } else {
+          setApplications([]);
+        }
         setError(loadError instanceof Error ? loadError.message : "Unable to load pilot applications");
       } finally {
         if (!cancelled) setLoading(false);
@@ -100,56 +153,36 @@ export function PilotApplicationsPanel() {
     };
   }, []);
 
+  const content = loading ? (
+    <p className="text-sm text-muted">Loading recent applications…</p>
+  ) : empty ? (
+    <p className="text-sm text-muted">No pilot applications submitted yet.</p>
+  ) : error && !usingMock && applications.length === 0 ? (
+    <p className="text-sm text-red-600">{error}</p>
+  ) : (
+    <ApplicationsTable applications={applications} limit={compact ? (limit ?? 3) : limit} />
+  );
+
+  if (compact) {
+    return (
+      <div className="px-4 pb-4">
+        {usingMock ? (
+          <p className="mb-2 text-xs text-amber-700">Showing sample data (mock fallback enabled).</p>
+        ) : null}
+        {content}
+      </div>
+    );
+  }
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">ICS Pilot Applications</CardTitle>
         {usingMock ? (
-          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
-            Sample data
-          </span>
+          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">Sample data</span>
         ) : null}
       </CardHeader>
-      <CardContent>
-        {loading ? (
-          <p className="text-sm text-muted">Loading recent applications…</p>
-        ) : error && !usingMock ? (
-          <p className="text-sm text-red-600">{error}</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Reference</TableHead>
-                <TableHead>Organisation</TableHead>
-                <TableHead>Region</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {applications.map((application) => (
-                <TableRow key={application.id}>
-                  <TableCell className="font-mono text-xs">
-                    {application.referenceLabel ?? formatPilotReferenceId(application.id)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{application.orgName}</div>
-                    <div className="text-xs text-muted">{application.orgType}</div>
-                  </TableCell>
-                  <TableCell>{application.region ?? "—"}</TableCell>
-                  <TableCell>
-                    <div>{application.contactName}</div>
-                    <div className="text-xs text-muted">{application.contactEmail}</div>
-                  </TableCell>
-                  <TableCell className="capitalize">{application.status}</TableCell>
-                  <TableCell>{formatDate(application.createdAt)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
+      <CardContent>{content}</CardContent>
     </Card>
   );
 }
