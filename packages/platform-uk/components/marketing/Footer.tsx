@@ -22,6 +22,8 @@ const footerColumns = [
       { label: "For Patients", href: "/for-patients" },
       { label: "For Hospitals", href: "/for-hospitals" },
       { label: "For Administrators", href: "/for-administrators" },
+      { label: "For ICS", href: "/for-ics" },
+      { label: "For Research", href: "/for-research" },
     ],
   },
   {

@@ -24,6 +24,8 @@ const publicRoutePrefixes = [
   "/for-hospitals",
   "/for-patients",
   "/for-administrators",
+  "/for-ics",
+  "/for-research",
   "/docs",
   "/security",
   "/integrations",

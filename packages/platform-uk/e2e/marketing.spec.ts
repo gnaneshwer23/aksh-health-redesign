@@ -34,6 +34,10 @@ test.describe("Marketing smoke", () => {
     await expect(mobileNav.getByRole("link", { name: "Clinicians" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Practices" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Patients" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Hospitals" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Administrators" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "ICS" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Research" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Integrations" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Docs" })).toBeVisible();
@@ -67,6 +71,18 @@ test.describe("Marketing smoke", () => {
 
     await page.goto("/for-patients");
     await expect(page.getByRole("heading", { name: /Your health, understood and supported/i })).toBeVisible();
+
+    await page.goto("/for-hospitals");
+    await expect(page.getByRole("heading", { name: /Command your hospital/i })).toBeVisible();
+
+    await page.goto("/for-administrators");
+    await expect(page.getByRole("heading", { name: /Keep integrations healthy/i })).toBeVisible();
+
+    await page.goto("/for-ics");
+    await expect(page.getByRole("heading", { name: /See population health across your integrated care system/i })).toBeVisible();
+
+    await page.goto("/for-research");
+    await expect(page.getByRole("heading", { name: /Evaluate outcomes with governed data access/i })).toBeVisible();
   });
 
   test("security and integrations pages load with expected headings", async ({ page }) => {

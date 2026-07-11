@@ -13,13 +13,41 @@ const navLinks = [
   ["Docs", "/docs"],
 ] as const;
 
-const solutionLinks = [
+const solutionSections = [
+  {
+    title: "Audiences",
+    links: [
+      ["Clinicians", "/for-clinicians"],
+      ["Practices", "/for-practices"],
+      ["Patients", "/for-patients"],
+      ["Hospitals", "/for-hospitals"],
+      ["Administrators", "/for-administrators"],
+      ["ICS", "/for-ics"],
+      ["Research", "/for-research"],
+    ],
+  },
+  {
+    title: "Trust",
+    links: [
+      ["Security", "/security"],
+      ["Integrations", "/integrations"],
+    ],
+  },
+] as const;
+
+type SolutionLink = [label: string, href: string];
+
+const solutionLinks: SolutionLink[] = [
   ["Clinicians", "/for-clinicians"],
   ["Practices", "/for-practices"],
   ["Patients", "/for-patients"],
+  ["Hospitals", "/for-hospitals"],
+  ["Administrators", "/for-administrators"],
+  ["ICS", "/for-ics"],
+  ["Research", "/for-research"],
   ["Security", "/security"],
   ["Integrations", "/integrations"],
-] as const;
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -86,16 +114,24 @@ export default function Navbar() {
               <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
             </button>
             {solutionsOpen && (
-              <div className="absolute left-0 top-full z-50 min-w-[11rem] pt-2">
+              <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2">
                 <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
-                  {solutionLinks.map(([label, href]) => (
-                    <Link
-                      key={label}
-                      href={href}
-                      className="block px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-navy/5"
-                    >
-                      {label}
-                    </Link>
+                  {solutionSections.map((section, sectionIndex) => (
+                    <div key={section.title}>
+                      {sectionIndex > 0 && <div className="my-1 border-t border-border-subtle" />}
+                      <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-steel">
+                        {section.title}
+                      </p>
+                      {section.links.map(([label, href]) => (
+                        <Link
+                          key={label}
+                          href={href}
+                          className="block px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5"
+                        >
+                          {label}
+                        </Link>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
