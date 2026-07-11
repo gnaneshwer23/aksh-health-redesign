@@ -70,6 +70,28 @@ test.describe("Marketing smoke", () => {
     await expect(solutionsButton).toBeFocused();
   });
 
+  test("Solutions hover keeps navbar brand and links visible", async ({ page }) => {
+    await page.goto("/");
+
+    const brandTitle = page.locator("nav a.navbar-brand .navbar-brand-title");
+    const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
+    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
+
+    await expect(brandTitle).toBeVisible();
+    await expect(platformLink).toBeVisible();
+
+    await solutionsButton.hover();
+    await expect(page.getByRole("menu")).toBeVisible();
+
+    await expect(brandTitle).toBeVisible();
+    await expect(platformLink).toBeVisible();
+
+    const brandBox = await brandTitle.boundingBox();
+    const menuBox = await page.getByRole("menu").boundingBox();
+    expect(brandBox?.y ?? 0).toBeGreaterThan(0);
+    expect(menuBox?.y ?? 0).toBeGreaterThan(brandBox?.y ?? 0);
+  });
+
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
     await page.goto("/");
 
