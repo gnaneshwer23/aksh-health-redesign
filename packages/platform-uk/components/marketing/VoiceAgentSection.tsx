@@ -8,10 +8,15 @@ export default function VoiceAgentSection() {
   ];
 
   return (
-    <section className="bg-navy-dark py-24 text-white">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold">AI That Calls Your Patients.</h2>
+    <section className="relative overflow-hidden bg-navy-dark py-20 text-white md:py-24">
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgb(0_168_107/0.12),transparent_40%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div className="mb-14 text-center md:mb-16">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-accent">Voice care</p>
+          <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">AI That Calls Your Patients.</h2>
           <p className="mx-auto max-w-2xl text-xl text-white/70">
             The Voice Care Agent makes outbound calls post-discharge, collects structured clinical data, stages FHIR
             resources for review, and escalates to the care team when risk is detected.
@@ -33,7 +38,7 @@ export default function VoiceAgentSection() {
           ))}
         </div>
 
-        <div className="mx-auto max-w-2xl space-y-4 rounded-2xl border border-white/10 bg-white/5 p-8">
+        <div className="mx-auto max-w-2xl space-y-4 rounded-2xl border border-white/10 bg-white/5 p-8 shadow-card backdrop-blur-sm">
           <div className="mb-6 text-xs font-bold uppercase tracking-wider text-white/50">
             Example conversation: day 3 post-discharge
           </div>

@@ -18,10 +18,10 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
   return (
     <div
       className={cn(
-        "px-4 py-3",
+        "px-4 py-4 md:py-5",
         isHero
           ? "border-t border-white/10 bg-white/5 backdrop-blur-md"
-          : "border-y border-navy/10 bg-white/95 backdrop-blur-sm"
+          : "border-y border-navy/10 bg-white shadow-sm"
       )}
       aria-label="Compliance and safety credentials"
     >
@@ -30,7 +30,7 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
           <span
             key={badge}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-semibold sm:text-sm",
+              "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold sm:text-sm",
               isHero
                 ? "border border-white/20 bg-white/10 text-white/90"
                 : "border border-emerald/20 bg-emerald/5 text-navy"

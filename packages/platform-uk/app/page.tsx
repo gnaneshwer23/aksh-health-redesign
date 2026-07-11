@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import HeroSection from "@/components/marketing/HeroSection";
+import StatsBand from "@/components/marketing/StatsBand";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 const ProblemSection = dynamic(() => import("@/components/marketing/ProblemSection"), {
@@ -31,35 +32,33 @@ export default function HomePage() {
   return (
     <MarketingShell overDarkHero className="overflow-x-hidden">
       <HeroSection />
+      <StatsBand />
       <ProblemSection />
       <HowItWorks />
       <AgentGrid />
       <VoiceAgentSection />
 
-      <section className="bg-emerald py-24 text-center text-white">
+      <section className="bg-emerald py-20 text-center text-white md:py-24">
         <div className="mx-auto max-w-3xl px-6">
-          <h2 className="mb-4 text-4xl font-bold">Ready to deploy across your organisation?</h2>
-          <p className="mb-8 text-xl text-white/80">
-            Eight role-specific dashboards. FHIR R4 ready, designed for EMIS Web and SystmOne. Clinical safety built in from day one. Demo uses synthetic data.
+          <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
+            Ready to deploy across your organisation?
+          </h2>
+          <p className="mb-10 text-lg leading-relaxed text-white/85 md:text-xl">
+            Eight role-specific dashboards. FHIR R4 ready, designed for EMIS Web and SystmOne. Clinical safety built
+            in from day one. Demo uses synthetic data.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/signup"
-              className="inline-block rounded-full bg-white px-10 py-4 text-lg font-bold text-emerald shadow-lg transition-colors hover:bg-white/90"
+              className="inline-block min-w-[11rem] rounded-xl bg-white px-10 py-4 text-lg font-bold text-emerald shadow-card-hover transition-all hover:-translate-y-0.5 hover:bg-white/90"
             >
-              Create your account
+              Get Started
             </Link>
             <Link
               href="/demo/patel"
-              className="inline-block rounded-full border-2 border-white/80 px-10 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
+              className="inline-block min-w-[11rem] rounded-xl border-2 border-white/80 px-10 py-4 text-lg font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
             >
               See it in action
-            </Link>
-            <Link
-              href="/get-started"
-              className="inline-block rounded-full border border-white/50 px-10 py-4 text-lg font-semibold text-white/90 transition-colors hover:bg-white/10"
-            >
-              Book a demo
             </Link>
           </div>
         </div>

@@ -4839,3 +4839,56 @@ input:focus, textarea:focus {
   border-color: #003d7a !important;
   box-shadow: 0 0 0 2px rgba(0, 61, 122, 0.15);
 }
+
+/* Dental-landing inspired marketing utilities (Aksh navy/emerald) */
+.marketing-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #006b4f;
+}
+
+.marketing-hero-blob {
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  filter: blur(64px);
+  pointer-events: none;
+}
+
+.marketing-hero-blob--emerald {
+  background: rgba(0, 168, 107, 0.35);
+}
+
+.marketing-hero-blob--navy {
+  background: rgba(0, 61, 122, 0.45);
+}
+
+.marketing-hero-card {
+  position: relative;
+}
+
+.marketing-capability-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.marketing-capability-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px -4px rgb(0 61 122 / 0.1), 0 4px 8px -4px rgb(0 61 122 / 0.06);
+  border-color: #d7e2f0;
+}
+
+.marketing-stat-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-capability-card,
+  .marketing-stat-card {
+    transition: none;
+  }
+
+  .marketing-capability-card:hover,
+  .marketing-stat-card:hover {
+    transform: none;
+  }
+}

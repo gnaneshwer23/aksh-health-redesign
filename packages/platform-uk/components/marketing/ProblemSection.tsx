@@ -1,11 +1,13 @@
+import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+
 export default function ProblemSection() {
   const cols = [
     {
       label: "Today",
-      border: "border-danger/30",
+      border: "border-danger/25",
       bg: "bg-danger/5",
       labelColor: "text-danger",
-      icon: "✕",
+      icon: XCircle,
       iconBg: "bg-danger/10",
       points: [
         "Patient data lives in 6+ disconnected systems",
@@ -17,10 +19,10 @@ export default function ProblemSection() {
     },
     {
       label: "The Gap",
-      border: "border-warning/30",
+      border: "border-warning/25",
       bg: "bg-warning/5",
       labelColor: "text-warning",
-      icon: "?",
+      icon: AlertTriangle,
       iconBg: "bg-warning/10",
       points: [
         "EHRs, labs, imaging, and pharmacy all exist",
@@ -32,10 +34,10 @@ export default function ProblemSection() {
     },
     {
       label: "Aksh Health",
-      border: "border-emerald/30",
+      border: "border-emerald/25",
       bg: "bg-emerald/5",
       labelColor: "text-emerald",
-      icon: "✓",
+      icon: CheckCircle2,
       iconBg: "bg-emerald/10",
       points: [
         "Designed for FHIR R4 and HL7 interoperability",
@@ -48,36 +50,43 @@ export default function ProblemSection() {
   ];
 
   return (
-    <section className="bg-white py-24">
+    <section className="bg-surface-muted py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-navy">
+        <div className="mb-14 text-center md:mb-16">
+          <p className="marketing-section-label mb-3">The challenge</p>
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-navy md:text-4xl">
             Healthcare Has Invested Trillions in Systems That Store Data.
           </h2>
-          <p className="text-xl text-steel">None of them understand it.</p>
+          <p className="text-lg text-steel md:text-xl">None of them understand it.</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {cols.map((col) => (
-            <div key={col.label} className={`rounded-2xl border-2 ${col.border} ${col.bg} p-8`}>
-              <div className="mb-6 flex items-center gap-3">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold ${col.iconBg} ${col.labelColor}`}
-                >
-                  {col.icon}
+          {cols.map((col) => {
+            const Icon = col.icon;
+            return (
+              <div
+                key={col.label}
+                className={`marketing-capability-card rounded-2xl border ${col.border} ${col.bg} p-8 shadow-card`}
+              >
+                <div className="mb-6 flex items-center gap-3">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${col.iconBg} ${col.labelColor}`}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <h3 className={`text-xl font-bold ${col.labelColor}`}>{col.label}</h3>
                 </div>
-                <h3 className={`text-xl font-bold ${col.labelColor}`}>{col.label}</h3>
+                <ul className="space-y-3">
+                  {col.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-2.5 text-sm leading-relaxed text-slate">
+                      <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${col.labelColor} bg-current`} />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {col.points.map((pt) => (
-                  <li key={pt} className="flex items-start gap-2 text-sm text-slate">
-                    <span className="mt-0.5 shrink-0">•</span>
-                    {pt}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

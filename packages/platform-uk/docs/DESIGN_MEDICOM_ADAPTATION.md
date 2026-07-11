@@ -1,8 +1,10 @@
 # Medicom Design Adaptation — Aksh Health
 
-Reference: [Medicom Healthcare Platform UI/UX](https://dribbble.com/shots/27266910-Medicom-Healthcare-Platform-UI-UX-Design) by SOLAR Digital.
+References:
+- [Medicom Healthcare Platform UI/UX](https://dribbble.com/shots/27266910-Medicom-Healthcare-Platform-UI-UX-Design) by SOLAR Digital
+- [Medical/Dental Website Landing](https://dribbble.com/shots/27148791-Medical-Dental-Website-Dental-Care-Landing-Design-UIUX) (dental care landing, adapted to Healthcare OS positioning)
 
-This document records what was adapted from the Medicom reference versus what remains on Aksh brand tokens.
+This document records what was adapted from design references versus what remains on Aksh brand tokens.
 
 ## Medicom patterns adopted
 
@@ -17,6 +19,21 @@ This document records what was adapted from the Medicom reference versus what re
 | Status badges | Pill-shaped badges with tinted borders (`badge` variants, `dashboard-status-badge`) |
 | Marketing hero | Grid overlay via Tailwind, emerald/navy radial accents, larger CTA radius |
 | Risk indicators | Tailwind tone classes (`risk-tone-*`) replacing inline colour styles |
+
+## Dental-landing patterns adopted (Healthcare OS, not dental clinic)
+
+| Pattern | Implementation |
+|--------|----------------|
+| Split hero layout | Copy left, mock GP review-queue dashboard card right (`HeroSection.tsx`) |
+| Dual primary CTAs | Get Started + See it in action (no tertiary Book a demo on homepage hero/CTA) |
+| Trust line below hero | Compliance pill row under CTAs; `TrustStrip` at hero base |
+| Stats / trust metrics band | `StatsBand.tsx`: 8 roles, 12 agents, HITL, FHIR R4 (factual, no inflated patient counts) |
+| Alternating section surfaces | `surface-muted` → `white` → `surface` rhythm across homepage sections |
+| Icon-led capability cards | Lucide icons in circles on `ProblemSection`, `HowItWorks`, `AgentGrid` |
+| Generous section padding | `py-20 md:py-24` on marketing sections |
+| Soft decorative blobs | `.marketing-hero-blob` navy/emerald gradients in hero (not teal) |
+| Card hover lift | `.marketing-capability-card` hover translate + shadow |
+| Section eyebrow labels | `.marketing-section-label` uppercase emerald micro-headings |
 
 ## Aksh brand preserved
 
@@ -35,7 +52,9 @@ This document records what was adapted from the Medicom reference versus what re
 - `app/onboarding/onboarding.css` — onboarding shell and card surface
 - `components/dashboard/Sidebar.tsx`, `TopBar.tsx`, `DashboardShell.tsx`
 - `components/dashboard/MetricCard.tsx`, `PatientPanel.tsx`, `PatientCard.tsx`, `ReviewQueueItem.tsx`, `RiskScoreBadge.tsx`
-- `components/marketing/HeroSection.tsx`, `Navbar.tsx`
+- `components/marketing/HeroSection.tsx`, `StatsBand.tsx`, `TrustStrip.tsx`, `ProblemSection.tsx`, `HowItWorks.tsx`, `AgentGrid.tsx`, `VoiceAgentSection.tsx`, `Navbar.tsx`
+- `app/page.tsx` — homepage section order and CTA polish
+- `app/globals.css` — `.marketing-*` utilities (blobs, capability cards, section labels)
 - `components/onboarding/OnboardingCard.tsx`, `StepIndicator.tsx`
 - `components/ui/card.tsx`, `badge.tsx`
 - `app/dashboard/gp/page.tsx` — GP three-column polish
@@ -43,6 +62,8 @@ This document records what was adapted from the Medicom reference versus what re
 ## Intentionally not copied
 
 - Medicom teal palette (replaced with Aksh navy/emerald)
+- Dental clinic imagery, tooth icons, or practice-booking flows
 - 3D anatomical visualisation motifs
 - Dark-mode glass aesthetic from legacy `globals.css` demo surfaces
 - Outfit display font on clinical dashboards (Inter only)
+- Fake social-proof metrics (e.g. inflated patient or practice counts)
