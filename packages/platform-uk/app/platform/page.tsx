@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PlatformPage() {
   return (
-    <MarketingShell overDarkHero>
+    <MarketingShell>
       <PlatformPageContent />
     </MarketingShell>
   );

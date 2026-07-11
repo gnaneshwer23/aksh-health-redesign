@@ -195,18 +195,22 @@ test.describe("Marketing smoke", () => {
     await page.goto("/platform");
 
     const nav = page.locator("nav[data-over-dark-hero]");
-    await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
+    await expect(nav).toHaveAttribute("data-over-dark-hero", "false");
+    await expect(nav).toHaveAttribute("data-solid-navbar", "true");
 
     const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
     await expect(platformLink).toBeVisible();
     const platformColor = await platformLink.evaluate((element) => window.getComputedStyle(element).color);
-    expect(platformColor).toMatch(/rgba?\(255,\s*255,\s*255/);
+    expect(platformColor).toBe("rgb(0, 61, 122)");
 
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Human-in-the-loop/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
+    await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
+    await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
   });
 
   test("resources page loads with expected sections", async ({ page }) => {
