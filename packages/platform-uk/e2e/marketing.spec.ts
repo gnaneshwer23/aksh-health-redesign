@@ -51,17 +51,18 @@ test.describe("Marketing smoke", () => {
   test("solutions dropdown exposes grouped audience links", async ({ page }) => {
     await page.goto("/");
 
-    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
+    const solutionsButton = page.locator("nav").getByRole("button", { name: "Solutions", exact: true });
+    const buttonBox = await solutionsButton.boundingBox();
     await solutionsButton.click();
 
-    const menu = page.locator("[data-solutions-menu]");
+    const menu = page.getByRole("menu", { name: "Solutions" });
     await expect(menu).toBeVisible();
 
     const menuBox = await menu.boundingBox();
-    const buttonBox = await solutionsButton.boundingBox();
     expect(menuBox).not.toBeNull();
     expect(buttonBox).not.toBeNull();
-    expect(Math.abs(menuBox!.x - buttonBox!.x)).toBeLessThan(4);
+    expect(Math.abs(menuBox!.x - buttonBox!.x)).toBeLessThan(12);
+    expect(menuBox!.y).toBeGreaterThan(buttonBox!.y + buttonBox!.height - 2);
 
     await expect(menu.getByRole("menuitem", { name: /Clinicians & practices/i })).toHaveAttribute(
       "href",
@@ -71,6 +72,9 @@ test.describe("Marketing smoke", () => {
     await expect(menu.getByRole("menuitem", { name: /Pharma & research/i })).toHaveAttribute("href", "/for-research");
     await expect(menu.getByRole("menuitem", { name: /Patients & carers/i })).toHaveAttribute("href", "/for-patients");
     await expect(menu.getByRole("menuitem", { name: "View all roles" })).toHaveAttribute("href", "/platform#roles");
+
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {

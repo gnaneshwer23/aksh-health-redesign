@@ -1,11 +1,20 @@
 import { Activity, Clock, ShieldCheck, Sparkles } from "lucide-react";
 
-const metrics = [
-  { label: "Agent outputs drafted", value: "12", icon: Sparkles, tone: "text-emerald" },
-  { label: "Review queue turnaround", value: "HITL", icon: Clock, tone: "text-navy" },
-  { label: "Every output audited", value: "100%", icon: ShieldCheck, tone: "text-emerald" },
-  { label: "FHIR resources staged", value: "R4", icon: Activity, tone: "text-navy" },
-] as const;
+import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { PastelCapabilityCard } from "@/components/marketing/PastelCapabilityCard";
+import type { PastelVariant } from "@/components/marketing/PastelCapabilityCard";
+
+const metrics: Array<{
+  label: string;
+  value: string;
+  icon: typeof Sparkles;
+  variant: PastelVariant;
+}> = [
+  { label: "Agent outputs drafted", value: "12", icon: Sparkles, variant: "mint" },
+  { label: "Review queue turnaround", value: "HITL", icon: Clock, variant: "blue" },
+  { label: "Every output audited", value: "100%", icon: ShieldCheck, variant: "lavender" },
+  { label: "FHIR resources staged", value: "R4", icon: Activity, variant: "peach" },
+];
 
 const activity = [
   { day: "Mon", value: 42 },
@@ -25,27 +34,26 @@ export default function PlatformMetricsSection() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
           <div>
-            <p className="marketing-section-label mb-3">Platform overview</p>
-            <h2 className="max-w-md text-3xl font-bold leading-[1.15] tracking-tight text-navy md:text-4xl">
-              Visibility into every agent, every review
-            </h2>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-steel">
-              Practice managers and ICS leads get a live view of agent throughput and review queue activity, without
-              leaving the platform.
-            </p>
+            <MarketingSectionHeader
+              align="left"
+              className="mb-0 md:mb-0"
+              label="Platform overview"
+              title="Visibility into every agent, every review"
+              description="Practice managers and ICS leads get a live view of agent throughput and review queue activity, without leaving the platform."
+            />
 
-            <dl className="mt-8 grid grid-cols-2 gap-4">
-              {metrics.map((metric) => {
-                const Icon = metric.icon;
-                return (
-                  <div key={metric.label} className="rounded-2xl border border-border-subtle bg-white p-5">
-                    <Icon className={`h-4 w-4 ${metric.tone}`} aria-hidden />
-                    <dd className="mt-2 text-xl font-bold text-navy">{metric.value}</dd>
-                    <dt className="mt-1 text-xs leading-relaxed text-steel">{metric.label}</dt>
-                  </div>
-                );
-              })}
-            </dl>
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              {metrics.map((metric) => (
+                <PastelCapabilityCard
+                  key={metric.label}
+                  variant={metric.variant}
+                  icon={metric.icon}
+                  title={metric.value}
+                  description={metric.label}
+                  compact
+                />
+              ))}
+            </div>
           </div>
 
           <div className="marketing-hero-card rounded-2xl border border-border-subtle bg-white p-6 shadow-xl shadow-navy/10 sm:p-8">

@@ -2,9 +2,15 @@
 
 import Link from "next/link";
 import { Building2, ChevronDown, FlaskConical, HeartPulse, Menu, Stethoscope, X } from "lucide-react";
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -48,31 +54,11 @@ type NavbarProps = {
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
 
-const solutionsMenuPanelClass =
-  "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 overflow-hidden rounded-2xl border border-border-subtle bg-white py-2.5 shadow-xl shadow-navy/10 ring-1 ring-black/[0.03] duration-150";
-
-type MenuCoords = {
-  left: number;
-  top: number;
-};
-
 export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const [menuCoords, setMenuCoords] = useState<MenuCoords | null>(null);
-  const solutionsMenuId = useId();
-  const solutionsButtonRef = useRef<HTMLButtonElement>(null);
-  const solutionsPanelRef = useRef<HTMLDivElement>(null);
-
-  const updateMenuCoords = useCallback(() => {
-    const button = solutionsButtonRef.current;
-    if (!button) return;
-
-    const rect = button.getBoundingClientRect();
-    setMenuCoords({ top: rect.bottom + 8, left: rect.left });
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -80,72 +66,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useLayoutEffect(() => {
-    if (!solutionsOpen) {
-      setMenuCoords(null);
-      return;
-    }
-
-    updateMenuCoords();
-    window.addEventListener("resize", updateMenuCoords);
-    window.addEventListener("scroll", updateMenuCoords, true);
-
-    return () => {
-      window.removeEventListener("resize", updateMenuCoords);
-      window.removeEventListener("scroll", updateMenuCoords, true);
-    };
-  }, [solutionsOpen, updateMenuCoords]);
-
-  useEffect(() => {
-    if (!solutionsOpen) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (solutionsButtonRef.current?.contains(target)) return;
-      if (solutionsPanelRef.current?.contains(target)) return;
-      setSolutionsOpen(false);
-    };
-
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [solutionsOpen]);
-
-  useEffect(() => {
-    if (!solutionsOpen) return;
-
-    const panel = solutionsPanelRef.current;
-    if (!panel) return;
-
-    const focusable = panel.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    first?.focus();
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setSolutionsOpen(false);
-        solutionsButtonRef.current?.focus();
-        return;
-      }
-
-      if (event.key !== "Tab" || focusable.length === 0) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [solutionsOpen]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -219,36 +139,55 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             </Link>
           ))}
 
-          <div
-            className="relative inline-flex"
-            onMouseEnter={() => setSolutionsOpen(true)}
-            onMouseLeave={() => setSolutionsOpen(false)}
-          >
-            <button
-              ref={solutionsButtonRef}
-              type="button"
-              className={cn(
-                "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
-                linkClass
-              )}
-              aria-expanded={solutionsOpen}
-              aria-haspopup="true"
-              aria-controls={solutionsMenuId}
-              onClick={() => setSolutionsOpen(true)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  setSolutionsOpen((open) => !open);
-                }
-                if (event.key === "Escape") {
-                  setSolutionsOpen(false);
-                }
-              }}
+          <DropdownMenu open={solutionsOpen} onOpenChange={setSolutionsOpen}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
+                  linkClass
+                )}
+                aria-haspopup="menu"
+              >
+                Solutions
+                <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="start"
+              sideOffset={8}
+              data-solutions-menu="true"
+              className="p-0"
+              onCloseAutoFocus={(event) => event.preventDefault()}
             >
-              Solutions
-              <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
-            </button>
-          </div>
+              <p className="px-4 pb-1.5 pt-3 text-[11px] font-semibold uppercase tracking-wide text-steel/70">
+                Browse by role
+              </p>
+              {solutionGroups.map((group) => {
+                const Icon = group.icon;
+                return (
+                  <DropdownMenuItem key={group.label} asChild className="mx-1.5 cursor-pointer rounded-xl px-3 py-2.5">
+                    <Link href={group.href} className="group flex items-start gap-3">
+                      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/[0.06] text-navy transition-colors group-hover:bg-emerald/10 group-hover:text-emerald">
+                        <Icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-semibold text-navy">{group.label}</span>
+                        <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
+                      </span>
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
+              <DropdownMenuSeparator className="mx-3" />
+              <DropdownMenuItem asChild className="mx-1.5 cursor-pointer rounded-xl px-3 py-2.5">
+                <Link href="/platform#roles" className="text-sm font-semibold text-emerald">
+                  View all roles
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {navLinks.slice(1).map(([label, href]) => (
             <Link key={label} href={href} className={linkClass}>
@@ -298,63 +237,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
-
-      {solutionsOpen && menuCoords
-        ? createPortal(
-            <div
-              id={solutionsMenuId}
-              ref={solutionsPanelRef}
-              role="menu"
-              data-solutions-menu="true"
-              className="fixed z-[60] min-w-[19.5rem]"
-              style={{ top: menuCoords.top, left: menuCoords.left }}
-              onMouseEnter={() => setSolutionsOpen(true)}
-              onMouseLeave={() => setSolutionsOpen(false)}
-            >
-              <div className={solutionsMenuPanelClass}>
-                <p className="px-4 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-steel/70">
-                  Browse by role
-                </p>
-                {solutionGroups.map((group) => {
-                  const Icon = group.icon;
-                  return (
-                    <Link
-                      key={group.label}
-                      href={group.href}
-                      role="menuitem"
-                      className={cn(
-                        "group flex items-start gap-3 rounded-lg px-4 py-2.5 mx-1.5 transition-colors hover:bg-emerald/[0.06]",
-                        focusRing
-                      )}
-                      onClick={() => setSolutionsOpen(false)}
-                    >
-                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy/[0.06] text-navy transition-colors group-hover:bg-emerald/10 group-hover:text-emerald">
-                        <Icon className="h-4 w-4" aria-hidden />
-                      </span>
-                      <span>
-                        <span className="block text-sm font-semibold text-navy">{group.label}</span>
-                        <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
-                      </span>
-                    </Link>
-                  );
-                })}
-                <div className="mx-3 my-1.5 border-t border-border-subtle" />
-                <Link
-                  href="/platform#roles"
-                  role="menuitem"
-                  className={cn(
-                    "mx-1.5 block rounded-lg px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
-                    focusRing
-                  )}
-                  onClick={() => setSolutionsOpen(false)}
-                >
-                  View all roles
-                </Link>
-              </div>
-            </div>,
-            document.body
-          )
-        : null}
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent

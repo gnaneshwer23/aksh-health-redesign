@@ -3,7 +3,9 @@ import { Users } from "lucide-react";
 
 import type { AudiencePageContent } from "@/components/marketing/audience/audience-content";
 import { AudienceWorkflowSection } from "@/components/marketing/audience/AudienceWorkflowSection";
+import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
 
 export type AudiencePageLayoutProps = AudiencePageContent;
@@ -80,27 +82,22 @@ export function AudiencePageLayout({
       {/* Pain points */}
       <section className="bg-surface-muted py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 max-w-2xl md:mb-14">
-            <p className="marketing-section-label mb-3">The challenge</p>
-            <h2 className="text-3xl font-bold tracking-tight text-navy md:text-4xl">Challenges we hear every day</h2>
-            <p className="mt-3 text-lg text-steel">Built for NHS workflows with clinician approval on every output.</p>
-          </div>
+          <MarketingSectionHeader
+            align="left"
+            label="The challenge"
+            title="Challenges we hear every day"
+            description="Built for NHS workflows with clinician approval on every output."
+          />
           <div className="grid gap-6 md:grid-cols-3">
-            {pains.map((pain) => {
-              const Icon = pain.icon;
-              return (
-                <article
-                  key={pain.title}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8"
-                >
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-navy/10 text-navy">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </div>
-                  <h3 className="text-lg font-bold text-navy">{pain.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-steel">{pain.body}</p>
-                </article>
-              );
-            })}
+            {pains.map((pain, index) => (
+              <PastelCapabilityCard
+                key={pain.title}
+                variant={pastelVariantAt(index)}
+                icon={pain.icon}
+                title={pain.title}
+                description={pain.body}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -108,29 +105,23 @@ export function AudiencePageLayout({
       {/* Capabilities */}
       <section className="bg-white py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 max-w-2xl md:mb-14">
-            <p className="marketing-section-label mb-3">How we help</p>
-            <h2 className="text-3xl font-bold tracking-tight text-navy md:text-4xl">How Aksh Health helps</h2>
-            <p className="mt-3 text-lg text-steel">FHIR R4 ready outputs staged for review. Demo uses synthetic data.</p>
-          </div>
+          <MarketingSectionHeader
+            align="left"
+            label="How we help"
+            title="How Aksh Health helps"
+            description="FHIR R4 ready outputs staged for review. Demo uses synthetic data."
+          />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {capabilities.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <article
-                  key={feature.title}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
-                >
-                  <div
-                    className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${feature.iconBg}`}
-                  >
-                    <Icon className={`h-5 w-5 ${feature.iconColor}`} aria-hidden />
-                  </div>
-                  <h3 className="text-lg font-bold text-navy">{feature.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-steel">{feature.body}</p>
-                </article>
-              );
-            })}
+            {capabilities.map((feature, index) => (
+              <PastelCapabilityCard
+                key={feature.title}
+                variant={pastelVariantAt(index)}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.body}
+                compact
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -140,11 +131,12 @@ export function AudiencePageLayout({
       {/* Workflow / agents */}
       <section className="bg-surface py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 max-w-2xl md:mb-14">
-            <p className="marketing-section-label mb-3">Your workflow</p>
-            <h2 className="text-3xl font-bold tracking-tight text-navy md:text-4xl">{workflowTitle}</h2>
-            <p className="mt-3 text-lg text-steel">{workflowDescription}</p>
-          </div>
+          <MarketingSectionHeader
+            align="left"
+            label="Your workflow"
+            title={workflowTitle}
+            description={workflowDescription}
+          />
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {agents.map((agent) => {
