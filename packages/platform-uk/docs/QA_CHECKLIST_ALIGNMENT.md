@@ -14,11 +14,11 @@ This document maps the **Aksh Health Deployment QA Checklist** (~188 checks acro
 | Checklist assumption | Current implementation |
 |---|---|
 | Supabase Auth / JWT refresh (S11-01) | **NextAuth.js** credentials + optional clinical OAuth; session via `next-auth` cookie |
-| Supabase Postgres (S1-03, S11-02) | **Neon Postgres** via `pg` + `lib/auth/user-repository.ts` (optional; demo users work without DB) |
+| Supabase Postgres (S1-03, S11-02) | **Neon Postgres** via `pg` + `lib/auth/user-repository.ts` (**required** for credentials auth) |
 | `SUPABASE_SERVICE_ROLE_KEY` in bundle (S11-02) | **N/A** — no Supabase; verify no `NEO4J_PASSWORD` / `NEXTAUTH_SECRET` in client bundle instead |
 | Signup role **dropdown** (S2-01) | **8-tile role picker** on `/signup` (`RoleTile` grid) |
 | Email confirmation after signup (S2-02) | Account created → auto sign-in → redirect to `/onboarding/role-select` (no email gate in demo) |
-| Test account `test-gp@example.com` (S15-02) | Demo GP: `gp@demo.akshhealth.com` / `demo123` |
+| Test account `test-gp@example.com` (S15-02) | E2E creates `e2e+…@akshhealth.test` via `POST /api/auth/signup` |
 
 ---
 
@@ -86,8 +86,9 @@ CI runs `npm run verify && npm run build` then Playwright against `npm run start
 | `e2e/role-routing.spec.ts` | Unauthenticated `/dashboard/*` → signin | S11-03, S15-03 |
 | `e2e/helpers/auth.ts` | Shared NextAuth sign-in helpers | — |
 
-**Demo accounts** (password `demo123`): see `lib/auth/demo-users.ts`.  
-Onboarding-only test user: `onboarding@demo.akshhealth.com`.
+**E2E auth:** each Playwright run signs up fresh users via `/api/auth/signup` (see `e2e/helpers/auth.ts`). Requires `DATABASE_URL`. Override password with `E2E_TEST_PASSWORD`.
+
+Demo credential accounts (`gp@demo.akshhealth.com`, etc.) were **removed** — use `/signup` for real accounts.
 
 ---
 

@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-import { applyApiCookiesToPage, DEMO_GP, signInViaApi } from "./helpers/auth";
+import { applyApiCookiesToPage, createOnboardedTestUser } from "./helpers/auth";
 
 test.describe("GP dashboard", () => {
   test.beforeEach(async ({ page, request, baseURL }) => {
-    await signInViaApi(request, baseURL!, DEMO_GP.email, DEMO_GP.password);
+    await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "gp-dashboard" });
     await applyApiCookiesToPage(page, request);
     await page.goto("/dashboard/gp");
     await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();

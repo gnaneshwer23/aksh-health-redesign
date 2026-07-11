@@ -57,7 +57,7 @@ The script is idempotent (`MERGE`) and loads:
 ## 4. Verify
 
 1. Start the app: `npm run dev`
-2. Sign in as `doctor@akshhealth.com` / `demo123`
+2. Create an account at `/signup` and sign in
 3. Open **GP Dashboard** → select **Mr James Patel (P002)**
 4. Check ORACLE score and GUARDIAN interaction panel (live when `X-Data-Source: neo4j`)
 5. Open **ICS Dashboard** → charts load from `/api/neo4j/ics-population`

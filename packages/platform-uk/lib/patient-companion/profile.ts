@@ -1,10 +1,6 @@
 import type { Session } from "next-auth";
 
-import { getPatientById } from "@/lib/mock-data/patients";
 import type { IdentityData } from "@/lib/onboarding/validation";
-
-const DEMO_PATIENT_EMAIL = "patient@demo.akshhealth.com";
-const DEMO_PATIENT_RECORD_ID = "P002";
 
 export type PatientCompanionProfile = {
   firstName: string;
@@ -93,49 +89,22 @@ export function getPatientCompanionProfile(
       ? `${onboardingFirst} ${onboardingLast}`
       : profileName ?? sessionName ?? firstName;
 
-  const linkedRecord =
-    session?.user?.email?.toLowerCase() === DEMO_PATIENT_EMAIL
-      ? getPatientById(DEMO_PATIENT_RECORD_ID)
-      : null;
+  const medications = [
+    { label: "Metformin 500mg", schedule: "twice daily", purpose: "For diabetes" },
+    { label: "Aspirin 75mg", schedule: "once daily", purpose: "For heart health" },
+  ];
 
-  const medications =
-    linkedRecord?.activeMedications.map((med) => {
-      const [label, ...rest] = med.split(/\s+(?=\d)/);
-      return {
-        label: label.trim(),
-        schedule: rest.join(" ").trim() || "As prescribed",
-        purpose: med.toLowerCase().includes("metformin")
-          ? "For diabetes"
-          : med.toLowerCase().includes("aspirin")
-            ? "For heart health"
-            : med.toLowerCase().includes("atorvastatin")
-              ? "For cholesterol"
-              : "As prescribed",
-      };
-    }) ?? [
-      { label: "Metformin 500mg", schedule: "twice daily", purpose: "For diabetes" },
-      { label: "Aspirin 75mg", schedule: "once daily", purpose: "For heart health" },
-    ];
-
-  const conditions =
-    linkedRecord?.activeConditions.map((condition, index) => ({
-      title: condition,
-      status: index === 0 ? "Monitor" : "Active",
+  const conditions = [
+    {
+      title: "Type 2 Diabetes",
+      status: "Monitor",
       summary:
-        index === 0
-          ? "Your HbA1c review is due. Your GP is reviewing your medications following your recent DVT diagnosis."
-          : "Your care team is monitoring this condition and will contact you if anything needs attention.",
-    })) ?? [
-      {
-        title: "Type 2 Diabetes",
-        status: "Monitor",
-        summary:
-          "Your HbA1c review is due. Your GP is reviewing your medications following your recent DVT diagnosis.",
-      },
-    ];
+        "Your HbA1c review is due. Your GP is reviewing your medications following your recent DVT diagnosis.",
+    },
+  ];
 
-  const appointmentDate = linkedRecord?.nextAppointmentDate ?? "2026-07-24";
-  const appointmentTime = linkedRecord?.appointmentTime ?? "09:30";
+  const appointmentDate = "2026-07-24";
+  const appointmentTime = "09:30";
 
   return {
     firstName,
@@ -143,12 +112,13 @@ export function getPatientCompanionProfile(
     conditions,
     medications,
     careTeam: [
-      { role: "GP", name: linkedRecord?.supervisingGp ?? "Dr Morgan" },
+      { role: "GP", name: "Dr Morgan" },
       { role: "Nurse", name: "Nurse Davies" },
       { role: "Pharmacist", name: "Pharmacist Lee" },
     ],
     upcomingAppointment: `${formatAppointmentDate(appointmentDate)}, ${appointmentTime} | GP review (Riverside Medical Centre)`,
-    pastAppointmentSummary: `Your last GP appointment summary: ${linkedRecord?.supervisingGp ?? "Dr Morgan"} reviewed your diabetes medications and suspected a blood clot in your leg. You were referred for a scan.`,
+    pastAppointmentSummary:
+      "Your last GP appointment summary: Dr Morgan reviewed your diabetes medications and suspected a blood clot in your leg. You were referred for a scan.",
     nurseReviewer: "Nurse Davies",
   };
 }

@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-import { applyApiCookiesToPage, DEMO_PATIENT, signInViaApi } from "./helpers/auth";
+import { applyApiCookiesToPage, createOnboardedTestUser } from "./helpers/auth";
 
 test.describe("Patient dashboard", () => {
   test.beforeEach(async ({ page, request, baseURL }) => {
-    await signInViaApi(request, baseURL!, DEMO_PATIENT.email, DEMO_PATIENT.password);
+    await createOnboardedTestUser(request, baseURL!, { role: "patient", label: "patient-dashboard" });
     await applyApiCookiesToPage(page, request);
     await page.goto("/dashboard/patient");
   });

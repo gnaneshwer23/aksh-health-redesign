@@ -3,10 +3,11 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { requireSmokeCredentials, requireSmokeUserId } from "./lib/smoke-credentials.mjs";
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const smokeEmail = process.env.SMOKE_LOOP_EMAIL ?? "smoke@akshhealth.com";
-const smokePassword = process.env.SMOKE_LOOP_PASSWORD ?? "demo123";
-const smokeUserId = process.env.SMOKE_LOOP_USER_ID ?? "user-003";
+const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_LOOP", "smoke:browser");
+const smokeUserId = requireSmokeUserId();
 const projectRoot = process.cwd();
 
 async function cleanupScopeFiles() {

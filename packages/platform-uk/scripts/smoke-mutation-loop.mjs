@@ -1,10 +1,11 @@
 import { unlink } from "node:fs/promises";
 import path from "node:path";
 
+import { requireSmokeCredentials, requireSmokeUserId } from "./lib/smoke-credentials.mjs";
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const smokeEmail = process.env.SMOKE_LOOP_EMAIL ?? "smoke@akshhealth.com";
-const smokePassword = process.env.SMOKE_LOOP_PASSWORD ?? "demo123";
-const smokeUserId = process.env.SMOKE_LOOP_USER_ID ?? "user-003";
+const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_LOOP", "smoke:loop");
+const smokeUserId = requireSmokeUserId();
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 const projectRoot = process.cwd();
 

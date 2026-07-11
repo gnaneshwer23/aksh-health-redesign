@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirects";
 import { signInSchema, type SignInInput } from "@/lib/auth/schemas";
-import { DEMO_TEST_CREDENTIALS } from "@/lib/auth/demo-credentials";
 import { PROOF_MODE_BANNER } from "@/lib/compliance-labels";
 import { authConfig, isClinicalOAuthConfigured } from "@/lib/auth/config";
 
@@ -132,7 +131,7 @@ function SignInFormInner() {
                     data-testid="signin-email"
                     type="email"
                     autoComplete="email"
-                    placeholder="doctor@akshhealth.com"
+                    placeholder="you@nhs.net"
                     className="rounded-xl"
                   />
                 </FormControl>
@@ -172,13 +171,6 @@ function SignInFormInner() {
           </Button>
         </form>
       </Form>
-
-      <div className="mt-6 rounded-xl bg-surface-muted px-4 py-3 text-sm text-muted">
-        <p className="font-medium text-slate">Demo account</p>
-        <p className="mt-1">
-          <code>{DEMO_TEST_CREDENTIALS.email}</code> / <code>{DEMO_TEST_CREDENTIALS.password}</code>
-        </p>
-      </div>
     </AuthCardLayout>
   );
 }

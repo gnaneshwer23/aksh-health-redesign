@@ -1,17 +1,18 @@
+import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
+
 /**
  * Hospital executive dashboard smoke checks.
  *
  * Requires a running app (`npm run dev` or `npm run build && npm run start`).
  *
- * Auth: uses NextAuth credentials flow with demo hospital account unless overridden:
- *   SMOKE_HOSPITAL_EMAIL=hospital@demo.akshhealth.com
- *   SMOKE_HOSPITAL_PASSWORD=demo123
+ * Auth: set credentials for a real account created via /signup:
+ *   SMOKE_HOSPITAL_EMAIL=you@example.com
+ *   SMOKE_HOSPITAL_PASSWORD=your-password
  *   SMOKE_BASE_URL=http://127.0.0.1:3000
  */
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const smokeEmail = process.env.SMOKE_HOSPITAL_EMAIL ?? "hospital@demo.akshhealth.com";
-const smokePassword = process.env.SMOKE_HOSPITAL_PASSWORD ?? "demo123";
+const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_HOSPITAL", "smoke:hospital");
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedHospitalRoutes = [
@@ -169,7 +170,7 @@ async function signIn() {
 
 async function run() {
   console.log(`Running hospital dashboard smoke checks against ${baseUrl}`);
-  console.log("Note: authenticated route checks require a valid session cookie from demo credentials.");
+  console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
   await assertRedirectsToSignIn("/dashboard/hospital");
 

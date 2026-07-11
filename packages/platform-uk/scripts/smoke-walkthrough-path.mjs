@@ -1,6 +1,7 @@
+import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const smokeEmail = process.env.SMOKE_EMAIL ?? "doctor@akshhealth.com";
-const smokePassword = process.env.SMOKE_PASSWORD ?? "demo123";
+const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE", "smoke:walkthrough");
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const publicPages = [

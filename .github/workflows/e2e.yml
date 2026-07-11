@@ -25,6 +25,8 @@ jobs:
       E2E_BASE_URL: http://127.0.0.1:3000
       NEXTAUTH_SECRET: ci-e2e-nextauth-secret
       NEXTAUTH_URL: http://127.0.0.1:3000
+      DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
 
     steps:
       - name: Checkout

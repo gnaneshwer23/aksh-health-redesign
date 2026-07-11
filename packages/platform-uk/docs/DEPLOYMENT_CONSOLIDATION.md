@@ -10,7 +10,7 @@ Environment variables for production (Vercel) and local development. **Never com
 | `NEXTAUTH_SECRET` | Generate: `openssl rand -base64 32` |
 | `DATABASE_URL` | `postgresql://...@...neon.tech/neondb?sslmode=require` |
 
-Seed demo users after deploy: `npm run auth:seed` (requires `DATABASE_URL`).
+Ensure auth schema after first deploy: `npm run auth:schema` (requires `DATABASE_URL`). Users sign up via `/signup` — demo accounts were removed.
 
 ## Optional — Neo4j Aura (Phase D)
 
@@ -28,12 +28,10 @@ Verify: sign in and call `GET /api/neo4j/health` — expect `{ "connected": true
 
 Full graph setup: [NEO4J_SETUP.md](./NEO4J_SETUP.md).
 
-## Optional — Demo / OAuth
+## Optional — Clinical OAuth
 
 | Variable | Notes |
 |----------|-------|
-| `AKSH_DEMO_PASSWORD` | Default `demo123` for seeded accounts |
-| `AKSH_DEMO_PASSWORD_HASH` | Optional bcrypt override |
 | `CLINICAL_OAUTH_*` | Clinical identity provider (off by default) |
 
 ## Profile-driven dashboards (Phase D)
@@ -47,5 +45,5 @@ No extra env vars beyond `DATABASE_URL` are required for profile personalization
 1. Set `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL`
 2. (Optional) Set `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`
 3. Redeploy
-4. Run `npm run auth:seed` against production Neon if demo accounts are needed
+4. Run `npm run auth:schema` against production Neon on first deploy
 5. Run `npm run data:seed:neo4j` if Neo4j credentials were added

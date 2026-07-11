@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { DEMO_GP, signInViaUi } from "./helpers/auth";
+import { createOnboardedTestUser, signInViaUi } from "./helpers/auth";
 
 const SIGNUP_ROLE_LABELS = [
   "GP",
@@ -30,8 +30,9 @@ test.describe("Auth flow", () => {
     await expect(roleTiles).toHaveCount(8);
   });
 
-  test("signin with demo GP reaches GP dashboard", async ({ page }) => {
-    await signInViaUi(page, DEMO_GP.email, DEMO_GP.password);
+  test("signin with onboarded GP reaches GP dashboard", async ({ page, request, baseURL }) => {
+    const user = await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "auth-gp" });
+    await signInViaUi(page, user.email, user.password);
     await page.goto("/dashboard/gp");
     await page.waitForURL(/\/dashboard\/gp/, { timeout: 15_000 });
 

@@ -93,7 +93,7 @@ async function run() {
   await assertFileIncludes("package.json", "\"smoke:walkthrough\"");
   await assertFileIncludes("next.config.mjs", ".next-build-active");
   await assertFileIncludes("scripts/smoke-walkthrough-path.mjs", "/review/demo-readiness?demo=1");
-  await assertFileIncludes("scripts/smoke-walkthrough-path.mjs", "doctor@akshhealth.com");
+  await assertFileIncludes("scripts/smoke-walkthrough-path.mjs", "requireSmokeCredentials");
   await assertFileIncludes("lib/simulated-patients.ts", "realPatientData: false");
   await assertFileIncludes("lib/governance-pack.ts", "productionClinicalSafetyCase: false");
   await assertFileIncludes("lib/research-evaluation-plan.ts", "productionClinicalAiClaim: false");

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { applyApiCookiesToPage, DEMO_ONBOARDING, signInViaApi } from "./helpers/auth";
+import { applyApiCookiesToPage, createFreshTestUser } from "./helpers/auth";
 
 test.describe("Onboarding redirect", () => {
   test("authenticated user without onboarding is sent to onboarding flow", async ({
@@ -8,7 +8,7 @@ test.describe("Onboarding redirect", () => {
     request,
     baseURL,
   }) => {
-    await signInViaApi(request, baseURL!, DEMO_ONBOARDING.email, DEMO_ONBOARDING.password);
+    await createFreshTestUser(request, baseURL!, { role: "gp", label: "onboarding" });
     await applyApiCookiesToPage(page, request);
 
     await page.goto("/dashboard/gp");

@@ -3,36 +3,10 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { authConfig, isClinicalOAuthConfigured } from "./auth/config";
-import { DEMO_USER_SEEDS } from "./auth/demo-users";
 import { nextAuthSecret } from "./auth-secret";
 import type { UserRole } from "./onboarding/roles";
 import type { IdentityData, OrganisationData } from "./onboarding/validation";
 import { resolveOrganisationName } from "./profile/personalization";
-
-const defaultDemoPasswordHash = "$2b$10$6iKQv2GujEgJKB9Auy8dK.clvty6jJfEGd.lZHML8BrjngJYLF7M6";
-
-function resolveDemoPasswordHash(primaryEnvKey: string) {
-  return process.env[primaryEnvKey]?.trim() || process.env.AKSH_DEMO_PASSWORD_HASH?.trim() || defaultDemoPasswordHash;
-}
-
-type DemoUser = {
-  id: string;
-  email: string;
-  name: string;
-  passwordHash: string;
-  role: UserRole;
-  onboardingComplete: boolean;
-};
-
-const DEMO_USERS: Record<string, DemoUser> = Object.fromEntries(
-  DEMO_USER_SEEDS.map((user) => [
-    user.email,
-    {
-      ...user,
-      passwordHash: resolveDemoPasswordHash(`AKSH_DEMO_${user.role.toUpperCase().replace(/-/g, "_")}_PASSWORD_HASH`),
-    },
-  ])
-);
 
 type ClinicalOAuthProfile = {
   sub?: string;
@@ -67,40 +41,22 @@ const oauthProviders = isClinicalOAuthConfigured()
 async function resolveCredentialsUser(email: string, password: string) {
   const normalizedEmail = email.trim().toLowerCase();
 
-  try {
-    const { findAuthUserByEmail, findUserByEmail } = await import("./auth/user-repository");
-    const dbUser = await findAuthUserByEmail(normalizedEmail);
-    if (dbUser) {
-      const stored = await findUserByEmail(normalizedEmail);
-      if (!stored) return null;
+  const { findAuthUserByEmail, findUserByEmail } = await import("./auth/user-repository");
+  const dbUser = await findAuthUserByEmail(normalizedEmail);
+  if (!dbUser) return null;
 
-      const passwordMatches = await compare(password, stored.passwordHash);
-      if (!passwordMatches) return null;
+  const stored = await findUserByEmail(normalizedEmail);
+  if (!stored) return null;
 
-      return {
-        id: dbUser.id,
-        email: dbUser.email,
-        name: dbUser.name,
-        role: dbUser.role,
-        onboardingComplete: dbUser.onboardingComplete,
-      };
-    }
-  } catch {
-    // Database unavailable — fall back to demo users.
-  }
-
-  const demoUser = DEMO_USERS[normalizedEmail];
-  if (!demoUser) return null;
-
-  const passwordMatches = await compare(password, demoUser.passwordHash);
+  const passwordMatches = await compare(password, stored.passwordHash);
   if (!passwordMatches) return null;
 
   return {
-    id: demoUser.id,
-    email: demoUser.email,
-    name: demoUser.name,
-    role: demoUser.role,
-    onboardingComplete: demoUser.onboardingComplete,
+    id: dbUser.id,
+    email: dbUser.email,
+    name: dbUser.name,
+    role: dbUser.role,
+    onboardingComplete: dbUser.onboardingComplete,
   };
 }
 
@@ -136,7 +92,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "doctor@akshhealth.com" },
+        email: { label: "Email", type: "email", placeholder: "you@nhs.net" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {

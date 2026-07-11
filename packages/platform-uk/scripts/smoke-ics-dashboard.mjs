@@ -1,17 +1,18 @@
+import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
+
 /**
  * ICS Lead dashboard smoke checks.
  *
  * Requires a running app (`npm run dev` or `npm run build && npm run start`).
  *
- * Auth: uses NextAuth credentials flow with demo ICS account unless overridden:
- *   SMOKE_ICS_EMAIL=ics@demo.akshhealth.com
- *   SMOKE_ICS_PASSWORD=demo123
+ * Auth: set credentials for a real account created via /signup:
+ *   SMOKE_ICS_EMAIL=you@example.com
+ *   SMOKE_ICS_PASSWORD=your-password
  *   SMOKE_BASE_URL=http://127.0.0.1:3000
  */
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const smokeEmail = process.env.SMOKE_ICS_EMAIL ?? "ics@demo.akshhealth.com";
-const smokePassword = process.env.SMOKE_ICS_PASSWORD ?? "demo123";
+const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_ICS", "smoke:ics");
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedIcsRoutes = [
@@ -170,7 +171,7 @@ async function signIn() {
 
 async function run() {
   console.log(`Running ICS dashboard smoke checks against ${baseUrl}`);
-  console.log("Note: authenticated route checks require a valid session cookie from demo credentials.");
+  console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
   await assertRedirectsToSignIn("/dashboard/ics");
 

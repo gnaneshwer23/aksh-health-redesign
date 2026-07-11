@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { DEMO_GP, signInViaApi } from "./helpers/auth";
+import { createOnboardedTestUser } from "./helpers/auth";
 
 test.describe("API health", () => {
   test("neo4j health and profile endpoints return expected shapes", async ({ request, baseURL }) => {
@@ -10,7 +10,7 @@ test.describe("API health", () => {
     const unauthProfile = await request.get("/api/profile");
     expect(unauthProfile.status()).toBe(401);
 
-    await signInViaApi(request, baseURL!, DEMO_GP.email, DEMO_GP.password);
+    await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "api-health" });
 
     const healthResponse = await request.get("/api/neo4j/health");
     expect(healthResponse.ok()).toBeTruthy();

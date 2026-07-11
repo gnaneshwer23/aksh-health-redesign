@@ -127,7 +127,7 @@ npm run dev
 npm run smoke:walkthrough
 ```
 
-This signs in with the demo clinical user and checks the main public-to-workspace walkthrough path.
+This signs in with configured smoke credentials (`SMOKE_EMAIL` / `SMOKE_PASSWORD`) and checks the main public-to-workspace walkthrough path.
 
 Use the browser-driven loop smoke gate against a running app:
 
@@ -150,7 +150,7 @@ npm run test:e2e:ui  # interactive UI mode
 
 See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
 
-Demo auth uses bcrypt-hashed fixtures. Override them with `AKSH_DEMO_PASSWORD_HASH` for a shared demo password hash, or with per-user values via `AKSH_DEMO_DOCTOR_PASSWORD_HASH`, `AKSH_DEMO_REVIEWER_PASSWORD_HASH`, and `AKSH_DEMO_SMOKE_PASSWORD_HASH`.
+E2E and authenticated smoke tests require `DATABASE_URL`. Playwright creates fresh users via `/api/auth/signup` each run (`e2e/helpers/auth.ts`). Smoke scripts require real credentials via env vars (see `.env.example`).
 
 The current build uses separate Next outputs:
 
