@@ -123,14 +123,17 @@ export function CookieConsent() {
           ) : (
             <>
               <div className="space-y-3 p-5">
-                <p id="cookie-consent-title" className="text-sm leading-relaxed text-slate">
+                <h2 id="cookie-consent-title" className="sr-only">
+                  Cookies on Aksh Health
+                </h2>
+                <p className="text-sm leading-relaxed text-slate">
                   We use essential cookies to keep you signed in and to protect the platform. We may also use optional
                   analytics cookies in future to improve our services.
                 </p>
                 <p id="cookie-consent-description" className="text-sm leading-relaxed text-slate">
                   For descriptions of each type of cookie, visit our{" "}
                   <Link href="/cookies" className="font-medium text-navy underline underline-offset-2 hover:text-emerald">
-                    Cookies page
+                    Cookie Policy
                   </Link>
                   . Click &lsquo;Accept all&rsquo; to enable optional cookies, &lsquo;Reject all&rsquo; to decline
                   them, or &lsquo;Settings&rsquo; to choose your preferences.

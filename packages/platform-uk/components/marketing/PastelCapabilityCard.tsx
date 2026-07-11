@@ -63,7 +63,7 @@ export function PastelCapabilityCard({
       {label ? (
         <p className={cn("mb-1 text-xs font-bold uppercase tracking-wider", styles.ink)}>{label}</p>
       ) : null}
-      <p className={cn("font-bold text-navy", compact ? "mb-2 text-base" : "mb-3 text-lg")}>{title}</p>
+      <h3 className={cn("font-bold text-navy", compact ? "mb-2 text-base" : "mb-3 text-lg")}>{title}</h3>
       <p className="text-sm leading-relaxed text-steel">{description}</p>
       {footer}
     </div>

@@ -343,8 +343,8 @@ test.describe("Marketing smoke", () => {
     const banner = page.getByRole("dialog", { name: /Cookies on Aksh Health/i });
     await expect(banner).toBeVisible();
     await expect(banner.getByRole("button", { name: "Accept all" })).toBeVisible();
-    await expect(banner.getByRole("button", { name: "Essential only" })).toBeVisible();
-    await expect(banner.getByRole("button", { name: "Manage preferences" })).toBeVisible();
+    await expect(banner.getByRole("button", { name: "Settings" })).toBeVisible();
+    await expect(banner.getByRole("button", { name: "Reject all" })).toBeVisible();
     await expect(banner.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
   });
 

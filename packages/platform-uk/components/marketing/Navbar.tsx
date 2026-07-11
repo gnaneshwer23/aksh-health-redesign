@@ -84,7 +84,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const linkClass = cn(
     "text-sm font-medium transition-colors rounded-lg",
     focusRing,
-    transparentOverHero ? "text-white/90 hover:text-white" : "text-steel hover:text-navy"
+    transparentOverHero ? "text-white/90 hover:text-white" : "text-navy hover:text-emerald"
   );
 
   return (
