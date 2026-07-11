@@ -3,7 +3,7 @@ const agents = [
   { name: "DrASSIST", tag: "Clinical", color: "bg-purple-700", desc: "Differential diagnosis + SNOMED-CT / ICD-10 coding with confidence scores. GP overrides freely.", fhir: "Condition" },
   { name: "GUARDIAN", tag: "Safety", color: "bg-danger", desc: "Real-time drug interaction, allergy, and contraindication checking. BNF-validated. Red / Amber / Green.", fhir: "Flag, MedicationRequest" },
   { name: "ORACLE", tag: "Risk", color: "bg-warning", desc: "CVD, T2D, and frailty risk scoring. 14-day hospital admission prediction using the knowledge graph.", fhir: "RiskAssessment" },
-  { name: "VOICE", tag: "Documentation", color: "bg-sky-500", desc: "GP dictates naturally. VOICE transcribes in real-time. SYNTHESIS converts to SOAP. GP approves.", fhir: "DocumentReference" },
+  { name: "VOICE", tag: "Documentation", color: "bg-sky-700", desc: "GP dictates naturally. VOICE transcribes in real-time. SYNTHESIS converts to SOAP. GP approves.", fhir: "DocumentReference" },
   { name: "EQUITY", tag: "Population", color: "bg-teal-600", desc: "Detects health disparities by IMD quintile and ethnicity. Monthly ICS equity reports.", fhir: "Observation (flag)" },
   { name: "SHIELD", tag: "Compliance", color: "bg-slate", desc: "Immutable audit trail for every AI recommendation and GP action. DCB0129-compliant. CQC-ready.", fhir: "AuditEvent" },
   { name: "HEALTH COMPANION", tag: "Patient", color: "bg-accent", desc: "24/7 patient health assistant. Daily check-ins, medication reminders, care plan in plain English.", fhir: "CommunicationRequest" },

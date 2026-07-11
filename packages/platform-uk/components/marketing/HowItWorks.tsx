@@ -2,7 +2,7 @@ export default function HowItWorks() {
   const steps = [
     {
       num: "01",
-      color: "bg-sky-500",
+      color: "bg-sky-700",
       title: "CONNECT",
       sub: "One platform. Every system.",
       body: "Designed to integrate with EMIS Web and SystmOne via FHIR R4 and HL7 v2. No migration project and no rip-and-replace. Current demo uses synthetic patient data; production integration paths are on the roadmap.",
