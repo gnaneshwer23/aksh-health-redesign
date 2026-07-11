@@ -30,7 +30,7 @@ export default function NotFound() {
               href="/signup"
               className="inline-flex rounded-xl border border-emerald/30 px-6 py-3 text-sm font-medium text-emerald transition-colors hover:bg-emerald/5"
             >
-              Get started
+              Create account
             </Link>
           </div>
         </div>

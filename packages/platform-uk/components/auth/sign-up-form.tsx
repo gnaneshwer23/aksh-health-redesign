@@ -81,15 +81,23 @@ function SignUpFormInner() {
   return (
     <AuthCardLayout
       title="Create your account"
-      subtitle="Join Aksh Health and complete personalised onboarding"
-      className="max-w-3xl"
+      subtitle="Self-serve registration for GPs, nurses, patients, and individual users"
+      className="max-w-2xl"
       footer={
-        <p className="text-center text-sm text-muted">
-          Already have an account?{" "}
-          <Link href="/signin" className="font-semibold text-medicom-navy hover:underline">
-            Sign in
-          </Link>
-        </p>
+        <div className="space-y-3 text-center text-sm text-muted">
+          <p>
+            Already have an account?{" "}
+            <Link href="/signin" className="font-semibold text-medicom-navy hover:underline">
+              Sign in
+            </Link>
+          </p>
+          <p>
+            Need organisation access?{" "}
+            <Link href="/get-started" className="font-semibold text-emerald hover:underline">
+              Request access
+            </Link>
+          </p>
+        </div>
       }
     >
       {error ? (

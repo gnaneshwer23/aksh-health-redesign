@@ -24,6 +24,7 @@ test.describe("Marketing smoke", () => {
 
     const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Get Started" });
     await expect(primaryCta).toBeVisible();
+    await expect(primaryCta).toHaveAttribute("href", "/get-started");
 
     const opacity = await primaryCta.evaluate((element) => window.getComputedStyle(element).opacity);
     expect(Number(opacity)).toBeGreaterThan(0);
@@ -163,20 +164,35 @@ test.describe("Marketing smoke", () => {
     await page.goto("/resources");
 
     await expect(
-      page.getByRole("heading", { name: /Compliance-aware clinical AI for the NHS/i })
+      page.getByRole("heading", { name: /Architecture, compliance, and integration documentation/i })
     ).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Architecture overview/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Compliance frameworks/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /FHIR and interoperability/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /HITL specification/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Find the documentation you need/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Five layers from intake to export/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Aligned design pathways, not certification claims/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /FHIR R4 staging above existing EHR systems/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Security" }).first()).toBeVisible();
+    await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
+  });
+
+  test("get-started page is organisation enquiry, distinct from signup", async ({ page }) => {
+    await page.goto("/get-started");
+
+    await expect(
+      page.getByRole("heading", { name: /Request access for your NHS organisation/i })
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Create your account instead/i })).toHaveAttribute("href", "/signup");
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+
+    await page.goto("/signup");
+    await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
+    await expect(page.getByTestId("signup-role-grid")).toBeVisible();
   });
 
   test("/docs redirects to platform resources", async ({ page }) => {
     await page.goto("/docs");
     await expect(page).toHaveURL(/\/resources/);
     await expect(
-      page.getByRole("heading", { name: /Compliance-aware clinical AI for the NHS/i })
+      page.getByRole("heading", { name: /Architecture, compliance, and integration documentation/i })
     ).toBeVisible();
   });
 

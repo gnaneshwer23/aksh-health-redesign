@@ -71,7 +71,7 @@ export default function SecurityPage() {
         },
       ]}
       ctaPrimary={{ label: "View resources", href: "/resources" }}
-      ctaSecondary={{ label: "Get started", href: "/signup" }}
+      ctaSecondary={{ label: "Request organisation access", href: "/get-started" }}
       complianceNote="Compliance badges describe aligned design pathways, not certification. See platform resources for architecture and compliance evidence."
     />
   );

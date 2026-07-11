@@ -6,6 +6,6 @@ test.describe("Role routing", () => {
     await page.waitForURL(/\/signin/, { timeout: 15_000 });
 
     await expect(page).toHaveURL(/\/signin/);
-    await expect(page.getByRole("heading", { name: /Sign in to your account/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^Sign in$/i })).toBeVisible();
   });
 });

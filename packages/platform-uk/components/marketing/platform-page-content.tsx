@@ -57,16 +57,16 @@ export function PlatformPageContent() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/signup"
+              href="/get-started"
               className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90"
             >
-              Get Started
+              Request organisation access
             </Link>
             <Link
-              href="/demo/patel"
+              href="/signup"
               className="rounded-xl border-2 border-white/70 px-8 py-3.5 text-center text-base font-bold text-white transition-all hover:bg-white/10"
             >
-              See it in action
+              Create account
             </Link>
           </div>
 
@@ -172,16 +172,16 @@ export function PlatformPageContent() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/signup"
+              href="/get-started"
               className="rounded-xl bg-white px-8 py-3.5 text-base font-bold text-emerald transition-colors hover:bg-white/90"
             >
-              Get Started
+              Request organisation access
             </Link>
             <Link
-              href="/demo/patel"
+              href="/signup"
               className="rounded-xl border-2 border-white/80 px-8 py-3.5 text-base font-bold text-white transition-colors hover:bg-white/10"
             >
-              See it in action
+              Create account
             </Link>
           </div>
         </div>

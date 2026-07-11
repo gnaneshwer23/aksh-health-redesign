@@ -210,7 +210,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             Sign In
           </Link>
           <Link
-            href="/signup"
+            href="/get-started"
             className={cn(
               "rounded-xl bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90",
               focusRing
@@ -332,7 +332,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             </SheetClose>
             <SheetClose asChild>
               <Link
-                href="/signup"
+                href="/get-started"
                 className={cn(
                   "rounded-xl bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90",
                   focusRing

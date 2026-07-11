@@ -371,7 +371,7 @@ export const audiencePages = {
         icon: Shield,
       },
     ],
-    ctaPrimary: { label: "Get Started", href: "/signup?role=hospital-executive" },
+    ctaPrimary: { label: "Request organisation access", href: "/get-started" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
       "Immutable audit trail and ICS-level governance dashboards for medical directors and CIOs. See documentation for architecture and compliance pathways.",
@@ -774,7 +774,7 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
-    ctaPrimary: { label: "Get Started", href: "/signup?role=practice-manager" },
+    ctaPrimary: { label: "Request organisation access", href: "/get-started" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
       "Compliance badges describe aligned design pathways, not certification. See documentation for architecture and compliance pathways.",
@@ -908,7 +908,7 @@ export const audiencePages = {
         icon: Shield,
       },
     ],
-    ctaPrimary: { label: "Get Started", href: "/signup?role=ics-lead" },
+    ctaPrimary: { label: "Request organisation access", href: "/get-started" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
       "Aggregate views only by default. Individual patient access requires explicit governance approval. See documentation for data access pathways.",
@@ -1036,7 +1036,7 @@ export const audiencePages = {
         icon: FileText,
       },
     ],
-    ctaPrimary: { label: "Get Started", href: "/signup?role=practice-manager" },
+    ctaPrimary: { label: "Request organisation access", href: "/get-started" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
       "Compliance badges describe aligned design pathways, not certification. See documentation for architecture and compliance pathways.",

@@ -108,7 +108,13 @@ export default function HeroSection() {
                 href="/signup"
                 className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
               >
-                Get Started
+                Create account
+              </Link>
+              <Link
+                href="/get-started"
+                className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
+              >
+                Request organisation access
               </Link>
               <Link
                 href="/demo/patel"

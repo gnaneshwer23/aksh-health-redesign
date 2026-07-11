@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Get Started | Aksh Health",
-  description: "Request a demo and begin onboarding your NHS organisation on Aksh Health.",
+  title: "Request Organisation Access | Aksh Health",
+  description:
+    "Request access for your NHS organisation. For practice managers, ICS leads, and hospital procurement teams.",
 };
 
 export { default } from "./GetStartedPageClient";

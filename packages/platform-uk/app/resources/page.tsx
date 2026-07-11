@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  FileCode2,
+  Layers,
+  Link2,
+  Shield,
+  ShieldCheck,
+  UserPlus,
+} from "lucide-react";
 
+import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { COMPLIANCE_DISCLAIMER, SEO_DEFAULTS } from "@/lib/compliance-labels";
 
@@ -12,9 +23,52 @@ export const metadata: Metadata = {
     "Architecture overview, FHIR R4 staging, human-in-the-loop specification, compliance pathways, and integration design for Aksh Health.",
 };
 
+const resourceCategories = [
+  {
+    id: "architecture",
+    icon: Layers,
+    title: "Architecture",
+    description: "Five-layer clinical AI design from intake through governed export.",
+  },
+  {
+    id: "compliance",
+    icon: ShieldCheck,
+    title: "Compliance",
+    description: "NHS clinical safety, DTAC alignment, and GDPR Art. 9 design pathways.",
+  },
+  {
+    id: "integration",
+    icon: Link2,
+    title: "Integration",
+    description: "FHIR R4 staging, EMIS Web, and SystmOne interoperability patterns.",
+  },
+  {
+    id: "security",
+    icon: Shield,
+    title: "Security",
+    description: "Data protection, RBAC, audit trails, and tenancy boundaries.",
+    href: "/security",
+  },
+  {
+    id: "api",
+    icon: FileCode2,
+    title: "API",
+    description: "REST endpoints, adapter contracts, and integration boundaries.",
+  },
+  {
+    id: "onboarding",
+    icon: UserPlus,
+    title: "Onboarding",
+    description: "Organisation access requests and individual account setup.",
+    href: "/get-started",
+  },
+] as const;
+
 const resourceSections = [
   {
-    title: "Architecture overview",
+    id: "architecture",
+    label: "Architecture",
+    title: "Five layers from intake to export",
     body: "Aksh Health organises clinical AI into five layers: intake, agent orchestration, synthesis, review queue, and export. Consultation data flows through named clinical agents. Outputs land in a draft review queue. No autonomous write-back to active clinical records.",
     bullets: [
       "Five layers: intake, agents, synthesis, review, export",
@@ -24,7 +78,21 @@ const resourceSections = [
     ],
   },
   {
-    title: "Compliance frameworks",
+    id: "hitl",
+    label: "Human-in-the-loop",
+    title: "Named reviewer approval on every output",
+    body: "Every AI-generated clinical output requires named clinician review before it reaches a care record or pathway. Queue items carry agent badges and DRAFT status until a reviewer records a decision.",
+    bullets: [
+      "Accept: freeze evidence artifacts and append FHIR AuditEvent to export bundle",
+      "Edit: reviewer modifies draft content before acceptance",
+      "Reject: discard output with audit trail; no write to clinical record",
+      "Draft-only writes: no production record impact without explicit approval",
+    ],
+  },
+  {
+    id: "compliance",
+    label: "Compliance",
+    title: "Aligned design pathways, not certification claims",
     body: "Aksh Health aligns with NHS clinical safety and digital technology assessment pathways. We do not claim certification. Internal clinical safety evidence remains confidential; public resources describe design alignment only.",
     bullets: [
       "DCB0129 clinical safety case pathway in active development",
@@ -35,7 +103,9 @@ const resourceSections = [
     ],
   },
   {
-    title: "FHIR and interoperability",
+    id: "integration",
+    label: "FHIR & interoperability",
+    title: "FHIR R4 staging above existing EHR systems",
     body: "Clinical outputs are staged as FHIR R4 draft resources for reviewer inspection. Integration architecture is designed for EMIS Web and SystmOne, the dominant UK primary care EHR systems. Production EHR connections are not live in this build.",
     bullets: [
       "Encounter, Condition, MedicationRequest, Observation in collection bundles",
@@ -45,19 +115,9 @@ const resourceSections = [
       "Designed for EMIS Web and SystmOne FHIR exchange patterns",
     ],
   },
-  {
-    title: "HITL specification",
-    body: "Every AI-generated clinical output requires named clinician review before it reaches a care record or pathway. Queue items carry agent badges and DRAFT status until a reviewer records a decision.",
-    bullets: [
-      "Accept: freeze evidence artifacts and append FHIR AuditEvent to export bundle",
-      "Edit: reviewer modifies draft content before acceptance",
-      "Reject: discard output with audit trail; no write to clinical record",
-      "Draft-only writes: no production record impact without explicit approval",
-    ],
-  },
 ] as const;
 
-const quickLinks = [
+const relatedLinks = [
   {
     label: "Security",
     description: "Data protection, GDPR Art. 9, RBAC, and audit trails.",
@@ -74,123 +134,225 @@ const quickLinks = [
     href: "/platform",
   },
   {
-    label: "Get started",
-    description: "Request access and explore the synthetic demo.",
-    href: "/signup",
+    label: "Request organisation access",
+    description: "Enquire about onboarding your NHS organisation.",
+    href: "/get-started",
   },
 ] as const;
 
+function ResourceDetailCard({ section }: { section: (typeof resourceSections)[number] }) {
+  return (
+    <article
+      id={section.id}
+      className="scroll-mt-28 rounded-2xl border border-border-subtle bg-white p-6 shadow-sm md:p-8"
+    >
+      <p className="marketing-section-label mb-3">{section.label}</p>
+      <h3 className="text-xl font-bold text-navy md:text-2xl">{section.title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-steel">{section.body}</p>
+      <ul className="mt-5 space-y-2">
+        {section.bullets.map((bullet, bulletIndex) => (
+          <li
+            key={bullet}
+            className="flex gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 text-sm text-steel"
+          >
+            <span
+              className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                bulletIndex % 2 === 0 ? "bg-pastel-mint text-pastel-mint-ink" : "bg-pastel-blue text-pastel-blue-ink"
+              }`}
+            >
+              {bulletIndex + 1}
+            </span>
+            {bullet}
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 export default function ResourcesPage() {
   return (
-    <MarketingShell overDarkHero>
-      <section className="relative overflow-hidden bg-medicom-navy pb-12 pt-24 text-white">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:48px_48px] opacity-50" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-emerald">Platform resources</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-            Compliance-aware clinical AI for the NHS
+    <MarketingShell>
+      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
+        <div
+          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
+          aria-hidden
+        />
+        <div
+          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-16 h-[22rem] w-[22rem] opacity-[0.08]"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+          <p className="marketing-section-label mb-4">Resources</p>
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+            Architecture, compliance, and integration documentation
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-            Architecture, FHIR R4 staging, human-in-the-loop review, and compliance design pathways for NHS primary
-            and secondary care. Public resources for procurement and technical evaluation.
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">
+            Technical reference for NHS procurement, clinical safety review, and integration planning. FHIR R4 staging,
+            human-in-the-loop review, and compliance design pathways for primary and secondary care.
           </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href="/signup"
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90"
+              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
             >
-              Get started
+              Create account
             </Link>
             <Link
-              href="/platform"
-              className="rounded-xl border-2 border-white/70 px-8 py-3.5 text-center text-base font-bold text-white transition-all hover:bg-white/10"
+              href="/get-started"
+              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
             >
-              View platform
+              Request organisation access
             </Link>
           </div>
         </div>
+      </section>
+
+      <div className="border-t border-border-subtle bg-white">
         <TrustStrip />
-      </section>
+      </div>
 
-      <section className="bg-white py-20">
+      <section className="bg-surface-muted py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 max-w-2xl">
-            <h2 className="text-2xl font-bold text-navy md:text-3xl">Technical and compliance reference</h2>
-            <p className="mt-3 text-sm leading-relaxed text-steel">
-              {COMPLIANCE_DISCLAIMER} Resources below describe design alignment, not certification or regulatory
-              approval.
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2">
-            {resourceSections.map((section) => (
-              <article key={section.title} className="rounded-2xl border border-border bg-surface p-6">
-                <h3 className="text-xl font-bold text-navy">{section.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-steel">{section.body}</p>
-                <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-steel">
-                  {section.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </article>
+          <MarketingSectionHeader
+            align="left"
+            label="Browse by topic"
+            title="Find the documentation you need"
+            description="Jump to architecture, compliance, integration, security, API contracts, or onboarding pathways."
+          />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {resourceCategories.map((category, index) => (
+              <PastelCapabilityCard
+                key={category.title}
+                variant={pastelVariantAt(index)}
+                icon={category.icon}
+                title={category.title}
+                description={category.description}
+                href={"href" in category ? category.href : `#${category.id}`}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border bg-surface py-20">
+      <section className="bg-white py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-navy md:text-3xl">Related pages</h2>
-          <p className="mt-3 max-w-2xl text-sm text-steel">
-            Explore security posture, integration architecture, platform capabilities, and onboarding.
-          </p>
+          <MarketingSectionHeader
+            align="left"
+            label="Technical reference"
+            title="Architecture and review specification"
+            description={`${COMPLIANCE_DISCLAIMER} Resources below describe design alignment, not certification or regulatory approval.`}
+          />
+          <div className="grid gap-8 lg:grid-cols-2">
+            <ResourceDetailCard section={resourceSections[0]} />
+            <ResourceDetailCard section={resourceSections[1]} />
+          </div>
+        </div>
+      </section>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {quickLinks.map((link) => (
-              <Link
+      <section className="bg-surface-muted py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <MarketingSectionHeader
+            align="left"
+            label="Governance & interoperability"
+            title="Compliance frameworks and FHIR staging"
+            description="Design alignment for NHS clinical safety, DTAC evidence, and EHR integration pathways."
+          />
+          <div className="grid gap-8 lg:grid-cols-2">
+            <ResourceDetailCard section={resourceSections[2]} />
+            <ResourceDetailCard section={resourceSections[3]} />
+          </div>
+        </div>
+      </section>
+
+      <section id="api" className="scroll-mt-28 bg-white py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <MarketingSectionHeader
+            align="left"
+            label="API contracts"
+            title="Integration and database boundaries"
+            description="Explicit contracts for adapter implementations and external system integration."
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Link
+              href="/api/system/database-contract"
+              className="group flex items-start gap-4 rounded-2xl border border-border-subtle bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-emerald/30 hover:shadow-card"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pastel-lavender">
+                <BookOpen className="h-5 w-5 text-pastel-lavender-ink" aria-hidden />
+              </div>
+              <div>
+                <p className="font-bold text-navy group-hover:text-emerald">Database adapter contract</p>
+                <p className="mt-1 text-sm text-steel">Schema boundaries and adapter interface for data persistence.</p>
+              </div>
+            </Link>
+            <Link
+              href="/api/system/integration-contract"
+              className="group flex items-start gap-4 rounded-2xl border border-border-subtle bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-emerald/30 hover:shadow-card"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pastel-peach">
+                <FileCode2 className="h-5 w-5 text-pastel-peach-ink" aria-hidden />
+              </div>
+              <div>
+                <p className="font-bold text-navy group-hover:text-emerald">Integration boundary contract</p>
+                <p className="mt-1 text-sm text-steel">External system interfaces and FHIR exchange boundaries.</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border-subtle bg-surface-muted py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <MarketingSectionHeader
+            align="left"
+            label="Related pages"
+            title="Explore the platform in depth"
+            description="Security posture, integration architecture, platform capabilities, and organisation onboarding."
+          />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {relatedLinks.map((link, index) => (
+              <PastelCapabilityCard
                 key={link.href}
+                variant={pastelVariantAt(index)}
+                icon={BookOpen}
+                title={link.label}
+                description={link.description}
                 href={link.href}
-                className="group flex flex-col rounded-2xl border border-border bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-emerald/30 hover:shadow-card"
-              >
-                <span className="flex items-center justify-between text-base font-bold text-navy">
-                  {link.label}
-                  <ArrowRight className="h-4 w-4 text-emerald transition-transform group-hover:translate-x-0.5" />
-                </span>
-                <span className="mt-2 text-sm leading-relaxed text-steel">{link.description}</span>
-              </Link>
+                compact
+                footer={
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy">
+                    Learn more
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  </span>
+                }
+              />
             ))}
-          </div>
-
-          <div className="mt-10 flex flex-wrap gap-4 text-sm">
-            <Link href="/api/system/database-contract" className="font-medium text-navy hover:underline">
-              Database adapter contract
-            </Link>
-            <Link href="/api/system/integration-contract" className="font-medium text-navy hover:underline">
-              Integration boundary contract
-            </Link>
           </div>
         </div>
       </section>
 
-      <section className="bg-emerald py-16 text-center text-white">
+      <section className="bg-emerald py-16 text-center text-white md:py-20">
         <div className="mx-auto max-w-2xl px-6">
-          <h2 className="text-3xl font-bold">Ready to evaluate Aksh Health?</h2>
-          <p className="mt-4 text-sm text-white/80">
-            Request access to the synthetic demo or speak with our team about NHS deployment pathways.
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to evaluate Aksh Health?</h2>
+          <p className="mt-4 text-lg leading-relaxed text-white/80">
+            Create an individual account to explore the platform, or request organisation access for NHS deployment
+            conversations.
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/signup"
-              className="rounded-xl bg-white px-8 py-3.5 text-base font-bold text-emerald transition-colors hover:bg-white/90"
+              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
             >
-              Get started
+              Create account
             </Link>
             <Link
-              href="/security"
-              className="rounded-xl border-2 border-white/80 px-8 py-3.5 text-base font-bold text-white transition-colors hover:bg-white/10"
+              href="/get-started"
+              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
             >
-              Security overview
+              Request organisation access
             </Link>
           </div>
         </div>

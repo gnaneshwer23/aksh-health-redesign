@@ -51,16 +51,16 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/signup"
+              href="/get-started"
               className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
             >
-              Get Started
+              Request organisation access
             </Link>
             <Link
-              href="/demo/patel"
+              href="/signup"
               className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
             >
-              See it in action
+              Create account
             </Link>
           </div>
         </div>

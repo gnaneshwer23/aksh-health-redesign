@@ -71,8 +71,8 @@ function SignInFormInner() {
 
   return (
     <AuthCardLayout
-      title="Sign in to your account"
-      subtitle="Clinical AI workflow platform with human-gated review"
+      title="Sign in"
+      subtitle="Welcome back"
       footer={
         <p className="text-center text-sm text-muted">
           Don&apos;t have an account?{" "}
@@ -204,7 +204,7 @@ function SignInFormInner() {
 
 export function SignInForm() {
   return (
-    <Suspense fallback={<AuthCardLayout title="Sign in to your account">Loading…</AuthCardLayout>}>
+    <Suspense fallback={<AuthCardLayout title="Sign in">Loading…</AuthCardLayout>}>
       <SignInFormInner />
     </Suspense>
   );
