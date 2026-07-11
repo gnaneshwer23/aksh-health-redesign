@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { MarketingShell } from "@/components/marketing/MarketingShell";
@@ -74,11 +74,15 @@ const DEMO_STEPS = [
   }
 ] as const;
 
-export function OverviewDemoLauncher() {
+type OverviewDemoLauncherProps = {
+  initialStep?: number;
+};
+
+export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialStep = Number(searchParams.get("step") ?? "0");
-  const [stepIndex, setStepIndex] = useState(Number.isFinite(initialStep) ? Math.min(initialStep, DEMO_STEPS.length - 1) : 0);
+  const [stepIndex, setStepIndex] = useState(
+    Math.min(Math.max(0, initialStep), DEMO_STEPS.length - 1)
+  );
 
   const step = DEMO_STEPS[stepIndex];
   const progress = useMemo(() => Math.round(((stepIndex + 1) / DEMO_STEPS.length) * 100), [stepIndex]);

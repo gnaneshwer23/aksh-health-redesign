@@ -14,12 +14,23 @@ export function getDatabaseUrl() {
   );
 }
 
+function shouldUseSsl(connectionString: string) {
+  if (process.env.PGSSLMODE === "disable") return false;
+  if (/sslmode=disable/i.test(connectionString)) return false;
+  if (/sslmode=(require|verify-full|verify-ca|prefer)/i.test(connectionString)) return true;
+  return /neon\.tech|supabase\.co|amazonaws\.com|rds\.amazonaws\.com/i.test(connectionString);
+}
+
 export function getPgPool(): Pool {
   if (!pool) {
+    const connectionString = getDatabaseUrl();
     pool = new PgPool({
-      connectionString: getDatabaseUrl(),
+      connectionString,
       max: 5,
-      idleTimeoutMillis: 10_000
+      idleTimeoutMillis: 10_000,
+      ...(shouldUseSsl(connectionString)
+        ? { ssl: { rejectUnauthorized: process.env.PGSSL_REJECT_UNAUTHORIZED === "true" } }
+        : {})
     });
   }
   return pool;

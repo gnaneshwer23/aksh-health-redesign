@@ -158,3 +158,19 @@ export async function requireAuthenticatedUserScope(request?: Request) {
     };
   }
 }
+
+export async function resolveOptionalAuthenticatedUserScope(
+  request?: Request
+): Promise<AuthenticatedUserScope | null> {
+  const testContext = resolveTestAuthenticatedUserScope(request);
+  if (testContext) {
+    return testContext;
+  }
+
+  try {
+    const session = await getServerSession(authOptions);
+    return resolveAuthenticatedUserScopeFromSession(session);
+  } catch {
+    return null;
+  }
+}

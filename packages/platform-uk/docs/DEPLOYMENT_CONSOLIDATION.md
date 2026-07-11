@@ -195,7 +195,9 @@ npm run smoke:gp
 |----------|-----------------|
 | `NEXTAUTH_URL` | `https://0ne-health.vercel.app` |
 | `NEXTAUTH_SECRET` | Generate: `openssl rand -base64 32` |
-| `DATABASE_URL` | `postgresql://...@...neon.tech/neondb?sslmode=require` |
+| `DATABASE_URL` | `postgresql://...@...neon.tech/neondb?sslmode=verify-full` (preferred) or `sslmode=require` |
+
+**Neon SSL:** For production, prefer `sslmode=verify-full` in `DATABASE_URL` so the client verifies the server certificate against Neon's CA. Use the pooled connection string from the Neon console (include `?sslmode=verify-full`). If your driver rejects `verify-full`, fall back to `sslmode=require` and ensure the connection string is only stored in Vercel/GitHub secrets, never in the repo.
 
 Ensure auth schema after first deploy: `npm run auth:schema` (requires `DATABASE_URL`). This applies `002_users_profiles.sql`, `005_password_reset.sql`, and `006_email_verification.sql`. Users sign up via `/signup` with Terms and Privacy consent; a verification email is sent (or auto-verified when `SKIP_EMAIL_SEND=true`).
 
@@ -282,6 +284,15 @@ npm run auth:cleanup-demo -- --apply
 Personalization reads from Neon `aksh.profiles` and `aksh.onboarding_progress` via `GET /api/profile`. Session JWT is enriched on sign-in with `fullName` and `organisation` when the database is available.
 
 No extra env vars beyond `DATABASE_URL` are required for profile personalization.
+
+## Public read-only system APIs
+
+Governance exports linked from `/resources` are intentionally public read-only (no session required):
+
+- `GET /api/system/database-contract` — returns JSON with `generatedBy: "public"` when unauthenticated
+- `GET /api/system/permission-matrix`, `GET /api/system/clinical-safety-files` — same pattern
+
+A `401` on these routes indicates a regression; they should always return `200` with synthetic boundary metadata.
 
 ## Vercel env vars summary
 

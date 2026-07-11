@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import { AuthCardLayout } from "@/components/auth/auth-card-layout";
+import { SignUpFormSkeleton } from "@/components/auth/sign-up-form-skeleton";
 import { RoleTile } from "@/components/onboarding/RoleTile";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,14 +29,14 @@ function resolveInitialRole(roleParam: string | null): UserRole {
   return SIGNUP_ROLE_MAP[roleParam] ?? (roleParam as UserRole);
 }
 
-function SignUpFormInner() {
+function SignUpFormFields({ initialRoleParam }: { initialRoleParam: string | null }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialRole = useMemo(
-    () => resolveInitialRole(searchParams.get("role")),
-    [searchParams]
-  );
+  const initialRole = resolveInitialRole(initialRoleParam);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    document.getElementById("signup-static-shell")?.remove();
+  }, []);
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
@@ -48,6 +49,10 @@ function SignUpFormInner() {
       acceptedTerms: undefined,
     },
   });
+
+  useEffect(() => {
+    form.setValue("role", initialRole);
+  }, [form, initialRole]);
 
   async function onSubmit(values: SignUpInput) {
     setError("");
@@ -79,27 +84,7 @@ function SignUpFormInner() {
   }
 
   return (
-    <AuthCardLayout
-      title="Create your account"
-      subtitle="Self-serve registration for GPs, nurses, patients, and individual users"
-      className="max-w-2xl"
-      footer={
-        <div className="space-y-3 text-center text-sm text-muted">
-          <p>
-            Already have an account?{" "}
-            <Link href="/signin" className="font-semibold text-medicom-navy hover:underline">
-              Sign in
-            </Link>
-          </p>
-          <p>
-            Need organisation access?{" "}
-            <Link href="/get-started" className="font-semibold text-emerald hover:underline">
-              Request access
-            </Link>
-          </p>
-        </div>
-      }
-    >
+    <>
       {error ? (
         <div
           id="signup-form-error"
@@ -263,14 +248,31 @@ function SignUpFormInner() {
           </Button>
         </form>
       </Form>
-    </AuthCardLayout>
+    </>
   );
 }
 
+function SignUpFormWithSearchParams() {
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role");
+
+  return <SignUpFormFields initialRoleParam={roleParam} />;
+}
+
 export function SignUpForm() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <Suspense fallback={<AuthCardLayout title="Create your account">Loading…</AuthCardLayout>}>
-      <SignUpFormInner />
+    <Suspense fallback={<SignUpFormSkeleton />}>
+      <SignUpFormWithSearchParams />
     </Suspense>
   );
 }

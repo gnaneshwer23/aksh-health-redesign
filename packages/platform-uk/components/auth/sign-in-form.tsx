@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { Suspense, useState } from "react";
-import { useForm } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { Suspense, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
-import { AuthCardLayout } from "@/components/auth/auth-card-layout";
+import { SignInFormSkeleton } from "@/components/auth/sign-in-form-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,11 +23,13 @@ import { signInSchema, type SignInInput } from "@/lib/auth/schemas";
 import { PROOF_MODE_BANNER } from "@/lib/compliance-labels";
 import { authConfig, isClinicalOAuthConfigured } from "@/lib/auth/config";
 
-function SignInFormInner() {
+function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
   const [error, setError] = useState("");
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
   const oauthReady = isClinicalOAuthConfigured();
+
+  useEffect(() => {
+    document.getElementById("signin-static-shell")?.remove();
+  }, []);
 
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -70,18 +72,7 @@ function SignInFormInner() {
   }
 
   return (
-    <AuthCardLayout
-      title="Sign in"
-      subtitle="Welcome back"
-      footer={
-        <p className="text-center text-sm text-muted">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-semibold text-primary hover:underline">
-            Create account
-          </Link>
-        </p>
-      }
-    >
+    <>
       {authConfig.proofMode ? (
         <div className="mb-4 rounded-xl border border-navy/10 bg-navy-light px-4 py-3 text-sm text-slate" role="note">
           <strong className="text-primary">{PROOF_MODE_BANNER.title}</strong>
@@ -198,14 +189,31 @@ function SignInFormInner() {
           </Button>
         </form>
       </Form>
-    </AuthCardLayout>
+    </>
   );
 }
 
+function SignInFormWithSearchParams() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
+  return <SignInFormFields callbackUrl={callbackUrl} />;
+}
+
 export function SignInForm() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <Suspense fallback={<AuthCardLayout title="Sign in">Loading…</AuthCardLayout>}>
-      <SignInFormInner />
+    <Suspense fallback={<SignInFormSkeleton />}>
+      <SignInFormWithSearchParams />
     </Suspense>
   );
 }

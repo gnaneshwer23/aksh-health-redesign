@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { buildIntegrationBoundaryContract } from "../../../../lib/integration-boundary-contract";
-import { requireAuthenticatedUserScope } from "../../../../lib/user-scope";
+import { resolveOptionalAuthenticatedUserScope } from "../../../../lib/user-scope";
 
 export async function GET(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
-  if (auth.response) return auth.response;
-
+  const context = await resolveOptionalAuthenticatedUserScope(request);
   const contract = buildIntegrationBoundaryContract({
-    generatedBy: auth.context.userEmail ?? undefined
+    generatedBy: context?.userEmail ?? context?.scopeKey ?? "public"
   });
 
   return NextResponse.json(contract, {

@@ -47,6 +47,8 @@ const sessionRequiredPrefixes = [
   "/workspace",
 ];
 
+const publicDemoDashboardPrefixes = ["/dashboard/gp"];
+
 function matchesPrefix(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => {
     if (prefix === "/") return pathname === "/";
@@ -88,6 +90,13 @@ export async function middleware(request: NextRequest) {
       callbackUrl: request.nextUrl.searchParams.get("callbackUrl"),
     });
     return NextResponse.redirect(new URL(destination, request.url));
+  }
+
+  const isPublicDemoDashboard =
+    !isAuthenticated && matchesPrefix(pathname, publicDemoDashboardPrefixes);
+
+  if (isPublicDemoDashboard) {
+    return NextResponse.next();
   }
 
   const requiresSession = matchesPrefix(pathname, sessionRequiredPrefixes);

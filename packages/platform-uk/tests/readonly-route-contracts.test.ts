@@ -102,6 +102,14 @@ async function run() {
     "Database route should require persisted review-state parity before migration"
   );
 
+  const publicDatabaseResponse = await getDatabaseContract(
+    new Request("http://localhost:3000/api/system/database-contract")
+  );
+  assert.equal(publicDatabaseResponse.status, 200, "Database contract should be public read-only without session");
+  const publicDatabase = (await publicDatabaseResponse.json()) as Record<string, any>;
+  assert.equal(publicDatabase.generatedBy, "public");
+  assert.equal(publicDatabase.artifactType, "aksh-uk-eu-database-adapter-contract");
+
   const acceptedCase = structuredClone(reviewCases.find((item) => item.id === "case-005"));
   assert.ok(acceptedCase, "Expected accepted fixture case-005 to exist");
   acceptedCase.userId = routeUserId;
