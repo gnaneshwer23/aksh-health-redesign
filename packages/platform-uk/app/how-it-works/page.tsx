@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { HowItWorksPageContent } from "@/components/marketing/HowItWorksPageContent";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { PlatformFlowDiagram } from "@/components/marketing/PlatformFlowDiagram";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
@@ -26,28 +27,39 @@ export default function HowItWorksPage() {
         />
 
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
-          <p className="marketing-section-label mb-4">How it works</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
-            From fragmented data to coordinated care
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">
-            Aksh Healthcare OS connects your EHR, builds a patient knowledge graph, runs twelve specialist agents in
-            parallel, and routes every output through clinician review before it reaches the record.
-          </p>
+          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div>
+              <p className="marketing-section-label mb-4">How it works</p>
+              <h1 className="max-w-2xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+                How Aksh Health works
+              </h1>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-steel">
+                From EHR intake to governed write-back: one connected pipeline with twelve specialist agents and
+                clinician approval on every output.
+              </p>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/get-started"
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
-            >
-              Request organisation access
-            </Link>
-            <Link
-              href="/platform"
-              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
-            >
-              Explore platform
-            </Link>
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  href="/signup"
+                  className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
+                >
+                  Create account
+                </Link>
+                <Link
+                  href="/get-started"
+                  className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
+                >
+                  Request organisation access
+                </Link>
+              </div>
+            </div>
+
+            <div className="marketing-glass-card p-6 md:p-8">
+              <p className="mb-5 text-center text-xs font-semibold uppercase tracking-wider text-steel">
+                Platform pipeline preview
+              </p>
+              <PlatformFlowDiagram variant="compact" showDescriptions={false} />
+            </div>
           </div>
         </div>
       </section>

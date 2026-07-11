@@ -155,15 +155,19 @@ test.describe("Marketing smoke", () => {
   test("how-it-works page loads with diagram and platform stages", async ({ page }) => {
     await page.goto("/how-it-works");
 
-    await expect(page.getByRole("heading", { name: /From fragmented data to coordinated care/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /How Aksh Health works/i })).toBeVisible();
+    await expect(
+      page.getByRole("figure", { name: /Platform flow/i }).first()
+    ).toBeVisible();
     await expect(
       page.getByRole("figure", { name: /End-to-end journey/i })
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: /Connect, understand, act, and learn/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How it works for your team/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Clinician" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Practice manager" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Clinician" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Practice manager" })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Human-in-the-loop on every output/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Data flow from EHR to governed record/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to see it in your organisation/i })).toBeVisible();
   });
 

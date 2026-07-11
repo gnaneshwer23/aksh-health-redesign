@@ -1,139 +1,246 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+import {
+  Bot,
+  ClipboardCheck,
+  FileCheck2,
+  Layers,
+  MonitorSmartphone,
+  Network,
+  Server,
+  ShieldCheck,
+} from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export type FlowNode = {
   id: string;
   label: string;
-  sublabel?: string;
+  description: string;
+  icon: LucideIcon;
   highlight?: boolean;
 };
 
 const FULL_FLOW_NODES: FlowNode[] = [
-  { id: "ehr", label: "EMIS / SystmOne", sublabel: "EHR systems" },
-  { id: "data", label: "Data layer", sublabel: "FHIR intake" },
-  { id: "graph", label: "Neo4j", sublabel: "Knowledge graph" },
-  { id: "agents", label: "12 AI agents", sublabel: "Parallel drafts" },
-  { id: "review", label: "Review queue", sublabel: "HITL", highlight: true },
-  { id: "fhir", label: "FHIR staging", sublabel: "Draft resources" },
-  { id: "write", label: "EHR write", sublabel: "On approval" },
+  {
+    id: "ehr",
+    label: "EMIS / SystmOne",
+    description: "EHR intake via FHIR R4 and HL7 v2",
+    icon: MonitorSmartphone,
+  },
+  {
+    id: "data",
+    label: "Data layer",
+    description: "Normalised clinical data pipeline",
+    icon: Layers,
+  },
+  {
+    id: "graph",
+    label: "Neo4j graph",
+    description: "Connected patient knowledge model",
+    icon: Network,
+  },
+  {
+    id: "agents",
+    label: "12 AI agents",
+    description: "Parallel specialist drafts",
+    icon: Bot,
+  },
+  {
+    id: "review",
+    label: "Review queue",
+    description: "Clinician Accept, Edit, or Reject",
+    icon: ClipboardCheck,
+    highlight: true,
+  },
+  {
+    id: "fhir",
+    label: "FHIR staging",
+    description: "Draft resources before write-back",
+    icon: FileCheck2,
+  },
+  {
+    id: "write",
+    label: "EHR write",
+    description: "Approved content to the record",
+    icon: Server,
+  },
 ];
 
 const COMPACT_FLOW_NODES: FlowNode[] = [
-  { id: "systems", label: "Systems", sublabel: "EMIS / SystmOne" },
-  { id: "aksh", label: "Aksh", sublabel: "Data layer" },
-  { id: "agents", label: "Agents", sublabel: "12 specialists" },
-  { id: "review", label: "Review", sublabel: "HITL", highlight: true },
-  { id: "record", label: "Record", sublabel: "FHIR write" },
+  {
+    id: "systems",
+    label: "Systems",
+    description: "EMIS / SystmOne",
+    icon: MonitorSmartphone,
+  },
+  {
+    id: "aksh",
+    label: "Aksh",
+    description: "Data layer and agents",
+    icon: Layers,
+  },
+  {
+    id: "review",
+    label: "Review",
+    description: "Human approval required",
+    icon: ClipboardCheck,
+    highlight: true,
+  },
+  {
+    id: "record",
+    label: "Record",
+    description: "FHIR write on approval",
+    icon: FileCheck2,
+  },
+];
+
+const ARCHITECTURE_FLOW_NODES: FlowNode[] = [
+  {
+    id: "emis",
+    label: "EMIS Web",
+    description: "Primary care record",
+    icon: MonitorSmartphone,
+  },
+  {
+    id: "aksh",
+    label: "Aksh platform",
+    description: "Graph, agents, governance",
+    icon: ShieldCheck,
+  },
+  {
+    id: "review",
+    label: "Clinician review",
+    description: "Accept, Edit, or Reject",
+    icon: ClipboardCheck,
+    highlight: true,
+  },
+  {
+    id: "fhir",
+    label: "FHIR R4",
+    description: "Governed write-back",
+    icon: FileCheck2,
+  },
 ];
 
 type PlatformFlowDiagramProps = {
-  variant: "compact" | "full";
+  variant: "compact" | "full" | "architecture";
   className?: string;
+  showDescriptions?: boolean;
 };
 
-function FlowArrow({ className }: { className?: string }) {
-  return (
-    <svg
-      className={cn("h-4 w-6 shrink-0 text-navy/25 md:h-5 md:w-8", className)}
-      viewBox="0 0 32 20"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M2 10h24m0 0l-6-6m6 6l-6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function getNodes(variant: PlatformFlowDiagramProps["variant"]) {
+  if (variant === "architecture") return ARCHITECTURE_FLOW_NODES;
+  if (variant === "compact") return COMPACT_FLOW_NODES;
+  return FULL_FLOW_NODES;
 }
 
-function FlowArrowVertical({ className }: { className?: string }) {
-  return (
-    <svg
-      className={cn("h-6 w-4 shrink-0 text-navy/25", className)}
-      viewBox="0 0 20 32"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M10 2v24m0 0l-6-6m6 6l6-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function getAriaLabel(variant: PlatformFlowDiagramProps["variant"]) {
+  if (variant === "architecture") {
+    return "Architecture flow: EMIS Web connects to the Aksh platform, clinicians review every output, then approved content writes back as FHIR R4.";
+  }
+  if (variant === "compact") {
+    return "Platform flow: EHR systems connect to Aksh data layer, twelve AI agents draft outputs, clinicians review in the HITL queue, then approved content writes to the FHIR record.";
+  }
+  return "End-to-end journey: EMIS or SystmOne feeds the data layer, Neo4j knowledge graph, twelve AI agents, human review queue, FHIR staging, and EHR write on clinician approval.";
 }
 
-function FlowNodeBox({ node, compact }: { node: FlowNode; compact: boolean }) {
+function FlowNodeCircle({
+  node,
+  compact,
+  showDescription,
+}: {
+  node: FlowNode;
+  compact: boolean;
+  showDescription: boolean;
+}) {
+  const Icon = node.icon;
+
   return (
-    <div
-      className={cn(
-        "relative flex flex-col items-center justify-center rounded-2xl border text-center transition-shadow motion-safe:duration-300",
-        compact ? "min-h-[4.5rem] px-3 py-3 sm:min-h-[5rem] sm:px-4" : "min-h-[5.5rem] px-4 py-4 sm:min-h-[6rem]",
-        node.highlight
-          ? "border-emerald/40 bg-emerald/10 shadow-md shadow-emerald/10 motion-safe:hover:shadow-lg motion-safe:hover:shadow-emerald/15"
-          : "border-navy/15 bg-white shadow-sm motion-safe:hover:shadow-md"
-      )}
-    >
-      <span
+    <div className="group flex flex-col items-center text-center">
+      <div className="relative">
+        {node.highlight ? (
+          <span className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+            HITL
+          </span>
+        ) : null}
+        <div
+          className={cn(
+            "flex items-center justify-center rounded-full border-2 transition-shadow motion-safe:duration-300",
+            compact ? "h-12 w-12 sm:h-14 sm:w-14" : "h-14 w-14 sm:h-16 sm:w-16 md:h-[4.5rem] md:w-[4.5rem]",
+            node.highlight
+              ? "border-emerald bg-emerald/10 shadow-lg shadow-emerald/15 motion-safe:group-hover:shadow-xl motion-safe:group-hover:shadow-emerald/20"
+              : "border-navy/15 bg-white shadow-sm motion-safe:group-hover:border-navy/25 motion-safe:group-hover:shadow-md"
+          )}
+        >
+          <Icon
+            className={cn(
+              compact ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7",
+              node.highlight ? "text-emerald" : "text-navy"
+            )}
+            aria-hidden
+          />
+        </div>
+      </div>
+
+      <p
         className={cn(
-          "font-bold leading-tight text-navy",
+          "mt-3 font-bold leading-tight text-navy",
           compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"
         )}
       >
         {node.label}
-      </span>
-      {node.sublabel ? (
-        <span className={cn("mt-1 text-navy/55", compact ? "text-[10px] sm:text-xs" : "text-xs")}>
-          {node.sublabel}
-        </span>
-      ) : null}
-      {node.highlight ? (
-        <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-emerald px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-          HITL
-        </span>
+      </p>
+
+      {showDescription ? (
+        <p
+          className={cn(
+            "mt-1 leading-snug text-steel",
+            compact ? "max-w-[7rem] text-[10px] sm:max-w-[8rem] sm:text-xs" : "max-w-[9rem] text-xs sm:max-w-[10rem]"
+          )}
+        >
+          {node.description}
+        </p>
       ) : null}
     </div>
   );
 }
 
-function FlowConnectorSvg({ variant }: { variant: "compact" | "full" }) {
-  const nodeCount = variant === "compact" ? 5 : 7;
-
+function DesktopFlowConnector({ nodeCount }: { nodeCount: number }) {
   return (
     <svg
-      className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
-      viewBox="0 0 1000 120"
+      className="pointer-events-none absolute inset-x-0 top-[2.25rem] hidden h-16 w-full lg:block md:top-[2.5rem]"
+      viewBox="0 0 1000 64"
       preserveAspectRatio="none"
       aria-hidden
     >
       <defs>
-        <marker id="flow-arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <path d="M0,0 L8,4 L0,8 Z" fill="#003D7A" fillOpacity="0.35" />
+        <marker id="flow-arrowhead-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#00A86B" fillOpacity="0.5" />
+        </marker>
+        <marker id="flow-arrowhead-navy" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#003D7A" fillOpacity="0.3" />
         </marker>
       </defs>
       {Array.from({ length: nodeCount - 1 }).map((_, index) => {
-        const startX = ((index + 0.5) / nodeCount) * 1000 + 40;
-        const endX = ((index + 1.5) / nodeCount) * 1000 - 40;
+        const startX = ((index + 0.5) / nodeCount) * 1000 + 56;
+        const endX = ((index + 1.5) / nodeCount) * 1000 - 56;
+        const midX = (startX + endX) / 2;
+        const isBeforeHitl = index === nodeCount - 3 && nodeCount === 7;
+        const isHitlConnector = index === nodeCount - 2 && nodeCount >= 4;
+
         return (
-          <line
+          <path
             key={index}
-            x1={startX}
-            y1="60"
-            x2={endX}
-            y2="60"
-            stroke="#003D7A"
-            strokeOpacity="0.2"
+            d={`M ${startX} 32 Q ${midX} ${isBeforeHitl || isHitlConnector ? 8 : 32} ${endX} 32`}
+            fill="none"
+            stroke={isHitlConnector ? "#00A86B" : "#003D7A"}
+            strokeOpacity={isHitlConnector ? 0.45 : 0.22}
             strokeWidth="2"
-            markerEnd="url(#flow-arrowhead)"
+            markerEnd={isHitlConnector ? "url(#flow-arrowhead-emerald)" : "url(#flow-arrowhead-navy)"}
             className="motion-safe:animate-[flow-pulse_2.4s_ease-in-out_infinite]"
-            style={{ animationDelay: `${index * 0.3}s` }}
+            style={{ animationDelay: `${index * 0.25}s` }}
           />
         );
       })}
@@ -141,52 +248,89 @@ function FlowConnectorSvg({ variant }: { variant: "compact" | "full" }) {
   );
 }
 
-export function PlatformFlowDiagram({ variant, className }: PlatformFlowDiagramProps) {
-  const nodes = variant === "compact" ? COMPACT_FLOW_NODES : FULL_FLOW_NODES;
-  const ariaLabel =
-    variant === "compact"
-      ? "Platform flow: EHR systems connect to Aksh data layer, twelve AI agents draft outputs, clinicians review in the HITL queue, then approved content writes to the FHIR record."
-      : "End-to-end journey: EMIS or SystmOne feeds the data layer, Neo4j knowledge graph, twelve AI agents, human review queue, FHIR staging, and EHR write on clinician approval.";
+function MobileTimeline({ nodes, showDescription }: { nodes: FlowNode[]; showDescription: boolean }) {
+  return (
+    <ol className="relative list-none space-y-0 p-0 lg:hidden">
+      <div
+        className="absolute bottom-6 left-[1.6875rem] top-6 w-0.5 bg-gradient-to-b from-navy/15 via-emerald/30 to-navy/15 sm:left-[1.9375rem]"
+        aria-hidden
+      />
+      {nodes.map((node, index) => (
+        <li key={node.id} className="relative flex gap-4 pb-8 last:pb-0 sm:gap-5">
+          <div className="relative z-10 shrink-0">
+            <FlowNodeCircle node={node} compact={false} showDescription={false} />
+          </div>
+          <div className="min-w-0 flex-1 pt-2 sm:pt-3">
+            <p className="text-base font-bold text-navy">{node.label}</p>
+            {showDescription ? <p className="mt-1 text-sm leading-relaxed text-steel">{node.description}</p> : null}
+            {index < nodes.length - 1 ? (
+              <span className="sr-only">Then</span>
+            ) : null}
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function TabletFlow({ nodes, compact, showDescription }: { nodes: FlowNode[]; compact: boolean; showDescription: boolean }) {
+  return (
+    <ol className="relative z-10 hidden list-none flex-wrap items-start justify-center gap-x-2 gap-y-6 p-0 sm:flex lg:hidden">
+      {nodes.map((node, index) => (
+        <li key={node.id} className="flex items-start">
+          <div className="flex flex-col items-center">
+            <FlowNodeCircle node={node} compact={compact} showDescription={showDescription} />
+          </div>
+          {index < nodes.length - 1 ? (
+            <div className="flex h-14 items-center px-1 sm:px-2" aria-hidden>
+              <svg className="h-4 w-6 text-navy/25" viewBox="0 0 32 20" fill="none">
+                <path
+                  d="M2 10h24m0 0l-6-6m6 6l-6 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          ) : null}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+export function PlatformFlowDiagram({ variant, className, showDescriptions = true }: PlatformFlowDiagramProps) {
+  const nodes = getNodes(variant);
+  const ariaLabel = getAriaLabel(variant);
+  const isCompact = variant === "compact" || variant === "architecture";
 
   return (
     <figure className={cn("relative", className)} aria-label={ariaLabel}>
       <figcaption className="sr-only">{ariaLabel}</figcaption>
 
-      {/* Desktop horizontal layout */}
+      {/* Desktop horizontal */}
       <div className="relative hidden lg:block">
-        <FlowConnectorSvg variant={variant} />
-        <ol className="relative z-10 grid list-none gap-3 p-0" style={{ gridTemplateColumns: `repeat(${nodes.length}, 1fr)` }}>
+        <DesktopFlowConnector nodeCount={nodes.length} />
+        <ol
+          className="relative z-10 grid list-none gap-4 p-0"
+          style={{ gridTemplateColumns: `repeat(${nodes.length}, 1fr)` }}
+        >
           {nodes.map((node) => (
             <li key={node.id}>
-              <FlowNodeBox node={node} compact={variant === "compact"} />
+              <FlowNodeCircle node={node} compact={isCompact} showDescription={showDescriptions} />
             </li>
           ))}
         </ol>
       </div>
 
-      {/* Tablet: wrapped rows with arrows */}
-      <ol className="relative z-10 hidden list-none flex-wrap items-center justify-center gap-2 p-0 sm:flex lg:hidden">
-        {nodes.map((node, index) => (
-          <li key={node.id} className="flex items-center gap-2">
-            <div className={variant === "compact" ? "w-[5.5rem] sm:w-[6.5rem]" : "w-[6.5rem] sm:w-[7.5rem]"}>
-              <FlowNodeBox node={node} compact={variant === "compact"} />
-            </div>
-            {index < nodes.length - 1 ? <FlowArrow /> : null}
-          </li>
-        ))}
-      </ol>
+      <TabletFlow nodes={nodes} compact={isCompact} showDescription={showDescriptions} />
 
-      {/* Mobile: vertical stack */}
-      <ol className="relative z-10 flex list-none flex-col items-center gap-2 p-0 sm:hidden">
-        {nodes.map((node, index) => (
-          <li key={node.id} className="flex w-full max-w-[14rem] flex-col items-center">
-            <FlowNodeBox node={node} compact={variant === "compact"} />
-            {index < nodes.length - 1 ? <FlowArrowVertical className="my-1" /> : null}
-          </li>
-        ))}
-      </ol>
+      <div className="sm:hidden">
+        <MobileTimeline nodes={nodes} showDescription={showDescriptions} />
+      </div>
     </figure>
   );
 }
 
-export { FULL_FLOW_NODES, COMPACT_FLOW_NODES };
+export { FULL_FLOW_NODES, COMPACT_FLOW_NODES, ARCHITECTURE_FLOW_NODES };
