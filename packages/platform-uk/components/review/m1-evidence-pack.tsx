@@ -68,7 +68,7 @@ export function M1EvidencePack() {
 
       <section className="report-section">
         <h2>Pack Summary</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Checklist items</span>
             <strong>{pack.summary.totalChecklistItems}</strong>

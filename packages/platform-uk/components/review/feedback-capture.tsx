@@ -202,7 +202,7 @@ export function FeedbackCapture({
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <div className="span-12 hero-banner stack">
         <span className="hero-kicker">Session Memory</span>
         <div className="actions">
@@ -600,7 +600,7 @@ export function FeedbackCapture({
           </div>
           <span className="pill">Summary export ready</span>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="span-4 panel stack" style={{ boxShadow: "none", background: "var(--panel-alt)" }}>
             <h3>Recurring Strongest Moments</h3>
             <div className="list">

@@ -118,7 +118,7 @@ export function OpsDashboard({
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <OpsDashboardHero
         dashboardHref={dashboardHref}
         exportOpsReport={exportOpsReport}

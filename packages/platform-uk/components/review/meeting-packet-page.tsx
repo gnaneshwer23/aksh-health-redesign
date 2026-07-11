@@ -139,7 +139,7 @@ export function MeetingPacketPage({
         </div>
       </div>
 
-      <div className="grid">
+      <div className="layout-grid">
         <div className="span-8 panel stack">
           <h2>Meeting Agenda</h2>
           <div className="list">

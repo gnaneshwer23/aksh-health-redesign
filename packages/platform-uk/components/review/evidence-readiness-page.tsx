@@ -49,7 +49,7 @@ export function EvidenceReadinessPage({
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <div className="span-12 hero-banner stack">
         <span className="hero-kicker">Evidence Readiness</span>
         <div className="actions">

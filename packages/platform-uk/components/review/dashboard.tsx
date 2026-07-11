@@ -121,7 +121,7 @@ export function Dashboard() {
         </article>
       </section>
 
-      <section className="grid">
+      <section className="layout-grid">
         <div className="span-7 panel stack">
           <div className="workspace-section-head">
             <div>
@@ -203,7 +203,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid">
+      <section className="layout-grid">
         <div className="span-8 panel stack">
           <div className="workspace-section-head">
             <div>
@@ -278,7 +278,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid">
+      <section className="layout-grid">
         <div className="span-8 panel stack">
           <div className="workspace-section-head">
             <div>

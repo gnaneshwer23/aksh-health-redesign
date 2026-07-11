@@ -52,7 +52,7 @@ export function CommandCentreReport() {
 
       <section className="report-section">
         <h2>Executive Summary</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Product stage</span>
             <strong>{evidence.productStage}</strong>
@@ -153,7 +153,7 @@ export function CommandCentreReport() {
 
       <section className="report-section">
         <h2>Current Signals</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Urgent clinical</span>
             <strong>{evidence.summary.urgentClinicalItems}</strong>

@@ -77,7 +77,7 @@ export function RoadmapReport() {
 
       <section className="report-section">
         <h2>Executive Summary</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Roadmap items</span>
             <strong>{evidence.summary.totalItems}</strong>
@@ -184,7 +184,7 @@ export function RoadmapReport() {
 
       <section className="report-section">
         <h2>Budget Readiness</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Header budget</span>
             <strong>£{evidence.budget.workbookHeaderBudgetK}K</strong>
@@ -220,7 +220,7 @@ export function RoadmapReport() {
 
       <section className="report-section">
         <h2>M1 Execution Checklist</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">M1 tasks</span>
             <strong>{evidence.m1Checklist.summary.total}</strong>

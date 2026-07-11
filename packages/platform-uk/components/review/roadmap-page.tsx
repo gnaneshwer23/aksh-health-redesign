@@ -211,7 +211,7 @@ export function RoadmapPage() {
   });
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <div className="span-12 hero-banner stack">
         <span className="hero-kicker">12-month execution roadmap</span>
         <div className="actions">

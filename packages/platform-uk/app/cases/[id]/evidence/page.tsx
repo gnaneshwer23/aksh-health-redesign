@@ -86,7 +86,7 @@ export default async function CaseEvidencePage({
         sourceProfile={reviewCase.input.sourceProfile}
       />
 
-      <div className="grid">
+      <div className="layout-grid">
         <CaseEvidenceDecisionSummarySection evidence={evidence} />
         <CaseEvidenceValidationReadinessSection evidence={evidence} />
         <CaseEvidenceHumanGateSection humanGates={humanGates} />

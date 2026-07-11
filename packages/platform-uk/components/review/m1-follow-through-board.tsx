@@ -15,7 +15,7 @@ export function M1FollowThroughBoard() {
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <section className="span-12 hero-banner stack">
         <span className="hero-kicker">M1 follow-through board</span>
         <div className="actions">

@@ -47,7 +47,7 @@ function RoleSelectContent() {
       title="Choose your role"
       description="Select how you will use Aksh Health. Your onboarding path is tailored to your role."
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map((role) => (
           <RoleTile
             key={role.id}

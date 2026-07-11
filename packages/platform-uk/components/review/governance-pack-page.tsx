@@ -33,7 +33,7 @@ export function GovernancePackPage() {
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <section className="span-12 hero-banner stack">
         <span className="hero-kicker">Clinical safety governance pack</span>
         <div className="actions">
@@ -97,7 +97,7 @@ export function GovernancePackPage() {
           </div>
           <span className="tag warn">rehearsal</span>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           {pack.safetyCaseSections.map((section) => (
             <div className="metric" key={section}>
               <span className="meta">Section</span>
@@ -309,7 +309,7 @@ export function GovernancePackPage() {
             Export Research JSON
           </a>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           {pack.researchEvaluation.tasks.map((task) => (
             <div className="span-6 panel stack" key={task.id}>
               <div className="row">

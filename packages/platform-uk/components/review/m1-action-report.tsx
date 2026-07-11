@@ -45,7 +45,7 @@ export function M1ActionReport() {
 
       <section className="report-section">
         <h2>Action Summary</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Generated</span>
             <strong>{evidence.summary.generated}</strong>

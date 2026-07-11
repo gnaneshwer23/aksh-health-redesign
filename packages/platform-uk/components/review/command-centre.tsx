@@ -52,7 +52,7 @@ export function CommandCentre() {
   ];
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <section className="span-12 hero-banner stack">
         <span className="hero-kicker">Product command centre</span>
         <h2>One view for what is built, what is safe to show, and what needs work next.</h2>
@@ -116,7 +116,7 @@ export function CommandCentre() {
           </div>
           <span className="pill">two clear paths</span>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           <article className="span-6 panel stack">
             <div>
               <h3>Team Mode</h3>
@@ -146,7 +146,7 @@ export function CommandCentre() {
           </div>
           <span className="pill">UK/EU active target</span>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Pending reviews</span>
             <strong>{summary.overview.pendingCount}</strong>

@@ -124,7 +124,7 @@ export function ProductModePage({ mode }: { mode: ProductMode }) {
   }
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <section className="span-12 hero-banner stack">
         <span className="hero-kicker">{isTeamMode ? "Team mode" : "Demo mode"}</span>
         <h2>{isTeamMode ? "Run the internal clinical proof work." : "Show the proof without overclaiming it."}</h2>

@@ -60,7 +60,7 @@ export default async function CaseReportPage({
         </div>
       </div>
 
-      <div className="grid">
+      <div className="layout-grid">
         <section className="report-section">
           <h2>Decision Summary</h2>
           <p>Last decision: {evidence.reviewSummary.lastDecision ?? "pending"}</p>

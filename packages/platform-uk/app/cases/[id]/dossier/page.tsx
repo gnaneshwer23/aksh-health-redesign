@@ -55,7 +55,7 @@ export default async function CaseValidationDossierPage({
         </div>
       </div>
 
-      <div className="grid">
+      <div className="layout-grid">
         <section className="report-section">
           <h2>Dossier Summary</h2>
           <div className="list">

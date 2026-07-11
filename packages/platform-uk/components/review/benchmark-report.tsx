@@ -50,7 +50,7 @@ export function BenchmarkReport({
 
       <section className="report-section">
         <h2>Run Summary</h2>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Benchmarked cases</span>
             <strong>{evidence.summary.benchmarkedCases}</strong>

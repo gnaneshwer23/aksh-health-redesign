@@ -45,7 +45,7 @@ export function RehearsalGuide({
   const feedbackHref = `/review/feedback${demoMode || recordingMode ? "?" : ""}${demoMode ? "demo=1" : ""}${demoMode && recordingMode ? "&" : ""}${recordingMode ? "recording=1" : ""}`;
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <div className="span-12 hero-banner stack">
         <span className="hero-kicker">Rehearsal</span>
         <div className="actions">

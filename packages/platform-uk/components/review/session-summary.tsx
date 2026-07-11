@@ -28,7 +28,7 @@ export function SessionSummary({ demoMode = false, recordingMode = false }: { de
     .slice(0, 5);
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <div className="span-12 panel stack">
         <div className="actions">
           <a className="button secondary" href={dashboardHref}>

@@ -14,7 +14,7 @@ export function SimulatedPatientsPage() {
   const summary = getSimulatedPatientCohortSummary();
 
   return (
-    <div className="grid">
+    <div className="layout-grid">
       <section className="span-12 hero-banner stack">
         <span className="hero-kicker">Simulated patient cohort</span>
         <div className="actions">
@@ -60,7 +60,7 @@ export function SimulatedPatientsPage() {
           </div>
           <span className="pill">synthetic only</span>
         </div>
-        <div className="grid">
+        <div className="layout-grid">
           <div className="metric">
             <span className="meta">Low risk</span>
             <strong>{summary.riskMix.low}</strong>

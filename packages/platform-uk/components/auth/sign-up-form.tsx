@@ -82,6 +82,7 @@ function SignUpFormInner() {
     <AuthCardLayout
       title="Create your account"
       subtitle="Join Aksh Health and complete personalised onboarding"
+      className="max-w-3xl"
       footer={
         <p className="text-center text-sm text-muted">
           Already have an account?{" "}
@@ -154,7 +155,10 @@ function SignUpFormInner() {
               <FormItem>
                 <FormLabel>Your role</FormLabel>
                 <FormControl>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div
+                    className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                    data-testid="signup-role-grid"
+                  >
                     {ROLES.map((role) => (
                       <RoleTile
                         key={role.id}
