@@ -39,6 +39,11 @@ const createNextConfig = (phase) => ({
         source: "/dashboard/admin/pilot-applications",
         destination: "/dashboard/admin/organisation-enquiries",
         permanent: true
+      },
+      {
+        source: "/docs",
+        destination: "/resources",
+        permanent: true
       }
     ];
   }

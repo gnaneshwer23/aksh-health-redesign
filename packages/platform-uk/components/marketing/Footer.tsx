@@ -7,7 +7,7 @@ const footerColumns = [
     title: "Product",
     links: [
       { label: "Platform", href: "/platform" },
-      { label: "Docs", href: "/docs" },
+      { label: "Resources", href: "/resources" },
       { label: "See demo", href: "/demo/patel" },
     ],
   },
@@ -57,8 +57,8 @@ export default function Footer() {
             </p>
             <p className="mt-4 max-w-md text-xs leading-relaxed text-white/45">
               {COMPLIANCE_DISCLAIMER}{" "}
-              <Link href="/docs" className="text-white/60 underline-offset-2 hover:text-white hover:underline">
-                Read documentation
+              <Link href="/resources" className="text-white/60 underline-offset-2 hover:text-white hover:underline">
+                View platform resources
               </Link>
             </p>
           </div>

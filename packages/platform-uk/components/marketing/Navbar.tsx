@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
-  ["Docs", "/docs"],
+  ["Resources", "/resources"],
 ] as const;
 
 type NavbarProps = {

@@ -70,9 +70,9 @@ export default function SecurityPage() {
           ],
         },
       ]}
-      ctaPrimary={{ label: "Read documentation", href: "/docs" }}
+      ctaPrimary={{ label: "View resources", href: "/resources" }}
       ctaSecondary={{ label: "Get started", href: "/signup" }}
-      complianceNote="Compliance badges describe aligned design pathways, not certification. See documentation for architecture and compliance evidence."
+      complianceNote="Compliance badges describe aligned design pathways, not certification. See platform resources for architecture and compliance evidence."
     />
   );
 }

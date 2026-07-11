@@ -11,7 +11,7 @@ export default function NotFound() {
           <h1 className="mb-4 text-3xl font-bold text-navy md:text-4xl">Page not found</h1>
           <p className="mb-8 text-base leading-relaxed text-steel">
             The page you requested does not exist or may have been moved. Return to the Aksh Health
-            homepage or browse our documentation.
+            homepage or browse our platform resources.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
@@ -21,10 +21,10 @@ export default function NotFound() {
               Return home
             </Link>
             <Link
-              href="/docs"
+              href="/resources"
               className="inline-flex rounded-xl border border-navy/20 px-6 py-3 text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
             >
-              View documentation
+              View resources
             </Link>
             <Link
               href="/signup"

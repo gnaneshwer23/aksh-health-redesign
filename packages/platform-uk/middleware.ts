@@ -28,7 +28,7 @@ const publicRoutePrefixes = [
   "/for-administrators",
   "/for-ics",
   "/for-research",
-  "/docs",
+  "/resources",
   "/security",
   "/integrations",
   "/about",

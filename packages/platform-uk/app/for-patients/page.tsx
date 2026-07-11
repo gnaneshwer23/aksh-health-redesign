@@ -46,7 +46,7 @@ export default function ForPatientsPage() {
       previewTitle="Health Companion preview"
       previewDescription="Patient-facing companion for check-ins, medications, and care plan visibility. Ask your GP practice if they use Aksh Health."
       ctaPrimary={{ label: "Create account", href: "/signup?role=patient" }}
-      ctaSecondary={{ label: "Learn more", href: "/docs" }}
+      ctaSecondary={{ label: "Learn more", href: "/resources" }}
       complianceNote="Your data stays within your NHS care pathway. You can opt out of AI-assisted features at any time."
     />
   );

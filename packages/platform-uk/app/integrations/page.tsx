@@ -71,8 +71,8 @@ export default function IntegrationsPage() {
         },
       ]}
       ctaPrimary={{ label: "Book a demo", href: "/get-started" }}
-      ctaSecondary={{ label: "Read documentation", href: "/docs" }}
-      complianceNote="Integration status reflects design readiness and roadmap position. See documentation for contracts and architecture detail."
+      ctaSecondary={{ label: "View resources", href: "/resources" }}
+      complianceNote="Integration status reflects design readiness and roadmap position. See platform resources for contracts and architecture detail."
     />
   );
 }

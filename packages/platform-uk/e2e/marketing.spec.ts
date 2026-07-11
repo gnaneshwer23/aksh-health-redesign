@@ -17,7 +17,7 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("link", { name: "Docs" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
 
     const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Get Started" });
@@ -40,7 +40,7 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Docs" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
   });
@@ -103,6 +103,27 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("link", { name: "See it in action" }).first()).toBeVisible();
   });
 
+  test("resources page loads with expected sections", async ({ page }) => {
+    await page.goto("/resources");
+
+    await expect(
+      page.getByRole("heading", { name: /Compliance-aware clinical AI for the NHS/i })
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Architecture overview/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Compliance frameworks/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /FHIR and interoperability/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /HITL specification/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Security" }).first()).toBeVisible();
+  });
+
+  test("/docs redirects to platform resources", async ({ page }) => {
+    await page.goto("/docs");
+    await expect(page).toHaveURL(/\/resources/);
+    await expect(
+      page.getByRole("heading", { name: /Compliance-aware clinical AI for the NHS/i })
+    ).toBeVisible();
+  });
+
   test("security and integrations pages load with expected headings", async ({ page }) => {
     await page.goto("/security");
     await expect(
@@ -137,6 +158,7 @@ test.describe("Marketing smoke", () => {
 
     const footer = page.locator("footer");
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
+    await expect(footer.getByRole("link", { name: "Resources" })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
