@@ -1,40 +1,51 @@
 import { compare } from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import type { JWT } from "next-auth/jwt";
 
 import { authConfig, isClinicalOAuthConfigured } from "./auth/config";
 import { nextAuthSecret } from "./auth-secret";
+import type { UserRole } from "./onboarding/roles";
 
-const defaultDemoPasswordHash = "$2b$10$QkvoReeIS7Cm9wEtffhnT.l.oY1gOcPjMYOkcNco7MT2SSi7aFfC6";
+const defaultDemoPasswordHash = "$2b$10$6iKQv2GujEgJKB9Auy8dK.clvty6jJfEGd.lZHML8BrjngJYLF7M6";
 
 function resolveDemoPasswordHash(primaryEnvKey: string) {
   return process.env[primaryEnvKey]?.trim() || process.env.AKSH_DEMO_PASSWORD_HASH?.trim() || defaultDemoPasswordHash;
 }
 
-// In-memory user store (demo only - use database in production)
-const DEMO_USERS: Record<string, { id: string; email: string; name: string; passwordHash: string; role: "clinical_reviewer" | "operations_lead" }> = {
+type DemoUser = {
+  id: string;
+  email: string;
+  name: string;
+  passwordHash: string;
+  role: UserRole;
+  onboardingComplete: boolean;
+};
+
+const DEMO_USERS: Record<string, DemoUser> = {
   "doctor@akshhealth.com": {
     id: "user-001",
     email: "doctor@akshhealth.com",
     name: "Dr. Clinical User",
     passwordHash: resolveDemoPasswordHash("AKSH_DEMO_DOCTOR_PASSWORD_HASH"),
-    role: "clinical_reviewer"
+    role: "gp",
+    onboardingComplete: true,
   },
   "reviewer@akshhealth.com": {
     id: "user-002",
     email: "reviewer@akshhealth.com",
     name: "Dr. Reviewer",
     passwordHash: resolveDemoPasswordHash("AKSH_DEMO_REVIEWER_PASSWORD_HASH"),
-    role: "operations_lead"
+    role: "practice-manager",
+    onboardingComplete: true,
   },
   "smoke@akshhealth.com": {
     id: "user-003",
     email: "smoke@akshhealth.com",
     name: "Smoke Loop Reviewer",
     passwordHash: resolveDemoPasswordHash("AKSH_DEMO_SMOKE_PASSWORD_HASH"),
-    role: "clinical_reviewer"
-  }
+    role: "gp",
+    onboardingComplete: true,
+  },
 };
 
 type ClinicalOAuthProfile = {
@@ -59,12 +70,53 @@ const oauthProviders = isClinicalOAuthConfigured()
             id: String(profile.sub ?? profile.id ?? "oauth-user"),
             email: String(profile.email ?? "clinician@example.com"),
             name: String(profile.name ?? "Clinical OAuth User"),
-            role: "clinical_reviewer" as const
+            role: "gp" as const,
+            onboardingComplete: false,
           };
-        }
-      }
+        },
+      },
     ]
   : [];
+
+async function resolveCredentialsUser(email: string, password: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    const { findAuthUserByEmail, findUserByEmail } = await import("./auth/user-repository");
+    const dbUser = await findAuthUserByEmail(normalizedEmail);
+    if (dbUser) {
+      const stored = await findUserByEmail(normalizedEmail);
+      if (!stored) return null;
+
+      const passwordMatches = await compare(password, stored.passwordHash);
+      if (!passwordMatches) return null;
+
+      return {
+        id: dbUser.id,
+        email: dbUser.email,
+        name: dbUser.name,
+        role: dbUser.role,
+        onboardingComplete: dbUser.onboardingComplete,
+      };
+    }
+  } catch {
+    // Database unavailable — fall back to demo users.
+  }
+
+  const demoUser = DEMO_USERS[normalizedEmail];
+  if (!demoUser) return null;
+
+  const passwordMatches = await compare(password, demoUser.passwordHash);
+  if (!passwordMatches) return null;
+
+  return {
+    id: demoUser.id,
+    email: demoUser.email,
+    name: demoUser.name,
+    role: demoUser.role,
+    onboardingComplete: demoUser.onboardingComplete,
+  };
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -80,11 +132,8 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = DEMO_USERS[credentials.email];
-
-        const passwordMatches = user ? await compare(credentials.password, user.passwordHash) : false;
-
-        if (!user || !passwordMatches) {
+        const user = await resolveCredentialsUser(credentials.email, credentials.password);
+        if (!user) {
           throw new Error("Invalid email or password");
         }
 
@@ -92,24 +141,36 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role
+          role: user.role,
+          onboardingComplete: user.onboardingComplete,
         };
       },
     }),
   ],
 
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signin",
     error: "/auth/error",
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
+        token.onboardingComplete = user.onboardingComplete ?? false;
       }
+
+      if (trigger === "update" && session) {
+        if (session.role) {
+          token.role = session.role;
+        }
+        if (typeof session.onboardingComplete === "boolean") {
+          token.onboardingComplete = session.onboardingComplete;
+        }
+      }
+
       return token;
     },
 
@@ -117,7 +178,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        session.user.role = token.role as "clinical_reviewer" | "operations_lead";
+        session.user.role = token.role as UserRole;
+        session.user.onboardingComplete = Boolean(token.onboardingComplete);
       }
       return session;
     },
@@ -125,7 +187,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 24 * 60 * 60,
   },
 
   secret: nextAuthSecret,

@@ -68,7 +68,7 @@ async function run() {
       user: {
         id: "user-001",
         email: "doctor@akshhealth.com",
-        role: "clinical_reviewer"
+        role: "gp"
       }
     }),
     {

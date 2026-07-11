@@ -55,7 +55,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/signup"
+            href="/signin"
             className={cn(
               "hidden rounded-xl border px-4 py-2 text-sm font-medium transition-all md:block",
               scrolled
@@ -64,6 +64,17 @@ export default function Navbar() {
             )}
           >
             Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className={cn(
+              "hidden rounded-xl px-4 py-2 text-sm font-semibold transition-all md:block",
+              scrolled
+                ? "bg-emerald text-white hover:bg-emerald/90"
+                : "bg-white/15 text-white hover:bg-white/25"
+            )}
+          >
+            Sign Up
           </Link>
           <Link
             href="/pilot"

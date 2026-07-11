@@ -96,7 +96,7 @@ export function UserOnboarding() {
 
   return (
     <main className="product-page">
-      <PublicProductNav ctaHref="/auth/signin" ctaLabel="Sign in" />
+      <PublicProductNav ctaHref="/signin" ctaLabel="Sign in" />
 
       <section className="product-simple-hero onboarding-hero">
         <p className="product-kicker">Role onboarding · Phase B</p>

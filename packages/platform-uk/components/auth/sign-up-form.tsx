@@ -1,0 +1,206 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { Suspense, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { AuthCardLayout } from "@/components/auth/auth-card-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { signUpSchema, type SignUpInput } from "@/lib/auth/schemas";
+import { ROLES, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
+
+function resolveInitialRole(roleParam: string | null): UserRole {
+  if (!roleParam) return "gp";
+  return SIGNUP_ROLE_MAP[roleParam] ?? (roleParam as UserRole);
+}
+
+function SignUpFormInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialRole = useMemo(
+    () => resolveInitialRole(searchParams.get("role")),
+    [searchParams]
+  );
+  const [error, setError] = useState("");
+
+  const form = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: initialRole,
+      fullName: "",
+    },
+  });
+
+  async function onSubmit(values: SignUpInput) {
+    setError("");
+
+    const signupResponse = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const signupBody = (await signupResponse.json()) as { error?: string };
+    if (!signupResponse.ok) {
+      setError(signupBody.error ?? "Unable to create account. Please try again.");
+      return;
+    }
+
+    const signInResult = await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
+
+    if (signInResult?.error) {
+      router.push("/signin");
+      return;
+    }
+
+    router.push(`/onboarding/role-select?role=${values.role}`);
+  }
+
+  return (
+    <AuthCardLayout
+      title="Create your account"
+      subtitle="Join Aksh Health and complete personalised onboarding"
+      footer={
+        <p className="text-center text-sm text-muted">
+          Already have an account?{" "}
+          <Link href="/signin" className="font-semibold text-primary hover:underline">
+            Sign in
+          </Link>
+        </p>
+      }
+    >
+      {error ? (
+        <div className="mb-4 rounded-xl border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger" role="alert">
+          {error}
+        </div>
+      ) : null}
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Dr Jane Smith" className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email address</FormLabel>
+                <FormControl>
+                  <Input {...field} type="email" autoComplete="email" placeholder="you@nhs.net" className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="rounded-xl">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {ROLES.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" autoComplete="new-password" className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" autoComplete="new-password" className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full rounded-xl bg-accent hover:bg-accent/90"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Creating account…" : "Create account"}
+          </Button>
+        </form>
+      </Form>
+    </AuthCardLayout>
+  );
+}
+
+export function SignUpForm() {
+  return (
+    <Suspense fallback={<AuthCardLayout title="Create your account">Loading…</AuthCardLayout>}>
+      <SignUpFormInner />
+    </Suspense>
+  );
+}

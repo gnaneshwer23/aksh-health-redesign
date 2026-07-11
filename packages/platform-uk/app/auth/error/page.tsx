@@ -32,7 +32,7 @@ function AuthErrorContent() {
         </div>
 
         <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
-          <Link href="/auth/signin" className="auth-submit" style={{ textAlign: "center", display: "block" }}>
+          <Link href="/signin" className="auth-submit" style={{ textAlign: "center", display: "block" }}>
             Try again
           </Link>
         </div>

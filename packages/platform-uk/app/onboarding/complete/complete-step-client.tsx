@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,12 @@ import { markOnboardingComplete, useOnboardingStore } from "@/lib/onboarding/sto
 
 export function CompleteStepClient() {
   const router = useRouter();
+  const { update } = useSession();
   const role = useOnboardingStore((s) => s.role);
   const identity = useOnboardingStore((s) => s.identity);
+  const organisation = useOnboardingStore((s) => s.organisation);
+  const preferences = useOnboardingStore((s) => s.preferences);
+  const consents = useOnboardingStore((s) => s.consents);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
   const [submitting, setSubmitting] = useState(false);
@@ -39,11 +44,25 @@ export function CompleteStepClient() {
     if (!role) return;
     setSubmitting(true);
     try {
-      await fetch("/api/onboarding/complete", {
+      const response = await fetch("/api/onboarding/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role }),
+        body: JSON.stringify({
+          role,
+          identity,
+          organisation,
+          preferences,
+          consents,
+          fullName: displayName,
+          practiceOds: organisation.odsCode,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to complete onboarding");
+      }
+
+      await update({ onboardingComplete: true, role });
       markStepComplete(def?.steps.indexOf("complete") ?? def?.steps.length ?? 0);
       markOnboardingComplete(role);
       setDone(true);

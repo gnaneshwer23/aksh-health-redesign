@@ -9,6 +9,7 @@
     "data:health": "node scripts/data-health.mjs",
     "data:seed": "node scripts/data-seed.mjs",
     "data:seed:postgres": "node --env-file=.env.local scripts/data-seed-postgres.mjs",
+    "auth:seed": "node --env-file=.env.local scripts/seed-auth-users.mjs",
     "data:reset": "node scripts/data-reset.mjs --with-auxiliary",
     "data:audit-integrity": "npx tsx scripts/data-audit-cli.ts",
     "seed:demo-evidence": "node scripts/seed-demo-evidence-scope.mjs",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Bell, Menu, Search } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -13,9 +14,17 @@ import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 export function TopBar({ role, title }: { role: DashboardRole; title?: string }) {
+  const { data: session } = useSession();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ReturnType<typeof searchPatients>>([]);
   const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } = useDashboardStore();
+  const displayName = session?.user?.name ?? session?.user?.email ?? "Aksh user";
+  const initials = displayName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const handleSearch = (q: string) => {
     setSearch(q);
@@ -76,12 +85,18 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
             )}
           </button>
           <div className="hidden items-center gap-2 sm:flex">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white shadow-sm">DM</span>
-            <span className="text-sm font-medium">Dr Morgan</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white shadow-sm">
+              {initials}
+            </span>
+            <span className="text-sm font-medium">{displayName}</span>
           </div>
-          <Link href="/" className="rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-muted hover:text-primary">
+          <button
+            type="button"
+            className="rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-muted hover:text-primary"
+            onClick={() => signOut({ callbackUrl: "/" })}
+          >
             Sign Out
-          </Link>
+          </button>
         </div>
       </header>
 

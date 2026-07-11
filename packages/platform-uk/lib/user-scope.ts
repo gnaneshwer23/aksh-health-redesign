@@ -4,6 +4,7 @@ import type { NextResponse } from "next/server";
 import { NextResponse as ServerNextResponse } from "next/server";
 
 import { authOptions } from "./auth";
+import type { AppRole } from "./permission-matrix";
 
 export const userScopeCookieName = "aksh_uid";
 
@@ -28,27 +29,25 @@ function createScopeKey() {
   return `usr_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 }
 
+export function mapSessionRoleToAppRole(role: string | null | undefined): AppRole {
+  if (role === "operations_lead") return "operations_lead";
+  if (role === "practice-manager" || role === "ics-lead" || role === "hospital-executive") {
+    return "operations_lead";
+  }
+  return "clinical_reviewer";
+}
+
 export function resolveUserScope(request: Request) {
-  // Priority 1: Check for authenticated user ID from NextAuth middleware
-  // Format: user-001, user-002, etc. from JWT token
-  const authenticatedUserId = request.headers.get("x-user-id");
-  if (authenticatedUserId && /^user-\d+/.test(authenticatedUserId)) {
+  const authenticatedUserId = sanitizeScopeKey(request.headers.get("x-user-id"));
+  if (authenticatedUserId) {
     return { scopeKey: authenticatedUserId, shouldSetCookie: false };
   }
 
-  // Priority 2: Check for x-user-id header from upstream systems
-  const headerScope = sanitizeScopeKey(request.headers.get("x-user-id"));
-  if (headerScope) {
-    return { scopeKey: headerScope, shouldSetCookie: false };
-  }
-
-  // Priority 3: Check for existing cookie
   const cookieScope = sanitizeScopeKey(parseCookieValue(request.headers.get("cookie"), userScopeCookieName));
   if (cookieScope) {
     return { scopeKey: cookieScope, shouldSetCookie: false };
   }
 
-  // Fallback: Create new pseudonymous scope (for backward compatibility)
   return { scopeKey: createScopeKey(), shouldSetCookie: true };
 }
 
@@ -60,7 +59,7 @@ export function applyUserScopeCookie(response: NextResponse, scopeKey: string) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 365
+    maxAge: 60 * 60 * 24 * 365,
   });
 }
 
@@ -85,14 +84,14 @@ export type AuthenticatedUserScope = {
   scopeKey: string;
   userId: string;
   userEmail: string | null;
-  userRole: "clinical_reviewer" | "operations_lead";
+  userRole: AppRole;
 };
 
 export function resolveAuthenticatedUserScopeFromSession(session: {
   user?: {
     id?: string | null;
     email?: string | null;
-    role?: "clinical_reviewer" | "operations_lead" | null;
+    role?: string | null;
   } | null;
 } | null | undefined): AuthenticatedUserScope | null {
   const userId = sanitizeScopeKey(session?.user?.id);
@@ -105,7 +104,7 @@ export function resolveAuthenticatedUserScopeFromSession(session: {
     scopeKey: userId,
     userId,
     userEmail: session?.user?.email?.trim() || null,
-    userRole: session?.user?.role === "operations_lead" ? "operations_lead" : "clinical_reviewer"
+    userRole: mapSessionRoleToAppRole(session?.user?.role),
   };
 }
 
@@ -124,7 +123,7 @@ function resolveTestAuthenticatedUserScope(request: Request | undefined): Authen
     scopeKey: userId,
     userId,
     userEmail: request.headers.get("x-user-email")?.trim() || null,
-    userRole: roleHeader === "operations_lead" ? "operations_lead" : "clinical_reviewer"
+    userRole: mapSessionRoleToAppRole(roleHeader),
   };
 }
 
@@ -133,7 +132,7 @@ export async function requireAuthenticatedUserScope(request?: Request) {
   if (testContext) {
     return {
       context: testContext,
-      response: null
+      response: null,
     };
   }
 
@@ -143,12 +142,12 @@ export async function requireAuthenticatedUserScope(request?: Request) {
   if (!context) {
     return {
       context: null,
-      response: ServerNextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      response: ServerNextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
 
   return {
     context,
-    response: null
+    response: null,
   };
 }
