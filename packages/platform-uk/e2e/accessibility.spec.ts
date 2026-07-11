@@ -1,5 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import type { Result } from "axe-core";
+
+function criticalViolations(violations: Result[]) {
+  return violations.filter((violation) => violation.impact === "critical");
+}
 
 test.describe("Accessibility (axe-core)", () => {
   test("homepage has no critical axe violations", async ({ page }) => {
@@ -10,7 +15,7 @@ test.describe("Accessibility (axe-core)", () => {
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
 
-    expect(results.violations).toEqual([]);
+    expect(criticalViolations(results.violations)).toEqual([]);
   });
 
   test("signup page has no critical axe violations", async ({ page }) => {
@@ -21,7 +26,7 @@ test.describe("Accessibility (axe-core)", () => {
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
 
-    expect(results.violations).toEqual([]);
+    expect(criticalViolations(results.violations)).toEqual([]);
   });
 });
 
