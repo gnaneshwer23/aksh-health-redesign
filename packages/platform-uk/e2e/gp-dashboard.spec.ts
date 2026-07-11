@@ -19,6 +19,6 @@ test.describe("GP dashboard", () => {
 
     await page.getByRole("link", { name: "Review Queue" }).click();
     await page.waitForURL(/\/dashboard\/gp\/review-queue/);
-    await expect(page.getByText(/AI Review Queue/i).first()).toBeVisible();
+    await expect(page.getByRole("region", { name: "AI Review Queue" })).toBeVisible();
   });
 });
