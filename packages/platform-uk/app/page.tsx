@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-3xl px-6">
           <h2 className="mb-4 text-4xl font-bold">Ready to deploy across your organisation?</h2>
           <p className="mb-8 text-xl text-white/80">
-            Eight role-specific dashboards. FHIR R4 integration with EMIS Web and SystmOne. Clinical safety built in from day one.
+            Eight role-specific dashboards. FHIR R4 ready, designed for EMIS Web and SystmOne. Clinical safety built in from day one. Demo uses synthetic data.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link

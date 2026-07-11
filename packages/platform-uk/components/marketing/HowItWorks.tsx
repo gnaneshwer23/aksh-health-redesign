@@ -5,7 +5,7 @@ export default function HowItWorks() {
       color: "bg-sky-500",
       title: "CONNECT",
       sub: "One platform. Every system.",
-      body: "Aksh Health connects to your existing EHR via FHIR R4 and HL7 v2: EMIS Web, SystmOne, and Epic. No migration project and no rip-and-replace. The nightly extraction job runs at midnight so data is ready for morning clinic.",
+      body: "Designed to integrate with EMIS Web and SystmOne via FHIR R4 and HL7 v2. No migration project and no rip-and-replace. Current demo uses synthetic patient data; production integration paths are on the roadmap.",
     },
     {
       num: "02",

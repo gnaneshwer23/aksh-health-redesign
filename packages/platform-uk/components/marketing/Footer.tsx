@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
+
 const footerColumns = [
   {
     title: "Platform",
@@ -12,10 +14,11 @@ const footerColumns = [
   {
     title: "Solutions",
     links: [
-      { label: "For Clinicians", href: "/platform#clinicians" },
-      { label: "For Hospitals", href: "/platform#hospitals" },
-      { label: "For Patients", href: "/platform#patients" },
-      { label: "For Administrators", href: "/platform#administrators" },
+      { label: "For Clinicians", href: "/for-clinicians" },
+      { label: "For Practices", href: "/for-practices" },
+      { label: "For Patients", href: "/for-patients" },
+      { label: "For Hospitals", href: "/for-hospitals" },
+      { label: "For Administrators", href: "/for-administrators" },
     ],
   },
   {
@@ -41,8 +44,14 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">Aksh Health</span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-white/60">
-              Clinical AI for NHS primary and secondary care. Connects your existing systems to specialist agents with
-              clinician approval on every output.
+              Clinical AI for NHS primary and secondary care. Designed for EMIS Web and SystmOne with FHIR R4 ready
+              integration paths and clinician approval on every output.
+            </p>
+            <p className="mt-4 max-w-md text-xs leading-relaxed text-white/45">
+              {COMPLIANCE_DISCLAIMER}{" "}
+              <Link href="/docs" className="text-white/60 underline-offset-2 hover:text-white hover:underline">
+                Read documentation
+              </Link>
             </p>
           </div>
 

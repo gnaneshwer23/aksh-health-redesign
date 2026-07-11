@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
@@ -9,13 +9,19 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
-  ["Solutions", "/platform#clinicians"],
   ["Docs", "/docs"],
+] as const;
+
+const solutionLinks = [
+  ["Clinicians", "/for-clinicians"],
+  ["Practices", "/for-practices"],
+  ["Patients", "/for-patients"],
 ] as const;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -31,6 +37,11 @@ export default function Navbar() {
       };
     }
   }, [mobileOpen]);
+
+  const linkClass = cn(
+    "text-sm font-medium transition-colors",
+    scrolled ? "text-steel hover:text-navy" : "text-white/90 hover:text-white"
+  );
 
   return (
     <nav
@@ -52,17 +63,41 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map(([label, href]) => (
-            <Link
-              key={label}
-              href={href}
-              className={cn(
-                "text-sm font-medium transition-colors",
-                scrolled ? "text-steel hover:text-navy" : "text-white/90 hover:text-white"
-              )}
-            >
+            <Link key={label} href={href} className={linkClass}>
               {label}
             </Link>
           ))}
+
+          <div
+            className="relative"
+            onMouseEnter={() => setSolutionsOpen(true)}
+            onMouseLeave={() => setSolutionsOpen(false)}
+          >
+            <button
+              type="button"
+              className={cn("inline-flex items-center gap-1", linkClass)}
+              aria-expanded={solutionsOpen}
+              aria-haspopup="true"
+            >
+              Solutions
+              <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
+            </button>
+            {solutionsOpen && (
+              <div className="absolute left-0 top-full z-50 min-w-[11rem] pt-2">
+                <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
+                  {solutionLinks.map(([label, href]) => (
+                    <Link
+                      key={label}
+                      href={href}
+                      className="block px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-navy/5"
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -115,6 +150,18 @@ export default function Navbar() {
 
           <nav className="flex flex-1 flex-col gap-1 px-4 py-4" aria-label="Mobile navigation">
             {navLinks.map(([label, href]) => (
+              <SheetClose key={label} asChild>
+                <Link
+                  href={href}
+                  className="rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5"
+                >
+                  {label}
+                </Link>
+              </SheetClose>
+            ))}
+
+            <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-widest text-steel">Solutions</p>
+            {solutionLinks.map(([label, href]) => (
               <SheetClose key={label} asChild>
                 <Link
                   href={href}

@@ -9,7 +9,7 @@ const agents = [
   { name: "HEALTH COMPANION", tag: "Patient", color: "bg-accent", desc: "24/7 patient health assistant. Daily check-ins, medication reminders, care plan in plain English.", fhir: "CommunicationRequest" },
   { name: "VOICE CARE AGENT", tag: "Patient", color: "bg-sky-600", desc: "AI makes outbound calls post-discharge. Collects symptoms. Detects deterioration. Escalates to GP.", fhir: "Encounter, Flag" },
   { name: "REFERRAL AGENT", tag: "Coordination", color: "bg-purple-600", desc: "Auto-generates referral packages: criteria check, missing investigations, urgency prediction.", fhir: "ServiceRequest" },
-  { name: "HOSPITAL COMMAND", tag: "Operational", color: "bg-slate", desc: "Live hospital status: ED waiting, bed occupancy, theatres. Predicts pressure. Recommends actions.", fhir: "Operational data" },
+  { name: "HOSPITAL COMMAND", tag: "Operational", color: "bg-slate", desc: "Hospital status views: ED waiting, bed occupancy, theatres. Surfaces pressure signals for operational review.", fhir: "Operational data" },
   { name: "CAPACITY PREDICTION", tag: "Operational", color: "bg-navy", desc: "14-day admission and discharge forecast. Winter surge planning. Discharge bottleneck detection.", fhir: "Operational data" },
 ];
 

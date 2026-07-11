@@ -13,8 +13,8 @@ export default function VoiceAgentSection() {
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold">AI That Calls Your Patients.</h2>
           <p className="mx-auto max-w-2xl text-xl text-white/70">
-            The Voice Care Agent makes outbound calls post-discharge, collects structured clinical data, updates FHIR
-            automatically, and escalates to the care team when risk is detected.
+            The Voice Care Agent makes outbound calls post-discharge, collects structured clinical data, stages FHIR
+            resources for review, and escalates to the care team when risk is detected.
           </p>
         </div>
 

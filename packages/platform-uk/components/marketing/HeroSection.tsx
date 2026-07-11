@@ -18,8 +18,9 @@ export default function HeroSection() {
           Clinical workflows, one platform.
         </h1>
         <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-white/75">
-          Aksh Health connects EMIS Web, SystmOne, and Epic to specialist AI agents that draft notes,
+          Designed for EMIS Web and SystmOne with FHIR R4 ready integration paths. Specialist AI agents draft notes,
           check safety, and coordinate care. Every output needs clinician approval before it reaches the record.
+          Demo uses synthetic data.
         </p>
 
         <div className="mb-14 flex flex-col justify-center gap-4 sm:flex-row">
@@ -39,11 +40,11 @@ export default function HeroSection() {
 
         <div className="flex flex-wrap justify-center gap-3">
           {[
-            "NHS DCB0129 Compliant",
-            "HL7 FHIR R4 Native",
+            "NHS DCB0129 pathway",
+            "FHIR R4 ready",
             "Human-in-the-Loop",
-            "NHS CIS2 SSO",
-            "DTAC Aligned",
+            "NHS CIS2 ready",
+            "DTAC aligned",
           ].map((badge) => (
             <span
               key={badge}

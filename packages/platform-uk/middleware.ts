@@ -20,6 +20,7 @@ const publicRoutePrefixes = [
   "/api/access-requests",
   "/platform",
   "/for-clinicians",
+  "/for-practices",
   "/for-hospitals",
   "/for-patients",
   "/for-administrators",

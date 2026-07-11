@@ -6,7 +6,7 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("link", { name: "Solutions" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Docs" })).toBeVisible();
 
     const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Get Started" });
@@ -29,7 +29,9 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Solutions" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Clinicians" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Practices" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Patients" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Docs" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
@@ -50,5 +52,16 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Return home" })).toBeVisible();
+  });
+
+  test("audience landing pages load with expected headings", async ({ page }) => {
+    await page.goto("/for-clinicians");
+    await expect(page.getByRole("heading", { name: /Spend time with patients/i })).toBeVisible();
+
+    await page.goto("/for-practices");
+    await expect(page.getByRole("heading", { name: /Run the practice with clear oversight/i })).toBeVisible();
+
+    await page.goto("/for-patients");
+    await expect(page.getByRole("heading", { name: /Your health, understood and supported/i })).toBeVisible();
   });
 });
