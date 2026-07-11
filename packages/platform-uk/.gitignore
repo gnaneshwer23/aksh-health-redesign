@@ -9,3 +9,7 @@ node_modules/
 .next-build-active/
 .next-dev/
 .next-dev-active/
+.vercel
+
+# Generated readiness audit artifacts
+data/readiness-history.*.json
