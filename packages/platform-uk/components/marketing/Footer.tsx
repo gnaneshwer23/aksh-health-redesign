@@ -4,18 +4,15 @@ import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
 
 const footerColumns = [
   {
-    title: "Platform",
+    title: "Product",
     links: [
-      { label: "How It Works", href: "/#how-it-works" },
-      { label: "Architecture", href: "/platform" },
-      { label: "Documentation", href: "/docs" },
-      { label: "Demo", href: "/demo" },
-      { label: "Security", href: "/security" },
-      { label: "Integrations", href: "/integrations" },
+      { label: "Platform", href: "/platform" },
+      { label: "Docs", href: "/docs" },
+      { label: "See demo", href: "/demo/patel" },
     ],
   },
   {
-    title: "Solutions",
+    title: "Audiences",
     links: [
       { label: "For Clinicians", href: "/for-clinicians" },
       { label: "For Practices", href: "/for-practices" },
@@ -27,10 +24,10 @@ const footerColumns = [
     ],
   },
   {
-    title: "Company",
+    title: "Trust",
     links: [
-      { label: "Get Started", href: "/get-started" },
-      { label: "Contact", href: "/contact" },
+      { label: "Security", href: "/security" },
+      { label: "Integrations", href: "/integrations" },
     ],
   },
   {

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 
-import Footer from "@/components/marketing/Footer";
-import Navbar from "@/components/marketing/Navbar";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 import {
   EHR_SYSTEMS,
   ICS_REGIONS,
@@ -96,9 +95,8 @@ export default function GetStartedPageClient() {
 
   if (submitted) {
     return (
-      <div className="marketing-site flex min-h-screen flex-col">
-        <Navbar />
-        <div className="flex flex-1 items-center justify-center">
+      <MarketingShell>
+        <div className="flex flex-1 items-center justify-center py-16">
           <div className="max-w-md px-6 text-center">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
               <span className="text-4xl text-emerald">✓</span>
@@ -115,15 +113,13 @@ export default function GetStartedPageClient() {
             ) : null}
           </div>
         </div>
-        <Footer />
-      </div>
+      </MarketingShell>
     );
   }
 
   return (
-    <div className="marketing-site flex min-h-screen flex-col bg-surface">
-      <Navbar />
-      <div className="mx-auto w-full max-w-2xl flex-1 px-6 pb-20 pt-28">
+    <MarketingShell>
+      <div className="mx-auto w-full max-w-2xl flex-1 px-6 pb-20 pt-8">
         <h1 className="mb-2 text-3xl font-bold text-navy">Get your organisation set up</h1>
         <p className="mb-8 text-steel">
           Tell us about your NHS organisation and we will arrange a demo with your clinical and IT leads.
@@ -312,7 +308,6 @@ export default function GetStartedPageClient() {
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+    </MarketingShell>
   );
 }

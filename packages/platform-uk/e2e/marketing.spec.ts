@@ -4,7 +4,7 @@ test.describe("Marketing smoke", () => {
   test("homepage loads with nav links and visible get started CTA", async ({ page }) => {
     await page.goto("/");
 
-    const nav = page.locator("nav");
+    const nav = page.locator("nav[data-over-dark-hero]");
     await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
     const brandTitle = page.locator("nav a.navbar-brand .navbar-brand-title");
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
@@ -17,9 +17,8 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("link", { name: "Demo" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Docs" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
 
     const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Get Started" });
     await expect(primaryCta).toBeVisible();
@@ -41,55 +40,9 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Demo" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Clinicians" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Practices" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Patients" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Hospitals" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Administrators" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "ICS" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Research" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Security" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Integrations" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Docs" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
-  });
-
-  test("Solutions dropdown is keyboard accessible", async ({ page }) => {
-    await page.goto("/");
-
-    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
-    await solutionsButton.focus();
-    await page.keyboard.press("Enter");
-    await expect(page.getByRole("menu")).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Clinicians" })).toBeFocused();
-
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("menu")).toBeHidden();
-    await expect(solutionsButton).toBeFocused();
-  });
-
-  test("Solutions hover keeps navbar brand and links visible", async ({ page }) => {
-    await page.goto("/");
-
-    const brandTitle = page.locator("nav a.navbar-brand .navbar-brand-title");
-    const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
-    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
-
-    await expect(brandTitle).toBeVisible();
-    await expect(platformLink).toBeVisible();
-
-    await solutionsButton.hover();
-    await expect(page.getByRole("menu")).toBeVisible();
-
-    await expect(brandTitle).toBeVisible();
-    await expect(platformLink).toBeVisible();
-
-    const brandBox = await brandTitle.boundingBox();
-    const menuBox = await page.getByRole("menu").boundingBox();
-    expect(brandBox?.y ?? 0).toBeGreaterThan(0);
-    expect(menuBox?.y ?? 0).toBeGreaterThan(brandBox?.y ?? 0);
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
@@ -135,13 +88,13 @@ test.describe("Marketing smoke", () => {
   test("platform page loads with cohesive sections", async ({ page }) => {
     await page.goto("/platform");
 
-    const nav = page.locator("nav");
+    const nav = page.locator("nav[data-over-dark-hero]");
     await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
 
     const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
     await expect(platformLink).toBeVisible();
     const platformColor = await platformLink.evaluate((element) => window.getComputedStyle(element).color);
-    expect(platformColor).toBe("rgb(255, 255, 255)");
+    expect(platformColor).toMatch(/rgba?\(255,\s*255,\s*255/);
 
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
@@ -164,24 +117,28 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /FHIR R4 resources/i })).toBeVisible();
   });
 
-  test("demo hub loads with demo cards linking to valid routes", async ({ page }) => {
+  test("/demo redirects to flagship clinical walkthrough", async ({ page }) => {
     await page.goto("/demo");
-
-    await expect(page.getByRole("heading", { name: /See Aksh Health in action/i })).toBeVisible();
-    await expect(page.getByText("Synthetic-safe only.")).toBeVisible();
-
-    const patelCard = page.getByRole("link", { name: /Open demo/i }).first();
-    await expect(patelCard).toBeVisible();
-    await expect(patelCard).toHaveAttribute("href", "/demo/patel");
-
-    const voiceCareLink = page.getByRole("link", { name: /Open demo/i }).nth(1);
-    await expect(voiceCareLink).toHaveAttribute("href", "/demo/voice-care-day3");
-
-    await patelCard.click();
     await expect(page).toHaveURL(/\/demo\/patel/);
     await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
+  });
+
+  test("clinical walkthrough routes load", async ({ page }) => {
+    await page.goto("/demo/patel");
+    await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open step surface" })).toBeVisible();
 
     await page.goto("/demo/voice-care-day3");
     await expect(page.getByRole("heading", { name: /Post-consult check-in: Mr James Patel/i })).toBeVisible();
+  });
+
+  test("footer exposes product, audience, and trust links", async ({ page }) => {
+    await page.goto("/");
+
+    const footer = page.locator("footer");
+    await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
+    await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
   });
 });

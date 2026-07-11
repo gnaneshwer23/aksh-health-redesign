@@ -88,7 +88,7 @@ const quickLinks = [
   { label: "Governance pack", href: "/review/governance-pack", desc: "Regulatory evidence" },
   { label: "Roadmap actions", href: "/review/roadmap/actions", desc: "M1 action inbox" },
   { label: "Meeting packet", href: "/review/meeting-packet", desc: "Presentation ready" },
-  { label: "Demo path", href: "/demo", desc: "Guided walkthrough" }
+  { label: "Demo path", href: "/demo/patel", desc: "Guided walkthrough" }
 ];
 
 export function UserDashboards({ clinical, operations, evidence }: UserDashboardsProps) {

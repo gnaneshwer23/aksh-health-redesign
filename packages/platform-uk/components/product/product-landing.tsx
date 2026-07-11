@@ -152,7 +152,7 @@ export function ProductLanding() {
             <span className="pill">MHRA-aware</span>
           </div>
           <div className="product-actions">
-            <Link className="product-button product-button--primary" href="/demo">
+            <Link className="product-button product-button--primary" href="/demo/patel">
               See it in action
             </Link>
             <Link className="product-button product-button--secondary" href="/dashboards">
@@ -303,7 +303,7 @@ export function ProductLanding() {
           </p>
         </div>
         <div className="product-actions">
-          <Link className="product-button product-button--primary" href="/demo">
+          <Link className="product-button product-button--primary" href="/demo/patel">
             Open demo path
           </Link>
           <Link className="product-button product-button--secondary" href="/dashboards">

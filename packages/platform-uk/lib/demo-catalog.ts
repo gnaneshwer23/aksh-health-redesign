@@ -1,3 +1,7 @@
+/**
+ * Product walkthrough routes for clinical demos. These are guided product experiences,
+ * not a separate marketing section. Entry points link directly to a walkthrough (e.g. /demo/patel).
+ */
 export type PublicDemo = {
   id: string;
   title: string;

@@ -1,13 +1,11 @@
 import Link from "next/link";
 
-import Footer from "@/components/marketing/Footer";
-import Navbar from "@/components/marketing/Navbar";
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 export default function NotFound() {
   return (
-    <div className="marketing-site flex min-h-screen flex-col overflow-x-hidden bg-surface">
-      <Navbar />
-      <main className="flex flex-1 items-center justify-center px-6 pt-16">
+    <MarketingShell>
+      <div className="flex flex-1 items-center justify-center px-6 py-16">
         <div className="mx-auto max-w-lg text-center">
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald">404</p>
           <h1 className="mb-4 text-3xl font-bold text-navy md:text-4xl">Page not found</h1>
@@ -36,8 +34,7 @@ export default function NotFound() {
             </Link>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </MarketingShell>
   );
 }

@@ -15,7 +15,7 @@ const pages = [
   { path: "/signup", text: "Choose your role" },
   { path: "/get-started", text: "Get your organisation set up" },
   { path: "/onboarding", text: "Choose your role. Start with the right work." },
-  { path: "/dashboards", text: "One product, three professional operating views." },
+  { path: "/platform", text: "One platform, eight roles" },
   { path: "/demo", text: "See Aksh Health in action" }
 ];
 

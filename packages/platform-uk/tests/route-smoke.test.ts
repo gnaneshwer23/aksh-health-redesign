@@ -14,7 +14,7 @@ async function run() {
   const criticalRoutes = [
     ["app/page.tsx", "HomePage"],
     ["app/onboarding/page.tsx", "OnboardingPage"],
-    ["app/dashboards/page.tsx", "DashboardsPage"],
+    ["app/platform/page.tsx", "PlatformPage"],
     ["app/review/page.tsx", "ReviewPageClient"],
     ["app/review/command-centre/page.tsx", "CommandCentre"],
     ["app/review/demo-readiness/page.tsx", "DemoReadinessChecklist"],

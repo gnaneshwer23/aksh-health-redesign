@@ -1,53 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
-  ["Demo", "/demo"],
   ["Docs", "/docs"],
 ] as const;
-
-const solutionSections = [
-  {
-    title: "Audiences",
-    links: [
-      ["Clinicians", "/for-clinicians"],
-      ["Practices", "/for-practices"],
-      ["Patients", "/for-patients"],
-      ["Hospitals", "/for-hospitals"],
-      ["Administrators", "/for-administrators"],
-      ["ICS", "/for-ics"],
-      ["Research", "/for-research"],
-    ],
-  },
-  {
-    title: "Trust",
-    links: [
-      ["Security", "/security"],
-      ["Integrations", "/integrations"],
-    ],
-  },
-] as const;
-
-type SolutionLink = [label: string, href: string];
-
-const solutionLinks: SolutionLink[] = [
-  ["Clinicians", "/for-clinicians"],
-  ["Practices", "/for-practices"],
-  ["Patients", "/for-patients"],
-  ["Hospitals", "/for-hospitals"],
-  ["Administrators", "/for-administrators"],
-  ["ICS", "/for-ics"],
-  ["Research", "/for-research"],
-  ["Security", "/security"],
-  ["Integrations", "/integrations"],
-];
 
 type NavbarProps = {
   /** Transparent navbar sits over a dark navy hero at page top */
@@ -60,11 +23,6 @@ const focusRing =
 export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const solutionsMenuId = useId();
-  const solutionsButtonRef = useRef<HTMLButtonElement>(null);
-  const solutionsPanelRef = useRef<HTMLDivElement>(null);
-  const solutionsOpenedByKeyboardRef = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -72,46 +30,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (!solutionsOpen) return;
-
-    const panel = solutionsPanelRef.current;
-    if (!panel) return;
-
-    const focusable = panel.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    // Only move focus when opened via keyboard/click — hover must not scroll the nav.
-    if (solutionsOpenedByKeyboardRef.current) {
-      first?.focus();
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setSolutionsOpen(false);
-        solutionsButtonRef.current?.focus();
-        return;
-      }
-
-      if (event.key !== "Tab" || focusable.length === 0) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [solutionsOpen]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -122,10 +40,8 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     }
   }, [mobileOpen]);
 
-  // Transparent nav + white text only when hero actually sits behind the navbar.
   const transparentOverHero = overDarkHero && !scrolled;
-  // White navbar + dark text whenever background is light (scrolled or non-hero pages).
-  const solidNavbar = scrolled || !overDarkHero;
+  const useLightNav = scrolled || !overDarkHero;
 
   const linkClass = cn(
     "text-sm font-medium transition-colors rounded-lg",
@@ -136,10 +52,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
   return (
     <nav
       data-over-dark-hero={transparentOverHero ? "true" : "false"}
-      data-solid-navbar={solidNavbar ? "true" : "false"}
+      data-solid-navbar={useLightNav ? "true" : "false"}
       className={cn(
         "fixed top-0 z-50 w-full overflow-visible transition-all duration-200",
-        solidNavbar
+        useLightNav
           ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md"
           : "bg-transparent"
       )}
@@ -185,76 +101,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               {label}
             </Link>
           ))}
-
-          <div
-            className="relative"
-            onMouseEnter={() => {
-              solutionsOpenedByKeyboardRef.current = false;
-              setSolutionsOpen(true);
-            }}
-            onMouseLeave={() => setSolutionsOpen(false)}
-          >
-            <button
-              ref={solutionsButtonRef}
-              type="button"
-              className={cn(
-                "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
-                linkClass
-              )}
-              aria-expanded={solutionsOpen}
-              aria-haspopup="true"
-              aria-controls={solutionsMenuId}
-              onClick={() => {
-                solutionsOpenedByKeyboardRef.current = true;
-                setSolutionsOpen((open) => !open);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  solutionsOpenedByKeyboardRef.current = true;
-                  setSolutionsOpen((open) => !open);
-                }
-                if (event.key === "Escape") {
-                  setSolutionsOpen(false);
-                }
-              }}
-            >
-              Solutions
-              <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
-            </button>
-            {solutionsOpen ? (
-              <div
-                id={solutionsMenuId}
-                ref={solutionsPanelRef}
-                role="menu"
-                className="absolute left-0 top-full z-[60] min-w-[13rem] pt-2"
-              >
-                <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
-                  {solutionSections.map((section, sectionIndex) => (
-                    <div key={section.title}>
-                      {sectionIndex > 0 && <div className="my-1 border-t border-border-subtle" />}
-                      <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-steel">
-                        {section.title}
-                      </p>
-                      {section.links.map(([label, href]) => (
-                        <Link
-                          key={label}
-                          href={href}
-                          role="menuitem"
-                          className={cn(
-                            "block px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5 rounded-lg",
-                            focusRing
-                          )}
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -312,21 +158,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
 
           <nav className="flex flex-1 flex-col gap-1 px-4 py-4" aria-label="Mobile navigation">
             {navLinks.map(([label, href]) => (
-              <SheetClose key={label} asChild>
-                <Link
-                  href={href}
-                  className={cn(
-                    "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                    focusRing
-                  )}
-                >
-                  {label}
-                </Link>
-              </SheetClose>
-            ))}
-
-            <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-widest text-steel">Solutions</p>
-            {solutionLinks.map(([label, href]) => (
               <SheetClose key={label} asChild>
                 <Link
                   href={href}

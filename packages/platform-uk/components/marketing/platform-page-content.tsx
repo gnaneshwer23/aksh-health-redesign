@@ -62,7 +62,7 @@ export function PlatformPageContent() {
               Get Started
             </Link>
             <Link
-              href="/demo"
+              href="/demo/patel"
               className="rounded-xl border-2 border-white/70 px-8 py-3.5 text-center text-base font-bold text-white transition-all hover:bg-white/10"
             >
               See it in action
@@ -175,7 +175,7 @@ export function PlatformPageContent() {
               Get Started
             </Link>
             <Link
-              href="/demo"
+              href="/demo/patel"
               className="rounded-xl border-2 border-white/80 px-8 py-3.5 text-base font-bold text-white transition-colors hover:bg-white/10"
             >
               See it in action
