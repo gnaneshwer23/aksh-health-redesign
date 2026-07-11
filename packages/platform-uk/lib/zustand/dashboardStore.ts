@@ -23,6 +23,7 @@ interface DashboardState {
   adminUsers: AdminUser[];
   dismissedHospitalAlerts: string[];
   acceptedHospitalRecs: string[];
+  dismissedHospitalRecs: string[];
   medicationReviewsCompleted: string[];
   notificationCount: number;
   writtenToRecordToday: ReviewQueueItem[];
@@ -43,6 +44,14 @@ interface DashboardState {
   updateUserStatus: (id: string, status: AdminUser["status"]) => void;
   dismissHospitalAlert: (id: string) => void;
   acceptHospitalRec: (id: string, reviewerName: string) => void;
+  dismissHospitalRec: (id: string, reviewerName: string) => void;
+  stageGuardianInteraction: (payload: {
+    patientId: string;
+    patientName: string;
+    patientNhsNumber: string;
+    title: string;
+    content: string;
+  }) => void;
   markMedicationReviewed: (patientId: string) => void;
 }
 
@@ -67,6 +76,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   adminUsers: [],
   dismissedHospitalAlerts: [],
   acceptedHospitalRecs: [],
+  dismissedHospitalRecs: [],
   medicationReviewsCompleted: [],
   notificationCount: 7,
   writtenToRecordToday: [],
@@ -178,6 +188,44 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       resource: id,
     });
     set((s) => ({ acceptedHospitalRecs: [...s.acceptedHospitalRecs, id] }));
+  },
+
+  dismissHospitalRec: (id, reviewerName) => {
+    get().addAuditEvent({
+      user: reviewerName,
+      agent: "COMMAND",
+      action: "Dismissed AI recommendation",
+      resource: id,
+    });
+    set((s) => ({ dismissedHospitalRecs: [...s.dismissedHospitalRecs, id] }));
+  },
+
+  stageGuardianInteraction: (payload) => {
+    const id = `RQ${Date.now()}`;
+    const item: ReviewQueueItem = {
+      id,
+      patientId: payload.patientId,
+      patientName: payload.patientName,
+      patientNhsNumber: payload.patientNhsNumber,
+      agentType: "GUARDIAN",
+      title: payload.title,
+      content: payload.content,
+      confidenceScore: null,
+      evidenceSources: [],
+      createdAt: new Date().toISOString(),
+      priority: "High",
+      status: "Pending",
+      editedContent: null,
+      rejectionReason: null,
+      auditEventId: null,
+    };
+    set((s) => ({ reviewQueueItems: [item, ...s.reviewQueueItems] }));
+    get().addAuditEvent({
+      user: "Pharmacist Lee",
+      agent: "GUARDIAN",
+      action: "Staged interaction check for review",
+      resource: `${id} / ${payload.patientName}`,
+    });
   },
 
   markMedicationReviewed: (patientId) =>

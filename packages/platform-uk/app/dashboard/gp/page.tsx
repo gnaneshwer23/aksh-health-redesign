@@ -15,14 +15,13 @@ import {
   countAwaitingApproval,
   getPatientById,
   getPathwaysForPatient,
-  reviewQueueItems,
   searchPatients,
   todaysAppointments,
 } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 export default function GpDashboardPage() {
-  const { selectedPatientId, setSelectedPatient, writtenToRecordToday } = useDashboardStore();
+  const { selectedPatientId, setSelectedPatient, writtenToRecordToday, reviewQueueItems } = useDashboardStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWritten, setShowWritten] = useState(true);
 
@@ -30,7 +29,7 @@ export default function GpDashboardPage() {
   const searchResults = useMemo(() => (searchQuery ? searchPatients(searchQuery) : []), [searchQuery]);
   const displayPatients = searchResults.length > 0 ? searchResults : todaysAppointments;
   const pathways = patient ? getPathwaysForPatient(patient.id) : [];
-  const guardianCount = reviewQueueItems.filter((r) => r.agentType === "GUARDIAN" && r.status === "Pending").length;
+  const guardianCount = reviewQueueItems.filter((r) => r.agentType === "GUARDIAN" && (r.status === "Pending" || r.status === "Edited")).length;
 
   return (
     <DashboardShell role="gp" title="Clinician Dashboard">

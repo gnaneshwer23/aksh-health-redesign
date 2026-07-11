@@ -16,7 +16,7 @@ import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
 export default function HospitalDashboardPage() {
-  const { dismissedHospitalAlerts, acceptHospitalRec, acceptedHospitalRecs } = useDashboardStore();
+  const { dismissedHospitalAlerts, acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalAlert, dismissHospitalRec } = useDashboardStore();
   const [time, setTime] = useState(new Date());
   const data = hospitalData;
   const bedPct = Math.round((data.wards.reduce((s, w) => s + w.occupiedBeds, 0) / data.wards.reduce((s, w) => s + w.totalBeds, 0)) * 100);
@@ -49,7 +49,7 @@ export default function HospitalDashboardPage() {
             <p className="text-sm">Digital Twin Alert: 73% probability of ED surge in next 12 hours. Recommend: accelerate discharge reviews in wards 3A, 3B, 4A</p>
             <div className="flex gap-2">
               <Button size="sm" variant="outline">View Analysis</Button>
-              <Button size="sm" variant="ghost" onClick={() => useDashboardStore.getState().dismissHospitalAlert("surge")}>Dismiss</Button>
+              <Button size="sm" variant="ghost" onClick={() => dismissHospitalAlert("surge")}>Dismiss</Button>
             </div>
           </div>
         )}
@@ -75,13 +75,17 @@ export default function HospitalDashboardPage() {
                     <Badge className={cn(rec.urgency === "Urgent" ? "bg-danger" : "bg-warning")}>{rec.urgency}</Badge>
                   </div>
                   {acceptedHospitalRecs.includes(rec.id) ? (
-                    <p className="text-xs text-accent">Actioned · {CURRENT_GP}</p>
+                    <p className="text-xs text-accent">Written to Record · Actioned · {CURRENT_GP}</p>
+                  ) : dismissedHospitalRecs.includes(rec.id) ? (
+                    <HitlActions status="Dismissed" onAccept={() => {}} onEdit={() => {}} onReject={() => {}} />
                   ) : (
                     <HitlActions
+                      variant="command"
                       status="Pending"
                       onAccept={() => { acceptHospitalRec(rec.id, CURRENT_GP); toast({ title: "Recommendation actioned" }); }}
                       onEdit={() => {}}
                       onReject={() => {}}
+                      onDismiss={() => { dismissHospitalRec(rec.id, CURRENT_GP); toast({ title: "Recommendation dismissed" }); }}
                     />
                   )}
                 </Card>

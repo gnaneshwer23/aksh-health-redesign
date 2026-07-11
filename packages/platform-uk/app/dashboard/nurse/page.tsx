@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -16,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/toaster";
 import { CURRENT_GP, patients, reviewQueueItems } from "@/lib/mock-data";
+import type { NurseEscalationTask } from "@/lib/types";
+import { readNurseEscalationTasks } from "@/lib/voice-care";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +31,11 @@ export default function NurseDashboardPage() {
   const [handoverAccepted, setHandoverAccepted] = useState(false);
   const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
   const [vitals, setVitals] = useState({ bpSys: "", bpDia: "", hr: "", rr: "", spo2: "", temp: "", weight: "" });
+  const [escalationTasks, setEscalationTasks] = useState<NurseEscalationTask[]>([]);
+
+  useEffect(() => {
+    setEscalationTasks(readNurseEscalationTasks());
+  }, []);
 
   const filtered = patients.filter((p) => {
     if (nurseFilter === "alerts") return p.flags.includes("GUARDIAN") || p.flags.includes("URGENT");
@@ -122,9 +130,16 @@ export default function NurseDashboardPage() {
           {!handoverAccepted ? (
             <HitlActions
               status="Pending"
-              onAccept={() => { setHandoverAccepted(true); addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Approved handover summary", resource: "Night shift" }); toast({ title: "Handover shared" }); }}
-              onEdit={() => {}}
-              onReject={() => setHandoverOpen(false)}
+              onAccept={() => {
+                setHandoverAccepted(true);
+                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Approved handover summary", resource: "Night shift" });
+                toast({ title: "Handover shared" });
+              }}
+              onEdit={() => toast({ title: "Edit handover", description: "Inline editor — re-acceptance required after save" })}
+              onReject={(reason) => {
+                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: `Rejected handover — ${reason}`, resource: "Night shift" });
+                setHandoverOpen(false);
+              }}
             />
           ) : (
             <p className="text-xs text-accent">Shared at {new Date().toLocaleTimeString("en-GB")}</p>
