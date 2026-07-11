@@ -18,6 +18,7 @@
     "smoke:loop": "node scripts/smoke-mutation-loop.mjs",
     "smoke:public": "node scripts/smoke-public-pages.mjs",
     "smoke:gp": "node scripts/smoke-gp-dashboard.mjs",
+    "smoke:patient": "node scripts/smoke-patient-dashboard.mjs",
     "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",
     "start": "next start",
     "lint": "npm run typecheck",

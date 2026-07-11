@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { searchPatients } from "@/lib/mock-data";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
+import { cn } from "@/lib/utils";
 
 const MOCK_NOTIFICATIONS = [
   {
@@ -34,12 +35,23 @@ const MOCK_NOTIFICATIONS = [
   },
 ];
 
-export function TopBar({ role, title }: { role: DashboardRole; title?: string }) {
+export function TopBar({
+  role,
+  title,
+  hideSearch,
+}: {
+  role: DashboardRole;
+  title?: string;
+  hideSearch?: boolean;
+}) {
   const { data: session } = useSession();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ReturnType<typeof searchPatients>>([]);
   const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } = useDashboardStore();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const isPatientView = role === "patient";
+  const showSearch = !hideSearch && !isPatientView;
+  const headerTitle = isPatientView ? title ?? "My Health" : title;
   const displayName = session?.user?.name ?? session?.user?.email ?? "Aksh user";
   const initials = displayName
     .split(" ")
@@ -64,35 +76,47 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
         </Button>
         <div className="flex items-center gap-2">
           <span className="text-base font-bold text-primary">Aksh</span>
-          {title && <span className="hidden text-sm text-muted sm:inline">· {title}</span>}
-        </div>
-        <div className="relative mx-auto hidden max-w-md flex-1 md:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <Input
-            className="rounded-xl border-border-subtle bg-surface-muted pl-9 shadow-none focus-visible:ring-primary/20"
-            placeholder="Search patients, records..."
-            value={search}
-            onChange={(e) => handleSearch(e.target.value)}
-            aria-label="Global search"
-          />
-          {results.length > 0 && (
-            <div className="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-border-subtle bg-card shadow-card-hover">
-              {results.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/dashboard/gp/patients/${p.id}`}
-                  className="block px-4 py-2.5 text-sm transition-colors hover:bg-surface-muted"
-                  onClick={() => {
-                    setSearch("");
-                    setResults([]);
-                  }}
-                >
-                  {p.name} · {p.nhsNumber}
-                </Link>
-              ))}
-            </div>
+          {headerTitle && (
+            <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
+              {isPatientView ? headerTitle : `· ${headerTitle}`}
+            </span>
           )}
         </div>
+        {showSearch ? (
+          <div className="relative mx-auto hidden max-w-md flex-1 md:block">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Input
+              className="rounded-xl border-border-subtle bg-surface-muted pl-9 shadow-none focus-visible:ring-primary/20"
+              placeholder="Search patients, records..."
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              aria-label="Global search"
+            />
+            {results.length > 0 && (
+              <div className="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-border-subtle bg-card shadow-card-hover">
+                {results.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/dashboard/gp/patients/${p.id}`}
+                    className="block px-4 py-2.5 text-sm transition-colors hover:bg-surface-muted"
+                    onClick={() => {
+                      setSearch("");
+                      setResults([]);
+                    }}
+                  >
+                    {p.name} · {p.nhsNumber}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          isPatientView && (
+            <p className="mx-auto hidden flex-1 text-center text-sm font-medium text-primary md:block">
+              {headerTitle}
+            </p>
+          )
+        )}
         <div className="ml-auto flex items-center gap-3">
           <button
             type="button"

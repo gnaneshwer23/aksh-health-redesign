@@ -282,7 +282,23 @@ export function PlatformPatientsPanel() {
           </p>
         </div>
 
-        <p className="mt-10 text-center text-lg font-semibold text-navy">Ask your GP practice if they use Aksh Health</p>
+        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <Link
+            href="/signup?role=patient"
+            className="rounded-xl bg-navy px-8 py-3 font-bold text-white transition-colors hover:bg-navy/90"
+          >
+            Sign up as a patient
+          </Link>
+          <Link
+            href="/signup?role=patient"
+            className="rounded-xl border border-navy px-8 py-3 font-bold text-navy transition-colors hover:bg-navy/5"
+          >
+            Get started
+          </Link>
+        </div>
+        <p className="mt-6 text-center text-sm text-steel">
+          Or ask your GP practice if they use Aksh Health
+        </p>
       </div>
     </section>
   );
