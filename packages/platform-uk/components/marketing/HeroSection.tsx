@@ -82,7 +82,7 @@ export default function HeroSection() {
   return (
     <section className="relative flex min-h-[92vh] flex-col overflow-hidden bg-medicom-navy">
       <div
-        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:56px_56px] opacity-50"
+        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:56px_56px] opacity-30"
         aria-hidden
       />
       <div

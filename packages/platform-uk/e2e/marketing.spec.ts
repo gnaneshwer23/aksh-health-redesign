@@ -53,7 +53,15 @@ test.describe("Marketing smoke", () => {
     const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
     await solutionsButton.click();
 
-    const menu = page.getByRole("menu");
+    const menu = page.locator("[data-solutions-menu]");
+    await expect(menu).toBeVisible();
+
+    const menuBox = await menu.boundingBox();
+    const buttonBox = await solutionsButton.boundingBox();
+    expect(menuBox).not.toBeNull();
+    expect(buttonBox).not.toBeNull();
+    expect(Math.abs(menuBox!.x - buttonBox!.x)).toBeLessThan(4);
+
     await expect(menu.getByRole("menuitem", { name: /Clinicians & practices/i })).toHaveAttribute(
       "href",
       "/for-clinicians"

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -43,14 +44,31 @@ type NavbarProps = {
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
 
+const solutionsMenuPanelClass =
+  "overflow-hidden rounded-xl border border-slate-200/80 bg-white/95 py-2 shadow-xl shadow-navy/15 ring-1 ring-black/5 backdrop-blur-sm";
+
+type MenuCoords = {
+  left: number;
+  top: number;
+};
+
 export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [menuCoords, setMenuCoords] = useState<MenuCoords | null>(null);
   const solutionsMenuId = useId();
   const solutionsButtonRef = useRef<HTMLButtonElement>(null);
   const solutionsPanelRef = useRef<HTMLDivElement>(null);
+
+  const updateMenuCoords = useCallback(() => {
+    const button = solutionsButtonRef.current;
+    if (!button) return;
+
+    const rect = button.getBoundingClientRect();
+    setMenuCoords({ top: rect.bottom + 8, left: rect.left });
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -58,6 +76,36 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!solutionsOpen) {
+      setMenuCoords(null);
+      return;
+    }
+
+    updateMenuCoords();
+    window.addEventListener("resize", updateMenuCoords);
+    window.addEventListener("scroll", updateMenuCoords, true);
+
+    return () => {
+      window.removeEventListener("resize", updateMenuCoords);
+      window.removeEventListener("scroll", updateMenuCoords, true);
+    };
+  }, [solutionsOpen, updateMenuCoords]);
+
+  useEffect(() => {
+    if (!solutionsOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (solutionsButtonRef.current?.contains(target)) return;
+      if (solutionsPanelRef.current?.contains(target)) return;
+      setSolutionsOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [solutionsOpen]);
 
   useEffect(() => {
     if (!solutionsOpen) return;
@@ -168,7 +216,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           ))}
 
           <div
-            className="relative"
+            className="relative inline-flex"
             onMouseEnter={() => setSolutionsOpen(true)}
             onMouseLeave={() => setSolutionsOpen(false)}
           >
@@ -196,44 +244,6 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               Solutions
               <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
             </button>
-            {solutionsOpen ? (
-              <div
-                id={solutionsMenuId}
-                ref={solutionsPanelRef}
-                role="menu"
-                className="absolute left-0 top-full z-50 min-w-[18rem] pt-2"
-              >
-                <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
-                  {solutionGroups.map((group) => (
-                    <Link
-                      key={group.label}
-                      href={group.href}
-                      role="menuitem"
-                      className={cn(
-                        "block px-4 py-2.5 transition-colors hover:bg-navy/5",
-                        focusRing
-                      )}
-                      onClick={() => setSolutionsOpen(false)}
-                    >
-                      <span className="block text-sm font-semibold text-navy">{group.label}</span>
-                      <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
-                    </Link>
-                  ))}
-                  <div className="my-1 border-t border-border-subtle" />
-                  <Link
-                    href="/platform#roles"
-                    role="menuitem"
-                    className={cn(
-                      "block px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
-                      focusRing
-                    )}
-                    onClick={() => setSolutionsOpen(false)}
-                  >
-                    View all roles
-                  </Link>
-                </div>
-              </div>
-            ) : null}
           </div>
 
           {navLinks.slice(1).map(([label, href]) => (
@@ -284,6 +294,49 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
+
+      {solutionsOpen && menuCoords
+        ? createPortal(
+            <div
+              id={solutionsMenuId}
+              ref={solutionsPanelRef}
+              role="menu"
+              data-solutions-menu="true"
+              className="fixed z-[60] min-w-[18rem]"
+              style={{ top: menuCoords.top, left: menuCoords.left }}
+              onMouseEnter={() => setSolutionsOpen(true)}
+              onMouseLeave={() => setSolutionsOpen(false)}
+            >
+              <div className={solutionsMenuPanelClass}>
+                {solutionGroups.map((group) => (
+                  <Link
+                    key={group.label}
+                    href={group.href}
+                    role="menuitem"
+                    className={cn("block px-4 py-2.5 transition-colors hover:bg-navy/5", focusRing)}
+                    onClick={() => setSolutionsOpen(false)}
+                  >
+                    <span className="block text-sm font-semibold text-navy">{group.label}</span>
+                    <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
+                  </Link>
+                ))}
+                <div className="my-1 border-t border-border-subtle" />
+                <Link
+                  href="/platform#roles"
+                  role="menuitem"
+                  className={cn(
+                    "block px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
+                    focusRing
+                  )}
+                  onClick={() => setSolutionsOpen(false)}
+                >
+                  View all roles
+                </Link>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
