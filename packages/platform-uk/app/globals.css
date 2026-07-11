@@ -30,14 +30,16 @@
 }
 
 /* Tailwind Preflight is disabled (see tailwind.config.ts) to protect legacy
-   dashboard/report CSS below, but that also drops Preflight's border reset —
-   so every Tailwind `border`/`border-*` utility renders width-only with the
-   browser's default border-style: none (invisible). Restore just the style,
-   leaving width/color untouched so nothing else here is affected. */
+   dashboard/report CSS below, but that also drops Preflight's border reset.
+   Restore the full border reset (width + style + color), not style alone —
+   setting only border-style: solid without border-width: 0 makes every
+   element's default border-width visible (pesticide-like outlines). */
 *,
 ::before,
 ::after {
+  border-width: 0;
   border-style: solid;
+  border-color: currentColor;
 }
 
 html,
