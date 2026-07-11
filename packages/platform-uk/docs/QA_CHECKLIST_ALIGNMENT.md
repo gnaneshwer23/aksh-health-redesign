@@ -61,7 +61,7 @@ CI runs `npm run verify && npm run build` then Playwright against `npm run start
 | **S4 Marketing Landing Pages** | 14 | `e2e/marketing.spec.ts` | `smoke:public` | Lighthouse, load timing, all audience pages |
 | **S5 GP Dashboard** | 23 | `e2e/gp-dashboard.spec.ts` | `smoke:gp` (6 routes) | Patient panel data fidelity, HITL actions |
 | **S6 Other Dashboards** | 16 | — | `smoke:all` (nurse, pharmacist, admin, patient, ics, hospital, researcher) | Per-role form interactions |
-| **S7 AI Review Queue (HITL)** | 11 | — | Partial (`verify` workflow tests) | Accept/Edit/Reject, draft-only writes |
+| **S7 AI Review Queue (HITL)** | 11 | — | Partial (`verify` workflow tests) | Accept/Edit/Reject, draft-only writes (see manual steps below) |
 | **S8 Neo4j Data Layer** | 10 | `e2e/api-health.spec.ts` | `phase-d-api.test.ts` | Live Aura patient queries, seed data |
 | **S9 Demo & Presenter Flow** | 7 | — | `smoke:walkthrough` | Patel walkthrough, voice care day |
 | **S10 Mobile & Responsive** | 7 | `e2e/patient-dashboard.spec.ts` (mobile project) | — | GP iPad layout, homepage hamburger |
@@ -84,6 +84,7 @@ CI runs `npm run verify && npm run build` then Playwright against `npm run start
 | `e2e/patient-dashboard.spec.ts` | Patient mobile tabs | S6-08, S10-01 |
 | `e2e/api-health.spec.ts` | `/api/neo4j/health`, `/api/profile` shapes + 401 | S8-01, S8-02, Phase D |
 | `e2e/role-routing.spec.ts` | Unauthenticated `/dashboard/*` → signin | S11-03, S15-03 |
+| `e2e/accessibility.spec.ts` | axe-core scan on `/` and `/signup` | S13 partial |
 | `e2e/helpers/auth.ts` | Shared NextAuth sign-in helpers | — |
 
 **E2E auth:** each Playwright run signs up fresh users via `/api/auth/signup` (see `e2e/helpers/auth.ts`). Requires `DATABASE_URL`. Override password with `E2E_TEST_PASSWORD`.
@@ -98,7 +99,23 @@ Demo credential accounts (`gp@demo.akshhealth.com`, etc.) were **removed** — u
 - **Phase E adds 8 Playwright specs** covering representative critical paths across auth, onboarding, marketing, GP/patient dashboards, API health, and route protection.
 - **`npm run smoke:all`** continues to cover all 8 role dashboards via HTTP (S6, S15).
 - **`npm run verify`** covers workflow/API contracts (S7, S8 partial, S14 partial).
-- **Remaining manual:** infrastructure sign-off, performance/Lighthouse, accessibility, clinical safety walkthroughs, production deploy verification, and detailed HITL interaction testing.
+- **Remaining manual:** infrastructure sign-off, Lighthouse on production URL, detailed clinical safety walkthroughs, and production deploy verification.
+
+---
+
+## S7 — HITL review queue manual test steps
+
+Sign in as a GP with onboarding complete and open `/dashboard/gp/review-queue`.
+
+1. **Queue visibility:** Confirm pending items show a **Draft** status badge (amber/warning). Accepted and rejected items are removed from the actionable queue.
+2. **Accept:** Click **Accept** on a pending item. Expect a toast ("Accepted … written to record"). Item leaves the pending list.
+3. **Edit:** Click **Edit**, change SOAP text, click **Save edit**. Expect toast ("Edit saved … awaiting re-acceptance"). Status shows **Edited** with re-acceptance prompt.
+4. **Re-accept after edit:** Click **Accept** on the edited item. Expect success toast and item clears from queue.
+5. **Reject:** Click **Reject**, enter an optional reason, confirm. Expect rejection toast. Item clears from pending queue.
+6. **Accessibility:** Tab to Accept/Edit/Reject buttons; screen reader should announce labels including patient name (e.g. "Accept AI output for James Patel").
+7. **Draft-only safety:** No item writes to a live EHR in demo mode; audit events are logged in the dashboard store only.
+
+Automated partial coverage: `npm run verify` (workflow scenarios), GP smoke (`npm run smoke:gp`), Playwright (`e2e/gp-dashboard.spec.ts`).
 
 ---
 

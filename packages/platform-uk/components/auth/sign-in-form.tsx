@@ -90,7 +90,11 @@ function SignInFormInner() {
       ) : null}
 
       {error ? (
-        <div className="mb-4 rounded-xl border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger" role="alert">
+        <div
+          id="signin-form-error"
+          className="mb-4 rounded-xl border border-danger/20 bg-red-50 px-4 py-3 text-sm text-danger"
+          role="alert"
+        >
           {error}
         </div>
       ) : null}
@@ -118,7 +122,11 @@ function SignInFormInner() {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+          aria-describedby={error ? "signin-form-error" : undefined}
+        >
           <FormField
             control={form.control}
             name="email"

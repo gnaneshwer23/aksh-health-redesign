@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,9 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const solutionsMenuId = useId();
+  const solutionsButtonRef = useRef<HTMLButtonElement>(null);
+  const solutionsPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -68,6 +71,42 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!solutionsOpen) return;
+
+    const panel = solutionsPanelRef.current;
+    if (!panel) return;
+
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setSolutionsOpen(false);
+        solutionsButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || focusable.length === 0) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [solutionsOpen]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -141,6 +180,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             onMouseLeave={() => setSolutionsOpen(false)}
           >
             <button
+              ref={solutionsButtonRef}
               type="button"
               className={cn(
                 "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
@@ -148,12 +188,28 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               )}
               aria-expanded={solutionsOpen}
               aria-haspopup="true"
+              aria-controls={solutionsMenuId}
+              onClick={() => setSolutionsOpen((open) => !open)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setSolutionsOpen((open) => !open);
+                }
+                if (event.key === "Escape") {
+                  setSolutionsOpen(false);
+                }
+              }}
             >
               Solutions
               <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
             </button>
             {solutionsOpen ? (
-              <div className="absolute left-0 top-full z-50 min-w-[13rem] pt-2">
+              <div
+                id={solutionsMenuId}
+                ref={solutionsPanelRef}
+                role="menu"
+                className="absolute left-0 top-full z-50 min-w-[13rem] pt-2"
+              >
                 <div className="rounded-xl border border-border-subtle bg-white py-2 shadow-lg">
                   {solutionSections.map((section, sectionIndex) => (
                     <div key={section.title}>
@@ -165,6 +221,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
                         <Link
                           key={label}
                           href={href}
+                          role="menuitem"
                           className={cn(
                             "block px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5 rounded-lg",
                             focusRing

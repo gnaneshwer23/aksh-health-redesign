@@ -110,3 +110,15 @@ export async function listRecentAccessRequests(limit = 10): Promise<AccessReques
 
   return result.rows.map(mapRow);
 }
+
+export async function countAccessRequestsByStatus(status = "submitted"): Promise<number> {
+  if (!isPostgresConfigured()) return 0;
+
+  const pool = getPgPool();
+  const result = await pool.query<{ count: string }>(
+    `SELECT COUNT(*)::text AS count FROM aksh.pilot_applications WHERE status = $1`,
+    [status]
+  );
+
+  return Number(result.rows[0]?.count ?? 0);
+}

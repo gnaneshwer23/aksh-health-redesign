@@ -18,7 +18,7 @@ export default function HeroSection() {
           Clinical workflows,
           <span className="block text-white/95">one platform.</span>
         </h1>
-        <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
+        <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/80 md:text-xl">
           Designed for EMIS Web and SystmOne with FHIR R4 ready integration paths. Specialist AI agents draft notes,
           check safety, and coordinate care. Every output needs clinician approval before it reaches the record.
           Demo uses synthetic data.

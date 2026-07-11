@@ -33,6 +33,8 @@
     "lint": "npm run typecheck",
     "typecheck": "tsc -p tsconfig.verify.json --pretty false",
     "verify": "npm run test:workflow && npm run typecheck",
+    "lighthouse": "node scripts/run-lighthouse.mjs",
+    "lighthouse:mobile": "node scripts/run-lighthouse.mjs --mobile",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:workflow": "tsc -p tsconfig.tests.json && node .tmp-tests/tests/workflow-scenarios.test.js && node .tmp-tests/tests/api-contracts.test.js && node .tmp-tests/tests/integration-boundary.test.js && node .tmp-tests/tests/readonly-route-contracts.test.js && node .tmp-tests/tests/repository-parity.test.js && node .tmp-tests/tests/export-mapping.test.js && node .tmp-tests/tests/phase-d-api.test.js && node .tmp-tests/tests/route-smoke.test.js"
@@ -71,6 +73,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^20.19.43",
     "@types/nodemailer": "^6.4.24",

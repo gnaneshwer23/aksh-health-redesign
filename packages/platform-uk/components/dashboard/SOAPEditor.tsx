@@ -45,6 +45,7 @@ export function HitlActions({
   onDismiss,
   disabled,
   variant = "review",
+  itemContext,
 }: {
   status: string;
   acceptedAt?: string | null;
@@ -56,9 +57,11 @@ export function HitlActions({
   onDismiss?: () => void;
   disabled?: boolean;
   variant?: "review" | "command";
+  itemContext?: string;
 }) {
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const contextSuffix = itemContext ? ` for ${itemContext}` : "";
 
   if (status === "Accepted") {
     return (
@@ -77,13 +80,13 @@ export function HitlActions({
       <div className="space-y-2">
         <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Edited: re-acceptance required</p>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label="Accept edited AI output">
+          <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label={`Accept edited AI output${contextSuffix}`}>
             Accept
           </Button>
-          <Button size="sm" variant="outline" className="border-primary text-primary" onClick={onEdit} disabled={disabled} aria-label="Edit AI output again">
+          <Button size="sm" variant="outline" className="border-primary text-primary" onClick={onEdit} disabled={disabled} aria-label={`Edit AI output again${contextSuffix}`}>
             Edit
           </Button>
-          <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => setRejecting(true)} disabled={disabled} aria-label="Reject AI output">
+          <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => setRejecting(true)} disabled={disabled} aria-label={`Reject AI output${contextSuffix}`}>
             Reject
           </Button>
         </div>
@@ -135,9 +138,9 @@ export function HitlActions({
     <div className="space-y-2">
       <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Draft: not in record</p>
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label="Accept AI output">Accept</Button>
-        <Button size="sm" variant="outline" className="border-primary text-primary" onClick={onEdit} disabled={disabled} aria-label="Edit AI output">Edit</Button>
-        <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => setRejecting(true)} disabled={disabled} aria-label="Reject AI output">Reject</Button>
+        <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label={`Accept AI output${contextSuffix}`}>Accept</Button>
+        <Button size="sm" variant="outline" className="border-primary text-primary" onClick={onEdit} disabled={disabled} aria-label={`Edit AI output${contextSuffix}`}>Edit</Button>
+        <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => setRejecting(true)} disabled={disabled} aria-label={`Reject AI output${contextSuffix}`}>Reject</Button>
       </div>
     </div>
   );

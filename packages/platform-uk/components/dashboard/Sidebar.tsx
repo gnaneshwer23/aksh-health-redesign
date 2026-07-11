@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Activity,
   BarChart3,
@@ -134,8 +135,31 @@ export function Sidebar({ role }: { role: DashboardRole }) {
   const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
   const { profile, loading } = useUserProfile();
   const items = NAV[role] ?? [];
+  const [enquiryCount, setEnquiryCount] = useState(0);
   const userName = profile?.fullName?.trim() || "Aksh user";
   const organisationLabel = getPersonalizedLabel(profile, PRACTICE_NAME);
+
+  useEffect(() => {
+    if (role !== "admin") return;
+
+    let cancelled = false;
+
+    async function loadEnquiryCount() {
+      try {
+        const response = await fetch("/api/admin/access-requests");
+        if (!response.ok) return;
+        const payload = (await response.json()) as { submittedCount?: number };
+        if (!cancelled) setEnquiryCount(payload.submittedCount ?? 0);
+      } catch {
+        // Non-blocking sidebar badge
+      }
+    }
+
+    void loadEnquiryCount();
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
 
   if (role === "patient") return null;
 
@@ -193,6 +217,10 @@ export function Sidebar({ role }: { role: DashboardRole }) {
           {items.map((item) => {
             const active = isNavItemActive(pathname, searchParams, item.href);
             const Icon = item.icon;
+            const showEnquiryBadge =
+              role === "admin" &&
+              item.href === "/dashboard/admin/organisation-enquiries" &&
+              enquiryCount > 0;
             const link = (
               <Link
                 key={`${item.href}-${item.label}`}
@@ -200,11 +228,29 @@ export function Sidebar({ role }: { role: DashboardRole }) {
                 className={cn(
                   "dashboard-nav-item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                   active ? "dashboard-nav-item--active" : "dashboard-nav-item--inactive",
-                  active && "border-l-[3px] border-accent pl-[9px]"
+                  active && "border-l-[3px] border-accent pl-[9px]",
+                  collapsed && showEnquiryBadge && "relative"
                 )}
               >
                 <Icon className={cn("h-[18px] w-[18px] shrink-0", active ? "text-white" : "text-steel")} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed ? (
+                  <>
+                    <span className="flex-1 truncate">{item.label}</span>
+                    {showEnquiryBadge ? (
+                      <span className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-danger px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        {enquiryCount > 99 ? "99+" : enquiryCount}
+                      </span>
+                    ) : null}
+                  </>
+                ) : null}
+                {collapsed && showEnquiryBadge ? (
+                  <span
+                    className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-danger px-1 text-[9px] font-bold text-white"
+                    aria-label={`${enquiryCount} new organisation enquiries`}
+                  >
+                    {enquiryCount > 9 ? "9+" : enquiryCount}
+                  </span>
+                ) : null}
               </Link>
             );
             if (collapsed) {

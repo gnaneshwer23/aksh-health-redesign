@@ -56,6 +56,20 @@ test.describe("Marketing smoke", () => {
     await expect(mobileMenu.getByRole("link", { name: "Get Started" })).toBeVisible();
   });
 
+  test("Solutions dropdown is keyboard accessible", async ({ page }) => {
+    await page.goto("/");
+
+    const solutionsButton = page.getByRole("navigation").getByRole("button", { name: "Solutions" });
+    await solutionsButton.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("menu")).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Clinicians" })).toBeFocused();
+
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("menu")).toBeHidden();
+    await expect(solutionsButton).toBeFocused();
+  });
+
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
     await page.goto("/");
 

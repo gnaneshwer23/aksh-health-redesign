@@ -268,12 +268,19 @@ export default function GetStartedPageClient() {
           )}
 
           {submitError ? (
-            <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p
+              id="get-started-form-error"
+              role="alert"
+              className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
               {submitError}
             </p>
           ) : null}
 
-          <div className="mt-8 flex justify-between border-t border-border pt-6">
+          <div
+            className="mt-8 flex justify-between border-t border-border pt-6"
+            aria-describedby={submitError ? "get-started-form-error" : undefined}
+          >
             <button
               type="button"
               onClick={() => setStep((current) => current - 1)}

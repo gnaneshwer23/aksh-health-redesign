@@ -4,11 +4,17 @@ import Link from "next/link";
 
 import Footer from "@/components/marketing/Footer";
 import HeroSection from "@/components/marketing/HeroSection";
-import HowItWorks from "@/components/marketing/HowItWorks";
 import Navbar from "@/components/marketing/Navbar";
-import ProblemSection from "@/components/marketing/ProblemSection";
 import { SkipToMain } from "@/components/marketing/SkipToMain";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
+
+const ProblemSection = dynamic(() => import("@/components/marketing/ProblemSection"), {
+  loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
+});
+
+const HowItWorks = dynamic(() => import("@/components/marketing/HowItWorks"), {
+  loading: () => <div className="min-h-[20rem] bg-surface" aria-hidden />,
+});
 
 const AgentGrid = dynamic(() => import("@/components/marketing/AgentGrid"), {
   loading: () => <div className="min-h-[24rem] bg-white" aria-hidden />,

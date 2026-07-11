@@ -56,9 +56,114 @@ Run against local production build:
 ```bash
 cd packages/platform-uk
 npm run build && npm run start
-# In another terminal (requires Lighthouse CLI: npm i -g lighthouse)
-lighthouse http://localhost:3000 --only-categories=performance,accessibility --view
+# In another terminal
+npm run lighthouse          # desktop report → .lighthouse/report.html
+npm run lighthouse:mobile   # mobile form factor → .lighthouse/report-mobile.html
 ```
+
+Or with npx directly:
+
+```bash
+npx lighthouse http://localhost:3000 --only-categories=performance,accessibility --view
+```
+
+## P2 launch checklist (nice-to-have before broad launch)
+
+| Item | Status | Notes |
+|------|--------|-------|
+| P2a Performance / Lighthouse | Code | `npm run lighthouse` / `lighthouse:mobile`; homepage `dynamic()` for below-fold sections; font `display=swap` + preconnect/preload |
+| P2b Accessibility (WCAG quick pass) | Code | Hero/nav contrast fixes; Solutions dropdown keyboard (Escape, focus trap); form `aria-describedby`; HITL `aria-label`; axe E2E |
+| P2c HITL review queue polish | Code | Accept/Edit/Reject toasts; Draft/Accepted/Rejected status badges with contrast |
+| P2d Access request admin notification | Code | `notifyAccessRequestSubmitted` + `ACCESS_REQUEST_NOTIFY_EMAIL`; admin sidebar badge for submitted enquiries |
+| P2e Production cleanup & monitoring docs | Docs | Demo user cleanup runbook; Neon PITR; `/api/health` uptime note |
+| P2f E2E expansion | Code | `e2e/accessibility.spec.ts` (axe on `/` and `/signup`); optional LCP budget test (skipped in CI) |
+
+### P2a — Performance targets
+
+Run Lighthouse after a production build (`npm run build && npm run start`). Targets for marketing homepage (mobile):
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Performance score | ≥ 80 | Local dev may score lower; validate on Vercel preview |
+| LCP | < 2.5s | Hero text and CTA are LCP candidates; avoid large images above fold |
+| Accessibility score | ≥ 90 | Complement with `npm run test:e2e -- e2e/accessibility.spec.ts` |
+| CLS | < 0.1 | Dynamic imports use min-height placeholders |
+
+Optimisations in code:
+
+- `app/page.tsx`: `dynamic()` for ProblemSection, HowItWorks, AgentGrid, VoiceAgentSection
+- `app/layout.tsx`: Google Fonts preconnect + preload (`display=swap` in CSS import)
+- Marketing pages use CSS/Tailwind (no unoptimised `<img>` tags); add `next/image` when raster assets are introduced
+
+### P2b — Accessibility manual checklist
+
+After deploy, spot-check:
+
+1. Tab from page load: skip link → main nav → hero CTAs
+2. Solutions menu: Enter opens, Tab cycles links, Escape closes and returns focus to trigger
+3. Sign-in/sign-up: field errors announced via `aria-describedby`; global error linked to form
+4. GP review queue: Accept/Edit/Reject buttons have descriptive `aria-label`s
+5. Run `npm run test:e2e -- e2e/accessibility.spec.ts` for axe-core scan
+
+### P2e — Demo user cleanup runbook
+
+Legacy demo accounts may still exist in Neon from earlier phases. **Do not auto-run against production.**
+
+From `packages/platform-uk` with `DATABASE_URL` in `.env.local`:
+
+```bash
+# Dry run (default) — lists matching users, deletes nothing
+npm run auth:cleanup-demo
+
+# Execute deletion (profiles and onboarding_progress cascade)
+npm run auth:cleanup-demo -- --apply
+```
+
+Matches:
+
+- `email LIKE '%@demo.akshhealth.com'`
+- `doctor@akshhealth.com`, `reviewer@akshhealth.com`, `smoke@akshhealth.com`
+
+Review dry-run output before `--apply`. Re-run dry-run after apply to confirm zero matches.
+
+### P2e — Neon backup and point-in-time restore
+
+Neon provides automatic backups and point-in-time restore (PITR) per branch:
+
+1. Open your project in the [Neon console](https://console.neon.tech/)
+2. Select the production branch
+3. **Branches** → **Restore** or **Create branch from timestamp** for PITR
+4. Docs: [Neon point-in-time restore](https://neon.tech/docs/guides/branch-restore)
+
+After restore to a new branch, update `DATABASE_URL` in Vercel only if you promote that branch to production.
+
+### P2e — Uptime monitoring
+
+Public health probe (no secrets):
+
+```bash
+curl -s https://YOUR_DOMAIN/api/health | jq .
+# Expect: { "status": "ok", "database": "connected"|"unconfigured", "neo4j": "..." }
+```
+
+Optional: configure an external uptime checker (Better Uptime, UptimeRobot, Vercel Monitoring) to poll `GET /api/health` every 5 minutes and alert on non-200 or `status != ok`.
+
+### P2d — Organisation enquiry emails
+
+On `POST /api/access-requests` success:
+
+1. Record saved to `aksh.pilot_applications`
+2. Email sent to `ACCESS_REQUEST_NOTIFY_EMAIL` via Resend/SMTP (`lib/email/notify-access-request.ts`)
+
+Verify in staging:
+
+```bash
+# Set RESEND_API_KEY, EMAIL_FROM, ACCESS_REQUEST_NOTIFY_EMAIL in .env.local
+npm run dev
+# Submit /get-started form, confirm team inbox receives notification
+```
+
+Admin dashboard shows a badge on **Organisation Enquiries** when `submittedCount > 0` (`GET /api/admin/access-requests`).
 
 ### P1f — Neo4j Aura (manual)
 
@@ -163,22 +268,14 @@ If `DATABASE_URL` credentials were ever committed, shared in chat, or exposed in
 
 ## Demo user cleanup (manual only)
 
-Legacy demo accounts may still exist in Neon from earlier phases. **Do not auto-run against production.**
+See **P2e — Demo user cleanup runbook** above for the full procedure.
 
-From `packages/platform-uk` with `DATABASE_URL` in `.env.local`:
+Quick reference:
 
 ```bash
-# Dry run (default) — lists matching users, deletes nothing
-npm run auth:cleanup-demo
-
-# Execute deletion (profiles and onboarding_progress cascade)
+npm run auth:cleanup-demo           # dry run
 npm run auth:cleanup-demo -- --apply
 ```
-
-Matches:
-
-- `email LIKE '%@demo.akshhealth.com'`
-- `doctor@akshhealth.com`, `reviewer@akshhealth.com`, `smoke@akshhealth.com`
 
 ## Profile-driven dashboards (Phase D)
 

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { listRecentAccessRequests } from "@/lib/access-requests/access-request-repository";
+import { listRecentAccessRequests, countAccessRequestsByStatus } from "@/lib/access-requests/access-request-repository";
 import { formatAccessRequestReferenceId } from "@/lib/access-requests/reference-id";
 
 const ADMIN_ROLES = new Set(["practice-manager", "ics-lead", "hospital-executive"]);
@@ -17,9 +17,11 @@ export async function GET() {
 
   try {
     const applications = await listRecentAccessRequests(10);
+    const submittedCount = await countAccessRequestsByStatus("submitted");
 
     return NextResponse.json({
       ok: true,
+      submittedCount,
       applications: applications.map((application) => ({
         ...application,
         referenceLabel: formatAccessRequestReferenceId(application.id),

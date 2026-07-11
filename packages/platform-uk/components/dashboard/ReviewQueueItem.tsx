@@ -8,11 +8,30 @@ import { HitlActions, SOAPEditor } from "@/components/dashboard/SOAPEditor";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "@/components/ui/toaster";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CURRENT_GP } from "@/lib/mock-data";
-import type { ReviewQueueItem as ReviewQueueItemType } from "@/lib/mock-data/types";
+import type { ReviewQueueItem as ReviewQueueItemType, ReviewStatus } from "@/lib/mock-data/types";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
+
+function statusBadgeVariant(status: ReviewStatus) {
+  switch (status) {
+    case "Accepted":
+      return "success" as const;
+    case "Rejected":
+      return "danger" as const;
+    case "Edited":
+      return "warning" as const;
+    default:
+      return "warning" as const;
+  }
+}
+
+function statusLabel(status: ReviewStatus) {
+  if (status === "Pending") return "Draft";
+  return status;
+}
 
 export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
   const [expanded, setExpanded] = useState(false);
@@ -34,8 +53,8 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
           >
             {item.priority}
           </Badge>
-          <Badge variant="outline" className="ml-auto capitalize">
-            {item.status}
+          <Badge variant={statusBadgeVariant(item.status)} className="ml-auto font-semibold">
+            {statusLabel(item.status)}
           </Badge>
         </div>
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">{item.title}</p>
@@ -46,6 +65,10 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
             onSave={() => {
               editReviewItem(item.id, editContent, CURRENT_GP);
               setEditing(false);
+              toast({
+                title: "Edit saved",
+                description: `${item.patientName}: awaiting re-acceptance before record write.`,
+              });
             }}
             onCancel={() => {
               setEditing(false);
@@ -104,9 +127,24 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
         {needsApproval && !editing && (
           <HitlActions
             status={item.status}
-            onAccept={() => acceptReviewItem(item.id, CURRENT_GP)}
+            itemContext={item.patientName}
+            onAccept={() => {
+              acceptReviewItem(item.id, CURRENT_GP);
+              toast({
+                title: "Accepted",
+                description: `${item.patientName}: written to record (demo).`,
+              });
+            }}
             onEdit={() => setEditing(true)}
-            onReject={(reason) => rejectReviewItem(item.id, reason, CURRENT_GP)}
+            onReject={(reason) => {
+              rejectReviewItem(item.id, reason, CURRENT_GP);
+              toast({
+                title: "Rejected",
+                description: reason
+                  ? `${item.patientName}: ${reason}`
+                  : `${item.patientName}: output rejected.`,
+              });
+            }}
           />
         )}
         {item.status === "Accepted" && (
