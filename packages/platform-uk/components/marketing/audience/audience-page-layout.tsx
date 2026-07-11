@@ -26,35 +26,29 @@ export function AudiencePageLayout({
   return (
     <MarketingShell>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-medicom-navy text-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
         <div
-          className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:56px_56px] opacity-50"
+          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgb(0_168_107/0.14),transparent_42%),radial-gradient(circle_at_85%_10%,rgb(0_61_122/0.28),transparent_38%)]"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--emerald absolute -left-24 top-20 h-64 w-64 opacity-20"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--navy absolute -right-16 bottom-12 h-48 w-48 opacity-15"
+          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-16 h-[22rem] w-[22rem] opacity-[0.08]"
           aria-hidden
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-16 md:py-20 lg:px-8 lg:py-24">
-          <p className="marketing-section-label mb-4 text-accent">{eyebrow}</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">{headline}</h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{subline}</p>
+        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-8 lg:py-28">
+          <p className="marketing-section-label mb-4">{eyebrow}</p>
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy md:text-5xl">
+            {headline}
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-steel">{subline}</p>
 
           {roles && roles.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">
               {roles.map((role) => (
                 <span
                   key={role}
-                  className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm"
+                  className="rounded-full border border-border-subtle bg-white px-3.5 py-1.5 text-xs font-medium text-navy shadow-sm"
                 >
                   {role}
                 </span>
@@ -65,13 +59,13 @@ export function AudiencePageLayout({
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href={ctaPrimary.href}
-              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-bold text-white shadow-card-hover transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
+              className="rounded-xl bg-emerald px-8 py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-emerald/20 transition-all hover:-translate-y-0.5 hover:bg-emerald/90 sm:min-w-[11rem]"
             >
               {ctaPrimary.label}
             </Link>
             <Link
               href={ctaSecondary.href}
-              className="rounded-xl border-2 border-white/80 px-8 py-3.5 text-center text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10 sm:min-w-[11rem]"
+              className="rounded-xl border border-navy/25 bg-white px-8 py-3.5 text-center text-base font-medium text-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] sm:min-w-[11rem]"
             >
               {ctaSecondary.label}
             </Link>
@@ -79,7 +73,9 @@ export function AudiencePageLayout({
         </div>
       </section>
 
-      <TrustStrip />
+      <div className="border-t border-border-subtle bg-white">
+        <TrustStrip />
+      </div>
 
       {/* Pain points */}
       <section className="bg-surface-muted py-20 md:py-24">
@@ -95,7 +91,7 @@ export function AudiencePageLayout({
               return (
                 <article
                   key={pain.title}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8 shadow-card"
+                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8"
                 >
                   <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-navy/10 text-navy">
                     <Icon className="h-5 w-5" aria-hidden />
@@ -123,7 +119,7 @@ export function AudiencePageLayout({
               return (
                 <article
                   key={feature.title}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6 shadow-card"
+                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
                 >
                   <div
                     className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${feature.iconBg}`}
@@ -156,7 +152,7 @@ export function AudiencePageLayout({
               return (
                 <article
                   key={agent.name}
-                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6 shadow-card"
+                  className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
                 >
                   <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${agent.iconBg}`}>
                     <Icon className={`h-5 w-5 ${agent.iconColor}`} aria-hidden />
@@ -174,8 +170,8 @@ export function AudiencePageLayout({
             })}
           </div>
 
-          <div className="mt-10 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center shadow-card">
-            <p className="mb-2 text-lg font-bold text-emerald">Human-in-the-loop. Always.</p>
+          <div className="mt-10 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center">
+            <p className="mb-2 text-lg font-semibold text-emerald">Human-in-the-loop. Always.</p>
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-steel">
               Every AI output is staged as a draft. The clinician clicks Accept, Edit, or Reject. Zero AI outputs are
               written to the FHIR record without explicit human approval.
@@ -184,24 +180,21 @@ export function AudiencePageLayout({
         </div>
       </section>
 
-      {/* Trust strip */}
-      <TrustStrip />
-
       {/* CTA band */}
       <section className="bg-emerald py-16 text-center text-white md:py-20">
         <div className="mx-auto max-w-2xl px-6">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to get started?</h2>
-          {complianceNote && <p className="mt-4 text-sm leading-relaxed text-white/85">{complianceNote}</p>}
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          {complianceNote && <p className="mt-4 text-sm leading-relaxed text-white/80">{complianceNote}</p>}
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href={ctaPrimary.href}
-              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-bold text-emerald shadow-card-hover transition-all hover:-translate-y-0.5 hover:bg-white/90"
+              className="inline-block min-w-[11rem] rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-emerald shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white/90"
             >
               {ctaPrimary.label}
             </Link>
             <Link
               href={ctaSecondary.href}
-              className="inline-block min-w-[11rem] rounded-xl border-2 border-white/80 px-8 py-3.5 text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
+              className="inline-block min-w-[11rem] rounded-xl border border-white/40 px-8 py-3.5 text-base font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
             >
               {ctaSecondary.label}
             </Link>

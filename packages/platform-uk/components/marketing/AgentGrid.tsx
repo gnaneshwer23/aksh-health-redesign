@@ -1,17 +1,4 @@
-import {
-  Activity,
-  BarChart3,
-  Building2,
-  FileText,
-  HeartPulse,
-  Phone,
-  Scale,
-  Send,
-  Shield,
-  Stethoscope,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { FileText, Scale, Send, Shield, TrendingUp, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const agents: {
@@ -23,18 +10,60 @@ const agents: {
   desc: string;
   fhir: string;
 }[] = [
-  { name: "SYNTHESIS", tag: "Clinical", color: "text-navy", iconBg: "bg-navy/10", icon: FileText, desc: "Converts voice or typed consultation notes into structured SOAP notes in 4 seconds.", fhir: "DocumentReference" },
-  { name: "DrASSIST", tag: "Clinical", color: "text-purple-700", iconBg: "bg-purple-100", icon: Stethoscope, desc: "Differential diagnosis + SNOMED-CT / ICD-10 coding with confidence scores. GP overrides freely.", fhir: "Condition" },
-  { name: "GUARDIAN", tag: "Safety", color: "text-danger", iconBg: "bg-danger/10", icon: Shield, desc: "Real-time drug interaction, allergy, and contraindication checking. BNF-validated. Red / Amber / Green.", fhir: "Flag, MedicationRequest" },
-  { name: "ORACLE", tag: "Risk", color: "text-warning", iconBg: "bg-warning/10", icon: TrendingUp, desc: "CVD, T2D, and frailty risk scoring. 14-day hospital admission prediction using the knowledge graph.", fhir: "RiskAssessment" },
-  { name: "VOICE", tag: "Documentation", color: "text-sky-700", iconBg: "bg-sky-100", icon: Activity, desc: "GP dictates naturally. VOICE transcribes in real-time. SYNTHESIS converts to SOAP. GP approves.", fhir: "DocumentReference" },
-  { name: "EQUITY", tag: "Population", color: "text-emerald", iconBg: "bg-emerald/10", icon: Scale, desc: "Detects health disparities by IMD quintile and ethnicity. Monthly ICS equity reports.", fhir: "Observation (flag)" },
-  { name: "SHIELD", tag: "Compliance", color: "text-slate", iconBg: "bg-surface-muted", icon: Shield, desc: "Immutable audit trail for every AI recommendation and GP action. DCB0129-compliant. CQC-ready.", fhir: "AuditEvent" },
-  { name: "HEALTH COMPANION", tag: "Patient", color: "text-accent", iconBg: "bg-accent/10", icon: HeartPulse, desc: "24/7 patient health assistant. Daily check-ins, medication reminders, care plan in plain English.", fhir: "CommunicationRequest" },
-  { name: "VOICE CARE AGENT", tag: "Patient", color: "text-sky-600", iconBg: "bg-sky-100", icon: Phone, desc: "AI makes outbound calls post-discharge. Collects symptoms. Detects deterioration. Escalates to GP.", fhir: "Encounter, Flag" },
-  { name: "REFERRAL AGENT", tag: "Coordination", color: "text-purple-600", iconBg: "bg-purple-100", icon: Send, desc: "Auto-generates referral packages: criteria check, missing investigations, urgency prediction.", fhir: "ServiceRequest" },
-  { name: "HOSPITAL COMMAND", tag: "Operational", color: "text-slate", iconBg: "bg-surface-muted", icon: Building2, desc: "Hospital status views: ED waiting, bed occupancy, theatres. Surfaces pressure signals for operational review.", fhir: "Operational data" },
-  { name: "CAPACITY PREDICTION", tag: "Operational", color: "text-navy", iconBg: "bg-navy/10", icon: BarChart3, desc: "14-day admission and discharge forecast. Winter surge planning. Discharge bottleneck detection.", fhir: "Operational data" },
+  {
+    name: "SYNTHESIS",
+    tag: "Clinical",
+    color: "text-navy",
+    iconBg: "bg-navy/10",
+    icon: FileText,
+    desc: "Converts voice or typed consultation notes into structured SOAP notes in 4 seconds.",
+    fhir: "DocumentReference",
+  },
+  {
+    name: "GUARDIAN",
+    tag: "Safety",
+    color: "text-danger",
+    iconBg: "bg-danger/10",
+    icon: Shield,
+    desc: "Real-time drug interaction, allergy, and contraindication checking. BNF-validated. Red / Amber / Green.",
+    fhir: "Flag, MedicationRequest",
+  },
+  {
+    name: "ORACLE",
+    tag: "Risk",
+    color: "text-warning",
+    iconBg: "bg-warning/10",
+    icon: TrendingUp,
+    desc: "CVD, T2D, and frailty risk scoring. 14-day hospital admission prediction using the knowledge graph.",
+    fhir: "RiskAssessment",
+  },
+  {
+    name: "EQUITY",
+    tag: "Population",
+    color: "text-emerald",
+    iconBg: "bg-emerald/10",
+    icon: Scale,
+    desc: "Detects health disparities by IMD quintile and ethnicity. Monthly ICS equity reports.",
+    fhir: "Observation (flag)",
+  },
+  {
+    name: "SHIELD",
+    tag: "Compliance",
+    color: "text-slate",
+    iconBg: "bg-surface-muted",
+    icon: Shield,
+    desc: "Immutable audit trail for every AI recommendation and GP action. DCB0129-compliant. CQC-ready.",
+    fhir: "AuditEvent",
+  },
+  {
+    name: "REFERRAL AGENT",
+    tag: "Coordination",
+    color: "text-navy",
+    iconBg: "bg-navy/10",
+    icon: Send,
+    desc: "Auto-generates referral packages: criteria check, missing investigations, urgency prediction.",
+    fhir: "ServiceRequest",
+  },
 ];
 
 export default function AgentGrid() {
@@ -51,13 +80,13 @@ export default function AgentGrid() {
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {agents.map((agent) => {
             const Icon = agent.icon;
             return (
               <div
                 key={agent.name}
-                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6 shadow-card"
+                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
               >
                 <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${agent.iconBg}`}>
                   <Icon className={`h-5 w-5 ${agent.color}`} aria-hidden />
@@ -76,8 +105,8 @@ export default function AgentGrid() {
           })}
         </div>
 
-        <div className="mt-12 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center shadow-card">
-          <p className="mb-2 text-lg font-bold text-emerald">Human-in-the-Loop. Always.</p>
+        <div className="mt-10 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center">
+          <p className="mb-2 text-lg font-semibold text-emerald">Human-in-the-Loop. Always.</p>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-steel">
             Every AI output is staged as a Draft. The clinician clicks Accept, Edit, or Reject. Zero AI outputs are
             written to the FHIR record without explicit human approval.

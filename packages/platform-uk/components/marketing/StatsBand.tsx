@@ -7,15 +7,12 @@ const stats = [
 
 export default function StatsBand() {
   return (
-    <section className="relative z-10 bg-white py-16 md:py-20" aria-label="Platform capabilities at a glance">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="relative z-10 border-y border-border-subtle bg-white py-12 md:py-14" aria-label="Platform capabilities at a glance">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-8 lg:grid-cols-4">
           {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="marketing-stat-card group rounded-2xl border border-border-subtle bg-white p-6 text-center shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover"
-            >
-              <p className="text-3xl font-bold tracking-tight text-navy md:text-4xl">{stat.value}</p>
+            <div key={stat.label} className="text-center sm:text-left">
+              <p className="text-3xl font-bold tracking-tight text-navy md:text-[2.25rem]">{stat.value}</p>
               <p className="mt-2 text-sm font-semibold text-slate">{stat.label}</p>
               <p className="mt-1 text-xs leading-relaxed text-steel">{stat.detail}</p>
             </div>

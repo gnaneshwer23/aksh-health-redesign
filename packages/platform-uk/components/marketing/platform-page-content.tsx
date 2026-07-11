@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import AgentGrid from "@/components/marketing/AgentGrid";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { ROLES } from "@/lib/onboarding/roles";
 
@@ -109,7 +110,9 @@ export function PlatformPageContent() {
         </div>
       </section>
 
-      <section id="roles" className="scroll-mt-24 bg-surface py-20">
+      <AgentGrid />
+
+      <section id="roles" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-bold text-navy">Eight role dashboards</h2>
@@ -122,7 +125,7 @@ export function PlatformPageContent() {
               <Link
                 key={role.id}
                 href={AUDIENCE_LINKS[role.id] ?? "/signup"}
-                className="group rounded-xl border border-border bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-xl border border-border-subtle bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div
                   className="mb-3 inline-block rounded-md px-2.5 py-1 text-xs font-bold text-white"

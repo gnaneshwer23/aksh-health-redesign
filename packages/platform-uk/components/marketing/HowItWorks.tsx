@@ -4,7 +4,7 @@ export default function HowItWorks() {
   const steps = [
     {
       num: "01",
-      color: "bg-sky-700",
+      color: "bg-navy",
       icon: Link2,
       title: "CONNECT",
       sub: "One platform. Every system.",
@@ -28,7 +28,7 @@ export default function HowItWorks() {
     },
     {
       num: "04",
-      color: "bg-purple-600",
+      color: "bg-emerald",
       icon: Sparkles,
       title: "LEARN",
       sub: "Every outcome improves the system.",
@@ -52,7 +52,7 @@ export default function HowItWorks() {
             return (
               <div
                 key={step.num}
-                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8 shadow-card"
+                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8"
               >
                 <div className="mb-5 flex items-center gap-3">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${step.color}`}>

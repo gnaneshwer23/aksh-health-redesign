@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Building2, ChevronDown, FlaskConical, HeartPulse, Menu, Stethoscope, X } from "lucide-react";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -18,21 +18,25 @@ const solutionGroups = [
     label: "Clinicians & practices",
     href: "/for-clinicians",
     description: "GPs, nurses, pharmacists, and practice managers",
+    icon: Stethoscope,
   },
   {
     label: "Hospitals & ICS",
     href: "/for-hospitals",
     description: "Trust executives, operational leads, and ICS population health",
+    icon: Building2,
   },
   {
     label: "Pharma & research",
     href: "/for-research",
     description: "Clinical informatics, outcome evaluation, and governed data access",
+    icon: FlaskConical,
   },
   {
     label: "Patients & carers",
     href: "/for-patients",
     description: "Health companion and support between appointments",
+    icon: HeartPulse,
   },
 ] as const;
 
@@ -45,7 +49,7 @@ const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
 
 const solutionsMenuPanelClass =
-  "overflow-hidden rounded-xl border border-slate-200/80 bg-white/95 py-2 shadow-xl shadow-navy/15 ring-1 ring-black/5 backdrop-blur-sm";
+  "animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 overflow-hidden rounded-2xl border border-border-subtle bg-white py-2.5 shadow-xl shadow-navy/10 ring-1 ring-black/[0.03] duration-150";
 
 type MenuCoords = {
   left: number;
@@ -302,30 +306,44 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               ref={solutionsPanelRef}
               role="menu"
               data-solutions-menu="true"
-              className="fixed z-[60] min-w-[18rem]"
+              className="fixed z-[60] min-w-[19.5rem]"
               style={{ top: menuCoords.top, left: menuCoords.left }}
               onMouseEnter={() => setSolutionsOpen(true)}
               onMouseLeave={() => setSolutionsOpen(false)}
             >
               <div className={solutionsMenuPanelClass}>
-                {solutionGroups.map((group) => (
-                  <Link
-                    key={group.label}
-                    href={group.href}
-                    role="menuitem"
-                    className={cn("block px-4 py-2.5 transition-colors hover:bg-navy/5", focusRing)}
-                    onClick={() => setSolutionsOpen(false)}
-                  >
-                    <span className="block text-sm font-semibold text-navy">{group.label}</span>
-                    <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
-                  </Link>
-                ))}
-                <div className="my-1 border-t border-border-subtle" />
+                <p className="px-4 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-steel/70">
+                  Browse by role
+                </p>
+                {solutionGroups.map((group) => {
+                  const Icon = group.icon;
+                  return (
+                    <Link
+                      key={group.label}
+                      href={group.href}
+                      role="menuitem"
+                      className={cn(
+                        "group flex items-start gap-3 rounded-lg px-4 py-2.5 mx-1.5 transition-colors hover:bg-emerald/[0.06]",
+                        focusRing
+                      )}
+                      onClick={() => setSolutionsOpen(false)}
+                    >
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy/[0.06] text-navy transition-colors group-hover:bg-emerald/10 group-hover:text-emerald">
+                        <Icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-semibold text-navy">{group.label}</span>
+                        <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
+                      </span>
+                    </Link>
+                  );
+                })}
+                <div className="mx-3 my-1.5 border-t border-border-subtle" />
                 <Link
                   href="/platform#roles"
                   role="menuitem"
                   className={cn(
-                    "block px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
+                    "mx-1.5 block rounded-lg px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
                     focusRing
                   )}
                   onClick={() => setSolutionsOpen(false)}

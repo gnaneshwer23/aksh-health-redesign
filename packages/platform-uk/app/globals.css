@@ -4843,10 +4843,10 @@ input:focus, textarea:focus {
 /* Dental-landing inspired marketing utilities (Aksh navy/emerald) */
 .marketing-section-label {
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #006b4f;
+  color: #64748b;
 }
 
 .marketing-hero-blob {
@@ -4867,18 +4867,29 @@ input:focus, textarea:focus {
   position: relative;
 }
 
+/* One card system for all marketing surfaces: quiet border, minimal shadow, gentle lift on hover */
 .marketing-capability-card {
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.03);
 }
 
 .marketing-capability-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px -4px rgb(0 61 122 / 0.1), 0 4px 8px -4px rgb(0 61 122 / 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgb(15 23 42 / 0.1);
   border-color: #d7e2f0;
 }
 
 .marketing-stat-card {
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Quiet numbered timeline used for audience workflow journeys */
+.marketing-timeline {
+  position: relative;
+}
+
+.marketing-timeline-item + .marketing-timeline-item {
+  border-top: 1px solid #e8edf3;
 }
 
 @media (prefers-reduced-motion: reduce) {

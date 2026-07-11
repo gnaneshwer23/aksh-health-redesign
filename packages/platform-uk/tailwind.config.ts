@@ -47,6 +47,17 @@ const config: Config = {
         slate: "#2D3748",
         surface: "#F4F6F9",
         "surface-muted": "#EEF1F6",
+        // Pastel capability-card tints inspired by the healthcare landing reference.
+        pastel: {
+          blue: "#EAF2FE",
+          "blue-ink": "#1D4ED8",
+          mint: "#E7F8EF",
+          "mint-ink": "#047857",
+          lavender: "#F1EDFB",
+          "lavender-ink": "#6D28D9",
+          peach: "#FDEEE7",
+          "peach-ink": "#C2410C",
+        },
         background: "#F4F6F9",
         card: "#FFFFFF",
         border: "#E2E8F0",

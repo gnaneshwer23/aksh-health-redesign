@@ -4,11 +4,9 @@ export default function ProblemSection() {
   const cols = [
     {
       label: "Today",
-      border: "border-danger/25",
-      bg: "bg-danger/5",
-      labelColor: "text-danger",
+      accent: "text-steel",
+      iconBg: "bg-surface-muted",
       icon: XCircle,
-      iconBg: "bg-danger/10",
       points: [
         "Patient data lives in 6+ disconnected systems",
         "Clinicians spend 40% of time on admin, not patients",
@@ -19,11 +17,9 @@ export default function ProblemSection() {
     },
     {
       label: "The Gap",
-      border: "border-warning/25",
-      bg: "bg-warning/5",
-      labelColor: "text-warning",
+      accent: "text-steel",
+      iconBg: "bg-surface-muted",
       icon: AlertTriangle,
-      iconBg: "bg-warning/10",
       points: [
         "EHRs, labs, imaging, and pharmacy all exist",
         "But no layer connects and reasons across them",
@@ -34,11 +30,9 @@ export default function ProblemSection() {
     },
     {
       label: "Aksh Health",
-      border: "border-emerald/25",
-      bg: "bg-emerald/5",
-      labelColor: "text-emerald",
-      icon: CheckCircle2,
+      accent: "text-emerald",
       iconBg: "bg-emerald/10",
+      icon: CheckCircle2,
       points: [
         "Designed for FHIR R4 and HL7 interoperability",
         "12 AI agents reason across unified clinical data",
@@ -60,26 +54,29 @@ export default function ProblemSection() {
           <p className="text-lg text-steel md:text-xl">None of them understand it.</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           {cols.map((col) => {
             const Icon = col.icon;
             return (
               <div
                 key={col.label}
-                className={`marketing-capability-card rounded-2xl border ${col.border} ${col.bg} p-8 shadow-card`}
+                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-8"
               >
                 <div className="mb-6 flex items-center gap-3">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${col.iconBg} ${col.labelColor}`}
-                  >
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-full ${col.iconBg} ${col.accent}`}>
                     <Icon className="h-5 w-5" aria-hidden />
                   </div>
-                  <h3 className={`text-xl font-bold ${col.labelColor}`}>{col.label}</h3>
+                  <h3 className={`text-lg font-semibold ${col.accent === "text-emerald" ? "text-emerald" : "text-navy"}`}>
+                    {col.label}
+                  </h3>
                 </div>
                 <ul className="space-y-3">
                   {col.points.map((pt) => (
                     <li key={pt} className="flex items-start gap-2.5 text-sm leading-relaxed text-slate">
-                      <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${col.labelColor} bg-current`} />
+                      <span
+                        className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-current ${col.accent}`}
+                        aria-hidden
+                      />
                       {pt}
                     </li>
                   ))}
