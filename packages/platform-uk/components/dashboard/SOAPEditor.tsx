@@ -69,7 +69,7 @@ export function HitlActions({
   }
 
   if (status === "Rejected") {
-    return <p className="text-xs text-danger font-medium">Rejected — {rejectionReason}</p>;
+    return <p className="text-xs text-danger font-medium">Rejected — {rejectionReason || "No reason provided"}</p>;
   }
 
   if (status === "Edited") {
@@ -101,15 +101,15 @@ export function HitlActions({
         <input
           aria-label="Rejection reason"
           className="w-full rounded-sm border border-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          placeholder="Reason for rejection..."
+          placeholder="Reason for rejection (optional but encouraged)..."
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         />
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => { onReject(reason); setRejecting(false); }} disabled={!reason.trim()}>
+          <Button size="sm" variant="outline" className="border-danger text-danger hover:bg-danger/5" onClick={() => { onReject(reason.trim()); setRejecting(false); setReason(""); }}>
             Confirm reject
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setRejecting(false)}>Cancel</Button>
+          <Button size="sm" variant="ghost" onClick={() => { setRejecting(false); setReason(""); }}>Cancel</Button>
         </div>
       </div>
     );

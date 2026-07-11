@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Activity,
   BarChart3,
   Building2,
   ClipboardList,
+  FlaskConical,
   Heart,
   LayoutDashboard,
   Pill,
@@ -22,57 +23,68 @@ import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
-const NAV: Record<DashboardRole, { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[]> = {
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const NAV: Record<DashboardRole, NavItem[]> = {
   gp: [
     { href: "/dashboard/gp", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
-    { href: "/dashboard/ics", label: "Population", icon: BarChart3 },
-    { href: "/dashboard/admin", label: "Reports", icon: BarChart3 },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/gp?section=population", label: "Population", icon: BarChart3 },
+    { href: "/dashboard/gp?section=reports", label: "Reports", icon: BarChart3 },
+    { href: "/dashboard/gp?section=settings", label: "Settings", icon: Settings },
   ],
   nurse: [
     { href: "/dashboard/nurse", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/nurse", label: "Observations", icon: Stethoscope },
-    { href: "/dashboard/nurse", label: "Handover", icon: ClipboardList },
-    { href: "/dashboard/gp/review-queue", label: "GUARDIAN Alerts", icon: Shield },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/nurse?panel=observations", label: "Observations", icon: Stethoscope },
+    { href: "/dashboard/nurse?panel=handover", label: "Handover", icon: ClipboardList },
+    { href: "/dashboard/nurse?panel=alerts", label: "GUARDIAN Alerts", icon: Shield },
+    { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
   pharmacist: [
     { href: "/dashboard/pharmacist", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/pharmacist", label: "Med Review", icon: Pill },
-    { href: "/dashboard/pharmacist", label: "Interactions", icon: Shield },
-    { href: "/dashboard/pharmacist", label: "BNF Reference", icon: ClipboardList },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/pharmacist?panel=med-review", label: "Med Review", icon: Pill },
+    { href: "/dashboard/pharmacist?panel=interactions", label: "Interactions", icon: Shield },
+    { href: "/dashboard/pharmacist?panel=bnf", label: "BNF Reference", icon: ClipboardList },
+    { href: "/dashboard/pharmacist?section=settings", label: "Settings", icon: Settings },
   ],
   admin: [
     { href: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/admin", label: "User Management", icon: Users },
-    { href: "/dashboard/admin", label: "Integrations", icon: Activity },
-    { href: "/dashboard/admin", label: "Audit Log", icon: ClipboardList },
-    { href: "/dashboard/ics", label: "Equity Reports", icon: BarChart3 },
-    { href: "/dashboard/admin", label: "Data Governance", icon: Shield },
-    { href: "/dashboard/admin", label: "Billing", icon: Building2 },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/admin?panel=users", label: "User Management", icon: Users },
+    { href: "/dashboard/admin?panel=integrations", label: "Integrations", icon: Activity },
+    { href: "/dashboard/admin?panel=audit", label: "Audit Log", icon: ClipboardList },
+    { href: "/dashboard/admin?panel=equity", label: "Equity Reports", icon: BarChart3 },
+    { href: "/dashboard/admin?panel=governance", label: "Data Governance", icon: Shield },
+    { href: "/dashboard/admin?panel=billing", label: "Billing", icon: Building2 },
+    { href: "/dashboard/admin?section=settings", label: "Settings", icon: Settings },
   ],
   ics: [
     { href: "/dashboard/ics", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/ics", label: "Population Health", icon: Users },
-    { href: "/dashboard/ics", label: "Equity Metrics", icon: BarChart3 },
-    { href: "/dashboard/ics", label: "Benchmarking", icon: Activity },
-    { href: "/dashboard/hospital", label: "Digital Twin", icon: Heart },
-    { href: "/dashboard/ics", label: "Reports", icon: ClipboardList },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/ics?panel=population", label: "Population Health", icon: Users },
+    { href: "/dashboard/ics?panel=equity", label: "Equity Metrics", icon: BarChart3 },
+    { href: "/dashboard/ics?panel=benchmarking", label: "Benchmarking", icon: Activity },
+    { href: "/dashboard/ics?panel=digital-twin", label: "Digital Twin", icon: Heart },
+    { href: "/dashboard/ics?panel=reports", label: "Reports", icon: ClipboardList },
+    { href: "/dashboard/ics?section=settings", label: "Settings", icon: Settings },
   ],
   hospital: [
     { href: "/dashboard/hospital", label: "Command Centre", icon: LayoutDashboard },
-    { href: "/dashboard/hospital", label: "Ward Status", icon: Building2 },
-    { href: "/dashboard/hospital", label: "Capacity", icon: BarChart3 },
-    { href: "/dashboard/hospital", label: "Staffing", icon: Users },
-    { href: "/dashboard/ics", label: "Digital Twin", icon: Heart },
-    { href: "/dashboard/ics", label: "Reports", icon: ClipboardList },
-    { href: "/dashboard/admin", label: "Settings", icon: Settings },
+    { href: "/dashboard/hospital?panel=wards", label: "Ward Status", icon: Building2 },
+    { href: "/dashboard/hospital?panel=capacity", label: "Capacity", icon: BarChart3 },
+    { href: "/dashboard/hospital?panel=staffing", label: "Staffing", icon: Users },
+    { href: "/dashboard/hospital?panel=digital-twin", label: "Digital Twin", icon: Heart },
+    { href: "/dashboard/hospital?panel=reports", label: "Reports", icon: ClipboardList },
+    { href: "/dashboard/hospital?section=settings", label: "Settings", icon: Settings },
+  ],
+  researcher: [
+    { href: "/dashboard/researcher", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/researcher?panel=evaluation", label: "Evaluation", icon: FlaskConical },
+    { href: "/dashboard/researcher?section=settings", label: "Settings", icon: Settings },
   ],
   patient: [],
 };
@@ -84,6 +96,7 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
   admin: "Admin",
   ics: "ICS Lead",
   hospital: "Hospital Ops",
+  researcher: "Researcher",
   patient: "Patient",
 };
 
@@ -94,11 +107,28 @@ const ROLE_COLORS: Record<DashboardRole, string> = {
   admin: "bg-slate",
   ics: "bg-warning",
   hospital: "bg-primary",
+  researcher: "bg-[#E67E22]",
   patient: "bg-accent",
 };
 
+function isNavItemActive(pathname: string, searchParams: URLSearchParams, href: string) {
+  const [path, query] = href.split("?");
+  if (pathname !== path) return false;
+
+  if (!query) {
+    return !searchParams.get("panel") && !searchParams.get("section");
+  }
+
+  const itemParams = new URLSearchParams(query);
+  for (const [key, value] of itemParams.entries()) {
+    if (searchParams.get(key) !== value) return false;
+  }
+  return true;
+}
+
 export function Sidebar({ role, userName = "Dr Morgan" }: { role: DashboardRole; userName?: string }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
   const items = NAV[role] ?? [];
 
@@ -141,7 +171,7 @@ export function Sidebar({ role, userName = "Dr Morgan" }: { role: DashboardRole;
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           {items.map((item) => {
-            const active = pathname === item.href || (item.href !== "/dashboard/gp" && pathname.startsWith(item.href));
+            const active = isNavItemActive(pathname, searchParams, item.href);
             const Icon = item.icon;
             const link = (
               <Link

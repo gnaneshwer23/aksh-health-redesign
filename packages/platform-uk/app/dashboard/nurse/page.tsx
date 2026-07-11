@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { GuardianAlert } from "@/components/dashboard/GuardianAlert";
-import { HitlActions } from "@/components/dashboard/SOAPEditor";
+import { HitlActions, SOAPEditor } from "@/components/dashboard/SOAPEditor";
 import { PatientCard } from "@/components/dashboard/PatientCard";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
@@ -26,9 +27,14 @@ const HANDOVER_DRAFT = `Night shift handover — Ward 3A
 3 patients with elevated ORACLE scores. Mrs Johnson (P001) — breathlessness reported via Voice Care Agent, requires same-day review. Mr Green (P008) — polypharmacy alert pending pharmacist review. All vital signs documented. 2 EQUITY flags raised for review.`;
 
 export default function NurseDashboardPage() {
+  const searchParams = useSearchParams();
+  const panel = searchParams.get("panel");
   const { nurseFilter, setNurseFilter, selectedPatientId, setSelectedPatient, addAuditEvent } = useDashboardStore();
-  const [handoverOpen, setHandoverOpen] = useState(false);
+  const [handoverOpen, setHandoverOpen] = useState(panel === "handover");
   const [handoverAccepted, setHandoverAccepted] = useState(false);
+  const [handoverEditing, setHandoverEditing] = useState(false);
+  const [handoverContent, setHandoverContent] = useState(HANDOVER_DRAFT);
+  const [handoverEdited, setHandoverEdited] = useState(false);
   const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
   const [vitals, setVitals] = useState({ bpSys: "", bpDia: "", hr: "", rr: "", spo2: "", temp: "", weight: "" });
   const [escalationTasks, setEscalationTasks] = useState<NurseEscalationTask[]>([]);
@@ -36,6 +42,12 @@ export default function NurseDashboardPage() {
   useEffect(() => {
     setEscalationTasks(readNurseEscalationTasks());
   }, []);
+
+  useEffect(() => {
+    if (panel === "handover") setHandoverOpen(true);
+    if (panel === "alerts") setNurseFilter("alerts");
+    if (panel === "observations") setNurseFilter("observations");
+  }, [panel, setNurseFilter]);
 
   const filtered = patients.filter((p) => {
     if (nurseFilter === "alerts") return p.flags.includes("GUARDIAN") || p.flags.includes("URGENT");
@@ -143,26 +155,46 @@ export default function NurseDashboardPage() {
       <Dialog open={handoverOpen} onOpenChange={setHandoverOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>AI Handover Summary — {handoverAccepted ? "Shared" : "Draft — Not Sent"}</DialogTitle>
+            <DialogTitle>
+              AI Handover Summary — {handoverAccepted ? "Shared" : handoverEdited ? "Edited — re-acceptance required" : "Draft — Not Sent"}
+            </DialogTitle>
           </DialogHeader>
-          <p className="text-sm whitespace-pre-line">{HANDOVER_DRAFT}</p>
-          {!handoverAccepted ? (
-            <HitlActions
-              status="Pending"
-              onAccept={() => {
-                setHandoverAccepted(true);
-                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Approved handover summary", resource: "Night shift" });
-                toast({ title: "Handover shared" });
+          {handoverEditing ? (
+            <SOAPEditor
+              value={handoverContent}
+              onChange={setHandoverContent}
+              onSave={() => {
+                setHandoverEditing(false);
+                setHandoverEdited(true);
+                setHandoverAccepted(false);
+                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Edited handover summary", resource: "Night shift" });
               }}
-              onEdit={() => toast({ title: "Edit handover", description: "Inline editor — re-acceptance required after save" })}
-              onReject={(reason) => {
-                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: `Rejected handover — ${reason}`, resource: "Night shift" });
-                setHandoverOpen(false);
+              onCancel={() => {
+                setHandoverEditing(false);
+                setHandoverContent(HANDOVER_DRAFT);
               }}
             />
           ) : (
-            <p className="text-xs text-accent">Shared at {new Date().toLocaleTimeString("en-GB")}</p>
+            <p className="text-sm whitespace-pre-line">{handoverContent}</p>
           )}
+          {!handoverAccepted && !handoverEditing ? (
+            <HitlActions
+              status={handoverEdited ? "Edited" : "Pending"}
+              onAccept={() => {
+                setHandoverAccepted(true);
+                setHandoverEdited(false);
+                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: "Approved handover summary", resource: "Night shift" });
+                toast({ title: "Handover shared" });
+              }}
+              onEdit={() => setHandoverEditing(true)}
+              onReject={(reason) => {
+                addAuditEvent({ user: "Nurse Davies", agent: "SYNTHESIS", action: `Rejected handover — ${reason || "No reason provided"}`, resource: "Night shift" });
+                setHandoverOpen(false);
+              }}
+            />
+          ) : handoverAccepted ? (
+            <p className="text-xs text-accent">Shared at {new Date().toLocaleTimeString("en-GB")}</p>
+          ) : null}
         </DialogContent>
       </Dialog>
     </DashboardShell>

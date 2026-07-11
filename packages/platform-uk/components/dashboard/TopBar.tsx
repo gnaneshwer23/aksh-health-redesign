@@ -13,11 +13,33 @@ import { searchPatients } from "@/lib/mock-data";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
+const MOCK_NOTIFICATIONS = [
+  {
+    id: "n1",
+    title: "Review queue item pending",
+    body: "GUARDIAN interaction check for Mrs Johnson requires approval.",
+    time: "12 min ago",
+  },
+  {
+    id: "n2",
+    title: "Handover summary ready",
+    body: "AI-generated night shift handover is awaiting nurse review.",
+    time: "1 hr ago",
+  },
+  {
+    id: "n3",
+    title: "Capacity alert",
+    body: "Digital Twin predicts ED surge probability at 73% in next 12 hours.",
+    time: "3 hrs ago",
+  },
+];
+
 export function TopBar({ role, title }: { role: DashboardRole; title?: string }) {
   const { data: session } = useSession();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ReturnType<typeof searchPatients>>([]);
   const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } = useDashboardStore();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const displayName = session?.user?.name ?? session?.user?.email ?? "Aksh user";
   const initials = displayName
     .split(" ")
@@ -76,6 +98,7 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
             type="button"
             className="relative rounded-xl p-2 transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={`${notificationCount} notifications`}
+            onClick={() => setNotificationsOpen(true)}
           >
             <Bell className="h-5 w-5 text-steel" />
             {notificationCount > 0 && (
@@ -103,6 +126,21 @@ export function TopBar({ role, title }: { role: DashboardRole; title?: string })
       <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
         <SheetContent side="left" className="w-sidebar p-0">
           <Sidebar role={role} />
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+        <SheetContent side="right" className="w-full max-w-sm">
+          <h2 className="text-lg font-semibold">Notifications</h2>
+          <ul className="mt-4 space-y-3">
+            {MOCK_NOTIFICATIONS.map((notification) => (
+              <li key={notification.id} className="rounded-xl border border-border-subtle bg-surface-muted p-3">
+                <p className="text-sm font-semibold text-foreground">{notification.title}</p>
+                <p className="mt-1 text-xs text-muted">{notification.body}</p>
+                <p className="mt-2 text-[10px] text-muted">{notification.time}</p>
+              </li>
+            ))}
+          </ul>
         </SheetContent>
       </Sheet>
     </>

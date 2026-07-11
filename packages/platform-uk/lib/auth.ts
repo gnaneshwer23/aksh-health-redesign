@@ -3,6 +3,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { authConfig, isClinicalOAuthConfigured } from "./auth/config";
+import { DEMO_USER_SEEDS } from "./auth/demo-users";
 import { nextAuthSecret } from "./auth-secret";
 import type { UserRole } from "./onboarding/roles";
 
@@ -21,32 +22,15 @@ type DemoUser = {
   onboardingComplete: boolean;
 };
 
-const DEMO_USERS: Record<string, DemoUser> = {
-  "doctor@akshhealth.com": {
-    id: "user-001",
-    email: "doctor@akshhealth.com",
-    name: "Dr. Clinical User",
-    passwordHash: resolveDemoPasswordHash("AKSH_DEMO_DOCTOR_PASSWORD_HASH"),
-    role: "gp",
-    onboardingComplete: true,
-  },
-  "reviewer@akshhealth.com": {
-    id: "user-002",
-    email: "reviewer@akshhealth.com",
-    name: "Dr. Reviewer",
-    passwordHash: resolveDemoPasswordHash("AKSH_DEMO_REVIEWER_PASSWORD_HASH"),
-    role: "practice-manager",
-    onboardingComplete: true,
-  },
-  "smoke@akshhealth.com": {
-    id: "user-003",
-    email: "smoke@akshhealth.com",
-    name: "Smoke Loop Reviewer",
-    passwordHash: resolveDemoPasswordHash("AKSH_DEMO_SMOKE_PASSWORD_HASH"),
-    role: "gp",
-    onboardingComplete: true,
-  },
-};
+const DEMO_USERS: Record<string, DemoUser> = Object.fromEntries(
+  DEMO_USER_SEEDS.map((user) => [
+    user.email,
+    {
+      ...user,
+      passwordHash: resolveDemoPasswordHash(`AKSH_DEMO_${user.role.toUpperCase().replace(/-/g, "_")}_PASSWORD_HASH`),
+    },
+  ])
+);
 
 type ClinicalOAuthProfile = {
   sub?: string;

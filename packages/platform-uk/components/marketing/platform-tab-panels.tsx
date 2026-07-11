@@ -169,7 +169,7 @@ export function PlatformCliniciansPanel() {
           <Link href="/signup?role=gp" className="rounded-xl bg-navy px-6 py-3 font-bold text-white hover:bg-navy/90">
             Get Started as a Clinician
           </Link>
-          <Link href="/onboarding?role=gp" className="rounded-xl border border-navy px-6 py-3 font-bold text-navy hover:bg-navy/5">
+          <Link href="/signup?role=gp" className="rounded-xl border border-navy px-6 py-3 font-bold text-navy hover:bg-navy/5">
             GP onboarding path
           </Link>
         </div>

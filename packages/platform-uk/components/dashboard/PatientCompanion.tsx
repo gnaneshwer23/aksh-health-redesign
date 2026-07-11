@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
 const MOCK_RESPONSES: Record<string, string> = {
@@ -26,6 +27,13 @@ export function PatientCompanion() {
     { role: "ai", text: "I've noted that and shared it with your care team. A nurse will review this and may be in touch. Is there anything else?" },
   ]);
   const [medsTaken, setMedsTaken] = useState<Record<string, boolean>>({});
+
+  const handleComingSoon = (feature: string) => {
+    toast({
+      title: "Coming soon",
+      description: `${feature} — messages your care team securely from this app.`,
+    });
+  };
 
   const handleChat = (text: string) => {
     setChatMessages((m) => [...m, { role: "user", text }, { role: "ai", text: MOCK_RESPONSES[text] ?? "Thank you for your question. Please speak to your GP about your personal health concerns." }]);
@@ -76,7 +84,7 @@ export function PatientCompanion() {
               <p>GP: Dr Morgan</p>
               <p>Nurse: Nurse Davies</p>
               <p>Pharmacist: Pharmacist Lee</p>
-              <Button variant="outline" size="sm" className="mt-2">Message Team</Button>
+              <Button variant="outline" size="sm" className="mt-2" onClick={() => handleComingSoon("Message Team")}>Message Team</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -135,8 +143,8 @@ export function PatientCompanion() {
               </div>
             ))}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">Request Repeat Prescription</Button>
-              <Button variant="outline" size="sm">Report Side Effect</Button>
+              <Button variant="outline" size="sm" onClick={() => handleComingSoon("Repeat prescription requests")}>Request Repeat Prescription</Button>
+              <Button variant="outline" size="sm" onClick={() => handleComingSoon("Side effect reporting")}>Report Side Effect</Button>
             </div>
           </Card>
         </TabsContent>

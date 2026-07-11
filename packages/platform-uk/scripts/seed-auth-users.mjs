@@ -9,27 +9,17 @@ const demoPassword = process.env.AKSH_DEMO_PASSWORD ?? "demo123";
 const demoPasswordHash = hashSync(demoPassword, 10);
 
 const demoUsers = [
-  {
-    id: "user-001",
-    email: "doctor@akshhealth.com",
-    role: "gp",
-    fullName: "Dr. Clinical User",
-    onboardingComplete: true,
-  },
-  {
-    id: "user-002",
-    email: "reviewer@akshhealth.com",
-    role: "practice-manager",
-    fullName: "Dr. Reviewer",
-    onboardingComplete: true,
-  },
-  {
-    id: "user-003",
-    email: "smoke@akshhealth.com",
-    role: "gp",
-    fullName: "Smoke Loop Reviewer",
-    onboardingComplete: true,
-  },
+  { id: "user-001", email: "doctor@akshhealth.com", role: "gp", fullName: "Dr. Clinical User", onboardingComplete: true },
+  { id: "user-gp", email: "gp@demo.akshhealth.com", role: "gp", fullName: "Dr. Morgan (GP)", onboardingComplete: true },
+  { id: "user-nurse", email: "nurse@demo.akshhealth.com", role: "nurse", fullName: "Nurse Davies", onboardingComplete: true },
+  { id: "user-pharmacist", email: "pharmacist@demo.akshhealth.com", role: "clinical-pharmacist", fullName: "Pharmacist Lee", onboardingComplete: true },
+  { id: "user-admin", email: "admin@demo.akshhealth.com", role: "practice-manager", fullName: "Admin Singh", onboardingComplete: true },
+  { id: "user-ics", email: "ics@demo.akshhealth.com", role: "ics-lead", fullName: "ICS Lead Patel", onboardingComplete: true },
+  { id: "user-hospital", email: "hospital@demo.akshhealth.com", role: "hospital-executive", fullName: "Hospital Exec Chen", onboardingComplete: true },
+  { id: "user-patient", email: "patient@demo.akshhealth.com", role: "patient", fullName: "James Wilson", onboardingComplete: true },
+  { id: "user-researcher", email: "researcher@demo.akshhealth.com", role: "researcher", fullName: "Dr. Research Analyst", onboardingComplete: true },
+  { id: "user-002", email: "reviewer@akshhealth.com", role: "practice-manager", fullName: "Dr. Reviewer", onboardingComplete: true },
+  { id: "user-003", email: "smoke@akshhealth.com", role: "gp", fullName: "Smoke Loop Reviewer", onboardingComplete: true },
 ];
 
 function getDatabaseUrl() {

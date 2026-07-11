@@ -9,6 +9,7 @@ import { HospitalCommandMap } from "@/components/dashboard/HospitalCommandMap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toaster";
 import { CURRENT_GP, hospitalData, wardStaffing } from "@/lib/mock-data";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 export default function HospitalDashboardPage() {
   const { dismissedHospitalAlerts, acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalAlert, dismissHospitalRec } = useDashboardStore();
   const [time, setTime] = useState(new Date());
+  const [analysisOpen, setAnalysisOpen] = useState(false);
   const data = hospitalData;
   const bedPct = Math.round((data.wards.reduce((s, w) => s + w.occupiedBeds, 0) / data.wards.reduce((s, w) => s + w.totalBeds, 0)) * 100);
 
@@ -48,7 +50,7 @@ export default function HospitalDashboardPage() {
           <div className="bg-warning/15 border-b border-warning/30 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm">Digital Twin Alert: 73% probability of ED surge in next 12 hours. Recommend: accelerate discharge reviews in wards 3A, 3B, 4A</p>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline">View Analysis</Button>
+              <Button size="sm" variant="outline" onClick={() => setAnalysisOpen(true)}>View Analysis</Button>
               <Button size="sm" variant="ghost" onClick={() => dismissHospitalAlert("surge")}>Dismiss</Button>
             </div>
           </div>
@@ -126,6 +128,38 @@ export default function HospitalDashboardPage() {
           </aside>
         </div>
       </div>
+
+      <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Digital Twin — ED Surge Analysis</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Model predicts a <strong>73% probability</strong> of ED surge within the next 12 hours based on
+              admission velocity, discharge backlog, and seasonal patterns.
+            </p>
+            <Card className="shadow-sm border-warning/30 bg-warning/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Capacity summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-muted">
+                <p>Current bed occupancy: {bedPct}% across {data.wards.length} wards</p>
+                <p>ED wait time: {data.edWaitingTime} hours ({data.edPatientsWaiting} patients waiting)</p>
+                <p>Net bed demand (14-day forecast): +{data.capacityForecast.slice(0, 3).reduce((s, d) => s + d.netBedDemand, 0)} beds over next 3 days</p>
+              </CardContent>
+            </Card>
+            <div>
+              <p className="font-medium mb-1">Recommended actions</p>
+              <ul className="list-disc pl-5 space-y-1 text-muted">
+                <li>Accelerate discharge reviews in wards 3A, 3B, 4A</li>
+                <li>Pre-position overflow beds in Ward 2B respiratory unit</li>
+                <li>Trigger agency staffing review for night shift</li>
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   );
 }

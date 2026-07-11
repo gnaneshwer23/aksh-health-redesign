@@ -4,7 +4,7 @@ import { auditEvents as initialAuditEvents } from "@/lib/mock-data/audit-events"
 import { reviewQueueItems as initialReviewQueue } from "@/lib/mock-data/review-queue";
 import type { AdminUser, AuditEvent, ReviewQueueItem } from "@/lib/mock-data/types";
 
-export type DashboardRole = "gp" | "nurse" | "pharmacist" | "admin" | "ics" | "hospital" | "patient";
+export type DashboardRole = "gp" | "nurse" | "pharmacist" | "admin" | "ics" | "hospital" | "patient" | "researcher";
 
 export type NurseFilter = "all" | "alerts" | "observations" | "completed";
 
