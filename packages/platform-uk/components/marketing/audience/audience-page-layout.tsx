@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Users } from "lucide-react";
 
 import type { AudiencePageContent } from "@/components/marketing/audience/audience-content";
+import { AudienceWorkflowSection } from "@/components/marketing/audience/AudienceWorkflowSection";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import TrustStrip from "@/components/marketing/TrustStrip";
 
@@ -14,6 +15,7 @@ export function AudiencePageLayout({
   roles,
   pains,
   capabilities,
+  endToEndWorkflow,
   workflowTitle,
   workflowDescription,
   agents,
@@ -136,6 +138,8 @@ export function AudiencePageLayout({
           </div>
         </div>
       </section>
+
+      {endToEndWorkflow && <AudienceWorkflowSection workflow={endToEndWorkflow} />}
 
       {/* Workflow / agents */}
       <section className="bg-surface py-20 md:py-24">

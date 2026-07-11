@@ -121,10 +121,14 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /Challenges we hear every day/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How Aksh Health helps/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /From sign-up to staged FHIR draft/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Agents and dashboards for clinical teams/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to get started/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Get Started" }).first()).toBeVisible();
     await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+
+    await page.goto("/for-practices");
+    await expect(page.getByRole("heading", { name: /From practice setup to team governance/i })).toBeVisible();
   });
 
   test("platform page loads with cohesive sections", async ({ page }) => {

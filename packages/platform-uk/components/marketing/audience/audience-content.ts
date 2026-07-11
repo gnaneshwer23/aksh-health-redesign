@@ -44,6 +44,55 @@ export type AudienceCta = {
   href: string;
 };
 
+export type WorkflowMockRow = {
+  label: string;
+  detail?: string;
+  badge?: string;
+  tone?: string;
+  status?: string;
+  statusTone?: "success" | "warning" | "danger";
+};
+
+export type WorkflowMockStat = {
+  label: string;
+  value: string;
+  tone?: string;
+};
+
+export type WorkflowIconName =
+  | "UserPlus"
+  | "Settings"
+  | "Database"
+  | "Stethoscope"
+  | "CheckSquare"
+  | "FileText"
+  | "Shield"
+  | "Users"
+  | "BarChart3";
+
+export type AudienceWorkflowStep = {
+  number: number;
+  title: string;
+  description: string;
+  iconName: WorkflowIconName;
+  mockTitle: string;
+  mockSubtitle?: string;
+  mockStats?: WorkflowMockStat[];
+  mockRows: WorkflowMockRow[];
+  mockFooter?: string;
+};
+
+export type AudienceWorkflow = {
+  sectionLabel: string;
+  sectionTitle: string;
+  sectionDescription: string;
+  disclaimer: string;
+  architecture?: {
+    stages: string[];
+  };
+  steps: AudienceWorkflowStep[];
+};
+
 export type AudiencePageContent = {
   eyebrow: string;
   headline: string;
@@ -51,6 +100,7 @@ export type AudiencePageContent = {
   roles?: string[];
   pains: [AudiencePain, AudiencePain, AudiencePain];
   capabilities: AudienceCapability[];
+  endToEndWorkflow?: AudienceWorkflow;
   workflowTitle: string;
   workflowDescription: string;
   agents: AudienceAgent[];
@@ -127,6 +177,116 @@ export const audiencePages = {
         iconColor: "text-warning",
       },
     ],
+    endToEndWorkflow: {
+      sectionLabel: "End-to-end workflow",
+      sectionTitle: "From sign-up to staged FHIR draft",
+      sectionDescription:
+        "Six steps from role selection through clinician review. Every AI output stays a draft until you approve it. Demo uses synthetic patients only.",
+      disclaimer: "Synthetic demo data. No outputs are written to the EHR without clinician approval.",
+      architecture: {
+        stages: ["EMIS / SystmOne", "Aksh Health", "Review Queue", "FHIR staging"],
+      },
+      steps: [
+        {
+          number: 1,
+          title: "Sign up and role",
+          description:
+            "Choose GP, nurse, or pharmacist at registration. Your dashboard, permissions, and review queue adapt to your clinical role.",
+          iconName: "UserPlus",
+          mockTitle: "Account setup",
+          mockSubtitle: "Select your clinical role",
+          mockRows: [
+            { badge: "GP", label: "General practice clinician", tone: "bg-navy" },
+            { badge: "Nurse", label: "Practice nurse", tone: "bg-emerald" },
+            { badge: "Rx", label: "Clinical pharmacist", tone: "bg-purple-600" },
+          ],
+          mockFooter: "Role determines dashboard layout and review permissions",
+        },
+        {
+          number: 2,
+          title: "Practice onboarding",
+          description:
+            "Link your practice and EHR context. EMIS Web and SystmOne integration paths are configured during setup.",
+          iconName: "Settings",
+          mockTitle: "Practice onboarding",
+          mockSubtitle: "Riverside Medical Centre",
+          mockRows: [
+            { label: "EHR system", detail: "EMIS Web", status: "Connected", statusTone: "success" },
+            { label: "Practice ODS", detail: "A12345", status: "Verified", statusTone: "success" },
+            { label: "FHIR pipeline", detail: "R4 ready", status: "Staging", statusTone: "warning" },
+          ],
+        },
+        {
+          number: 3,
+          title: "Patient context loads",
+          description:
+            "Synthetic patient records load into your clinician view with conditions, medications, and appointment context ready for consultation.",
+          iconName: "Database",
+          mockTitle: "Patient context",
+          mockSubtitle: "Mr James Patel · NHS 943 476 5919",
+          mockStats: [
+            { label: "Active conditions", value: "4", tone: "text-navy" },
+            { label: "Medications", value: "7", tone: "text-emerald" },
+            { label: "ORACLE risk", value: "Med", tone: "text-warning" },
+          ],
+          mockRows: [
+            { badge: "T2D", label: "Type 2 diabetes mellitus", tone: "bg-navy" },
+            { badge: "HTN", label: "Essential hypertension", tone: "bg-navy" },
+            { badge: "Rx", label: "Metformin 500mg BD", tone: "bg-emerald" },
+          ],
+          mockFooter: "Synthetic patient · Demo data only",
+        },
+        {
+          number: 4,
+          title: "Consultation and agent drafts",
+          description:
+            "During consultation, SYNTHESIS drafts your SOAP note while GUARDIAN checks interactions and ORACLE scores risk in parallel.",
+          iconName: "Stethoscope",
+          mockTitle: "Agent activity",
+          mockSubtitle: "Consultation in progress",
+          mockRows: [
+            { badge: "SYNTHESIS", label: "SOAP note draft ready", tone: "bg-navy", status: "Draft" },
+            { badge: "GUARDIAN", label: "Amlodipine + simvastatin check", tone: "bg-danger", status: "Amber" },
+            { badge: "ORACLE", label: "CVD risk score 18.4%", tone: "bg-warning", status: "Review" },
+          ],
+        },
+        {
+          number: 5,
+          title: "Review queue (HITL)",
+          description:
+            "All agent outputs appear in one review queue. Accept, edit, or reject each draft. Nothing proceeds without your explicit decision.",
+          iconName: "CheckSquare",
+          mockTitle: "GP Review Queue",
+          mockSubtitle: "3 items awaiting approval",
+          mockStats: [
+            { label: "Pending", value: "3", tone: "text-navy" },
+            { label: "Approved today", value: "12", tone: "text-emerald" },
+            { label: "Rejected", value: "1", tone: "text-steel" },
+          ],
+          mockRows: [
+            { badge: "SYNTHESIS", label: "SOAP note draft", tone: "bg-navy", status: "Accept / Edit / Reject" },
+            { badge: "GUARDIAN", label: "Drug interaction flag", tone: "bg-danger", status: "Accept / Edit / Reject" },
+            { badge: "ORACLE", label: "CVD risk score", tone: "bg-warning", status: "Accept / Edit / Reject" },
+          ],
+          mockFooter: "Human-in-the-loop on every clinical output",
+        },
+        {
+          number: 6,
+          title: "FHIR draft staged",
+          description:
+            "Approved outputs are staged as FHIR DocumentReference drafts. They are not auto-written to the EHR record until you confirm.",
+          iconName: "FileText",
+          mockTitle: "FHIR staging queue",
+          mockSubtitle: "DocumentReference · Pending write",
+          mockRows: [
+            { label: "SOAP note", detail: "DocumentReference", status: "Staged", statusTone: "warning" },
+            { label: "Condition code", detail: "SNOMED-CT E11.9", status: "Staged", statusTone: "warning" },
+            { label: "EHR write", detail: "EMIS Web", status: "Awaiting confirm", statusTone: "warning" },
+          ],
+          mockFooter: "Zero auto-writes. Clinician confirms before record update.",
+        },
+      ],
+    },
     workflowTitle: "Agents and dashboards for clinical teams",
     workflowDescription:
       "GP, nurse, and pharmacist views with review queue, vitals, handover, and medicines safety. Synthetic patients only in this build.",
@@ -534,6 +694,114 @@ export const audiencePages = {
         iconColor: "text-purple-700",
       },
     ],
+    endToEndWorkflow: {
+      sectionLabel: "End-to-end workflow",
+      sectionTitle: "From practice setup to team governance",
+      sectionDescription:
+        "Six steps for practice managers to configure tenancy, monitor team performance, and maintain compliance evidence. Demo uses synthetic data.",
+      disclaimer: "Synthetic demo data. Production tenancy requires practice administrator sign-off.",
+      architecture: {
+        stages: ["EMIS / SystmOne", "Aksh Health", "Review Queue", "FHIR staging"],
+      },
+      steps: [
+        {
+          number: 1,
+          title: "Practice manager sign-up",
+          description:
+            "Register as practice manager or administrator. You receive tenancy controls and oversight dashboards for your organisation.",
+          iconName: "UserPlus",
+          mockTitle: "Administrator registration",
+          mockSubtitle: "Practice manager account",
+          mockRows: [
+            { label: "Organisation", detail: "Riverside Medical Centre", status: "New", statusTone: "warning" },
+            { label: "Role", detail: "Practice Manager", status: "Assigned", statusTone: "success" },
+            { label: "Sites", detail: "1 primary site", status: "Pending", statusTone: "warning" },
+          ],
+        },
+        {
+          number: 2,
+          title: "Configure practice and roles",
+          description:
+            "Set up sites, invite clinicians, and assign role-based access for GPs, nurses, pharmacists, and admin staff.",
+          iconName: "Settings",
+          mockTitle: "Tenancy configuration",
+          mockSubtitle: "Roles and access boundaries",
+          mockRows: [
+            { badge: "GP", label: "Dr Sarah Chen", tone: "bg-navy", status: "Active", statusTone: "success" },
+            { badge: "Nurse", label: "Lisa Okonkwo", tone: "bg-emerald", status: "Active", statusTone: "success" },
+            { badge: "Admin", label: "James Wright", tone: "bg-purple-600", status: "Invited", statusTone: "warning" },
+          ],
+        },
+        {
+          number: 3,
+          title: "Team dashboards",
+          description:
+            "Monitor GP, nurse, and admin views from a practice-level overview. See queue clearance, agent adoption, and daily activity.",
+          iconName: "Users",
+          mockTitle: "Team overview",
+          mockSubtitle: "Today's activity across roles",
+          mockStats: [
+            { label: "Clinicians active", value: "8", tone: "text-navy" },
+            { label: "Queue items", value: "24", tone: "text-emerald" },
+            { label: "Clearance rate", value: "94%", tone: "text-emerald" },
+          ],
+          mockRows: [
+            { badge: "GP", label: "Review queue · 3 pending", tone: "bg-navy" },
+            { badge: "Nurse", label: "Handover notes · 2 drafts", tone: "bg-emerald" },
+            { badge: "Admin", label: "Integration health · OK", tone: "bg-purple-600" },
+          ],
+        },
+        {
+          number: 4,
+          title: "Compliance and audit",
+          description:
+            "SHIELD provides an immutable audit trail of AI recommendations and clinician actions for CQC, DSPT, and clinical safety reviews.",
+          iconName: "Shield",
+          mockTitle: "SHIELD audit trail",
+          mockSubtitle: "Last 24 hours",
+          mockRows: [
+            { label: "AI recommendation logged", detail: "SYNTHESIS", status: "14:32", statusTone: "success" },
+            { label: "Clinician approval", detail: "Dr Chen", status: "14:35", statusTone: "success" },
+            { label: "FHIR staging event", detail: "DocumentReference", status: "14:35", statusTone: "success" },
+          ],
+          mockFooter: "Immutable audit log for compliance evidence",
+        },
+        {
+          number: 5,
+          title: "Population oversight",
+          description:
+            "Practice-level population view shows risk distribution, queue trends, and operational metrics across your registered list.",
+          iconName: "BarChart3",
+          mockTitle: "Population view",
+          mockSubtitle: "Practice operational metrics",
+          mockStats: [
+            { label: "List size", value: "12.4k", tone: "text-navy" },
+            { label: "High risk", value: "342", tone: "text-warning" },
+            { label: "Reviews due", value: "28", tone: "text-emerald" },
+          ],
+          mockRows: [
+            { label: "CVD screening gap", status: "18 patients", statusTone: "warning" },
+            { label: "Diabetes review overdue", status: "12 patients", statusTone: "warning" },
+            { label: "Queue clearance trend", status: "+6% this week", statusTone: "success" },
+          ],
+        },
+        {
+          number: 6,
+          title: "HITL governance across team",
+          description:
+            "Set practice-wide policies for human-in-the-loop review. Monitor that no AI output bypasses clinician approval before the record.",
+          iconName: "CheckSquare",
+          mockTitle: "HITL governance",
+          mockSubtitle: "Team approval policy",
+          mockRows: [
+            { label: "Auto-write to EHR", status: "Disabled", statusTone: "success" },
+            { label: "Pending without approval", status: "0 items", statusTone: "success" },
+            { label: "Rejected outputs (7d)", status: "3 logged", statusTone: "warning" },
+          ],
+          mockFooter: "Every AI output requires explicit clinician approval",
+        },
+      ],
+    },
     workflowTitle: "Admin dashboard for practice operations",
     workflowDescription:
       "Integration health, tenant configuration, and SHIELD compliance views for practice administrators. Synthetic data in this build.",
