@@ -254,6 +254,12 @@ export function PlatformHospitalsPanel() {
             Book Executive Briefing
           </Link>
           <Link
+            href="/signup?role=hospital-executive"
+            className="rounded-xl border border-primary bg-primary/5 px-6 py-3 font-bold text-primary hover:bg-primary/10"
+          >
+            Hospital Command Centre — sign up
+          </Link>
+          <Link
             href="/signup?role=ics-lead"
             className="rounded-xl border border-warning bg-warning/5 px-6 py-3 font-bold text-warning hover:bg-warning/10"
           >

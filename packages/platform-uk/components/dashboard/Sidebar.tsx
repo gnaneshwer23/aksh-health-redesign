@@ -71,9 +71,9 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   hospital: [
     { href: "/dashboard/hospital", label: "Command Centre", icon: LayoutDashboard },
-    { href: "/dashboard/hospital?panel=wards", label: "Ward Status", icon: Building2 },
-    { href: "/dashboard/hospital?panel=capacity", label: "Capacity", icon: BarChart3 },
-    { href: "/dashboard/hospital?panel=staffing", label: "Staffing", icon: Users },
+    { href: "/dashboard/hospital/wards", label: "Ward Status", icon: Building2 },
+    { href: "/dashboard/hospital/capacity", label: "Capacity", icon: BarChart3 },
+    { href: "/dashboard/hospital/staffing", label: "Staffing", icon: Users },
     { href: "/dashboard/hospital?panel=digital-twin", label: "Digital Twin", icon: Heart },
     { href: "/dashboard/hospital?panel=reports", label: "Reports", icon: ClipboardList },
     { href: "/dashboard/hospital?section=settings", label: "Settings", icon: Settings },

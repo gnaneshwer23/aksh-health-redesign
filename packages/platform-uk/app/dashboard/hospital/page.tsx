@@ -1,165 +1,107 @@
-"use client";
+import Link from "next/link";
+import { BarChart3, Building2, Users } from "lucide-react";
 
-import { useEffect, useState } from "react";
-
-import { CapacityChart } from "@/components/dashboard/CapacityChart";
-import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { HitlActions } from "@/components/dashboard/SOAPEditor";
-import { HospitalCommandMap } from "@/components/dashboard/HospitalCommandMap";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { toast } from "@/components/ui/toaster";
-import { CURRENT_GP, hospitalData, wardStaffing } from "@/lib/mock-data";
-import { useDashboardStore } from "@/lib/zustand/dashboardStore";
-import { cn } from "@/lib/utils";
+import { hospitalData } from "@/lib/mock-data";
 
-export default function HospitalDashboardPage() {
-  const { dismissedHospitalAlerts, acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalAlert, dismissHospitalRec } = useDashboardStore();
-  const [time, setTime] = useState(new Date());
-  const [analysisOpen, setAnalysisOpen] = useState(false);
-  const data = hospitalData;
-  const bedPct = Math.round((data.wards.reduce((s, w) => s + w.occupiedBeds, 0) / data.wards.reduce((s, w) => s + w.totalBeds, 0)) * 100);
+const sections = [
+  {
+    href: "/dashboard/hospital/wards",
+    label: "Ward Status",
+    description: "Live ward grid with occupancy and discharge backlog",
+    icon: Building2,
+  },
+  {
+    href: "/dashboard/hospital/capacity",
+    label: "Capacity",
+    description: "14-day forecast and AI recommendations with HITL approval",
+    icon: BarChart3,
+  },
+  {
+    href: "/dashboard/hospital/staffing",
+    label: "Staffing",
+    description: "Ward staffing ratios and agency trigger alerts",
+    icon: Users,
+  },
+];
 
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 60000);
-    return () => clearInterval(t);
-  }, []);
+export default function HospitalOverviewPage() {
+  const bedPct = calcBedOccupancyPct(hospitalData);
 
   return (
-    <DashboardShell role="hospital" title="Command Centre">
-      <div className="flex flex-col h-full overflow-hidden">
-        <div className="bg-primary text-white px-4 py-3 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="text-lg font-semibold">Hospital Command Centre — {data.hospitalName}</h1>
-              <p className="text-xs opacity-80">{time.toLocaleString("en-GB")}</p>
-            </div>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-danger/90 px-3 py-1">🔴 ED Wait: {data.edWaitingTime} hrs</span>
-              <span className="rounded-full bg-warning/90 px-3 py-1 text-primary">🟡 Beds: {bedPct}% occupied</span>
-              <span className="rounded-full bg-accent/90 px-3 py-1 text-primary">✅ Theatres: {data.theatresRunning}/{data.theatresTotal}</span>
-              <span className="rounded-full bg-warning/90 px-3 py-1 text-primary">🟠 Staff: Night shift -2 nurses</span>
-            </div>
-          </div>
-        </div>
-
-        {!dismissedHospitalAlerts.includes("surge") && (
-          <div className="bg-warning/15 border-b border-warning/30 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm">Digital Twin Alert: 73% probability of ED surge in next 12 hours. Recommend: accelerate discharge reviews in wards 3A, 3B, 4A</p>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => setAnalysisOpen(true)}>View Analysis</Button>
-              <Button size="sm" variant="ghost" onClick={() => dismissHospitalAlert("surge")}>Dismiss</Button>
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-1 overflow-hidden">
-          <aside className="w-80 shrink-0 overflow-y-auto border-r border-border p-4">
-            <h2 className="text-sm font-semibold mb-3">Ward Status</h2>
-            <HospitalCommandMap wards={data.wards} />
-          </aside>
-
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <Card className="shadow-sm">
-              <CardHeader><CardTitle className="text-sm">Capacity Forecast</CardTitle></CardHeader>
-              <CardContent><CapacityChart data={data.capacityForecast} /></CardContent>
-            </Card>
-
-            <section className="space-y-2">
-              <h3 className="text-sm font-semibold">AI Recommendations</h3>
-              {data.aiRecommendations.map((rec) => (
-                <Card key={rec.id} className="shadow-sm p-4">
-                  <div className="flex justify-between gap-2 mb-2">
-                    <p className="text-sm">{rec.text}</p>
-                    <Badge className={cn(rec.urgency === "Urgent" ? "bg-danger" : "bg-warning")}>{rec.urgency}</Badge>
-                  </div>
-                  {acceptedHospitalRecs.includes(rec.id) ? (
-                    <p className="text-xs text-accent">Written to Record · Actioned · {CURRENT_GP}</p>
-                  ) : dismissedHospitalRecs.includes(rec.id) ? (
-                    <HitlActions status="Dismissed" onAccept={() => {}} onEdit={() => {}} onReject={() => {}} />
-                  ) : (
-                    <HitlActions
-                      variant="command"
-                      status="Pending"
-                      onAccept={() => { acceptHospitalRec(rec.id, CURRENT_GP); toast({ title: "Recommendation actioned" }); }}
-                      onEdit={() => {}}
-                      onReject={() => {}}
-                      onDismiss={() => { dismissHospitalRec(rec.id, CURRENT_GP); toast({ title: "Recommendation dismissed" }); }}
-                    />
-                  )}
-                </Card>
-              ))}
-            </section>
-          </div>
-
-          <aside className="w-72 shrink-0 overflow-y-auto border-l border-border p-4 space-y-4">
-            <h2 className="text-sm font-semibold">Staffing & Alerts</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ward</TableHead>
-                  <TableHead>Req</TableHead>
-                  <TableHead>Actual</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {wardStaffing.map((s) => (
-                  <TableRow key={s.ward} className={s.actual < s.required ? "bg-danger/5" : ""}>
-                    <TableCell className="text-xs">{s.ward.split("—")[0]}</TableCell>
-                    <TableCell>{s.required}</TableCell>
-                    <TableCell className={s.actual < s.required ? "text-danger font-semibold" : ""}>{s.actual}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            {data.agencyTriggers.map((t) => (
-              <Card key={t.ward} className="shadow-sm border-danger/30 bg-danger/5 p-3">
-                <p className="text-xs font-medium text-danger">{t.ward}: {t.message}</p>
-                <div className="mt-2 flex gap-2">
-                  <Button size="sm" variant="accent" onClick={() => toast({ title: "Agency request submitted" })}>Yes, Request</Button>
-                  <Button size="sm" variant="outline">No</Button>
-                </div>
-              </Card>
-            ))}
-          </aside>
-        </div>
+    <div className="p-4 space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-primary">Command Centre Overview</h2>
+        <p className="text-sm text-muted mt-1">
+          {hospitalData.hospitalName} — real-time operational intelligence across {hospitalData.wards.length} wards
+        </p>
       </div>
 
-      <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Digital Twin — ED Surge Analysis</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 text-sm">
-            <p>
-              Model predicts a <strong>73% probability</strong> of ED surge within the next 12 hours based on
-              admission velocity, discharge backlog, and seasonal patterns.
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted">ED Wait</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-danger">{hospitalData.edWaitingTime}h</p>
+            <p className="text-xs text-muted">{hospitalData.edPatientsWaiting} patients waiting</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted">Bed Occupancy</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-warning">{bedPct}%</p>
+            <p className="text-xs text-muted">Across all wards</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted">Theatres</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-accent">
+              {hospitalData.theatresRunning}/{hospitalData.theatresTotal}
             </p>
-            <Card className="shadow-sm border-warning/30 bg-warning/5">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Capacity summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-muted">
-                <p>Current bed occupancy: {bedPct}% across {data.wards.length} wards</p>
-                <p>ED wait time: {data.edWaitingTime} hours ({data.edPatientsWaiting} patients waiting)</p>
-                <p>Net bed demand (14-day forecast): +{data.capacityForecast.slice(0, 3).reduce((s, d) => s + d.netBedDemand, 0)} beds over next 3 days</p>
-              </CardContent>
-            </Card>
-            <div>
-              <p className="font-medium mb-1">Recommended actions</p>
-              <ul className="list-disc pl-5 space-y-1 text-muted">
-                <li>Accelerate discharge reviews in wards 3A, 3B, 4A</li>
-                <li>Pre-position overflow beds in Ward 2B respiratory unit</li>
-                <li>Trigger agency staffing review for night shift</li>
-              </ul>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </DashboardShell>
+            <p className="text-xs text-muted">Running now</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted">Agency Alerts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-danger">{hospitalData.agencyTriggers.length}</p>
+            <p className="text-xs text-muted">Pending staffing triggers</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <section>
+        <h3 className="text-sm font-semibold mb-3">Sections</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {sections.map((section) => {
+            const Icon = section.icon;
+            return (
+              <Link key={section.href} href={section.href} className="group">
+                <Card className="shadow-sm h-full transition-colors group-hover:border-primary/40">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm">{section.label}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted">{section.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+    </div>
   );
 }

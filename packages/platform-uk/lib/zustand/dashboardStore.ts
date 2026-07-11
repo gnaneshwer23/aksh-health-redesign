@@ -22,6 +22,7 @@ interface DashboardState {
   icsSortAsc: boolean;
   adminUsers: AdminUser[];
   dismissedHospitalAlerts: string[];
+  dismissedAgencyAlerts: string[];
   acceptedHospitalRecs: string[];
   dismissedHospitalRecs: string[];
   medicationReviewsCompleted: string[];
@@ -43,6 +44,7 @@ interface DashboardState {
   inviteUser: (user: Omit<AdminUser, "id" | "lastActive">) => void;
   updateUserStatus: (id: string, status: AdminUser["status"]) => void;
   dismissHospitalAlert: (id: string) => void;
+  dismissAgencyAlert: (ward: string) => void;
   acceptHospitalRec: (id: string, reviewerName: string) => void;
   dismissHospitalRec: (id: string, reviewerName: string) => void;
   stageGuardianInteraction: (payload: {
@@ -75,6 +77,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   icsSortAsc: false,
   adminUsers: [],
   dismissedHospitalAlerts: [],
+  dismissedAgencyAlerts: [],
   acceptedHospitalRecs: [],
   dismissedHospitalRecs: [],
   medicationReviewsCompleted: [],
@@ -179,6 +182,9 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   dismissHospitalAlert: (id) =>
     set((s) => ({ dismissedHospitalAlerts: [...s.dismissedHospitalAlerts, id] })),
+
+  dismissAgencyAlert: (ward) =>
+    set((s) => ({ dismissedAgencyAlerts: [...s.dismissedAgencyAlerts, ward] })),
 
   acceptHospitalRec: (id, reviewerName) => {
     get().addAuditEvent({
