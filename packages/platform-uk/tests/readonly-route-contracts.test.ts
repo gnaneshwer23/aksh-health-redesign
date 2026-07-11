@@ -58,10 +58,19 @@ async function assertJsonAttachment(response: Response, expectedFilename: string
 async function run() {
   process.env.AKSH_TEST_AUTH_HEADER = "true";
 
-  const research = await assertJsonAttachment(
-    await getResearchEvaluation(buildRouteRequest("/api/research/evaluation")),
-    "aksh-uk-eu-research-evaluation-boundary.json"
+  const researchResponse = await getResearchEvaluation(buildRouteRequest("/api/research/evaluation"));
+  assert.equal(researchResponse.status, 200);
+  assert.ok(
+    researchResponse.headers.get("content-type")?.includes("application/json"),
+    "Route handler should return an application/json response"
   );
+  assert.match(
+    researchResponse.headers.get("content-disposition") ?? "",
+    /filename="[a-z0-9-]+-research-evaluation-boundary\.json"/,
+    "Route handler should return an org-scoped research evaluation filename"
+  );
+  assert.equal(researchResponse.headers.has("set-cookie"), false, "Read-only route contracts should not set pseudonymous cookies");
+  const research = (await researchResponse.json()) as Record<string, any>;
   assert.equal(research.artifactType, "aksh-uk-eu-research-evaluation-boundary");
   assert.equal(research.generatedBy, routeUserEmail);
   assert.equal(research.syntheticOnly, true);

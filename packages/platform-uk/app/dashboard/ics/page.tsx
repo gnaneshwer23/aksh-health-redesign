@@ -6,6 +6,8 @@ import { Activity, BarChart3, ChevronRight, Heart, Users } from "lucide-react";
 import { IcsKpiRow } from "@/components/dashboard/ics/IcsKpiRow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIcsData } from "@/components/dashboard/ics/IcsDataContext";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { getPersonalizedLabel } from "@/lib/profile/personalization";
 
 const SECTIONS = [
   {
@@ -40,13 +42,15 @@ const SECTIONS = [
 
 export default function IcsOverviewPage() {
   const { data } = useIcsData();
+  const { profile } = useUserProfile();
+  const icsName = getPersonalizedLabel(profile, data.icsName);
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold text-foreground">ICS Population Intelligence</h2>
         <p className="text-sm text-muted">
-          {data.practices} practices · {data.equityFlags} equity flags · {data.totalPatients.toLocaleString()} patients
+          {icsName}: {data.practices} practices · {data.equityFlags} equity flags · {data.totalPatients.toLocaleString()} patients
         </p>
       </div>
 

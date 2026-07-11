@@ -1,8 +1,10 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { getEvaluationSummaryMetrics, researcherCohortData, type ResearcherCohortData } from "@/lib/researcher/cohort-data";
+import { getPersonalizedLabel } from "@/lib/profile/personalization";
 
 type ResearcherDataContextValue = {
   cohort: ResearcherCohortData;
@@ -12,10 +14,19 @@ type ResearcherDataContextValue = {
 const ResearcherDataContext = createContext<ResearcherDataContextValue | null>(null);
 
 export function ResearcherDataProvider({ children }: { children: ReactNode }) {
+  const { profile } = useUserProfile();
+  const cohort = useMemo(
+    () => ({
+      ...researcherCohortData,
+      organisationName: getPersonalizedLabel(profile, researcherCohortData.organisationName),
+    }),
+    [profile]
+  );
+
   return (
     <ResearcherDataContext.Provider
       value={{
-        cohort: researcherCohortData,
+        cohort,
         evaluation: getEvaluationSummaryMetrics(),
       }}
     >

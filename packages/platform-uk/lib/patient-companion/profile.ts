@@ -13,6 +13,8 @@ export type PatientCompanionProfile = {
   nurseReviewer: string;
 };
 
+type PreferenceRecord = Record<string, unknown> | undefined;
+
 function formatAppointmentDate(isoDate: string) {
   const date = new Date(`${isoDate}T12:00:00`);
   return new Intl.DateTimeFormat("en-GB", {
@@ -32,6 +34,58 @@ function getTimeGreeting() {
 function readIdentityString(identity: IdentityData | undefined, key: string) {
   const value = identity?.[key];
   return typeof value === "string" ? value.trim() : "";
+}
+
+function readPreferenceConditions(preferences: PreferenceRecord) {
+  const raw = preferences?.conditions;
+  if (!Array.isArray(raw)) return null;
+
+  const parsed = raw
+    .map((item) => {
+      if (typeof item === "string" && item.trim()) {
+        return { title: item.trim(), status: "Monitor", summary: "Tracked in your care plan." };
+      }
+      if (item && typeof item === "object") {
+        const record = item as Record<string, unknown>;
+        const title = typeof record.title === "string" ? record.title.trim() : "";
+        if (!title) return null;
+        return {
+          title,
+          status: typeof record.status === "string" ? record.status : "Monitor",
+          summary: typeof record.summary === "string" ? record.summary : "Tracked in your care plan.",
+        };
+      }
+      return null;
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+  return parsed.length > 0 ? parsed : null;
+}
+
+function readPreferenceMedications(preferences: PreferenceRecord) {
+  const raw = preferences?.medications;
+  if (!Array.isArray(raw)) return null;
+
+  const parsed = raw
+    .map((item) => {
+      if (typeof item === "string" && item.trim()) {
+        return { label: item.trim(), schedule: "as prescribed", purpose: "As directed by your care team" };
+      }
+      if (item && typeof item === "object") {
+        const record = item as Record<string, unknown>;
+        const label = typeof record.label === "string" ? record.label.trim() : "";
+        if (!label) return null;
+        return {
+          label,
+          schedule: typeof record.schedule === "string" ? record.schedule : "as prescribed",
+          purpose: typeof record.purpose === "string" ? record.purpose : "As directed by your care team",
+        };
+      }
+      return null;
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+  return parsed.length > 0 ? parsed : null;
 }
 
 export function getPatientFirstName(
@@ -77,7 +131,8 @@ export function getPatientGreeting(
 export function getPatientCompanionProfile(
   session: Session | null,
   identity?: IdentityData,
-  profileFullName?: string | null
+  profileFullName?: string | null,
+  preferences?: PreferenceRecord
 ): PatientCompanionProfile {
   const firstName = getPatientFirstName(session, identity, profileFullName);
   const sessionName = session?.user?.name?.trim();
@@ -89,12 +144,12 @@ export function getPatientCompanionProfile(
       ? `${onboardingFirst} ${onboardingLast}`
       : profileName ?? sessionName ?? firstName;
 
-  const medications = [
+  const defaultMedications = [
     { label: "Metformin 500mg", schedule: "twice daily", purpose: "For diabetes" },
     { label: "Aspirin 75mg", schedule: "once daily", purpose: "For heart health" },
   ];
 
-  const conditions = [
+  const defaultConditions = [
     {
       title: "Type 2 Diabetes",
       status: "Monitor",
@@ -103,8 +158,15 @@ export function getPatientCompanionProfile(
     },
   ];
 
+  const medications = readPreferenceMedications(preferences) ?? defaultMedications;
+  const conditions = readPreferenceConditions(preferences) ?? defaultConditions;
+
   const appointmentDate = "2026-07-24";
   const appointmentTime = "09:30";
+  const practiceName =
+    typeof preferences?.practiceName === "string" && preferences.practiceName.trim()
+      ? preferences.practiceName.trim()
+      : "Riverside Medical Centre";
 
   return {
     firstName,
@@ -116,7 +178,7 @@ export function getPatientCompanionProfile(
       { role: "Nurse", name: "Nurse Davies" },
       { role: "Pharmacist", name: "Pharmacist Lee" },
     ],
-    upcomingAppointment: `${formatAppointmentDate(appointmentDate)}, ${appointmentTime} | GP review (Riverside Medical Centre)`,
+    upcomingAppointment: `${formatAppointmentDate(appointmentDate)}, ${appointmentTime} | GP review (${practiceName})`,
     pastAppointmentSummary:
       "Your last GP appointment summary: Dr Morgan reviewed your diabetes medications and suspected a blood clot in your leg. You were referred for a scan.",
     nurseReviewer: "Nurse Davies",

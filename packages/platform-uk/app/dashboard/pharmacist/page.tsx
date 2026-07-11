@@ -5,7 +5,9 @@ import { ClipboardList, Pill, Shield } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { patients } from "@/lib/mock-data";
+import { getPharmacyLabel } from "@/lib/profile/personalization";
 
 const PHARMACIST_ACCENT = "text-[#6B46C1]";
 
@@ -34,12 +36,15 @@ const sections = [
 ];
 
 export default function PharmacistOverviewPage() {
+  const { profile } = useUserProfile();
+  const pharmacyLabel = getPharmacyLabel(profile);
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className={`text-lg font-semibold ${PHARMACIST_ACCENT}`}>Pharmacist workspace</h2>
         <p className="text-sm text-muted mt-1">
-          Medication safety, interaction checks, and BNF reference | all with human-in-the-loop approval.
+          Medication safety for {pharmacyLabel} | interaction checks and BNF reference with human-in-the-loop approval.
         </p>
       </div>
 

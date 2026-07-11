@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatAccessRequestReferenceId } from "@/lib/access-requests/reference-id";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { matchesOrgEmail } from "@/lib/profile/personalization";
 
 type OrganisationEnquiryRow = {
   id: string;
@@ -58,7 +60,15 @@ function formatDate(value: string) {
   });
 }
 
-function EnquiriesTable({ enquiries, limit }: { enquiries: OrganisationEnquiryRow[]; limit?: number }) {
+function EnquiriesTable({
+  enquiries,
+  limit,
+  highlightOrg,
+}: {
+  enquiries: OrganisationEnquiryRow[];
+  limit?: number;
+  highlightOrg?: string | null;
+}) {
   const rows = limit ? enquiries.slice(0, limit) : enquiries;
 
   return (
@@ -74,8 +84,14 @@ function EnquiriesTable({ enquiries, limit }: { enquiries: OrganisationEnquiryRo
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((enquiry) => (
-          <TableRow key={enquiry.id}>
+        {rows.map((enquiry) => {
+          const isHighlighted =
+            Boolean(highlightOrg) &&
+            (enquiry.orgName.toLowerCase().includes(highlightOrg!.toLowerCase()) ||
+              matchesOrgEmail(enquiry.contactEmail, highlightOrg));
+
+          return (
+            <TableRow key={enquiry.id} className={isHighlighted ? "bg-primary/5" : undefined}>
             <TableCell className="font-mono text-xs">
               {enquiry.referenceLabel ?? formatAccessRequestReferenceId(enquiry.id)}
             </TableCell>
@@ -91,13 +107,24 @@ function EnquiriesTable({ enquiries, limit }: { enquiries: OrganisationEnquiryRo
             <TableCell className="capitalize">{enquiry.status}</TableCell>
             <TableCell>{formatDate(enquiry.createdAt)}</TableCell>
           </TableRow>
-        ))}
+          );
+        })}
       </TableBody>
     </Table>
   );
 }
 
-export function OrganisationEnquiriesPanel({ compact = false, limit }: { compact?: boolean; limit?: number }) {
+export function OrganisationEnquiriesPanel({
+  compact = false,
+  limit,
+  highlightOrg,
+}: {
+  compact?: boolean;
+  limit?: number;
+  highlightOrg?: string | null;
+}) {
+  const { profile } = useUserProfile();
+  const resolvedHighlightOrg = highlightOrg ?? profile?.organisation ?? null;
   const [enquiries, setEnquiries] = useState<OrganisationEnquiryRow[]>([]);
   const [usingMock, setUsingMock] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -156,6 +183,17 @@ export function OrganisationEnquiriesPanel({ compact = false, limit }: { compact
     };
   }, []);
 
+  const sortedEnquiries = [...enquiries].sort((a, b) => {
+    if (!resolvedHighlightOrg) return 0;
+    const aMatch =
+      a.orgName.toLowerCase().includes(resolvedHighlightOrg.toLowerCase()) ||
+      matchesOrgEmail(a.contactEmail, resolvedHighlightOrg);
+    const bMatch =
+      b.orgName.toLowerCase().includes(resolvedHighlightOrg.toLowerCase()) ||
+      matchesOrgEmail(b.contactEmail, resolvedHighlightOrg);
+    return Number(bMatch) - Number(aMatch);
+  });
+
   const content = loading ? (
     <p className="text-sm text-muted">Loading recent enquiries…</p>
   ) : empty ? (
@@ -163,7 +201,11 @@ export function OrganisationEnquiriesPanel({ compact = false, limit }: { compact
   ) : error && !usingMock && enquiries.length === 0 ? (
     <p className="text-sm text-red-600">{error}</p>
   ) : (
-    <EnquiriesTable enquiries={enquiries} limit={compact ? (limit ?? 3) : limit} />
+    <EnquiriesTable
+      enquiries={sortedEnquiries}
+      limit={compact ? (limit ?? 3) : limit}
+      highlightOrg={resolvedHighlightOrg}
+    />
   );
 
   if (compact) {
@@ -171,6 +213,9 @@ export function OrganisationEnquiriesPanel({ compact = false, limit }: { compact
       <div className="px-4 pb-4">
         {usingMock ? (
           <p className="mb-2 text-xs text-amber-700">Showing sample data (mock fallback enabled).</p>
+        ) : null}
+        {resolvedHighlightOrg ? (
+          <p className="mb-2 text-xs text-primary">Matching enquiries for {resolvedHighlightOrg} are highlighted.</p>
         ) : null}
         {content}
       </div>

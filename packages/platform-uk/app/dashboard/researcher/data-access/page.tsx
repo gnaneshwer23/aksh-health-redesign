@@ -15,7 +15,7 @@ export default function ResearcherDataAccessPage() {
       <div>
         <h2 className="text-lg font-semibold text-foreground">Data Access</h2>
         <p className="text-sm text-muted">
-          Your approved data access level and ethics governance for this research tenancy.
+          Your approved data access level and ethics governance for {cohort.organisationName}.
         </p>
       </div>
 
@@ -34,6 +34,9 @@ export default function ResearcherDataAccessPage() {
                 <span className="text-xs text-muted">Default for new researcher accounts</span>
               )}
             </div>
+            <p className="text-sm text-muted">
+              Institution: <span className="font-medium text-foreground">{cohort.organisationName}</span>
+            </p>
             <p className="text-sm text-muted">
               {isAggregate
                 ? "You can view cohort-level metrics, study summaries, and offline evaluation signals. Individual patient identifiers are not available."

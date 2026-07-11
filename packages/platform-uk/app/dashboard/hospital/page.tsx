@@ -26,7 +26,11 @@ const sections = [
   },
 ];
 
-export default function HospitalOverviewPage() {
+export default function HospitalOverviewPage({
+  hospitalName = hospitalData.hospitalName,
+}: {
+  hospitalName?: string;
+}) {
   const bedPct = calcBedOccupancyPct(hospitalData);
 
   return (
@@ -34,7 +38,7 @@ export default function HospitalOverviewPage() {
       <div>
         <h2 className="text-lg font-semibold text-primary">Command Centre Overview</h2>
         <p className="text-sm text-muted mt-1">
-          {hospitalData.hospitalName}: real-time operational intelligence across {hospitalData.wards.length} wards
+          {hospitalName}: real-time operational intelligence across {hospitalData.wards.length} wards
         </p>
       </div>
 
@@ -54,7 +58,7 @@ export default function HospitalOverviewPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-warning">{bedPct}%</p>
-            <p className="text-xs text-muted">Across all wards</p>
+            <p className="text-xs text-muted">Across all wards at {hospitalName}</p>
           </CardContent>
         </Card>
         <Card className="shadow-sm">

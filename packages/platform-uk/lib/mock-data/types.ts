@@ -47,6 +47,7 @@ export interface Patient {
   flags: string[];
   appointmentTime?: string;
   supervisingGp?: string;
+  organisation?: string;
   room?: string;
   lastObsTime?: string;
   equityFlag?: boolean;
@@ -96,6 +97,7 @@ export interface CarePathway {
   currentPatients: string[];
   steps: CarePathwayStep[];
   automationLevel: PathwayAutomation;
+  organisation?: string;
 }
 
 export interface AuditEvent {

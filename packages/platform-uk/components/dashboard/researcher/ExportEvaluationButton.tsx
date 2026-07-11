@@ -5,9 +5,13 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { toOrgSlug } from "@/lib/profile/personalization";
 
 export function ExportEvaluationButton() {
   const [exporting, setExporting] = useState(false);
+  const { profile } = useUserProfile();
+  const orgSlug = toOrgSlug(profile?.organisation);
 
   async function handleExport() {
     setExporting(true);
@@ -20,7 +24,7 @@ export function ExportEvaluationButton() {
       const blob = await response.blob();
       const disposition = response.headers.get("content-disposition") ?? "";
       const filenameMatch = disposition.match(/filename="([^"]+)"/);
-      const filename = filenameMatch?.[1] ?? "aksh-uk-eu-research-evaluation-boundary.json";
+      const filename = filenameMatch?.[1] ?? `${orgSlug}-research-evaluation-boundary.json`;
 
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");

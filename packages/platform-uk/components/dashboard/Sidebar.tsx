@@ -21,6 +21,8 @@ import {
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PRACTICE_NAME } from "@/lib/mock-data";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { getPersonalizedLabel } from "@/lib/profile/personalization";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
@@ -126,11 +128,14 @@ function isNavItemActive(pathname: string, searchParams: URLSearchParams, href: 
   return true;
 }
 
-export function Sidebar({ role, userName = "Dr Morgan" }: { role: DashboardRole; userName?: string }) {
+export function Sidebar({ role }: { role: DashboardRole }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
+  const { profile, loading } = useUserProfile();
   const items = NAV[role] ?? [];
+  const userName = profile?.fullName?.trim() || "Aksh user";
+  const organisationLabel = getPersonalizedLabel(profile, PRACTICE_NAME);
 
   if (role === "patient") return null;
 
@@ -151,20 +156,35 @@ export function Sidebar({ role, userName = "Dr Morgan" }: { role: DashboardRole;
             {!collapsed && (
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-primary">Aksh Health</p>
-                <p className="truncate text-[11px] text-muted">{PRACTICE_NAME}</p>
+                <p className="truncate text-[11px] text-muted">
+                  {loading ? (
+                    <span className="inline-block h-3 w-28 animate-pulse rounded bg-muted/30" />
+                  ) : (
+                    organisationLabel
+                  )}
+                </p>
               </div>
             )}
           </div>
           {!collapsed && (
             <div className="mt-4 flex items-center gap-2 rounded-xl bg-surface-muted px-3 py-2">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                {userName.split(" ").pop()?.[0] ?? "U"}
+                {loading ? "…" : (userName.split(" ").pop()?.[0] ?? "U")}
               </span>
               <div className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-medium text-foreground">{userName}</span>
+                <span className="block truncate text-xs font-medium text-foreground">
+                  {loading ? (
+                    <span className="inline-block h-3 w-20 animate-pulse rounded bg-muted/30" />
+                  ) : (
+                    userName
+                  )}
+                </span>
                 <span className={cn("mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold text-white", ROLE_COLORS[role])}>
                   {ROLE_LABELS[role]}
                 </span>
+                {!loading && profile?.organisation ? (
+                  <span className="mt-1 block truncate text-[10px] text-muted">{profile.organisation}</span>
+                ) : null}
               </div>
             </div>
           )}

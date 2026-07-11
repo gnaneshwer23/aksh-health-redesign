@@ -10,11 +10,16 @@ import type { HospitalData } from "@/lib/mock-data/types";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
-export function CapacityPanel({ data }: { data: HospitalData }) {
+export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hospitalName?: string }) {
   const { acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalRec } = useDashboardStore();
+  const label = hospitalName ?? data.hospitalName;
 
   return (
     <div className="p-4 space-y-4">
+      <div>
+        <h2 className="text-sm font-semibold">Capacity & Forecast</h2>
+        <p className="text-xs text-muted">{label}</p>
+      </div>
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-sm">Capacity Forecast</CardTitle>

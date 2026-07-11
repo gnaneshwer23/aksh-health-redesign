@@ -8,14 +8,18 @@ import type { HospitalData } from "@/lib/mock-data/types";
 import { wardStaffing } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
-export function StaffingPanel({ data }: { data: HospitalData }) {
+export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hospitalName?: string }) {
   const { dismissedAgencyAlerts, dismissAgencyAlert } = useDashboardStore();
+  const label = hospitalName ?? data.hospitalName;
 
   const visibleTriggers = data.agencyTriggers.filter((t) => !dismissedAgencyAlerts.includes(t.ward));
 
   return (
     <div className="p-4 space-y-4">
-      <h2 className="text-sm font-semibold">Staffing & Alerts</h2>
+      <div>
+        <h2 className="text-sm font-semibold">Staffing & Alerts</h2>
+        <p className="text-xs text-muted">{label}</p>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>

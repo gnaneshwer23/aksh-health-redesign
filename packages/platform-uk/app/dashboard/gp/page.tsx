@@ -23,7 +23,7 @@ import {
   searchPatients,
   todaysAppointments,
 } from "@/lib/mock-data";
-import { filterGpPatients } from "@/lib/profile/personalization";
+import { buildEmptyStateMessage, filterGpPatientsForProfile } from "@/lib/profile/personalization";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function HeaderSkeleton() {
@@ -44,8 +44,8 @@ export default function GpDashboardPage() {
   const [mobilePatientsOpen, setMobilePatientsOpen] = useState(true);
 
   const scopedAppointments = useMemo(
-    () => filterGpPatients(todaysAppointments, profile?.fullName),
-    [profile?.fullName]
+    () => filterGpPatientsForProfile(todaysAppointments, profile),
+    [profile]
   );
   const patient = getPatientById(selectedPatientId ?? scopedAppointments[0]?.id ?? "P002");
   const { data: oracleData, loading: oracleLoading, source: oracleSource } = useNeo4jPatient(selectedPatientId ?? patient?.id);
@@ -53,8 +53,8 @@ export default function GpDashboardPage() {
 
   const searchResults = useMemo(() => {
     const results = searchQuery ? searchPatients(searchQuery) : [];
-    return results.length > 0 ? filterGpPatients(results, profile?.fullName) : [];
-  }, [searchQuery, profile?.fullName]);
+    return results.length > 0 ? filterGpPatientsForProfile(results, profile) : [];
+  }, [searchQuery, profile]);
   const displayPatients = searchResults.length > 0 ? searchResults : scopedAppointments;
   const pathways = patient ? getPathwaysForPatient(patient.id) : [];
   const guardianCount = reviewQueueItems.filter((r) => r.agentType === "GUARDIAN" && (r.status === "Pending" || r.status === "Edited")).length;
@@ -87,18 +87,24 @@ export default function GpDashboardPage() {
           </button>
           {mobilePatientsOpen ? (
             <div className="space-y-3 border-t border-border-subtle p-3">
-              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none">
-                {displayPatients.map((p) => (
-                  <div key={p.id} className="w-56 shrink-0">
-                    <PatientCard
-                      patient={p}
-                      selected={selectedPatientId === p.id}
-                      onClick={() => setSelectedPatient(p.id)}
-                      showTime
-                    />
-                  </div>
-                ))}
-              </div>
+              {displayPatients.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-border-subtle p-4 text-center text-xs text-muted">
+                  {buildEmptyStateMessage(profile, "patients", "No patients scheduled for today.")}
+                </p>
+              ) : (
+                <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none">
+                  {displayPatients.map((p) => (
+                    <div key={p.id} className="w-56 shrink-0">
+                      <PatientCard
+                        patient={p}
+                        selected={selectedPatientId === p.id}
+                        onClick={() => setSelectedPatient(p.id)}
+                        showTime
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <Input
                 className="rounded-xl border-border-subtle bg-surface-muted shadow-none"
                 placeholder="Search by name or NHS number"
@@ -159,7 +165,7 @@ export default function GpDashboardPage() {
             </header>
           )}
 
-          <ReviewQueue patientId={selectedPatientId} />
+          <ReviewQueue patientId={selectedPatientId} queueLabel={profile?.fullName ? `${profile.fullName}'s queue` : undefined} />
 
           <section>
             <button type="button" className="flex items-center gap-2 text-sm font-semibold" onClick={() => setShowWritten(!showWritten)}>

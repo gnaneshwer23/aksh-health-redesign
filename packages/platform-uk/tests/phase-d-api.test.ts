@@ -4,9 +4,13 @@ import { GET as getNeo4jHealth } from "../app/api/neo4j/health/route";
 import { GET as getProfile } from "../app/api/profile/route";
 import { checkNeo4jHealth, isNeo4jConfigured } from "../lib/neo4j";
 import {
+  buildEmptyStateMessage,
   buildProfileGreeting,
   filterGpPatients,
+  filterGpPatientsForProfile,
+  getPersonalizedLabel,
   resolveOrganisationName,
+  toOrgSlug,
 } from "../lib/profile/personalization";
 
 function buildAuthedRequest(pathname: string, extraHeaders: Record<string, string> = {}) {
@@ -61,6 +65,39 @@ async function run() {
   const filtered = filterGpPatients(patients, "Dr. Morgan (GP)");
   assert.equal(filtered.length, 1);
   assert.equal(filtered[0]?.id, "P001");
+
+  const profileScoped = filterGpPatientsForProfile(
+    [
+      { id: "P001", supervisingGp: "Dr Morgan", organisation: "Riverside Medical Centre" },
+      { id: "P002", supervisingGp: "Dr Williams", organisation: "Oakwood Health Practice" },
+    ],
+    {
+      userId: "test",
+      email: null,
+      fullName: "Dr. Morgan (GP)",
+      role: "gp",
+      organisation: "Riverside Medical Centre",
+      practiceOds: null,
+      preferences: {},
+      onboardingComplete: true,
+      identity: {},
+      organisationDetails: {},
+      source: "session",
+    }
+  );
+  assert.equal(profileScoped.length, 1);
+  assert.equal(profileScoped[0]?.id, "P001");
+
+  assert.equal(getPersonalizedLabel(null, "Fallback Org"), "Fallback Org");
+  assert.equal(toOrgSlug("North Thames Clinical Informatics Unit"), "north-thames-clinical-informatics-unit");
+  assert.match(
+    buildEmptyStateMessage(
+      { organisation: "Riverside Medical Centre" } as Parameters<typeof buildEmptyStateMessage>[0],
+      "patients",
+      "No patients"
+    ),
+    /Riverside Medical Centre/
+  );
 
   const unauth = await getProfile(new Request("http://localhost:3000/api/profile"));
   assert.equal(unauth.status, 401);

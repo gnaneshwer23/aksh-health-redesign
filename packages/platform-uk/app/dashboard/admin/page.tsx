@@ -18,6 +18,7 @@ import { countAwaitingApproval } from "@/lib/mock-data";
 export default function AdminDashboardPage() {
   const guardianCount = getUrgentGuardianAlertCount();
   const { profile } = useUserProfile();
+  const orgLabel = profile?.organisation ?? "your organisation";
 
   return (
     <DashboardShell
@@ -27,6 +28,11 @@ export default function AdminDashboardPage() {
     >
       <div className="space-y-6 overflow-y-auto p-4">
         <ConsentBanner />
+
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Organisation overview</h2>
+          <p className="text-sm text-muted">Dashboard stats for {orgLabel}</p>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <MetricCard label="Total Users" value="12" sparkline={[10, 11, 11, 12, 12, 12, 12]} />
@@ -65,7 +71,7 @@ export default function AdminDashboardPage() {
               </Button>
             </CardHeader>
             <CardContent className="p-0 pt-0">
-              <OrganisationEnquiriesPanel compact />
+              <OrganisationEnquiriesPanel compact highlightOrg={profile?.organisation} />
             </CardContent>
           </Card>
         </div>

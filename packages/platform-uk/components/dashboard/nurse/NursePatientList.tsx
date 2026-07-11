@@ -3,11 +3,14 @@
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { PatientCard } from "@/components/dashboard/PatientCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { patients } from "@/lib/mock-data";
+import { buildEmptyStateMessage } from "@/lib/profile/personalization";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 export function NursePatientList() {
   const { nurseFilter, setNurseFilter, selectedPatientId, setSelectedPatient } = useDashboardStore();
+  const { profile } = useUserProfile();
 
   const filtered = patients.filter((p) => {
     if (nurseFilter === "alerts") return p.flags.includes("GUARDIAN") || p.flags.includes("URGENT");
@@ -36,14 +39,20 @@ export function NursePatientList() {
         </TabsList>
       </Tabs>
       <div className="mt-3 space-y-1">
-        {filtered.map((p) => (
-          <PatientCard
-            key={p.id}
-            patient={p}
-            selected={(selectedPatientId ?? "P001") === p.id}
-            onClick={() => setSelectedPatient(p.id)}
-          />
-        ))}
+        {filtered.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border-subtle p-4 text-center text-xs text-muted">
+            {buildEmptyStateMessage(profile, "patients in this filter", "No patients match this filter.")}
+          </p>
+        ) : (
+          filtered.map((p) => (
+            <PatientCard
+              key={p.id}
+              patient={p}
+              selected={(selectedPatientId ?? "P001") === p.id}
+              onClick={() => setSelectedPatient(p.id)}
+            />
+          ))
+        )}
       </div>
     </aside>
   );

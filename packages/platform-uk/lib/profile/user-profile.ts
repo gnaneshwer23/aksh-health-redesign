@@ -17,7 +17,24 @@ export type UserProfile = {
   source: "database" | "session";
 };
 
-export { buildProfileGreeting, filterGpPatients, getTimeGreeting, resolveOrganisationName } from "./personalization";
+export {
+  buildEmptyStateMessage,
+  buildProfileGreeting,
+  buildReviewQueueLabel,
+  filterByOrg,
+  filterGpPatients,
+  filterGpPatientsForProfile,
+  getFirstName,
+  getPersonalizedLabel,
+  getPharmacyLabel,
+  getSupervisingGpHint,
+  getTimeGreeting,
+  getWardLabel,
+  matchesOrgEmail,
+  readPreferenceString,
+  resolveOrganisationName,
+  toOrgSlug,
+} from "./personalization";
 
 export async function buildUserProfile(input: {
   userId: string;
@@ -54,10 +71,7 @@ export async function buildUserProfile(input: {
       organisation:
         resolveOrganisationName(role, profile, identity, organisationDetails) ?? input.organisation ?? null,
       practiceOds: profile?.practiceOds ?? readStringRecord(organisationDetails, "odsCode") ?? null,
-      preferences: {
-        ...(profile?.preferences ?? {}),
-        ...(onboarding?.preferences ?? {}),
-      },
+      preferences: mergeProfilePreferences(profile?.preferences, onboarding?.preferences, organisationDetails),
       onboardingComplete: profile?.onboardingComplete ?? input.onboardingComplete ?? false,
       identity,
       organisationDetails,
@@ -87,4 +101,27 @@ function readStringRecord(record: Record<string, unknown> | undefined, ...keys: 
     if (typeof value === "string" && value.trim()) return value.trim();
   }
   return null;
+}
+
+function mergeProfilePreferences(
+  profilePreferences: Record<string, unknown> | undefined,
+  onboardingPreferences: Record<string, unknown> | undefined,
+  organisationDetails: OrganisationData
+): Record<string, unknown> {
+  const merged: Record<string, unknown> = {
+    ...(profilePreferences ?? {}),
+    ...(onboardingPreferences ?? {}),
+  };
+
+  const supervisingGp = readStringRecord(organisationDetails as Record<string, unknown>, "supervisingGp");
+  const wardTeam = readStringRecord(organisationDetails as Record<string, unknown>, "wardTeam");
+  const pcnAffiliation = readStringRecord(organisationDetails as Record<string, unknown>, "pcnAffiliation");
+  const pharmacyName = readStringRecord(organisationDetails as Record<string, unknown>, "pharmacyName");
+
+  if (supervisingGp && merged.supervisingGp === undefined) merged.supervisingGp = supervisingGp;
+  if (wardTeam && merged.wardTeam === undefined) merged.wardTeam = wardTeam;
+  if (pcnAffiliation && merged.pcnAffiliation === undefined) merged.pcnAffiliation = pcnAffiliation;
+  if (pharmacyName && merged.pharmacyName === undefined) merged.pharmacyName = pharmacyName;
+
+  return merged;
 }

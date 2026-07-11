@@ -7,18 +7,21 @@ import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { getPatientById } from "@/lib/mock-data";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { buildReviewQueueLabel } from "@/lib/profile/personalization";
 
 function GpReviewQueueContent() {
   const searchParams = useSearchParams();
+  const { profile } = useUserProfile();
   const patientId = searchParams.get("patient");
   const patient = patientId ? getPatientById(patientId) : null;
-  const title = patient ? `Review Queue | ${patient.name}` : "AI Review Queue";
+  const title = patient ? `Review Queue | ${patient.name}` : buildReviewQueueLabel(profile?.fullName);
 
   return (
-    <DashboardShell role="gp" title={title}>
+    <DashboardShell role="gp" title={title} organisation={profile?.organisation}>
       <div className="space-y-4 overflow-y-auto p-4">
         <ConsentBanner />
-        <ReviewQueue patientId={patientId} showAll={!patientId} />
+        <ReviewQueue patientId={patientId} showAll={!patientId} queueLabel={buildReviewQueueLabel(profile?.fullName)} />
       </div>
     </DashboardShell>
   );

@@ -7,6 +7,7 @@ export const carePathways: CarePathway[] = [
     triggerCondition: "HbA1c above target or new T2D diagnosis",
     currentPatients: ["P002", "P007"],
     automationLevel: "SupervisedAutomation",
+    organisation: "Riverside Medical Centre",
     steps: [
       {
         stepNumber: 1,
@@ -86,6 +87,7 @@ export const carePathways: CarePathway[] = [
     triggerCondition: "Hospital discharge with HF diagnosis",
     currentPatients: ["P001", "P003"],
     automationLevel: "SupervisedAutomation",
+    organisation: "Riverside Medical Centre",
     steps: [
       {
         stepNumber: 1,
@@ -155,6 +157,7 @@ export const carePathways: CarePathway[] = [
     triggerCondition: "COPD diagnosis with rising rescue inhaler use",
     currentPatients: ["P003"],
     automationLevel: "SupervisedAutomation",
+    organisation: "Riverside Medical Centre",
     steps: [
       {
         stepNumber: 1,
@@ -214,6 +217,7 @@ export const carePathways: CarePathway[] = [
     triggerCondition: "eFI score ≥0.25 or age ≥80 with multimorbidity",
     currentPatients: ["P008"],
     automationLevel: "Manual",
+    organisation: "Oakwood Health Practice",
     steps: [
       {
         stepNumber: 1,

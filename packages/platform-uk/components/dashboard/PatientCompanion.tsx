@@ -50,8 +50,14 @@ export function PatientCompanion() {
   const identity = useOnboardingStore((state) => state.identity);
   const profileIdentity = userProfile?.identity ?? identity;
   const companionProfile = useMemo(
-    () => getPatientCompanionProfile(session, profileIdentity, userProfile?.fullName),
-    [session, profileIdentity, userProfile?.fullName]
+    () =>
+      getPatientCompanionProfile(
+        session,
+        profileIdentity,
+        userProfile?.fullName,
+        userProfile?.preferences
+      ),
+    [session, profileIdentity, userProfile?.fullName, userProfile?.preferences]
   );
   const firstName = getPatientFirstName(session, profileIdentity, userProfile?.fullName);
   const greeting = getPatientGreeting(session, profileIdentity, userProfile?.fullName);
