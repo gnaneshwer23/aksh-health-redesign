@@ -12,6 +12,7 @@ export type UserProfile = {
   practiceOds: string | null;
   preferences: Record<string, unknown>;
   onboardingComplete: boolean;
+  emailVerified: boolean;
   identity: IdentityData;
   organisationDetails: OrganisationData;
   source: "database" | "session";
@@ -46,12 +47,14 @@ export async function buildUserProfile(input: {
 }): Promise<UserProfile> {
   let profile = null;
   let onboarding = null;
+  let emailVerified = true;
 
   try {
-    const { findProfileByUserId } = await import("@/lib/auth/user-repository");
+    const { findProfileByUserId, findUserEmailVerification } = await import("@/lib/auth/user-repository");
     const { getOnboardingProgress } = await import("@/lib/onboarding/onboarding-progress-repository");
     profile = await findProfileByUserId(input.userId);
     onboarding = await getOnboardingProgress(input.userId);
+    emailVerified = await findUserEmailVerification(input.userId);
   } catch {
     profile = null;
     onboarding = null;
@@ -73,6 +76,7 @@ export async function buildUserProfile(input: {
       practiceOds: profile?.practiceOds ?? readStringRecord(organisationDetails, "odsCode") ?? null,
       preferences: mergeProfilePreferences(profile?.preferences, onboarding?.preferences, organisationDetails),
       onboardingComplete: profile?.onboardingComplete ?? input.onboardingComplete ?? false,
+      emailVerified,
       identity,
       organisationDetails,
       source: "database",
@@ -88,6 +92,7 @@ export async function buildUserProfile(input: {
     practiceOds: null,
     preferences: {},
     onboardingComplete: input.onboardingComplete ?? false,
+    emailVerified: true,
     identity: {},
     organisationDetails: {},
     source: "session",

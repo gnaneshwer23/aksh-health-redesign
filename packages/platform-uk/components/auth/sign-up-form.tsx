@@ -106,7 +106,12 @@ function SignUpFormInner() {
               <FormItem>
                 <FormLabel>Full name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Dr Jane Smith" className="rounded-xl" />
+                  <Input
+                    {...field}
+                    aria-label="Full name"
+                    placeholder="Dr Jane Smith"
+                    className="rounded-xl"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -120,7 +125,14 @@ function SignUpFormInner() {
               <FormItem>
                 <FormLabel>Email address</FormLabel>
                 <FormControl>
-                  <Input {...field} type="email" autoComplete="email" placeholder="you@nhs.net" className="rounded-xl" />
+                  <Input
+                    {...field}
+                    aria-label="Email address"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@nhs.net"
+                    className="rounded-xl"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,7 +169,13 @@ function SignUpFormInner() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" autoComplete="new-password" className="rounded-xl" />
+                  <Input
+                    {...field}
+                    aria-label="Password"
+                    type="password"
+                    autoComplete="new-password"
+                    className="rounded-xl"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -171,7 +189,13 @@ function SignUpFormInner() {
               <FormItem>
                 <FormLabel>Confirm password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" autoComplete="new-password" className="rounded-xl" />
+                  <Input
+                    {...field}
+                    aria-label="Confirm password"
+                    type="password"
+                    autoComplete="new-password"
+                    className="rounded-xl"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

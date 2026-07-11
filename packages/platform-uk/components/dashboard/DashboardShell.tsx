@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
+import { EmailVerificationBanner } from "@/components/dashboard/EmailVerificationBanner";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Toaster } from "@/components/ui/toaster";
@@ -50,6 +51,7 @@ export function DashboardShell({
 
   return (
     <div className={cn("dashboard-root dashboard-surface flex h-screen flex-col overflow-hidden")}>
+      <EmailVerificationBanner />
       <TopBar
         role={role}
         title={displayTitle}

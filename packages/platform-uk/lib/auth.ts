@@ -32,6 +32,7 @@ const oauthProviders = isClinicalOAuthConfigured()
             name: String(profile.name ?? "Clinical OAuth User"),
             role: "gp" as const,
             onboardingComplete: false,
+            isEmailVerified: true,
           };
         },
       },
@@ -57,6 +58,7 @@ async function resolveCredentialsUser(email: string, password: string) {
     name: dbUser.name,
     role: dbUser.role,
     onboardingComplete: dbUser.onboardingComplete,
+    isEmailVerified: dbUser.emailVerified,
   };
 }
 
@@ -111,6 +113,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           onboardingComplete: user.onboardingComplete,
+          isEmailVerified: user.isEmailVerified ?? false,
         };
       },
     }),
@@ -128,6 +131,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.role = user.role;
         token.onboardingComplete = user.onboardingComplete ?? false;
+        token.isEmailVerified = user.isEmailVerified ?? false;
 
         const enriched = await enrichTokenFromProfile(user.id, user.role, user.name);
         token.name = enriched.name ?? user.name;
@@ -147,6 +151,9 @@ export const authOptions: NextAuthOptions = {
         if (session.organisation) {
           token.organisation = session.organisation;
         }
+        if (typeof session.isEmailVerified === "boolean") {
+          token.isEmailVerified = session.isEmailVerified;
+        }
       }
 
       return token;
@@ -158,6 +165,7 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string;
         session.user.role = token.role as UserRole;
         session.user.onboardingComplete = Boolean(token.onboardingComplete);
+        session.user.isEmailVerified = Boolean(token.isEmailVerified);
         session.user.name = (token.name as string | null | undefined) ?? session.user.name;
         session.user.organisation = (token.organisation as string | null | undefined) ?? null;
       }

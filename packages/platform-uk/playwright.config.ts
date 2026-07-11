@@ -38,6 +38,7 @@ export default defineConfig({
       DATABASE_URL: process.env.DATABASE_URL ?? "",
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ?? "local-e2e-nextauth-secret",
       NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? baseURL,
+      SKIP_EMAIL_SEND: "true",
     },
   },
 });

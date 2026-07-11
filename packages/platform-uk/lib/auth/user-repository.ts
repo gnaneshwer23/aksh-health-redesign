@@ -24,6 +24,7 @@ export type AuthUserRecord = {
   name: string | null;
   role: UserRole;
   onboardingComplete: boolean;
+  emailVerified: boolean;
 };
 
 function createUserId() {
@@ -50,6 +51,18 @@ function mapProfileRow(row: {
     practiceOds: row.practice_ods,
     preferences: row.preferences ?? {},
   };
+}
+
+export async function findUserEmailVerification(userId: string): Promise<boolean> {
+  if (!isPostgresConfigured()) return true;
+
+  const pool = getPgPool();
+  const result = await pool.query<{ email_verified_at: Date | null }>(
+    `SELECT email_verified_at FROM aksh.users WHERE id = $1 LIMIT 1`,
+    [userId]
+  );
+
+  return Boolean(result.rows[0]?.email_verified_at);
 }
 
 export async function findUserByEmail(email: string): Promise<DbUser | null> {
@@ -101,6 +114,7 @@ export async function findAuthUserByEmail(email: string): Promise<AuthUserRecord
   if (!user) return null;
 
   const profile = await findProfileByUserId(user.id);
+  const emailVerified = await findUserEmailVerification(user.id);
 
   return {
     id: user.id,
@@ -108,6 +122,7 @@ export async function findAuthUserByEmail(email: string): Promise<AuthUserRecord
     name: profile?.fullName ?? null,
     role: profile?.role ?? "gp",
     onboardingComplete: profile?.onboardingComplete ?? false,
+    emailVerified,
   };
 }
 
@@ -153,6 +168,7 @@ export async function createUserWithProfile(input: {
     name: fullName,
     role: input.role,
     onboardingComplete: false,
+    emailVerified: false,
   };
 }
 
@@ -207,7 +223,11 @@ export async function ensureAuthSchema() {
 
   const { readFile } = await import("node:fs/promises");
   const path = await import("node:path");
-  const migrationPath = path.join(process.cwd(), "db/migrations/002_users_profiles.sql");
-  const sql = await readFile(migrationPath, "utf8");
-  await getPgPool().query(sql);
+  const migrations = ["002_users_profiles.sql", "005_password_reset.sql", "006_email_verification.sql"];
+
+  for (const file of migrations) {
+    const migrationPath = path.join(process.cwd(), "db/migrations", file);
+    const sql = await readFile(migrationPath, "utf8");
+    await getPgPool().query(sql);
+  }
 }

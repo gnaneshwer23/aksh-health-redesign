@@ -80,6 +80,7 @@ async function run() {
       practiceOds: null,
       preferences: {},
       onboardingComplete: true,
+      emailVerified: true,
       identity: {},
       organisationDetails: {},
       source: "session",

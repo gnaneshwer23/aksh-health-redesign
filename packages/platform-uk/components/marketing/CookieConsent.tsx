@@ -59,11 +59,20 @@ export function CookieConsent() {
             for details.
           </p>
         </div>
-        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-          <Button type="button" variant="outline" className="rounded-xl" onClick={() => accept("essential")}>
+        <div className="flex shrink-0 flex-col gap-2 sm:flex-row" role="group" aria-label="Cookie consent actions">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2"
+            onClick={() => accept("essential")}
+          >
             Essential only
           </Button>
-          <Button type="button" className="rounded-xl bg-accent hover:bg-accent/90" onClick={() => accept("all")}>
+          <Button
+            type="button"
+            className="rounded-xl bg-accent hover:bg-accent/90 focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2"
+            onClick={() => accept("all")}
+          >
             Accept all
           </Button>
         </div>

@@ -27,6 +27,7 @@ jobs:
       NEXTAUTH_URL: http://127.0.0.1:3000
       DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
       E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+      SKIP_EMAIL_SEND: "true"
 
     steps:
       - name: Checkout

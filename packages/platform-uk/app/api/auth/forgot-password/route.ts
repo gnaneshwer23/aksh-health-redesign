@@ -5,13 +5,18 @@ import {
   createPasswordResetToken,
 } from "@/lib/auth/password-reset-repository";
 import { forgotPasswordSchema } from "@/lib/auth/password-reset-schemas";
+import { enforceForgotPasswordRateLimit } from "@/lib/auth/rate-limit-guards";
 import { findUserByEmail } from "@/lib/auth/user-repository";
 import { sendEmail } from "@/lib/email/send";
+import { reportError } from "@/lib/monitoring";
 
 const GENERIC_MESSAGE =
   "If an account exists for that email address, we have sent password reset instructions.";
 
 export async function POST(request: Request) {
+  const rateLimited = enforceForgotPasswordRateLimit(request);
+  if (rateLimited) return rateLimited;
+
   const body = await request.json().catch(() => ({}));
   const parsed = forgotPasswordSchema.safeParse(body);
 
@@ -55,6 +60,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
   } catch (error) {
+    reportError(error, { route: "/api/auth/forgot-password" });
     const message = error instanceof Error ? error.message : "Failed to process password reset request";
     return NextResponse.json({ error: message }, { status: 500 });
   }

@@ -129,6 +129,7 @@ function SignInFormInner() {
                   <Input
                     {...field}
                     data-testid="signin-email"
+                    aria-label="Email address"
                     type="email"
                     autoComplete="email"
                     placeholder="you@nhs.net"
@@ -155,6 +156,7 @@ function SignInFormInner() {
                   <Input
                     {...field}
                     data-testid="signin-password"
+                    aria-label="Password"
                     type="password"
                     autoComplete="current-password"
                     placeholder="Enter your password"

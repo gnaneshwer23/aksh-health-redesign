@@ -4757,9 +4757,19 @@ input:focus, textarea:focus {
 }
 
 /* Preserve explicit link/button colors — avoids white-on-white CTAs on navy heroes */
-.marketing-site a:not([class*="text-"]):not([class*="bg-"]) {
+/* Preserve explicit link/button colors — avoids white-on-white CTAs on navy heroes */
+.marketing-site a:not([class*="text-"]):not([class*="bg-"]):not(.navbar-brand) {
   color: inherit;
 }
+
+.marketing-site a.navbar-brand {
+  color: #ffffff;
+}
+
+.marketing-site a.navbar-brand--light {
+  color: #003d7a;
+}
+
 
 .marketing-site a[class*="bg-"]:not([class*="text-"]) {
   color: #003d7a;

@@ -54,6 +54,9 @@ type NavbarProps = {
   overDarkHero?: boolean;
 };
 
+const focusRing =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
+
 export default function Navbar({ overDarkHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -61,6 +64,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -74,11 +78,14 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
     }
   }, [mobileOpen]);
 
+  const onDarkHero = overDarkHero && !scrolled;
+
   const linkClass = cn(
-    "text-sm font-medium transition-colors",
+    "text-sm font-medium transition-colors rounded-lg",
+    focusRing,
     scrolled
       ? "text-steel hover:text-navy"
-      : overDarkHero
+      : onDarkHero
         ? "text-white/90 hover:text-white"
         : "text-steel hover:text-navy"
   );
@@ -91,20 +98,39 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex min-w-0 shrink items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-navy shadow-sm">
+        <Link
+          href="/"
+          className={cn(
+            "navbar-brand flex min-w-0 shrink items-center gap-2.5 rounded-xl",
+            focusRing,
+            onDarkHero ? "navbar-brand !text-white" : "navbar-brand navbar-brand--light text-navy"
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
+              onDarkHero ? "border border-white/30 bg-white/15" : "bg-navy"
+            )}
+          >
             <span className="text-sm font-bold text-white">A</span>
           </div>
           <div className="flex min-w-0 flex-col leading-tight">
             <span
               className={cn(
                 "truncate text-base font-bold leading-none transition-colors",
-                scrolled ? "text-navy" : overDarkHero ? "text-white" : "text-navy"
+                onDarkHero ? "!text-white" : "text-navy"
               )}
             >
               Aksh Health
             </span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald">Healthcare OS</span>
+            <span
+              className={cn(
+                "text-[10px] font-semibold uppercase tracking-wide",
+                onDarkHero ? "text-emerald-light" : "text-emerald"
+              )}
+            >
+              Healthcare OS
+            </span>
           </div>
         </Link>
 
@@ -122,7 +148,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           >
             <button
               type="button"
-              className={cn("inline-flex items-center gap-1", linkClass)}
+              className={cn("inline-flex items-center gap-1 rounded-lg", linkClass)}
               aria-expanded={solutionsOpen}
               aria-haspopup="true"
             >
@@ -142,7 +168,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
                         <Link
                           key={label}
                           href={href}
-                          className="block px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5"
+                          className={cn(
+                            "block px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5 rounded-lg",
+                            focusRing
+                          )}
                         >
                           {label}
                         </Link>
@@ -160,9 +189,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             href="/signin"
             className={cn(
               "rounded-xl border px-4 py-2 text-sm font-medium transition-all",
+              focusRing,
               scrolled
                 ? "border-navy/20 text-navy hover:border-navy hover:bg-navy hover:text-white"
-                : overDarkHero
+                : onDarkHero
                   ? "border-white/50 text-white hover:border-white hover:bg-white/10"
                   : "border-navy/20 text-navy hover:border-navy hover:bg-navy/5"
             )}
@@ -171,7 +201,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           </Link>
           <Link
             href="/signup"
-            className="rounded-xl bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90"
+            className={cn(
+              "rounded-xl bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90",
+              focusRing
+            )}
           >
             Get Started
           </Link>
@@ -181,9 +214,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
           type="button"
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
+            focusRing,
             scrolled
               ? "border-navy/20 text-navy hover:bg-navy/5"
-              : overDarkHero
+              : onDarkHero
                 ? "border-white/40 text-white hover:bg-white/10"
                 : "border-navy/20 text-navy hover:bg-navy/5"
           )}
@@ -212,7 +246,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               <SheetClose key={label} asChild>
                 <Link
                   href={href}
-                  className="rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5"
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                    focusRing
+                  )}
                 >
                   {label}
                 </Link>
@@ -224,7 +261,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               <SheetClose key={label} asChild>
                 <Link
                   href={href}
-                  className="rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5"
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
+                    focusRing
+                  )}
                 >
                   {label}
                 </Link>
@@ -236,7 +276,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             <SheetClose asChild>
               <Link
                 href="/signin"
-                className="rounded-xl border border-navy/20 px-4 py-3 text-center text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
+                className={cn(
+                  "rounded-xl border border-navy/20 px-4 py-3 text-center text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white",
+                  focusRing
+                )}
               >
                 Sign In
               </Link>
@@ -244,7 +287,10 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
             <SheetClose asChild>
               <Link
                 href="/signup"
-                className="rounded-xl bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90"
+                className={cn(
+                  "rounded-xl bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90",
+                  focusRing
+                )}
               >
                 Get Started
               </Link>

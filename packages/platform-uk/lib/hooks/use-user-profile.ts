@@ -24,6 +24,7 @@ function sessionFallbackProfile(session: ReturnType<typeof useSession>["data"]):
     practiceOds: null,
     preferences: {},
     onboardingComplete: session.user.onboardingComplete,
+    emailVerified: session.user.isEmailVerified ?? true,
     identity: {},
     organisationDetails: {},
     source: "session",
