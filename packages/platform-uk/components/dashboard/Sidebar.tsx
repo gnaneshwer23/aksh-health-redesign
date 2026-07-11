@@ -63,11 +63,10 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   ics: [
     { href: "/dashboard/ics", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/ics?panel=population", label: "Population Health", icon: Users },
-    { href: "/dashboard/ics?panel=equity", label: "Equity Metrics", icon: BarChart3 },
-    { href: "/dashboard/ics?panel=benchmarking", label: "Benchmarking", icon: Activity },
-    { href: "/dashboard/ics?panel=digital-twin", label: "Digital Twin", icon: Heart },
-    { href: "/dashboard/ics?panel=reports", label: "Reports", icon: ClipboardList },
+    { href: "/dashboard/ics/population", label: "Population Health", icon: Users },
+    { href: "/dashboard/ics/equity", label: "Equity Metrics", icon: BarChart3 },
+    { href: "/dashboard/ics/benchmarking", label: "Benchmarking", icon: Activity },
+    { href: "/dashboard/ics/forecast", label: "Digital Twin", icon: Heart },
     { href: "/dashboard/ics?section=settings", label: "Settings", icon: Settings },
   ],
   hospital: [

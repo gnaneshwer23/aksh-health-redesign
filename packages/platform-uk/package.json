@@ -22,6 +22,7 @@
     "smoke:pharmacist": "node scripts/smoke-pharmacist-dashboard.mjs",
     "smoke:admin": "node scripts/smoke-admin-dashboard.mjs",
     "smoke:patient": "node scripts/smoke-patient-dashboard.mjs",
+    "smoke:ics": "node scripts/smoke-ics-dashboard.mjs",
     "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",
     "start": "next start",
     "lint": "npm run typecheck",

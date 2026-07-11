@@ -208,9 +208,14 @@ export function PlatformAdministratorsPanel() {
             <p className="mt-2 text-sm text-steel">
               Integration health, tenant configuration, and SHIELD audit views for practice administrators.
             </p>
-            <Link href="/signup?role=admin" className="mt-4 inline-block text-sm font-semibold text-navy hover:underline">
-              Sign up as Admin →
-            </Link>
+            <div className="mt-4 flex flex-col gap-2">
+              <Link href="/signup?role=admin" className="text-sm font-semibold text-navy hover:underline">
+                Sign up as Admin →
+              </Link>
+              <Link href="/signup?role=ics-lead" className="text-sm font-semibold text-warning hover:underline">
+                Sign up as ICS Lead →
+              </Link>
+            </div>
           </article>
           <article className="rounded-2xl border border-border p-6">
             <h3 className="text-lg font-bold text-navy">EMIS → Mirth → FHIR → HITL (planned)</h3>
@@ -244,9 +249,15 @@ export function PlatformHospitalsPanel() {
             </article>
           ))}
         </div>
-        <div className="mt-10">
+        <div className="mt-10 flex flex-wrap gap-4">
           <Link href="/pilot/apply" className="rounded-xl bg-navy px-6 py-3 font-bold text-white hover:bg-navy/90">
             Book Executive Briefing
+          </Link>
+          <Link
+            href="/signup?role=ics-lead"
+            className="rounded-xl border border-warning bg-warning/5 px-6 py-3 font-bold text-warning hover:bg-warning/10"
+          >
+            ICS Lead dashboard — population intelligence
           </Link>
         </div>
       </div>
