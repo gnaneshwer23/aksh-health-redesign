@@ -7,12 +7,12 @@ export const reviewQueueItems: ReviewQueueItem[] = [
     patientName: "Mr James Patel",
     patientNhsNumber: "482 193 7654",
     agentType: "SYNTHESIS",
-    title: "SOAP note — T2D + DVT consultation",
+    title: "SOAP note | T2D + DVT consultation",
     content: `S: Mr Patel, 54, presents for follow-up of newly diagnosed right popliteal DVT and poorly controlled T2D. Reports mild calf discomfort, no chest pain or breathlessness. Adherent to Metformin. Concerned about starting anticoagulation alongside aspirin.
 
 O: BP 138/86, HR 78 regular. Right calf mildly tender, no erythema. HbA1c 68 mmol/mol (last done 12 months ago). Weight stable. No signs of heart failure.
 
-A: 1) Deep vein thrombosis right popliteal vein — newly diagnosed, requires anticoagulation. 2) Type 2 diabetes mellitus with hyperglycaemia — suboptimal control, review overdue. 3) Drug interaction risk: aspirin + proposed apixaban.
+A: 1) Deep vein thrombosis right popliteal vein: newly diagnosed, requires anticoagulation. 2) Type 2 diabetes mellitus with hyperglycaemia | suboptimal control, review overdue. 3) Drug interaction risk: aspirin + proposed apixaban.
 
 P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review. Repeat HbA1c and renal function. 2-week follow-up. Patient education on DVT warning signs. Consider diabetes nurse referral.`,
     confidenceScore: 91,
@@ -34,9 +34,9 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     patientName: "Mr James Patel",
     patientNhsNumber: "482 193 7654",
     agentType: "DrASSIST",
-    title: "Clinical coding — DVT + T2D poor control",
+    title: "Clinical coding | DVT + T2D poor control",
     content:
-      "Proposed clinical codes: [1] I82.4 — Deep vein thrombosis of right popliteal vein (94% confidence) [2] E11.65 — Type 2 diabetes mellitus with hyperglycaemia (97% confidence)",
+      "Proposed clinical codes: [1] I82.4: Deep vein thrombosis of right popliteal vein (94% confidence) [2] E11.65: Type 2 diabetes mellitus with hyperglycaemia (97% confidence)",
     confidenceScore: 94,
     evidenceSources: [
       { resourceType: "Condition", resourceId: "cond-dvt-p002", summary: "Ultrasound-confirmed DVT" },
@@ -55,7 +55,7 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     patientName: "Mr James Patel",
     patientNhsNumber: "482 193 7654",
     agentType: "GUARDIAN",
-    title: "Drug interaction — Aspirin + Apixaban",
+    title: "Drug interaction | Aspirin + Apixaban",
     content:
       "🔴 HIGH RISK: Aspirin 75mg (current) and Apixaban 10mg (proposed) share additive bleeding risk. BNF section 2.9. Recommend: review Aspirin indication before co-prescribing anticoagulant. If co-prescribing necessary, consider gastroprotection.",
     confidenceScore: null,
@@ -96,12 +96,12 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     patientName: "Mrs Sarah Johnson",
     patientNhsNumber: "943 476 5820",
     agentType: "VOICE",
-    title: "Voice Care Agent — Day 3 post-discharge SOAP",
-    content: `Voice Care Agent call — Day 3 post-discharge. SOAP:
+    title: "Voice Care Agent | Day 3 post-discharge SOAP",
+    content: `Voice Care Agent call: Day 3 post-discharge. SOAP:
 S: Patient reports increased breathlessness over last 24h. Ankle swelling worsening bilaterally. Weight gain 2.3kg since discharge (now 78.2kg).
-O: [Phone assessment — no vitals available]
+O: [Phone assessment: no vitals available]
 A: High risk of heart failure decompensation / readmission.
-P: URGENT — escalate to on-call nurse for same-day review. Continue Furosemide 40mg. Reduce fluid intake to <1.5L/day.`,
+P: URGENT | escalate to on-call nurse for same-day review. Continue Furosemide 40mg. Reduce fluid intake to <1.5L/day.`,
     confidenceScore: 88,
     evidenceSources: [
       { resourceType: "Communication", resourceId: "voice-p001-20260710", summary: "Voice Care Agent call transcript" },
@@ -121,11 +121,11 @@ P: URGENT — escalate to on-call nurse for same-day review. Continue Furosemide
     patientNhsNumber: "673 204 8912",
     agentType: "DrASSIST",
     title: "Hypertension + CKD coding update",
-    content: "Proposed: I10 — Essential hypertension (99%), N18.3 — CKD Stage 3 (98%)",
+    content: "Proposed: I10: Essential hypertension (99%), N18.3: CKD Stage 3 (98%)",
     confidenceScore: 98,
     evidenceSources: [
       { resourceType: "Condition", resourceId: "cond-htn-p004", summary: "Persistent hypertension" },
-      { resourceType: "Observation", resourceId: "obs-egfr-p004", summary: "eGFR 52 — CKD Stage 3" },
+      { resourceType: "Observation", resourceId: "obs-egfr-p004", summary: "eGFR 52: CKD Stage 3" },
     ],
     createdAt: "2026-07-08T11:05:00Z",
     priority: "Normal",
@@ -140,9 +140,9 @@ P: URGENT — escalate to on-call nurse for same-day review. Continue Furosemide
     patientName: "Mr Thomas Green",
     patientNhsNumber: "947 123 5680",
     agentType: "GUARDIAN",
-    title: "Polypharmacy alert — 9 medications, 3 interactions",
+    title: "Polypharmacy alert | 9 medications, 3 interactions",
     content:
-      "🔴 Polypharmacy alert: 9 active medications. Identified interactions: [1] Warfarin + Ibuprofen (PRN) — HIGH: bleeding risk. [2] ACE inhibitor + Potassium supplement — MEDIUM: hyperkalaemia risk. [3] Amitriptyline + Tramadol — MEDIUM: serotonin syndrome risk. Recommend comprehensive medication review.",
+      "🔴 Polypharmacy alert: 9 active medications. Identified interactions: [1] Warfarin + Ibuprofen (PRN): HIGH: bleeding risk. [2] ACE inhibitor + Potassium supplement: MEDIUM: hyperkalaemia risk. [3] Amitriptyline + Tramadol: MEDIUM: serotonin syndrome risk. Recommend comprehensive medication review.",
     confidenceScore: null,
     evidenceSources: [
       { resourceType: "MedicationStatement", resourceId: "med-list-p008", summary: "9 active medications" },
@@ -160,14 +160,14 @@ P: URGENT — escalate to on-call nurse for same-day review. Continue Furosemide
     patientName: "Mrs Margaret Williams",
     patientNhsNumber: "291 847 3056",
     agentType: "SYNTHESIS",
-    title: "Multimorbidity summary — COPD + HF + Frailty",
+    title: "Multimorbidity summary | COPD + HF + Frailty",
     content: `S: Mrs Williams, 78, frail, with COPD, heart failure and progressive breathlessness. Carer reports increased fatigue and reduced mobility. Using salbutamol more frequently. Some confusion about medication timing.
 
 O: Last SpO2 92% (home reading). Weight up 1.8kg. Using 3-4 salbutamol doses daily (baseline 1-2). No fever. Mild peripheral oedema.
 
-A: 1) COPD — possible exacerbation / decompensation. 2) Heart failure — fluid overload likely contributing. 3) Frailty — medication non-adherence and functional decline. 4) High 14-day admission risk (73%).
+A: 1) COPD: possible exacerbation / decompensation. 2) Heart failure: fluid overload likely contributing. 3) Frailty: medication non-adherence and functional decline. 4) High 14-day admission risk (73%).
 
-P: Urgent community nurse review. Reinforce Furosemide adherence. Consider oral steroids if COPD exacerbation confirmed. MDT frailty review. Carer support assessment. Safety netting — when to call 999.`,
+P: Urgent community nurse review. Reinforce Furosemide adherence. Consider oral steroids if COPD exacerbation confirmed. MDT frailty review. Carer support assessment. Safety netting | when to call 999.`,
     confidenceScore: 87,
     evidenceSources: [
       { resourceType: "Encounter", resourceId: "enc-p003-20260703", summary: "Last GP review" },
@@ -192,7 +192,7 @@ P: Urgent community nurse review. Reinforce Furosemide adherence. Consider oral 
     confidenceScore: 79,
     evidenceSources: [
       { resourceType: "DiagnosticReport", resourceId: "psa-p006", summary: "Latest PSA 18.4 ng/mL" },
-      { resourceType: "ImagingStudy", resourceId: "ct-p006", summary: "CT pelvis — progressive disease" },
+      { resourceType: "ImagingStudy", resourceId: "ct-p006", summary: "CT pelvis: progressive disease" },
     ],
     createdAt: "2026-07-05T12:20:00Z",
     priority: "Urgent",

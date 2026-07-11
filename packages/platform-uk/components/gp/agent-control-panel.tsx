@@ -24,7 +24,7 @@ export function GpAgentControlPanel({
       <div className="gp-panel__header">
         <p className="gp-panel__eyebrow">Column C · Agent control</p>
         <h2>Clinical AI agents</h2>
-        <p className="meta">Synthetic proof mode — mapped to existing workflow modules, not LangGraph.</p>
+        <p className="meta">Synthetic proof mode: mapped to existing workflow modules, not LangGraph.</p>
       </div>
 
       <div className="gp-agent-grid">

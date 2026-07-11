@@ -43,7 +43,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
     label: "GP",
-    description: "General Practitioner — AI-assisted clinical documentation",
+    description: "General Practitioner. AI-assisted clinical documentation",
     icon: "stethoscope",
     color: "#003D7A",
     steps: [
@@ -131,7 +131,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "hospital-executive",
     label: "Hospital Executive",
-    description: "CEO, COO, CMO — command centre and capacity",
+    description: "CEO, COO, or CMO. Command centre and capacity planning",
     icon: "chart-bar",
     color: "#001A3D",
     steps: [

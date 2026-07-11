@@ -25,7 +25,7 @@ export function CommandHeader({
     <div className="bg-primary text-white px-4 py-3 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold">Hospital Command Centre — {displayName}</h1>
+          <h1 className="text-lg font-semibold">Hospital Command Centre: {displayName}</h1>
           <p className="text-xs opacity-80">{time.toLocaleString("en-GB")}</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">

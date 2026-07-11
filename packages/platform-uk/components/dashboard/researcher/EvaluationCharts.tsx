@@ -84,7 +84,7 @@ export function EvaluationCharts() {
             </ResponsiveContainer>
           </div>
           <p className="mt-3 text-xs text-muted">
-            Offline rehearsal metrics from synthetic review cases only — not production clinical AI claims.
+            Offline rehearsal metrics from synthetic review cases only. Not production clinical AI claims.
           </p>
         </CardContent>
       </Card>

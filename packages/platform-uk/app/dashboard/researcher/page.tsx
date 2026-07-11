@@ -24,7 +24,7 @@ const QUICK_LINKS = [
   {
     href: "/dashboard/researcher/settings",
     title: "Settings",
-    description: "Notification preferences and export governance — Phase B stub.",
+    description: "Notification preferences and export governance (Phase B stub).",
     icon: Settings,
   },
 ] as const;
@@ -74,7 +74,7 @@ export default function ResearcherOverviewPage() {
         </CardHeader>
         <CardContent className="text-sm text-muted">
           All cohort metrics in this dashboard use pseudonymised synthetic patients. Benchmark drilldowns and
-          sign-off workflows are available in the research evaluation module — not via legacy review routes.
+          sign-off workflows are available in the research evaluation module, not via legacy review routes.
         </CardContent>
       </Card>
     </div>

@@ -167,7 +167,7 @@ export function UserDashboards({ clinical, operations, evidence }: UserDashboard
           badge="Command Centre"
           badgeTone="command"
           title="Cross-functional control"
-          description="Start every session here. See the full picture — urgency, pending work, evidence health — and decide where to act first."
+          description="Start every session here. See the full picture: urgency, pending work, evidence health | and decide where to act first."
           href="/review/command-centre"
           cta="Open command centre"
           secondaryLinks={[{ label: "Session summary", href: "/review/summary" }]}

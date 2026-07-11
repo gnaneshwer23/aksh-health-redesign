@@ -133,7 +133,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       const event = createAuditEvent({
         user: reviewerName,
         agent: rejected?.agentType ?? "SYNTHESIS",
-        action: `Rejected — ${reason}`,
+        action: `Rejected | ${reason}`,
         resource: `${id} / ${rejected?.patientName ?? "unknown"}`,
       });
       return { reviewQueueItems: items, auditEvents: [event, ...s.auditEvents] };
@@ -150,7 +150,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       const event = createAuditEvent({
         user: reviewerName,
         agent: items.find((i) => i.id === id)?.agentType ?? "SYNTHESIS",
-        action: "Edited AI output — pending re-acceptance",
+        action: "Edited AI output | pending re-acceptance",
         resource: id,
       });
       return { reviewQueueItems: items, auditEvents: [event, ...s.auditEvents] };
@@ -165,14 +165,14 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set((s) => ({
       adminUsers: [
         ...s.adminUsers,
-        { ...user, id: `U${Date.now()}`, lastActive: "—" },
+        { ...user, id: `U${Date.now()}`, lastActive: "Not set" },
       ],
     }));
     get().addAuditEvent({
       user: "Admin Singh",
       agent: "Admin",
       action: "Invited user",
-      resource: `${user.email} — ${user.role}`,
+      resource: `${user.email} | ${user.role}`,
     });
   },
 

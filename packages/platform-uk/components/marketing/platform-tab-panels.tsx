@@ -3,7 +3,7 @@ import Link from "next/link";
 const clinicianFeatures = [
   {
     title: "Clinical Copilot",
-    body: "Pre-consultation briefing, in-consultation decision support, and post-consultation task management — all in your existing workflow.",
+    body: "Pre-consultation briefing, in-consultation decision support, and post-consultation task management, all within your existing workflow.",
   },
   {
     title: "SYNTHESIS Documentation",
@@ -19,7 +19,7 @@ const clinicianFeatures = [
   },
   {
     title: "Referral Agent",
-    body: "Automated referral package creation with urgency prediction — ServiceRequest FHIR resources ready for your approval.",
+    body: "Automated referral package creation with urgency prediction. ServiceRequest FHIR resources are ready for your approval.",
   },
   {
     title: "One Review Queue",
@@ -30,7 +30,7 @@ const clinicianFeatures = [
 const hospitalSections = [
   {
     title: "Hospital Command Centre",
-    body: "Real-time ED waiting times, bed occupancy, staff shortage alerts, and AI recommendations — a single operational view for your trust.",
+    body: "Real-time ED waiting times, bed occupancy, staff shortage alerts, and AI recommendations in a single operational view for your trust.",
   },
   {
     title: "Capacity Prediction",
@@ -144,8 +144,8 @@ export function PlatformCliniciansPanel() {
         <div className="mb-10 max-w-2xl">
           <h2 className="text-2xl font-bold text-navy">Spend Time With Patients. Not Paperwork.</h2>
           <p className="mt-3 text-steel">
-            Aksh Health gives GPs and nurses an AI clinical copilot that connects to EMIS Web and SystmOne —
-            documenting consultations, checking safety, and coordinating care while you stay in control.
+            Aksh Health gives GPs and nurses a clinical copilot connected to EMIS Web and SystmOne. It drafts notes,
+            checks safety, and coordinates care. You approve every output before it reaches the record.
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -176,13 +176,13 @@ export function PlatformCliniciansPanel() {
             href="/signup?role=nurse"
             className="rounded-xl border border-emerald bg-emerald-light px-6 py-3 font-bold text-emerald hover:bg-emerald/10"
           >
-            Nurse dashboard — vitals & handover
+            Nurse dashboard: vitals and handover
           </Link>
           <Link
             href="/signup?role=pharmacist"
             className="rounded-xl border border-[#6B46C1] bg-[#6B46C1]/5 px-6 py-3 font-bold text-[#6B46C1] hover:bg-[#6B46C1]/10"
           >
-            Pharmacist dashboard — med review & interactions
+            Pharmacist dashboard: med review and interactions
           </Link>
         </div>
       </div>
@@ -197,7 +197,7 @@ export function PlatformAdministratorsPanel() {
         <div className="mb-10 max-w-2xl">
           <h2 className="text-2xl font-bold text-navy">Multi-tenancy, integration health, and SHIELD.</h2>
           <p className="mt-3 text-steel">
-            Practice-level tenancy, EMIS/Mirth integration status, and SHIELD compliance evidence — scaffolded for
+            Practice-level tenancy, EMIS/Mirth integration status, and SHIELD compliance evidence are scaffolded for
             Phase B. No live DSPT evidence export in this build.
           </p>
         </div>
@@ -216,7 +216,7 @@ export function PlatformAdministratorsPanel() {
                 Sign up as ICS Lead →
               </Link>
               <Link href="/signup?role=researcher" className="text-sm font-semibold text-[#E67E22] hover:underline">
-                Sign up as Researcher — cohort metrics & evaluation export →
+                Sign up as Researcher: cohort metrics and evaluation export →
               </Link>
             </div>
           </article>
@@ -240,7 +240,7 @@ export function PlatformHospitalsPanel() {
         <div className="mb-10 max-w-2xl">
           <h2 className="text-2xl font-bold text-navy">Command Your Hospital. Not Just Your Dashboard.</h2>
           <p className="mt-3 text-steel">
-            For hospital CEOs, COOs, medical directors, and CIOs — Aksh Health provides real-time operational
+            For hospital CEOs, COOs, medical directors, and CIOs, Aksh Health provides real-time operational
             intelligence across Epic, Oracle Health, and NHS Spine-connected systems.
           </p>
         </div>
@@ -260,13 +260,13 @@ export function PlatformHospitalsPanel() {
             href="/signup?role=hospital-executive"
             className="rounded-xl border border-primary bg-primary/5 px-6 py-3 font-bold text-primary hover:bg-primary/10"
           >
-            Hospital Command Centre — sign up
+            Hospital Command Centre sign up
           </Link>
           <Link
             href="/signup?role=ics-lead"
             className="rounded-xl border border-warning bg-warning/5 px-6 py-3 font-bold text-warning hover:bg-warning/10"
           >
-            ICS Lead dashboard — population intelligence
+            ICS Lead dashboard: population intelligence
           </Link>
         </div>
       </div>
@@ -281,8 +281,8 @@ export function PlatformPatientsPanel() {
         <div className="mb-10 max-w-2xl">
           <h2 className="text-2xl font-bold text-navy">Your Health. Understood. Supported. Always.</h2>
           <p className="mt-3 text-steel">
-            For patients invited to Aksh Health by their GP practice — a Health Companion that keeps you connected to
-            your care team between appointments.
+            For patients invited by their GP practice. The Health Companion keeps you connected to your care team between
+            appointments.
           </p>
         </div>
 
@@ -301,8 +301,8 @@ export function PlatformPatientsPanel() {
         <div className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 p-6">
           <h3 className="font-bold text-navy">Voice Care</h3>
           <p className="mt-2 text-sm text-steel">
-            Your care team never stops looking after you — even between appointments. If your health changes, someone
-            will call.
+            Your care team stays in touch between appointments. If your health changes, someone from the practice will
+            call.
           </p>
         </div>
 

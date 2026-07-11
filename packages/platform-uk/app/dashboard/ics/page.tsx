@@ -25,7 +25,7 @@ const SECTIONS = [
   {
     href: "/dashboard/ics/benchmarking",
     title: "Practice Benchmarking",
-    description: "Sortable practice scorecard — AI adoption, queue clearance, and overall score.",
+    description: "Sortable practice scorecard: AI adoption,, queue clearance, and overall score.",
     icon: Activity,
     accent: "border-l-primary",
   },

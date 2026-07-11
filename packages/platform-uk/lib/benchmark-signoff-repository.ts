@@ -78,7 +78,7 @@ async function ensureDataFile(scopeKey = "shared", userId = "anonymous") {
       return;
     }
   } catch {
-    // Missing store file — initialize below.
+    // Missing store file | initialize below.
   }
 
   await writeFile(dataFile, JSON.stringify(buildDefaultState(userId), null, 2), "utf8");

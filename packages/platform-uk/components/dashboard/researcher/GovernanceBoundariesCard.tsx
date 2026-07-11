@@ -17,7 +17,7 @@ export function GovernanceBoundariesCard() {
       </CardHeader>
       <CardContent className="space-y-3 text-sm text-muted">
         <p>
-          Your default access is <strong className="text-foreground">aggregate-only</strong> — pseudonymised cohort
+          Your default access is <strong className="text-foreground">aggregate-only</strong>. Pseudonymised cohort
           metrics, study-level summaries, and offline evaluation signals. No identifiable patient records are included
           in routine exports.
         </p>

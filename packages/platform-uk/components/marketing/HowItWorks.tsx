@@ -5,14 +5,14 @@ export default function HowItWorks() {
       color: "bg-sky-500",
       title: "CONNECT",
       sub: "One platform. Every system.",
-      body: "Aksh Health connects to your existing EHR via FHIR R4 and HL7 v2. EMIS Web, SystmOne, Epic — no migration project. No rip and replace. The daily extraction job runs at midnight and everything is ready for your morning clinic.",
+      body: "Aksh Health connects to your existing EHR via FHIR R4 and HL7 v2: EMIS Web, SystmOne, and Epic. No migration project and no rip-and-replace. The nightly extraction job runs at midnight so data is ready for morning clinic.",
     },
     {
       num: "02",
       color: "bg-emerald",
       title: "UNDERSTAND",
       sub: "A knowledge graph that reasons.",
-      body: "Every patient record becomes a connected intelligence model in Neo4j — conditions linked to risks, medications linked to interactions, history linked to predictions. 12 AI agents run in parallel to generate insights.",
+      body: "Each patient record becomes a connected model in Neo4j: conditions linked to risks, medications to interactions, history to predictions. Twelve specialist agents run in parallel to surface insights.",
     },
     {
       num: "03",
@@ -26,7 +26,7 @@ export default function HowItWorks() {
       color: "bg-purple-600",
       title: "LEARN",
       sub: "Every outcome improves the system.",
-      body: "Approved decisions feed back into the knowledge graph. Rejected AI outputs trigger model refinement. The platform gets smarter with every consultation — across every practice in your ICS.",
+      body: "Approved decisions feed back into the knowledge graph. Rejected outputs inform model refinement. The platform improves with every consultation across practices in your ICS.",
     },
   ];
 

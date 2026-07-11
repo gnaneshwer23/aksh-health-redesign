@@ -12,21 +12,21 @@ const DEMO_STEPS = [
     id: "midnight-etl",
     title: "Midnight ETL status",
     route: "/dashboard/admin",
-    narrative: "Last night while patients slept — synthetic extraction SUCCESS in 6m 39s.",
+    narrative: "Last night while patients slept: synthetic extraction SUCCESS in 6m 39s.",
     demoSection: "§5.1"
   },
   {
     id: "gp-dashboard",
-    title: "Clinician dashboard — Mr Patel",
+    title: "Clinician dashboard | Mr Patel",
     route: "/dashboard/gp",
-    narrative: "Appointment list sorted by ORACLE risk — Mr James Patel (78 HIGH) at top.",
+    narrative: "Appointment list sorted by ORACLE risk: Mr James Patel (78 HIGH) at top.",
     demoSection: "§5.2–5.3"
   },
   {
     id: "voice-consult",
     title: "VOICE consultation",
     route: "/dashboard/gp?highlight=voice",
-    narrative: "Click mic — calf swelling, sugars 12–14, polydipsia transcribed to SYNTHESIS path.",
+    narrative: "Click mic: calf swelling, sugars 12–14, polydipsia transcribed to SYNTHESIS path.",
     demoSection: "§5.4"
   },
   {
@@ -40,28 +40,28 @@ const DEMO_STEPS = [
     id: "referral",
     title: "REFERRAL AGENT package",
     route: "/dashboard/gp?highlight=referral",
-    narrative: "After SOAP + codes Accept — urgent DVT duplex + D-dimer ServiceRequest draft.",
+    narrative: "After SOAP + codes Accept: urgent DVT duplex + D-dimer ServiceRequest draft.",
     demoSection: "§5.8"
   },
   {
     id: "pharmacist",
     title: "Pharmacist view",
     route: "/dashboard/pharmacist",
-    narrative: "GUARDIAN medication queue — aspirin + apixaban interaction review.",
+    narrative: "GUARDIAN medication queue: aspirin + apixaban interaction review.",
     demoSection: "Layer 1"
   },
   {
     id: "admin-audit",
     title: "Admin SHIELD audit",
     route: `/cases/${GOLDEN_SCENARIO_PATEL_DEMO_ID}/evidence`,
-    narrative: "AuditEvent manifest — agents activated, zero auto-writes.",
+    narrative: "AuditEvent manifest: agents activated, zero auto-writes.",
     demoSection: "§5.9"
   },
   {
     id: "voice-care",
     title: "Voice Care Day 3",
     route: "/demo/voice-care-day3",
-    narrative: "Outbound call — worsening calf pain + SOB → ORACLE 91 → nurse escalation.",
+    narrative: "Outbound call | worsening calf pain + SOB → ORACLE 91 → nurse escalation.",
     demoSection: "§5.10"
   },
   {
@@ -98,7 +98,7 @@ export function OverviewDemoLauncher() {
         <h1>Mr James Patel walkthrough</h1>
         <p>
           Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, Voice Care Day-3,
-          and regional EQUITY view. Proof-mode only — no production claims.
+          and regional EQUITY view. Proof-mode only | no production claims.
         </p>
         <div className="pill-row">
           <span className="pill">Step {stepIndex + 1} / {DEMO_STEPS.length}</span>

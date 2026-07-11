@@ -83,7 +83,7 @@ export function TopBar({
           {headerTitle && (
             <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
               {isPatientView ? headerTitle : `· ${headerTitle}`}
-              {!isPatientView && resolvedOrganisation ? ` — ${resolvedOrganisation}` : ""}
+              {!isPatientView && resolvedOrganisation ? `, ${resolvedOrganisation}` : ""}
             </span>
           )}
         </div>

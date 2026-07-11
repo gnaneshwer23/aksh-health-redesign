@@ -35,13 +35,13 @@ export default function VoiceAgentSection() {
 
         <div className="mx-auto max-w-2xl space-y-4 rounded-2xl border border-white/10 bg-white/5 p-8">
           <div className="mb-6 text-xs font-bold uppercase tracking-wider text-white/50">
-            Example Conversation — Day 3 Post-Discharge
+            Example conversation: day 3 post-discharge
           </div>
           {[
             { who: "AI", msg: "Hello Mrs Johnson, I'm calling to check your recovery after your heart failure admission. How are you feeling today?" },
             { who: "Patient", msg: "I've been more breathless and my ankles are swollen again..." },
             { who: "AI", msg: "Thank you for telling me. I'm flagging this to your care team immediately. A nurse will call you within the hour." },
-            { who: "System", msg: "🔴 URGENT — Mrs Johnson — Readmission risk HIGH — Nurse dashboard notified" },
+            { who: "System", msg: "URGENT: Mrs Johnson. Readmission risk HIGH. Nurse dashboard notified." },
           ].map((item, i) => (
             <div key={i} className={`flex gap-3 ${item.who === "Patient" ? "flex-row-reverse" : ""}`}>
               <div

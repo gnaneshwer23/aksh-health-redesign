@@ -29,7 +29,7 @@ export function HospitalCommandMap({ wards }: { wards: Ward[] }) {
                     style={{ minHeight: `${40 + ward.totalBeds}px` }}
                     aria-label={`${ward.name}, ${pct}% occupied`}
                   >
-                    <p className="text-[10px] font-bold leading-tight">{ward.name.split("—")[0]?.trim()}</p>
+                    <p className="text-[10px] font-bold leading-tight">{ward.name.split(":")[0]?.trim()}</p>
                     <p className="text-xs mt-1">{ward.occupiedBeds}/{ward.totalBeds}</p>
                   </button>
                 </TooltipTrigger>

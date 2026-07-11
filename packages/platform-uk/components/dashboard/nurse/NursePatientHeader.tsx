@@ -20,7 +20,7 @@ export function NursePatientHeader() {
 
       {patient.equityFlag ? (
         <div className="rounded-sm border border-emerald/30 bg-emerald-light px-4 py-3 text-sm text-emerald" role="alert">
-          Equity flag — consider GP review for care disparity
+          Equity flag: consider GP review for care disparity
         </div>
       ) : null}
     </>

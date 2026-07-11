@@ -69,7 +69,7 @@ export function InteractionChecker() {
       title: `Interaction check: ${ix.drugA} + ${ix.drugB}`,
       content: `${severity}: ${ix.drugA} and ${ix.drugB}. ${note} (${ix.bnfSection})`,
     });
-    toast({ title: "Staged for GP review queue", description: "GUARDIAN alert added — pending Accept" });
+    toast({ title: "Staged for GP review queue", description: "GUARDIAN alert added | pending Accept" });
   };
 
   return (

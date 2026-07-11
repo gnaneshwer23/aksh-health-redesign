@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
   const allowed = await canAccessResearchEvaluation(request);
   if (!allowed) {
-    return NextResponse.json({ error: "Forbidden — researcher or admin role required" }, { status: 403 });
+    return NextResponse.json({ error: "Forbidden. Researcher or admin role required." }, { status: 403 });
   }
 
   const { userEmail, scopeKey } = auth.context;

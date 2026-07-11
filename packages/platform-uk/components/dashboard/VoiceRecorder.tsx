@@ -35,7 +35,7 @@ export function VoiceRecorder({
         {recording ? <Square className="h-5 w-5" /> : <Mic className="h-6 w-6" />}
       </Button>
       <p className="text-xs text-muted">
-        {recording ? "Recording… (mock) — click to stop and parse" : "Click to start dictation"}
+        {recording ? "Recording (mock). Click to stop and parse." : "Click to start dictation"}
       </p>
     </div>
   );

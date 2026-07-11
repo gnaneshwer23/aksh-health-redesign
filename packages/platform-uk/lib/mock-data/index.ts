@@ -33,7 +33,7 @@ export const adminUsers: AdminUser[] = [
   { id: "U008", name: "ICS Lead Thompson", role: "ICS Lead", email: "thompson@wyhcp.nhs.uk", status: "Active", lastActive: "2026-07-08 10:00", mfa: true },
   { id: "U009", name: "Dr Foster", role: "GP", email: "foster@oakwood.nhs.uk", status: "Active", lastActive: "2026-07-07 15:00", mfa: true },
   { id: "U010", name: "Nurse Roberts", role: "Nurse", email: "roberts@oakwood.nhs.uk", status: "Active", lastActive: "2026-07-06 09:00", mfa: false },
-  { id: "U011", name: "Pharmacist Ahmed", role: "Pharmacist", email: "ahmed@oakwood.nhs.uk", status: "Invited", lastActive: "—", mfa: false },
+  { id: "U011", name: "Pharmacist Ahmed", role: "Pharmacist", email: "ahmed@oakwood.nhs.uk", status: "Invited", lastActive: "Not set", mfa: false },
   { id: "U012", name: "Dr Chen", role: "GP", email: "chen@valleyview.nhs.uk", status: "Active", lastActive: "2026-07-05 11:00", mfa: true },
 ];
 

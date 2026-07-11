@@ -52,7 +52,7 @@ export default function GpSettingsPage() {
           <div>
             <h1 className="text-lg font-semibold text-foreground">AI agent preferences</h1>
             <p className="text-sm text-muted">
-              Configured during onboarding — read-only in this build. Editing opens in a future release.
+              Configured during onboarding. Read-only in this build. Editing opens in a future release.
             </p>
           </div>
           <Button

@@ -40,7 +40,7 @@ export function GuardianAlertsPanel({ scope = "selected" }: { scope?: "selected"
         <p className="text-xs text-muted">
           {scope === "filtered"
             ? `${guardianItems.length} alert(s) across ${filteredPatients.length} patient(s) in current filter`
-            : `Safety alerts for ${selectedPatient.name} — reviewed in-dashboard, not routed to GP queue`}
+            : `Safety alerts for ${selectedPatient.name} | reviewed in-dashboard, not routed to GP queue`}
         </p>
       </CardHeader>
       <CardContent className="space-y-2">

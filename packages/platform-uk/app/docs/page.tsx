@@ -6,7 +6,7 @@ import Navbar from "@/components/marketing/Navbar";
 import { COMPLIANCE_BADGES, COMPLIANCE_DISCLAIMER, SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 export const metadata: Metadata = {
-  title: `Documentation — ${SEO_DEFAULTS.title}`,
+  title: `Documentation | ${SEO_DEFAULTS.title}`,
   description: "Architecture overview, FHIR resources, HITL specification, and compliance design pathways for AkshHealth.",
 };
 
@@ -53,10 +53,10 @@ export default function DocsPage() {
           <div>
             <h2 className="text-xl font-bold text-navy">FHIR R4 resources (staged)</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-steel">
-              <li>Encounter, Condition, MedicationRequest, Observation — collection bundle export</li>
-              <li>AuditEvent — SHIELD compliance trail on Accept / Edit / Reject</li>
-              <li>DocumentReference — SYNTHESIS SOAP output (review queue)</li>
-              <li>RiskAssessment — ORACLE score updates</li>
+              <li>Encounter, Condition, MedicationRequest, Observation: collection bundle export</li>
+              <li>AuditEvent: SHIELD compliance trail on Accept / Edit / Reject</li>
+              <li>DocumentReference: SYNTHESIS SOAP output (review queue)</li>
+              <li>RiskAssessment: ORACLE score updates</li>
             </ul>
           </div>
 

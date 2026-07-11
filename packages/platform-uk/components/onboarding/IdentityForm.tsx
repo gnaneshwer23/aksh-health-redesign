@@ -66,7 +66,7 @@ export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
       setVerifyMessage(message);
     } catch {
       setVerificationStatus(key, "error");
-      setVerifyMessage("Verification failed — check the number format");
+      setVerifyMessage("Verification failed. Check the number format.");
     }
   }
 

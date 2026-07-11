@@ -138,7 +138,7 @@ async function seedMedicationInteractions(session: Session) {
      MERGE (a)-[i:INTERACTS_WITH]->(b)
      SET i.severity = 'High',
          i.bnfRef = 'BNF 2.9',
-         i.recommendation = 'Additive bleeding risk — review aspirin indication; consider apixaban monotherapy'`
+         i.recommendation = 'Additive bleeding risk. Review aspirin indication; consider apixaban monotherapy'`
   );
 }
 

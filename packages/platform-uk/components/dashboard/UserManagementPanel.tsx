@@ -39,7 +39,7 @@ export function UserManagementPanel({ embedded = false }: { embedded?: boolean }
             <TableCell>{u.email}</TableCell>
             <TableCell>{u.status}</TableCell>
             <TableCell>{u.lastActive}</TableCell>
-            <TableCell>{u.mfa ? "✓" : "—"}</TableCell>
+            <TableCell>{u.mfa ? "✓" : "Not set"}</TableCell>
             <TableCell>
               <Button
                 variant="outline"

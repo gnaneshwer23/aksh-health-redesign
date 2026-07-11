@@ -83,7 +83,7 @@ function EnquiriesTable({ enquiries, limit }: { enquiries: OrganisationEnquiryRo
               <div className="font-medium">{enquiry.orgName}</div>
               <div className="text-xs text-muted">{enquiry.orgType}</div>
             </TableCell>
-            <TableCell>{enquiry.region ?? "—"}</TableCell>
+            <TableCell>{enquiry.region ?? "Not set"}</TableCell>
             <TableCell>
               <div>{enquiry.contactName}</div>
               <div className="text-xs text-muted">{enquiry.contactEmail}</div>

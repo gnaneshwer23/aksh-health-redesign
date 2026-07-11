@@ -41,8 +41,8 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">Aksh Health</span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-white/60">
-              The AI Healthcare Operating System. Connecting existing NHS infrastructure to a network of specialist
-              clinical AI agents.
+              Clinical AI for NHS primary and secondary care. Connects your existing systems to specialist agents with
+              clinician approval on every output.
             </p>
           </div>
 

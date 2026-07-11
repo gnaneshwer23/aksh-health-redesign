@@ -14,7 +14,7 @@ export default function PlatformPage() {
     <AudiencePage
       kicker="Platform"
       title="The AI Healthcare Operating System"
-      description="Aksh Health is not a chatbot, patient portal, or EHR. It is the intelligence layer that sits above your existing healthcare infrastructure — EMIS Web, SystmOne, Epic, Oracle Health — and makes it intelligent, proactive, and coordinated."
+      description="Aksh Health sits above your existing systems: EMIS Web, SystmOne, Epic, and Oracle Health. It connects data, surfaces risk, and coordinates care without replacing your EHR."
     >
       <Suspense fallback={<div className="py-16 text-center text-steel">Loading platform…</div>}>
         <PlatformTabs />

@@ -39,7 +39,7 @@ export default function PharmacistOverviewPage() {
       <div>
         <h2 className={`text-lg font-semibold ${PHARMACIST_ACCENT}`}>Pharmacist workspace</h2>
         <p className="text-sm text-muted mt-1">
-          Medication safety, interaction checks, and BNF reference — all with human-in-the-loop approval.
+          Medication safety, interaction checks, and BNF reference | all with human-in-the-loop approval.
         </p>
       </div>
 

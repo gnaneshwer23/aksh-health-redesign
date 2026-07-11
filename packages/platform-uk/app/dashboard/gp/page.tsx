@@ -148,7 +148,7 @@ export default function GpDashboardPage() {
                       {patient.nextAppointmentDate && ` · Next: ${patient.nextAppointmentDate}`}
                     </p>
                     <p className="mt-1 text-xs font-medium text-warning">
-                      14-day admission risk: {oracleData?.admissionRisk14Days ?? patient.digitalTwinPrediction.admissionRisk14Days}% — {(oracleData?.riskFactors ?? patient.digitalTwinPrediction.deteriorationSignals)[0]}
+                      14-day admission risk: {oracleData?.admissionRisk14Days ?? patient.digitalTwinPrediction.admissionRisk14Days}%. {(oracleData?.riskFactors ?? patient.digitalTwinPrediction.deteriorationSignals)[0]}
                     </p>
                   </div>
                   <RiskScoreBadge score={oracleScore} risk={oracleRisk} size="lg" />

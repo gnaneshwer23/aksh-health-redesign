@@ -69,13 +69,13 @@ export function HitlActions({
   }
 
   if (status === "Rejected") {
-    return <p className="text-xs text-danger font-medium">Rejected — {rejectionReason || "No reason provided"}</p>;
+    return <p className="text-xs text-danger font-medium">Rejected: {rejectionReason || "No reason provided"}</p>;
   }
 
   if (status === "Edited") {
     return (
       <div className="space-y-2">
-        <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Edited — re-acceptance required</p>
+        <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Edited: re-acceptance required</p>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label="Accept edited AI output">
             Accept
@@ -92,7 +92,7 @@ export function HitlActions({
   }
 
   if (status === "Dismissed") {
-    return <p className="text-xs text-muted font-medium">Dismissed — not actioned</p>;
+    return <p className="text-xs text-muted font-medium">Dismissed: not actioned</p>;
   }
 
   if (rejecting) {
@@ -118,7 +118,7 @@ export function HitlActions({
   if (variant === "command") {
     return (
       <div className="space-y-2">
-        <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Draft — not in record</p>
+        <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Draft: not in record</p>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label="Accept recommendation">
             Accept
@@ -133,7 +133,7 @@ export function HitlActions({
 
   return (
     <div className="space-y-2">
-      <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Draft — not in record</p>
+      <p className="text-[10px] uppercase tracking-wide text-warning font-semibold">Draft: not in record</p>
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="accent" onClick={onAccept} disabled={disabled} aria-label="Accept AI output">Accept</Button>
         <Button size="sm" variant="outline" className="border-primary text-primary" onClick={onEdit} disabled={disabled} aria-label="Edit AI output">Edit</Button>

@@ -27,7 +27,7 @@ export function StaffingPanel({ data }: { data: HospitalData }) {
         <TableBody>
           {wardStaffing.map((s) => (
             <TableRow key={s.ward} className={s.actual < s.required ? "bg-danger/5" : ""}>
-              <TableCell className="text-xs">{s.ward.split("—")[0]}</TableCell>
+              <TableCell className="text-xs">{s.ward.split(":")[0]}</TableCell>
               <TableCell>{s.required}</TableCell>
               <TableCell className={s.actual < s.required ? "text-danger font-semibold" : ""}>{s.actual}</TableCell>
             </TableRow>
@@ -56,7 +56,7 @@ export function StaffingPanel({ data }: { data: HospitalData }) {
               variant="outline"
               onClick={() => {
                 dismissAgencyAlert(t.ward);
-                toast({ title: "Acknowledged — no agency request logged" });
+                toast({ title: "Acknowledged | no agency request logged" });
               }}
             >
               No

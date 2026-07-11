@@ -580,15 +580,15 @@ export const reviewCases: ReviewCase[] = [
     "id": "case-v-uk1",
     "userId": "demo",
     "scenarioId": "V-UK1",
-    "patientLabel": "Margaret T. — T2D + DVT",
+    "patientLabel": "Margaret T.: T2D + DVT",
     "status": "pending_review",
     "updatedAt": "2026-07-10 14:30",
-    "summary": "Golden scenario V-UK1: T2D with poor glycaemic control, suspected DVT, aspirin + proposed apixaban — all agent outputs staged as DRAFT.",
+    "summary": "Golden scenario V-UK1: T2D with poor glycaemic control, suspected DVT, aspirin + proposed apixaban: all agent outputs staged as DRAFT.",
     "input": {
       "sourceType": "transcript",
       "sourceProfile": "voice_note_intake",
       "capturedAt": "2026-07-10 14:15",
-      "summary": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes — last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
+      "summary": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes: last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
       "transcriptConfidence": 0.91
     },
     "safetyContext": {
@@ -603,7 +603,7 @@ export const reviewCases: ReviewCase[] = [
       "current": 82,
       "factors": [
         "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)",
-        "Suspected deep vein thrombosis — left leg swelling",
+        "Suspected deep vein thrombosis: left leg swelling",
         "Antiplatelet therapy (Aspirin) with proposed anticoagulation",
         "Poor glycaemic control increases vascular risk"
       ]
@@ -619,7 +619,7 @@ export const reviewCases: ReviewCase[] = [
       "condition": {
         "resourceType": "Condition",
         "id": "condition-vuk1-dvt",
-        "codeText": "Suspected deep vein thrombosis — left leg",
+        "codeText": "Suspected deep vein thrombosis: left leg",
         "clinicalStatus": "provisional",
         "evidence": "Unilateral calf swelling, discomfort on walking, prior leg swelling history."
       },
@@ -628,7 +628,7 @@ export const reviewCases: ReviewCase[] = [
         "id": "medreq-vuk1",
         "medicationText": "Apixaban 5mg twice daily",
         "dosageInstruction": "5mg twice daily pending confirmatory imaging",
-        "reason": "Proposed anticoagulation for suspected DVT — requires GUARDIAN review with aspirin",
+        "reason": "Proposed anticoagulation for suspected DVT: requires GUARDIAN review with aspirin",
         "confidence": 0.94
       },
       "observations": [
@@ -650,7 +650,7 @@ export const reviewCases: ReviewCase[] = [
           "resourceType": "Observation",
           "id": "obs-vuk1-wells",
           "codeText": "Wells DVT score",
-          "valueText": "Moderate probability — imaging advised",
+          "valueText": "Moderate probability: imaging advised",
           "status": "preliminary"
         }
       ]
@@ -662,8 +662,8 @@ export const reviewCases: ReviewCase[] = [
         "itemType": "voice_transcript",
         "status": "DRAFT",
         "title": "Voice intake transcript",
-        "summary": "VOICE captured consultation — leg swelling, T2D, HbA1c 58, metformin + aspirin, apixaban discussed.",
-        "content": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes — last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
+        "summary": "VOICE captured consultation: leg swelling, T2D, HbA1c 58, metformin + aspirin, apixaban discussed.",
+        "content": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes: last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
         "metadata": {
           "sourceType": "transcript",
           "confidence": 91
@@ -676,10 +676,10 @@ export const reviewCases: ReviewCase[] = [
         "status": "DRAFT",
         "title": "SOAP note draft",
         "summary": "SYNTHESIS: DVT suspicion with poor glycaemic control in T2D patient.",
-        "content": "Subjective: Five-day left calf swelling and tightness. T2D — HbA1c 58 mmol/mol. On metformin and aspirin 75mg.\nObjective: Left calf swelling. HbA1c 58 mmol/mol. Wells score moderate.\nAssessment: Suspected DVT (left). T2D with hyperglycaemia (E11.65). Poor glycaemic control.\nPlan: Urgent DVT imaging. Consider apixaban if confirmed — GUARDIAN review required (aspirin interaction). Diabetes optimisation.",
+        "content": "Subjective: Five-day left calf swelling and tightness. T2D: HbA1c 58 mmol/mol. On metformin and aspirin 75mg.\nObjective: Left calf swelling. HbA1c 58 mmol/mol. Wells score moderate.\nAssessment: Suspected DVT (left). T2D with hyperglycaemia (E11.65). Poor glycaemic control.\nPlan: Urgent DVT imaging. Consider apixaban if confirmed: GUARDIAN review required (aspirin interaction). Diabetes optimisation.",
         "metadata": {
           "encounterReason": "Leg swelling with T2D review",
-          "condition": "Suspected deep vein thrombosis — left leg"
+          "condition": "Suspected deep vein thrombosis: left leg"
         }
       },
       {
@@ -688,12 +688,12 @@ export const reviewCases: ReviewCase[] = [
         "itemType": "diagnosis_codes",
         "status": "DRAFT",
         "title": "Diagnosis code suggestions",
-        "summary": "I82.4 · E11.65 — confidence 94%",
-        "content": "I82.4 — Acute embolism and thrombosis of deep veins of lower extremity\nE11.65 — Type 2 diabetes mellitus with hyperglycaemia",
+        "summary": "I82.4 · E11.65: confidence 94%",
+        "content": "I82.4: Acute embolism and thrombosis of deep veins of lower extremity\nE11.65: Type 2 diabetes mellitus with hyperglycaemia",
         "metadata": {
           "icdCodes": [
-            "I82.4 — Acute embolism and thrombosis of deep veins of lower extremity",
-            "E11.65 — Type 2 diabetes mellitus with hyperglycaemia"
+            "I82.4: Acute embolism and thrombosis of deep veins of lower extremity",
+            "E11.65: Type 2 diabetes mellitus with hyperglycaemia"
           ],
           "confidence": 94
         }
@@ -704,8 +704,8 @@ export const reviewCases: ReviewCase[] = [
         "itemType": "guardian_alert",
         "status": "DRAFT",
         "title": "Anticoagulant + antiplatelet interaction",
-        "summary": "GUARDIAN HIGH: Aspirin 75mg + proposed Apixaban — major bleeding risk.",
-        "content": "GUARDIAN HIGH ALERT\nCurrent: Aspirin 75mg daily\nProposed: Apixaban 5mg twice daily\nRisk: Major bleeding — dual antithrombotic therapy\nAction: GP must Accept / Edit / Reject before any write-back.",
+        "summary": "GUARDIAN HIGH: Aspirin 75mg + proposed Apixaban: major bleeding risk.",
+        "content": "GUARDIAN HIGH ALERT\nCurrent: Aspirin 75mg daily\nProposed: Apixaban 5mg twice daily\nRisk: Major bleeding: dual antithrombotic therapy\nAction: GP must Accept / Edit / Reject before any write-back.",
         "metadata": {
           "severity": "high",
           "flagCount": 1
@@ -718,7 +718,7 @@ export const reviewCases: ReviewCase[] = [
         "status": "DRAFT",
         "title": "Risk score update",
         "summary": "ORACLE: CVD/T2D composite risk 78 → 82 after DVT flag",
-        "content": "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)\nSuspected deep vein thrombosis — left leg swelling\nAntiplatelet therapy (Aspirin) with proposed anticoagulation\nPoor glycaemic control increases vascular risk",
+        "content": "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)\nSuspected deep vein thrombosis: left leg swelling\nAntiplatelet therapy (Aspirin) with proposed anticoagulation\nPoor glycaemic control increases vascular risk",
         "metadata": {
           "baseline": 78,
           "current": 82,

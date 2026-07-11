@@ -10,14 +10,14 @@ export function buildReferralQueueItem(reviewCase: ReviewCase): ReviewQueueItem 
     itemType: "referral_package",
     status: "DRAFT",
     title: "DVT urgent referral package",
-    summary: "Duplex ultrasound + D-dimer — urgent pathway (synthetic e-referral draft)",
+    summary: "Duplex ultrasound + D-dimer: urgent pathway (synthetic e-referral draft)",
     content: [
-      "REFERRAL AGENT — coordination draft",
+      "REFERRAL AGENT: coordination draft",
       "Priority: URGENT",
       "Requested: Duplex ultrasound (left lower limb) + D-dimer",
-      "Clinical indication: Suspected DVT — left calf swelling × 5 days, Wells moderate",
+      "Clinical indication: Suspected DVT: left calf swelling × 5 days, Wells moderate",
       "Supporting codes: I82.4, E11.65",
-      "Status: DRAFT — GP Accept required before ServiceRequest write-back"
+      "Status: DRAFT | GP Accept required before ServiceRequest write-back"
     ].join("\n"),
     metadata: {
       priority: "urgent",
@@ -34,7 +34,7 @@ export function buildServiceRequestStub(reviewCase: ReviewCase): ServiceRequestR
     codeText: "Duplex ultrasound lower limb + D-dimer",
     status: "draft",
     priority: "urgent",
-    reason: "Suspected DVT — urgent imaging per referral package",
+    reason: "Suspected DVT | urgent imaging per referral package",
     performerText: "Regional vascular diagnostics (synthetic)"
   };
 }
@@ -67,7 +67,7 @@ export function maybeStageReferralPackage(reviewCase: ReviewCase, items: ReviewQ
         label: "REFERRAL AGENT: urgent DVT package staged",
         actor: "system",
         timestamp: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
-        detail: "Triggered after SYNTHESIS SOAP and DrASSIST codes accepted — synthetic only"
+        detail: "Triggered after SYNTHESIS SOAP and DrASSIST codes accepted: synthetic only"
       }
     ]
   };

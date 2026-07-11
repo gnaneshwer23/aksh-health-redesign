@@ -30,8 +30,8 @@ export const medications: Medication[] = [
     bnfSection: "2.9 Anticoagulants",
     dosing: "5mg BD (reduce to 2.5mg BD if ≥2 of: age ≥80, weight ≤60kg, creatinine ≥133)",
     interactions: [
-      { drugA: "Apixaban", drugB: "Aspirin", severity: "High", bnfSection: "2.9", recommendation: "Additive bleeding risk — review aspirin indication" },
-      { drugA: "Apixaban", drugB: "Ibuprofen", severity: "High", bnfSection: "2.9", recommendation: "Avoid NSAIDs — use paracetamol instead" },
+      { drugA: "Apixaban", drugB: "Aspirin", severity: "High", bnfSection: "2.9", recommendation: "Additive bleeding risk: review aspirin indication" },
+      { drugA: "Apixaban", drugB: "Ibuprofen", severity: "High", bnfSection: "2.9", recommendation: "Avoid NSAIDs: use paracetamol instead" },
     ],
   },
   {
@@ -65,7 +65,7 @@ export const medications: Medication[] = [
     bnfSection: "4.3 Antidepressants",
     dosing: "50mg OD. Increase gradually to max 200mg.",
     interactions: [
-      { drugA: "Sertraline", drugB: "Tramadol", severity: "Medium", bnfSection: "4.3", recommendation: "Serotonin syndrome risk — monitor closely" },
+      { drugA: "Sertraline", drugB: "Tramadol", severity: "Medium", bnfSection: "4.3", recommendation: "Serotonin syndrome risk: monitor closely" },
     ],
   },
 ];
@@ -98,7 +98,7 @@ export function checkInteractions(drug: string, patientMeds: string[]): { drugA:
         drugB: "Anticoagulant",
         severity: "High",
         bnfSection: "2.9",
-        recommendation: "Review bleeding risk — consider gastroprotection",
+        recommendation: "Review bleeding risk: consider gastroprotection",
       });
     }
   }

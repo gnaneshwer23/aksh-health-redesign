@@ -37,7 +37,7 @@ export default function VoiceCareDay3Page() {
     <main className="stack" style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1rem" }}>
       <header className="panel stack">
         <p className="gp-panel__eyebrow">VOICE CARE · Day 3 outbound (synthetic)</p>
-        <h1>Post-consult check-in — Mr James Patel</h1>
+        <h1>Post-consult check-in: Mr James Patel</h1>
         <p>Simulates Day-3 Voice Care call after DVT consultation. Escalation triggers ORACLE re-score and nurse task.</p>
         <div className="actions">
           <Link className="button secondary" href="/demo/patel?step=7">
@@ -63,7 +63,7 @@ export default function VoiceCareDay3Page() {
         <>
           <section className="panel stack gp-urgent-banner" style={{ borderColor: "var(--danger)" }}>
             <p className="gp-panel__eyebrow">Clinician alert</p>
-            <h2>URGENT — Voice Care escalation</h2>
+            <h2>URGENT: Voice Care escalation</h2>
             <p>
               ORACLE composite risk {escalation.oraclePrevious} → <strong>{escalation.oracleScore}</strong> after new
               breathlessness and calf pain.
@@ -83,7 +83,7 @@ export default function VoiceCareDay3Page() {
 
           <section className="panel stack">
             <h2>Nurse escalation task created</h2>
-            <p>Task queued on <Link href="/dashboard/nurse">nurse dashboard</Link> — vitals review and callback.</p>
+            <p>Task queued on <Link href="/dashboard/nurse">nurse dashboard</Link>. Vitals review and callback.</p>
           </section>
         </>
       ) : null}

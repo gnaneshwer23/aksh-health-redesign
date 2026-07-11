@@ -73,7 +73,7 @@ export function getMockGuardianResponse(patientId: string): Neo4jGuardianRespons
         drugB: "Aspirin",
         severity: "red",
         bnfRef: "BNF 2.9",
-        recommendation: "Additive bleeding risk — review aspirin indication; consider apixaban monotherapy",
+        recommendation: "Additive bleeding risk: review aspirin indication; consider apixaban monotherapy",
       });
     }
   }

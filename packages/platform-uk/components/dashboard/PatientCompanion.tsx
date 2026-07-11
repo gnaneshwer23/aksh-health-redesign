@@ -72,7 +72,7 @@ export function PatientCompanion() {
   const handleComingSoon = (feature: string) => {
     toast({
       title: "Coming soon",
-      description: `${feature} — messages your care team securely from this app.`,
+      description: `${feature} | messages your care team securely from this app.`,
     });
   };
 
@@ -138,7 +138,7 @@ export function PatientCompanion() {
             </CardHeader>
             <CardContent className="space-y-2">
               {companionProfile.medications.map((med) => {
-                const medKey = `${med.label} — ${med.schedule}`;
+                const medKey = `${med.label} | ${med.schedule}`;
                 return (
                   <div key={medKey} className="flex items-center justify-between gap-2 text-sm">
                     <span>{medKey}</span>
@@ -191,7 +191,7 @@ export function PatientCompanion() {
                 </div>
               ))}
               <p className="text-xs text-accent">
-                Shared with care team — reviewed by {companionProfile.nurseReviewer} at 10:32
+                Shared with care team. Reviewed by {companionProfile.nurseReviewer} at 10:32
               </p>
             </CardContent>
           </Card>

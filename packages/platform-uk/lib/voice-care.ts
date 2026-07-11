@@ -1,11 +1,11 @@
 import type { NurseEscalationTask, ReviewCase } from "./types";
 
 export const VOICE_CARE_DAY3_TRANSCRIPT = [
-  "VOICE CARE (Day 3 outbound — synthetic)",
+  "VOICE CARE (Day 3 outbound: synthetic)",
   "Agent: How are you feeling since your consultation three days ago?",
   "Patient: My calf is more painful and tighter. I also felt short of breath climbing stairs this morning.",
   "Agent: Thank you. I am flagging worsening calf pain and new breathlessness for urgent clinician review.",
-  "Assessment: Possible pulmonary embolism risk in context of suspected DVT — escalate immediately."
+  "Assessment: Possible pulmonary embolism risk in context of suspected DVT: escalate immediately."
 ].join("\n");
 
 export const VOICE_CARE_ESCALATION_KEY = "aksh-voice-care-escalation-v1";
@@ -30,8 +30,8 @@ export function buildVoiceCareEscalation(reviewCase: ReviewCase): VoiceCareEscal
     oraclePrevious: previous,
     oracleScore: 91,
     symptoms: ["Worsening left calf pain", "New shortness of breath on exertion"],
-    guardianAudit: "GUARDIAN: PE risk flag staged — dual antithrombotic context reviewed (synthetic)",
-    shieldAudit: "SHIELD: Voice Care escalation logged — zero auto-write, clinician task created"
+    guardianAudit: "GUARDIAN: PE risk flag staged: dual antithrombotic context reviewed (synthetic)",
+    shieldAudit: "SHIELD: Voice Care escalation logged: zero auto-write, clinician task created"
   };
 }
 
@@ -41,7 +41,7 @@ export function buildNurseEscalationTask(reviewCase: ReviewCase, escalation: Voi
     patientLabel: reviewCase.patientLabel,
     caseId: reviewCase.id,
     priority: "urgent",
-    summary: `Voice Care Day-3: ${escalation.symptoms.join("; ")} — ORACLE ${escalation.oraclePrevious}→${escalation.oracleScore}`,
+    summary: `Voice Care Day-3: ${escalation.symptoms.join("; ")} | ORACLE ${escalation.oraclePrevious}→${escalation.oracleScore}`,
     createdAt: escalation.triggeredAt,
     source: "voice_care"
   };

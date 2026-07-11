@@ -27,7 +27,7 @@ export default function ProblemSection() {
         "But no layer connects and reasons across them",
         "No layer acts on the insights",
         "No layer coordinates the care automatically",
-        "No layer writes to the record — not just a PDF",
+        "No layer writes to the record, not just a PDF",
       ],
     },
     {
@@ -40,7 +40,7 @@ export default function ProblemSection() {
       points: [
         "Connects every system via FHIR R4 + HL7",
         "12 AI agents reason across the unified data",
-        "Outputs written directly to FHIR — not PDFs",
+        "Outputs written directly to FHIR, not PDFs",
         "ORACLE predicts deterioration 14 days ahead",
         "GP approves every recommendation before it acts",
       ],
@@ -71,7 +71,7 @@ export default function ProblemSection() {
               <ul className="space-y-3">
                 {col.points.map((pt) => (
                   <li key={pt} className="flex items-start gap-2 text-sm text-slate">
-                    <span className="mt-0.5 shrink-0">—</span>
+                    <span className="mt-0.5 shrink-0">•</span>
                     {pt}
                   </li>
                 ))}

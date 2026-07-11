@@ -62,7 +62,7 @@ export function AgentControlPanel({
             <Mic className="h-7 w-7" />
           </button>
           <p className="text-xs text-muted text-center">Click to start dictation</p>
-          <p className="text-[10px] text-muted">Last dictation: 2h ago — Pending approval</p>
+          <p className="text-[10px] text-muted">Last dictation: 2h ago. Pending approval.</p>
         </CardContent>
       </Card>
 

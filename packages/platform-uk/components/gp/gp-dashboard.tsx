@@ -97,7 +97,7 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           <h1>Clinician Dashboard</h1>
           <p>
             Patient context, AI review queue, and agent control panel for synthetic HITL workflow.
-            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong> — synthetic proof only.
+            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong> (synthetic proof only).
           </p>
         </div>
         <div className="actions">

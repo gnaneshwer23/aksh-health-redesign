@@ -20,12 +20,12 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
   return [
     {
       title: "Everything AI Suggests. Nothing AI Decides.",
-      body: "Your Review Queue is the heart of Aksh Health. Every AI output — SOAP notes, diagnosis codes, drug alerts, risk scores — appears here as a draft. You Accept, Edit, or Reject. Only then does it reach the patient record.",
+      body: "Your Review Queue is the heart of Aksh Health. Every AI output (SOAP notes, diagnosis codes, drug alerts, risk scores) appears here as a draft. You Accept, Edit, or Reject. Only then does it reach the patient record.",
       visual: (
         <div className="space-y-2 rounded-md border border-border p-4 text-sm">
           {[
-            "[SYNTHESIS] SOAP note — Mrs Johnson — T2D review",
-            "[DrASSIST] I82.4 DVT — 94% confidence",
+            "[SYNTHESIS] SOAP note: Mrs Johnson, T2D review",
+            "[DrASSIST] I82.4 DVT, 94% confidence",
             "[GUARDIAN] 🔴 Aspirin + Apixaban interaction",
           ].map((item) => (
             <div key={item} className="flex items-center justify-between rounded border border-border p-2">
@@ -53,7 +53,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
           </div>
           <div className="h-8 rounded bg-border/60" />
           <div className="rounded border border-border p-3 text-sm">
-            <strong>SOAP — T2D + DVT review</strong>
+            <strong>SOAP: T2D + DVT review</strong>
             <p className="mt-2 text-muted">
               S: Patient reports leg swelling, type 2 diabetes on metformin.
               O: BMI 31.4, prior DVT history noted.
@@ -66,18 +66,18 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
     },
     {
       title: "Drug Interaction Checking Happens Before You Prescribe.",
-      body: "The moment you consider adding a new medication, GUARDIAN cross-checks it against every current medication, allergy, and contraindication — using the BNF as its source of truth.",
+      body: "The moment you consider adding a new medication, GUARDIAN cross-checks it against every current medication, allergy, and contraindication, using the BNF as its source of truth.",
       visual: (
         <div className="space-y-2 text-sm">
-          <div className="rounded border border-danger/30 bg-danger/5 p-3">🔴 Contraindicated: Apixaban + Aspirin — HIGH risk</div>
-          <div className="rounded border border-warning/30 bg-warning/5 p-3">🟠 Monitor closely: Apixaban + NSAIDs — MEDIUM risk</div>
-          <div className="rounded border border-accent/30 bg-accent/5 p-3">🟢 No interaction: Apixaban + Metformin — SAFE</div>
+          <div className="rounded border border-danger/30 bg-danger/5 p-3">🔴 Contraindicated: Apixaban + Aspirin, HIGH risk</div>
+          <div className="rounded border border-warning/30 bg-warning/5 p-3">🟠 Monitor closely: Apixaban + NSAIDs, MEDIUM risk</div>
+          <div className="rounded border border-accent/30 bg-accent/5 p-3">🟢 No interaction: Apixaban + Metformin, SAFE</div>
         </div>
       ),
     },
     {
       title: "Your highest-risk patients. Identified automatically.",
-      body: "ORACLE analyses each patient's full clinical record — conditions, medications, history, social determinants — and generates a risk score with the contributing factors you can act on.",
+      body: "ORACLE analyses each patient's full clinical record (conditions, medications, history, social determinants) and generates a risk score with contributing factors you can act on.",
       visual: (
         <div className="rounded-md border border-border p-4">
           <div className="flex items-center gap-4">
@@ -85,7 +85,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
               82
             </div>
             <div className="text-sm">
-              <p className="font-semibold">Margaret T. — Risk 82/100</p>
+              <p className="font-semibold">Margaret T., risk 82/100</p>
               <ul className="mt-2 list-disc space-y-1 pl-4 text-muted">
                 <li>DVT + Diabetes combination</li>
                 <li>Aspirin prescribed with anticoagulant risk</li>
@@ -99,7 +99,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
     },
     {
       title: "AI coordinates the follow-up so you don't have to.",
-      body: "When ORACLE flags a patient, Aksh Health creates the care pathway automatically — booking reviews, arranging screening, notifying the team — all pending your confirmation.",
+      body: "When ORACLE flags a patient, Aksh Health drafts the care pathway: booking reviews, arranging screening, notifying the team. All steps await your confirmation.",
       visual: (
         <ol className="space-y-2 border-l-2 border-primary pl-4 text-sm">
           {[
@@ -120,13 +120,13 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
       visual: (
         <ul className="space-y-1 text-sm text-accent">
           {[
-            "SYNTHESIS — encounter summarisation active",
-            "DrASSIST — clinical coding active",
-            "GUARDIAN — drug safety active",
-            "ORACLE — risk scoring active",
-            "VOICE — dictation active",
-            "EQUITY — disparity monitoring active",
-            "SHIELD — audit trail active",
+            "SYNTHESIS: encounter summarisation active",
+            "DrASSIST: clinical coding active",
+            "GUARDIAN: drug safety active",
+            "ORACLE: risk scoring active",
+            "VOICE: dictation active",
+            "EQUITY: disparity monitoring active",
+            "SHIELD: audit trail active",
           ].map((line) => (
             <li key={line}>✓ {line}</li>
           ))}
@@ -221,7 +221,7 @@ function getHospitalScreens(): TutorialScreen[] {
       visual: (
         <div className="space-y-2 text-sm">
           <p>Winter surge: +18% admissions projected</p>
-          <p className="text-muted">Discharge bottleneck: Ward 4 — avg 2.1 day delay</p>
+          <p className="text-muted">Discharge bottleneck: Ward 4, avg 2.1 day delay</p>
         </div>
       ),
     },
@@ -238,7 +238,7 @@ function getPatientScreens(): TutorialScreen[] {
   return [
     {
       title: "My Health",
-      body: "See your conditions, medications, and care plan in plain English — always approved by your GP.",
+      body: "See your conditions, medications, and care plan in plain English, always approved by your GP.",
       visual: (
         <div className="space-y-2 text-sm">
           <p><strong>Conditions:</strong> Type 2 diabetes, previous DVT</p>

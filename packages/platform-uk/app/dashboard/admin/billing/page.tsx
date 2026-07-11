@@ -15,7 +15,7 @@ export default function AdminBillingPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted">
-              Billing contact and subscription — Phase 2. Contract management, invoicing, and NHS framework
+              Billing contact and subscription (Phase 2). Contract management, invoicing, and NHS framework
               pricing will be available in a future release.
             </p>
           </CardContent>

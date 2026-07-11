@@ -29,6 +29,6 @@ export async function verifyNhsNumber(value: string): Promise<{
     valid,
     message: valid
       ? "✓ NHS number validated"
-      : "Invalid NHS number — check the 10-digit format",
+      : "Invalid NHS number: check the 10-digit format",
   };
 }

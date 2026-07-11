@@ -13,7 +13,7 @@ export function AdmissionForecast() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-sm">ICS Admission Forecast — Digital Twin</CardTitle>
+        <CardTitle className="text-sm">ICS Admission Forecast (digital twin)</CardTitle>
       </CardHeader>
       <CardContent className="h-72">
         {loading && !liveData ? (

@@ -44,7 +44,7 @@ export default function ResearcherEvaluationPage() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted">
           <p>
-            Exports include the offline research evaluation boundary artifact — task definitions, dataset boundaries,
+            Exports include the offline research evaluation boundary artifact: task definitions,, dataset boundaries,
             and explicit &quot;not yet&quot; claims. No production clinical AI safety claims are included.
           </p>
           <p>

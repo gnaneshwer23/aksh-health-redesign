@@ -44,7 +44,7 @@ export const populationData: PopulationData = {
   ],
   admissionForecast: generateAdmissionForecast(),
   equityDeepDive: [
-    { category: "Ethnicity — South Asian", flagCount: 14, practice: "East Leeds Family Practice", recommendedAction: "Targeted diabetes screening outreach", status: "In progress" },
+    { category: "Ethnicity: South Asian", flagCount: 14, practice: "East Leeds Family Practice", recommendedAction: "Targeted diabetes screening outreach", status: "In progress" },
     { category: "IMD Q1 deprivation", flagCount: 18, practice: "Valley View Surgery", recommendedAction: "Extended hours for working-age patients", status: "Planned" },
     { category: "Language barrier", flagCount: 6, practice: "Riverside Medical Centre", recommendedAction: "Interpreter service integration", status: "Completed" },
     { category: "Digital exclusion", flagCount: 9, practice: "Oakwood Health Practice", recommendedAction: "Telephone-first care pathway", status: "In progress" },

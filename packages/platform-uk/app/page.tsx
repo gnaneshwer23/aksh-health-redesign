@@ -11,7 +11,7 @@ import VoiceAgentSection from "@/components/marketing/VoiceAgentSection";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 export const metadata: Metadata = {
-  title: "Aksh Health — Healthcare OS",
+  title: "Aksh Health | Healthcare OS",
   description: SEO_DEFAULTS.description,
 };
 

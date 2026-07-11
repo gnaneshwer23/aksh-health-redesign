@@ -4,7 +4,7 @@ import { OrganisationEnquiriesPanel } from "@/components/dashboard/OrganisationE
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
 export const metadata: Metadata = {
-  title: "Organisation Enquiries — Admin",
+  title: "Organisation Enquiries | Admin",
 };
 
 export default function AdminOrganisationEnquiriesPage() {

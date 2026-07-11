@@ -53,7 +53,7 @@ export default function ResearcherDataAccessPage() {
             ) : (
               <div className="flex items-center gap-2 text-sm text-muted">
                 <Lock className="h-4 w-4 shrink-0" />
-                <span>No ethics reference on file — individual-level access not approved.</span>
+                <span>No ethics reference on file. Individual-level access not approved.</span>
               </div>
             )}
             <p className="text-xs text-muted">
@@ -83,7 +83,7 @@ export default function ResearcherDataAccessPage() {
                   ["Cohort metrics", "Yes", "Yes"],
                   ["Study-level summaries", "Yes", "Yes"],
                   ["Offline evaluation export", "Yes", "Scoped to protocol"],
-                  ["Patient identifiers", "No", "Yes — with ethics ref"],
+                  ["Patient identifiers", "No", "Yes, with ethics ref"],
                   ["Clinical record linkage", "No", "Governance approval required"],
                 ].map(([capability, aggregate, individual]) => (
                   <tr key={capability} className="border-b border-border-subtle">

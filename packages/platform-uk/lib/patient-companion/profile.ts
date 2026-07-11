@@ -147,7 +147,7 @@ export function getPatientCompanionProfile(
       { role: "Nurse", name: "Nurse Davies" },
       { role: "Pharmacist", name: "Pharmacist Lee" },
     ],
-    upcomingAppointment: `${formatAppointmentDate(appointmentDate)}, ${appointmentTime} — GP review (Riverside Medical Centre)`,
+    upcomingAppointment: `${formatAppointmentDate(appointmentDate)}, ${appointmentTime} | GP review (Riverside Medical Centre)`,
     pastAppointmentSummary: `Your last GP appointment summary: ${linkedRecord?.supervisingGp ?? "Dr Morgan"} reviewed your diabetes medications and suspected a blood clot in your leg. You were referred for a scan.`,
     nurseReviewer: "Nurse Davies",
   };

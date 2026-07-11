@@ -34,7 +34,7 @@ export default function HospitalOverviewPage() {
       <div>
         <h2 className="text-lg font-semibold text-primary">Command Centre Overview</h2>
         <p className="text-sm text-muted mt-1">
-          {hospitalData.hospitalName} — real-time operational intelligence across {hospitalData.wards.length} wards
+          {hospitalData.hospitalName}: real-time operational intelligence across {hospitalData.wards.length} wards
         </p>
       </div>
 

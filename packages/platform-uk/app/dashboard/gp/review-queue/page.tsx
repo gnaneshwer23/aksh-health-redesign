@@ -12,7 +12,7 @@ function GpReviewQueueContent() {
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patient");
   const patient = patientId ? getPatientById(patientId) : null;
-  const title = patient ? `Review Queue — ${patient.name}` : "AI Review Queue";
+  const title = patient ? `Review Queue | ${patient.name}` : "AI Review Queue";
 
   return (
     <DashboardShell role="gp" title={title}>

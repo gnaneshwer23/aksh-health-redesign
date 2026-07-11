@@ -36,7 +36,7 @@ export async function lookupOdsCode(code: string): Promise<OdsLookupResult> {
   if (!match) {
     return {
       found: false,
-      message: "Not found — please enter manually",
+      message: "Not found: please enter manually",
     };
   }
   const parts = [

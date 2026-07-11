@@ -238,7 +238,7 @@ export const carePathways: CarePathway[] = [
       {
         stepNumber: 3,
         title: "Polypharmacy review",
-        description: "GUARDIAN polypharmacy analysis — 3 interactions flagged",
+        description: "GUARDIAN polypharmacy analysis: 3 interactions flagged",
         status: "AwaitingApproval",
         dueDate: "2026-07-08",
         completedDate: null,

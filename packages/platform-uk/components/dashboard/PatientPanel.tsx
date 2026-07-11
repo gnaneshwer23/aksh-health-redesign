@@ -30,7 +30,7 @@ export function PatientPanel({
         <section>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted">
-              Today — {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
+              Today, {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
             </h2>
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">{patients.length}</span>
           </div>

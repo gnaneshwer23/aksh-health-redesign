@@ -15,7 +15,7 @@ const proofStats = [
   {
     value: "56",
     label: "Product surfaces",
-    detail: "Review flows, evidence reports, ops views, roadmap, readiness, governance, and export routes — all built."
+    detail: "Review flows, evidence reports, ops views, roadmap, readiness, governance, and export routes: all built."
   },
   {
     value: "7",
@@ -25,12 +25,12 @@ const proofStats = [
   {
     value: "4",
     label: "Operating layers",
-    detail: "Intake, clinician review, operations dashboards, and evidence governance — fully separated."
+    detail: "Intake, clinician review, operations dashboards, and evidence governance: fully separated."
   },
   {
     value: "3",
     label: "Clinical roles",
-    detail: "Clinical reviewer, operations lead, and leadership — each with a distinct workflow path and controls."
+    detail: "Clinical reviewer, operations lead, and leadership: each with a distinct workflow path and controls."
   }
 ];
 
@@ -38,7 +38,7 @@ const capabilities = [
   {
     icon: "01",
     title: "AI-Structured Intake",
-    text: "Consultation notes and transcripts are transformed into structured, FHIR-shaped drafts — complete with source trace, confidence scores, and deterministic workflow context.",
+    text: "Consultation notes and transcripts become structured, FHIR-shaped drafts with source trace, confidence scores, and workflow context.",
     items: [
       "Consultation note and transcript intake",
       "Source profile and provenance trace",
@@ -58,7 +58,7 @@ const capabilities = [
   {
     icon: "03",
     title: "Evidence & Governance",
-    text: "Every accepted outcome becomes inspectable evidence — flowing into benchmark sign-off, readiness history, and governance-facing proof surfaces for regulatory inspection.",
+    text: "Every accepted outcome becomes inspectable evidence: flowing into benchmark sign-off, readiness history, and governance-facing proof surfaces for regulatory inspection.",
     items: [
       "Benchmark report and sign-off flows",
       "Readiness snapshots and history tracking",
@@ -68,7 +68,7 @@ const capabilities = [
   {
     icon: "04",
     title: "Integration-Ready Architecture",
-    text: "The platform demonstrates how future NHS GP Connect and EMIS integration fits — while keeping current proof boundaries clearly visible, honest, and non-overclaiming.",
+    text: "The platform demonstrates how future NHS GP Connect and EMIS integration fits: while keeping current proof boundaries clearly visible, honest, and non-overclaiming.",
     items: [
       "FHIR R4 export shape ready for live integration",
       "Synthetic-only labels throughout all surfaces",
@@ -86,7 +86,7 @@ const howItWorks = [
   {
     step: "02",
     title: "Clinician Review & Decision",
-    text: "Surface blockers, ranked concerns, and reviewer checklist items before any decision is recorded. The clinician accepts, defers, rejects, or overrides — with full accountability captured."
+    text: "Surface blockers, ranked concerns, and reviewer checklist items before any decision is recorded. The clinician accepts, defers, rejects, or overrides: with full accountability captured."
   },
   {
     step: "03",
@@ -99,7 +99,7 @@ const roles = [
   {
     role: "Clinical Reviewer",
     promise: "Review the next safe decision.",
-    detail: "Priority queue, draft inspection, safety flags, checklist confirmation, and accept or defer controls — all in one focused clinical workflow.",
+    detail: "Priority queue, draft inspection, safety flags, checklist confirmation, and accept or defer controls: all in one focused clinical workflow.",
     href: "/review",
     cta: "Open clinical queue",
     primary: true
@@ -222,8 +222,8 @@ export function ProductLanding() {
           <p className="product-kicker">Platform capabilities</p>
           <h2 id="capabilities-heading">Everything the clinical workflow needs to run.</h2>
           <p>
-            Four interlocking capabilities — from unstructured intake to inspectable governance
-            evidence — built to support a credible UK GP clinical AI deployment.
+            Four interlocking capabilities: from unstructured intake to inspectable governance
+            evidence: built to support a credible UK GP clinical AI deployment.
           </p>
         </div>
         <div className="product-capability-grid">
@@ -248,7 +248,7 @@ export function ProductLanding() {
           <p className="product-kicker">How it works</p>
           <h2 id="how-heading">Intake to evidence in three stages.</h2>
           <p>
-            A controlled clinical workflow loop — from unstructured input to frozen evidence artifact —
+            A controlled clinical workflow loop: from unstructured input to frozen evidence artifact,
             keeping every decision auditable and every boundary professionally honest.
           </p>
         </div>
@@ -269,7 +269,7 @@ export function ProductLanding() {
           <p className="product-kicker">Built for your role</p>
           <h2 id="roles-heading">Each role gets the workflow it needs.</h2>
           <p>
-            Aksh Health adapts to clinical reviewers, operations leads, and leadership — each with
+            Aksh Health adapts to clinical reviewers, operations leads, and leadership | each with
             a distinct path, purpose, and set of controls.
           </p>
         </div>
@@ -299,7 +299,7 @@ export function ProductLanding() {
           <h2>The synthetic proof environment is live.</h2>
           <p>
             No real patient data. No live NHS writeback. A complete clinical workflow platform
-            running in a safe validation environment — ready to inspect, demonstrate, and evaluate.
+            running in a safe validation environment: ready to inspect, demonstrate, and evaluate.
           </p>
         </div>
         <div className="product-actions">

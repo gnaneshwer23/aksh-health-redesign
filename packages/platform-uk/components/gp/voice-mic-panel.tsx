@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AudioRecorder } from "@/components/review/audio-recorder";
 
 const PATEL_STUB_TRANSCRIPT =
-  "Patient reports worsening left calf swelling and discomfort over five days. Type 2 diabetes — blood sugars running 12 to 14, polydipsia. Last HbA1c 58 mmol/mol. On metformin and aspirin 75mg. Considering apixaban for suspected DVT after Wells score discussion.";
+  "Patient reports worsening left calf swelling and discomfort over five days. Type 2 diabetes: blood sugars running 12 to 14, polydipsia. Last HbA1c 58 mmol/mol. On metformin and aspirin 75mg. Considering apixaban for suspected DVT after Wells score discussion.";
 
 export function VoiceMicPanel({
   onTranscript,

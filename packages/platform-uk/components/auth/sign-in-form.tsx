@@ -73,7 +73,7 @@ function SignInFormInner() {
   return (
     <AuthCardLayout
       title="Sign in to your account"
-      subtitle="Clinical AI workflow platform — human-gated review"
+      subtitle="Clinical AI workflow platform with human-gated review"
       footer={
         <p className="text-center text-sm text-muted">
           Don&apos;t have an account?{" "}

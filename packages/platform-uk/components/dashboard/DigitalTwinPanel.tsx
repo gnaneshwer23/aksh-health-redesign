@@ -50,7 +50,7 @@ export function DigitalTwinPanel(props: DigitalTwinPanelProps) {
     return (
       <Card className="shadow-sm">
         <CardHeader className="p-4 pb-0">
-          <CardTitle className="text-sm">ICS Digital Twin — Aggregate Intelligence</CardTitle>
+          <CardTitle className="text-sm">ICS Digital Twin: aggregate intelligence</CardTitle>
           <p className="text-xs text-muted">{icsData.icsName} · read-only population view</p>
         </CardHeader>
         <CardContent className="p-4 space-y-4">
@@ -80,7 +80,7 @@ export function DigitalTwinPanel(props: DigitalTwinPanelProps) {
             {aggregate.recommendedActions.map((a) => (
               <div key={a} className="mb-2 rounded-sm border border-border p-2 text-xs">
                 <p>{a}</p>
-                {readOnly && <p className="mt-1 text-muted text-[10px]">Read-only aggregate view — no HITL write-back</p>}
+                {readOnly && <p className="mt-1 text-muted text-[10px]">Read-only aggregate view. No HITL write-back.</p>}
               </div>
             ))}
           </div>

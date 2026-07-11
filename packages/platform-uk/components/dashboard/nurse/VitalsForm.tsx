@@ -51,7 +51,7 @@ export function VitalsForm() {
       user: "Nurse Davies",
       agent: "Nurse",
       action: "Saved vital signs",
-      resource: `${patient.name} — BP ${vitals.bpSys}/${vitals.bpDia}`,
+      resource: `${patient.name} | BP ${vitals.bpSys}/${vitals.bpDia}`,
     });
     toast({ title: "Observations saved", description: "Mock FHIR Observation created" });
   };
@@ -60,7 +60,7 @@ export function VitalsForm() {
     setVitals(MOCK_VOICE_VITALS);
     setEntryMode("manual");
     toast({
-      title: "VOICE parsed vitals — please verify before save",
+      title: "VOICE parsed vitals | please verify before save",
       description: "Review auto-filled values before saving to the record.",
     });
   };

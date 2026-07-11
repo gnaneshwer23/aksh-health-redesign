@@ -59,7 +59,7 @@ export const CLINICAL_AGENT_META: Record<
   EQUITY: {
     label: "EQUITY",
     function: "Disparity overlay",
-    description: "IMD / ethnicity disparity signals (admin review — Phase B)."
+    description: "IMD / ethnicity disparity signals (admin review: Phase B)."
   },
   SHIELD: {
     label: "SHIELD",
@@ -154,9 +154,9 @@ function buildDrAssistItem(reviewCase: ReviewCase): ReviewQueueItem {
 
 function inferIcdCodes(conditionText: string) {
   const lower = conditionText.toLowerCase();
-  if (lower.includes("dvt") || lower.includes("deep vein")) return ["I82.4 — Acute embolism and thrombosis of deep veins of lower extremity"];
+  if (lower.includes("dvt") || lower.includes("deep vein")) return ["I82.4: Acute embolism and thrombosis of deep veins of lower extremity"];
   if (lower.includes("type 2") || lower.includes("t2d") || lower.includes("diabetes")) {
-    return ["E11.65 — Type 2 diabetes mellitus with hyperglycaemia"];
+    return ["E11.65 | Type 2 diabetes mellitus with hyperglycaemia"];
   }
   return [`Provisional: ${conditionText}`];
 }
