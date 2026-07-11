@@ -4,29 +4,94 @@ import { useState } from "react";
 
 import Footer from "@/components/marketing/Footer";
 import Navbar from "@/components/marketing/Navbar";
+import {
+  EHR_SYSTEMS,
+  ICS_REGIONS,
+  LIST_SIZES,
+  ORG_TYPES,
+  PILOT_COMMITMENTS,
+} from "@/lib/pilot/validation";
 
 const STEPS = ["Organisation", "Technical Setup", "Commitments"];
+
+type FormState = {
+  orgType: string;
+  orgName: string;
+  odsCode: string;
+  region: string;
+  contactName: string;
+  contactEmail: string;
+  ehrSystem: string[];
+  listSize: string;
+  itContact: string;
+  commitments: string[];
+};
 
 export default function PilotApplyPage() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
+  const [referenceLabel, setReferenceLabel] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>({
     orgType: "",
     orgName: "",
     odsCode: "",
     region: "",
     contactName: "",
     contactEmail: "",
-    ehrSystem: [] as string[],
+    ehrSystem: [],
     listSize: "",
     itContact: "",
-    commitments: [] as string[],
+    commitments: [],
   });
 
-  const update = (key: string, value: unknown) => setForm((current) => ({ ...current, [key]: value }));
+  const update = (key: keyof FormState, value: unknown) =>
+    setForm((current) => ({ ...current, [key]: value }));
+
   const toggleArr = (key: "ehrSystem" | "commitments", value: string) => {
     const arr = form[key];
     update(key, arr.includes(value) ? arr.filter((item) => item !== value) : [...arr, value]);
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("/api/pilot/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orgType: form.orgType,
+          orgName: form.orgName,
+          odsCode: form.odsCode,
+          region: form.region,
+          contactName: form.contactName,
+          contactEmail: form.contactEmail,
+          ehrSystems: form.ehrSystem,
+          listSize: form.listSize,
+          itContact: form.itContact,
+          commitments: form.commitments,
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        referenceLabel?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to submit application. Please try again.");
+      }
+
+      setReferenceLabel(payload.referenceLabel ?? "");
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit application.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -39,9 +104,15 @@ export default function PilotApplyPage() {
               <span className="text-4xl text-emerald">✓</span>
             </div>
             <h1 className="mb-3 text-2xl font-bold text-navy">Application Received</h1>
-            <p className="text-steel">
+            <p className="mb-6 text-steel">
               Our team will contact you within 3 working days to discuss your pilot application.
             </p>
+            {referenceLabel ? (
+              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-slate">
+                Application reference:{" "}
+                <span className="font-mono font-semibold text-navy">{referenceLabel}</span>
+              </p>
+            ) : null}
           </div>
         </div>
         <Footer />
@@ -88,7 +159,7 @@ export default function PilotApplyPage() {
                   onChange={(event) => update("orgType", event.target.value)}
                 >
                   <option value="">Select type</option>
-                  {["NHS ICS", "GP Network / PCN", "NHS Hospital Trust", "Private Healthcare Provider"].map((option) => (
+                  {ORG_TYPES.map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
@@ -105,6 +176,7 @@ export default function PilotApplyPage() {
                   <label className="mb-1.5 block text-sm font-medium text-slate">{label}</label>
                   <input
                     className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                    type={key === "contactEmail" ? "email" : "text"}
                     value={form[key]}
                     onChange={(event) => update(key, event.target.value)}
                   />
@@ -118,11 +190,9 @@ export default function PilotApplyPage() {
                   onChange={(event) => update("region", event.target.value)}
                 >
                   <option value="">Select region</option>
-                  {["London", "South East", "South West", "Midlands", "East of England", "North West", "North East & Yorkshire"].map(
-                    (option) => (
-                      <option key={option}>{option}</option>
-                    ),
-                  )}
+                  {ICS_REGIONS.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -134,7 +204,7 @@ export default function PilotApplyPage() {
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate">Current EHR System(s) *</label>
                 <div className="space-y-2">
-                  {["EMIS Web", "SystmOne", "Epic", "Oracle Health", "Other"].map((ehr) => (
+                  {EHR_SYSTEMS.map((ehr) => (
                     <label key={ehr} className="flex cursor-pointer items-center gap-3">
                       <input
                         type="checkbox"
@@ -155,7 +225,7 @@ export default function PilotApplyPage() {
                   onChange={(event) => update("listSize", event.target.value)}
                 >
                   <option value="">Select size</option>
-                  {["Under 5,000", "5,000–15,000", "15,000–50,000", "50,000–200,000", "Over 200,000"].map((option) => (
+                  {LIST_SIZES.map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
@@ -177,13 +247,7 @@ export default function PilotApplyPage() {
               <h2 className="mb-6 text-xl font-bold text-navy">Commitments</h2>
               <p className="text-sm text-steel">Please confirm your organisation can commit to the following:</p>
               <div className="space-y-3">
-                {[
-                  "We will sign a Data Processing Agreement (DPA) before pilot start",
-                  "We will nominate a Clinical Safety Officer or lead clinician for the pilot",
-                  "We will provide access for integration with our EHR system",
-                  "We will make at least 50 clinicians available for the pilot period (Oct–Dec 2026)",
-                  "We will participate in monthly clinical outcome reporting",
-                ].map((commitment) => (
+                {PILOT_COMMITMENTS.map((commitment) => (
                   <label
                     key={commitment}
                     className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-surface p-3 transition-colors hover:border-navy"
@@ -201,10 +265,17 @@ export default function PilotApplyPage() {
             </div>
           )}
 
+          {submitError ? (
+            <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </p>
+          ) : null}
+
           <div className="mt-8 flex justify-between border-t border-border pt-6">
             <button
               type="button"
               onClick={() => setStep((current) => current - 1)}
+              disabled={submitting}
               className={`rounded-lg border border-border px-5 py-2.5 font-medium text-slate transition-colors hover:bg-surface ${
                 step === 0 ? "invisible" : ""
               }`}
@@ -222,10 +293,11 @@ export default function PilotApplyPage() {
             ) : (
               <button
                 type="button"
-                onClick={() => setSubmitted(true)}
-                className="rounded-lg bg-emerald px-8 py-2.5 font-bold text-white transition-colors hover:bg-emerald/90"
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="rounded-lg bg-emerald px-8 py-2.5 font-bold text-white transition-colors hover:bg-emerald/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Submit Application
+                {submitting ? "Submitting…" : "Submit Application"}
               </button>
             )}
           </div>

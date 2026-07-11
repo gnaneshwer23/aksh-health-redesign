@@ -38,6 +38,7 @@ export default function Navbar() {
             ["For Clinicians", "/for-clinicians"],
             ["For Hospitals", "/for-hospitals"],
             ["For Patients", "/for-patients"],
+            ["For Administrators", "/for-administrators"],
             ["Docs", "/docs"],
           ].map(([label, href]) => (
             <Link

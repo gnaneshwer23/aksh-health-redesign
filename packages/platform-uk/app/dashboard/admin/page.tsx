@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { AuditLogTable } from "@/components/dashboard/AuditLogTable";
+import { PilotApplicationsPanel } from "@/components/dashboard/PilotApplicationsPanel";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IntegrationStatus } from "@/components/dashboard/IntegrationStatus";
@@ -48,6 +49,8 @@ export default function AdminDashboardPage() {
             <CardContent><AuditLogTable limit={10} /></CardContent>
           </Card>
         </div>
+
+        <PilotApplicationsPanel />
 
         <Card className="shadow-sm">
           <CardHeader className="flex flex-row justify-between items-center">

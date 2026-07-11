@@ -25,6 +25,7 @@ export default function Footer() {
                 ["For Clinicians", "/for-clinicians"],
                 ["For Hospitals", "/for-hospitals"],
                 ["For Patients", "/for-patients"],
+                ["For Administrators", "/for-administrators"],
               ],
             },
             {

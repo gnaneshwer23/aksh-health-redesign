@@ -17,6 +17,7 @@ const publicRoutePrefixes = [
   "/api/auth",
   "/demo",
   "/pilot",
+  "/api/pilot",
   "/platform",
   "/for-clinicians",
   "/for-hospitals",
