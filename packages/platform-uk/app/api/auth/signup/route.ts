@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 import { signUpSchema } from "@/lib/auth/schemas";
 import { createUserWithProfile, findUserByEmail } from "@/lib/auth/user-repository";
-import { SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
+import { upsertOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
+import { getRoleDefinition, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -29,6 +30,15 @@ export async function POST(request: Request) {
       password,
       role: mappedRole,
       fullName,
+    });
+
+    const roleDef = getRoleDefinition(mappedRole);
+    await upsertOnboardingProgress({
+      userId: user.id,
+      role: mappedRole,
+      currentStep: 0,
+      totalSteps: roleDef?.steps.length ?? null,
+      completedSteps: [],
     });
 
     return NextResponse.json(

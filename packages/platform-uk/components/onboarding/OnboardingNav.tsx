@@ -2,8 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useOnboardingStore } from "@/lib/onboarding/store";
-import { saveForLater } from "@/lib/onboarding/nav-utils";
+import { formatSavedAt, useOnboardingStore } from "@/lib/onboarding/store";
 
 type OnboardingNavProps = {
   onBack?: () => void;
@@ -21,14 +20,17 @@ export function OnboardingNav({
   showBack = true,
 }: OnboardingNavProps) {
   const { toast } = useToast();
-  const save = useOnboardingStore((s) => s.saveForLater);
+  const saveForLater = useOnboardingStore((s) => s.saveForLater);
 
-  function handleSave() {
-    save();
-    saveForLater();
+  async function handleSave() {
+    const savedAt = await saveForLater();
+    const formatted = formatSavedAt(savedAt);
+
     toast({
       title: "Progress saved",
-      description: "You can continue onboarding later from this device.",
+      description: formatted
+        ? `Your onboarding was saved at ${formatted}. Sign in on any device to continue.`
+        : "Saved locally. Sign in to sync across devices.",
     });
   }
 

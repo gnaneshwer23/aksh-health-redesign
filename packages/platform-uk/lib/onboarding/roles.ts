@@ -197,6 +197,28 @@ export function getStepIndex(role: UserRole | null, stepId: OnboardingStepId): n
   return def.steps.indexOf(stepId);
 }
 
+export function getStepIdAtIndex(
+  role: UserRole | null,
+  index: number
+): OnboardingStepId | null {
+  const def = getRoleDefinition(role);
+  if (!def || index < 0 || index >= def.steps.length) return null;
+  return def.steps[index] ?? null;
+}
+
+export function getStepIdFromPathname(pathname: string): OnboardingStepId | null {
+  if (pathname === "/onboarding" || pathname === "/onboarding/role-select") {
+    return "role-select";
+  }
+  const match = pathname.match(/^\/onboarding\/([^/]+)/);
+  if (!match?.[1]) return null;
+  const segment = match[1] as OnboardingStepId;
+  if (segment in ONBOARDING_STEP_LABELS) {
+    return segment;
+  }
+  return null;
+}
+
 export function getStepPath(stepId: OnboardingStepId): string {
   if (stepId === "role-select") return "/onboarding/role-select";
   if (stepId === "complete") return "/onboarding/complete";

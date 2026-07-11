@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { completeOnboarding } from "@/lib/auth/user-repository";
+import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
 const roleValues = ROLES.map((role) => role.id) as [string, ...string[]];
@@ -48,6 +49,8 @@ export async function POST(request: Request) {
         consents: consents ?? {},
       },
     });
+
+    await clearOnboardingProgress(session.user.id);
 
     return NextResponse.json({
       ok: true,

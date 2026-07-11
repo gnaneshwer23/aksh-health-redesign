@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 
+import { OnboardingHydrator } from "@/components/onboarding/OnboardingHydrator";
 import { ToasterProvider } from "@/components/ui/use-toast";
 
 import "./onboarding.css";
@@ -19,7 +20,7 @@ export default function OnboardingLayout({ children }: { children: ReactNode }) 
       <div className="onboarding-shell">
         <main className="px-4 py-10">
           <Suspense fallback={<p className="text-center text-muted">Loading onboarding…</p>}>
-            {children}
+            <OnboardingHydrator>{children}</OnboardingHydrator>
           </Suspense>
         </main>
       </div>
