@@ -7,6 +7,7 @@ import {
   BarChart3,
   Building2,
   ClipboardList,
+  Database,
   FileText,
   FlaskConical,
   Heart,
@@ -80,8 +81,9 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   researcher: [
     { href: "/dashboard/researcher", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/researcher?panel=evaluation", label: "Evaluation", icon: FlaskConical },
-    { href: "/dashboard/researcher?section=settings", label: "Settings", icon: Settings },
+    { href: "/dashboard/researcher/evaluation", label: "Evaluation", icon: FlaskConical },
+    { href: "/dashboard/researcher/data-access", label: "Data Access", icon: Database },
+    { href: "/dashboard/researcher/settings", label: "Settings", icon: Settings },
   ],
   patient: [],
 };

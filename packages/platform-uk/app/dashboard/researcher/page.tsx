@@ -1,85 +1,82 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { ChevronRight, Database, FlaskConical, Settings, Shield } from "lucide-react";
 
-import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { GovernanceBoundariesCard } from "@/components/dashboard/researcher/GovernanceBoundariesCard";
+import { ResearcherKpiRow } from "@/components/dashboard/researcher/ResearcherKpiRow";
+import { useResearcherData } from "@/components/dashboard/researcher/ResearcherDataContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function ResearcherDashboardPage() {
-  const searchParams = useSearchParams();
-  const panel = searchParams.get("panel");
-  const section = searchParams.get("section");
+const QUICK_LINKS = [
+  {
+    href: "/dashboard/researcher/evaluation",
+    title: "Outcome Evaluation",
+    description: "Cohort metrics, evaluation charts, and authenticated JSON export.",
+    icon: FlaskConical,
+  },
+  {
+    href: "/dashboard/researcher/data-access",
+    title: "Data Access",
+    description: "Aggregate vs individual access level and ethics reference status.",
+    icon: Database,
+  },
+  {
+    href: "/dashboard/researcher/settings",
+    title: "Settings",
+    description: "Notification preferences and export governance — Phase B stub.",
+    icon: Settings,
+  },
+] as const;
 
-  if (section === "settings") {
-    return (
-      <DashboardShell role="researcher" title="Settings">
-        <div className="flex-1 overflow-y-auto p-6">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Researcher settings</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted">
-              <p>Notification preferences, data access scopes, and export governance — coming in Phase B.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardShell>
-    );
-  }
-
-  if (panel === "evaluation") {
-    return (
-      <DashboardShell role="researcher" title="Evaluation">
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Outcome evaluation</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted">
-              <p>Pseudonymised cohort metrics and AI outcome signals for approved studies.</p>
-              <div className="flex flex-wrap gap-3">
-                <Link className="text-sm font-semibold text-primary underline" href="/api/research/evaluation">
-                  API evaluation export
-                </Link>
-                <Link className="text-sm font-semibold text-primary underline" href="/review/benchmarks">
-                  Benchmark dashboard
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardShell>
-    );
-  }
+export default function ResearcherOverviewPage() {
+  const { cohort } = useResearcherData();
 
   return (
-    <DashboardShell role="researcher" title="Researcher Dashboard">
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Aggregate research view</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted">
-              <p>Pseudonymised cohort metrics and AI outcome signals for approved studies.</p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Report formats</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-3">
-              <Link className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-surface-muted" href="/api/research/evaluation">
-                API evaluation export
-              </Link>
-              <Link className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-surface-muted" href="/review/benchmarks">
-                Benchmark dashboard
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">Research Cohort Overview</h2>
+        <p className="text-sm text-muted">
+          {cohort.organisationName} · {cohort.studiesActive} active studies · aggregate access by default
+        </p>
       </div>
-    </DashboardShell>
+
+      <ResearcherKpiRow />
+
+      <GovernanceBoundariesCard />
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {QUICK_LINKS.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link key={link.href} href={link.href}>
+              <Card className="h-full border-l-4 border-l-[#E67E22] shadow-sm transition-shadow hover:shadow-md">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-[#E67E22]" />
+                    <CardTitle className="text-sm">{link.title}</CardTitle>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted">{link.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
+      </div>
+
+      <Card className="border-[#E67E22]/20 bg-[#E67E22]/5 shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-2 space-y-0">
+          <Shield className="h-4 w-4 text-[#E67E22]" />
+          <CardTitle className="text-sm text-[#E67E22]">Synthetic data only</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted">
+          All cohort metrics in this dashboard use pseudonymised synthetic patients. Benchmark drilldowns and
+          sign-off workflows are available in the research evaluation module — not via legacy review routes.
+        </CardContent>
+      </Card>
+    </div>
   );
 }

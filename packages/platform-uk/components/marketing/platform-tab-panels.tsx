@@ -215,6 +215,9 @@ export function PlatformAdministratorsPanel() {
               <Link href="/signup?role=ics-lead" className="text-sm font-semibold text-warning hover:underline">
                 Sign up as ICS Lead →
               </Link>
+              <Link href="/signup?role=researcher" className="text-sm font-semibold text-[#E67E22] hover:underline">
+                Sign up as Researcher — cohort metrics & evaluation export →
+              </Link>
             </div>
           </article>
           <article className="rounded-2xl border border-border p-6">

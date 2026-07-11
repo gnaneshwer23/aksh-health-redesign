@@ -24,6 +24,7 @@
     "smoke:patient": "node scripts/smoke-patient-dashboard.mjs",
     "smoke:ics": "node scripts/smoke-ics-dashboard.mjs",
     "smoke:hospital": "node scripts/smoke-hospital-dashboard.mjs",
+    "smoke:researcher": "node scripts/smoke-researcher-dashboard.mjs",
     "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",
     "start": "next start",
     "lint": "npm run typecheck",
