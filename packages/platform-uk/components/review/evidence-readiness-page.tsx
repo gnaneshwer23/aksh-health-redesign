@@ -201,7 +201,7 @@ export function EvidenceReadinessPage({
               <div className="row" key={item}>
                 <div>
                   <strong>{item}</strong>
-                  <p>Track this before external reuse or broader pilot packaging.</p>
+                  <p>Track this before external reuse or broader deployment packaging.</p>
                 </div>
                 <span className="tag warn">follow-up</span>
               </div>

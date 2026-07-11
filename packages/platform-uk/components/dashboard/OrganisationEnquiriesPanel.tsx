@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatPilotReferenceId } from "@/lib/pilot/reference-id";
+import { formatAccessRequestReferenceId } from "@/lib/access-requests/reference-id";
 
-type PilotApplicationRow = {
+type OrganisationEnquiryRow = {
   id: string;
   orgName: string;
   orgType: string;
@@ -18,7 +18,7 @@ type PilotApplicationRow = {
   referenceLabel?: string;
 };
 
-const MOCK_APPLICATIONS: PilotApplicationRow[] = [
+const MOCK_ENQUIRIES: OrganisationEnquiryRow[] = [
   {
     id: "mock-north-west-ics",
     orgName: "North West Integrated Care Board",
@@ -28,7 +28,7 @@ const MOCK_APPLICATIONS: PilotApplicationRow[] = [
     contactEmail: "s.chen@example.nhs.uk",
     status: "submitted",
     createdAt: "2026-07-08T09:15:00.000Z",
-    referenceLabel: "PILOT-A1B2",
+    referenceLabel: "AKSH-A1B2",
   },
   {
     id: "mock-london-pcn",
@@ -39,12 +39,15 @@ const MOCK_APPLICATIONS: PilotApplicationRow[] = [
     contactEmail: "j.okonkwo@example.nhs.uk",
     status: "submitted",
     createdAt: "2026-07-05T14:42:00.000Z",
-    referenceLabel: "PILOT-C3D4",
+    referenceLabel: "AKSH-C3D4",
   },
 ];
 
 function mockFallbackEnabled() {
-  return process.env.NEXT_PUBLIC_AKSH_PILOT_MOCK_FALLBACK === "true";
+  return (
+    process.env.NEXT_PUBLIC_AKSH_ACCESS_REQUEST_MOCK_FALLBACK === "true" ||
+    process.env.NEXT_PUBLIC_AKSH_PILOT_MOCK_FALLBACK === "true"
+  );
 }
 
 function formatDate(value: string) {
@@ -55,8 +58,8 @@ function formatDate(value: string) {
   });
 }
 
-function ApplicationsTable({ applications, limit }: { applications: PilotApplicationRow[]; limit?: number }) {
-  const rows = limit ? applications.slice(0, limit) : applications;
+function EnquiriesTable({ enquiries, limit }: { enquiries: OrganisationEnquiryRow[]; limit?: number }) {
+  const rows = limit ? enquiries.slice(0, limit) : enquiries;
 
   return (
     <Table>
@@ -71,22 +74,22 @@ function ApplicationsTable({ applications, limit }: { applications: PilotApplica
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((application) => (
-          <TableRow key={application.id}>
+        {rows.map((enquiry) => (
+          <TableRow key={enquiry.id}>
             <TableCell className="font-mono text-xs">
-              {application.referenceLabel ?? formatPilotReferenceId(application.id)}
+              {enquiry.referenceLabel ?? formatAccessRequestReferenceId(enquiry.id)}
             </TableCell>
             <TableCell>
-              <div className="font-medium">{application.orgName}</div>
-              <div className="text-xs text-muted">{application.orgType}</div>
+              <div className="font-medium">{enquiry.orgName}</div>
+              <div className="text-xs text-muted">{enquiry.orgType}</div>
             </TableCell>
-            <TableCell>{application.region ?? "—"}</TableCell>
+            <TableCell>{enquiry.region ?? "—"}</TableCell>
             <TableCell>
-              <div>{application.contactName}</div>
-              <div className="text-xs text-muted">{application.contactEmail}</div>
+              <div>{enquiry.contactName}</div>
+              <div className="text-xs text-muted">{enquiry.contactEmail}</div>
             </TableCell>
-            <TableCell className="capitalize">{application.status}</TableCell>
-            <TableCell>{formatDate(application.createdAt)}</TableCell>
+            <TableCell className="capitalize">{enquiry.status}</TableCell>
+            <TableCell>{formatDate(enquiry.createdAt)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -94,8 +97,8 @@ function ApplicationsTable({ applications, limit }: { applications: PilotApplica
   );
 }
 
-export function PilotApplicationsPanel({ compact = false, limit }: { compact?: boolean; limit?: number }) {
-  const [applications, setApplications] = useState<PilotApplicationRow[]>([]);
+export function OrganisationEnquiriesPanel({ compact = false, limit }: { compact?: boolean; limit?: number }) {
+  const [enquiries, setEnquiries] = useState<OrganisationEnquiryRow[]>([]);
   const [usingMock, setUsingMock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,63 +107,63 @@ export function PilotApplicationsPanel({ compact = false, limit }: { compact?: b
   useEffect(() => {
     let cancelled = false;
 
-    async function loadApplications() {
+    async function loadEnquiries() {
       setLoading(true);
       setError(null);
       setEmpty(false);
 
       try {
-        const response = await fetch("/api/admin/pilot-applications");
+        const response = await fetch("/api/admin/access-requests");
         const payload = (await response.json().catch(() => ({}))) as {
-          applications?: PilotApplicationRow[];
+          applications?: OrganisationEnquiryRow[];
           error?: string;
         };
 
         if (!response.ok) {
-          throw new Error(payload.error ?? "Unable to load pilot applications");
+          throw new Error(payload.error ?? "Unable to load organisation enquiries");
         }
 
         if (cancelled) return;
 
         if (payload.applications?.length) {
-          setApplications(payload.applications);
+          setEnquiries(payload.applications);
           setUsingMock(false);
         } else if (mockFallbackEnabled()) {
-          setApplications(MOCK_APPLICATIONS);
+          setEnquiries(MOCK_ENQUIRIES);
           setUsingMock(true);
         } else {
-          setApplications([]);
+          setEnquiries([]);
           setUsingMock(false);
           setEmpty(true);
         }
       } catch (loadError) {
         if (cancelled) return;
         if (mockFallbackEnabled()) {
-          setApplications(MOCK_APPLICATIONS);
+          setEnquiries(MOCK_ENQUIRIES);
           setUsingMock(true);
         } else {
-          setApplications([]);
+          setEnquiries([]);
         }
-        setError(loadError instanceof Error ? loadError.message : "Unable to load pilot applications");
+        setError(loadError instanceof Error ? loadError.message : "Unable to load organisation enquiries");
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
-    void loadApplications();
+    void loadEnquiries();
     return () => {
       cancelled = true;
     };
   }, []);
 
   const content = loading ? (
-    <p className="text-sm text-muted">Loading recent applications…</p>
+    <p className="text-sm text-muted">Loading recent enquiries…</p>
   ) : empty ? (
-    <p className="text-sm text-muted">No pilot applications submitted yet.</p>
-  ) : error && !usingMock && applications.length === 0 ? (
+    <p className="text-sm text-muted">No organisation enquiries submitted yet.</p>
+  ) : error && !usingMock && enquiries.length === 0 ? (
     <p className="text-sm text-red-600">{error}</p>
   ) : (
-    <ApplicationsTable applications={applications} limit={compact ? (limit ?? 3) : limit} />
+    <EnquiriesTable enquiries={enquiries} limit={compact ? (limit ?? 3) : limit} />
   );
 
   if (compact) {
@@ -177,7 +180,7 @@ export function PilotApplicationsPanel({ compact = false, limit }: { compact?: b
   return (
     <Card className="shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">ICS Pilot Applications</CardTitle>
+        <CardTitle className="text-base">Organisation Enquiries</CardTitle>
         {usingMock ? (
           <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">Sample data</span>
         ) : null}

@@ -278,7 +278,7 @@ export function DemoReadinessChecklist({
         <h2>Prep the product for a stakeholder walkthrough without overclaiming it.</h2>
         <p>
           This page separates automatically derived readiness signals from manual rehearsal checks. Use it immediately
-          before an advisor, investor, or pilot-partner walkthrough.
+          before an advisor, investor, or partner walkthrough.
         </p>
         <div className="hero-stats">
           <div className="hero-stat">

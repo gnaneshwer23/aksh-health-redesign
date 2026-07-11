@@ -123,13 +123,13 @@ export function PlatformOverviewPanel() {
         <div className="mx-auto max-w-xl px-6">
           <h2 className="text-2xl font-bold text-navy">See the platform in your environment</h2>
           <p className="mt-3 text-steel">
-            Request a pilot to connect Aksh Health to your EMIS Web or SystmOne deployment with FHIR R4 integration.
+            Connect Aksh Health to your EMIS Web or SystmOne deployment with FHIR R4 integration. Our team handles onboarding.
           </p>
           <Link
-            href="/pilot/apply"
-            className="mt-6 inline-block rounded-xl bg-navy px-8 py-3 font-bold text-white transition-colors hover:bg-navy/90"
+            href="/get-started"
+            className="mt-6 inline-block rounded-xl bg-emerald px-8 py-3 font-bold text-white transition-colors hover:bg-emerald/90"
           >
-            Request a Pilot
+            Book a Demo
           </Link>
         </div>
       </section>
@@ -253,7 +253,7 @@ export function PlatformHospitalsPanel() {
           ))}
         </div>
         <div className="mt-10 flex flex-wrap gap-4">
-          <Link href="/pilot/apply" className="rounded-xl bg-navy px-6 py-3 font-bold text-white hover:bg-navy/90">
+          <Link href="/get-started" className="rounded-xl bg-navy px-6 py-3 font-bold text-white hover:bg-navy/90">
             Book Executive Briefing
           </Link>
           <Link

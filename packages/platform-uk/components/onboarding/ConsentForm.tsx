@@ -53,7 +53,7 @@ const CONSENT_COPY: Record<
   "ics-lead": [
     { key: "dataSharing", label: "I accept data sharing terms across practices in my ICS boundary", required: true },
     { key: "pseudonymised", label: "I understand population data is pseudonymised", required: true },
-    { key: "pilotEvaluation", label: "I agree to NHS pilot evaluation requirements", required: true },
+    { key: "pilotEvaluation", label: "I agree to NHS clinical evaluation requirements", required: true },
   ],
   "hospital-executive": [
     { key: "enterpriseDpa", label: "I accept the Enterprise Data Processing Agreement", required: true },

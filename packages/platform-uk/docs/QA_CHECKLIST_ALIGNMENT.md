@@ -77,7 +77,7 @@ CI runs `npm run verify && npm run build` then Playwright against `npm run start
 
 | File | Journey | Checklist anchors |
 |---|---|---|
-| `e2e/marketing.spec.ts` | Homepage, nav, pilot CTA visibility | S4-01, S4-02, S15-01 |
+| `e2e/marketing.spec.ts` | Homepage, nav, get started CTA visibility | S4-01, S4-02, S15-01 |
 | `e2e/auth.spec.ts` | 8-tile signup, GP credentials sign-in | S2-01, S2-03, S15-02 |
 | `e2e/onboarding-redirect.spec.ts` | Incomplete onboarding → `/onboarding/*` | S3-01, S3-02 |
 | `e2e/gp-dashboard.spec.ts` | GP dashboard + sidebar nav | S5-01, S5-03 |

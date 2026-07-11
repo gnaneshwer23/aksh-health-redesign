@@ -9,30 +9,29 @@ export default function HeroSection() {
       <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-24 text-center">
         <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 shadow-sm backdrop-blur-sm">
           <div className="h-2 w-2 animate-pulse rounded-full bg-accent" />
-          <span className="text-sm font-medium text-white/85">NHS Phase 1 Pilot — October 2026</span>
+          <span className="text-sm font-medium text-white/85">AI-native Healthcare OS for the NHS</span>
         </div>
 
-        <h1 className="mb-4 text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl">Healthcare Has Data.</h1>
-        <h1 className="mb-8 text-5xl font-bold leading-tight tracking-tight text-medicom-accent md:text-7xl">Now It Has Intelligence.</h1>
-
+        <h1 className="mb-4 text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl">
+          Clinical workflows, one platform.
+        </h1>
         <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-white/75">
-          Aksh Health connects your existing EHR systems — EMIS, SystmOne, Epic — to a network of AI agents
-          that coordinate care, predict deterioration, and eliminate administrative waste. Every output requires
-          human approval.
+          Aksh Health connects EMIS Web, SystmOne, and Epic to specialist AI agents that draft notes,
+          check safety, and coordinate care. Every output needs clinician approval before it reaches the record.
         </p>
 
         <div className="mb-14 flex flex-col justify-center gap-4 sm:flex-row">
           <Link
-            href="/pilot"
-            className="rounded-2xl bg-white px-8 py-4 text-lg font-bold text-navy shadow-card-hover transition-all hover:-translate-y-0.5 hover:bg-white/95"
+            href="/signup"
+            className="rounded-2xl bg-emerald px-8 py-4 text-lg font-bold text-white shadow-card-hover transition-all hover:-translate-y-0.5 hover:bg-emerald/90"
           >
-            Request a Pilot
+            Get Started
           </Link>
           <Link
-            href="#how-it-works"
-            className="rounded-2xl border-2 border-emerald/80 px-8 py-4 text-lg font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-emerald/15"
+            href="/get-started"
+            className="rounded-2xl border-2 border-white/80 px-8 py-4 text-lg font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
           >
-            See How It Works
+            Book a Demo
           </Link>
         </div>
 

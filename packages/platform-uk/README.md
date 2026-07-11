@@ -176,4 +176,4 @@ Do not position this as production clinical software, live NHS/EHR integration, 
 - Architecture: `docs/ARCHITECTURE.md`
 - Data health and reset policy: `docs/DATA_HEALTH_AND_RESET_POLICY.md`
 - Build quality notes: `docs/BUILD_QUALITY_NOTES.md`
-- Pilot package: `docs/PILOT_PACKAGE.md`
+- Demo package: `docs/PILOT_PACKAGE.md` (internal rehearsal guide)

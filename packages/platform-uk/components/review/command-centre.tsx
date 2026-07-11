@@ -129,7 +129,7 @@ export function CommandCentre() {
           <article className="span-6 panel stack">
             <div>
               <h3>Demo Mode</h3>
-              <p>For advisor or investor-style walkthroughs: product story, presenter guide, pilot package, and reports.</p>
+              <p>For advisor or investor-style walkthroughs: product story, presenter guide, demo package, and reports.</p>
             </div>
             <Link className="button secondary" href="/review/demo-mode">
               Open Demo Mode

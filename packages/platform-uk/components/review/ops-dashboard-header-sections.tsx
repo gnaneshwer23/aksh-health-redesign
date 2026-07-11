@@ -56,9 +56,9 @@ export function OpsDashboardHero({
           Export Ops Report
         </button>
       </div>
-      <h2>Pilot Operations Dashboard</h2>
+      <h2>Clinical Operations Dashboard</h2>
       <p>
-        One view for current review throughput and feedback-memory trends across rehearsals, demos, and pilot sessions.
+        One view for current review throughput and feedback-memory trends across rehearsals, demos, and live sessions.
       </p>
       <div className="hero-stats">
         <div className="hero-stat">
@@ -77,8 +77,8 @@ export function OpsDashboardHero({
           <span className="hero-stat-value">{feedbackAnalytics.total}</span>
         </div>
         <div className="hero-stat">
-          <strong>Pilot-prep cohort</strong>
-          <p>Synthetic cases currently positioned for clinician training and ICS pilot rehearsal.</p>
+          <strong>Deployment-prep cohort</strong>
+          <p>Synthetic cases currently positioned for clinician training and organisation onboarding rehearsal.</p>
           <span className="hero-stat-value">{dataCollectionAnalytics.streamCounts.ics_pilot_preparation}</span>
         </div>
         <div className="hero-stat">

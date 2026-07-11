@@ -8,7 +8,7 @@ import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IntegrationStatus } from "@/components/dashboard/IntegrationStatus";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { PilotApplicationsPanel } from "@/components/dashboard/PilotApplicationsPanel";
+import { OrganisationEnquiriesPanel } from "@/components/dashboard/OrganisationEnquiriesPanel";
 import { UrgentGuardianAlertsPanel, getUrgentGuardianAlertCount } from "@/components/dashboard/UrgentGuardianAlertsPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,13 +59,13 @@ export default function AdminDashboardPage() {
 
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm">Recent Pilot Applications</CardTitle>
+              <CardTitle className="text-sm">Recent Organisation Enquiries</CardTitle>
               <Button variant="outline" size="sm" asChild>
-                <Link href="/dashboard/admin/pilot-applications">View all</Link>
+                <Link href="/dashboard/admin/organisation-enquiries">View all</Link>
               </Button>
             </CardHeader>
             <CardContent className="p-0 pt-0">
-              <PilotApplicationsPanel compact />
+              <OrganisationEnquiriesPanel compact />
             </CardContent>
           </Card>
         </div>

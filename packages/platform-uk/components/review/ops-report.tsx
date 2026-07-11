@@ -96,7 +96,7 @@ export function OpsReport({
       <div className="report-header stack">
         <span className="hero-kicker">Stakeholder Report</span>
         <ReportActions backHref={`/review/ops${query}`} />
-        <h1>Pilot Operations Report</h1>
+        <h1>Clinical Operations Report</h1>
         <p>
           Snapshot of current review workflow performance and cross-session feedback trends for the Aksh Health UK/EU
           proof platform.
@@ -135,7 +135,7 @@ export function OpsReport({
             <div className="hero-stat">
               <strong>High-readiness sessions</strong>
               <span className="hero-stat-value">{feedbackAnalytics.highReadiness}</span>
-              <p>Saved sessions scored 4 or 5 in rehearsal, demo, or pilot follow-up.</p>
+              <p>Saved sessions scored 4 or 5 in rehearsal, demo, or stakeholder follow-up.</p>
             </div>
             <div className="hero-stat">
               <strong>Open follow-up</strong>

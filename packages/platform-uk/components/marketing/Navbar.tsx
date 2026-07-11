@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   ["Platform", "/platform"],
-  ["Pilot", "/pilot"],
+  ["Solutions", "/platform#clinicians"],
   ["Docs", "/docs"],
 ] as const;
 
@@ -66,10 +66,10 @@ export default function Navbar() {
             Sign In
           </Link>
           <Link
-            href="/pilot"
-            className="rounded-xl bg-white px-5 py-2 text-sm font-bold text-navy shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
+            href="/signup"
+            className="rounded-xl bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90"
           >
-            Request Pilot
+            Get Started
           </Link>
         </div>
       </div>

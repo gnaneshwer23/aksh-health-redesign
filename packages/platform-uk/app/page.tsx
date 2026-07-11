@@ -27,16 +27,24 @@ export default function HomePage() {
 
       <section className="bg-emerald py-24 text-center text-white">
         <div className="mx-auto max-w-3xl px-6">
-          <h2 className="mb-4 text-4xl font-bold">Join the Phase 1 ICS Pilot — October 2026</h2>
+          <h2 className="mb-4 text-4xl font-bold">Ready to deploy across your organisation?</h2>
           <p className="mb-8 text-xl text-white/80">
-            3 NHS ICS sites · 150 clinicians · 5,000 patients · EMIS Web and SystmOne
+            Eight role-specific dashboards. FHIR R4 integration with EMIS Web and SystmOne. Clinical safety built in from day one.
           </p>
-          <Link
-            href="/pilot/apply"
-            className="inline-block rounded-full bg-white px-10 py-4 text-lg font-bold text-emerald shadow-lg transition-colors hover:bg-white/90"
-          >
-            Apply for Pilot Cohort
-          </Link>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/signup"
+              className="inline-block rounded-full bg-white px-10 py-4 text-lg font-bold text-emerald shadow-lg transition-colors hover:bg-white/90"
+            >
+              Create your account
+            </Link>
+            <Link
+              href="/get-started"
+              className="inline-block rounded-full border-2 border-white/80 px-10 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
+            >
+              Book a demo
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -231,7 +231,7 @@ export function UserOnboarding() {
                   Go to {DASHBOARD_LABELS[activeRole.id === "clinician" ? "clinician" : activeRole.id]}
                 </Link>
               )}
-              <Link className="button secondary" href="/pilot">Pilot program</Link>
+              <Link className="button secondary" href="/get-started">Book a demo</Link>
             </div>
           </div>
         ) : null}

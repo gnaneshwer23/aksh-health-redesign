@@ -383,7 +383,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
               name={"pilotCohort" as keyof FormValues}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pilot cohort</FormLabel>
+                  <FormLabel>Deployment phase</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
                     <FormControl>
                       <SelectTrigger>

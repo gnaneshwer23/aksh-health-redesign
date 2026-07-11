@@ -1,4 +1,2 @@
-export function formatPilotReferenceId(id: string): string {
-  const compact = id.replace(/-/g, "").toUpperCase();
-  return `PILOT-${compact.slice(0, 4)}`;
-}
+/** @deprecated Use formatAccessRequestReferenceId from @/lib/access-requests/reference-id */
+export { formatAccessRequestReferenceId as formatPilotReferenceId } from "@/lib/access-requests/reference-id";

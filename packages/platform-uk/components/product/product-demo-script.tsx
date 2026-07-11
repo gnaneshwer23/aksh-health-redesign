@@ -43,7 +43,7 @@ const demoStops = [
     title: "Close on evidence readiness",
     route: "/review/readiness",
     action: "Show readiness gate, benchmark context, and the honest synthetic-only boundary.",
-    talkTrack: "The next milestone is credibility and controlled pilot preparation, not premature live integration."
+    talkTrack: "The next milestone is credibility and controlled deployment preparation, not premature live integration."
   }
 ];
 

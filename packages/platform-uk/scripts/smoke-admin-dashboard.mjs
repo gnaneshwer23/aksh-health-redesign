@@ -20,9 +20,9 @@ const protectedAdminRoutes = [
   { label: "Admin integrations", path: "/dashboard/admin/integrations", expectedText: ["Integrations", "Integration Status"] },
   { label: "Admin audit", path: "/dashboard/admin/audit", expectedText: ["Audit Log", "Export Full Audit Log"] },
   {
-    label: "Admin pilot applications",
-    path: "/dashboard/admin/pilot-applications",
-    expectedText: ["ICS Pilot Applications", "Reference"],
+    label: "Admin organisation enquiries",
+    path: "/dashboard/admin/organisation-enquiries",
+    expectedText: ["Organisation Enquiries", "Reference"],
   },
   { label: "Admin billing", path: "/dashboard/admin/billing", expectedText: ["Billing", "Phase 2"] },
 ];

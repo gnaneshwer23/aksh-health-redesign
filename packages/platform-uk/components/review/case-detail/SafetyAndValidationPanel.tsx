@@ -272,7 +272,7 @@ export function SafetyAndValidationPanel({
             <div className="row" key={item.id}>
               <div>
                 <strong>{item.title}</strong>
-                <p>{item.phase === "to_pilot_prep" ? "To pilot prep" : "To RWE candidate"}</p>
+                <p>{item.phase === "to_pilot_prep" ? "To deployment prep" : "To RWE candidate"}</p>
                 <p>{item.detail}</p>
               </div>
               <span className={`tag ${item.status === "done" ? "ok" : "warn"}`}>{item.status}</span>

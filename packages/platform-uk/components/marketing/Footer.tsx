@@ -21,7 +21,7 @@ const footerColumns = [
   {
     title: "Company",
     links: [
-      { label: "ICS Pilot", href: "/pilot" },
+      { label: "Get Started", href: "/get-started" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Contact", href: "/contact" },
     ],

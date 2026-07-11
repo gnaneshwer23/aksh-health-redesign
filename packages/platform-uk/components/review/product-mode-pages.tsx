@@ -80,7 +80,7 @@ const demoTracks = [
     cta: "Open guide"
   },
   {
-    title: "Pilot package",
+    title: "Demo package",
     detail: "Curated proof package with stable demo cases, runbook, and evidence handoff links.",
     href: "/review/pilot?demo=1",
     cta: "Open package"

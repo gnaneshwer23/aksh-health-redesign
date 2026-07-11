@@ -59,7 +59,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
     { href: "/dashboard/admin/audit", label: "Audit Log", icon: ClipboardList },
-    { href: "/dashboard/admin/pilot-applications", label: "Pilot Applications", icon: FileText },
+    { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", icon: FileText },
     { href: "/dashboard/admin/billing", label: "Billing", icon: Building2 },
   ],
   ics: [

@@ -14,6 +14,21 @@ const createNextConfig = (phase) => ({
         source: "/product",
         destination: "/",
         permanent: true
+      },
+      {
+        source: "/pilot",
+        destination: "/get-started",
+        permanent: true
+      },
+      {
+        source: "/pilot/apply",
+        destination: "/get-started",
+        permanent: true
+      },
+      {
+        source: "/dashboard/admin/pilot-applications",
+        destination: "/dashboard/admin/organisation-enquiries",
+        permanent: true
       }
     ];
   }

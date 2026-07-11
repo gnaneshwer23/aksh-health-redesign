@@ -84,7 +84,7 @@ export function CaseEvidenceHeader({
         </div>
         <div className="hero-stat">
           <strong>Validation readiness</strong>
-          <p>Roadmap triage state for remediation, pilot prep, or downstream evidence reuse.</p>
+          <p>Roadmap triage state for remediation, deployment prep, or downstream evidence reuse.</p>
           <span className="hero-stat-value">{evidence.validationReadiness.label}</span>
         </div>
         <div className="hero-stat">
