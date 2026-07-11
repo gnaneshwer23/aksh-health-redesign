@@ -41,9 +41,9 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   nurse: [
     { href: "/dashboard/nurse", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/nurse?panel=observations", label: "Observations", icon: Stethoscope },
-    { href: "/dashboard/nurse?panel=handover", label: "Handover", icon: ClipboardList },
-    { href: "/dashboard/nurse?panel=alerts", label: "GUARDIAN Alerts", icon: Shield },
+    { href: "/dashboard/nurse/observations", label: "Observations", icon: Stethoscope },
+    { href: "/dashboard/nurse/handover", label: "Handover", icon: ClipboardList },
+    { href: "/dashboard/nurse/alerts", label: "GUARDIAN Alerts", icon: Shield },
     { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
   pharmacist: [
@@ -111,16 +111,17 @@ const ROLE_COLORS: Record<DashboardRole, string> = {
 
 function isNavItemActive(pathname: string, searchParams: URLSearchParams, href: string) {
   const [path, query] = href.split("?");
+  if (query) {
+    if (pathname !== path) return false;
+    const itemParams = new URLSearchParams(query);
+    for (const [key, value] of itemParams.entries()) {
+      if (searchParams.get(key) !== value) return false;
+    }
+    return true;
+  }
+
   if (pathname !== path) return false;
-
-  if (!query) {
-    return !searchParams.get("panel") && !searchParams.get("section");
-  }
-
-  const itemParams = new URLSearchParams(query);
-  for (const [key, value] of itemParams.entries()) {
-    if (searchParams.get(key) !== value) return false;
-  }
+  if (searchParams.get("panel") || searchParams.get("section")) return false;
   return true;
 }
 
