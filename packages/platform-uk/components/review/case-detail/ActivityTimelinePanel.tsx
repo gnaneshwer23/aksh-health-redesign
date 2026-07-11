@@ -1,4 +1,6 @@
 import React from "react";
+
+import { formatAgentTimelineLabel } from "@/lib/agents";
 import { AuditEvent } from "@/lib/types";
 
 type ActivityFilter = AuditEvent["category"] | "all";
@@ -31,7 +33,7 @@ export function ActivityTimelinePanel({
       {filteredAuditEvents.map((event) => (
         <div className="row" key={event.id}>
           <div>
-            <strong>{event.label}</strong>
+            <strong>{formatAgentTimelineLabel(event.label)}</strong>
             <p>{event.category}</p>
             {event.detail ? <p>{event.detail}</p> : null}
             <p>{event.actor}</p>

@@ -68,6 +68,27 @@ export const CLINICAL_AGENT_META: Record<
   }
 };
 
+/** Resolve a clinical agent id (or alias) to its user-facing label. */
+export function resolveClinicalAgentLabel(agent: string): string {
+  if (agent in CLINICAL_AGENT_META) {
+    return CLINICAL_AGENT_META[agent as ClinicalAgentId].label;
+  }
+  return agent;
+}
+
+/** Normalize legacy agent prefixes in timeline/audit copy (e.g. "DrASSIST: …" → "Dr.Assist: …"). */
+export function formatAgentTimelineLabel(label: string): string {
+  const colonIndex = label.indexOf(":");
+  if (colonIndex === -1) {
+    return resolveClinicalAgentLabel(label);
+  }
+
+  const prefix = label.slice(0, colonIndex).trim();
+  const suffix = label.slice(colonIndex);
+  const resolved = resolveClinicalAgentLabel(prefix);
+  return resolved === prefix ? label : `${resolved}${suffix}`;
+}
+
 const AGENT_BADGE_CLASS: Record<ClinicalAgentId, string> = {
   VOICE: "agent-badge--voice",
   SYNTHESIS: "agent-badge--synthesis",

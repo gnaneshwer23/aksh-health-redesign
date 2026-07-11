@@ -1,3 +1,4 @@
+import { CLINICAL_AGENT_META } from "./agents";
 import type { ReviewCase, ReviewQueueItem, ServiceRequestResource } from "./types";
 
 export const PATEL_REFERRAL_TRANSCRIPT =
@@ -67,7 +68,7 @@ export function maybeStageReferralPackage(reviewCase: ReviewCase, items: ReviewQ
         label: "REFERRAL AGENT: urgent DVT package staged",
         actor: "system",
         timestamp: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
-        detail: "Triggered after SYNTHESIS SOAP and DrASSIST codes accepted: synthetic only"
+        detail: `Triggered after SYNTHESIS SOAP and ${CLINICAL_AGENT_META.DrASSIST.label} codes accepted: synthetic only`
       }
     ]
   };

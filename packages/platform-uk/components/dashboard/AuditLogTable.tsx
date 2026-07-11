@@ -2,16 +2,8 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CLINICAL_AGENT_META } from "@/lib/agents";
-import type { ClinicalAgentId } from "@/lib/types";
+import { resolveClinicalAgentLabel } from "@/lib/agents";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
-
-function formatAuditAgent(agent: string) {
-  if (agent in CLINICAL_AGENT_META) {
-    return CLINICAL_AGENT_META[agent as ClinicalAgentId].label;
-  }
-  return agent;
-}
 
 export function AuditLogTable({ limit = 15 }: { limit?: number }) {
   const events = useDashboardStore((s) => s.auditEvents).slice(0, limit);
@@ -33,7 +25,7 @@ export function AuditLogTable({ limit = 15 }: { limit?: number }) {
             <TableRow key={e.id}>
               <TableCell className="text-xs whitespace-nowrap">{new Date(e.timestamp).toLocaleString("en-GB")}</TableCell>
               <TableCell className="text-xs">{e.user}</TableCell>
-              <TableCell className="text-xs">{formatAuditAgent(e.agent)}</TableCell>
+              <TableCell className="text-xs">{resolveClinicalAgentLabel(e.agent)}</TableCell>
               <TableCell className="text-xs">{e.action}</TableCell>
               <TableCell className="text-xs max-w-[200px] truncate">{e.resource}</TableCell>
             </TableRow>

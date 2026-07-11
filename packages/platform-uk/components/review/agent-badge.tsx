@@ -3,7 +3,7 @@ import { agentBadgeClass, CLINICAL_AGENT_META } from "@/lib/agents";
 
 export function AgentBadge({
   agentId,
-  compact = false
+  compact: _compact = false
 }: {
   agentId: ClinicalAgentId;
   compact?: boolean;
@@ -12,7 +12,7 @@ export function AgentBadge({
 
   return (
     <span className={`agent-badge ${agentBadgeClass(agentId)}`} title={meta.description}>
-      {compact ? agentId : meta.label}
+      {meta.label}
     </span>
   );
 }
