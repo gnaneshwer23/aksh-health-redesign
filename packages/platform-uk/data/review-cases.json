@@ -1301,5 +1301,204 @@
       ],
       "expectedPromotionRecommendation": "hold_in_remediation"
     }
+  },
+  {
+    "id": "case-patel-demo",
+    "userId": "demo",
+    "scenarioId": "PATEL-DEMO",
+    "patientLabel": "Mr James Patel — T2D + DVT",
+    "digitalTwinPercent": 61,
+    "status": "pending_review",
+    "updatedAt": "2026-07-10 14:30",
+    "summary": "Golden Patel demo: T2D with poor glycaemic control, suspected DVT, metformin + aspirin + proposed apixaban — all agent outputs staged as DRAFT.",
+    "input": {
+      "sourceType": "transcript",
+      "sourceProfile": "voice_note_intake",
+      "capturedAt": "2026-07-10 14:15",
+      "summary": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes — last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
+      "transcriptConfidence": 0.91
+    },
+    "safetyContext": {
+      "allergies": [],
+      "currentMedications": [
+        "Metformin 1g twice daily",
+        "Aspirin 75mg daily"
+      ]
+    },
+    "oracleRiskScore": {
+      "baseline": 78,
+      "current": 82,
+      "factors": [
+        "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)",
+        "Suspected deep vein thrombosis — left leg swelling",
+        "Antiplatelet therapy (Aspirin) with proposed anticoagulation",
+        "Poor glycaemic control increases vascular risk"
+      ]
+    },
+    "draft": {
+      "encounter": {
+        "resourceType": "Encounter",
+        "id": "encounter-vuk1",
+        "className": "primary-care",
+        "reason": "Leg swelling with T2D review",
+        "clinicianSummary": "62-year-old Mr James Patel with T2D (HbA1c 58 mmol/mol) presents with five-day left calf swelling and tightness. Wells criteria suggest moderate DVT probability. Poor glycaemic control noted. Anticoagulation discussed pending imaging."
+      },
+      "condition": {
+        "resourceType": "Condition",
+        "id": "condition-vuk1-dvt",
+        "codeText": "Suspected deep vein thrombosis — left leg",
+        "clinicalStatus": "provisional",
+        "evidence": "Unilateral calf swelling, discomfort on walking, prior leg swelling history."
+      },
+      "medicationRequest": {
+        "resourceType": "MedicationRequest",
+        "id": "medreq-vuk1",
+        "medicationText": "Apixaban 5mg twice daily",
+        "dosageInstruction": "5mg twice daily pending confirmatory imaging",
+        "reason": "Proposed anticoagulation for suspected DVT — requires GUARDIAN review with aspirin",
+        "confidence": 0.94
+      },
+      "observations": [
+        {
+          "resourceType": "Observation",
+          "id": "obs-vuk1-hba1c",
+          "codeText": "HbA1c",
+          "valueText": "58 mmol/mol (poor glycaemic control)",
+          "status": "final"
+        },
+        {
+          "resourceType": "Observation",
+          "id": "obs-vuk1-leg",
+          "codeText": "Leg swelling",
+          "valueText": "Left calf swelling × 5 days, prior history noted",
+          "status": "preliminary"
+        },
+        {
+          "resourceType": "Observation",
+          "id": "obs-vuk1-wells",
+          "codeText": "Wells DVT score",
+          "valueText": "Moderate probability — imaging advised",
+          "status": "preliminary"
+        }
+      ]
+    },
+    "reviewQueueItems": [
+      {
+        "id": "case-patel-demo-queue-voice",
+        "agentId": "VOICE",
+        "itemType": "voice_transcript",
+        "status": "DRAFT",
+        "title": "Voice intake transcript",
+        "summary": "VOICE captured consultation — leg swelling, T2D, HbA1c 58, metformin + aspirin, apixaban discussed.",
+        "content": "Patient reports worsening left leg swelling and discomfort over five days. Type 2 diabetes — last HbA1c 58 mmol/mol. Currently on metformin and aspirin 75mg. GP considering apixaban for suspected DVT after Wells score discussion.",
+        "metadata": {
+          "sourceType": "transcript",
+          "confidence": 91
+        }
+      },
+      {
+        "id": "case-patel-demo-queue-soap",
+        "agentId": "SYNTHESIS",
+        "itemType": "soap_note",
+        "status": "DRAFT",
+        "title": "SOAP note draft",
+        "summary": "SYNTHESIS: DVT suspicion with poor glycaemic control in T2D patient.",
+        "content": "Subjective: Five-day left calf swelling and tightness. T2D — HbA1c 58 mmol/mol. On metformin and aspirin 75mg.\nObjective: Left calf swelling. HbA1c 58 mmol/mol. Wells score moderate.\nAssessment: Suspected DVT (left). T2D with hyperglycaemia (E11.65). Poor glycaemic control.\nPlan: Urgent DVT imaging. Consider apixaban if confirmed — GUARDIAN review required (aspirin interaction). Diabetes optimisation.",
+        "metadata": {
+          "encounterReason": "Leg swelling with T2D review",
+          "condition": "Suspected deep vein thrombosis — left leg"
+        }
+      },
+      {
+        "id": "case-patel-demo-queue-codes",
+        "agentId": "DrASSIST",
+        "itemType": "diagnosis_codes",
+        "status": "DRAFT",
+        "title": "Diagnosis code suggestions",
+        "summary": "I82.4 · E11.65 — confidence 94%",
+        "content": "I82.4 — Acute embolism and thrombosis of deep veins of lower extremity\nE11.65 — Type 2 diabetes mellitus with hyperglycaemia",
+        "metadata": {
+          "icdCodes": [
+            "I82.4 — Acute embolism and thrombosis of deep veins of lower extremity",
+            "E11.65 — Type 2 diabetes mellitus with hyperglycaemia"
+          ],
+          "confidence": 94
+        }
+      },
+      {
+        "id": "case-patel-demo-queue-guardian",
+        "agentId": "GUARDIAN",
+        "itemType": "guardian_alert",
+        "status": "DRAFT",
+        "title": "Anticoagulant + antiplatelet interaction",
+        "summary": "GUARDIAN HIGH: Aspirin 75mg + proposed Apixaban — major bleeding risk.",
+        "content": "GUARDIAN HIGH ALERT\nCurrent: Aspirin 75mg daily\nProposed: Apixaban 5mg twice daily\nRisk: Major bleeding — dual antithrombotic therapy\nAction: GP must Accept / Edit / Reject before any write-back.",
+        "metadata": {
+          "severity": "high",
+          "flagCount": 1
+        }
+      },
+      {
+        "id": "case-patel-demo-queue-oracle",
+        "agentId": "ORACLE",
+        "itemType": "oracle_update",
+        "status": "DRAFT",
+        "title": "Risk score update",
+        "summary": "ORACLE: CVD/T2D composite risk 78 → 82 after DVT flag",
+        "content": "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)\nSuspected deep vein thrombosis — left leg swelling\nAntiplatelet therapy (Aspirin) with proposed anticoagulation\nPoor glycaemic control increases vascular risk",
+        "metadata": {
+          "baseline": 78,
+          "current": 82,
+          "delta": 4
+        }
+      }
+    ],
+    "auditEvents": [
+      {
+        "id": "evt-vuk1-1",
+        "category": "system",
+        "label": "VOICE: transcript received",
+        "actor": "system",
+        "timestamp": "14:15"
+      },
+      {
+        "id": "evt-vuk1-2",
+        "category": "system",
+        "label": "SYNTHESIS: SOAP draft staged",
+        "actor": "system",
+        "timestamp": "14:16"
+      },
+      {
+        "id": "evt-vuk1-3",
+        "category": "system",
+        "label": "DrASSIST: codes suggested",
+        "actor": "system",
+        "timestamp": "14:16"
+      },
+      {
+        "id": "evt-vuk1-4",
+        "category": "system",
+        "label": "GUARDIAN: HIGH alert raised",
+        "actor": "system",
+        "timestamp": "14:17"
+      },
+      {
+        "id": "evt-vuk1-5",
+        "category": "system",
+        "label": "ORACLE: risk score updated",
+        "actor": "system",
+        "timestamp": "14:17"
+      }
+    ],
+    "reviewSummary": {},
+    "fieldChanges": [],
+    "expectedOutcome": {
+      "scenarioClass": "Patel T2D + DVT golden demo",
+      "expectedFinalizationState": "blocked",
+      "expectedSafetyLabels": [
+        "Anticoagulant + antiplatelet interaction"
+      ],
+      "expectedPromotionRecommendation": "hold_in_remediation"
+    }
   }
 ]

@@ -54,6 +54,25 @@ export default function NurseDashboardPage() {
 
   return (
     <DashboardShell role="nurse" title="Nurse Dashboard">
+      {escalationTasks.length ? (
+        <Card className="mb-4 border-destructive/40 bg-destructive/5 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Voice Care escalation tasks</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {escalationTasks.map((task) => (
+              <div className="rounded-sm border border-border bg-card p-3" key={task.id}>
+                <p className="font-medium">{task.patientLabel}</p>
+                <p className="text-sm text-muted">{task.summary}</p>
+                <span className="mt-2 inline-block rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">{task.priority}</span>
+              </div>
+            ))}
+            <Link className="text-sm text-accent underline" href="/demo/voice-care-day3">
+              Open Voice Care Day 3 simulation
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
       <div className="flex h-full overflow-hidden">
         <aside className="w-72 shrink-0 overflow-y-auto border-r border-border bg-card p-3">
           <ConsentBanner className="mb-3" />

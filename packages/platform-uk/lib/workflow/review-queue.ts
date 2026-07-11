@@ -1,4 +1,5 @@
 import { deriveReviewQueueItems, CLINICAL_AGENT_META } from "../agents";
+import { applyReferralAccept, maybeStageReferralPackage } from "../referral-agent";
 import { createShieldAuditEvent, applyQueueItemStatus, appendShieldAudit } from "../shield-audit";
 import { formatCaseTimestamp } from "../time-format";
 import type { ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "../types";
@@ -36,7 +37,7 @@ export function updateQueueItemDecision(
     agentLabel: CLINICAL_AGENT_META[target.agentId].label
   });
 
-  return appendShieldAudit(
+  let nextCase: ReviewCase = appendShieldAudit(
     {
       ...reviewCase,
       reviewQueueItems: nextItems,
@@ -44,4 +45,12 @@ export function updateQueueItemDecision(
     },
     shieldEvent
   );
+
+  nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));
+
+  if (target.itemType === "referral_package" && status === "ACCEPTED") {
+    nextCase = applyReferralAccept(nextCase);
+  }
+
+  return nextCase;
 }

@@ -4581,6 +4581,7 @@ input:focus, textarea:focus {
 .agent-badge--drassist { background: rgba(179, 157, 219, 0.15); color: #b39ddb; border-color: rgba(179, 157, 219, 0.3); }
 .agent-badge--guardian { background: var(--danger-soft); color: var(--danger); border-color: rgba(255, 82, 82, 0.3); }
 .agent-badge--oracle { background: rgba(255, 183, 77, 0.15); color: var(--warn); border-color: rgba(255, 183, 77, 0.3); }
+.agent-badge--referral { background: rgba(77, 208, 225, 0.15); color: #4dd0e1; border-color: rgba(77, 208, 225, 0.3); }
 .agent-badge--equity { background: rgba(144, 164, 174, 0.15); color: #90a4ae; border-color: rgba(144, 164, 174, 0.3); }
 .agent-badge--shield { background: rgba(100, 181, 246, 0.15); color: #64b5f6; border-color: rgba(100, 181, 246, 0.3); }
 

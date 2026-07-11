@@ -8,6 +8,7 @@
     "build:diagnose": "node scripts/diagnose-next-build.mjs",
     "data:health": "node scripts/data-health.mjs",
     "data:seed": "node scripts/data-seed.mjs",
+    "data:seed:postgres": "node scripts/data-seed-postgres.mjs",
     "data:reset": "node scripts/data-reset.mjs --with-auxiliary",
     "data:audit-integrity": "npx tsx scripts/data-audit-cli.ts",
     "seed:demo-evidence": "node scripts/seed-demo-evidence-scope.mjs",

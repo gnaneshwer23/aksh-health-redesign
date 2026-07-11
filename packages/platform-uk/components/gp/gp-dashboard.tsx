@@ -6,19 +6,26 @@ import { useMemo, useState } from "react";
 import { GpAgentControlPanel } from "@/components/gp/agent-control-panel";
 import { GpPatientPanel } from "@/components/gp/patient-panel";
 import { GpReviewQueuePanel } from "@/components/gp/review-queue-panel";
-import { GOLDEN_SCENARIO_V_UK1_ID, deriveAgentCards } from "@/lib/agents";
+import { VoiceMicPanel } from "@/components/gp/voice-mic-panel";
+import { GOLDEN_SCENARIO_PATEL_DEMO_ID, GOLDEN_SCENARIO_V_UK1_ID, deriveAgentCards } from "@/lib/agents";
 import { useReviewCases } from "@/lib/use-review-cases";
 import type { ReviewQueueItemType } from "@/lib/types";
 import { resolveReviewQueueItems, updateQueueItemDecision } from "@/lib/workflow";
 
-export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_V_UK1_ID }: { caseId?: string }) {
+export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { caseId?: string }) {
   const { cases, getCaseById, isLoaded, updateCase } = useReviewCases();
   const [reviewerName, setReviewerName] = useState("Dr Morgan");
   const [agentFilter, setAgentFilter] = useState<ReviewQueueItemType | null>(null);
 
   const reviewCase = useMemo(() => {
     if (!isLoaded) return null;
-    return getCaseById(caseId) ?? cases.find((item) => item.scenarioId === "V-UK1") ?? null;
+    return (
+      getCaseById(caseId) ??
+      cases.find((item) => item.scenarioId === "PATEL-DEMO") ??
+      getCaseById(GOLDEN_SCENARIO_V_UK1_ID) ??
+      cases.find((item) => item.scenarioId === "V-UK1") ??
+      null
+    );
   }, [caseId, cases, getCaseById, isLoaded]);
 
   if (!isLoaded) {
@@ -29,7 +36,10 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_V_UK1_ID }: { caseI
     return (
       <div className="panel stack">
         <h2>GP dashboard</h2>
-        <p>Golden scenario V-UK1 not found. Seed synthetic data with <code>npm run data:seed</code>.</p>
+        <p>
+          Golden Patel demo case not found. Seed synthetic data with <code>npm run data:seed</code> or{" "}
+          <code>npm run data:seed:postgres</code>.
+        </p>
         <Link className="button primary" href="/review">
           Open review queue
         </Link>
@@ -61,6 +71,24 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_V_UK1_ID }: { caseI
     persist(updateQueueItemDecision(activeCase, itemId, "DRAFT", { decidedBy: reviewerName, content }));
   }
 
+  function handleVoiceTranscript(transcript: string) {
+    if (!reviewCase) return;
+    const items = resolveReviewQueueItems(activeCase).map((item) =>
+      item.itemType === "voice_transcript"
+        ? {
+            ...item,
+            summary: transcript.slice(0, 120) + (transcript.length > 120 ? "…" : ""),
+            content: transcript
+          }
+        : item
+    );
+    persist({
+      ...activeCase,
+      input: { ...activeCase.input, summary: transcript, sourceType: "transcript" as const },
+      reviewQueueItems: items
+    });
+  }
+
   return (
     <div className="stack gp-dashboard">
       <header className="gp-dashboard__hero panel">
@@ -75,6 +103,9 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_V_UK1_ID }: { caseI
         <div className="actions">
           <Link className="button secondary" href={`/cases/${reviewCase.id}`}>
             Full case review
+          </Link>
+          <Link className="button secondary" href="/demo/patel">
+            Patel demo launcher
           </Link>
           <Link className="button secondary" href="/review">
             All cases
@@ -97,7 +128,10 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_V_UK1_ID }: { caseI
       </div>
 
       <div className="gp-dashboard__columns">
-        <GpPatientPanel reviewCase={reviewCase} />
+        <div className="stack">
+          <GpPatientPanel reviewCase={reviewCase} />
+          <VoiceMicPanel initialSummary={reviewCase.input.summary} onTranscript={handleVoiceTranscript} />
+        </div>
         <GpReviewQueuePanel
           agentFilter={agentFilter}
           items={queueItems}

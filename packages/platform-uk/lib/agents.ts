@@ -51,6 +51,11 @@ export const CLINICAL_AGENT_META: Record<
     function: "CVD / T2D risk score",
     description: "Risk stratification with contributing factors."
   },
+  REFERRAL: {
+    label: "REFERRAL",
+    function: "Pathway coordination",
+    description: "Referral package draft → ServiceRequest after GP Accept."
+  },
   EQUITY: {
     label: "EQUITY",
     function: "Disparity overlay",
@@ -69,6 +74,7 @@ const AGENT_BADGE_CLASS: Record<ClinicalAgentId, string> = {
   DrASSIST: "agent-badge--drassist",
   GUARDIAN: "agent-badge--guardian",
   ORACLE: "agent-badge--oracle",
+  REFERRAL: "agent-badge--referral",
   EQUITY: "agent-badge--equity",
   SHIELD: "agent-badge--shield"
 };
@@ -269,6 +275,20 @@ export function deriveAgentCards(reviewCase: ReviewCase): AgentCard[] {
       queueFilter: "oracle_update"
     },
     {
+      id: "REFERRAL",
+      label: CLINICAL_AGENT_META.REFERRAL.label,
+      function: CLINICAL_AGENT_META.REFERRAL.function,
+      status: items.find((i) => i.itemType === "referral_package")
+        ? items.find((i) => i.itemType === "referral_package")?.status === "DRAFT"
+          ? "draft_pending"
+          : "completed"
+        : "idle",
+      detail: items.find((i) => i.itemType === "referral_package")
+        ? "DVT urgent referral package staged"
+        : "Activates after SOAP + codes accepted",
+      queueFilter: "referral_package"
+    },
+    {
       id: "SHIELD",
       label: CLINICAL_AGENT_META.SHIELD.label,
       function: CLINICAL_AGENT_META.SHIELD.function,
@@ -280,4 +300,6 @@ export function deriveAgentCards(reviewCase: ReviewCase): AgentCard[] {
   return cards;
 }
 
+export const GOLDEN_SCENARIO_PATEL_DEMO_ID = "case-patel-demo";
 export const GOLDEN_SCENARIO_V_UK1_ID = "case-v-uk1";
+export const GOLDEN_SCENARIO_ID = GOLDEN_SCENARIO_PATEL_DEMO_ID;

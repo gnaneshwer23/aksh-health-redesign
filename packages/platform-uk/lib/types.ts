@@ -1,12 +1,41 @@
 /** TechDoc §2.2 clinical AI agents (synthetic proof labels). */
-export type ClinicalAgentId = "VOICE" | "SYNTHESIS" | "DrASSIST" | "GUARDIAN" | "ORACLE" | "SHIELD" | "EQUITY";
+export type ClinicalAgentId =
+  | "VOICE"
+  | "SYNTHESIS"
+  | "DrASSIST"
+  | "GUARDIAN"
+  | "ORACLE"
+  | "REFERRAL"
+  | "SHIELD"
+  | "EQUITY";
 
 export type ReviewQueueItemType =
   | "voice_transcript"
   | "soap_note"
   | "diagnosis_codes"
   | "guardian_alert"
-  | "oracle_update";
+  | "oracle_update"
+  | "referral_package";
+
+export type ServiceRequestResource = {
+  resourceType: "ServiceRequest";
+  id: string;
+  codeText: string;
+  status: "draft" | "active";
+  priority: "routine" | "urgent";
+  reason: string;
+  performerText?: string;
+};
+
+export type NurseEscalationTask = {
+  id: string;
+  patientLabel: string;
+  caseId: string;
+  priority: "urgent" | "high" | "normal";
+  summary: string;
+  createdAt: string;
+  source: "voice_care";
+};
 
 export type ReviewQueueItemStatus = "DRAFT" | "ACCEPTED" | "REJECTED";
 
@@ -446,11 +475,13 @@ export type ReviewCase = {
   practiceId?: string;
   scenarioId?: string;
   patientLabel: string;
+  digitalTwinPercent?: number;
   status: WorkflowStatus;
   updatedAt: string;
   summary: string;
   reviewQueueItems?: ReviewQueueItem[];
   oracleRiskScore?: OracleRiskScore;
+  serviceRequestDraft?: ServiceRequestResource;
   input: ConsultationInput;
   dataCollectionProfile?: DataCollectionProfile;
   safetyContext: SafetyContext;
