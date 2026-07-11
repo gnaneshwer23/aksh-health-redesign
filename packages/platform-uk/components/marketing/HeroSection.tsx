@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import TrustStrip from "@/components/marketing/TrustStrip";
+
 export default function HeroSection() {
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden bg-medicom-navy">
@@ -53,7 +55,10 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-medicom-surface to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <TrustStrip />
+        <div className="h-16 bg-gradient-to-t from-medicom-surface to-transparent" />
+      </div>
     </section>
   );
 }
