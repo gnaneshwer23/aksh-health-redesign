@@ -5,13 +5,22 @@ import Link from "next/link";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import HeroSection from "@/components/marketing/HeroSection";
 import StatsBand from "@/components/marketing/StatsBand";
+import AboutStatsSection from "@/components/marketing/AboutStatsSection";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
-const ProblemSection = dynamic(() => import("@/components/marketing/ProblemSection"), {
+const HowItWorks = dynamic(() => import("@/components/marketing/HowItWorks"), {
   loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
 });
 
-const HowItWorks = dynamic(() => import("@/components/marketing/HowItWorks"), {
+const ProcessStepsSection = dynamic(() => import("@/components/marketing/ProcessStepsSection"), {
+  loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
+});
+
+const RolesGridSection = dynamic(() => import("@/components/marketing/RolesGridSection"), {
+  loading: () => <div className="min-h-[20rem] bg-white" aria-hidden />,
+});
+
+const PlatformMetricsSection = dynamic(() => import("@/components/marketing/PlatformMetricsSection"), {
   loading: () => <div className="min-h-[20rem] bg-surface" aria-hidden />,
 });
 
@@ -25,8 +34,11 @@ export default function HomePage() {
     <MarketingShell className="overflow-x-hidden">
       <HeroSection />
       <StatsBand />
-      <ProblemSection />
+      <AboutStatsSection />
       <HowItWorks />
+      <ProcessStepsSection />
+      <RolesGridSection />
+      <PlatformMetricsSection />
 
       <section className="bg-emerald py-20 text-center text-white md:py-24">
         <div className="mx-auto max-w-2xl px-6">

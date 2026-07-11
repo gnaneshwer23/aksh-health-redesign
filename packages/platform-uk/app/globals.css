@@ -4903,3 +4903,87 @@ input:focus, textarea:focus {
     transform: none;
   }
 }
+
+/* ── Marketing design tokens (reference-aligned light system) ── */
+:root {
+  --marketing-surface: #f4f8fc;
+  --marketing-surface-alt: #eef4fa;
+  --marketing-accent-soft: rgba(0, 168, 107, 0.08);
+  --marketing-navy-soft: rgba(0, 61, 122, 0.06);
+}
+
+.marketing-soft-surface {
+  background: var(--marketing-surface);
+}
+
+/* Pill buttons — primary (emerald) and secondary (outline) CTAs */
+.marketing-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.marketing-pill-btn:hover {
+  transform: translateY(-2px);
+}
+
+.marketing-pill-btn--primary {
+  background: #00a86b;
+  color: #ffffff;
+  box-shadow: 0 12px 28px -6px rgba(0, 168, 107, 0.35);
+}
+
+.marketing-pill-btn--primary:hover {
+  background: #00915d;
+  box-shadow: 0 16px 32px -6px rgba(0, 168, 107, 0.4);
+}
+
+.marketing-pill-btn--secondary {
+  background: #ffffff;
+  color: #003d7a;
+  border: 1px solid rgba(0, 61, 122, 0.14);
+}
+
+.marketing-pill-btn--secondary:hover {
+  border-color: rgba(0, 61, 122, 0.3);
+  background: rgba(0, 61, 122, 0.03);
+}
+
+/* Glassmorphism cards floating over hero/photo panels */
+.marketing-glass-card {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 48px -12px rgba(0, 61, 122, 0.22);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.marketing-pastel-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.03);
+}
+
+.marketing-pastel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -10px rgb(15 23 42 / 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-pill-btn,
+  .marketing-pastel-card {
+    transition: none;
+  }
+
+  .marketing-pill-btn:hover,
+  .marketing-pastel-card:hover {
+    transform: none;
+  }
+}

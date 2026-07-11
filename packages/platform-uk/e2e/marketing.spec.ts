@@ -5,15 +5,16 @@ test.describe("Marketing smoke", () => {
     await page.goto("/");
 
     const nav = page.locator("nav[data-over-dark-hero]");
-    await expect(nav).toHaveAttribute("data-over-dark-hero", "true");
+    await expect(nav).toHaveAttribute("data-over-dark-hero", "false");
+    await expect(nav).toHaveAttribute("data-solid-navbar", "true");
     const brandTitle = page.locator("nav a.navbar-brand .navbar-brand-title");
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
-    expect(brandColor).toBe("rgb(255, 255, 255)");
+    expect(brandColor).toBe("rgb(0, 61, 122)");
 
     const subtitleColor = await page
       .locator("nav a.navbar-brand .navbar-brand-subtitle")
       .evaluate((element) => window.getComputedStyle(element).color);
-    expect(subtitleColor).toBe("rgb(0, 168, 107)");
+    expect(subtitleColor).toBe("rgb(0, 107, 79)");
 
     await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Platform" })).toBeVisible();
@@ -204,7 +205,7 @@ test.describe("Marketing smoke", () => {
 
     const footer = page.locator("footer");
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
-    await expect(footer.getByRole("link", { name: "Resources" })).toHaveAttribute("href", "/resources");
+    await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();

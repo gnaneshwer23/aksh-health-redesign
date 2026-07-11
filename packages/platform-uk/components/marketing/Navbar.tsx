@@ -234,7 +234,7 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
               aria-expanded={solutionsOpen}
               aria-haspopup="true"
               aria-controls={solutionsMenuId}
-              onClick={() => setSolutionsOpen((open) => !open)}
+              onClick={() => setSolutionsOpen(true)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
