@@ -11,7 +11,7 @@ export default function SignupPage({ searchParams }: SignupPageProps) {
   const mappedRole = role ? (SIGNUP_ROLE_MAP[role] ?? role) : null;
 
   if (mappedRole) {
-    redirect(`/onboarding?role=${mappedRole}`);
+    redirect(`/onboarding/role-select?role=${mappedRole}`);
   }
 
   redirect("/onboarding/role-select");

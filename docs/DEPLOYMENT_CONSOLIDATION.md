@@ -46,7 +46,7 @@ Add to each retired project's root `vercel.json`:
 | `/` | Marketing homepage |
 | `/platform`, `/for-clinicians`, `/for-hospitals`, `/for-patients`, `/docs` | Audience pages |
 | `/pilot`, `/pilot/apply` | Pilot programme |
-| `/signup` | Sign up → `/onboarding?role=` or `/onboarding/role-select` |
+| `/signup` | Sign up → `/onboarding/role-select` (optional `?role=`) |
 | `/onboarding/*` | 8-role personalised onboarding |
 | `/dashboard/*` | Role dashboards |
 | `/demo/patel` | Investor demo |
