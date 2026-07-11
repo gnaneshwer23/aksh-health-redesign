@@ -104,6 +104,21 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Evaluate outcomes with governed data access/i })).toBeVisible();
   });
 
+  test("audience pages use solid navbar and cohesive marketing sections", async ({ page }) => {
+    await page.goto("/for-clinicians");
+
+    const nav = page.locator("nav[data-solid-navbar]");
+    await expect(nav).toHaveAttribute("data-solid-navbar", "true");
+    await expect(nav).toHaveAttribute("data-over-dark-hero", "false");
+
+    await expect(page.getByRole("heading", { name: /Challenges we hear every day/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /How Aksh Health helps/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Agents and dashboards for clinical teams/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Ready to get started/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Get Started" }).first()).toBeVisible();
+    await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+  });
+
   test("platform page loads with cohesive sections", async ({ page }) => {
     await page.goto("/platform");
 
