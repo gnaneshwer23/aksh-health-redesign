@@ -48,7 +48,7 @@ test.describe("Marketing smoke", () => {
     await expect(mobileMenu.getByRole("link", { name: "Get in touch" })).toBeVisible();
   });
 
-  test("solutions mega-menu exposes grouped audience links", async ({ page }) => {
+  test("solutions mega-menu exposes unique audience links", async ({ page }) => {
     await page.goto("/");
 
     const solutionsButton = page.locator("nav").getByRole("button", { name: "Solutions", exact: true });
@@ -56,12 +56,78 @@ test.describe("Marketing smoke", () => {
 
     const menu = page.locator(".owkin-mega");
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole("link", { name: /GPs & nurses/i })).toHaveAttribute("href", "/for-clinicians");
-    await expect(menu.getByRole("link", { name: /Hospitals/i })).toHaveAttribute("href", "/for-hospitals");
+    await expect(menu.getByRole("link", { name: "Clinicians", exact: true })).toHaveAttribute("href", "/for-clinicians");
+    await expect(menu.getByRole("link", { name: "Practice managers", exact: true })).toHaveAttribute(
+      "href",
+      "/for-practices"
+    );
+    await expect(menu.getByRole("link", { name: "Patients", exact: true })).toHaveAttribute("href", "/for-patients");
+    await expect(menu.getByRole("link", { name: "Hospitals", exact: true })).toHaveAttribute("href", "/for-hospitals");
+    await expect(menu.getByRole("link", { name: "ICS leads", exact: true })).toHaveAttribute("href", "/for-ics");
+    await expect(menu.getByRole("link", { name: "Administrators", exact: true })).toHaveAttribute(
+      "href",
+      "/for-administrators"
+    );
     await expect(menu.getByRole("link", { name: /Research/i })).toHaveAttribute("href", "/for-research");
-    await expect(menu.getByRole("link", { name: /Patients/i })).toHaveAttribute("href", "/for-patients");
-    await expect(menu.getByRole("link", { name: /Practice managers/i })).toHaveAttribute("href", "/for-practices");
     await expect(menu.getByRole("link", { name: "View all roles" })).toHaveAttribute("href", "/platform#roles");
+
+    // Each Solutions destination appears once (no label clones of the same page).
+    const hrefs = await menu.locator("a[href]").evaluateAll((anchors) =>
+      anchors.map((a) => a.getAttribute("href")).filter((href): href is string => Boolean(href))
+    );
+    expect(new Set(hrefs).size).toBe(hrefs.length);
+  });
+
+  test("platform and resources mega-menus avoid duplicate destinations", async ({ page }) => {
+    await page.goto("/");
+
+    const collectHrefs = async (menuName: "Platform" | "Resources") => {
+      await page.locator("nav").getByRole("button", { name: menuName, exact: true }).hover();
+      const menu = page.locator(".owkin-mega");
+      await expect(menu).toBeVisible();
+      return menu.locator("a[href]").evaluateAll((anchors) =>
+        anchors.map((a) => a.getAttribute("href")).filter((href): href is string => Boolean(href))
+      );
+    };
+
+    const platformHrefs = await collectHrefs("Platform");
+    expect(platformHrefs).toContain("/platform");
+    expect(platformHrefs).toContain("/how-it-works#journey");
+    expect(platformHrefs).not.toContain("/how-it-works");
+    expect(new Set(platformHrefs).size).toBe(platformHrefs.length);
+
+    // Close by moving to brand, then open Resources.
+    await page.locator("nav a.owkin-nav__brand").hover();
+    const resourcesHrefs = await collectHrefs("Resources");
+    expect(resourcesHrefs).toContain("/resources");
+    expect(resourcesHrefs).toContain("/faq");
+    expect(resourcesHrefs).not.toContain("/pricing");
+    expect(resourcesHrefs).not.toContain("/security");
+    expect(resourcesHrefs).not.toContain("/demo/patel");
+    expect(new Set(resourcesHrefs).size).toBe(resourcesHrefs.length);
+  });
+
+  test("mobile drawer mirrors unique Solutions audience links", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu" }).click();
+
+    const mobileNav = page.getByRole("dialog").getByRole("navigation", { name: "Mobile navigation" });
+    await expect(mobileNav.getByRole("link", { name: "Clinicians", exact: true })).toHaveAttribute(
+      "href",
+      "/for-clinicians"
+    );
+    await expect(mobileNav.getByRole("link", { name: "Administrators", exact: true })).toHaveAttribute(
+      "href",
+      "/for-administrators"
+    );
+    await expect(mobileNav.getByRole("link", { name: "Patients", exact: true })).toHaveAttribute(
+      "href",
+      "/for-patients"
+    );
+    await expect(mobileNav.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
+    await expect(mobileNav.getByRole("link", { name: "Pharmacists" })).toHaveCount(0);
+    await expect(mobileNav.getByRole("link", { name: "Practices", exact: true })).toHaveCount(0);
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {

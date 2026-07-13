@@ -16,8 +16,8 @@ const megaMenus: Record<string, MegaColumn[]> = {
       pill: "Platform",
       links: [
         { label: "Overview", href: "/platform", description: "Agents, review, and FHIR staging" },
-        { label: "How it works", href: "/how-it-works", description: "From EHR systems to governed record" },
-        { label: "Security", href: "/security", description: "Safety case and audit posture" },
+        { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR R4" },
+        { label: "Security & safety", href: "/security", description: "Safety case and audit posture" },
       ],
       cta: { label: "Book a walkthrough", href: "/demo/patel" },
     },
@@ -26,7 +26,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       links: [
         { label: "Human-in-the-loop review", href: "/platform#hitl" },
         { label: "FHIR R4 staging", href: "/how-it-works#journey" },
-        { label: "Integrations", href: "/integrations" },
+        { label: "Specialist agents", href: "/platform#agents" },
       ],
     },
     {
@@ -40,11 +40,15 @@ const megaMenus: Record<string, MegaColumn[]> = {
   ],
   Solutions: [
     {
-      pill: "Clinicians",
+      pill: "Care delivery",
       links: [
-        { label: "GPs & nurses", href: "/for-clinicians", description: "Documentation and care coordination" },
-        { label: "Pharmacists", href: "/for-clinicians", description: "Medication review and safety" },
+        {
+          label: "Clinicians",
+          href: "/for-clinicians",
+          description: "GPs, nurses, and pharmacists",
+        },
         { label: "Practice managers", href: "/for-practices", description: "Operations and governance" },
+        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
       ],
     },
     {
@@ -52,14 +56,13 @@ const megaMenus: Record<string, MegaColumn[]> = {
       links: [
         { label: "Hospitals", href: "/for-hospitals", description: "Command centre and capacity" },
         { label: "ICS leads", href: "/for-ics", description: "Population health intelligence" },
-        { label: "Practices", href: "/for-practices", description: "Oversight across the team" },
+        { label: "Administrators", href: "/for-administrators", description: "Integrations and uptime" },
       ],
     },
     {
       pill: "Partners",
       links: [
         { label: "Research", href: "/for-research", description: "Governed outcome evaluation", badge: "Open" },
-        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
         { label: "View all roles", href: "/platform#roles" },
       ],
     },
@@ -71,22 +74,14 @@ const megaMenus: Record<string, MegaColumn[]> = {
         { label: "Resources hub", href: "/resources" },
         { label: "FAQ", href: "/faq" },
         { label: "Contact", href: "/contact" },
-        { label: "Live demo", href: "/demo/patel" },
       ],
     },
     {
-      pill: "Trust",
+      pill: "Trust & legal",
       links: [
-        { label: "Security", href: "/security" },
         { label: "Privacy", href: "/privacy" },
         { label: "Cookie policy", href: "/cookies" },
-      ],
-    },
-    {
-      pill: "Legal",
-      links: [
         { label: "Terms of service", href: "/terms" },
-        { label: "Pricing", href: "/pricing" },
       ],
     },
   ],
