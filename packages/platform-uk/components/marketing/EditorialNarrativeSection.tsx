@@ -11,7 +11,7 @@ const beats = [
   },
   {
     title: "A governed agent layer is the answer",
-    body: "Twelve specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
+    body: "Eight specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
     href: "/how-it-works",
     cta: "See how it works",
   },

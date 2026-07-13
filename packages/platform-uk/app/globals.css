@@ -6746,9 +6746,414 @@ input:focus, textarea:focus {
   color: var(--owkin-muted);
 }
 
+/* ---- Inner-page editorial hero ---- */
+.owkin-page-hero {
+  padding: clamp(3.5rem, 8vw, 5.5rem) 0 clamp(2.5rem, 5vw, 3.5rem);
+  border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+}
+
+.owkin-page-hero__grid {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .owkin-page-hero__grid:has(.owkin-page-hero__aside) {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3rem;
+  }
+}
+
+.owkin-page-hero__title {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-marketing-display);
+  font-size: clamp(2.1rem, 4vw, 3.15rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  color: var(--owkin-ink);
+}
+
+.owkin-page-hero__lede {
+  margin: 0;
+  max-width: 38rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--owkin-muted);
+}
+
+.owkin-page-hero__aside {
+  border-radius: 1.5rem;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 1.25rem;
+  box-shadow: 0 24px 60px -42px rgba(20, 20, 20, 0.35);
+}
+
+/* ---- FAQ ---- */
+.owkin-faq {
+  padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(3.5rem, 8vw, 5.5rem);
+}
+
+.owkin-faq__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  max-width: 48rem;
+}
+
+.owkin-faq__item {
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 1.15rem;
+}
+
+.owkin-faq__item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 1.15rem 0;
+  font-family: var(--font-marketing-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--owkin-ink);
+}
+
+.owkin-faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.owkin-faq__item[open] summary {
+  color: var(--owkin-accent);
+}
+
+.owkin-faq__answer {
+  margin: 0 0 1.15rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--owkin-muted);
+}
+
+/* ---- Contact ---- */
+.owkin-contact {
+  padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(3.5rem, 8vw, 5.5rem);
+}
+
+.owkin-contact__grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 800px) {
+  .owkin-contact__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+}
+
+.owkin-contact__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.4rem 1.45rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms ease, transform 180ms var(--ease-out-strong);
+}
+
+.owkin-contact__card:hover {
+  border-color: rgba(31, 75, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+.owkin-contact__card h2 {
+  margin: 0;
+  font-family: var(--font-marketing-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--owkin-ink);
+}
+
+.owkin-contact__card p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--owkin-muted);
+}
+
 .owkin-footer {
   background: var(--owkin-royal);
   color: #fff;
+}
+
+/* ---- Roles: editorial, product-aligned (homepage) ---- */
+.owkin-roles {
+  padding: clamp(3.75rem, 8vw, 6.5rem) 0;
+}
+
+.owkin-roles__intro {
+  max-width: 38rem;
+  margin-bottom: clamp(2.25rem, 5vw, 3.25rem);
+}
+
+.owkin-roles__eyebrow {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--owkin-royal);
+}
+
+.owkin-roles__title {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-marketing-display);
+  font-size: clamp(1.9rem, 3.5vw, 2.85rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  color: var(--owkin-ink);
+}
+
+.owkin-roles__lede {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--owkin-muted);
+}
+
+.owkin-roles__band {
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.owkin-roles__band + .owkin-roles__band {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: clamp(2rem, 4vw, 2.75rem);
+  border-top: 1px solid rgba(20, 20, 20, 0.08);
+}
+
+.owkin-roles__band-label {
+  margin: 0 0 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 20, 20, 0.45);
+}
+
+.owkin-roles__featured {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.owkin-roles__row,
+.owkin-roles__panel,
+.owkin-roles__reach-link {
+  display: grid;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  transition:
+    border-color 200ms ease,
+    transform 200ms var(--ease-out-strong),
+    box-shadow 200ms ease;
+}
+
+.owkin-roles__row:hover,
+.owkin-roles__panel:hover,
+.owkin-roles__reach-link:hover {
+  border-color: rgba(31, 75, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px -36px rgba(20, 20, 20, 0.4);
+}
+
+.owkin-roles__row--featured {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  padding: 1.35rem 1.35rem 1.4rem;
+  border-radius: 1.35rem;
+}
+
+@media (min-width: 900px) {
+  .owkin-roles__row--featured {
+    grid-template-columns: 3.25rem 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.55rem 1.75rem;
+  }
+}
+
+.owkin-roles__index {
+  font-family: var(--font-marketing-display);
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--owkin-accent);
+}
+
+.owkin-roles__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.85rem;
+  margin-bottom: 0.55rem;
+}
+
+.owkin-roles__meta h3,
+.owkin-roles__reach-label {
+  margin: 0;
+  font-family: var(--font-marketing-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--owkin-ink);
+}
+
+.owkin-roles__dashboard {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  background: var(--owkin-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--owkin-ink);
+}
+
+.owkin-roles__body p,
+.owkin-roles__panel p,
+.owkin-roles__reach-desc {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--owkin-muted);
+}
+
+.owkin-roles__signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.owkin-roles__signals li {
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 20, 20, 0.1);
+  background: rgba(250, 247, 242, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(20, 20, 20, 0.72);
+}
+
+.owkin-roles__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  font-weight: 550;
+  color: var(--owkin-ink);
+  white-space: nowrap;
+}
+
+.owkin-roles__row--featured .owkin-roles__cta {
+  justify-self: start;
+}
+
+@media (min-width: 900px) {
+  .owkin-roles__row--featured .owkin-roles__cta {
+    justify-self: end;
+    margin-top: 0;
+  }
+}
+
+.owkin-roles__row:hover .owkin-roles__cta,
+.owkin-roles__panel:hover .owkin-roles__cta,
+.owkin-roles__reach-link:hover .owkin-roles__cta {
+  color: var(--owkin-accent);
+}
+
+.owkin-roles__governance {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 800px) {
+  .owkin-roles__governance {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+.owkin-roles__panel {
+  padding: 1.35rem 1.4rem 1.45rem;
+  border-radius: 1.25rem;
+  min-height: 100%;
+}
+
+.owkin-roles__panel .owkin-roles__cta {
+  margin-top: 1.1rem;
+}
+
+.owkin-roles__reach {
+  display: grid;
+  gap: 0.65rem;
+}
+
+@media (min-width: 960px) {
+  .owkin-roles__reach {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+}
+
+.owkin-roles__reach-link {
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 1.15rem 1.2rem;
+  border-radius: 1.1rem;
+}
+
+.owkin-roles__reach-copy {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.owkin-roles__reach-label {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.owkin-roles__reach .owkin-roles__dashboard {
+  width: fit-content;
+}
+
+.owkin-roles__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.75rem;
+  margin-top: clamp(2rem, 4vw, 2.75rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(20, 20, 20, 0.08);
 }
 
 .marketing-site--editorial .marketing-stats-editorial,

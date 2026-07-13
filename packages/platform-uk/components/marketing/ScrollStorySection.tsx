@@ -15,7 +15,7 @@ const scenes = [
   {
     id: "answer",
     title: "A governed agent layer is the answer",
-    body: "Twelve specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
+    body: "Eight specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
     cta: { href: "/how-it-works", label: "See how it works" },
     visual: "agents" as const,
   },

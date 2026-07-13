@@ -9,6 +9,8 @@ import { SkipToMain } from "@/components/marketing/SkipToMain";
 type MarketingShellProps = {
   children: ReactNode;
   className?: string;
+  /** Cream Owkin marketing system (inner pages with solid nav) */
+  editorial?: boolean;
   /** Transparent navbar with light text over a dark navy hero */
   overDarkHero?: boolean;
   /** Transparent navbar with dark ink over a light editorial hero */
@@ -18,16 +20,18 @@ type MarketingShellProps = {
 export function MarketingShell({
   children,
   className,
+  editorial = false,
   overDarkHero = false,
   overLightHero = false,
 }: MarketingShellProps) {
   const overHero = overDarkHero || overLightHero;
+  const useEditorial = editorial || overLightHero;
 
   return (
     <div
       className={cn(
         "marketing-site flex min-h-screen flex-col overflow-x-hidden bg-surface",
-        overLightHero && "marketing-site--editorial",
+        useEditorial && "marketing-site--editorial",
         className
       )}
     >

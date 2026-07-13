@@ -12,9 +12,8 @@ import {
 } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
 import {
-  bandPrimaryCta,
-  bandSecondaryCta,
   container,
   heroPrimaryCta,
   heroSecondaryCta,
@@ -223,7 +222,7 @@ function ResourceDetailCard({ section }: { section: (typeof resourceSections)[nu
 
 export default function ResourcesPage() {
   return (
-    <MarketingShell>
+    <MarketingShell editorial>
       <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
         <div
           className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
@@ -381,23 +380,12 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      <section className="marketing-section-tight bg-emerald text-center text-white">
-        <div className={`${container} max-w-2xl`}>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to evaluate Aksh Health?</h2>
-          <p className="mt-4 text-lg leading-relaxed text-white/80">
-            Create an individual account to explore the platform, or request organisation access for NHS deployment
-            conversations.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/signup" className={`${bandPrimaryCta} min-w-[11rem]`}>
-              Create account
-            </Link>
-            <Link href="/get-started" className={`${bandSecondaryCta} min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCtaBand
+        title="Ready to evaluate Aksh Health?"
+        lede="Create an individual account to explore the platform, or request organisation access for NHS deployment conversations."
+        primary={{ label: "Create account", href: "/signup" }}
+        secondary={{ label: "Request organisation access", href: "/get-started" }}
+      />
     </MarketingShell>
   );
 }

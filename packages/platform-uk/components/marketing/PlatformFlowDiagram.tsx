@@ -193,9 +193,9 @@ function getAriaLabel(variant: PlatformFlowDiagramProps["variant"]) {
     return "Architecture flow: EMIS Web connects to the Aksh platform, clinicians review every output, then approved content writes back as FHIR R4.";
   }
   if (variant === "compact") {
-    return "Platform flow: EHR systems connect to Aksh data layer, twelve AI agents draft outputs, clinicians review in the HITL queue, then approved content writes to the FHIR record.";
+    return "Platform flow: EHR systems connect to Aksh data layer, eight AI agents draft outputs, clinicians review in the HITL queue, then approved content writes to the FHIR record.";
   }
-  return "End-to-end journey: EMIS or SystmOne feeds the data layer, Neo4j knowledge graph, twelve AI agents, human review queue, FHIR staging, and EHR write on clinician approval.";
+  return "End-to-end journey: EMIS or SystmOne feeds the data layer, Neo4j knowledge graph, eight AI agents, human review queue, FHIR staging, and EHR write on clinician approval.";
 }
 
 function FlowNodeCircle({

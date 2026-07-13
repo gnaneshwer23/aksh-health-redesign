@@ -17,19 +17,21 @@ export type LegalPageLayoutProps = {
 
 export function LegalPageLayout({ title, description, lastUpdated, sections }: LegalPageLayoutProps) {
   return (
-    <MarketingShell>
-      <section className="bg-white py-16">
+    <MarketingShell editorial>
+      <section className="owkin-page-hero border-b border-navy/[0.06] py-16">
         <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-widest text-emerald">Legal</p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-navy">{title}</h1>
-          <p className="mt-4 text-base leading-relaxed text-steel">{description}</p>
-          <p className="mt-2 text-sm text-muted">Last updated: {lastUpdated}</p>
+          <p className="owkin-roles__eyebrow">Legal</p>
+          <h1 className="owkin-page-hero__title">{title}</h1>
+          <p className="owkin-page-hero__lede">{description}</p>
+          <p className="mt-3 text-sm text-slate/60">Last updated: {lastUpdated}</p>
 
           <div className="mt-12 space-y-10">
             {sections.map((section) => (
               <article key={section.id ?? section.title} id={section.id}>
-                <h2 className="text-xl font-bold text-navy">{section.title}</h2>
-                <div className="mt-3 space-y-3 text-sm leading-relaxed text-steel">{section.content}</div>
+                <h2 className="font-[family-name:var(--font-marketing-display)] text-xl font-semibold tracking-tight text-navy-dark">
+                  {section.title}
+                </h2>
+                <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate/75">{section.content}</div>
               </article>
             ))}
           </div>

@@ -47,14 +47,14 @@ const platformStages: Array<{
     icon: Brain,
     label: "Understand",
     title: "A knowledge graph that reasons.",
-    body: "Each patient record becomes a connected model in Neo4j: conditions linked to risks, medications to interactions, history to predictions. Twelve specialist agents run in parallel to surface insights.",
+    body: "Each patient record becomes a connected model in Neo4j: conditions linked to risks, medications to interactions, history to predictions. Eight specialist agents run in parallel to surface insights.",
   },
   {
     num: "03",
     variant: "lavender",
     icon: ShieldCheck,
     label: "Act",
-    title: "Twelve AI agents. One review queue.",
+    title: "Eight AI agents. One review queue.",
     body: "SYNTHESIS writes your SOAP note. Dr.Assist codes the diagnosis. GUARDIAN checks drug interactions. ORACLE scores patient risk. Everything appears as a draft in your review queue. Nothing writes to the FHIR record until you click Accept.",
   },
   {
@@ -95,7 +95,7 @@ const roleFlows = {
         icon: Sparkles,
         label: "Draft",
         title: "Agents work in parallel",
-        description: "Twelve specialists draft SOAP notes, safety checks, coding suggestions, and risk scores at once.",
+        description: "Eight specialists draft SOAP notes, safety checks, coding suggestions, and risk scores at once.",
       },
       {
         icon: ClipboardCheck,
@@ -195,7 +195,7 @@ export function HowItWorksPageContent() {
   return (
     <>
       {/* Main pipeline diagram */}
-      <section className="bg-white py-20 md:py-24">
+      <section id="journey" className="scroll-mt-24 py-16 md:py-20">
         <div className={container}>
           <MarketingSectionHeader
             align="left"

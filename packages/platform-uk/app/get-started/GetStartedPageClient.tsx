@@ -97,7 +97,7 @@ export default function GetStartedPageClient() {
 
   if (submitted) {
     return (
-      <MarketingShell>
+      <MarketingShell editorial>
         <div className="flex flex-1 items-center justify-center py-16">
           <div className="max-w-md px-6 text-center">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
@@ -120,7 +120,7 @@ export default function GetStartedPageClient() {
   }
 
   return (
-    <MarketingShell>
+    <MarketingShell editorial>
       <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
         <div
           className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[20rem] w-[20rem] opacity-[0.12]"

@@ -4,9 +4,8 @@ import { Building2, CheckCircle2, Hospital, Stethoscope } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
+import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
 import {
-  bandPrimaryCta,
-  bandSecondaryCta,
   btnPrimary,
   btnSecondary,
   container,
@@ -81,7 +80,7 @@ const tiers: PricingTier[] = [
 
 export default function PricingPage() {
   return (
-    <MarketingShell>
+    <MarketingShell editorial>
       <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
         <div
           className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
@@ -176,22 +175,12 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="marketing-section-tight bg-emerald text-center text-white">
-        <div className={`${container} max-w-2xl`}>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to talk pricing?</h2>
-          <p className="mt-4 text-lg leading-relaxed text-white/80">
-            Tell us about your organisation and we will scope a tier and quote that fits.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/get-started" className={`${bandPrimaryCta} min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-            <Link href="/contact" className={`${bandSecondaryCta} min-w-[11rem]`}>
-              Talk to us
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCtaBand
+        title="Ready to talk pricing?"
+        lede="Tell us about your organisation and we will scope a tier and quote that fits."
+        primary={{ label: "Request organisation access", href: "/get-started" }}
+        secondary={{ label: "Talk to us", href: "/contact" }}
+      />
     </MarketingShell>
   );
 }

@@ -1,117 +1,76 @@
-import { FileText, Scale, Send, Shield, TrendingUp, Users } from "lucide-react";
+import { Activity, FileText, Scale, Send, Shield, Stethoscope, TrendingUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 
-const agents: {
-  name: string;
-  tag: string;
-  color: string;
-  iconBg: string;
-  icon: LucideIcon;
-  desc: string;
-  fhir: string;
-}[] = [
-  {
-    name: "SYNTHESIS",
-    tag: "Clinical",
-    color: "text-navy",
-    iconBg: "bg-navy/10",
-    icon: FileText,
-    desc: "Converts voice or typed consultation notes into structured SOAP notes in 4 seconds.",
-    fhir: "DocumentReference",
-  },
-  {
-    name: "GUARDIAN",
-    tag: "Safety",
-    color: "text-danger",
-    iconBg: "bg-danger/10",
-    icon: Shield,
-    desc: "Real-time drug interaction, allergy, and contraindication checking. BNF-validated. Red / Amber / Green.",
-    fhir: "Flag, MedicationRequest",
-  },
-  {
-    name: "ORACLE",
-    tag: "Risk",
-    color: "text-warning",
-    iconBg: "bg-warning/10",
-    icon: TrendingUp,
-    desc: "CVD, T2D, and frailty risk scoring. 14-day hospital admission prediction using the knowledge graph.",
-    fhir: "RiskAssessment",
-  },
-  {
-    name: "EQUITY",
-    tag: "Population",
-    color: "text-emerald",
-    iconBg: "bg-emerald/10",
-    icon: Scale,
-    desc: "Detects health disparities by IMD quintile and ethnicity. Monthly ICS equity reports.",
-    fhir: "Observation (flag)",
-  },
-  {
-    name: "SHIELD",
-    tag: "Compliance",
-    color: "text-slate",
-    iconBg: "bg-surface-muted",
-    icon: Shield,
-    desc: "Immutable audit trail for every AI recommendation and GP action. DCB0129-compliant. CQC-ready.",
-    fhir: "AuditEvent",
-  },
-  {
-    name: "REFERRAL AGENT",
-    tag: "Coordination",
-    color: "text-navy",
-    iconBg: "bg-navy/10",
-    icon: Send,
-    desc: "Auto-generates referral packages: criteria check, missing investigations, urgency prediction.",
-    fhir: "ServiceRequest",
-  },
-];
+import { CLINICAL_AGENT_META } from "@/lib/agents";
+
+const agentIcons: Record<string, LucideIcon> = {
+  VOICE: Activity,
+  SYNTHESIS: FileText,
+  DrASSIST: Stethoscope,
+  GUARDIAN: Shield,
+  ORACLE: TrendingUp,
+  REFERRAL: Send,
+  EQUITY: Scale,
+  SHIELD: Shield,
+};
+
+const agentOrder = ["VOICE", "SYNTHESIS", "DrASSIST", "GUARDIAN", "ORACLE", "REFERRAL", "EQUITY", "SHIELD"] as const;
 
 export default function AgentGrid() {
+  const agents = agentOrder.map((id) => {
+    const meta = CLINICAL_AGENT_META[id];
+    return {
+      id,
+      name: meta.label,
+      function: meta.function,
+      desc: meta.description,
+      icon: agentIcons[id] ?? FileText,
+    };
+  });
+
   return (
-    <section className="bg-surface py-20 md:py-24">
+    <section className="py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-14 text-center md:mb-16">
-          <p className="marketing-section-label mb-3">AI agents</p>
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-            Twelve AI Agents. Every Role. One Platform.
+        <div className="mb-12 max-w-2xl md:mb-14">
+          <p className="owkin-roles__eyebrow mb-3">AI agents</p>
+          <h2 className="mb-4 font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-navy-dark md:text-4xl">
+            Eight specialist agents. One review queue.
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-steel md:text-xl">
-            Each agent has memory, permissions, and a human-approval gate before any action is taken.
+          <p className="text-base leading-relaxed text-slate/75 md:text-lg">
+            Each agent drafts or checks work against clinical context. Nothing reaches the record without clinician
+            approval — with a full SHIELD audit trail.
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {agents.map((agent) => {
             const Icon = agent.icon;
             return (
               <div
-                key={agent.name}
-                className="marketing-capability-card rounded-2xl border border-border-subtle bg-white p-6"
+                key={agent.id}
+                className="rounded-2xl border border-navy/[0.08] bg-white/70 p-5"
               >
-                <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-full ${agent.iconBg}`}>
-                  <Icon className={`h-5 w-5 ${agent.color}`} aria-hidden />
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebe4d8]">
+                  <Icon className="h-4 w-4 text-navy-dark" aria-hidden />
                 </div>
-                <div className={`mb-2 text-xs font-bold uppercase tracking-wide ${agent.color}`}>{agent.name}</div>
-                <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-steel">
-                  <Users className="h-3 w-3" aria-hidden />
-                  {agent.tag}
-                </div>
-                <p className="mb-3 text-sm leading-relaxed text-slate">{agent.desc}</p>
-                <div className="rounded-lg bg-surface px-2.5 py-1.5 text-xs text-steel/80">
-                  <span className="font-semibold text-steel">FHIR:</span> {agent.fhir}
-                </div>
+                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-navy/55">{agent.function}</p>
+                <h3 className="mb-2 font-[family-name:var(--font-marketing-display)] text-lg font-semibold text-navy-dark">
+                  {agent.name}
+                </h3>
+                <p className="text-sm leading-relaxed text-slate/70">{agent.desc}</p>
               </div>
             );
           })}
         </div>
 
-        <div className="mt-10 rounded-2xl border border-emerald/20 bg-emerald/5 p-8 text-center">
-          <p className="mb-2 text-lg font-semibold text-emerald">Human-in-the-Loop. Always.</p>
-          <p className="mx-auto max-w-2xl text-sm leading-relaxed text-steel">
-            Every AI output is staged as a Draft. The clinician clicks Accept, Edit, or Reject. Zero AI outputs are
-            written to the FHIR record without explicit human approval.
-          </p>
-        </div>
+        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-slate/75">
+          Human-in-the-loop always.{" "}
+          <Link href="/platform#hitl" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+            Accept, Edit, or Reject
+          </Link>{" "}
+          before any FHIR write. DCB0129 clinical safety case in progress — not a certification claim.
+        </p>
       </div>
     </section>
   );

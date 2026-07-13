@@ -1,58 +1,14 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Building2,
-  CheckCircle2,
-  ClipboardCheck,
-  FlaskConical,
-  HeartPulse,
-  Inbox,
-  Link2,
-  Network,
-  Pencil,
-  Pill,
-  ShieldCheck,
-  Stethoscope,
-  TrendingUp,
-  User,
-  XCircle,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { CheckCircle2, ClipboardCheck, Inbox, Link2, Pencil, ShieldCheck, XCircle } from "lucide-react";
 
 import AgentGrid from "@/components/marketing/AgentGrid";
+import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
+import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
-import {
-  bandPrimaryCta,
-  bandSecondaryCta,
-  container,
-  heroPrimaryCta,
-  heroSecondaryCta,
-} from "@/components/marketing/marketing-ui";
+import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
+import RolesGridSection from "@/components/marketing/RolesGridSection";
 import TrustStrip from "@/components/marketing/TrustStrip";
-import { ROLES, type UserRole } from "@/lib/onboarding/roles";
-
-const AUDIENCE_LINKS: Record<string, string> = {
-  gp: "/for-clinicians",
-  nurse: "/for-clinicians",
-  "clinical-pharmacist": "/for-clinicians",
-  "practice-manager": "/for-practices",
-  "ics-lead": "/for-ics",
-  "hospital-executive": "/for-hospitals",
-  patient: "/for-patients",
-  researcher: "/for-research",
-};
-
-const ROLE_ICONS: Record<UserRole, LucideIcon> = {
-  gp: Stethoscope,
-  nurse: HeartPulse,
-  "clinical-pharmacist": Pill,
-  "practice-manager": Building2,
-  "ics-lead": Network,
-  "hospital-executive": TrendingUp,
-  patient: User,
-  researcher: FlaskConical,
-};
 
 const platformLayers = [
   {
@@ -62,105 +18,62 @@ const platformLayers = [
   },
   {
     title: "Review",
-    body: "Specialist agents draft notes, safety checks, risk scores, and referrals. Everything lands in one review queue.",
+    body: "Specialist agents draft notes, safety checks, risk scores, and referrals into one HITL queue.",
     icon: ClipboardCheck,
   },
   {
     title: "Evidence",
-    body: "Approved outputs stage as FHIR resources with an immutable SHIELD audit trail for governance and compliance.",
+    body: "Approved outputs stage as FHIR resources with an immutable SHIELD audit trail.",
     icon: ShieldCheck,
   },
   {
     title: "Integration",
-    body: "Designed to sit above your existing EHR. No rip-and-replace. Production integration paths are on the roadmap.",
+    body: "Designed to sit above your existing EHR. No rip-and-replace. Production paths remain gated by governance.",
     icon: Link2,
   },
 ] as const;
 
 const sectionNav = [
   { id: "layers", label: "Layers" },
+  { id: "agents", label: "Agents" },
   { id: "roles", label: "Roles" },
   { id: "hitl", label: "HITL" },
 ] as const;
 
 const hitlActions = [
-  {
-    icon: CheckCircle2,
-    label: "Accept",
-    tone: "border-emerald/30 bg-emerald/10 text-emerald",
-    iconTone: "text-emerald",
-  },
-  {
-    icon: Pencil,
-    label: "Edit",
-    tone: "border-navy/15 bg-white text-navy",
-    iconTone: "text-navy",
-  },
-  {
-    icon: XCircle,
-    label: "Reject",
-    tone: "border-danger/20 bg-danger/5 text-danger",
-    iconTone: "text-danger",
-  },
+  { icon: CheckCircle2, label: "Accept", tone: "border-emerald/30 bg-emerald/10 text-emerald", iconTone: "text-emerald" },
+  { icon: Pencil, label: "Edit", tone: "border-navy/15 bg-white text-navy", iconTone: "text-navy" },
+  { icon: XCircle, label: "Reject", tone: "border-danger/20 bg-danger/5 text-danger", iconTone: "text-danger" },
 ] as const;
 
 export function PlatformPageContent() {
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
-        <div
-          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-16 h-[22rem] w-[22rem] opacity-[0.08]"
-          aria-hidden
-        />
+      <MarketingPageHero
+        eyebrow="Platform"
+        title="One platform, eight roles, clinician-owned AI"
+        lede="Designed for EMIS Web and SystmOne workflows. Eight specialist agents draft, check, and escalate — every output needs clinician approval before it reaches the record."
+        primary={{ label: "Create account", href: "/signup" }}
+        secondary={{ label: "Request organisation access", href: "/get-started" }}
+      >
+        <nav className="mt-10 flex flex-wrap gap-2" aria-label="Platform page sections">
+          {sectionNav.map((item) => (
+            <a key={item.id} href={`#${item.id}`} className="owkin-roles__dashboard">
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </MarketingPageHero>
 
-        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
-          <p className="marketing-section-label mb-4">Platform</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
-            One platform, eight roles, clinician-owned AI
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
-            Designed for EMIS Web and SystmOne workflows. Specialist agents draft notes, check safety, and coordinate
-            care. Every output needs clinician approval before it reaches the record.
-          </p>
+      <TrustStrip />
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link href="/signup" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
-              Create account
-            </Link>
-            <Link href="/get-started" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-          </div>
-
-          <nav className="mt-10 flex flex-wrap gap-2" aria-label="Platform page sections">
-            {sectionNav.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="rounded-full border border-border-subtle bg-white px-4 py-1.5 text-sm font-semibold text-navy shadow-sm transition-colors hover:border-emerald/30 hover:bg-emerald/[0.04]"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </section>
-
-      <div className="border-t border-border-subtle bg-white">
-        <TrustStrip />
-      </div>
-
-      <section id="layers" className="scroll-mt-24 bg-surface-muted py-20 md:py-24">
+      <section id="layers" className="scroll-mt-24 py-16 md:py-20">
         <div className={container}>
           <MarketingSectionHeader
             align="left"
             label="Platform layers"
             title="How the platform works"
-            description="Four layers from patient context to governed outputs. No tab switching. One connected workflow."
+            description="Four layers from patient context to governed outputs. Deep dive on the journey page — this is the product map."
           />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {platformLayers.map((layer, index) => (
@@ -174,53 +87,46 @@ export function PlatformPageContent() {
               />
             ))}
           </div>
+          <p className="mt-8 text-sm text-slate/70">
+            Prefer the end-to-end diagram?{" "}
+            <Link href="/how-it-works#journey" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+              See how it works
+            </Link>
+            .
+          </p>
         </div>
       </section>
 
-      <AgentGrid />
+      <div id="agents" className="scroll-mt-24 border-t border-navy/[0.06]">
+        <AgentGrid />
+      </div>
 
-      <section id="roles" className="scroll-mt-24 bg-white py-20 md:py-24">
-        <div className={container}>
-          <MarketingSectionHeader
-            align="left"
-            label="Role dashboards"
-            title="Eight role dashboards"
-            description="Each role gets a purpose-built view. Clinical teams share one review queue."
-          />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {ROLES.map((role, index) => (
-              <PastelCapabilityCard
-                key={role.id}
-                variant={pastelVariantAt(index)}
-                icon={ROLE_ICONS[role.id]}
-                title={role.label}
-                description={role.description}
-                href={AUDIENCE_LINKS[role.id] ?? "/signup"}
-                compact
-                footer={
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-emerald">
-                    Learn more
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                  </span>
-                }
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="border-t border-navy/[0.06]">
+        <RolesGridSection variant="platform" />
+      </div>
 
-      <section id="hitl" className="scroll-mt-24 bg-white py-20 md:py-24">
+      <section id="hitl" className="scroll-mt-24 border-t border-navy/[0.06] py-16 md:py-20">
         <div className={container}>
-          <div className="overflow-hidden rounded-2xl border-2 border-emerald/25 bg-gradient-to-br from-emerald/5 via-white to-emerald/[0.03]">
+          <div className="overflow-hidden rounded-2xl border border-navy/[0.08] bg-white/70">
             <div className="grid gap-0 lg:grid-cols-[1fr_1.4fr]">
-              <div className="border-b border-emerald/15 p-8 md:p-10 lg:border-b-0 lg:border-r">
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/10">
-                  <ClipboardCheck className="h-7 w-7 text-emerald" aria-hidden />
-                </div>
-                <h2 className="text-2xl font-bold tracking-tight text-navy md:text-3xl">Human-in-the-loop. Always.</h2>
-                <p className="mt-4 text-base leading-relaxed text-steel">
+              <div className="border-b border-navy/[0.06] p-8 md:p-10 lg:border-b-0 lg:border-r">
+                <p className="owkin-roles__eyebrow mb-4">Clinical safety</p>
+                <h2 className="font-[family-name:var(--font-marketing-display)] text-2xl font-semibold tracking-tight text-navy-dark md:text-3xl">
+                  Human-in-the-loop. Always.
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-slate/75">
                   Every AI output is staged as a Draft. The clinician clicks Accept, Edit, or Reject. Nothing writes to
-                  the FHIR record without explicit human approval.
+                  the FHIR record without explicit human approval. MHRA-aware positioning: decision support, not
+                  autonomous diagnosis. DCB0129 safety case in progress.
+                </p>
+                <p className="mt-4 text-sm text-slate/70">
+                  <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+                    Security &amp; compliance detail
+                  </Link>
+                  {" · "}
+                  <Link href="/faq" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+                    FAQ
+                  </Link>
                 </p>
               </div>
 
@@ -243,22 +149,12 @@ export function PlatformPageContent() {
         </div>
       </section>
 
-      <section className="marketing-section-tight bg-emerald text-center text-white">
-        <div className={`${container} max-w-2xl`}>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Ready to explore the platform?</h2>
-          <p className="mt-4 text-lg leading-relaxed text-white/80">
-            FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/signup" className={`${bandPrimaryCta} min-w-[11rem]`}>
-              Create account
-            </Link>
-            <Link href="/get-started" className={`${bandSecondaryCta} min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCtaBand
+        title="Ready to explore the platform?"
+        lede="FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one."
+        primary={{ label: "Create account", href: "/signup" }}
+        secondary={{ label: "Request organisation access", href: "/get-started" }}
+      />
     </>
   );
 }

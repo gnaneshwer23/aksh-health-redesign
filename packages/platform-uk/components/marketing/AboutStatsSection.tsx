@@ -5,7 +5,7 @@ import { container, linkUnderline, section } from "@/components/marketing/market
 
 const points = [
   "Designed for EMIS Web and SystmOne integration paths",
-  "Twelve specialist agents covering clinical, safety, and operational work",
+  "Eight specialist agents covering clinical, safety, and operational work",
   "Nothing writes to the record without clinician approval",
 ] as const;
 
