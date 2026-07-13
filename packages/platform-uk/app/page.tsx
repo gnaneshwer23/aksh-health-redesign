@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <MarketingShell>
+    <MarketingShell overDarkHero>
       <HeroSection />
       <PlatformMetricsSection />
       <StatsBand />

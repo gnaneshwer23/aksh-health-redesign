@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+  --font-marketing-display: 'Outfit', system-ui, sans-serif;
+}
 
 :root {
   --bg: #0a0e12;
@@ -4897,6 +4901,105 @@ input:focus, textarea:focus {
 
 .marketing-hero-card {
   position: relative;
+}
+
+/* Homepage hero — Owkin-inspired atmosphere: brand-first, dark plane, quiet motion */
+.marketing-homepage-hero {
+  isolation: isolate;
+}
+
+.marketing-homepage-hero__atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(0, 168, 107, 0.22), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 35%, rgba(74, 111, 165, 0.28), transparent 50%),
+    radial-gradient(ellipse 55% 45% at 10% 70%, rgba(0, 61, 122, 0.55), transparent 55%),
+    linear-gradient(180deg, #001a3d 0%, #002852 48%, #001428 100%);
+}
+
+.marketing-homepage-hero__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: marketing-hero-drift 18s ease-in-out infinite alternate;
+}
+
+.marketing-homepage-hero__glow--emerald {
+  top: 12%;
+  right: 8%;
+  width: min(42vw, 28rem);
+  height: min(42vw, 28rem);
+  background: rgba(0, 168, 107, 0.35);
+}
+
+.marketing-homepage-hero__glow--steel {
+  bottom: 8%;
+  left: 4%;
+  width: min(48vw, 32rem);
+  height: min(48vw, 32rem);
+  background: rgba(74, 111, 165, 0.3);
+  animation-delay: -7s;
+}
+
+.marketing-homepage-hero__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 20%, transparent 75%);
+}
+
+.marketing-homepage-hero__horizon {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 20, 40, 0.55) 100%);
+}
+
+.marketing-homepage-hero__copy {
+  animation: marketing-hero-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.marketing-homepage-hero__brand,
+.marketing-homepage-hero__title {
+  font-family: var(--font-marketing-display);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+@keyframes marketing-hero-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-2%, 3%, 0) scale(1.08);
+  }
+}
+
+@keyframes marketing-hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-homepage-hero__glow,
+  .marketing-homepage-hero__copy {
+    animation: none;
+  }
 }
 
 /* One card system for all marketing surfaces: quiet border, minimal shadow, gentle lift on hover */
