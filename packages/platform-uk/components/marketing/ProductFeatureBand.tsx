@@ -8,17 +8,52 @@ export default function ProductFeatureBand() {
     <section className="owkin-product-band" aria-labelledby="product-band-heading">
       <div className={`${container} owkin-product-band__grid`}>
         <ScrollReveal className="owkin-product-band__viz" delayMs={60}>
-          <div className="owkin-product-card">
-            <p className="owkin-product-card__eyebrow">Agent throughput · this week</p>
-            <p className="owkin-product-card__title">Review queue activity</p>
-            <div className="owkin-product-card__chart" aria-hidden>
-              {[42, 58, 51, 67, 74, 33, 28].map((value, index) => (
-                <div key={index} className="owkin-product-card__bar" style={{ height: `${value}%` }} />
-              ))}
+          <div className="owkin-product-card aksh-product-mock">
+            <div className="aksh-product-mock__header">
+              <p className="owkin-product-card__eyebrow">GP dashboard · Patel practice</p>
+              <span className="aksh-product-mock__pill">HITL · live</span>
             </div>
+            <p className="owkin-product-card__title">Today&apos;s clinical queue</p>
+
+            <div className="aksh-product-mock__rows" aria-hidden>
+              <div className="aksh-product-mock__row">
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--voice">VOICE</span>
+                <div>
+                  <p>Consult transcript · Mr J. Patel</p>
+                  <p className="aksh-product-mock__meta">Calf swelling · sugars 12–14 · SYNTHESIS path</p>
+                </div>
+                <span className="aksh-product-mock__status">Live</span>
+              </div>
+              <div className="aksh-product-mock__row">
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--synth">SOAP</span>
+                <div>
+                  <p>SYNTHESIS draft ready</p>
+                  <p className="aksh-product-mock__meta">DocumentReference · awaiting GP</p>
+                </div>
+                <span className="aksh-product-mock__status aksh-product-mock__status--draft">Draft</span>
+              </div>
+              <div className="aksh-product-mock__row">
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--oracle">ORACLE</span>
+                <div>
+                  <p>Admission risk 78 → 82</p>
+                  <p className="aksh-product-mock__meta">14-day horizon · HIGH</p>
+                </div>
+                <span className="aksh-product-mock__status aksh-product-mock__status--risk">Review</span>
+              </div>
+              <div className="aksh-product-mock__row">
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--shield">SHIELD</span>
+                <div>
+                  <p>AuditEvent · zero auto-writes</p>
+                  <p className="aksh-product-mock__meta">Midnight ETL · SUCCESS 6m 39s</p>
+                </div>
+                <span className="aksh-product-mock__status aksh-product-mock__status--ok">Clear</span>
+              </div>
+            </div>
+
             <div className="owkin-product-card__bubble">
               <p>
-                Draft a SOAP note for today&apos;s COPD review, stage FHIR Condition, and hold for GP approval.
+                Draft SOAP + urgent DVT duplex referral, stage FHIR Condition &amp; ServiceRequest, hold for GP
+                approval.
               </p>
               <div className="owkin-product-card__bubble-bar" aria-hidden />
             </div>
@@ -29,15 +64,15 @@ export default function ProductFeatureBand() {
           <p className="owkin-product-band__logo">AKSH PLATFORM</p>
           <h2 id="product-band-heading">Get governed drafts in minutes, instead of hours.</h2>
           <p>
-            Specialist agents draft clinical work from live context. Clinicians stay in the loop — accept, edit, or
-            reject — before anything reaches the record.
+            Voice consults, risk scores, referrals, and pharmacist checks land in one review queue. Clinicians accept,
+            edit, or reject before anything reaches the record.
           </p>
           <div className="owkin-product-band__actions">
             <Link href="/platform" className="owkin-btn-ink">
               Discover the platform
             </Link>
             <Link href="/demo/patel" className="owkin-text-cta">
-              Book a walkthrough with our team
+              Walk the Patel demo
               <span aria-hidden>→</span>
             </Link>
           </div>

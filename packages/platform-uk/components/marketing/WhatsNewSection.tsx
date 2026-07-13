@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { NewsCardMotif } from "@/components/marketing/OwkinVisuals";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { container } from "@/components/marketing/marketing-ui";
 
 const tabs = ["Updates", "Safety", "Integrations", "Roles", "Demos"] as const;
 
-const cards: Record<(typeof tabs)[number], Array<{ tag: string; title: string; href: string; tone: string }>> = {
+const cards: Record<(typeof tabs)[number], Array<{ tag: string; title: string; href: string; tone: "navy" | "mint" | "ink" }>> = {
   Updates: [
     { tag: "Platform", title: "Human-in-the-loop review queue for every agent output", href: "/platform", tone: "navy" },
     { tag: "Demo", title: "Walk the Patel practice journey end to end", href: "/demo/patel", tone: "mint" },
@@ -70,6 +71,7 @@ export default function WhatsNewSection() {
             <ScrollReveal key={`${active}-${card.title}`} delayMs={100 + index * 60}>
               <Link href={card.href} className={`owkin-news-card owkin-news-card--${card.tone}`}>
                 <span className="owkin-news-card__tag">{card.tag}</span>
+                <NewsCardMotif tone={card.tone} />
                 <h3>{card.title}</h3>
               </Link>
             </ScrollReveal>

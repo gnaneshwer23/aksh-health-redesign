@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { PastelOrbVisual } from "@/components/marketing/OwkinVisuals";
+import { PlatformHubVisual } from "@/components/marketing/OwkinVisuals";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { container } from "@/components/marketing/marketing-ui";
 
@@ -8,7 +8,7 @@ export default function HeroSection() {
   return (
     <section className="marketing-homepage-hero owkin-hero relative flex min-h-[100svh] flex-col overflow-hidden">
       <div className="owkin-hero__atmosphere" aria-hidden>
-        <PastelOrbVisual className="owkin-hero__orb" />
+        <PlatformHubVisual className="owkin-hero__orb" idPrefix="hero" />
       </div>
 
       <div className={`relative z-10 flex flex-1 flex-col justify-center ${container} pb-10 pt-28 md:pt-32`}>
