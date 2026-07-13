@@ -44,6 +44,26 @@ const createNextConfig = (phase) => ({
         source: "/docs",
         destination: "/resources",
         permanent: true
+      },
+      {
+        source: "/voice-care",
+        destination: "/demo/patel",
+        permanent: false
+      },
+      {
+        source: "/solutions",
+        destination: "/for-clinicians",
+        permanent: false
+      },
+      {
+        source: "/about",
+        destination: "/platform",
+        permanent: false
+      },
+      {
+        source: "/careers",
+        destination: "/contact",
+        permanent: false
       }
     ];
   }

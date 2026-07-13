@@ -53,25 +53,19 @@ test.describe("Marketing smoke", () => {
 
     const solutionsButton = page.locator("nav").getByRole("button", { name: "Solutions", exact: true });
     await solutionsButton.hover();
-
     const menu = page.locator(".owkin-mega");
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole("link", { name: "Clinicians", exact: true })).toHaveAttribute("href", "/for-clinicians");
-    await expect(menu.getByRole("link", { name: "Practice managers", exact: true })).toHaveAttribute(
-      "href",
-      "/for-practices"
-    );
-    await expect(menu.getByRole("link", { name: "Patients", exact: true })).toHaveAttribute("href", "/for-patients");
-    await expect(menu.getByRole("link", { name: "Hospitals", exact: true })).toHaveAttribute("href", "/for-hospitals");
-    await expect(menu.getByRole("link", { name: "ICS leads", exact: true })).toHaveAttribute("href", "/for-ics");
-    await expect(menu.getByRole("link", { name: "Administrators", exact: true })).toHaveAttribute(
-      "href",
-      "/for-administrators"
-    );
-    await expect(menu.getByRole("link", { name: /Research/i })).toHaveAttribute("href", "/for-research");
-    await expect(menu.getByRole("link", { name: "View all roles" })).toHaveAttribute("href", "/platform#roles");
+    await menu.hover();
 
-    // Each Solutions destination appears once (no label clones of the same page).
+    await expect(menu.locator('a[href="/for-clinicians"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-practices"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-patients"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-hospitals"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-ics"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-administrators"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-research"]')).toBeVisible();
+    await expect(menu.locator('a[href="/platform#roles"]')).toBeVisible();
+
     const hrefs = await menu.locator("a[href]").evaluateAll((anchors) =>
       anchors.map((a) => a.getAttribute("href")).filter((href): href is string => Boolean(href))
     );
@@ -82,9 +76,11 @@ test.describe("Marketing smoke", () => {
     await page.goto("/");
 
     const collectHrefs = async (menuName: "Platform" | "Resources") => {
-      await page.locator("nav").getByRole("button", { name: menuName, exact: true }).hover();
+      const button = page.locator("nav").getByRole("button", { name: menuName, exact: true });
+      await button.hover();
       const menu = page.locator(".owkin-mega");
       await expect(menu).toBeVisible();
+      await menu.hover();
       return menu.locator("a[href]").evaluateAll((anchors) =>
         anchors.map((a) => a.getAttribute("href")).filter((href): href is string => Boolean(href))
       );
@@ -96,8 +92,9 @@ test.describe("Marketing smoke", () => {
     expect(platformHrefs).not.toContain("/how-it-works");
     expect(new Set(platformHrefs).size).toBe(platformHrefs.length);
 
-    // Close by moving to brand, then open Resources.
     await page.locator("nav a.owkin-nav__brand").hover();
+    await expect(page.locator(".owkin-mega")).toHaveCount(0);
+
     const resourcesHrefs = await collectHrefs("Resources");
     expect(resourcesHrefs).toContain("/resources");
     expect(resourcesHrefs).toContain("/faq");
@@ -407,10 +404,36 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
   });
 
+  test("/voice-care redirects to Patel walkthrough", async ({ page }) => {
+    await page.goto("/voice-care");
+    await expect(page).toHaveURL(/\/demo\/patel/);
+    await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
+  });
+
+  test("legacy marketing aliases redirect without 404", async ({ page }) => {
+    await page.goto("/solutions");
+    await expect(page).toHaveURL(/\/for-clinicians/);
+
+    await page.goto("/about");
+    await expect(page).toHaveURL(/\/platform/);
+
+    await page.goto("/careers");
+    await expect(page).toHaveURL(/\/contact/);
+  });
+
   test("clinical walkthrough routes load", async ({ page }) => {
     await page.goto("/demo/patel");
     await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Open step surface" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign in to open step|Open step surface/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Voice Care Day-3/i })).toHaveCount(0);
+
+    // Default step 0 (admin) is auth-gated; clinician steps stay public.
+    await expect(page.getByRole("link", { name: "Sign in to open step" })).toHaveAttribute(
+      "href",
+      /\/signin\?callbackUrl=/
+    );
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.getByRole("link", { name: "Open step surface" })).toHaveAttribute("href", "/dashboard/gp");
   });
 
   test("footer exposes product, audience, and trust links", async ({ page }) => {

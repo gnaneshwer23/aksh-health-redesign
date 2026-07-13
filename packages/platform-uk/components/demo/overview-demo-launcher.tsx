@@ -13,59 +13,72 @@ const DEMO_STEPS = [
     id: "midnight-etl",
     title: "Midnight ETL status",
     route: "/dashboard/admin",
+    publicSurface: false,
     narrative: "Last night while patients slept: synthetic extraction SUCCESS in 6m 39s.",
-    demoSection: "§5.1"
+    demoSection: "§5.1",
   },
   {
     id: "gp-dashboard",
     title: "Clinician dashboard | Mr Patel",
     route: "/dashboard/gp",
+    publicSurface: true,
     narrative: "Appointment list sorted by ORACLE risk: Mr James Patel (78 HIGH) at top.",
-    demoSection: "§5.2–5.3"
+    demoSection: "§5.2–5.3",
   },
   {
     id: "voice-consult",
     title: "VOICE consultation",
     route: "/dashboard/gp?highlight=voice",
+    publicSurface: true,
     narrative: "Click mic: calf swelling, sugars 12–14, polydipsia transcribed to SYNTHESIS path.",
-    demoSection: "§5.4"
+    demoSection: "§5.4",
   },
   {
     id: "review-queue",
     title: "AI review queue",
     route: "/dashboard/gp?highlight=queue",
+    publicSurface: true,
     narrative: "Four DRAFT items: SOAP, codes, GUARDIAN URGENT, ORACLE 78→82.",
-    demoSection: "§5.5–5.6"
+    demoSection: "§5.5–5.6",
   },
   {
     id: "referral",
     title: "REFERRAL AGENT package",
     route: "/dashboard/gp?highlight=referral",
+    publicSurface: true,
     narrative: "After SOAP + codes Accept: urgent DVT duplex + D-dimer ServiceRequest draft.",
-    demoSection: "§5.8"
+    demoSection: "§5.8",
   },
   {
     id: "pharmacist",
     title: "Pharmacist view",
     route: "/dashboard/pharmacist",
+    publicSurface: false,
     narrative: "GUARDIAN medication queue: aspirin + apixaban interaction review.",
-    demoSection: "Layer 1"
+    demoSection: "Layer 1",
   },
   {
     id: "admin-audit",
     title: "Admin SHIELD audit",
     route: `/cases/${GOLDEN_SCENARIO_PATEL_DEMO_ID}/evidence`,
+    publicSurface: false,
     narrative: "AuditEvent manifest: agents activated, zero auto-writes.",
-    demoSection: "§5.9"
+    demoSection: "§5.9",
   },
   {
     id: "regional",
     title: "Regional population view",
     route: "/dashboard/regional",
+    publicSurface: false,
     narrative: "Aggregate metrics + EQUITY disparity insights across practices.",
-    demoSection: "§5.11"
-  }
+    demoSection: "§5.11",
+  },
 ] as const;
+
+function surfaceHref(route: string, publicSurface: boolean) {
+  if (publicSurface) return route;
+  return `/signin?callbackUrl=${encodeURIComponent(route)}`;
+}
 
 type OverviewDemoLauncherProps = {
   initialStep?: number;
@@ -79,6 +92,8 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
 
   const step = DEMO_STEPS[stepIndex];
   const progress = useMemo(() => Math.round(((stepIndex + 1) / DEMO_STEPS.length) * 100), [stepIndex]);
+  const openHref = surfaceHref(step.route, step.publicSurface);
+  const openLabel = step.publicSurface ? "Open step surface" : "Sign in to open step";
 
   function goToStep(index: number) {
     const next = Math.max(0, Math.min(DEMO_STEPS.length - 1, index));
@@ -97,7 +112,8 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
             Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and regional
-            EQUITY view. Proof-mode only. No production claims.
+            EQUITY view. Proof-mode only. No production claims. Clinician dashboard steps are open without sign-in;
+            admin, pharmacy, audit, and regional surfaces require an account.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/85">
@@ -120,12 +136,18 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
             <p className="text-xs font-semibold uppercase tracking-widest text-emerald">{step.demoSection}</p>
             <h2 className="mt-2 text-2xl font-bold text-navy">{step.title}</h2>
             <p className="mt-3 text-steel">{step.narrative}</p>
+            {!step.publicSurface ? (
+              <p className="mt-3 text-sm text-navy/70">
+                This surface is behind sign-in. Use an organisation account, or continue with the public clinician
+                dashboard steps.
+              </p>
+            ) : null}
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
-                href={step.route}
+                href={openHref}
                 className="rounded-xl bg-emerald px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-emerald/90"
               >
-                Open step surface
+                {openLabel}
               </Link>
               <button
                 className="rounded-xl border border-navy/20 px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-50"
@@ -173,14 +195,17 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
                       <p className="text-xs font-semibold uppercase tracking-widest text-emerald">{item.demoSection}</p>
                       <h2 className="mt-1 text-lg font-bold text-navy">{item.title}</h2>
                       <p className="mt-2 text-sm text-steel">{item.narrative}</p>
+                      {!item.publicSurface ? (
+                        <p className="mt-2 text-xs font-medium text-navy/55">Requires sign-in</p>
+                      ) : null}
                     </div>
                   </div>
                   <Link
                     className="shrink-0 rounded-xl border border-navy/20 px-4 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/5"
-                    href={item.route}
+                    href={surfaceHref(item.route, item.publicSurface)}
                     onClick={(event) => event.stopPropagation()}
                   >
-                    Open
+                    {item.publicSurface ? "Open" : "Sign in"}
                   </Link>
                 </div>
               </article>

@@ -38,8 +38,8 @@ test.describe("Auth flow", () => {
   test("signin with onboarded GP reaches GP dashboard", async ({ page, request, baseURL }) => {
     const user = await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "auth-gp" });
     await signInViaUi(page, user.email, user.password);
-    await page.goto("/dashboard/gp");
-    await page.waitForURL(/\/dashboard\/gp/, { timeout: 15_000 });
+    await page.goto("/dashboard/gp", { waitUntil: "domcontentloaded" });
+    await expect(page).toHaveURL(/\/dashboard\/gp/, { timeout: 15_000 });
 
     await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
   });

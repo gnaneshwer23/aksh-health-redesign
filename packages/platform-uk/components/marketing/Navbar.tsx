@@ -136,7 +136,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
 
   function scheduleClose() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenMega(null), 120);
+    closeTimer.current = setTimeout(() => setOpenMega(null), 220);
   }
 
   return (
@@ -158,7 +158,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
           <span className="owkin-nav__wordmark">Aksh Health</span>
         </Link>
 
-        <div className="owkin-nav__center hidden lg:flex" role="menubar">
+        <div className="owkin-nav__center hidden lg:flex" aria-label="Primary">
           {centerLinks.map((item) => {
             const isOpen = openMega === item.label;
             if (!item.mega) {
@@ -179,6 +179,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 type="button"
                 className={cn("owkin-nav__link", isOpen && "is-active", focusRing)}
                 aria-expanded={isOpen}
+                aria-haspopup="true"
                 aria-controls={`${menuId}-${item.label}`}
                 onMouseEnter={() => openMenu(item.label)}
                 onFocus={() => openMenu(item.label)}

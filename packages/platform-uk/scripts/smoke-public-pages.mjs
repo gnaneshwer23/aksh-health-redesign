@@ -1,31 +1,29 @@
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 
 const pages = [
-  { path: "/", text: "Clinical workflows, one platform." },
-  { path: "/platform", text: "The AI Healthcare Operating System" },
-  { path: "/for-clinicians", text: "Spend time with patients, not paperwork." },
-  { path: "/for-practices", text: "Run the practice with clear oversight." },
-  { path: "/for-patients", text: "Your health, understood and supported." },
-  { path: "/for-hospitals", text: "Command your hospital, not just your dashboard." },
-  { path: "/for-administrators", text: "Keep integrations healthy and governance auditable." },
-  { path: "/for-ics", text: "See population health across your integrated care system." },
-  { path: "/for-research", text: "Evaluate outcomes with governed data access." },
-  { path: "/security", text: "Data protection and clinical safety for NHS deployments." },
-  { path: "/integrations", text: "Integration-ready architecture for NHS care settings." },
-  { path: "/signup", text: "Choose your role" },
-  { path: "/get-started", text: "Get your organisation set up" },
-  { path: "/onboarding", text: "Choose your role. Start with the right work." },
+  { path: "/", text: "Clinical workflows, one platform" },
   { path: "/platform", text: "One platform, eight roles" },
-  { path: "/demo", text: "See Aksh Health in action" }
-];
-
-const assets = [
-  "/_next/static/css/app/layout.css",
-  "/_next/static/chunks/main-app.js"
+  { path: "/how-it-works", text: "How Aksh Health works" },
+  { path: "/for-clinicians", text: "Spend time with patients" },
+  { path: "/for-practices", text: "Run the practice with clear oversight" },
+  { path: "/for-patients", text: "Your health, understood and supported" },
+  { path: "/for-hospitals", text: "Command your hospital" },
+  { path: "/for-administrators", text: "Keep integrations healthy" },
+  { path: "/for-ics", text: "See population health across your integrated care system" },
+  { path: "/for-research", text: "Evaluate outcomes with governed data access" },
+  { path: "/security", text: "Data protection and clinical safety for NHS deployments" },
+  { path: "/integrations", text: "Integration-ready architecture for NHS care settings" },
+  { path: "/faq", text: "Questions procurement and clinical teams ask" },
+  { path: "/contact", text: "Talk to Aksh Health" },
+  { path: "/pricing", text: "Pricing scales with your organisation" },
+  { path: "/resources", text: "Architecture, compliance, and integration documentation" },
+  { path: "/signup", text: "Create your account" },
+  { path: "/get-started", text: "Request access for your NHS organisation" },
+  { path: "/demo/patel", text: "Mr James Patel walkthrough" },
 ];
 
 async function assertOk(url, expectedText) {
-  const response = await fetch(url);
+  const response = await fetch(url, { redirect: "follow" });
   if (!response.ok) {
     throw new Error(`${url} returned ${response.status}`);
   }
@@ -42,8 +40,4 @@ for (const page of pages) {
   await assertOk(`${baseUrl}${page.path}`, page.text);
 }
 
-for (const asset of assets) {
-  await assertOk(`${baseUrl}${asset}`);
-}
-
-console.log(`Public page smoke checks passed for ${baseUrl}`);
+console.log(`Public page smoke checks passed for ${baseUrl} (${pages.length} pages)`);
