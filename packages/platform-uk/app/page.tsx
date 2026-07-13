@@ -43,20 +43,20 @@ export default function HomePage() {
       <PlatformFlowSection />
       <RolesGridSection />
 
-      <section className={`${sectionTight} bg-[var(--owkin-ink)] text-center text-white`}>
+      <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band>
         <div className={`${container} max-w-2xl`}>
-          <h2 className="owkin-display mb-4 text-3xl text-white md:text-4xl">
+          <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
             Ready to deploy across your organisation?
           </h2>
-          <p className="mb-10 text-lg leading-relaxed text-white/70 md:text-xl">
+          <p className="owkin-cta-band__lede mb-10 text-lg leading-relaxed md:text-xl">
             Eight role-specific dashboards. FHIR R4 ready, designed for EMIS Web and SystmOne. Clinical safety built
             in from day one.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <Link href="/get-started" className="owkin-btn-ink !bg-white !text-[var(--owkin-ink)] hover:!bg-white/90">
+            <Link href="/get-started" className="owkin-cta-band__btn">
               Request organisation access
             </Link>
-            <Link href="/signup" className="owkin-text-cta !text-white !decoration-white/40 hover:!decoration-white">
+            <Link href="/signup" className="owkin-cta-band__link">
               Create account
               <span aria-hidden>→</span>
             </Link>

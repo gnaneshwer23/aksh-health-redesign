@@ -154,6 +154,53 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText("Auto-writes without approval")).toBeVisible();
   });
 
+  test("homepage closing CTA band has readable dark contrast", async ({ page }) => {
+    await page.goto("/");
+
+    const band = page.locator("[data-cta-band]");
+    await expect(band).toBeVisible();
+    await expect(band.getByRole("heading", { name: /Ready to deploy across your organisation/i })).toBeVisible();
+
+    const bg = await band.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    expect(bg).toBe("rgb(20, 20, 20)");
+
+    const titleColor = await band
+      .getByRole("heading", { name: /Ready to deploy across your organisation/i })
+      .evaluate((el) => window.getComputedStyle(el).color);
+    expect(titleColor).toBe("rgb(255, 255, 255)");
+
+    const primary = band.getByRole("link", { name: "Request organisation access" });
+    await expect(primary).toBeVisible();
+    const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
+    expect(primaryBg).toBe("rgb(255, 255, 255)");
+    expect(primaryColor).toBe("rgb(20, 20, 20)");
+  });
+
+  test("homepage hero does not render readable labels behind the headline", async ({ page }) => {
+    await page.goto("/");
+
+    const hero = page.locator("section.owkin-hero");
+    await expect(hero.getByText("HITL")).toHaveCount(0);
+    await expect(hero.getByText("clinician gate")).toHaveCount(0);
+    await expect(hero.locator(".owkin-hero__scrim")).toBeAttached();
+  });
+
+  test("homepage agent and FHIR scenes use quiet product mocks", async ({ page }) => {
+    await page.goto("/");
+
+    const agentMock = page.locator(".aksh-mock-frame");
+    await expect(agentMock).toBeVisible();
+    await expect(agentMock.getByText("Review queue")).toBeVisible();
+    await expect(agentMock.locator(".aksh-mock-frame__actions")).toContainText("Accept");
+
+    const fhirMock = page.locator(".aksh-mock-stack");
+    await expect(fhirMock).toBeVisible();
+    await expect(fhirMock.getByText("Clinician queue")).toBeVisible();
+    await expect(fhirMock.getByText("FHIR staging")).toBeVisible();
+    await expect(page.locator(".owkin-float-chip")).toHaveCount(0);
+  });
+
   test("how-it-works page loads with diagram and platform stages", async ({ page }) => {
     await page.goto("/how-it-works");
 
