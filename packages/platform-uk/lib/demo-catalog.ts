@@ -21,13 +21,4 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     duration: "~25 minutes",
     category: "Clinical workflow",
   },
-  {
-    id: "voice-care-day3",
-    title: "Voice Care Day 3",
-    description:
-      "Outbound post-consult check-in with worsening symptoms, ORACLE re-scoring, and nurse escalation.",
-    href: "/demo/voice-care-day3",
-    duration: "~5 minutes",
-    category: "Patient monitoring",
-  },
 ];

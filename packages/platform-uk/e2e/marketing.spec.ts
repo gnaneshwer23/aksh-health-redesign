@@ -273,9 +273,6 @@ test.describe("Marketing smoke", () => {
     await page.goto("/demo/patel");
     await expect(page.getByRole("heading", { name: /Mr James Patel walkthrough/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Open step surface" })).toBeVisible();
-
-    await page.goto("/demo/voice-care-day3");
-    await expect(page.getByRole("heading", { name: /Post-consult check-in: Mr James Patel/i })).toBeVisible();
   });
 
   test("footer exposes product, audience, and trust links", async ({ page }) => {

@@ -59,13 +59,6 @@ const DEMO_STEPS = [
     demoSection: "§5.9"
   },
   {
-    id: "voice-care",
-    title: "Voice Care Day 3",
-    route: "/demo/voice-care-day3",
-    narrative: "Outbound call | worsening calf pain + SOB → ORACLE 91 → nurse escalation.",
-    demoSection: "§5.10"
-  },
-  {
     id: "regional",
     title: "Regional population view",
     route: "/dashboard/regional",
@@ -103,8 +96,8 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
             Mr James Patel walkthrough
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, Voice Care Day-3,
-            and regional EQUITY view. Proof-mode only. No production claims.
+            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and regional
+            EQUITY view. Proof-mode only. No production claims.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/85">

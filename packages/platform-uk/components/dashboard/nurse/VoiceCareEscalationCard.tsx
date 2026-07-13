@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,13 +31,10 @@ export function VoiceCareEscalationCard() {
           ))
         ) : (
           <p className="text-sm text-muted">
-            Voice Care monitors patients between appointments. Escalations from Day-3 outbound calls appear here for
-            nurse triage.
+            Voice Care monitors patients between appointments. Escalations from outbound calls appear here for nurse
+            triage.
           </p>
         )}
-        <Link className="text-sm font-medium text-secondary underline" href="/demo/voice-care-day3">
-          Open Voice Care Day 3 simulation →
-        </Link>
       </CardContent>
     </Card>
   );
