@@ -24,8 +24,8 @@ const megaMenus: Record<string, MegaColumn[]> = {
     {
       pill: "Capabilities",
       links: [
-        { label: "Human-in-the-loop review", href: "/platform#roles" },
-        { label: "FHIR R4 staging", href: "/how-it-works" },
+        { label: "Human-in-the-loop review", href: "/platform#hitl" },
+        { label: "FHIR R4 staging", href: "/how-it-works#journey" },
         { label: "Integrations", href: "/integrations" },
       ],
     },
@@ -44,7 +44,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       links: [
         { label: "GPs & nurses", href: "/for-clinicians", description: "Documentation and care coordination" },
         { label: "Pharmacists", href: "/for-clinicians", description: "Medication review and safety" },
-        { label: "Practice managers", href: "/for-administrators", description: "Operations and governance" },
+        { label: "Practice managers", href: "/for-practices", description: "Operations and governance" },
       ],
     },
     {
@@ -69,6 +69,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       pill: "Latest",
       links: [
         { label: "Resources hub", href: "/resources" },
+        { label: "FAQ", href: "/faq" },
         { label: "Contact", href: "/contact" },
         { label: "Live demo", href: "/demo/patel" },
       ],
@@ -282,7 +283,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
               </SheetClose>
             ))}
             {megaMenus.Solutions.flatMap((col) =>
-              col.links.slice(0, 2).map((link) => (
+              col.links.map((link) => (
                 <SheetClose key={link.href + link.label} asChild>
                   <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                     {link.label}
@@ -290,6 +291,11 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 </SheetClose>
               ))
             )}
+            <SheetClose asChild>
+              <Link href="/faq" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                FAQ
+              </Link>
+            </SheetClose>
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">

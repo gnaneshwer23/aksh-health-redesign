@@ -60,6 +60,7 @@ test.describe("Marketing smoke", () => {
     await expect(menu.getByRole("link", { name: /Hospitals/i })).toHaveAttribute("href", "/for-hospitals");
     await expect(menu.getByRole("link", { name: /Research/i })).toHaveAttribute("href", "/for-research");
     await expect(menu.getByRole("link", { name: /Patients/i })).toHaveAttribute("href", "/for-patients");
+    await expect(menu.getByRole("link", { name: /Practice managers/i })).toHaveAttribute("href", "/for-practices");
     await expect(menu.getByRole("link", { name: "View all roles" })).toHaveAttribute("href", "/platform#roles");
   });
 
@@ -133,6 +134,33 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /From EHR systems to governed record/i })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Platform flow/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /See full journey/i })).toHaveAttribute("href", "/how-it-works");
+  });
+
+  test("homepage roles section highlights product-aligned role dashboards", async ({ page }) => {
+    await page.goto("/");
+
+    const roles = page.locator("section#roles");
+    await expect(roles.getByRole("heading", { name: /Built for every role/i })).toBeVisible();
+    await expect(roles.getByText("Care delivery")).toBeVisible();
+    await expect(roles.getByText("Governance")).toBeVisible();
+
+    await expect(roles.getByRole("link", { name: /GP/i }).first()).toHaveAttribute("href", "/for-clinicians");
+    await expect(roles.getByText("Clinician dashboard")).toBeVisible();
+    await expect(roles.locator(".owkin-roles__signals li", { hasText: "VOICE" })).toBeVisible();
+    await expect(roles.locator(".owkin-roles__signals li", { hasText: "SYNTHESIS" })).toBeVisible();
+
+    await expect(roles.getByRole("link", { name: /Practice Admin/i })).toHaveAttribute("href", "/for-practices");
+    await expect(roles.getByText("Admin · SHIELD")).toBeVisible();
+    await expect(roles.locator(".owkin-roles__signals li", { hasText: "SHIELD" })).toBeVisible();
+
+    await expect(roles.getByRole("link", { name: /ICS \/ Regional Lead/i })).toHaveAttribute("href", "/for-ics");
+    await expect(roles.locator(".owkin-roles__signals li", { hasText: "EQUITY" }).first()).toBeVisible();
+
+    await expect(roles.getByRole("link", { name: /Explore roles on the platform/i })).toHaveAttribute(
+      "href",
+      "/platform#roles"
+    );
+    await expect(roles.getByRole("link", { name: /Walk the Patel demo/i })).toHaveAttribute("href", "/demo/patel");
   });
 
   test("homepage surfaces platform story and outcome stats after the hero", async ({ page }) => {
@@ -223,23 +251,38 @@ test.describe("Marketing smoke", () => {
   test("platform page loads with cohesive sections", async ({ page }) => {
     await page.goto("/platform");
 
-    const nav = page.locator("nav[data-over-dark-hero]");
+    const nav = page.locator("nav.owkin-nav");
     await expect(nav).toHaveAttribute("data-over-dark-hero", "false");
     await expect(nav).toHaveAttribute("data-solid-navbar", "true");
 
-    const platformLink = page.getByRole("navigation").getByRole("link", { name: "Platform" });
-    await expect(platformLink).toBeVisible();
-    const platformColor = await platformLink.evaluate((element) => window.getComputedStyle(element).color);
-    expect(platformColor).toBe("rgb(74, 111, 165)");
+    const howItWorks = page.getByRole("navigation").getByRole("link", { name: "How it works" });
+    await expect(howItWorks).toBeVisible();
+    await expect(howItWorks).toHaveAttribute("href", "/how-it-works");
 
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned AI/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Eight role dashboards/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Built for every role/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Eight specialist agents/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Human-in-the-loop\. Always\./i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
-    await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
+    await expect(page.locator("section#roles")).toBeVisible();
     await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+  });
+
+  test("faq and contact pages render production content", async ({ page }) => {
+    await page.goto("/faq");
+    await expect(page.getByRole("heading", { name: /Questions procurement and clinical teams ask/i })).toBeVisible();
+    await expect(page.getByText(/Does Aksh Health replace EMIS Web or SystmOne/i)).toBeVisible();
+    await expect(page.getByText(/Is Aksh Health MHRA-certified/i)).toBeVisible();
+
+    await page.goto("/contact");
+    await expect(page.getByRole("heading", { name: /Talk to Aksh Health/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request organisation access/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /hello@akshhealth.com/i })).toHaveAttribute(
+      "href",
+      "mailto:hello@akshhealth.com"
+    );
   });
 
   test("resources page loads with expected sections", async ({ page }) => {
@@ -312,9 +355,11 @@ test.describe("Marketing smoke", () => {
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
     await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "How we price" })).toHaveAttribute("href", "/pricing");
-    await expect(footer.getByRole("link", { name: "For Clinicians" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Clinicians", exact: true })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
+    await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
   });
 
   test("audience footer links all render without 404", async ({ page }) => {

@@ -9,6 +9,7 @@ const footerColumns = [
       { label: "Platform", href: "/platform" },
       { label: "How it works", href: "/how-it-works" },
       { label: "Resources", href: "/resources" },
+      { label: "FAQ", href: "/faq" },
       { label: "How we price", href: "/pricing" },
     ],
   },
@@ -16,7 +17,10 @@ const footerColumns = [
     title: "Audiences",
     links: [
       { label: "Clinicians", href: "/for-clinicians" },
-      { label: "Hospitals & ICS", href: "/for-hospitals" },
+      { label: "Practices", href: "/for-practices" },
+      { label: "Administrators", href: "/for-administrators" },
+      { label: "Hospitals", href: "/for-hospitals" },
+      { label: "ICS leads", href: "/for-ics" },
       { label: "Research", href: "/for-research" },
       { label: "Patients", href: "/for-patients" },
     ],
@@ -28,6 +32,7 @@ const footerColumns = [
       { label: "Integrations", href: "/integrations" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
+      { label: "Cookie Policy", href: "/cookies" },
     ],
   },
   {
@@ -37,6 +42,7 @@ const footerColumns = [
       { label: "Create account", href: "/signup" },
       { label: "See demo", href: "/demo/patel" },
       { label: "Contact", href: "/contact" },
+      { label: "Sign in", href: "/signin" },
     ],
   },
 ] as const;
