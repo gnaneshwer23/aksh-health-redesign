@@ -10,10 +10,9 @@ import {
   TrendingUp,
   User,
 } from "lucide-react";
+import Link from "next/link";
 
-import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
-import { container } from "@/components/marketing/marketing-ui";
-import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
+import { container, section } from "@/components/marketing/marketing-ui";
 
 const roles: Array<{ label: string; description: string; href: string; icon: LucideIcon }> = [
   { label: "GP", description: "AI-assisted clinical documentation", href: "/for-clinicians", icon: Stethoscope },
@@ -28,33 +27,40 @@ const roles: Array<{ label: string; description: string; href: string; icon: Luc
 
 export default function RolesGridSection() {
   return (
-    <section id="roles" className="marketing-section bg-white">
+    <section id="roles" className={`${section} bg-white`}>
       <div className={container}>
-        <MarketingSectionHeader
-          align="center"
-          label="Every role, one platform"
-          title="Built for every role"
-          description="Eight role-specific dashboards, each tuned to what that role needs to see and approve."
-        />
+        <div className="mx-auto mb-14 max-w-2xl text-center md:mb-16">
+          <p className="marketing-section-label mb-4">Every role, one platform</p>
+          <h2 className="marketing-display-title mb-4 text-[clamp(1.85rem,3.4vw,2.75rem)] text-navy-dark">
+            Built for every role
+          </h2>
+          <p className="text-base leading-relaxed text-slate/75 sm:text-lg">
+            Eight role-specific dashboards, each tuned to what that role needs to see and approve.
+          </p>
+        </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {roles.map((role, index) => (
-            <PastelCapabilityCard
-              key={role.label}
-              variant={pastelVariantAt(index)}
-              icon={role.icon}
-              title={role.label}
-              description={role.description}
-              href={role.href}
-              compact
-              footer={
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-emerald">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-navy/[0.08] bg-navy/[0.08] sm:grid-cols-2 lg:grid-cols-4">
+          {roles.map((role) => {
+            const Icon = role.icon;
+            return (
+              <Link
+                key={role.label}
+                href={role.href}
+                className="group flex h-full flex-col bg-white p-6 transition-colors hover:bg-[#f5f8fb] sm:p-7"
+              >
+                <Icon className="mb-5 h-5 w-5 text-navy/55 transition-colors group-hover:text-emerald" aria-hidden />
+                <h3 className="marketing-display-title mb-2 text-lg text-navy-dark">{role.label}</h3>
+                <p className="mb-5 flex-1 text-sm leading-relaxed text-slate/70">{role.description}</p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-navy-dark">
                   Learn more
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  <ArrowRight
+                    className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                    aria-hidden
+                  />
                 </span>
-              }
-            />
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

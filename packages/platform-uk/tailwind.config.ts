@@ -86,6 +86,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        marketing: ["Instrument Sans", "Inter", "system-ui", "sans-serif"],
+        display: ["Syne", "Outfit", "system-ui", "sans-serif"],
       },
     },
   },

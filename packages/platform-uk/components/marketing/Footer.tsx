@@ -4,25 +4,21 @@ import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
 
 const footerColumns = [
   {
-    title: "Product",
+    title: "Explore",
     links: [
       { label: "Platform", href: "/platform" },
       { label: "How it works", href: "/how-it-works" },
       { label: "Resources", href: "/resources" },
       { label: "How we price", href: "/pricing" },
-      { label: "See demo", href: "/demo/patel" },
     ],
   },
   {
     title: "Audiences",
     links: [
-      { label: "For Clinicians", href: "/for-clinicians" },
-      { label: "For Practices", href: "/for-practices" },
-      { label: "For Patients", href: "/for-patients" },
-      { label: "For Hospitals", href: "/for-hospitals" },
-      { label: "For Administrators", href: "/for-administrators" },
-      { label: "For ICS", href: "/for-ics" },
-      { label: "For Research", href: "/for-research" },
+      { label: "Clinicians", href: "/for-clinicians" },
+      { label: "Hospitals & ICS", href: "/for-hospitals" },
+      { label: "Research", href: "/for-research" },
+      { label: "Patients", href: "/for-patients" },
     ],
   },
   {
@@ -30,49 +26,40 @@ const footerColumns = [
     links: [
       { label: "Security", href: "/security" },
       { label: "Integrations", href: "/integrations" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
     ],
   },
   {
-    title: "Legal",
+    title: "Get started",
     links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Cookie Policy", href: "/cookies" },
-      { label: "Terms of Service", href: "/terms" },
+      { label: "Request access", href: "/get-started" },
+      { label: "Create account", href: "/signup" },
+      { label: "See demo", href: "/demo/patel" },
+      { label: "Contact", href: "/contact" },
     ],
   },
 ] as const;
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-dark py-16 text-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
-          <div className="md:col-span-2">
-            <div className="mb-5 flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                <span className="text-sm font-bold text-white">A</span>
-              </div>
-              <span className="text-lg font-bold text-white">Aksh Health</span>
-            </div>
-            <p className="max-w-sm text-sm leading-relaxed text-white/60">
-              Clinical AI for NHS primary and secondary care. Designed for EMIS Web and SystmOne with FHIR R4 ready
-              integration paths and clinician approval on every output.
-            </p>
-            <p className="mt-4 max-w-md text-xs leading-relaxed text-white/45">
-              {COMPLIANCE_DISCLAIMER}{" "}
-              <Link href="/resources" className="text-white/60 underline-offset-2 hover:text-white hover:underline">
-                View platform resources
-              </Link>
-            </p>
+    <footer className="owkin-footer">
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        <div className="mb-12 flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30">
+            <span className="text-sm font-bold text-white">A</span>
           </div>
+          <span className="text-lg font-semibold tracking-wide text-white">Aksh Health</span>
+        </div>
 
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/80">{col.title}</h4>
+              <h4 className="mb-4 text-base font-semibold text-white">{col.title}</h4>
               <ul className="list-none space-y-3 p-0">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-white/55 transition-colors hover:text-white">
+                    <Link href={link.href} className="text-sm text-white/75 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -82,20 +69,16 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 md:flex-row md:items-center">
-          <p className="text-sm text-white/40">
+        <div className="mt-12 border-t border-white/15 pt-8">
+          <p className="max-w-3xl text-xs leading-relaxed text-white/55">
+            {COMPLIANCE_DISCLAIMER}{" "}
+            <Link href="/resources" className="underline-offset-2 hover:text-white hover:underline">
+              View platform resources
+            </Link>
+          </p>
+          <p className="mt-4 text-sm text-white/45">
             © 2026 Aksh Health Ltd · Registered in England & Wales · NHS DCB0129 Safety Case In Progress
           </p>
-          <div className="flex flex-wrap gap-2">
-            {["DCB0129", "DTAC", "FHIR R4", "NHS CIS2", "UK GDPR"].map((badge) => (
-              <span
-                key={badge}
-                className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/40"
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

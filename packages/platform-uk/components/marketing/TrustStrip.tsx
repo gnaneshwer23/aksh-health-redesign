@@ -18,29 +18,33 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
   return (
     <div
       className={cn(
-        "px-4 py-4 md:py-5",
+        "px-4 py-5 md:py-6",
         isHero
-          ? "border-t border-white/10 bg-white/5 backdrop-blur-md"
+          ? "border-t border-black/[0.06] bg-white/35 backdrop-blur-md"
           : "border-y border-navy/10 bg-white shadow-sm"
       )}
       aria-label="Compliance and safety credentials"
     >
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4">
-        {trustBadges.map((badge) => (
-          <span
-            key={badge}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold sm:text-sm",
-              isHero
-                ? "border border-white/20 bg-white/10 text-white/90"
-                : "border border-emerald/20 bg-emerald/5 text-navy"
-            )}
-          >
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-1 gap-y-2 sm:gap-x-0">
+        {trustBadges.map((badge, index) => (
+          <span key={badge} className="inline-flex items-center">
+            {index > 0 ? (
+              <span
+                className={cn(
+                  "mx-2.5 hidden h-1 w-1 rounded-full sm:mx-3.5 sm:inline-block",
+                  isHero ? "bg-black/25" : "bg-emerald/50"
+                )}
+                aria-hidden
+              />
+            ) : null}
             <span
-              className={cn("h-1.5 w-1.5 shrink-0 rounded-full", isHero ? "bg-accent" : "bg-emerald")}
-              aria-hidden="true"
-            />
-            {badge}
+              className={cn(
+                "text-xs font-semibold tracking-[0.04em] sm:text-sm",
+                isHero ? "text-black/65" : "text-navy"
+              )}
+            >
+              {badge}
+            </span>
           </span>
         ))}
       </div>

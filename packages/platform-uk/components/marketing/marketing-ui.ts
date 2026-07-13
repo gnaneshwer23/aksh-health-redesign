@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 
 /** Pill CTA — emerald fill. Default action on light backgrounds. */
 export const btnPrimary = "btn-marketing-primary";
+/** Pill CTA — ink/navy fill (Owkin-style solid pill on paper fields). */
+export const btnInk = "btn-marketing-ink";
 /** Pill CTA — white fill, navy outline. Secondary action on light backgrounds. */
 export const btnSecondary = "btn-marketing-secondary";
 /** Pill CTA — white fill, emerald text. Primary action on emerald/dark bands. */
@@ -16,6 +18,8 @@ export const btnInverse = "btn-marketing-inverse";
 export const btnGhost = "btn-marketing-ghost";
 /** Size modifier for hero and CTA-band prominence (px-8 py-3.5 text-base). */
 export const btnLg = "btn-marketing-lg";
+/** Quiet underlined text CTA (Owkin secondary pattern). */
+export const linkUnderline = "marketing-link-underline";
 
 /** Outer max-width + responsive gutters used by every marketing section. */
 export const container = "marketing-container";

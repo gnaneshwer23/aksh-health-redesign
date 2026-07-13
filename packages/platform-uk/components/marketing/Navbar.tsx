@@ -1,68 +1,120 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, ChevronDown, FlaskConical, HeartPulse, Menu, Stethoscope, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Menu, Search, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  ["Platform", "/platform"],
-  ["How it works", "/how-it-works"],
-  ["Resources", "/resources"],
-] as const;
+type MegaLink = { label: string; href: string; description?: string; badge?: string };
+type MegaColumn = { pill: string; links: MegaLink[]; cta?: { label: string; href: string } };
 
-const solutionGroups = [
-  {
-    label: "Clinicians & practices",
-    href: "/for-clinicians",
-    description: "GPs, nurses, pharmacists, and practice managers",
-    icon: Stethoscope,
-  },
-  {
-    label: "Hospitals & ICS",
-    href: "/for-hospitals",
-    description: "Trust executives, operational leads, and ICS population health",
-    icon: Building2,
-  },
-  {
-    label: "Pharma & research",
-    href: "/for-research",
-    description: "Clinical informatics, outcome evaluation, and governed data access",
-    icon: FlaskConical,
-  },
-  {
-    label: "Patients & carers",
-    href: "/for-patients",
-    description: "Health companion and support between appointments",
-    icon: HeartPulse,
-  },
+const megaMenus: Record<string, MegaColumn[]> = {
+  Platform: [
+    {
+      pill: "Platform",
+      links: [
+        { label: "Overview", href: "/platform", description: "Agents, review, and FHIR staging" },
+        { label: "How it works", href: "/how-it-works", description: "From EHR systems to governed record" },
+        { label: "Security", href: "/security", description: "Safety case and audit posture" },
+      ],
+      cta: { label: "Book a walkthrough", href: "/demo/patel" },
+    },
+    {
+      pill: "Capabilities",
+      links: [
+        { label: "Human-in-the-loop review", href: "/platform#roles" },
+        { label: "FHIR R4 staging", href: "/how-it-works" },
+        { label: "Integrations", href: "/integrations" },
+      ],
+    },
+    {
+      pill: "Get started",
+      links: [
+        { label: "Request organisation access", href: "/get-started" },
+        { label: "Create account", href: "/signup" },
+        { label: "Pricing", href: "/pricing" },
+      ],
+    },
+  ],
+  Solutions: [
+    {
+      pill: "Clinicians",
+      links: [
+        { label: "GPs & nurses", href: "/for-clinicians", description: "Documentation and care coordination" },
+        { label: "Pharmacists", href: "/for-clinicians", description: "Medication review and safety" },
+        { label: "Practice managers", href: "/for-administrators", description: "Operations and governance" },
+      ],
+    },
+    {
+      pill: "Systems",
+      links: [
+        { label: "Hospitals", href: "/for-hospitals", description: "Command centre and capacity" },
+        { label: "ICS leads", href: "/for-ics", description: "Population health intelligence" },
+        { label: "Practices", href: "/for-practices", description: "Oversight across the team" },
+      ],
+    },
+    {
+      pill: "Partners",
+      links: [
+        { label: "Research", href: "/for-research", description: "Governed outcome evaluation", badge: "Open" },
+        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
+        { label: "View all roles", href: "/platform#roles" },
+      ],
+    },
+  ],
+  Resources: [
+    {
+      pill: "Latest",
+      links: [
+        { label: "Resources hub", href: "/resources" },
+        { label: "Contact", href: "/contact" },
+        { label: "Live demo", href: "/demo/patel" },
+      ],
+    },
+    {
+      pill: "Trust",
+      links: [
+        { label: "Security", href: "/security" },
+        { label: "Privacy", href: "/privacy" },
+        { label: "Cookie policy", href: "/cookies" },
+      ],
+    },
+    {
+      pill: "Legal",
+      links: [
+        { label: "Terms of service", href: "/terms" },
+        { label: "Pricing", href: "/pricing" },
+      ],
+    },
+  ],
+};
+
+const centerLinks = [
+  { label: "Platform", href: "/platform", mega: true },
+  { label: "How it works", href: "/how-it-works", mega: false },
+  { label: "Solutions", href: "/for-clinicians", mega: true },
+  { label: "Resources", href: "/resources", mega: true },
 ] as const;
 
 type NavbarProps = {
-  /** Transparent navbar sits over a dark navy hero at page top */
   overDarkHero?: boolean;
+  overLightHero?: boolean;
 };
 
 const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--owkin-accent)] focus-visible:ring-offset-2";
 
-export default function Navbar({ overDarkHero = false }: NavbarProps) {
+export default function Navbar({ overDarkHero = false, overLightHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [openMega, setOpenMega] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuId = useId();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -75,161 +127,93 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         document.body.style.overflow = "";
       };
     }
-    setMobileSolutionsOpen(false);
   }, [mobileOpen]);
 
-  const transparentOverHero = overDarkHero && !scrolled;
-  const useLightNav = scrolled || !overDarkHero;
+  const transparentOverDark = overDarkHero && !scrolled;
+  const transparentOverLight = overLightHero && !scrolled;
+  const useSolidNav = scrolled || (!overDarkHero && !overLightHero) || Boolean(openMega);
 
-  const linkClass = cn(
-    "text-sm font-medium transition-colors rounded-lg",
-    focusRing,
-    transparentOverHero ? "text-white/90 hover:text-white" : "text-navy hover:text-emerald"
-  );
+  function openMenu(label: string) {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenMega(label);
+  }
+
+  function scheduleClose() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenMega(null), 120);
+  }
 
   return (
     <nav
-      data-over-dark-hero={transparentOverHero ? "true" : "false"}
-      data-solid-navbar={useLightNav ? "true" : "false"}
+      data-over-dark-hero={transparentOverDark ? "true" : "false"}
+      data-over-light-hero={transparentOverLight && !openMega ? "true" : "false"}
+      data-solid-navbar={useSolidNav ? "true" : "false"}
       className={cn(
-        "fixed top-0 z-50 w-full overflow-visible transition-all duration-200",
-        useLightNav
-          ? "border-b border-border-subtle bg-white/95 shadow-sm backdrop-blur-md"
-          : "bg-transparent"
+        "owkin-nav fixed top-0 z-50 w-full transition-colors duration-200",
+        useSolidNav ? "owkin-nav--solid" : "owkin-nav--transparent"
       )}
+      onMouseLeave={scheduleClose}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link
-          href="/"
-          className={cn("navbar-brand flex min-w-0 shrink-0 items-center gap-2.5 rounded-xl transition-colors", focusRing)}
-          style={{ color: transparentOverHero ? "#ffffff" : "#003D7A" }}
-        >
-          <div
-            className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
-              transparentOverHero ? "border border-white/40 bg-white/20 backdrop-blur-sm" : "bg-navy"
-            )}
-          >
-            <span
-              className="text-sm font-bold"
-              style={{ color: transparentOverHero ? "#003D7A" : "#ffffff" }}
-            >
-              A
-            </span>
-          </div>
-          <div className="flex min-w-0 flex-col leading-tight">
-            <span
-              className="navbar-brand-title truncate text-base font-bold leading-none"
-              style={{ color: transparentOverHero ? "#ffffff" : "#003D7A" }}
-            >
-              Aksh Health
-            </span>
-            <span
-              className="navbar-brand-subtitle text-xs font-semibold uppercase tracking-wide"
-              style={{ color: transparentOverHero ? "#00A86B" : "#006B4F" }}
-            >
-              Healthcare OS
-            </span>
-          </div>
+      <div className="owkin-nav__bar mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link href="/" className={cn("owkin-nav__brand", focusRing)} onMouseEnter={() => setOpenMega(null)}>
+          <span className="owkin-nav__mark" aria-hidden>
+            A
+          </span>
+          <span className="owkin-nav__wordmark">Aksh Health</span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          {navLinks.slice(0, 2).map(([label, href]) => (
-            <Link key={label} href={href} className={linkClass}>
-              {label}
-            </Link>
-          ))}
-
-          <DropdownMenu open={solutionsOpen} onOpenChange={setSolutionsOpen}>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-lg border-0 bg-transparent p-0 shadow-none",
-                  linkClass
-                )}
-                aria-haspopup="menu"
-              >
-                Solutions
-                <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsOpen && "rotate-180")} />
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="start"
-              sideOffset={8}
-              data-solutions-menu="true"
-              className="p-0"
-              onCloseAutoFocus={(event) => event.preventDefault()}
-            >
-              <p className="px-4 pb-1.5 pt-3 text-[11px] font-semibold uppercase tracking-wide text-steel/70">
-                Browse by role
-              </p>
-              {solutionGroups.map((group) => {
-                const Icon = group.icon;
-                return (
-                  <DropdownMenuItem key={group.label} asChild className="mx-1.5 cursor-pointer rounded-xl px-3 py-2.5">
-                    <Link href={group.href} className="group flex items-start gap-3">
-                      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/[0.06] text-navy transition-colors group-hover:bg-emerald/10 group-hover:text-emerald">
-                        <Icon className="h-4 w-4" aria-hidden />
-                      </span>
-                      <span>
-                        <span className="block text-sm font-semibold text-navy">{group.label}</span>
-                        <span className="mt-0.5 block text-xs leading-snug text-steel">{group.description}</span>
-                      </span>
-                    </Link>
-                  </DropdownMenuItem>
-                );
-              })}
-              <DropdownMenuSeparator className="mx-3" />
-              <DropdownMenuItem asChild className="mx-1.5 cursor-pointer rounded-xl px-3 py-2.5">
-                <Link href="/platform#roles" className="text-sm font-semibold text-emerald">
-                  View all roles
+        <div className="owkin-nav__center hidden lg:flex" role="menubar">
+          {centerLinks.map((item) => {
+            const isOpen = openMega === item.label;
+            if (!item.mega) {
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={cn("owkin-nav__link", focusRing)}
+                  onMouseEnter={() => setOpenMega(null)}
+                >
+                  {item.label}
                 </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {navLinks.slice(2).map(([label, href]) => (
-            <Link key={label} href={href} className={linkClass}>
-              {label}
-            </Link>
-          ))}
+              );
+            }
+            return (
+              <button
+                key={item.label}
+                type="button"
+                className={cn("owkin-nav__link", isOpen && "is-active", focusRing)}
+                aria-expanded={isOpen}
+                aria-controls={`${menuId}-${item.label}`}
+                onMouseEnter={() => openMenu(item.label)}
+                onFocus={() => openMenu(item.label)}
+                onClick={() => setOpenMega(isOpen ? null : item.label)}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/signin"
-            className={cn(
-              "inline-flex min-h-[40px] items-center rounded-full border px-4 py-2 text-sm font-medium transition-all",
-              focusRing,
-              transparentOverHero
-                ? "border-white/50 text-white hover:border-white hover:bg-white/10"
-                : "border-navy/20 text-navy hover:border-navy hover:bg-navy hover:text-white"
-            )}
-          >
+        <div className="hidden items-center gap-3 lg:flex">
+          <Link href="/signin" className={cn("owkin-nav__ghost-link", focusRing)}>
             Sign In
           </Link>
+          <Link href="/get-started" className={cn("owkin-nav__pill", focusRing)}>
+            Get in touch
+          </Link>
           <Link
-            href="/get-started"
-            className={cn(
-              "inline-flex min-h-[40px] items-center rounded-full bg-emerald px-5 py-2 text-sm font-bold text-white shadow-card transition-all hover:-translate-y-0.5 hover:bg-emerald/90",
-              focusRing
-            )}
+            href="/resources"
+            className={cn("owkin-nav__search", focusRing)}
+            aria-label="Search resources"
+            title="Resources"
           >
-            Get Started
+            <Search className="h-4 w-4" aria-hidden />
           </Link>
         </div>
 
         <button
           type="button"
-          className={cn(
-            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors md:hidden",
-            focusRing,
-            transparentOverHero
-              ? "border-white/40 text-white hover:bg-white/10"
-              : "border-navy/20 text-navy hover:bg-navy/5"
-          )}
+          className={cn("owkin-nav__mobile-toggle lg:hidden", focusRing)}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-menu"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -239,119 +223,84 @@ export default function Navbar({ overDarkHero = false }: NavbarProps) {
         </button>
       </div>
 
+      {openMega && megaMenus[openMega] ? (
+        <div
+          id={`${menuId}-${openMega}`}
+          className="owkin-mega"
+          onMouseEnter={() => openMenu(openMega)}
+          onMouseLeave={scheduleClose}
+        >
+          <div className="owkin-mega__panel mx-auto max-w-7xl px-6 py-8">
+            <div className="owkin-mega__grid">
+              {megaMenus[openMega].map((column) => (
+                <div key={column.pill} className="owkin-mega__col">
+                  <span className="owkin-mega__pill">{column.pill}</span>
+                  <ul className="owkin-mega__list">
+                    {column.links.map((link) => (
+                      <li key={link.label}>
+                        <Link href={link.href} className="owkin-mega__item" onClick={() => setOpenMega(null)}>
+                          <span className="owkin-mega__item-label">
+                            {link.label}
+                            {link.badge ? <span className="owkin-mega__badge">{link.badge}</span> : null}
+                          </span>
+                          {link.description ? (
+                            <span className="owkin-mega__item-desc">{link.description}</span>
+                          ) : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  {column.cta ? (
+                    <Link href={column.cta.href} className="owkin-btn-ink owkin-mega__cta" onClick={() => setOpenMega(null)}>
+                      {column.cta.label}
+                    </Link>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
           id="mobile-nav-menu"
           side="right"
-          className="flex w-[min(100vw,20rem)] flex-col border-l border-border-subtle bg-white p-0"
+          className="flex w-[min(100vw,22rem)] flex-col border-l border-black/5 bg-[var(--owkin-cream)] p-0"
         >
-          <div className="border-b border-border-subtle px-6 py-5">
-            <p className="text-sm font-semibold text-navy">Menu</p>
-            <p className="text-xs text-steel">Aksh Health Healthcare OS</p>
+          <div className="border-b border-black/5 px-6 py-5">
+            <p className="text-sm font-semibold text-[var(--owkin-ink)]">Menu</p>
+            <p className="text-xs text-black/50">Aksh Health Healthcare OS</p>
           </div>
 
-          <nav className="flex flex-1 flex-col gap-1 px-4 py-4" aria-label="Mobile navigation">
-            <SheetClose asChild>
-              <Link
-                href="/platform"
-                className={cn(
-                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                  focusRing
-                )}
-              >
-                Platform
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link
-                href="/how-it-works"
-                className={cn(
-                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                  focusRing
-                )}
-              >
-                How it works
-              </Link>
-            </SheetClose>
-
-            <button
-              type="button"
-              className={cn(
-                "flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                focusRing
-              )}
-              aria-expanded={mobileSolutionsOpen}
-              onClick={() => setMobileSolutionsOpen((open) => !open)}
-            >
-              Solutions
-              <ChevronDown className={cn("h-4 w-4 transition-transform", mobileSolutionsOpen && "rotate-180")} />
-            </button>
-
-            {mobileSolutionsOpen ? (
-              <div className="ml-2 flex flex-col gap-1 border-l border-border-subtle pl-3">
-                {solutionGroups.map((group) => (
-                  <SheetClose key={group.label} asChild>
-                    <Link
-                      href={group.href}
-                      className={cn(
-                        "rounded-xl px-4 py-2.5 text-sm text-navy transition-colors hover:bg-navy/5",
-                        focusRing
-                      )}
-                    >
-                      <span className="block font-semibold">{group.label}</span>
-                      <span className="mt-0.5 block text-xs text-steel">{group.description}</span>
-                    </Link>
-                  </SheetClose>
-                ))}
-                <SheetClose asChild>
-                  <Link
-                    href="/platform#roles"
-                    className={cn(
-                      "rounded-xl px-4 py-2.5 text-sm font-semibold text-emerald transition-colors hover:bg-emerald/5",
-                      focusRing
-                    )}
-                  >
-                    View all roles
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
+            {centerLinks.map((item) => (
+              <SheetClose key={item.label} asChild>
+                <Link href={item.href} className={cn("rounded-xl px-4 py-3 text-base font-medium text-[var(--owkin-ink)]", focusRing)}>
+                  {item.label}
+                </Link>
+              </SheetClose>
+            ))}
+            {megaMenus.Solutions.flatMap((col) =>
+              col.links.slice(0, 2).map((link) => (
+                <SheetClose key={link.href + link.label} asChild>
+                  <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                    {link.label}
                   </Link>
                 </SheetClose>
-              </div>
-            ) : null}
-
-            <SheetClose asChild>
-              <Link
-                href="/resources"
-                className={cn(
-                  "rounded-xl px-4 py-3 text-base font-medium text-navy transition-colors hover:bg-navy/5",
-                  focusRing
-                )}
-              >
-                Resources
-              </Link>
-            </SheetClose>
+              ))
+            )}
           </nav>
 
-          <div className="mt-auto flex flex-col gap-3 border-t border-border-subtle p-4">
+          <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">
             <SheetClose asChild>
-              <Link
-                href="/signin"
-                className={cn(
-                  "inline-flex min-h-[44px] items-center justify-center rounded-full border border-navy/20 px-4 py-3 text-center text-sm font-medium text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white",
-                  focusRing
-                )}
-              >
+              <Link href="/signin" className={cn("owkin-nav__pill text-center", focusRing)}>
                 Sign In
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link
-                href="/get-started"
-                className={cn(
-                  "inline-flex min-h-[44px] items-center justify-center rounded-full bg-emerald px-4 py-3 text-center text-sm font-bold text-white shadow-card transition-all hover:bg-emerald/90",
-                  focusRing
-                )}
-              >
-                Get Started
+              <Link href="/get-started" className={cn("owkin-btn-ink text-center", focusRing)}>
+                Get in touch
               </Link>
             </SheetClose>
           </div>

@@ -1,5 +1,4 @@
 import { container } from "@/components/marketing/marketing-ui";
-import { PastelStatChip, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 
 const stats = [
   { value: "4 sec", label: "SOAP note draft", detail: "SYNTHESIS structures your note from consultation input" },
@@ -10,17 +9,18 @@ const stats = [
 
 export default function StatsBand() {
   return (
-    <section className="relative z-10 border-y border-border-subtle bg-white py-12 md:py-14" aria-label="Platform capabilities at a glance">
+    <section
+      className="marketing-stats-editorial border-y border-navy/[0.08] bg-white/70 py-14 md:py-16"
+      aria-label="Platform capabilities at a glance"
+    >
       <div className={container}>
-        <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
-          {stats.map((stat, index) => (
-            <PastelStatChip
-              key={stat.label}
-              variant={pastelVariantAt(index)}
-              value={stat.value}
-              label={stat.label}
-              detail={stat.detail}
-            />
+        <div className="marketing-stats-editorial__grid">
+          {stats.map((stat) => (
+            <div key={stat.label} className="marketing-stats-editorial__item">
+              <p className="marketing-stats-editorial__value">{stat.value}</p>
+              <p className="marketing-stats-editorial__label">{stat.label}</p>
+              <p className="marketing-stats-editorial__detail">{stat.detail}</p>
+            </div>
           ))}
         </div>
       </div>
