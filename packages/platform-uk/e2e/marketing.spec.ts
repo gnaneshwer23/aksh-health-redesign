@@ -98,9 +98,14 @@ test.describe("Marketing smoke", () => {
     const resourcesHrefs = await collectHrefs("Resources");
     expect(resourcesHrefs).toContain("/resources");
     expect(resourcesHrefs).toContain("/faq");
+    expect(resourcesHrefs).toContain("/contact");
+    expect(resourcesHrefs).toContain("/walkthrough");
     expect(resourcesHrefs).not.toContain("/pricing");
     expect(resourcesHrefs).not.toContain("/security");
     expect(resourcesHrefs).not.toContain("/demo/patel");
+    expect(resourcesHrefs).not.toContain("/privacy");
+    expect(resourcesHrefs).not.toContain("/cookies");
+    expect(resourcesHrefs).not.toContain("/terms");
     expect(new Set(resourcesHrefs).size).toBe(resourcesHrefs.length);
   });
 
@@ -123,6 +128,15 @@ test.describe("Marketing smoke", () => {
       "/for-patients"
     );
     await expect(mobileNav.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
+    await expect(mobileNav.getByRole("link", { name: "Security & safety", exact: true })).toHaveAttribute(
+      "href",
+      "/security"
+    );
+    await expect(mobileNav.getByRole("link", { name: "Contact", exact: true })).toHaveAttribute("href", "/contact");
+    await expect(mobileNav.getByRole("link", { name: "Case walkthrough", exact: true })).toHaveAttribute(
+      "href",
+      "/walkthrough"
+    );
     await expect(mobileNav.getByRole("link", { name: "Pharmacists" })).toHaveCount(0);
     await expect(mobileNav.getByRole("link", { name: "Practices", exact: true })).toHaveCount(0);
   });
@@ -272,18 +286,21 @@ test.describe("Marketing smoke", () => {
     await page.goto("/");
 
     const hero = page.locator("section.owkin-hero");
+    const product = hero.locator(".owkin-hero__product");
+    await expect(product).toBeVisible();
+    await expect(product.getByText("Clinical queue")).toBeVisible();
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.getByText("clinician gate")).toHaveCount(0);
-    await expect(hero.locator(".owkin-hero__scrim")).toBeAttached();
+    await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
+    await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
   });
 
   test("homepage agent and FHIR scenes use quiet product mocks", async ({ page }) => {
     await page.goto("/");
 
-    const agentMock = page.locator(".aksh-mock-frame");
-    await expect(agentMock).toBeVisible();
-    await expect(agentMock.getByText("Review queue")).toBeVisible();
-    await expect(agentMock.locator(".aksh-mock-frame__actions")).toContainText("Accept");
+    const voiceMock = page.locator(".aksh-mock-voice");
+    await expect(voiceMock).toBeVisible();
+    await expect(page.locator(".aksh-mock-frame__title", { hasText: "Voice consult" })).toBeVisible();
 
     const fhirMock = page.locator(".aksh-mock-stack");
     await expect(fhirMock).toBeVisible();
@@ -386,16 +403,23 @@ test.describe("Marketing smoke", () => {
 
   test("security and integrations pages load with expected headings", async ({ page }) => {
     await page.goto("/security");
-    await expect(
-      page.getByRole("heading", { name: /Data protection and clinical safety for NHS deployments/i })
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trust is a gate, not a slogan/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /GDPR Art\. 9 special category data/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Honest limits/i })).toBeVisible();
+    await expect(page.getByText(/Not claimed in this build/i)).toBeVisible();
 
     await page.goto("/integrations");
     await expect(
       page.getByRole("heading", { name: /Integration-ready architecture for NHS care settings/i })
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: /FHIR R4 resources/i })).toBeVisible();
+  });
+
+  test("case walkthrough page frames the Patel demo", async ({ page }) => {
+    await page.goto("/walkthrough");
+    await expect(page.getByRole("heading", { name: /Walk the Patel practice end to end/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open live demo" }).first()).toHaveAttribute("href", "/demo/patel");
+    await expect(page.getByRole("link", { name: "Launch Patel demo" })).toHaveAttribute("href", "/demo/patel");
   });
 
   test("/demo redirects to flagship clinical walkthrough", async ({ page }) => {
@@ -444,8 +468,9 @@ test.describe("Marketing smoke", () => {
     await expect(footer.getByRole("link", { name: "See demo" })).toHaveAttribute("href", "/demo/patel");
     await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "How we price" })).toHaveAttribute("href", "/pricing");
+    await expect(footer.getByRole("link", { name: "Case walkthrough" })).toHaveAttribute("href", "/walkthrough");
     await expect(footer.getByRole("link", { name: "Clinicians", exact: true })).toBeVisible();
-    await expect(footer.getByRole("link", { name: "Security" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Security & safety" })).toHaveAttribute("href", "/security");
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
     await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");

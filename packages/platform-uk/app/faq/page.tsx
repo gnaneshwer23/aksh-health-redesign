@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     "Answers about EMIS Web and SystmOne, FHIR R4, human-in-the-loop approval, who can access Aksh Health, demos, and data handling.",
 };
 
-const faqs = [
+const faqs: { q: string; a: ReactNode }[] = [
   {
     q: "Does Aksh Health replace EMIS Web or SystmOne?",
     a: "No. Aksh Health is designed to sit above existing EHR workflows. Integration paths target EMIS Web and SystmOne via FHIR R4–ready staging. Production write-back remains gated behind organisation governance and clinical safety sign-off.",
@@ -28,15 +29,43 @@ const faqs = [
   },
   {
     q: "Can I see a demo before procurement?",
-    a: "Yes. The Patel practice walkthrough is a synthetic end-to-end demo (midnight ETL → GP consult → HITL queue → pharmacist / SHIELD / regional views). Request organisation access for a guided demo with your team.",
+    a: (
+      <>
+        Yes. Start with the{" "}
+        <Link href="/walkthrough" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+          case walkthrough
+        </Link>{" "}
+        framing, then open the live Patel practice demo. Request organisation access for a guided session with your
+        team.
+      </>
+    ),
   },
   {
     q: "Where is clinical data processed?",
-    a: "Aksh Health is designed for UK/EU hosting boundaries appropriate for NHS workloads, with TLS in transit, encryption at rest, and tenant-scoped access. See Security for residency and GDPR Art. 9 framing.",
+    a: (
+      <>
+        Aksh Health is designed for UK/EU hosting boundaries appropriate for NHS workloads, with TLS in transit,
+        encryption at rest, and tenant-scoped access. See{" "}
+        <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+          Clinical safety &amp; security
+        </Link>{" "}
+        for residency and GDPR Art. 9 framing.
+      </>
+    ),
   },
   {
     q: "Is Aksh Health MHRA-certified or DCB0129-approved?",
-    a: "No. We position the product as clinical decision support with human review — MHRA-aware, not an autonomous diagnostic system. The DCB0129 clinical safety case is in progress; we do not claim certification, accreditation, or CQC readiness.",
+    a: (
+      <>
+        No. We position the product as clinical decision support with human review — MHRA-aware, not an autonomous
+        diagnostic system. The DCB0129 clinical safety case is in progress; we do not claim certification,
+        accreditation, or CQC readiness. See{" "}
+        <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+          Clinical safety &amp; security
+        </Link>{" "}
+        for what we do and do not claim.
+      </>
+    ),
   },
   {
     q: "What FHIR resources are staged?",
@@ -46,7 +75,7 @@ const faqs = [
     q: "How do I contact Aksh Health?",
     a: "Use Contact for general enquiries, Get in touch for organisation access, or Create account for individual proof-mode exploration.",
   },
-] as const;
+];
 
 export default function FaqPage() {
   return (
@@ -56,7 +85,7 @@ export default function FaqPage() {
         title="Questions procurement and clinical teams ask"
         lede="Straight answers on EMR fit, approval gates, demos, and compliance posture — without overclaiming certifications."
         primary={{ label: "Request organisation access", href: "/get-started" }}
-        secondary={{ label: "View security", href: "/security" }}
+        secondary={{ label: "Clinical safety", href: "/security" }}
       />
 
       <section className="owkin-faq">
@@ -66,7 +95,7 @@ export default function FaqPage() {
               <li key={item.q}>
                 <details className="owkin-faq__item">
                   <summary>{item.q}</summary>
-                  <p className="owkin-faq__answer">{item.a}</p>
+                  <div className="owkin-faq__answer">{item.a}</div>
                 </details>
               </li>
             ))}

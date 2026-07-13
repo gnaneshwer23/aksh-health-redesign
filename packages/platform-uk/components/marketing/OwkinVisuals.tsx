@@ -1,91 +1,76 @@
 /**
  * Product-aligned marketing visuals for Aksh Health.
+ * Crisp UI frames drawn from demo/dashboard patterns — few labels, clear gaps.
  * Atmosphere modes stay unlabeled so type never fights captions.
- * Scene modes are quiet product mocks — few labels, clear gaps, no spaghetti.
  */
 
 import type { CSSProperties, ReactNode } from "react";
 
-/** Soft unlabeled hub — safe behind / around type. Never includes readable captions. */
+/** Soft unlabeled wash — safe behind / around type. Never includes readable captions. */
 export function AtmosphereHubVisual({
   className = "",
-  idPrefix = "hub",
 }: {
   className?: string;
   idPrefix?: string;
 }) {
-  const coreId = `aksh-${idPrefix}-core`;
-  const pathId = `aksh-${idPrefix}-path`;
-
   return (
-    <div className={`aksh-visual aksh-visual--hub aksh-visual--atmosphere ${className}`} aria-hidden>
-      <div className="aksh-visual__hub-glow" />
-      <div className="aksh-visual__hub-ring aksh-visual__hub-ring--outer" />
-      <div className="aksh-visual__hub-ring aksh-visual__hub-ring--mid" />
-      <svg className="aksh-visual__hub-svg" viewBox="0 0 320 320" fill="none">
-        <defs>
-          <linearGradient id={coreId} x1="80" y1="60" x2="240" y2="260" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#5b7cff" />
-            <stop offset="0.55" stopColor="#1f4bff" />
-            <stop offset="1" stopColor="#1038d6" />
-          </linearGradient>
-          <linearGradient id={pathId} x1="40" y1="40" x2="280" y2="280" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#1f4bff" stopOpacity="0.4" />
-            <stop offset="1" stopColor="#00a86b" stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
-        <path
-          className="aksh-visual__hub-arc"
-          d="M70 160c0-55 40-95 90-95s90 40 90 95"
-          stroke={`url(#${pathId})`}
-          strokeWidth="1.25"
-          strokeDasharray="4 8"
-        />
-        <path
-          className="aksh-visual__hub-arc aksh-visual__hub-arc--delay"
-          d="M55 200c15 50 55 80 105 80s90-30 105-80"
-          stroke={`url(#${pathId})`}
-          strokeWidth="1.25"
-          strokeDasharray="3 9"
-        />
-        <g stroke="#1f4bff" strokeOpacity="0.12" strokeWidth="1">
-          <line x1="160" y1="160" x2="88" y2="78" />
-          <line x1="160" y1="160" x2="248" y2="92" />
-          <line x1="160" y1="160" x2="264" y2="200" />
-          <line x1="160" y1="160" x2="72" y2="214" />
-          <line x1="160" y1="160" x2="160" y2="268" />
-        </g>
-        <g className="aksh-visual__hub-nodes" opacity="0.55">
-          <g transform="translate(72 62)">
-            <circle r="18" fill="#fff" stroke="rgba(20,20,20,0.06)" strokeWidth="1" />
-            <circle r="5" fill="#1f4bff" opacity="0.2" />
-          </g>
-          <g transform="translate(248 78)">
-            <circle r="18" fill="#fff" stroke="rgba(20,20,20,0.06)" strokeWidth="1" />
-            <circle r="5" fill="#d97706" opacity="0.25" />
-          </g>
-          <g transform="translate(264 200)">
-            <circle r="18" fill="#fff" stroke="rgba(20,20,20,0.06)" strokeWidth="1" />
-            <circle r="5" fill="#1f4bff" opacity="0.2" />
-          </g>
-          <g transform="translate(72 214)">
-            <circle r="18" fill="#fff" stroke="rgba(20,20,20,0.06)" strokeWidth="1" />
-            <circle r="5" fill="#00a86b" opacity="0.25" />
-          </g>
-          <g transform="translate(160 268)">
-            <circle r="16" fill="#fff" stroke="rgba(20,20,20,0.06)" strokeWidth="1" />
-            <circle r="4.5" fill="#1038d6" opacity="0.2" />
-          </g>
-        </g>
-        <circle cx="160" cy="160" r="36" fill={`url(#${coreId})`} className="aksh-visual__hub-core" opacity="0.85" />
-        <circle cx="160" cy="160" r="36" fill={`url(#${coreId})`} opacity="0.2" className="aksh-visual__hub-core-pulse" />
-      </svg>
-      <div className="aksh-visual__hub-shine" />
+    <div className={`aksh-visual aksh-visual--atmosphere-wash ${className}`} aria-hidden>
+      <div className="aksh-atmosphere-wash__blob aksh-atmosphere-wash__blob--a" />
+      <div className="aksh-atmosphere-wash__blob aksh-atmosphere-wash__blob--b" />
+      <div className="aksh-atmosphere-wash__mesh" />
     </div>
   );
 }
 
-/** Hero + vision: unlabeled atmosphere by default. Set labeled only in dedicated visual columns. */
+/** Hero product frame — sits below headlines, never behind type. */
+export function HeroProductVisual({ className = "" }: { className?: string }) {
+  return (
+    <div className={`aksh-hero-product ${className}`} aria-hidden>
+      <div className="aksh-hero-product__main">
+        <div className="aksh-mock-frame aksh-mock-frame--hero">
+          <div className="aksh-mock-frame__chrome">
+            <span className="aksh-mock-frame__dot" />
+            <span className="aksh-mock-frame__title">Clinical queue</span>
+            <span className="aksh-mock-frame__badge">Named review</span>
+          </div>
+          <ul className="aksh-mock-queue">
+            <li className="aksh-mock-queue__row">
+              <span className="aksh-mock-queue__dot" style={{ background: "#00a86b" }} />
+              <span className="aksh-mock-queue__agent">VOICE</span>
+              <span className="aksh-mock-queue__detail">Consult · Mr J. Patel</span>
+            </li>
+            <li className="aksh-mock-queue__row">
+              <span className="aksh-mock-queue__dot" style={{ background: "#1f4bff" }} />
+              <span className="aksh-mock-queue__agent">SOAP</span>
+              <span className="aksh-mock-queue__detail">Draft awaiting GP</span>
+            </li>
+            <li className="aksh-mock-queue__row">
+              <span className="aksh-mock-queue__dot" style={{ background: "#d97706" }} />
+              <span className="aksh-mock-queue__agent">ORACLE</span>
+              <span className="aksh-mock-queue__detail">14-day risk · 82</span>
+            </li>
+            <li className="aksh-mock-queue__row">
+              <span className="aksh-mock-queue__dot" style={{ background: "#64748b" }} />
+              <span className="aksh-mock-queue__agent">SHIELD</span>
+              <span className="aksh-mock-queue__detail">Audit trail on</span>
+            </li>
+          </ul>
+          <div className="aksh-mock-frame__actions">
+            <span>Accept</span>
+            <span>Edit</span>
+            <span>Reject</span>
+          </div>
+        </div>
+      </div>
+      <div className="aksh-hero-product__side">
+        <OracleRiskCard />
+        <ShieldAuditCard compact />
+      </div>
+    </div>
+  );
+}
+
+/** @deprecated Prefer PlatformHubVisual — kept for soft alias during migration */
 export function PlatformHubVisual({
   className = "",
   idPrefix = "hub",
@@ -93,111 +78,27 @@ export function PlatformHubVisual({
 }: {
   className?: string;
   idPrefix?: string;
-  /** When true, never render captions — safe behind headlines. */
   atmosphere?: boolean;
 }) {
   if (atmosphere) {
     return <AtmosphereHubVisual className={className} idPrefix={idPrefix} />;
   }
-
-  const coreId = `aksh-${idPrefix}-core`;
-  const pathId = `aksh-${idPrefix}-path`;
-
-  return (
-    <div className={`aksh-visual aksh-visual--hub ${className}`} aria-hidden>
-      <div className="aksh-visual__hub-glow" />
-      <div className="aksh-visual__hub-ring aksh-visual__hub-ring--outer" />
-      <div className="aksh-visual__hub-ring aksh-visual__hub-ring--mid" />
-      <svg className="aksh-visual__hub-svg" viewBox="0 0 320 320" fill="none">
-        <defs>
-          <linearGradient id={coreId} x1="80" y1="60" x2="240" y2="260" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#5b7cff" />
-            <stop offset="0.55" stopColor="#1f4bff" />
-            <stop offset="1" stopColor="#1038d6" />
-          </linearGradient>
-          <linearGradient id={pathId} x1="40" y1="40" x2="280" y2="280" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#1f4bff" stopOpacity="0.55" />
-            <stop offset="1" stopColor="#00a86b" stopOpacity="0.45" />
-          </linearGradient>
-        </defs>
-        <path
-          className="aksh-visual__hub-arc"
-          d="M70 160c0-55 40-95 90-95s90 40 90 95"
-          stroke={`url(#${pathId})`}
-          strokeWidth="1.5"
-          strokeDasharray="4 6"
-        />
-        <path
-          className="aksh-visual__hub-arc aksh-visual__hub-arc--delay"
-          d="M55 200c15 50 55 80 105 80s90-30 105-80"
-          stroke={`url(#${pathId})`}
-          strokeWidth="1.5"
-          strokeDasharray="3 7"
-        />
-        <g stroke="#1f4bff" strokeOpacity="0.22" strokeWidth="1.25">
-          <line x1="160" y1="160" x2="88" y2="78" />
-          <line x1="160" y1="160" x2="248" y2="92" />
-          <line x1="160" y1="160" x2="264" y2="200" />
-          <line x1="160" y1="160" x2="72" y2="214" />
-          <line x1="160" y1="160" x2="160" y2="268" />
-        </g>
-        <g className="aksh-visual__hub-nodes">
-          <g transform="translate(72 62)">
-            <circle r="22" fill="#fff" stroke="rgba(20,20,20,0.08)" strokeWidth="1" />
-            <circle r="7" fill="#1f4bff" opacity="0.15" />
-            <path d="M-3 -4v8M-3 0h4a3.5 3.5 0 010 7h-2" stroke="#1f4bff" strokeWidth="1.6" strokeLinecap="round" />
-            <circle cx="5" cy="-6" r="2.2" fill="#00a86b" />
-          </g>
-          <g transform="translate(248 78)">
-            <circle r="22" fill="#fff" stroke="rgba(20,20,20,0.08)" strokeWidth="1" />
-            <path
-              d="M-8 6 L-2 -6 L4 2 L9 -8"
-              stroke="#d97706"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-            <circle cx="9" cy="-8" r="2.2" fill="#d97706" />
-          </g>
-          <g transform="translate(264 200)">
-            <circle r="22" fill="#fff" stroke="rgba(20,20,20,0.08)" strokeWidth="1" />
-            <rect x="-9" y="-8" width="18" height="3.5" rx="1" fill="#1f4bff" opacity="0.85" />
-            <rect x="-9" y="-2" width="14" height="3.5" rx="1" fill="#1f4bff" opacity="0.5" />
-            <rect x="-9" y="4" width="11" height="3.5" rx="1" fill="#1f4bff" opacity="0.3" />
-          </g>
-          <g transform="translate(72 214)">
-            <circle r="22" fill="#fff" stroke="rgba(20,20,20,0.08)" strokeWidth="1" />
-            <path d="M-7 -2h14M-7 3h10" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" />
-            <circle cx="6" cy="-6" r="5" fill="none" stroke="#00a86b" strokeWidth="1.6" />
-            <path d="M6 -9v3h3" stroke="#00a86b" strokeWidth="1.4" strokeLinecap="round" />
-          </g>
-          <g transform="translate(160 268)">
-            <circle r="20" fill="#fff" stroke="rgba(20,20,20,0.08)" strokeWidth="1" />
-            <circle cx="-5" cy="-2" r="3.2" fill="#00a86b" opacity="0.7" />
-            <circle cx="5" cy="-2" r="3.2" fill="#1f4bff" opacity="0.7" />
-            <circle cx="0" cy="5" r="3.2" fill="#d97706" opacity="0.65" />
-          </g>
-        </g>
-        <circle cx="160" cy="160" r="42" fill={`url(#${coreId})`} className="aksh-visual__hub-core" />
-        <circle cx="160" cy="160" r="42" fill={`url(#${coreId})`} opacity="0.35" className="aksh-visual__hub-core-pulse" />
-      </svg>
-      <div className="aksh-visual__hub-shine" />
-    </div>
-  );
+  return <HeroProductVisual className={className} />;
 }
 
-/** @deprecated Prefer PlatformHubVisual — kept for soft alias during migration */
+/** @deprecated Prefer AtmosphereHubVisual */
 export function PastelOrbVisual({ className = "" }: { className?: string }) {
-  return <PlatformHubVisual className={className} idPrefix="orb" atmosphere />;
+  return <AtmosphereHubVisual className={className} />;
 }
 
-type SceneVariant = "fragmented" | "agents" | "fhir";
+type SceneVariant = "fragmented" | "agents" | "fhir" | "voice" | "oracle" | "shield";
 
 /** Scroll-story centre visuals mapped to product scenes. */
 export function ProductSceneVisual({ variant }: { variant: SceneVariant }) {
   if (variant === "fragmented") return <FragmentedSystemsVisual />;
-  if (variant === "agents") return <AgentGovernanceVisual />;
+  if (variant === "agents" || variant === "voice") return <VoiceConsultVisual />;
+  if (variant === "oracle") return <OracleSceneVisual />;
+  if (variant === "shield") return <ShieldSceneVisual />;
   return <FhirStagingVisual />;
 }
 
@@ -210,9 +111,13 @@ export function ClinicalCellVisual({
   const mapped: SceneVariant =
     variant === "amber" || variant === "fragmented"
       ? "fragmented"
-      : variant === "rose" || variant === "agents"
+      : variant === "rose" || variant === "agents" || variant === "voice"
         ? "agents"
-        : "fhir";
+        : variant === "oracle"
+          ? "oracle"
+          : variant === "shield"
+            ? "shield"
+            : "fhir";
   return <ProductSceneVisual variant={mapped} />;
 }
 
@@ -220,66 +125,60 @@ function FragmentedSystemsVisual() {
   return (
     <div className="aksh-visual aksh-visual--scene aksh-visual--fragmented" aria-hidden>
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--amber" />
-      <svg className="aksh-visual__scene-svg" viewBox="0 0 280 280" fill="none">
-        <rect x="24" y="48" width="88" height="64" rx="12" fill="#fff" stroke="rgba(20,20,20,0.08)" />
-        <text x="68" y="72" textAnchor="middle" fill="#141414" fontSize="9" fontWeight="700">
-          EMIS Web
-        </text>
-        <text x="68" y="88" textAnchor="middle" fill="rgba(20,20,20,0.45)" fontSize="7">
-          notes · meds
-        </text>
-        <rect x="168" y="36" width="88" height="64" rx="12" fill="#fff" stroke="rgba(20,20,20,0.08)" />
-        <text x="212" y="60" textAnchor="middle" fill="#141414" fontSize="9" fontWeight="700">
-          SystmOne
-        </text>
-        <text x="212" y="76" textAnchor="middle" fill="rgba(20,20,20,0.45)" fontSize="7">
-          appointments
-        </text>
-        <rect x="96" y="148" width="88" height="64" rx="12" fill="#fff" stroke="rgba(20,20,20,0.08)" />
-        <text x="140" y="172" textAnchor="middle" fill="#141414" fontSize="9" fontWeight="700">
-          Inbox
-        </text>
-        <text x="140" y="188" textAnchor="middle" fill="rgba(20,20,20,0.45)" fontSize="7">
-          handovers · chaos
-        </text>
-        <path d="M112 80 L168 68" stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 5" opacity="0.7" />
-        <path d="M80 112 L120 148" stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 5" opacity="0.55" />
-        <path d="M200 100 L160 148" stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 5" opacity="0.55" />
-        <circle cx="140" cy="118" r="14" fill="#faf7f2" stroke="#d97706" strokeWidth="1.5" strokeDasharray="2 3" />
-        <text x="140" y="121" textAnchor="middle" fill="#d97706" fontSize="14" fontWeight="700">
-          ?
-        </text>
-      </svg>
+      <div className="aksh-mock-frame">
+        <div className="aksh-mock-frame__chrome">
+          <span className="aksh-mock-frame__dot" style={{ background: "#d97706" }} />
+          <span className="aksh-mock-frame__title">Scattered systems</span>
+        </div>
+        <div className="aksh-mock-scatter">
+          <div className="aksh-mock-scatter__card">
+            <p>EMIS Web</p>
+            <span>notes · meds</span>
+          </div>
+          <div className="aksh-mock-scatter__card">
+            <p>SystmOne</p>
+            <span>appointments</span>
+          </div>
+          <div className="aksh-mock-scatter__card aksh-mock-scatter__card--warn">
+            <p>Inbox</p>
+            <span>handovers · chaos</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-/** Quiet review-queue mock — 4 labels max, no radial spokes. */
-function AgentGovernanceVisual() {
-  const rows = [
-    { agent: "VOICE", detail: "Consult transcript", tone: "#00a86b" },
-    { agent: "ORACLE", detail: "14-day risk · 82", tone: "#d97706" },
-    { agent: "SHIELD", detail: "Audit trail on", tone: "#64748b" },
-    { agent: "SYNTHESIS", detail: "SOAP draft ready", tone: "#1f4bff" },
-  ] as const;
-
+/** Voice consult → governed queue — matches GP dashboard / Patel demo patterns. */
+function VoiceConsultVisual() {
   return (
     <div className="aksh-visual aksh-visual--scene aksh-visual--agents-mock" aria-hidden>
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--rose" />
       <div className="aksh-mock-frame">
         <div className="aksh-mock-frame__chrome">
-          <span className="aksh-mock-frame__dot" />
-          <span className="aksh-mock-frame__title">Review queue</span>
-          <span className="aksh-mock-frame__badge">Human gate</span>
+          <span className="aksh-mock-frame__dot" style={{ background: "#00a86b" }} />
+          <span className="aksh-mock-frame__title">Voice consult</span>
+          <span className="aksh-mock-frame__badge">Live</span>
         </div>
-        <ul className="aksh-mock-queue">
-          {rows.map((row) => (
-            <li key={row.agent} className="aksh-mock-queue__row">
-              <span className="aksh-mock-queue__dot" style={{ background: row.tone }} />
-              <span className="aksh-mock-queue__agent">{row.agent}</span>
-              <span className="aksh-mock-queue__detail">{row.detail}</span>
-            </li>
-          ))}
+        <div className="aksh-mock-voice">
+          <div className="aksh-mock-voice__wave" aria-hidden>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <span key={i} style={{ animationDelay: `${i * 0.08}s` }} />
+            ))}
+          </div>
+          <p className="aksh-mock-voice__line">“…calf swelling since Tuesday, sugars running 12 to 14…”</p>
+        </div>
+        <ul className="aksh-mock-queue aksh-mock-queue--compact">
+          <li className="aksh-mock-queue__row">
+            <span className="aksh-mock-queue__dot" style={{ background: "#1f4bff" }} />
+            <span className="aksh-mock-queue__agent">SYNTHESIS</span>
+            <span className="aksh-mock-queue__detail">SOAP draft ready</span>
+          </li>
+          <li className="aksh-mock-queue__row">
+            <span className="aksh-mock-queue__dot" style={{ background: "#d97706" }} />
+            <span className="aksh-mock-queue__agent">ORACLE</span>
+            <span className="aksh-mock-queue__detail">Risk flagged</span>
+          </li>
         </ul>
         <div className="aksh-mock-frame__actions">
           <span>Accept</span>
@@ -287,6 +186,75 @@ function AgentGovernanceVisual() {
           <span>Reject</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+function OracleSceneVisual() {
+  return (
+    <div className="aksh-visual aksh-visual--scene aksh-visual--agents-mock" aria-hidden>
+      <div className="aksh-visual__scene-glow aksh-visual__scene-glow--amber" />
+      <OracleRiskCard />
+    </div>
+  );
+}
+
+function ShieldSceneVisual() {
+  return (
+    <div className="aksh-visual aksh-visual--scene aksh-visual--agents-mock" aria-hidden>
+      <div className="aksh-visual__scene-glow aksh-visual__scene-glow--teal" />
+      <ShieldAuditCard />
+    </div>
+  );
+}
+
+function OracleRiskCard() {
+  return (
+    <div className="aksh-mock-frame aksh-mock-oracle">
+      <div className="aksh-mock-frame__chrome">
+        <span className="aksh-mock-frame__dot" style={{ background: "#d97706" }} />
+        <span className="aksh-mock-frame__title">ORACLE risk</span>
+        <span className="aksh-mock-frame__badge aksh-mock-frame__badge--warn">High</span>
+      </div>
+      <div className="aksh-mock-oracle__score">
+        <span className="aksh-mock-oracle__value">82</span>
+        <div>
+          <p className="aksh-mock-oracle__label">14-day admission risk</p>
+          <p className="aksh-mock-oracle__delta">78 → 82 · review recommended</p>
+        </div>
+      </div>
+      <ul className="aksh-mock-oracle__factors">
+        <li>Calf swelling · DVT pathway</li>
+        <li>Glycaemic range 12–14</li>
+      </ul>
+    </div>
+  );
+}
+
+function ShieldAuditCard({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`aksh-mock-frame aksh-mock-shield${compact ? " aksh-mock-shield--compact" : ""}`}>
+      <div className="aksh-mock-frame__chrome">
+        <span className="aksh-mock-frame__dot" style={{ background: "#64748b" }} />
+        <span className="aksh-mock-frame__title">SHIELD audit</span>
+        <span className="aksh-mock-frame__badge">Clear</span>
+      </div>
+      <ul className="aksh-mock-shield__events">
+        <li>
+          <span>09:41</span>
+          <span>Draft staged · no auto-write</span>
+        </li>
+        <li>
+          <span>09:44</span>
+          <span>GP Accept · AuditEvent</span>
+        </li>
+        {!compact ? (
+          <li>
+            <span>ETL</span>
+            <span>Midnight run · SUCCESS</span>
+          </li>
+        ) : null}
+      </ul>
     </div>
   );
 }
@@ -317,6 +285,7 @@ function FhirStagingVisual() {
           </div>
           <p className="aksh-mock-panel__meta">R4 · EMIS / SystmOne</p>
         </div>
+        <ShieldAuditCard compact />
       </div>
     </div>
   );

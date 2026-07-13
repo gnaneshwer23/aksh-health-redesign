@@ -15,15 +15,15 @@ const scenes = [
   {
     id: "answer",
     title: "A governed agent layer is the answer",
-    body: "Eight specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
+    body: "Voice consults feed specialist agents that draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects — with a full audit trail.",
     cta: { href: "/how-it-works", label: "See how it works" },
-    visual: "agents" as const,
+    visual: "voice" as const,
   },
   {
     id: "improving",
     title: "Powered by FHIR. Continuously reviewed.",
-    body: "Approved outputs stage as FHIR R4 resources ready for EMIS Web and SystmOne paths. Every decision is accountable; every write waits for clinician sign-off.",
-    cta: { href: "/security", label: "Explore what makes this possible" },
+    body: "Approved outputs stage as FHIR R4 resources ready for EMIS Web and SystmOne paths. ORACLE surfaces risk; SHIELD records every decision. Every write waits for clinician sign-off.",
+    cta: { href: "/security", label: "Explore clinical safety" },
     visual: "fhir" as const,
   },
 ] as const;

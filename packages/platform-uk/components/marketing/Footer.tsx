@@ -11,6 +11,7 @@ const footerColumns = [
       { label: "Resources", href: "/resources" },
       { label: "FAQ", href: "/faq" },
       { label: "How we price", href: "/pricing" },
+      { label: "Case walkthrough", href: "/walkthrough" },
     ],
   },
   {
@@ -26,9 +27,9 @@ const footerColumns = [
     ],
   },
   {
-    title: "Trust",
+    title: "Trust & legal",
     links: [
-      { label: "Security", href: "/security" },
+      { label: "Security & safety", href: "/security" },
       { label: "Integrations", href: "/integrations" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },

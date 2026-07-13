@@ -1,18 +1,13 @@
 import Link from "next/link";
 
-import { AtmosphereHubVisual } from "@/components/marketing/OwkinVisuals";
+import { HeroProductVisual } from "@/components/marketing/OwkinVisuals";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { container } from "@/components/marketing/marketing-ui";
 
 export default function HeroSection() {
   return (
     <section className="marketing-homepage-hero owkin-hero relative flex min-h-[100svh] flex-col overflow-hidden">
-      <div className="owkin-hero__atmosphere" aria-hidden>
-        <AtmosphereHubVisual className="owkin-hero__orb" idPrefix="hero" />
-      </div>
-      <div className="owkin-hero__scrim" aria-hidden />
-
-      <div className={`relative z-10 flex flex-1 flex-col justify-center ${container} pb-10 pt-28 md:pt-32`}>
+      <div className={`relative z-10 flex flex-1 flex-col justify-center ${container} pb-6 pt-28 md:pt-32`}>
         <div className="owkin-hero__copy mx-auto max-w-4xl text-center">
           <p className="owkin-hero__brand">Aksh Health</p>
           <h1 className="owkin-hero__title">
@@ -36,6 +31,10 @@ export default function HeroSection() {
               <span aria-hidden>→</span>
             </Link>
           </div>
+        </div>
+
+        <div className="owkin-hero__product">
+          <HeroProductVisual />
         </div>
 
         <div className="owkin-hero__scroll" aria-hidden>

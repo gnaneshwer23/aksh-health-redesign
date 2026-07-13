@@ -71,17 +71,19 @@ const megaMenus: Record<string, MegaColumn[]> = {
     {
       pill: "Latest",
       links: [
-        { label: "Resources hub", href: "/resources" },
-        { label: "FAQ", href: "/faq" },
-        { label: "Contact", href: "/contact" },
+        { label: "Resources hub", href: "/resources", description: "Architecture and compliance reference" },
+        { label: "FAQ", href: "/faq", description: "Procurement and clinical questions" },
+        { label: "Contact", href: "/contact", description: "General enquiries" },
       ],
     },
     {
-      pill: "Trust & legal",
+      pill: "Learn more",
       links: [
-        { label: "Privacy", href: "/privacy" },
-        { label: "Cookie policy", href: "/cookies" },
-        { label: "Terms of service", href: "/terms" },
+        {
+          label: "Case walkthrough",
+          href: "/walkthrough",
+          description: "Patel practice story and live demo",
+        },
       ],
     },
   ],
@@ -288,8 +290,23 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
               ))
             )}
             <SheetClose asChild>
+              <Link href="/security" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                Security & safety
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
               <Link href="/faq" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                 FAQ
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/contact" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                Contact
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/walkthrough" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                Case walkthrough
               </Link>
             </SheetClose>
           </nav>

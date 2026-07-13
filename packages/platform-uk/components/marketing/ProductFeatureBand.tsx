@@ -11,7 +11,7 @@ export default function ProductFeatureBand() {
           <div className="owkin-product-card aksh-product-mock">
             <div className="aksh-product-mock__header">
               <p className="owkin-product-card__eyebrow">GP dashboard · Patel practice</p>
-              <span className="aksh-product-mock__pill">HITL · live</span>
+              <span className="aksh-product-mock__pill">Named review</span>
             </div>
             <p className="owkin-product-card__title">Today&apos;s clinical queue</p>
 
@@ -50,6 +50,24 @@ export default function ProductFeatureBand() {
               </div>
             </div>
 
+            <div className="aksh-product-mock__panels" aria-hidden>
+              <div className="aksh-product-mock__mini">
+                <p className="aksh-product-mock__mini-label">ORACLE</p>
+                <p className="aksh-product-mock__mini-value">82</p>
+                <p className="aksh-product-mock__mini-meta">14-day risk</p>
+              </div>
+              <div className="aksh-product-mock__mini">
+                <p className="aksh-product-mock__mini-label">SHIELD</p>
+                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--ok">0</p>
+                <p className="aksh-product-mock__mini-meta">Auto-writes</p>
+              </div>
+              <div className="aksh-product-mock__mini">
+                <p className="aksh-product-mock__mini-label">VOICE</p>
+                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--voice">Live</p>
+                <p className="aksh-product-mock__mini-meta">Consult capture</p>
+              </div>
+            </div>
+
             <div className="owkin-product-card__bubble">
               <p>
                 Draft SOAP + urgent DVT duplex referral, stage FHIR Condition &amp; ServiceRequest, hold for GP
@@ -71,8 +89,8 @@ export default function ProductFeatureBand() {
             <Link href="/platform" className="owkin-btn-ink">
               Discover the platform
             </Link>
-            <Link href="/demo/patel" className="owkin-text-cta">
-              Walk the Patel demo
+            <Link href="/walkthrough" className="owkin-text-cta">
+              Walk the Patel case
               <span aria-hidden>→</span>
             </Link>
           </div>
