@@ -16,7 +16,7 @@ export function AudienceWorkflowSection({ workflow }: AudienceWorkflowSectionPro
         : "sm:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section className="bg-surface-muted py-20 md:py-24" aria-labelledby="audience-workflow-heading">
+    <section className="bg-surface-muted py-12 md:py-16" aria-labelledby="audience-workflow-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <MarketingSectionHeader
           align="left"
@@ -25,7 +25,7 @@ export function AudienceWorkflowSection({ workflow }: AudienceWorkflowSectionPro
           description={workflow.sectionDescription}
         />
 
-        <div className={`grid gap-6 ${gridCols}`}>
+        <div className={`mt-6 grid gap-6 ${stepCount === 3 ? "sm:grid-cols-3" : gridCols}`}>
           {workflow.steps.map((step, index) => (
             <PastelCapabilityCard
               key={step.title}

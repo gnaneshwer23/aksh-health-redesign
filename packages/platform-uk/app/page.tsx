@@ -46,15 +46,15 @@ export default function HomePage() {
       <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band>
         <div className={`${container} max-w-2xl`}>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
-            Ready to deploy across your organisation?
+            Ready for your organisation?
           </h2>
-          <p className="owkin-cta-band__lede mb-10 text-lg leading-relaxed md:text-xl">
-            Eight role-specific dashboards. FHIR R4 ready, designed for EMIS Web and SystmOne. Clinical safety built
-            in from day one.
+          <p className="owkin-cta-band__lede mb-8 text-lg leading-relaxed md:text-xl">
+            Eight role-specific dashboards. FHIR R4 ready for EMIS Web and SystmOne. Clinician approval built in from
+            day one.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">
-              Request organisation access
+              Talk to us
             </Link>
             <Link href="/signup" className="owkin-cta-band__link">
               Create account

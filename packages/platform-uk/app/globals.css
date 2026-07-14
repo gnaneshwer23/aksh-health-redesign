@@ -5401,11 +5401,11 @@ input:focus, textarea:focus {
   }
 
   .marketing-section {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-14 md:py-20 lg:py-24;
   }
 
   .marketing-section-tight {
-    @apply py-16 md:py-20;
+    @apply py-12 md:py-16;
   }
 
   /* Pill CTA buttons — one shape, one hover/focus language, everywhere.
@@ -5769,7 +5769,7 @@ input:focus, textarea:focus {
   z-index: 2;
   width: 100%;
   max-width: 52rem;
-  margin: 2.25rem auto 0;
+  margin: 1.5rem auto 0;
   animation: marketing-hero-rise 1400ms var(--ease-out-strong) both;
 }
 
@@ -5815,7 +5815,7 @@ input:focus, textarea:focus {
 .owkin-hero__scroll {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 }
 
 .owkin-hero__scroll-mouse {
@@ -6507,7 +6507,7 @@ input:focus, textarea:focus {
 /* ---- Vision / story ---- */
 .owkin-vision {
   position: relative;
-  padding: clamp(5rem, 12vw, 9rem) 0;
+  padding: clamp(3rem, 7vw, 5.5rem) 0;
   overflow: hidden;
 }
 
@@ -6534,7 +6534,7 @@ input:focus, textarea:focus {
 }
 
 .owkin-story__scene {
-  padding: clamp(3.5rem, 8vw, 6rem) 0;
+  padding: clamp(2.25rem, 5vw, 4rem) 0;
 }
 
 .owkin-story__grid {
@@ -6648,7 +6648,7 @@ input:focus, textarea:focus {
 }
 
 .owkin-product-band {
-  padding: clamp(4rem, 9vw, 7rem) 0;
+  padding: clamp(2.75rem, 6vw, 4.5rem) 0;
 }
 
 .owkin-product-band__grid {
@@ -7132,7 +7132,7 @@ input:focus, textarea:focus {
 
 /* ---- Roles: editorial, product-aligned (homepage) ---- */
 .owkin-roles {
-  padding: clamp(3.75rem, 8vw, 6.5rem) 0;
+  padding: clamp(2.5rem, 5vw, 4.25rem) 0;
 }
 
 .owkin-roles__intro {

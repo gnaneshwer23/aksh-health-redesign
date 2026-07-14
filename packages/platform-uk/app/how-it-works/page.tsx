@@ -12,7 +12,7 @@ import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 export const metadata: Metadata = {
   title: `How it works | ${SEO_DEFAULTS.title}`,
   description:
-    "See how Aksh Health connects EMIS Web and SystmOne to a Neo4j knowledge graph, eight AI agents, human review, and governed FHIR write-back.",
+    "See how Aksh Health connects EMIS Web and SystmOne: capture, draft and clinical checks, clinician approval, and governed FHIR staging.",
 };
 
 export default function HowItWorksPage() {
@@ -21,15 +21,15 @@ export default function HowItWorksPage() {
       <MarketingPageHero
         eyebrow="How it works"
         title="How Aksh Health works"
-        lede="From EHR intake to governed write-back: one connected pipeline with eight specialist agents and clinician approval on every output. This page owns the depth — the homepage only introduces the story."
+        lede="From consult capture to a governed record: draft notes and clinical checks stage for review — clinicians approve every output. This page owns the depth; the homepage only introduces the story."
         primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Request organisation access", href: "/get-started" }}
+        secondary={{ label: "Talk to us", href: "/get-started" }}
         aside={
           <>
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-slate/55">
-              Platform pipeline preview
+              Care journey preview
             </p>
-            <PlatformFlowDiagram variant="compact" showDescriptions={false} />
+            <PlatformFlowDiagram variant="journey" showDescriptions={false} />
           </>
         }
       />
@@ -40,8 +40,8 @@ export default function HowItWorksPage() {
 
       <MarketingCtaBand
         title="Ready to see it in your organisation?"
-        lede="Eight role-specific dashboards. FHIR R4 ready for EMIS Web and SystmOne. Clinical safety built in from day one."
-        primary={{ label: "Request organisation access", href: "/get-started" }}
+        lede="Eight role-specific dashboards. FHIR R4 ready for EMIS Web and SystmOne. Clinician approval built in from day one."
+        primary={{ label: "Talk to us", href: "/get-started" }}
         secondary={{ label: "Create account", href: "/signup" }}
       />
 

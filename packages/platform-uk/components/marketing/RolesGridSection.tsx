@@ -25,8 +25,8 @@ const careRoles: RoleSignal[] = [
     href: "/for-clinicians",
     dashboard: "Clinician dashboard",
     description:
-      "Risk-ranked appointments, VOICE consults, SYNTHESIS SOAP drafts, and referral packages — all in one HITL review queue.",
-    signals: ["VOICE", "SYNTHESIS", "ORACLE", "HITL queue"],
+      "Risk-ranked appointments, consult capture, SOAP drafts, and referral packages — all in one clinician review queue.",
+    signals: ["Consult capture", "SOAP drafts", "Risk signals", "Review queue"],
     featured: true,
   },
   {
@@ -34,8 +34,8 @@ const careRoles: RoleSignal[] = [
     label: "Nurse / Care Coordinator",
     href: "/for-clinicians",
     dashboard: "Nurse dashboard",
-    description: "Observations, structured handover, and GUARDIAN alerts so care coordination stays with the patient.",
-    signals: ["Vitals", "Handover", "GUARDIAN"],
+    description: "Observations, structured handover, and safety alerts so care coordination stays with the patient.",
+    signals: ["Vitals", "Handover", "Safety alerts"],
     featured: true,
   },
   {
@@ -44,7 +44,7 @@ const careRoles: RoleSignal[] = [
     href: "/for-clinicians",
     dashboard: "Pharmacist dashboard",
     description: "Medication review queue with interaction checks — flag aspirin + apixaban before it reaches the script.",
-    signals: ["Med review", "GUARDIAN", "BNF"],
+    signals: ["Med review", "Interactions", "BNF"],
     featured: true,
   },
 ];
@@ -54,17 +54,17 @@ const governanceRoles: RoleSignal[] = [
     id: "admin",
     label: "Practice Admin",
     href: "/for-practices",
-    dashboard: "Admin · SHIELD",
-    description: "Midnight ETL health, tenancy controls, and immutable AuditEvent trails. Zero auto-writes.",
-    signals: ["SHIELD", "Integrations", "ETL"],
+    dashboard: "Admin · Audit",
+    description: "Integration health, tenancy controls, and immutable audit trails. Zero auto-writes.",
+    signals: ["Audit", "Integrations", "ETL"],
   },
   {
     id: "regional",
     label: "ICS / Regional Lead",
     href: "/for-ics",
     dashboard: "Regional dashboard",
-    description: "Population aggregates and EQUITY disparity insights across practices — no patient-level spill.",
-    signals: ["EQUITY", "Cohorts", "Capacity"],
+    description: "Population aggregates and equity insights across practices — no patient-level spill.",
+    signals: ["Equity", "Cohorts", "Capacity"],
   },
 ];
 
@@ -91,7 +91,7 @@ const reachRoles: RoleSignal[] = [
     href: "/for-research",
     dashboard: "Informatics view",
     description: "Governed outcome research with equity analysis and safety monitoring.",
-    signals: ["EQUITY", "Cohorts"],
+    signals: ["Equity", "Cohorts"],
   },
 ];
 
@@ -115,8 +115,8 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
             Built for every role
           </h2>
           <p className="owkin-roles__lede">
-            Eight purpose-built dashboards — from the Patel practice consult floor to regional EQUITY views. Same
-            governed agents. Different work.
+            Eight purpose-built dashboards — from the Patel practice consult floor to regional equity views. Same
+            governed care journey. Different work.
           </p>
         </ScrollReveal>
 

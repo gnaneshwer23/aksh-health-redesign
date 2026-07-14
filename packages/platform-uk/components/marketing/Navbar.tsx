@@ -11,11 +11,11 @@ type MegaLink = { label: string; href: string; description?: string; badge?: str
 type MegaColumn = { pill: string; links: MegaLink[]; cta?: { label: string; href: string } };
 
 const megaMenus: Record<string, MegaColumn[]> = {
-  Platform: [
+  "What it is": [
     {
       pill: "Platform",
       links: [
-        { label: "Overview", href: "/platform", description: "Agents, review, and FHIR staging" },
+        { label: "Overview", href: "/platform", description: "Care coordination, review, and FHIR staging" },
         { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR R4" },
         { label: "Security & safety", href: "/security", description: "Safety case and audit posture" },
       ],
@@ -24,9 +24,9 @@ const megaMenus: Record<string, MegaColumn[]> = {
     {
       pill: "Capabilities",
       links: [
-        { label: "Human-in-the-loop review", href: "/platform#hitl" },
+        { label: "Clinician review", href: "/platform#hitl" },
         { label: "FHIR R4 staging", href: "/how-it-works#journey" },
-        { label: "Specialist agents", href: "/platform#agents" },
+        { label: "Clinical checks", href: "/platform#agents" },
       ],
     },
     {
@@ -38,7 +38,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       ],
     },
   ],
-  Solutions: [
+  "Who for": [
     {
       pill: "Care delivery",
       links: [
@@ -67,33 +67,14 @@ const megaMenus: Record<string, MegaColumn[]> = {
       ],
     },
   ],
-  Resources: [
-    {
-      pill: "Latest",
-      links: [
-        { label: "Resources hub", href: "/resources", description: "Architecture and compliance reference" },
-        { label: "FAQ", href: "/faq", description: "Procurement and clinical questions" },
-        { label: "Contact", href: "/contact", description: "General enquiries" },
-      ],
-    },
-    {
-      pill: "Learn more",
-      links: [
-        {
-          label: "Case walkthrough",
-          href: "/walkthrough",
-          description: "Patel practice story and live demo",
-        },
-      ],
-    },
-  ],
 };
 
 const centerLinks = [
-  { label: "Platform", href: "/platform", mega: true },
+  { label: "What it is", href: "/platform", mega: true },
   { label: "How it works", href: "/how-it-works", mega: false },
-  { label: "Solutions", href: "/for-clinicians", mega: true },
-  { label: "Resources", href: "/resources", mega: true },
+  { label: "Who for", href: "/for-clinicians", mega: true },
+  { label: "Safety", href: "/security", mega: false },
+  { label: "See it", href: "/walkthrough", mega: false },
 ] as const;
 
 type NavbarProps = {
@@ -198,7 +179,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
             Sign In
           </Link>
           <Link href="/get-started" className={cn("owkin-nav__pill", focusRing)}>
-            Get in touch
+            Talk to us
           </Link>
           <Link
             href="/resources"
@@ -269,7 +250,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         >
           <div className="border-b border-black/5 px-6 py-5">
             <p className="text-sm font-semibold text-[var(--owkin-ink)]">Menu</p>
-            <p className="text-xs text-black/50">Aksh Health Healthcare OS</p>
+            <p className="text-xs text-black/50">Aksh Health</p>
           </div>
 
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
@@ -280,7 +261,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 </Link>
               </SheetClose>
             ))}
-            {megaMenus.Solutions.flatMap((col) =>
+            {megaMenus["Who for"].flatMap((col) =>
               col.links.map((link) => (
                 <SheetClose key={link.href + link.label} asChild>
                   <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
@@ -289,11 +270,6 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 </SheetClose>
               ))
             )}
-            <SheetClose asChild>
-              <Link href="/security" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                Security & safety
-              </Link>
-            </SheetClose>
             <SheetClose asChild>
               <Link href="/faq" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                 FAQ
@@ -305,8 +281,8 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/walkthrough" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                Case walkthrough
+              <Link href="/resources" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                Resources
               </Link>
             </SheetClose>
           </nav>
@@ -319,7 +295,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
             </SheetClose>
             <SheetClose asChild>
               <Link href="/get-started" className={cn("owkin-btn-ink text-center", focusRing)}>
-                Get in touch
+                Talk to us
               </Link>
             </SheetClose>
           </div>

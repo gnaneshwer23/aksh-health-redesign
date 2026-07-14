@@ -11,29 +11,29 @@ export default function ProductFeatureBand() {
           <div className="owkin-product-card aksh-product-mock">
             <div className="aksh-product-mock__header">
               <p className="owkin-product-card__eyebrow">GP dashboard · Patel practice</p>
-              <span className="aksh-product-mock__pill">Named review</span>
+              <span className="aksh-product-mock__pill">Awaiting GP</span>
             </div>
-            <p className="owkin-product-card__title">Today&apos;s clinical queue</p>
+            <p className="owkin-product-card__title">Today&apos;s review queue</p>
 
             <div className="aksh-product-mock__rows" aria-hidden>
               <div className="aksh-product-mock__row">
-                <span className="aksh-product-mock__agent aksh-product-mock__agent--voice">VOICE</span>
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--voice">CAP</span>
                 <div>
                   <p>Consult transcript · Mr J. Patel</p>
-                  <p className="aksh-product-mock__meta">Calf swelling · sugars 12–14 · SYNTHESIS path</p>
+                  <p className="aksh-product-mock__meta">Calf swelling · sugars 12–14</p>
                 </div>
                 <span className="aksh-product-mock__status">Live</span>
               </div>
               <div className="aksh-product-mock__row">
                 <span className="aksh-product-mock__agent aksh-product-mock__agent--synth">SOAP</span>
                 <div>
-                  <p>SYNTHESIS draft ready</p>
+                  <p>SOAP draft ready</p>
                   <p className="aksh-product-mock__meta">DocumentReference · awaiting GP</p>
                 </div>
                 <span className="aksh-product-mock__status aksh-product-mock__status--draft">Draft</span>
               </div>
               <div className="aksh-product-mock__row">
-                <span className="aksh-product-mock__agent aksh-product-mock__agent--oracle">ORACLE</span>
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--oracle">RISK</span>
                 <div>
                   <p>Admission risk 78 → 82</p>
                   <p className="aksh-product-mock__meta">14-day horizon · HIGH</p>
@@ -41,10 +41,10 @@ export default function ProductFeatureBand() {
                 <span className="aksh-product-mock__status aksh-product-mock__status--risk">Review</span>
               </div>
               <div className="aksh-product-mock__row">
-                <span className="aksh-product-mock__agent aksh-product-mock__agent--shield">SHIELD</span>
+                <span className="aksh-product-mock__agent aksh-product-mock__agent--shield">AUDIT</span>
                 <div>
-                  <p>AuditEvent · zero auto-writes</p>
-                  <p className="aksh-product-mock__meta">Midnight ETL · SUCCESS 6m 39s</p>
+                  <p>Audit trail · zero auto-writes</p>
+                  <p className="aksh-product-mock__meta">Overnight sync · SUCCESS</p>
                 </div>
                 <span className="aksh-product-mock__status aksh-product-mock__status--ok">Clear</span>
               </div>
@@ -52,25 +52,25 @@ export default function ProductFeatureBand() {
 
             <div className="aksh-product-mock__panels" aria-hidden>
               <div className="aksh-product-mock__mini">
-                <p className="aksh-product-mock__mini-label">ORACLE</p>
+                <p className="aksh-product-mock__mini-label">Risk</p>
                 <p className="aksh-product-mock__mini-value">82</p>
-                <p className="aksh-product-mock__mini-meta">14-day risk</p>
+                <p className="aksh-product-mock__mini-meta">14-day</p>
               </div>
               <div className="aksh-product-mock__mini">
-                <p className="aksh-product-mock__mini-label">SHIELD</p>
+                <p className="aksh-product-mock__mini-label">Audit</p>
                 <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--ok">0</p>
                 <p className="aksh-product-mock__mini-meta">Auto-writes</p>
               </div>
               <div className="aksh-product-mock__mini">
-                <p className="aksh-product-mock__mini-label">VOICE</p>
+                <p className="aksh-product-mock__mini-label">Capture</p>
                 <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--voice">Live</p>
-                <p className="aksh-product-mock__mini-meta">Consult capture</p>
+                <p className="aksh-product-mock__mini-meta">Consult</p>
               </div>
             </div>
 
             <div className="owkin-product-card__bubble">
               <p>
-                Draft SOAP + urgent DVT duplex referral, stage FHIR Condition &amp; ServiceRequest, hold for GP
+                Draft SOAP + urgent DVT duplex referral, stage for FHIR Condition &amp; ServiceRequest, hold for GP
                 approval.
               </p>
               <div className="owkin-product-card__bubble-bar" aria-hidden />

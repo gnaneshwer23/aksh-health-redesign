@@ -33,13 +33,13 @@ export default function AgentGrid() {
     <section className="py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-12 max-w-2xl md:mb-14">
-          <p className="owkin-roles__eyebrow mb-3">AI agents</p>
+          <p className="owkin-roles__eyebrow mb-3">Clinical capabilities</p>
           <h2 className="mb-4 font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-navy-dark md:text-4xl">
-            Eight specialist agents. One review queue.
+            Eight capabilities. One review queue.
           </h2>
           <p className="text-base leading-relaxed text-slate/75 md:text-lg">
-            Each agent drafts or checks work against clinical context. Nothing reaches the record without clinician
-            approval — with a full SHIELD audit trail.
+            Each capability drafts or checks work against clinical context. Nothing reaches the record without clinician
+            approval — with a full audit trail.
           </p>
         </div>
 

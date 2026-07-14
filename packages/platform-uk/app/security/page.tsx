@@ -111,10 +111,10 @@ export default function SecurityPage() {
 
       <TrustStrip />
 
-      <section className="py-16 md:py-20">
+      <section className="py-12 md:py-16">
         <div className={container}>
           <div className="mb-10 max-w-2xl">
-            <p className="owkin-roles__eyebrow">How we govern AI</p>
+            <p className="owkin-roles__eyebrow">How we govern clinical outputs</p>
             <h2 className="owkin-display text-3xl text-[var(--owkin-ink)] md:text-4xl">
               Safety controls that stay visible in the product
             </h2>
@@ -144,7 +144,7 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      <section className="border-y border-black/5 bg-white py-16 md:py-20">
+      <section className="border-y border-black/5 bg-white py-12 md:py-16">
         <div className={container}>
           <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
             <div>

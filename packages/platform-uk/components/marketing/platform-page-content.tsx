@@ -12,18 +12,18 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 
 const platformLayers = [
   {
-    title: "Intake",
+    title: "Capture",
     body: "Connect patient context from EMIS Web and SystmOne via FHIR R4 ready integration paths.",
     icon: Inbox,
   },
   {
-    title: "Review",
-    body: "Specialist agents draft notes, safety checks, risk scores, and referrals into one HITL queue.",
+    title: "Draft + checks",
+    body: "Structured notes, safety checks, risk scores, and referrals stage into one clinician review queue.",
     icon: ClipboardCheck,
   },
   {
     title: "Evidence",
-    body: "Approved outputs stage as FHIR resources with an immutable SHIELD audit trail.",
+    body: "Approved outputs stage as FHIR resources with an immutable audit trail.",
     icon: ShieldCheck,
   },
   {
@@ -35,9 +35,9 @@ const platformLayers = [
 
 const sectionNav = [
   { id: "layers", label: "Layers" },
-  { id: "agents", label: "Agents" },
+  { id: "agents", label: "Capabilities" },
   { id: "roles", label: "Roles" },
-  { id: "hitl", label: "HITL" },
+  { id: "hitl", label: "Review" },
 ] as const;
 
 const hitlActions = [
@@ -51,8 +51,8 @@ export function PlatformPageContent() {
     <>
       <MarketingPageHero
         eyebrow="Platform"
-        title="One platform, eight roles, clinician-owned AI"
-        lede="Designed for EMIS Web and SystmOne workflows. Eight specialist agents draft, check, and escalate — every output needs clinician approval before it reaches the record."
+        title="One platform, eight roles, clinician-owned care"
+        lede="Designed for EMIS Web and SystmOne workflows. Capture consults, stage drafts and clinical checks — every output needs clinician approval before it reaches the record."
         primary={{ label: "Create account", href: "/signup" }}
         secondary={{ label: "Request organisation access", href: "/get-started" }}
       >
@@ -112,12 +112,12 @@ export function PlatformPageContent() {
               <div className="border-b border-navy/[0.06] p-8 md:p-10 lg:border-b-0 lg:border-r">
                 <p className="owkin-roles__eyebrow mb-4">Clinical safety</p>
                 <h2 className="font-[family-name:var(--font-marketing-display)] text-2xl font-semibold tracking-tight text-navy-dark md:text-3xl">
-                  Human-in-the-loop. Always.
+                  Clinician approval. Always.
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-slate/75">
-                  Every AI output is staged as a Draft. The clinician clicks Accept, Edit, or Reject. Nothing writes to
-                  the FHIR record without explicit human approval. MHRA-aware positioning: decision support, not
-                  autonomous diagnosis. DCB0129 safety case in progress.
+                  Every clinical draft is staged for review. The clinician clicks Accept, Edit, or Reject. Nothing writes
+                  to the FHIR record without explicit human approval. MHRA-aware positioning: decision support, not
+                  unsupervised care. DCB0129 safety case in progress.
                 </p>
                 <p className="mt-4 text-sm text-slate/70">
                   <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">

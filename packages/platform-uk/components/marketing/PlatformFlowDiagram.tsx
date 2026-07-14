@@ -2,19 +2,17 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
-  Bot,
   ClipboardCheck,
   FileCheck2,
-  Layers,
+  Mic,
   MonitorSmartphone,
-  Network,
-  Server,
+  PencilLine,
   ShieldCheck,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type FlowLayer = "intake" | "agents" | "review" | "output";
+export type FlowLayer = "intake" | "draft" | "review" | "output";
 
 export type FlowNode = {
   id: string;
@@ -32,7 +30,7 @@ const layerStyles: Record<FlowLayer, { border: string; bg: string; icon: string;
     icon: "text-steel",
     ring: "shadow-steel/10",
   },
-  agents: {
+  draft: {
     border: "border-pastel-lavender-ink/25",
     bg: "bg-pastel-lavender/60",
     icon: "text-pastel-lavender-ink",
@@ -53,92 +51,74 @@ const layerStyles: Record<FlowLayer, { border: string; bg: string; icon: string;
 };
 
 export const FLOW_LAYER_LEGEND: Array<{ layer: FlowLayer; label: string }> = [
-  { layer: "intake", label: "Intake" },
-  { layer: "agents", label: "AI agents" },
-  { layer: "review", label: "Clinician review" },
-  { layer: "output", label: "Governed output" },
+  { layer: "intake", label: "Capture" },
+  { layer: "draft", label: "Draft + checks" },
+  { layer: "review", label: "Clinician approves" },
+  { layer: "output", label: "Governed record" },
 ];
+
+/** Calm 3-step care journey used on homepage and marketing surfaces. */
+const JOURNEY_FLOW_NODES: FlowNode[] = [
+  {
+    id: "capture",
+    label: "Capture",
+    description: "Consult notes or voice from EMIS / SystmOne context",
+    icon: Mic,
+    layer: "intake",
+  },
+  {
+    id: "draft",
+    label: "Draft + checks",
+    description: "Structured note, safety flags, referral package",
+    icon: PencilLine,
+    layer: "draft",
+  },
+  {
+    id: "approve",
+    label: "Clinician approves",
+    description: "Accept, edit, or reject before the record",
+    icon: ClipboardCheck,
+    layer: "review",
+    highlight: true,
+  },
+];
+
+const COMPACT_FLOW_NODES: FlowNode[] = JOURNEY_FLOW_NODES;
 
 const FULL_FLOW_NODES: FlowNode[] = [
   {
     id: "ehr",
     label: "EMIS / SystmOne",
-    description: "EHR intake via FHIR R4 and HL7 v2",
+    description: "Clinical context via FHIR-ready paths",
     icon: MonitorSmartphone,
     layer: "intake",
   },
   {
-    id: "data",
-    label: "Data layer",
-    description: "Normalised clinical data pipeline",
-    icon: Layers,
+    id: "capture",
+    label: "Capture",
+    description: "Consult notes or voice",
+    icon: Mic,
     layer: "intake",
   },
   {
-    id: "graph",
-    label: "Neo4j graph",
-    description: "Connected patient knowledge model",
-    icon: Network,
-    layer: "agents",
-  },
-  {
-    id: "agents",
-    label: "12 AI agents",
-    description: "Parallel specialist drafts",
-    icon: Bot,
-    layer: "agents",
+    id: "draft",
+    label: "Draft + checks",
+    description: "Notes, safety, referrals staged",
+    icon: PencilLine,
+    layer: "draft",
   },
   {
     id: "review",
-    label: "Review queue",
-    description: "Clinician Accept, Edit, or Reject",
-    icon: ClipboardCheck,
-    layer: "review",
-    highlight: true,
-  },
-  {
-    id: "fhir",
-    label: "FHIR staging",
-    description: "Draft resources before write-back",
-    icon: FileCheck2,
-    layer: "output",
-  },
-  {
-    id: "write",
-    label: "EHR write",
-    description: "Approved content to the record",
-    icon: Server,
-    layer: "output",
-  },
-];
-
-const COMPACT_FLOW_NODES: FlowNode[] = [
-  {
-    id: "systems",
-    label: "Systems",
-    description: "EMIS / SystmOne",
-    icon: MonitorSmartphone,
-    layer: "intake",
-  },
-  {
-    id: "aksh",
-    label: "Aksh",
-    description: "Data layer and agents",
-    icon: Layers,
-    layer: "agents",
-  },
-  {
-    id: "review",
-    label: "Review",
-    description: "Human approval required",
+    label: "Clinician review",
+    description: "Accept, edit, or reject",
     icon: ClipboardCheck,
     layer: "review",
     highlight: true,
   },
   {
     id: "record",
-    label: "Record",
-    description: "FHIR write on approval",
+    label: "Governed record",
+    description: "FHIR staging after approval",
     icon: FileCheck2,
     layer: "output",
   },
@@ -147,55 +127,55 @@ const COMPACT_FLOW_NODES: FlowNode[] = [
 const ARCHITECTURE_FLOW_NODES: FlowNode[] = [
   {
     id: "emis",
-    label: "EMIS Web",
+    label: "EMIS / SystmOne",
     description: "Primary care record",
     icon: MonitorSmartphone,
     layer: "intake",
   },
   {
     id: "aksh",
-    label: "Aksh platform",
-    description: "Graph, agents, governance",
+    label: "Aksh Health",
+    description: "Drafts, checks, audit",
     icon: ShieldCheck,
-    layer: "agents",
+    layer: "draft",
   },
   {
     id: "review",
-    label: "Clinician review",
-    description: "Accept, Edit, or Reject",
+    label: "Clinician approves",
+    description: "Accept, edit, or reject",
     icon: ClipboardCheck,
     layer: "review",
     highlight: true,
   },
   {
     id: "fhir",
-    label: "FHIR R4",
-    description: "Governed write-back",
+    label: "FHIR staging",
+    description: "Write-back only when approved",
     icon: FileCheck2,
     layer: "output",
   },
 ];
 
 type PlatformFlowDiagramProps = {
-  variant: "compact" | "full" | "architecture";
+  variant: "compact" | "full" | "architecture" | "journey";
   className?: string;
   showDescriptions?: boolean;
 };
 
 function getNodes(variant: PlatformFlowDiagramProps["variant"]) {
   if (variant === "architecture") return ARCHITECTURE_FLOW_NODES;
-  if (variant === "compact") return COMPACT_FLOW_NODES;
+  if (variant === "compact" || variant === "journey") return JOURNEY_FLOW_NODES;
   return FULL_FLOW_NODES;
 }
 
 function getAriaLabel(variant: PlatformFlowDiagramProps["variant"]) {
   if (variant === "architecture") {
-    return "Architecture flow: EMIS Web connects to the Aksh platform, clinicians review every output, then approved content writes back as FHIR R4.";
+    return "Architecture flow: EMIS or SystmOne connects to Aksh Health, clinicians approve every output, then approved content stages as FHIR.";
   }
-  if (variant === "compact") {
-    return "Platform flow: EHR systems connect to Aksh data layer, eight AI agents draft outputs, clinicians review in the HITL queue, then approved content writes to the FHIR record.";
+  if (variant === "compact" || variant === "journey") {
+    return "Care journey: capture the consult, draft notes and checks, then the clinician approves before anything reaches the record.";
   }
-  return "End-to-end journey: EMIS or SystmOne feeds the data layer, Neo4j knowledge graph, eight AI agents, human review queue, FHIR staging, and EHR write on clinician approval.";
+  return "End-to-end journey: EMIS or SystmOne context, capture, draft and clinical checks, clinician review, then FHIR staging on approval.";
 }
 
 function FlowNodeCircle({
@@ -215,7 +195,7 @@ function FlowNodeCircle({
       <div className="relative">
         {node.highlight ? (
           <span className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-            HITL
+            You
           </span>
         ) : null}
         <div
@@ -247,7 +227,7 @@ function FlowNodeCircle({
         <p
           className={cn(
             "mt-1 leading-snug text-steel",
-            compact ? "max-w-[7rem] text-[10px] sm:max-w-[8rem] sm:text-xs" : "max-w-[9rem] text-xs sm:max-w-[10rem]"
+            compact ? "max-w-[8rem] text-[10px] sm:max-w-[9rem] sm:text-xs" : "max-w-[10rem] text-xs sm:max-w-[11rem]"
           )}
         >
           {node.description}
@@ -277,13 +257,12 @@ function DesktopFlowConnector({ nodeCount }: { nodeCount: number }) {
         const startX = ((index + 0.5) / nodeCount) * 1000 + 56;
         const endX = ((index + 1.5) / nodeCount) * 1000 - 56;
         const midX = (startX + endX) / 2;
-        const isBeforeHitl = index === nodeCount - 3 && nodeCount === 7;
-        const isHitlConnector = index === nodeCount - 2 && nodeCount >= 4;
+        const isHitlConnector = index === nodeCount - 2;
 
         return (
           <path
             key={index}
-            d={`M ${startX} 32 Q ${midX} ${isBeforeHitl || isHitlConnector ? 8 : 32} ${endX} 32`}
+            d={`M ${startX} 32 Q ${midX} ${isHitlConnector ? 8 : 32} ${endX} 32`}
             fill="none"
             stroke={isHitlConnector ? "#00A86B" : "#003D7A"}
             strokeOpacity={isHitlConnector ? 0.45 : 0.22}
@@ -313,9 +292,7 @@ function MobileTimeline({ nodes, showDescription }: { nodes: FlowNode[]; showDes
           <div className="min-w-0 flex-1 pt-2 sm:pt-3">
             <p className="text-base font-bold text-navy">{node.label}</p>
             {showDescription ? <p className="mt-1 text-sm leading-relaxed text-steel">{node.description}</p> : null}
-            {index < nodes.length - 1 ? (
-              <span className="sr-only">Then</span>
-            ) : null}
+            {index < nodes.length - 1 ? <span className="sr-only">Then</span> : null}
           </div>
         </li>
       ))}
@@ -323,7 +300,15 @@ function MobileTimeline({ nodes, showDescription }: { nodes: FlowNode[]; showDes
   );
 }
 
-function TabletFlow({ nodes, compact, showDescription }: { nodes: FlowNode[]; compact: boolean; showDescription: boolean }) {
+function TabletFlow({
+  nodes,
+  compact,
+  showDescription,
+}: {
+  nodes: FlowNode[];
+  compact: boolean;
+  showDescription: boolean;
+}) {
   return (
     <ol className="relative z-10 hidden list-none flex-wrap items-start justify-center gap-x-2 gap-y-6 p-0 sm:flex lg:hidden">
       {nodes.map((node, index) => (
@@ -371,14 +356,13 @@ function FlowLayerLegend({ layers }: { layers: FlowLayer[] }) {
 export function PlatformFlowDiagram({ variant, className, showDescriptions = true }: PlatformFlowDiagramProps) {
   const nodes = getNodes(variant);
   const ariaLabel = getAriaLabel(variant);
-  const isCompact = variant === "compact" || variant === "architecture";
+  const isCompact = variant === "compact" || variant === "architecture" || variant === "journey";
   const layersPresent = Array.from(new Set(nodes.map((node) => node.layer)));
 
   return (
     <figure className={cn("relative", className)} aria-label={ariaLabel}>
       <figcaption className="sr-only">{ariaLabel}</figcaption>
 
-      {/* Desktop horizontal */}
       <div className="relative hidden lg:block">
         <DesktopFlowConnector nodeCount={nodes.length} />
         <ol
@@ -404,4 +388,4 @@ export function PlatformFlowDiagram({ variant, className, showDescriptions = tru
   );
 }
 
-export { FULL_FLOW_NODES, COMPACT_FLOW_NODES, ARCHITECTURE_FLOW_NODES };
+export { FULL_FLOW_NODES, COMPACT_FLOW_NODES, ARCHITECTURE_FLOW_NODES, JOURNEY_FLOW_NODES };

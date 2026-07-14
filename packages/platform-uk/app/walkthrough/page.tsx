@@ -10,29 +10,24 @@ import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 export const metadata: Metadata = {
   title: `Case walkthrough | ${SEO_DEFAULTS.title}`,
   description:
-    "Frame the Patel practice demo: midnight ETL, voice consult, HITL review queue, ORACLE risk, SHIELD audit, and FHIR staging.",
+    "Frame the Patel practice demo: consult capture, draft and clinical checks, clinician approval, and FHIR staging for EMIS Web and SystmOne.",
 };
 
 const beats = [
   {
     step: "01",
-    title: "Midnight ETL lands clean",
-    body: "Synthetic practice data refreshes overnight. SHIELD shows the run status before morning clinic — no mystery loads.",
+    title: "Capture the consult",
+    body: "A GP consult with Mr J. Patel is captured — notes or voice — with practice context ready for morning clinic.",
   },
   {
     step: "02",
-    title: "Voice consult → governed draft",
-    body: "A GP consult with Mr J. Patel is captured. VOICE and SYNTHESIS produce a SOAP draft and referral suggestions for review.",
+    title: "Draft + clinical checks",
+    body: "A SOAP draft, safety flags, and referral suggestions stage for review. Risk signals surface with a clear 14-day horizon.",
   },
   {
     step: "03",
-    title: "HITL queue, not auto-write",
-    body: "The clinician Accepts, Edits, or Rejects. ORACLE surfaces 14-day admission risk. Nothing reaches the record without a named decision.",
-  },
-  {
-    step: "04",
-    title: "Audit and FHIR staging",
-    body: "SHIELD records the trail. Approved outputs stage as FHIR R4 drafts designed for EMIS Web and SystmOne paths.",
+    title: "Clinician approves",
+    body: "Accept, edit, or reject. Nothing reaches the record without a named decision. Approved outputs stage as FHIR R4 for EMIS Web and SystmOne paths.",
   },
 ] as const;
 
@@ -42,16 +37,16 @@ export default function WalkthroughPage() {
       <MarketingPageHero
         eyebrow="Case walkthrough"
         title="Walk the Patel practice end to end."
-        lede="A synthetic GP story that shows how voice, agents, human review, risk, and audit fit together — then open the live demo when you are ready."
+        lede="A synthetic GP story that shows capture, drafts and checks, clinician approval, and audit — then open the live demo when you are ready."
         primary={{ label: "Open live demo", href: "/demo/patel" }}
-        secondary={{ label: "Request organisation access", href: "/get-started" }}
+        secondary={{ label: "Talk to us", href: "/get-started" }}
       />
 
-      <section className="py-16 md:py-20">
+      <section className="py-12 md:py-16">
         <div className={container}>
-          <div className="mb-10 max-w-2xl">
+          <div className="mb-8 max-w-2xl">
             <p className="owkin-roles__eyebrow">What you will see</p>
-            <h2 className="owkin-display text-3xl text-[var(--owkin-ink)] md:text-4xl">Four beats, one clinical story</h2>
+            <h2 className="owkin-display text-3xl text-[var(--owkin-ink)] md:text-4xl">Three beats, one clinical story</h2>
             <p className="mt-4 text-base leading-relaxed text-[var(--owkin-muted)]">
               This page frames the demo. It does not replace role dashboards or authenticated workflows — it orients
               buyers and clinicians before they click into{" "}
@@ -62,7 +57,7 @@ export default function WalkthroughPage() {
             </p>
           </div>
 
-          <ol className="grid gap-5 md:grid-cols-2">
+          <ol className="grid gap-5 md:grid-cols-3">
             {beats.map((beat) => (
               <li
                 key={beat.step}
@@ -75,32 +70,16 @@ export default function WalkthroughPage() {
             ))}
           </ol>
 
-          <div className="mt-12 rounded-2xl border border-black/8 bg-[var(--owkin-cream)] p-6 md:p-8">
+          <div className="mt-10 rounded-2xl border border-black/8 bg-[var(--owkin-cream)] p-6 md:p-8">
             <h3 className="text-lg font-semibold text-[var(--owkin-ink)]">Before you start</h3>
             <ul className="mt-4 space-y-2 text-sm leading-relaxed text-steel">
-              <li>The demo uses synthetic data — no live patient records.</li>
-              <li>
-                Clinical safety posture is explained on{" "}
-                <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                  Security &amp; safety
-                </Link>
-                .
-              </li>
-              <li>
-                For FAQ-style answers, see{" "}
-                <Link href="/faq" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                  FAQ
-                </Link>
-                .
-              </li>
+              <li>Live demo routes use synthetic Patel practice data.</li>
+              <li>Some steps require sign-in; public clinician surfaces stay open without an account.</li>
+              <li>Production write-back to EMIS or SystmOne stays gated until organisation governance sign-off.</li>
             </ul>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link href="/demo/patel" className="owkin-btn-ink text-center sm:min-w-[12rem]">
+            <div className="mt-6">
+              <Link href="/demo/patel" className="owkin-btn-ink">
                 Launch Patel demo
-              </Link>
-              <Link href="/how-it-works" className="owkin-text-cta justify-center sm:justify-start">
-                Prefer the product journey diagram
-                <span aria-hidden>→</span>
               </Link>
             </div>
           </div>
@@ -108,10 +87,10 @@ export default function WalkthroughPage() {
       </section>
 
       <MarketingCtaBand
-        title="Want a guided walkthrough with your team?"
-        lede="Request organisation access and we will run the Patel case against your evaluation questions."
-        primary={{ label: "Get in touch", href: "/get-started" }}
-        secondary={{ label: "Open live demo", href: "/demo/patel" }}
+        title="Want this for your organisation?"
+        lede="Request organisation access, or create an account and complete personalised onboarding."
+        primary={{ label: "Talk to us", href: "/get-started" }}
+        secondary={{ label: "Create account", href: "/signup" }}
       />
     </MarketingShell>
   );

@@ -43,7 +43,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
     label: "GP",
-    description: "General Practitioner. AI-assisted clinical documentation",
+    description: "General Practitioner. Clinical documentation and review",
     icon: "stethoscope",
     color: "#003D7A",
     steps: [
