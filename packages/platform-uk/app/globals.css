@@ -7850,16 +7850,21 @@ input:focus, textarea:focus {
   z-index: 0;
   width: calc(100% - clamp(2.7rem, 6.4vw, 4rem));
   height: calc(100% - clamp(2.7rem, 6.4vw, 4rem));
-  color: color-mix(in srgb, var(--mk-accent) 48%, transparent);
+  color: color-mix(in srgb, var(--mk-accent) 62%, transparent);
   pointer-events: none;
+  overflow: visible;
 }
 
 .aksh-interop-diagram__wires path {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.5;
+  stroke-width: 1.55;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.aksh-interop-diagram__arrowhead {
+  fill: color-mix(in srgb, var(--mk-accent) 88%, var(--mk-ink));
 }
 
 .aksh-interop-diagram__flow path {
@@ -7874,12 +7879,140 @@ input:focus, textarea:focus {
 }
 
 .aksh-interop-diagram__junction {
-  fill: color-mix(in srgb, var(--mk-accent) 72%, #fff);
+  fill: color-mix(in srgb, var(--mk-accent) 78%, #fff);
+  stroke: color-mix(in srgb, var(--mk-accent) 35%, transparent);
+  stroke-width: 1;
 }
 
 @keyframes aksh-interop-flow {
   to {
     stroke-dashoffset: -40;
+  }
+}
+
+/* Homepage trust marquee — cream / ink / clinical green ticker */
+.aksh-trust-marquee {
+  border-top: 1px solid color-mix(in srgb, var(--mk-ink) 8%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--mk-surface) 88%, #fff),
+      color-mix(in srgb, var(--mk-surface) 96%, var(--mk-accent))
+    );
+  color: var(--mk-ink);
+}
+
+.aksh-trust-marquee__viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+}
+
+.aksh-trust-marquee__rail {
+  display: flex;
+  width: max-content;
+  animation: aksh-trust-marquee-scroll 42s linear infinite;
+}
+
+.aksh-trust-marquee:hover .aksh-trust-marquee__rail {
+  animation-play-state: paused;
+}
+
+.aksh-trust-marquee__track {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-block: 0.85rem;
+}
+
+.aksh-trust-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-inline: 0.85rem 1.35rem;
+  white-space: nowrap;
+}
+
+.aksh-trust-marquee__dot {
+  display: inline-block;
+  height: 0.28rem;
+  width: 0.28rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mk-accent) 72%, transparent);
+}
+
+.aksh-trust-marquee__text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.045em;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--mk-ink) 78%, var(--mk-accent));
+}
+
+@keyframes aksh-trust-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aksh-interop-diagram__flow path {
+    animation: none;
+    opacity: 0.22;
+  }
+
+  .aksh-trust-marquee__viewport {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .aksh-trust-marquee__rail {
+    display: block;
+    width: 100%;
+    animation: none;
+    transform: none;
+  }
+
+  .aksh-trust-marquee__track {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.15rem 0;
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-block: 0.75rem;
+    padding-inline: 1rem;
+  }
+
+  .aksh-trust-marquee__track + .aksh-trust-marquee__track {
+    display: none;
+  }
+
+  .aksh-trust-marquee__item {
+    padding-inline: 0.55rem 0.85rem;
+    padding-block: 0.2rem;
+  }
+
+  .aksh-trust-marquee__text {
+    white-space: normal;
+    text-align: center;
   }
 }
 
@@ -7959,24 +8092,6 @@ input:focus, textarea:focus {
 .aksh-interop-node--hub .aksh-interop-node__glyph {
   height: 1.05rem;
   width: 1.05rem;
-}
-
-.aksh-interop-node__badge {
-  position: absolute;
-  top: -0.5rem;
-  right: -0.4rem;
-  z-index: 2;
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  border: 1.5px solid #fff;
-  background: var(--mk-accent);
-  color: #fff;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-  box-shadow: 0 8px 18px -10px rgba(7, 95, 80, 0.55);
 }
 
 .aksh-interop-node__label {
@@ -8337,13 +8452,6 @@ input:focus, textarea:focus {
   .aksh-interop-node--hub .aksh-interop-node__glyph {
     height: 0.9rem;
     width: 0.9rem;
-  }
-
-  .aksh-interop-node__badge {
-    top: -0.4rem;
-    right: -0.3rem;
-    padding: 0.16rem 0.42rem;
-    font-size: 0.52rem;
   }
 
   .aksh-interop-node__label {

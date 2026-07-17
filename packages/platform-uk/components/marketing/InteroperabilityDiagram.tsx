@@ -17,7 +17,6 @@ type InteropNodeProps = {
   sub?: string;
   icon: LucideIcon;
   variant?: "default" | "hub" | "review";
-  badge?: string;
   className?: string;
 };
 
@@ -26,7 +25,6 @@ function InteropNode({
   sub,
   icon: Icon,
   variant = "default",
-  badge,
   className,
 }: InteropNodeProps) {
   return (
@@ -38,11 +36,6 @@ function InteropNode({
         className
       )}
     >
-      {badge ? (
-        <span className="aksh-interop-node__badge" aria-hidden>
-          {badge}
-        </span>
-      ) : null}
       <span className="aksh-interop-node__icon" aria-hidden>
         <Icon className="aksh-interop-node__glyph" strokeWidth={1.75} />
       </span>
@@ -75,22 +68,25 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
         <defs>
           <marker
             id="aksh-interop-arrow"
-            viewBox="0 0 8 8"
-            markerWidth="5.5"
-            markerHeight="5.5"
-            refX="6.5"
-            refY="4"
+            viewBox="0 0 12 12"
+            markerWidth="8"
+            markerHeight="8"
+            refX="10"
+            refY="6"
             orient="auto"
             markerUnits="userSpaceOnUse"
           >
-            <path d="M1 1.2 L6.8 4 L1 6.8 Z" fill="currentColor" />
+            <path
+              className="aksh-interop-diagram__arrowhead"
+              d="M1.8 1.6 L10.2 6 L1.8 10.4 Z"
+            />
           </marker>
         </defs>
 
         {/* Structural orthogonal paths — column centers 60 / 180 / 300 */}
         <g className="aksh-interop-diagram__wires">
           {/* EHRs → hub */}
-          <path d="M 60 71 L 60 107 L 180 107 L 180 114" />
+          <path d="M 60 71 L 60 107 L 180 107 L 180 118" markerEnd="url(#aksh-interop-arrow)" />
           <path d="M 300 71 L 300 107 L 180 107" />
           {/* Hub → clinician review */}
           <path d="M 180 186 L 180 222" markerEnd="url(#aksh-interop-arrow)" />
@@ -101,7 +97,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
 
         {/* Restrained flow cue — soft dashed overlay */}
         <g className="aksh-interop-diagram__flow">
-          <path d="M 60 71 L 60 107 L 180 107 L 180 114" />
+          <path d="M 60 71 L 60 107 L 180 107 L 180 118" />
           <path d="M 300 71 L 300 107 L 180 107" />
           <path d="M 180 186 L 180 222" />
           <path d="M 180 293 L 180 329 L 60 329 L 60 340" />
@@ -137,7 +133,6 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           sub="Accept · edit · reject"
           icon={ClipboardCheck}
           variant="review"
-          badge="You"
           className="aksh-interop-diagram__review"
         />
         <InteropNode

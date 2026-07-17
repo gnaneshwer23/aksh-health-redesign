@@ -127,9 +127,11 @@ test.describe("Marketing smoke", () => {
 
     const trustStrip = page.getByLabel("Product trust and pilot readiness");
     await expect(trustStrip).toBeVisible();
-    await expect(trustStrip.getByText("Built for NHS primary care")).toBeVisible();
-    await expect(trustStrip.getByText("FHIR R4-ready architecture")).toBeVisible();
-    await expect(trustStrip.getByText("Clinician-reviewed outputs")).toBeVisible();
+    await expect(trustStrip.getByText("Built for NHS primary care").first()).toBeVisible();
+    await expect(trustStrip.getByText("FHIR R4-ready architecture").first()).toBeVisible();
+    await expect(trustStrip.getByText("Clinician-reviewed outputs").first()).toBeVisible();
+    await expect(trustStrip.getByText("EMIS Web & SystmOne ready").first()).toBeVisible();
+    await expect(trustStrip.getByText("Pilot access open").first()).toBeVisible();
   });
 
   test("custom 404 page renders branded message", async ({ page }) => {
@@ -269,7 +271,8 @@ test.describe("Marketing smoke", () => {
     await expect(visual).toBeVisible();
     await expect(visual.getByText("Aksh Health")).toBeVisible();
     await expect(visual.getByText("EMIS Web")).toBeVisible();
-    await expect(visual.getByText("You")).toBeVisible();
+    await expect(visual.getByText("Clinician review")).toBeVisible();
+    await expect(visual.getByText("You")).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.getByText("clinician gate")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { InteroperabilityDiagram } from "@/components/marketing/InteroperabilityDiagram";
-import TrustStrip from "@/components/marketing/TrustStrip";
+import TrustMarquee from "@/components/marketing/TrustMarquee";
 import { container } from "@/components/marketing/marketing-ui";
 
 export default function HeroSection() {
@@ -37,7 +37,7 @@ export default function HeroSection() {
       </div>
 
       <div className="relative z-10 mt-auto">
-        <TrustStrip variant="hero" />
+        <TrustMarquee />
       </div>
     </section>
   );
