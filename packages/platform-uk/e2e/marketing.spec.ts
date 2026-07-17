@@ -265,13 +265,22 @@ test.describe("Marketing smoke", () => {
     await page.goto("/");
 
     const hero = page.locator("section.owkin-hero");
-    const product = hero.locator(".owkin-hero__product");
-    await expect(product).toBeVisible();
-    await expect(product.getByText("Clinical queue")).toBeVisible();
+    const visual = hero.locator(".owkin-hero__visual");
+    await expect(visual).toBeVisible();
+    await expect(visual.getByText("Aksh Health")).toBeVisible();
+    await expect(visual.getByText("EMIS Web")).toBeVisible();
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.getByText("clinician gate")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
+
+    const headline = hero.getByRole("heading", { name: /Clinical work, properly coordinated/i });
+    const diagram = hero.locator(".aksh-interop-diagram");
+    const headlineBox = await headline.boundingBox();
+    const diagramBox = await diagram.boundingBox();
+    expect(headlineBox).not.toBeNull();
+    expect(diagramBox).not.toBeNull();
+    expect(diagramBox!.y).toBeGreaterThanOrEqual(headlineBox!.y - 4);
   });
 
   test("homepage agent and FHIR scenes use quiet product mocks", async ({ page }) => {
