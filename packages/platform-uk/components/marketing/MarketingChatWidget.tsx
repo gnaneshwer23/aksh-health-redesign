@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const SUGGESTIONS = [
   "What is human-in-the-loop?",
   "Does this replace EMIS or SystmOne?",
-  "Is Aksh Health MHRA-certified?",
+  "How are clinical outputs reviewed?",
   "How do I see a demo?",
 ] as const;
 

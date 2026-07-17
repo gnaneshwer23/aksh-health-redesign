@@ -85,7 +85,7 @@ export default function Footer() {
             </Link>
           </p>
           <p className="mt-4 text-sm text-white/45">
-            © 2026 Aksh Health Ltd · Registered in England & Wales · NHS DCB0129 Safety Case In Progress
+            © 2026 Aksh Health Ltd · Registered in England & Wales · Pilot-stage platform · Clinician review required
           </p>
         </div>
       </div>

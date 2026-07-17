@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
 
 const trustBadges = [
-  "NHS-ready",
-  "FHIR R4",
-  "GDPR Art. 9",
-  "MHRA-aware",
-  "Human-in-the-loop",
+  "Built for NHS primary care",
+  "FHIR R4-ready architecture",
+  "Clinician-reviewed outputs",
+  "Pilot access open",
 ] as const;
 
 type TrustStripProps = {
@@ -23,7 +22,7 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
           ? "border-t border-black/[0.06] bg-white/35 backdrop-blur-md"
           : "border-y border-navy/10 bg-white shadow-sm"
       )}
-      aria-label="Compliance and safety credentials"
+      aria-label="Product trust and pilot readiness"
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-1 gap-y-2 sm:gap-x-0">
         {trustBadges.map((badge, index) => (

@@ -116,8 +116,8 @@ export function PlatformPageContent() {
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-slate/75">
                   Every clinical draft is staged for review. The clinician clicks Accept, Edit, or Reject. Nothing writes
-                  to the FHIR record without explicit human approval. MHRA-aware positioning: decision support, not
-                  unsupervised care. DCB0129 safety case in progress.
+                  to the FHIR record without explicit human approval. Aksh Health supports clinical judgement; it does
+                  not make autonomous diagnoses or treatment decisions.
                 </p>
                 <p className="mt-4 text-sm text-slate/70">
                   <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">

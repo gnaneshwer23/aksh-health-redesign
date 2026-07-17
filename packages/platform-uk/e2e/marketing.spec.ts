@@ -12,8 +12,8 @@ test.describe("Marketing smoke", () => {
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
     expect(brandColor).toBe("rgb(20, 20, 20)");
 
-    await expect(page.getByRole("heading", { name: /Clinical workflows, one platform/i })).toBeVisible();
-    await expect(page.getByText("Aksh Health", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Clinical work, properly coordinated/i })).toBeVisible();
+    await expect(page.getByText("Care coordination for NHS primary care", { exact: true })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "What it is" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "How it works" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "Who for" })).toBeVisible();
@@ -125,11 +125,11 @@ test.describe("Marketing smoke", () => {
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
     await page.goto("/");
 
-    const trustStrip = page.getByLabel("Compliance and safety credentials");
+    const trustStrip = page.getByLabel("Product trust and pilot readiness");
     await expect(trustStrip).toBeVisible();
-    await expect(trustStrip.getByText("NHS-ready")).toBeVisible();
-    await expect(trustStrip.getByText("FHIR R4")).toBeVisible();
-    await expect(trustStrip.getByText("Human-in-the-loop")).toBeVisible();
+    await expect(trustStrip.getByText("Built for NHS primary care")).toBeVisible();
+    await expect(trustStrip.getByText("FHIR R4-ready architecture")).toBeVisible();
+    await expect(trustStrip.getByText("Clinician-reviewed outputs")).toBeVisible();
   });
 
   test("custom 404 page renders branded message", async ({ page }) => {
@@ -174,7 +174,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Capture, draft, approve/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to talk/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Talk to us" }).first()).toBeVisible();
-    await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+    await expect(page.getByLabel("Product trust and pilot readiness").first()).toBeVisible();
     await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
 
     await page.goto("/for-practices");
@@ -222,7 +222,7 @@ test.describe("Marketing smoke", () => {
   test("homepage surfaces platform story and outcome stats after the hero", async ({ page }) => {
     await page.goto("/");
 
-    const hero = page.getByRole("heading", { name: /Clinical workflows, one platform/i });
+    const hero = page.getByRole("heading", { name: /Clinical work, properly coordinated/i });
     const story = page.getByRole("heading", { name: /Clinical work is profoundly fragmented/i });
     await expect(hero).toBeVisible();
     await expect(story).toBeVisible();
@@ -322,7 +322,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
     await expect(page.locator("section#roles")).toBeVisible();
-    await expect(page.getByLabel("Compliance and safety credentials").first()).toBeVisible();
+    await expect(page.getByLabel("Product trust and pilot readiness").first()).toBeVisible();
   });
 
   test("faq and contact pages render production content", async ({ page }) => {
@@ -477,7 +477,7 @@ test.describe("Marketing smoke", () => {
     await page.goto("/pricing");
 
     await expect(
-      page.getByRole("heading", { name: /Pricing scales with your organisation, not per patient record/i })
+      page.getByRole("heading", { name: /Pricing scales with your organisation, not each patient record/i })
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Practice", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Organisation", exact: true })).toBeVisible();
