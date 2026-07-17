@@ -525,7 +525,7 @@ test.describe("Marketing smoke", () => {
 
     const dialog = page.getByRole("dialog", { name: /Ask Aksh Health/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText(/Product questions/i)).toBeVisible();
+    await expect(dialog.getByText(/^Product questions — grounded in our public docs\./i)).toBeVisible();
     await expect(dialog.getByPlaceholder(/Ask about Aksh Health|Chat unavailable/i)).toBeVisible();
   });
 
