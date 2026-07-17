@@ -15,9 +15,9 @@ import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionH
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
 import {
   container,
-  heroPrimaryCta,
-  heroSecondaryCta,
+  frame,
 } from "@/components/marketing/marketing-ui";
+import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import TrustStrip from "@/components/marketing/TrustStrip";
@@ -194,7 +194,7 @@ function ResourceDetailCard({ section }: { section: (typeof resourceSections)[nu
   return (
     <article
       id={section.id}
-      className="scroll-mt-28 rounded-2xl border border-border-subtle bg-white p-6 shadow-sm md:p-8"
+      className={`${frame} scroll-mt-28`}
     >
       <p className="marketing-section-label mb-3">{section.label}</p>
       <h3 className="text-xl font-bold text-navy md:text-2xl">{section.title}</h3>
@@ -223,36 +223,13 @@ function ResourceDetailCard({ section }: { section: (typeof resourceSections)[nu
 export default function ResourcesPage() {
   return (
     <MarketingShell editorial>
-      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
-        <div
-          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-16 h-[22rem] w-[22rem] opacity-[0.08]"
-          aria-hidden
-        />
-
-        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
-          <p className="marketing-section-label mb-4">Resources</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
-            Architecture, compliance, and integration documentation
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
-            Technical reference for NHS procurement, clinical safety review, and integration planning. FHIR R4 staging,
-            human-in-the-loop review, and compliance design pathways for primary and secondary care.
-          </p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link href="/signup" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
-              Create account
-            </Link>
-            <Link href="/get-started" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingPageHero
+        eyebrow="Resources"
+        title="Architecture, compliance, and integration documentation"
+        lede="Technical reference for NHS procurement, clinical safety review, and integration planning. FHIR R4 staging, human-in-the-loop review, and compliance design pathways for primary and secondary care."
+        primary={{ label: "Create account", href: "/signup" }}
+        secondary={{ label: "Request organisation access", href: "/get-started" }}
+      />
 
       <div className="border-t border-border-subtle bg-white">
         <TrustStrip />
@@ -324,7 +301,7 @@ export default function ResourcesPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             <Link
               href="/api/system/database-contract"
-              className="group flex items-start gap-4 rounded-2xl border border-border-subtle bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-emerald/30 hover:shadow-card"
+              className={`${frame} group flex items-start gap-4 transition-all hover:-translate-y-0.5 hover:border-emerald/30`}
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pastel-lavender">
                 <BookOpen className="h-5 w-5 text-pastel-lavender-ink" aria-hidden />
@@ -336,7 +313,7 @@ export default function ResourcesPage() {
             </Link>
             <Link
               href="/api/system/integration-contract"
-              className="group flex items-start gap-4 rounded-2xl border border-border-subtle bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-emerald/30 hover:shadow-card"
+              className={`${frame} group flex items-start gap-4 transition-all hover:-translate-y-0.5 hover:border-emerald/30`}
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pastel-peach">
                 <FileCode2 className="h-5 w-5 text-pastel-peach-ink" aria-hidden />

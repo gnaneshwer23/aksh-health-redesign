@@ -17,32 +17,32 @@ export function AuthCardLayout({
   className?: string;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-10">
+    <div className="marketing-site marketing-site--editorial flex min-h-screen items-center justify-center bg-[var(--mk-surface)] px-4 py-10 sm:px-6">
       <div
         className={cn(
-          "w-full max-w-md rounded-2xl border border-border-subtle bg-card p-8 shadow-card",
+          "w-full max-w-md rounded-3xl border border-[var(--mk-line)] bg-white p-6 shadow-[var(--mk-shadow-frame)] sm:p-8",
           className
         )}
       >
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--mk-accent)] text-sm font-bold text-white">
             A
           </div>
           <div className="leading-tight">
-            <p className="text-base font-bold text-primary">Aksh Health</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald">Healthcare OS</p>
+            <p className="text-base font-bold text-[var(--mk-ink)]">Aksh Health</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--mk-accent)]">Healthcare OS</p>
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold tracking-tight text-slate">{title}</h1>
-        {subtitle ? <p className="mt-2 text-sm text-muted">{subtitle}</p> : null}
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--mk-ink)]">{title}</h1>
+        {subtitle ? <p className="mt-2 text-sm text-[var(--mk-muted)]">{subtitle}</p> : null}
 
         <div className="mt-6">{children}</div>
 
-        {footer ? <div className="mt-6 border-t border-border-subtle pt-6">{footer}</div> : null}
+        {footer ? <div className="mt-6 border-t border-[var(--mk-line)] pt-6">{footer}</div> : null}
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm font-medium text-steel transition-colors hover:text-primary">
+          <Link href="/" className="text-sm font-medium text-[var(--mk-muted)] transition-colors hover:text-[var(--mk-accent)]">
             ← Back to home
           </Link>
         </div>

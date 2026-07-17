@@ -7,10 +7,10 @@ export const PASTEL_VARIANTS = ["blue", "mint", "lavender", "peach"] as const;
 export type PastelVariant = (typeof PASTEL_VARIANTS)[number];
 
 const variantStyles: Record<PastelVariant, { bg: string; ink: string }> = {
-  blue: { bg: "bg-pastel-blue", ink: "text-pastel-blue-ink" },
-  mint: { bg: "bg-pastel-mint", ink: "text-pastel-mint-ink" },
-  lavender: { bg: "bg-pastel-lavender", ink: "text-pastel-lavender-ink" },
-  peach: { bg: "bg-pastel-peach", ink: "text-pastel-peach-ink" },
+  blue: { bg: "bg-white/70", ink: "text-emerald" },
+  mint: { bg: "bg-white/70", ink: "text-emerald" },
+  lavender: { bg: "bg-white/70", ink: "text-emerald" },
+  peach: { bg: "bg-white/70", ink: "text-emerald" },
 };
 
 export function pastelVariantAt(index: number): PastelVariant {
@@ -47,7 +47,7 @@ export function PastelCapabilityCard({
   const card = (
     <div
       className={cn(
-        "marketing-pastel-card h-full rounded-2xl border border-white/60",
+        "marketing-pastel-card h-full rounded-2xl border border-border-subtle",
         styles.bg,
         compact ? "p-5" : "p-8",
         href && "transition-transform group-hover:-translate-y-0.5",
@@ -55,7 +55,7 @@ export function PastelCapabilityCard({
       )}
     >
       <div className={cn("flex items-center justify-between", compact ? "mb-4" : "mb-5")}>
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/70">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald/[0.08]">
           <Icon className={cn("h-5 w-5", styles.ink)} aria-hidden />
         </div>
         {stepNumber ? <span className="text-sm font-bold text-navy/40">{stepNumber}</span> : null}
@@ -94,7 +94,7 @@ export function PastelStatChip({ variant, value, label, detail, className }: Pas
   return (
     <div
       className={cn(
-        "marketing-pastel-card rounded-2xl border border-white/60 px-5 py-4 text-center sm:text-left",
+        "marketing-pastel-card rounded-2xl border border-border-subtle px-5 py-4 text-center sm:text-left",
         styles.bg,
         className
       )}

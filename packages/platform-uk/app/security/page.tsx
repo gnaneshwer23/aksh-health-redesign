@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FileText, ShieldAlert } from "lucide-react";
 
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import { container } from "@/components/marketing/marketing-ui";
+import { container, frame } from "@/components/marketing/marketing-ui";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
@@ -170,7 +170,7 @@ export default function SecurityPage() {
                 .
               </p>
             </div>
-            <div className="rounded-2xl border border-black/8 bg-[var(--owkin-cream)] p-6 md:p-8">
+            <div className={frame}>
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pastel-peach">
                   <ShieldAlert className="h-5 w-5 text-pastel-peach-ink" aria-hidden />

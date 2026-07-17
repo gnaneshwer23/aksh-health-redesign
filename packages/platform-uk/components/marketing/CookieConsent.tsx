@@ -54,7 +54,7 @@ export function CookieConsent() {
       aria-describedby="cookie-consent-description"
     >
       <div className="pointer-events-auto mx-auto w-full max-w-[400px] sm:ml-auto sm:mr-6">
-        <div className="overflow-hidden rounded-xl border border-navy/20 bg-white shadow-[0_8px_32px_rgba(15,23,42,0.12)]">
+        <div className="overflow-hidden rounded-3xl border border-[var(--mk-line)] bg-white shadow-[var(--mk-shadow-frame)]">
           {showPreferences ? (
             <div className="p-5" role="region" aria-label="Cookie preferences" id="cookie-preferences-panel">
               <p className="text-sm font-semibold text-navy">Cookie settings</p>

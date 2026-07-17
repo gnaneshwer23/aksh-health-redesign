@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import { container } from "@/components/marketing/marketing-ui";
+import { container, frame } from "@/components/marketing/marketing-ui";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
@@ -61,7 +61,7 @@ export default function WalkthroughPage() {
             {beats.map((beat) => (
               <li
                 key={beat.step}
-                className="rounded-2xl border border-black/8 bg-white p-6 shadow-[0_20px_40px_-28px_rgba(20,20,20,0.35)]"
+                className={frame}
               >
                 <p className="text-xs font-bold tracking-[0.14em] text-[var(--owkin-royal)]">{beat.step}</p>
                 <h3 className="mt-3 text-xl font-semibold text-[var(--owkin-ink)]">{beat.title}</h3>
@@ -70,7 +70,7 @@ export default function WalkthroughPage() {
             ))}
           </ol>
 
-          <div className="mt-10 rounded-2xl border border-black/8 bg-[var(--owkin-cream)] p-6 md:p-8">
+          <div className={`${frame} mt-10`}>
             <h3 className="text-lg font-semibold text-[var(--owkin-ink)]">Before you start</h3>
             <ul className="mt-4 space-y-2 text-sm leading-relaxed text-steel">
               <li>Live demo routes use synthetic Patel practice data.</li>

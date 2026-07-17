@@ -5,7 +5,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import { btnPrimary, btnSecondary, container } from "@/components/marketing/marketing-ui";
+import { btnPrimary, btnSecondary, container, frame } from "@/components/marketing/marketing-ui";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import TrustStrip from "@/components/marketing/TrustStrip";
@@ -104,8 +104,9 @@ export default function PricingPage() {
                 <div
                   key={tier.name}
                   className={cn(
-                    "flex flex-col rounded-2xl border bg-white p-8 shadow-sm transition-all",
-                    tier.highlighted ? "border-emerald/40 shadow-lg shadow-emerald/10 lg:-translate-y-2" : "border-border-subtle"
+                    frame,
+                    "flex flex-col transition-all",
+                    tier.highlighted ? "border-emerald/40" : "border-border-subtle"
                   )}
                 >
                   {tier.highlighted ? (

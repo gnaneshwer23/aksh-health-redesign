@@ -88,8 +88,8 @@ export function MarketingChatPanel({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden border border-black/10 bg-[var(--owkin-cream)] shadow-[0_16px_48px_rgba(20,20,20,0.14)]",
-        compact ? "rounded-2xl" : "rounded-none md:rounded-2xl",
+        "flex flex-col overflow-hidden border border-[var(--mk-line)] bg-[var(--mk-surface)] shadow-[var(--mk-shadow-frame)]",
+        compact ? "rounded-3xl" : "rounded-none md:rounded-3xl",
         className
       )}
     >
@@ -308,7 +308,7 @@ export function MarketingChatWidget() {
 
       <button
         type="button"
-        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[var(--owkin-ink)] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(20,20,20,0.22)] transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--owkin-accent)] focus-visible:ring-offset-2"
+        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-[var(--mk-ink)] px-4 py-3 text-sm font-semibold text-white shadow-[var(--mk-shadow-float)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
         aria-expanded={open}
         aria-label={open ? "Close Ask Aksh Health chat" : "Open Ask Aksh Health chat"}
         onClick={() => setOpen((value) => !value)}

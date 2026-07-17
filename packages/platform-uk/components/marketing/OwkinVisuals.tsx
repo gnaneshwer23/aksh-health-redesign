@@ -35,22 +35,22 @@ export function HeroProductVisual({ className = "" }: { className?: string }) {
           </div>
           <ul className="aksh-mock-queue">
             <li className="aksh-mock-queue__row">
-              <span className="aksh-mock-queue__dot" style={{ background: "#00a86b" }} />
+              <span className="aksh-mock-queue__dot" />
               <span className="aksh-mock-queue__agent">VOICE</span>
               <span className="aksh-mock-queue__detail">Consult · Mr J. Patel</span>
             </li>
             <li className="aksh-mock-queue__row">
-              <span className="aksh-mock-queue__dot" style={{ background: "#1f4bff" }} />
+              <span className="aksh-mock-queue__dot" />
               <span className="aksh-mock-queue__agent">SOAP</span>
               <span className="aksh-mock-queue__detail">Draft awaiting GP</span>
             </li>
             <li className="aksh-mock-queue__row">
-              <span className="aksh-mock-queue__dot" style={{ background: "#d97706" }} />
+              <span className="aksh-mock-queue__dot" />
               <span className="aksh-mock-queue__agent">ORACLE</span>
               <span className="aksh-mock-queue__detail">14-day risk · 82</span>
             </li>
             <li className="aksh-mock-queue__row">
-              <span className="aksh-mock-queue__dot" style={{ background: "#64748b" }} />
+              <span className="aksh-mock-queue__dot" />
               <span className="aksh-mock-queue__agent">SHIELD</span>
               <span className="aksh-mock-queue__detail">Audit trail on</span>
             </li>
@@ -127,7 +127,7 @@ function FragmentedSystemsVisual() {
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--amber" />
       <div className="aksh-mock-frame">
         <div className="aksh-mock-frame__chrome">
-          <span className="aksh-mock-frame__dot" style={{ background: "#d97706" }} />
+          <span className="aksh-mock-frame__dot" />
           <span className="aksh-mock-frame__title">Scattered systems</span>
         </div>
         <div className="aksh-mock-scatter">
@@ -156,7 +156,7 @@ function VoiceConsultVisual() {
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--rose" />
       <div className="aksh-mock-frame">
         <div className="aksh-mock-frame__chrome">
-          <span className="aksh-mock-frame__dot" style={{ background: "#00a86b" }} />
+          <span className="aksh-mock-frame__dot" />
           <span className="aksh-mock-frame__title">Voice consult</span>
           <span className="aksh-mock-frame__badge">Live</span>
         </div>
@@ -170,12 +170,12 @@ function VoiceConsultVisual() {
         </div>
         <ul className="aksh-mock-queue aksh-mock-queue--compact">
           <li className="aksh-mock-queue__row">
-            <span className="aksh-mock-queue__dot" style={{ background: "#1f4bff" }} />
+            <span className="aksh-mock-queue__dot" />
             <span className="aksh-mock-queue__agent">SYNTHESIS</span>
             <span className="aksh-mock-queue__detail">SOAP draft ready</span>
           </li>
           <li className="aksh-mock-queue__row">
-            <span className="aksh-mock-queue__dot" style={{ background: "#d97706" }} />
+            <span className="aksh-mock-queue__dot" />
             <span className="aksh-mock-queue__agent">ORACLE</span>
             <span className="aksh-mock-queue__detail">Risk flagged</span>
           </li>
@@ -212,7 +212,7 @@ function OracleRiskCard() {
   return (
     <div className="aksh-mock-frame aksh-mock-oracle">
       <div className="aksh-mock-frame__chrome">
-        <span className="aksh-mock-frame__dot" style={{ background: "#d97706" }} />
+        <span className="aksh-mock-frame__dot" />
         <span className="aksh-mock-frame__title">ORACLE risk</span>
         <span className="aksh-mock-frame__badge aksh-mock-frame__badge--warn">High</span>
       </div>
@@ -235,7 +235,7 @@ function ShieldAuditCard({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`aksh-mock-frame aksh-mock-shield${compact ? " aksh-mock-shield--compact" : ""}`}>
       <div className="aksh-mock-frame__chrome">
-        <span className="aksh-mock-frame__dot" style={{ background: "#64748b" }} />
+        <span className="aksh-mock-frame__dot" />
         <span className="aksh-mock-frame__title">SHIELD audit</span>
         <span className="aksh-mock-frame__badge">Clear</span>
       </div>
@@ -344,20 +344,20 @@ export function NewsCardMotif({ tone }: { tone: "navy" | "mint" | "ink" }) {
   if (tone === "mint") {
     return (
       <svg className="aksh-news-motif" viewBox="0 0 120 64" fill="none" aria-hidden>
-        <circle cx="30" cy="32" r="18" fill="rgba(0,168,107,0.2)" />
-        <circle cx="54" cy="32" r="18" fill="rgba(31,75,255,0.15)" />
-        <circle cx="78" cy="32" r="18" fill="rgba(217,119,6,0.15)" />
-        <path d="M20 48c12-8 28-8 40 0" stroke="#00a86b" strokeWidth="1.5" opacity="0.5" />
+        <circle cx="30" cy="32" r="18" fill="rgba(7,95,80,0.2)" />
+        <circle cx="54" cy="32" r="18" fill="rgba(7,95,80,0.12)" />
+        <circle cx="78" cy="32" r="18" fill="rgba(16,33,29,0.09)" />
+        <path d="M20 48c12-8 28-8 40 0" stroke="var(--mk-accent)" strokeWidth="1.5" opacity="0.5" />
       </svg>
     );
   }
   return (
     <svg className="aksh-news-motif" viewBox="0 0 120 64" fill="none" aria-hidden>
-      <rect x="12" y="10" width="96" height="44" rx="8" fill="#f3efe8" />
-      <rect x="24" y="22" width="28" height="4" rx="1" fill="#1f4bff" opacity="0.7" />
+      <rect x="12" y="10" width="96" height="44" rx="8" fill="var(--mk-surface)" />
+      <rect x="24" y="22" width="28" height="4" rx="1" fill="var(--mk-accent)" opacity="0.7" />
       <rect x="24" y="32" width="48" height="4" rx="1" fill="rgba(20,20,20,0.2)" />
       <rect x="24" y="42" width="36" height="4" rx="1" fill="rgba(20,20,20,0.12)" />
-      <circle cx="92" cy="32" r="10" stroke="#1038d6" strokeWidth="1.5" fill="none" />
+      <circle cx="92" cy="32" r="10" stroke="var(--mk-accent)" strokeWidth="1.5" fill="none" />
     </svg>
   );
 }

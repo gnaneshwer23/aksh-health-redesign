@@ -51,7 +51,7 @@ export default function AgentGrid() {
                 key={agent.id}
                 className="rounded-2xl border border-navy/[0.08] bg-white/70 p-5"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebe4d8]">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald/[0.08]">
                   <Icon className="h-4 w-4 text-navy-dark" aria-hidden />
                 </div>
                 <p className="mb-1 text-xs font-bold uppercase tracking-wider text-navy/55">{agent.function}</p>

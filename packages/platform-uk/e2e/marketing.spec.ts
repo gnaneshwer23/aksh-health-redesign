@@ -246,7 +246,7 @@ test.describe("Marketing smoke", () => {
     await expect(band.getByRole("heading", { name: /Ready for your organisation/i })).toBeVisible();
 
     const bg = await band.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(bg).toBe("rgb(20, 20, 20)");
+    expect(bg).toBe("rgb(16, 33, 29)");
 
     const titleColor = await band
       .getByRole("heading", { name: /Ready for your organisation/i })
@@ -258,7 +258,7 @@ test.describe("Marketing smoke", () => {
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(255, 255, 255)");
-    expect(primaryColor).toBe("rgb(20, 20, 20)");
+    expect(primaryColor).toBe("rgb(16, 33, 29)");
   });
 
   test("homepage hero does not render readable labels behind the headline", async ({ page }) => {

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { btnPrimary, btnSecondary, frame } from "@/components/marketing/marketing-ui";
+import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import {
@@ -121,33 +123,12 @@ export default function GetStartedPageClient() {
 
   return (
     <MarketingShell editorial>
-      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
-        <div
-          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[20rem] w-[20rem] opacity-[0.12]"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-12 h-[18rem] w-[18rem] opacity-[0.08]"
-          aria-hidden
-        />
-
-        <div className="relative mx-auto max-w-3xl px-6 py-16 md:py-20 lg:px-8">
-          <p className="marketing-section-label mb-4">Organisation access</p>
-          <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-navy md:text-4xl">
-            Request access for your NHS organisation
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-steel">
-            For practice managers, ICS leads, hospital procurement, and IT teams. Tell us about your organisation and
-            we will arrange a conversation with your clinical and technical leads.
-          </p>
-          <p className="mt-4 text-sm text-steel">
-            Individual clinician?{" "}
-            <Link href="/signup" className="font-semibold text-emerald hover:underline">
-              Create your account instead
-            </Link>
-          </p>
-        </div>
-      </section>
+      <MarketingPageHero
+        eyebrow="Organisation access"
+        title="Request access for your NHS organisation"
+        lede="For practice managers, ICS leads, hospital procurement, and IT teams. Tell us about your organisation and we will arrange a conversation with your clinical and technical leads."
+        secondary={{ label: "Create your account instead", href: "/signup" }}
+      />
 
       <div className="border-t border-border-subtle bg-white">
         <TrustStrip />
@@ -179,7 +160,7 @@ export default function GetStartedPageClient() {
             ))}
           </div>
 
-          <div className="rounded-2xl border border-border-subtle bg-white p-8 shadow-sm">
+          <div className={frame}>
             {step === 0 && (
               <div className="space-y-5">
                 <h2 className="mb-2 text-xl font-bold text-navy">Organisation details</h2>
@@ -316,7 +297,7 @@ export default function GetStartedPageClient() {
                 type="button"
                 onClick={() => setStep((current) => current - 1)}
                 disabled={submitting}
-                className={`rounded-lg border border-border px-5 py-2.5 font-medium text-slate transition-colors hover:bg-surface ${
+                className={`${btnSecondary} px-5 ${
                   step === 0 ? "invisible" : ""
                 }`}
               >
@@ -326,7 +307,7 @@ export default function GetStartedPageClient() {
                 <button
                   type="button"
                   onClick={() => setStep((current) => current + 1)}
-                  className="rounded-lg bg-navy px-8 py-2.5 font-bold text-white transition-colors hover:bg-navy/90"
+                  className={`${btnPrimary} px-8`}
                 >
                   Continue
                 </button>
@@ -335,7 +316,7 @@ export default function GetStartedPageClient() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="rounded-lg bg-emerald px-8 py-2.5 font-bold text-white transition-colors hover:bg-emerald/90 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={`${btnPrimary} px-8 disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   {submitting ? "Submitting…" : "Submit enquiry"}
                 </button>
