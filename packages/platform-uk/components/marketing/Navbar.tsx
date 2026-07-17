@@ -175,6 +175,9 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <Link href="/chat" className={cn("owkin-nav__ghost-link", focusRing)}>
+            Ask
+          </Link>
           <Link href="/signin" className={cn("owkin-nav__ghost-link", focusRing)}>
             Sign In
           </Link>
@@ -273,6 +276,11 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
             <SheetClose asChild>
               <Link href="/faq" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                 FAQ
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/chat" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
+                Ask
               </Link>
             </SheetClose>
             <SheetClose asChild>

@@ -34,6 +34,7 @@ const publicRoutePrefixes = [
   "/integrations",
   "/walkthrough",
   "/faq",
+  "/chat",
   "/pricing",
   "/about",
   "/contact",

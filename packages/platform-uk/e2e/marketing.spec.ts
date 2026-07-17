@@ -114,6 +114,7 @@ test.describe("Marketing smoke", () => {
       "/for-patients"
     );
     await expect(mobileNav.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
+    await expect(mobileNav.getByRole("link", { name: "Ask", exact: true })).toHaveAttribute("href", "/chat");
     await expect(mobileNav.getByRole("link", { name: "Safety", exact: true })).toHaveAttribute("href", "/security");
     await expect(mobileNav.getByRole("link", { name: "See it", exact: true })).toHaveAttribute("href", "/walkthrough");
     await expect(mobileNav.getByRole("link", { name: "Contact", exact: true })).toHaveAttribute("href", "/contact");
@@ -447,6 +448,7 @@ test.describe("Marketing smoke", () => {
     await expect(footer.getByRole("link", { name: "Security & safety" })).toHaveAttribute("href", "/security");
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
+    await expect(footer.getByRole("link", { name: "Ask Aksh Health" })).toHaveAttribute("href", "/chat");
     await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
   });
 
@@ -505,6 +507,34 @@ test.describe("Marketing smoke", () => {
     await expect(banner.getByRole("button", { name: "Settings" })).toBeVisible();
     await expect(banner.getByRole("button", { name: "Reject all" })).toBeVisible();
     await expect(banner.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cookies");
+  });
+
+  test("marketing chat widget opens from homepage", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("aksh_cookie_consent", "essential");
+    });
+    await page.goto("/");
+
+    const openChat = page.getByRole("button", { name: /Open Ask Aksh Health chat/i });
+    await expect(openChat).toBeVisible();
+    const statusPromise = page.waitForResponse(
+      (response) => response.url().includes("/api/chat") && response.request().method() === "GET"
+    );
+    await openChat.click();
+    await statusPromise;
+
+    const dialog = page.getByRole("dialog", { name: /Ask Aksh Health/i });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText(/Product questions/i)).toBeVisible();
+    await expect(dialog.getByPlaceholder(/Ask about Aksh Health|Chat unavailable/i)).toBeVisible();
+  });
+
+  test("dedicated chat page loads", async ({ page }) => {
+    await page.goto("/chat");
+    await expect(
+      page.getByRole("heading", { name: /Questions about Aksh Health, answered from our public docs/i })
+    ).toBeVisible();
+    await expect(page.getByPlaceholder(/Ask about Aksh Health|Chat unavailable/i)).toBeVisible();
   });
 
   test("footer exposes cookie policy link", async ({ page }) => {

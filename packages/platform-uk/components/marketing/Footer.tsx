@@ -10,6 +10,7 @@ const footerColumns = [
       { label: "How it works", href: "/how-it-works" },
       { label: "Resources", href: "/resources" },
       { label: "FAQ", href: "/faq" },
+      { label: "Ask Aksh Health", href: "/chat" },
       { label: "How we price", href: "/pricing" },
       { label: "Case walkthrough", href: "/walkthrough" },
     ],

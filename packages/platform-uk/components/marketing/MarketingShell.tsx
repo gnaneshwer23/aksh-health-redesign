@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 import Footer from "@/components/marketing/Footer";
+import { MarketingChatWidget } from "@/components/marketing/MarketingChatWidget";
 import Navbar from "@/components/marketing/Navbar";
 import { SkipToMain } from "@/components/marketing/SkipToMain";
 
@@ -15,6 +16,8 @@ type MarketingShellProps = {
   overDarkHero?: boolean;
   /** Transparent navbar with dark ink over a light editorial hero */
   overLightHero?: boolean;
+  /** Floating Ask widget (hidden on dedicated /chat page) */
+  showChatWidget?: boolean;
 };
 
 export function MarketingShell({
@@ -23,6 +26,7 @@ export function MarketingShell({
   editorial = false,
   overDarkHero = false,
   overLightHero = false,
+  showChatWidget = true,
 }: MarketingShellProps) {
   const overHero = overDarkHero || overLightHero;
   const useEditorial = editorial || overLightHero;
@@ -41,6 +45,7 @@ export function MarketingShell({
         {children}
       </main>
       <Footer />
+      {showChatWidget ? <MarketingChatWidget /> : null}
     </div>
   );
 }
