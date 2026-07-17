@@ -155,11 +155,7 @@ export function HowItWorksPageContent() {
             description="A calm pipeline: capture the consult, stage drafts and checks, then clinician approval. No unsupervised write-back."
           />
 
-          <div className="relative overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br from-pastel-blue/40 via-white to-pastel-mint/30 p-6 md:p-10 lg:p-12">
-            <div className="relative">
-              <PlatformFlowDiagram variant="full" />
-            </div>
-          </div>
+          <PlatformFlowDiagram variant="full" />
         </div>
       </section>
 
@@ -298,9 +294,7 @@ export function HowItWorksPageContent() {
             description="How clinical systems connect to Aksh Health, pass clinician review, and stage as FHIR R4."
           />
 
-          <div className="marketing-pastel-card rounded-2xl border border-white/60 bg-gradient-to-br from-navy-light/30 via-white to-pastel-lavender/20 p-6 md:p-10">
-            <PlatformFlowDiagram variant="architecture" />
-          </div>
+          <PlatformFlowDiagram variant="architecture" />
         </div>
       </section>
     </>

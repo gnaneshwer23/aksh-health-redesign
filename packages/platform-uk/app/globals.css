@@ -7943,6 +7943,56 @@ input:focus, textarea:focus {
   color: rgba(255, 255, 255, 0.68) !important;
 }
 
+.marketing-frame,
+.aksh-flow {
+  border: 1px solid var(--mk-line) !important;
+  border-radius: var(--mk-radius-lg) !important;
+  background: var(--mk-raised) !important;
+  box-shadow: var(--mk-shadow-frame) !important;
+}
+
+.marketing-frame {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.btn-marketing-secondary,
+.btn-marketing-inverse,
+.btn-marketing-ghost {
+  min-height: 48px;
+  border-radius: var(--mk-radius-sm);
+  font-weight: 650;
+}
+
+.btn-marketing-secondary {
+  border-color: var(--mk-line);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--mk-ink) !important;
+}
+
+.btn-marketing-secondary:hover {
+  border-color: var(--mk-accent);
+  color: var(--mk-accent) !important;
+}
+
+.owkin-cta-band .owkin-cta-band__btn {
+  border-color: #fff;
+  background: #fff;
+  color: var(--mk-ink) !important;
+}
+
+.owkin-cta-band .owkin-cta-band__btn:hover {
+  transform: translateY(-1px);
+  background: #f2f3ef;
+}
+
+.marketing-site :is(input, select, textarea) {
+  min-height: 48px;
+  border-color: var(--mk-line) !important;
+  border-radius: var(--mk-radius-sm) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: var(--mk-ink) !important;
+}
+
 @media (max-width: 767px) {
   .marketing-site {
     --mk-section: 4rem;

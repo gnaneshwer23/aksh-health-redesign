@@ -18,9 +18,7 @@ export default function PlatformFlowSection() {
           </p>
         </div>
 
-        <div className="rounded-[1.75rem] border border-navy/[0.08] bg-white/80 px-4 py-6 shadow-[0_24px_60px_-40px_rgba(0,26,61,0.35)] sm:px-8 md:px-10 md:py-8">
-          <PlatformFlowDiagram variant="journey" />
-        </div>
+        <PlatformFlowDiagram variant="journey" />
 
         <div className="mt-6 text-center">
           <Link

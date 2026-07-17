@@ -28,6 +28,9 @@ export const section = "marketing-section";
 /** Tighter rhythm for bands that don't need the full section height (e.g. CTA strips). */
 export const sectionTight = "marketing-section-tight";
 
+/** Raised clinical frame shared by diagrams, forms, pricing, and information panels. */
+export const frame = "marketing-frame";
+
 /** Hero primary CTA: emerald pill, large size. */
 export const heroPrimaryCta = cn(btnPrimary, btnLg);
 /** Hero secondary CTA: outline pill, large size. */
