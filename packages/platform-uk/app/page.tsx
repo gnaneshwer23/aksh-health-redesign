@@ -14,15 +14,15 @@ import { container, sectionTight } from "@/components/marketing/marketing-ui";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 const ScrollStorySection = dynamic(() => import("@/components/marketing/ScrollStorySection"), {
-  loading: () => <div className="min-h-[40rem]" aria-hidden />,
+  loading: () => <div className="min-h-[28rem]" aria-hidden />,
 });
 
 const PlatformFlowSection = dynamic(() => import("@/components/marketing/PlatformFlowSection"), {
-  loading: () => <div className="min-h-[20rem]" aria-hidden />,
+  loading: () => <div className="min-h-[16rem]" aria-hidden />,
 });
 
 const RolesGridSection = dynamic(() => import("@/components/marketing/RolesGridSection"), {
-  loading: () => <div className="min-h-[20rem]" aria-hidden />,
+  loading: () => <div className="min-h-[16rem]" aria-hidden />,
 });
 
 export const metadata: Metadata = {

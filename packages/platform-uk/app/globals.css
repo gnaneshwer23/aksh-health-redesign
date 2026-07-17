@@ -7489,8 +7489,19 @@ input:focus, textarea:focus {
   padding-block: var(--mk-section-tight) !important;
 }
 
-.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band) {
+.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band):not(.owkin-story) {
   padding-block: var(--mk-section) !important;
+}
+
+/* Story is a scene wrapper — scenes own vertical rhythm (avoid double section pad). */
+.marketing-site--editorial main > section.owkin-story {
+  padding-block: 0 !important;
+}
+
+/* Honour tight tokens when a section opts in (blanket rule would otherwise force full). */
+.marketing-site--editorial main > section.marketing-section-tight:not(.owkin-cta-band),
+.marketing-site--editorial main > section.marketing-stats-editorial {
+  padding-block: var(--mk-section-tight) !important;
 }
 
 .marketing-site :is(.bg-surface-muted, .bg-white) {
@@ -7938,20 +7949,25 @@ input:focus, textarea:focus {
 }
 
 /* Rhythm and type across homepage and inner marketing pages. */
-.owkin-vision,
+.owkin-vision {
+  padding-block: var(--mk-section-tight) !important;
+}
+
 .owkin-product-band,
 .owkin-whats-new,
 .owkin-roles {
-  padding-block: var(--mk-section) !important;
+  padding-block: var(--mk-section-tight) !important;
 }
 
 .owkin-story__scene {
-  padding-block: var(--mk-section) !important;
+  padding-block: var(--mk-section-tight) !important;
   border-top: 1px solid var(--mk-line);
 }
 
 .owkin-story__scene:first-child {
   border-top: 0;
+  /* Connect vision → first scene; avoid deserted half-viewport air. */
+  padding-top: clamp(1.75rem, 3.5vw, 2.75rem) !important;
 }
 
 .owkin-story__grid {
@@ -8093,6 +8109,7 @@ input:focus, textarea:focus {
 .owkin-newsletter {
   border-color: var(--mk-line);
   background: var(--mk-surface);
+  padding-block: clamp(2rem, 4vw, 3rem) !important;
 }
 
 .marketing-stats-editorial__detail {
