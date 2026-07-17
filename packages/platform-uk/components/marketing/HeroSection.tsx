@@ -9,25 +9,21 @@ export default function HeroSection() {
     <section className="marketing-homepage-hero owkin-hero relative flex min-h-[min(100svh,52rem)] flex-col overflow-hidden">
       <div className={`relative z-10 flex flex-1 flex-col justify-center ${container} pb-4 pt-24 md:pt-28`}>
         <div className="owkin-hero__copy mx-auto max-w-4xl text-center">
-          <p className="owkin-hero__brand">Aksh Health</p>
+          <p className="owkin-hero__brand">Care coordination for NHS primary care</p>
           <h1 className="owkin-hero__title">
-            Clinical workflows,
-            <span className="block">one platform.</span>
+            Clinical work,
+            <span className="block">properly coordinated.</span>
           </h1>
           <p className="owkin-hero__lede">
-            Care coordination for EMIS Web and SystmOne. Draft notes, clinical checks, and audit trails —
-            clinicians approve before anything reaches the record.
+            Bring consult capture, draft notes, clinical checks, and audit trails into one governed workflow for EMIS
+            Web and SystmOne — with a clinician deciding what reaches the record.
           </p>
           <div className="owkin-hero__actions">
-            <Link href="/signup" className="owkin-btn-ink">
-              Create account
+            <Link href="/get-started" className="owkin-btn-ink">
+              Discuss a pilot
             </Link>
             <Link href="/walkthrough" className="owkin-text-cta">
               See it in action
-              <span aria-hidden>→</span>
-            </Link>
-            <Link href="/get-started" className="owkin-text-cta">
-              Talk to us
               <span aria-hidden>→</span>
             </Link>
           </div>

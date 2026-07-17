@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { container, heroPrimaryCta, heroSecondaryCta } from "@/components/marketing/marketing-ui";
+import { container, heroPrimaryCta, linkUnderline } from "@/components/marketing/marketing-ui";
 
 type Cta = { label: string; href: string };
 
@@ -40,8 +40,11 @@ export function MarketingPageHero({
                 </Link>
               ) : null}
               {secondary ? (
-                <Link href={secondary.href} className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
+                <Link href={secondary.href} className={linkUnderline}>
                   {secondary.label}
+                  <span aria-hidden className="ml-2">
+                    →
+                  </span>
                 </Link>
               ) : null}
             </div>

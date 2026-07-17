@@ -2,11 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&family=Syne:wght@400;500;600;700;800&display=swap');
-
 :root {
-  --font-marketing-display: 'Syne', 'Outfit', system-ui, sans-serif;
-  --font-marketing-body: 'Instrument Sans', Inter, system-ui, sans-serif;
+  --font-marketing-display: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  --font-marketing-body: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -55,13 +53,13 @@ body {
   background: var(--bg-gradient);
   background-attachment: fixed;
   color: var(--ink);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-aksh-body), -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, strong {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-aksh-display), system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -7432,4 +7430,570 @@ input:focus, textarea:focus {
 /* Fix accidental invalid rule from generation */
 .owkin-nav__mark {
   height: 1.85rem;
+}
+
+/* ===== Aksh marketing craft system — single source of truth ===== */
+.marketing-site {
+  --mk-surface: #f8f6f1;
+  --mk-raised: #ffffff;
+  --mk-ink: #10211d;
+  --mk-muted: #52635e;
+  --mk-accent: #075f50;
+  --mk-line: rgba(16, 33, 29, 0.12);
+  --mk-section: clamp(4.5rem, 8vw, 7rem);
+  --mk-section-tight: clamp(3.5rem, 6vw, 5rem);
+  --mk-radius-sm: 0.75rem;
+  --mk-radius-md: 1rem;
+  --mk-radius-lg: 1.5rem;
+  --mk-shadow-frame: 0 1px 2px rgba(16, 33, 29, 0.04), 0 24px 64px -36px rgba(16, 33, 29, 0.32);
+  --mk-shadow-float: 0 18px 50px -30px rgba(16, 33, 29, 0.3);
+  --mk-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  background: var(--mk-surface) !important;
+  color: var(--mk-ink);
+  font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.marketing-site--editorial {
+  background: var(--mk-surface) !important;
+  color: var(--mk-ink);
+  font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
+}
+
+.marketing-site :is(h1, h2, h3, .owkin-display) {
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  color: var(--mk-ink);
+}
+
+.marketing-site :is(h1, h2) {
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.marketing-site p {
+  text-wrap: pretty;
+}
+
+.marketing-container {
+  width: min(100% - 2.5rem, 76rem);
+  margin-inline: auto;
+}
+
+.marketing-section {
+  padding-block: var(--mk-section) !important;
+}
+
+.marketing-section-tight {
+  padding-block: var(--mk-section-tight) !important;
+}
+
+.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band) {
+  padding-block: var(--mk-section) !important;
+}
+
+.marketing-site :is(.bg-surface-muted, .bg-white) {
+  background: transparent !important;
+}
+
+.marketing-site :is(.border-navy\/\[0\.06\], .border-black\/5, .border-border-subtle) {
+  border-color: var(--mk-line) !important;
+}
+
+.marketing-site :is(
+  .text-navy,
+  .text-navy-dark,
+  .text-slate,
+  .text-steel,
+  .text-\[var\(--owkin-ink\)\]
+) {
+  color: var(--mk-ink) !important;
+}
+
+.marketing-site :is(.text-\[var\(--owkin-muted\)\], .text-slate\/75, .text-slate\/70) {
+  color: var(--mk-muted) !important;
+}
+
+.marketing-site :is(.text-navy\/40, .text-navy\/55, .text-slate\/65) {
+  color: var(--mk-muted) !important;
+}
+
+.marketing-site .text-danger {
+  color: #8f2424 !important;
+}
+
+.marketing-site :is(a, button, summary, input, textarea, select):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--mk-accent) 34%, transparent) !important;
+  outline-offset: 3px;
+  box-shadow: none !important;
+}
+
+.owkin-display {
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-weight: 650;
+  line-height: 1.08;
+}
+
+.owkin-btn-ink,
+.btn-marketing-primary,
+.btn-marketing-ink,
+.owkin-cta-band__btn {
+  min-height: 48px;
+  padding: 0.75rem 1.35rem;
+  border: 1px solid var(--mk-ink);
+  border-radius: var(--mk-radius-sm);
+  background: var(--mk-ink);
+  color: #fff !important;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 1px rgba(16, 33, 29, 0.12);
+  transition:
+    transform 160ms var(--mk-ease),
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.owkin-btn-ink:hover,
+.btn-marketing-primary:hover,
+.btn-marketing-ink:hover {
+  transform: translateY(-1px);
+  border-color: var(--mk-accent);
+  background: var(--mk-accent);
+}
+
+.owkin-btn-ink:active,
+.btn-marketing-primary:active,
+.btn-marketing-ink:active,
+.owkin-cta-band__btn:active {
+  transform: scale(0.98);
+}
+
+.owkin-text-cta,
+.marketing-link-underline {
+  min-height: 48px;
+  color: var(--mk-ink) !important;
+  font-weight: 600;
+  text-decoration-color: color-mix(in srgb, var(--mk-ink) 28%, transparent);
+  text-underline-offset: 0.3em;
+}
+
+.owkin-text-cta:hover,
+.marketing-link-underline:hover {
+  color: var(--mk-accent) !important;
+  text-decoration-color: var(--mk-accent);
+}
+
+/* Hero: one focal statement, one calm product frame. */
+.owkin-hero,
+.marketing-homepage-hero.owkin-hero {
+  min-height: auto !important;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(8, 127, 103, 0.075), transparent 34rem),
+    var(--mk-surface) !important;
+}
+
+.owkin-hero__copy {
+  max-width: 52rem !important;
+}
+
+.owkin-hero__brand {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mk-accent);
+}
+
+.owkin-hero__title {
+  margin-bottom: 1.5rem;
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-size: clamp(3rem, 7.4vw, 6.4rem);
+  font-weight: 650;
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  color: var(--mk-ink);
+}
+
+.owkin-hero__lede {
+  max-width: 42rem;
+  margin-bottom: 1.75rem;
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--mk-muted);
+}
+
+.owkin-hero__actions {
+  gap: 0.75rem 1.25rem;
+}
+
+.owkin-hero__product {
+  max-width: 58rem;
+  margin-top: 3.25rem;
+}
+
+.owkin-hero__scroll {
+  display: none;
+}
+
+/* All product diagrams share one frame, stroke, radius, type, and accent. */
+.aksh-mock-frame,
+.aksh-mock-panel,
+.owkin-product-card,
+.owkin-story__visual-frame,
+.aksh-flow {
+  border-color: var(--mk-line) !important;
+  border-radius: var(--mk-radius-lg) !important;
+  background: var(--mk-raised) !important;
+  box-shadow: var(--mk-shadow-frame) !important;
+}
+
+.owkin-story__visual-frame {
+  min-height: 21rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow: hidden;
+}
+
+.aksh-visual__scene-glow,
+.aksh-atmosphere-wash__blob,
+.aksh-atmosphere-wash__mesh {
+  display: none;
+}
+
+.aksh-mock-frame__chrome,
+.aksh-product-mock__header {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.aksh-mock-frame__dot,
+.aksh-mock-queue__dot,
+.owkin-float-chip__dot {
+  background: var(--mk-accent) !important;
+}
+
+.aksh-mock-frame__title,
+.owkin-product-card__eyebrow,
+.aksh-mock-panel__eyebrow,
+.aksh-product-mock__mini-label {
+  color: var(--mk-muted);
+  font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.aksh-mock-frame__badge,
+.aksh-product-mock__pill {
+  border-radius: 999px;
+  background: rgba(8, 127, 103, 0.1);
+  color: var(--mk-accent);
+}
+
+.aksh-mock-queue__detail,
+.aksh-mock-oracle__delta,
+.aksh-mock-oracle__factors li,
+.aksh-mock-shield__events li,
+.aksh-product-mock__meta,
+.aksh-product-mock__mini-meta,
+.aksh-mock-panel__meta {
+  color: var(--mk-muted) !important;
+}
+
+.aksh-mock-queue__row,
+.aksh-mock-scatter__card,
+.aksh-mock-voice,
+.aksh-mock-oracle__factors li,
+.aksh-mock-shield__events li,
+.aksh-product-mock__mini,
+.aksh-product-mock__row,
+.owkin-product-card__bubble {
+  border: 1px solid rgba(16, 33, 29, 0.07);
+  border-radius: var(--mk-radius-sm);
+  background: #f5f5f1;
+}
+
+.aksh-mock-frame__actions span {
+  border-radius: 0.55rem;
+  background: #eef0ec;
+  color: var(--mk-ink);
+}
+
+.aksh-mock-frame__actions span:first-child {
+  background: var(--mk-accent);
+  color: #fff;
+}
+
+.aksh-mock-voice__wave span,
+.aksh-product-mock__agent {
+  background: var(--mk-accent) !important;
+}
+
+.aksh-product-mock__status,
+.aksh-product-mock__mini-value,
+.aksh-mock-oracle__value,
+.aksh-mock-frame__badge--warn {
+  color: var(--mk-accent) !important;
+}
+
+.aksh-mock-oracle__value {
+  background: rgba(8, 127, 103, 0.09);
+}
+
+.owkin-product-card__bubble-bar {
+  height: 2px;
+  background: var(--mk-accent);
+}
+
+.aksh-flow {
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.aksh-flow [class*="rounded-full"][class*="border-2"] {
+  border-width: 1px;
+  border-color: var(--mk-line) !important;
+  border-radius: var(--mk-radius-md);
+  background: #f5f5f1 !important;
+  color: var(--mk-accent) !important;
+  box-shadow: none !important;
+}
+
+.aksh-flow svg path {
+  stroke: var(--mk-accent);
+}
+
+.aksh-flow [class*="bg-gradient-to-b"] {
+  background: var(--mk-line) !important;
+}
+
+.aksh-flow p {
+  color: var(--mk-ink) !important;
+}
+
+.aksh-flow p + p,
+.aksh-flow li > div > p:last-child {
+  color: var(--mk-muted) !important;
+}
+
+/* Rhythm and type across homepage and inner marketing pages. */
+.owkin-vision,
+.owkin-product-band,
+.owkin-whats-new,
+.owkin-roles {
+  padding-block: var(--mk-section) !important;
+}
+
+.owkin-story__scene {
+  padding-block: var(--mk-section) !important;
+  border-top: 1px solid var(--mk-line);
+}
+
+.owkin-story__scene:first-child {
+  border-top: 0;
+}
+
+.owkin-story__grid {
+  gap: clamp(2rem, 5vw, 4.5rem);
+}
+
+.owkin-story__headline h2,
+.owkin-product-band__copy h2,
+.owkin-whats-new__title,
+.owkin-roles__title,
+.owkin-page-hero__title {
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  color: var(--mk-ink);
+}
+
+.owkin-story__copy p,
+.owkin-product-band__copy > p,
+.owkin-roles__lede,
+.owkin-page-hero__lede {
+  max-width: 68ch;
+  line-height: 1.55;
+  color: var(--mk-muted);
+}
+
+.owkin-page-hero {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  border-color: var(--mk-line);
+  background:
+    linear-gradient(90deg, rgba(8, 127, 103, 0.07) 1px, transparent 1px) 0 0 / 4rem 4rem,
+    var(--mk-surface);
+}
+
+.owkin-page-hero__title {
+  max-width: 15ch;
+  font-size: clamp(2.7rem, 5.4vw, 4.8rem);
+}
+
+.owkin-page-hero__lede {
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+}
+
+.owkin-roles__eyebrow,
+.marketing-section-label,
+.owkin-product-band__logo {
+  color: var(--mk-accent) !important;
+}
+
+/* Flatten the old pastel/card patchwork into a clinical editorial surface. */
+.marketing-pastel-card,
+.marketing-capability-card,
+.owkin-contact__card,
+.owkin-news-card,
+.owkin-roles__row,
+.owkin-roles__panel,
+.owkin-roles__reach-link {
+  border: 1px solid var(--mk-line) !important;
+  border-radius: var(--mk-radius-md) !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+  color: var(--mk-ink) !important;
+  box-shadow: none !important;
+}
+
+.marketing-pastel-card:hover,
+.marketing-capability-card:hover,
+.owkin-contact__card:hover,
+.owkin-news-card:hover,
+.owkin-roles__row:hover,
+.owkin-roles__panel:hover,
+.owkin-roles__reach-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(8, 127, 103, 0.34) !important;
+  box-shadow: var(--mk-shadow-float) !important;
+}
+
+.marketing-site .marketing-pastel-card [class*="bg-pastel-"],
+.marketing-site .marketing-capability-card [class*="bg-pastel-"] {
+  background: rgba(8, 127, 103, 0.09) !important;
+}
+
+.marketing-site .marketing-pastel-card [class*="text-pastel-"],
+.marketing-site .marketing-capability-card [class*="text-pastel-"] {
+  color: var(--mk-accent) !important;
+}
+
+.owkin-news-card--navy,
+.owkin-news-card--mint,
+.owkin-news-card--ink {
+  background: rgba(255, 255, 255, 0.68) !important;
+  color: var(--mk-ink) !important;
+}
+
+.owkin-news-card__tag,
+.owkin-news-card--navy .owkin-news-card__tag {
+  background: rgba(8, 127, 103, 0.1);
+  color: var(--mk-accent);
+}
+
+.owkin-roles__dashboard,
+.owkin-mega__pill {
+  background: #e7ece8;
+  color: var(--mk-ink);
+}
+
+.owkin-nav--solid {
+  border-color: var(--mk-line);
+  background: rgba(248, 246, 241, 0.9);
+}
+
+.owkin-nav__pill,
+.owkin-nav__search,
+.owkin-nav__mobile-toggle {
+  border-color: var(--mk-line);
+  border-radius: var(--mk-radius-sm);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.owkin-mega {
+  border-color: var(--mk-line);
+  background: rgba(248, 246, 241, 0.98);
+  box-shadow: var(--mk-shadow-frame);
+}
+
+.owkin-nav__link::after {
+  background: var(--mk-accent);
+}
+
+.owkin-cta-band,
+.marketing-site--editorial .owkin-cta-band.marketing-section-tight {
+  background: var(--mk-ink) !important;
+}
+
+.owkin-footer {
+  background: var(--mk-ink);
+}
+
+.owkin-newsletter {
+  border-color: var(--mk-line);
+  background: var(--mk-surface);
+}
+
+.marketing-stats-editorial__detail {
+  color: var(--mk-muted) !important;
+}
+
+.owkin-footer .text-white\/45 {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+@media (max-width: 767px) {
+  .marketing-site {
+    --mk-section: 4rem;
+    --mk-section-tight: 3.5rem;
+  }
+
+  .marketing-container {
+    width: min(100% - 2rem, 76rem);
+  }
+
+  .marketing-homepage-hero > .marketing-container {
+    padding-top: 7rem !important;
+  }
+
+  .owkin-hero__title {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+
+  .owkin-hero__product {
+    margin-top: 2.5rem;
+  }
+
+  .aksh-hero-product__side {
+    display: none;
+  }
+
+  .aksh-mock-frame {
+    padding: 0.9rem;
+  }
+
+  .owkin-story__visual-frame {
+    min-height: 17rem;
+  }
+
+  .owkin-page-hero {
+    padding-block: 4.5rem;
+    background-size: 3rem 3rem;
+  }
+
+  .owkin-page-hero__title {
+    font-size: clamp(2.4rem, 11vw, 3.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-site *,
+  .marketing-site *::before,
+  .marketing-site *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

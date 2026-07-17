@@ -1,11 +1,24 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
+import { Instrument_Sans, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
 import { CookieConsent } from "@/components/marketing/CookieConsent";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
+
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-aksh-body",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-aksh-display",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: SEO_DEFAULTS.title,
@@ -14,16 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;600;700&family=Outfit:wght@600;800&family=Syne:wght@400;500;600;700;800&display=swap"
-          as="style"
-        />
-      </head>
+    <html lang="en" className={`${instrumentSans.variable} ${manrope.variable}`}>
       <body>
         <AuthProvider>
           {children}

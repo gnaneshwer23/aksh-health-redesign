@@ -12,6 +12,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        health: {
+          surface: "#F8F6F1",
+          raised: "#FFFFFF",
+          ink: "#10211D",
+          muted: "#52635E",
+          accent: "#075F50",
+          line: "rgb(16 33 29 / 0.12)",
+        },
         // Medicom design reference (Dribbble): navy hero, emerald accents, soft surfaces.
         // Use medicom.* in marketing/onboarding for brand-consistent polish.
         medicom: {
@@ -74,20 +82,24 @@ const config: Config = {
         sm: "6px",
         xl: "16px",
         "2xl": "20px",
+        frame: "24px",
       },
       boxShadow: {
         sm: "0 1px 2px 0 rgb(0 61 122 / 0.04)",
         card: "0 1px 3px 0 rgb(0 61 122 / 0.06), 0 1px 2px -1px rgb(0 61 122 / 0.04)",
         "card-hover": "0 8px 24px -4px rgb(0 61 122 / 0.1), 0 4px 8px -4px rgb(0 61 122 / 0.06)",
         sidebar: "2px 0 12px -2px rgb(0 61 122 / 0.06)",
+        frame: "0 1px 2px rgb(16 33 29 / 0.04), 0 24px 64px -36px rgb(16 33 29 / 0.32)",
       },
       spacing: {
         "sidebar": "240px",
+        "section-mobile": "64px",
+        "section-desktop": "112px",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        marketing: ["Instrument Sans", "Inter", "system-ui", "sans-serif"],
-        display: ["Syne", "Outfit", "system-ui", "sans-serif"],
+        sans: ["var(--font-aksh-body)", "system-ui", "sans-serif"],
+        marketing: ["var(--font-aksh-body)", "system-ui", "sans-serif"],
+        display: ["var(--font-aksh-display)", "system-ui", "sans-serif"],
       },
     },
   },

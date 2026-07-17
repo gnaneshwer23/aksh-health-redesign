@@ -360,7 +360,7 @@ export function PlatformFlowDiagram({ variant, className, showDescriptions = tru
   const layersPresent = Array.from(new Set(nodes.map((node) => node.layer)));
 
   return (
-    <figure className={cn("relative", className)} aria-label={ariaLabel}>
+    <figure className={cn("aksh-flow relative", className)} aria-label={ariaLabel}>
       <figcaption className="sr-only">{ariaLabel}</figcaption>
 
       <div className="relative hidden lg:block">

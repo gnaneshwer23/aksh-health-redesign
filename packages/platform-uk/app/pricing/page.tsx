@@ -5,13 +5,8 @@ import type { LucideIcon } from "lucide-react";
 
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import {
-  btnPrimary,
-  btnSecondary,
-  container,
-  heroPrimaryCta,
-  heroSecondaryCta,
-} from "@/components/marketing/marketing-ui";
+import { btnPrimary, btnSecondary, container } from "@/components/marketing/marketing-ui";
+import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import { cn } from "@/lib/utils";
@@ -81,36 +76,13 @@ const tiers: PricingTier[] = [
 export default function PricingPage() {
   return (
     <MarketingShell editorial>
-      <section className="relative overflow-hidden bg-gradient-to-b from-navy-light via-white to-white">
-        <div
-          className="marketing-hero-blob marketing-hero-blob--emerald absolute -right-24 top-0 h-[24rem] w-[24rem] opacity-[0.12]"
-          aria-hidden
-        />
-        <div
-          className="marketing-hero-blob marketing-hero-blob--navy absolute -left-28 top-16 h-[22rem] w-[22rem] opacity-[0.08]"
-          aria-hidden
-        />
-
-        <div className={`relative ${container} py-20 md:py-24 lg:py-28`}>
-          <p className="marketing-section-label mb-4">How we price</p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl">
-            Pricing scales with your organisation, not per patient record
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-steel sm:text-lg">
-            Aksh Health is priced per organisation, based on the number of sites, roles, and integration paths you
-            need. There are no per-patient fees. Speak to us for a quote tailored to your practice, trust, or ICS.
-          </p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link href="/get-started" className={`${heroPrimaryCta} sm:min-w-[11rem]`}>
-              Request organisation access
-            </Link>
-            <Link href="/contact" className={`${heroSecondaryCta} sm:min-w-[11rem]`}>
-              Talk to us
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingPageHero
+        eyebrow="How we price"
+        title="Pricing scales with your organisation, not each patient record"
+        lede="Pricing reflects your sites, roles, and integration scope. There are no per-patient fees; we shape a clear quote around the deployment your practice, trust, or ICS actually needs."
+        primary={{ label: "Discuss your deployment", href: "/get-started" }}
+        secondary={{ label: "Talk to us", href: "/contact" }}
+      />
 
       <div className="border-t border-border-subtle bg-white">
         <TrustStrip />
