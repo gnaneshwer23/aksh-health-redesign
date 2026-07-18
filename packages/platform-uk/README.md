@@ -150,6 +150,18 @@ npm run test:e2e:ui  # interactive UI mode
 
 See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
 
+### Clinical proof harness (E2E clinical chain)
+
+Proves the HITL gate and zero-autonomous-write invariant as far as the platform goes. Does **not** fake-pass live EMIS write-back.
+
+```bash
+npm run test:clinical-proof           # unit: cohort, FHIR shape, HITL, SHIELD, RBAC
+npm run test:e2e:clinical-proof       # Playwright: HITL bypass, Patel golden path, RBAC
+npm run test:e2e:clinical-proof:all   # orchestrator (unit + Playwright)
+```
+
+Docs: `docs/E2E_CLINICAL_PROOF.md` · `docs/QA_TRACEABILITY_MATRIX.md` · `docs/evidence-pack/`
+
 E2E and authenticated smoke tests require `DATABASE_URL`. Playwright creates fresh users via `/api/auth/signup` each run (`e2e/helpers/auth.ts`). Smoke scripts require real credentials via env vars (see `.env.example`).
 
 **CI:** GitHub Actions requires the `E2E_DATABASE_URL` secret (Neon pooled connection string). Optional: `E2E_TEST_PASSWORD`. See `docs/DEPLOYMENT_CONSOLIDATION.md`.
@@ -174,6 +186,9 @@ Do not position this as production clinical software, live NHS/EHR integration, 
 
 ## Key Docs
 
+- E2E clinical proof: `docs/E2E_CLINICAL_PROOF.md`
+- QA traceability matrix: `docs/QA_TRACEABILITY_MATRIX.md`
+- Evidence pack skeleton: `docs/evidence-pack/README.md`
 - Product audit and roadmap: `docs/PRODUCT_AUDIT_AND_ROADMAP.md`
 - Architecture: `docs/ARCHITECTURE.md`
 - Data health and reset policy: `docs/DATA_HEALTH_AND_RESET_POLICY.md`

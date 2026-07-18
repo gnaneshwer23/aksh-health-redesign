@@ -1,4 +1,6 @@
 import { reviewCases } from "./mock-data";
+import { patients } from "./mock-data/patients";
+import { getClinicalProofCohortSummary } from "./clinical-proof/cohort";
 
 export type SimulatedPatientProfile = {
   id: string;
@@ -15,10 +17,30 @@ export type SimulatedPatientProfile = {
   socialContext: string;
   riskProfile: "low" | "moderate" | "high";
   linkedCaseIds: string[];
+  clinicalProfiles?: string[];
   syntheticOnly: true;
 };
 
-export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
+function ageBandFromAge(age: number): string {
+  if (age < 1) return "0-1";
+  if (age < 18) return "1-17";
+  if (age < 25) return "18-24";
+  if (age < 35) return "25-34";
+  if (age < 45) return "35-44";
+  if (age < 55) return "45-54";
+  if (age < 65) return "55-64";
+  if (age < 75) return "65-74";
+  return "75+";
+}
+
+function riskFromOracle(risk: string): "low" | "moderate" | "high" {
+  if (risk === "Low") return "low";
+  if (risk === "Medium") return "moderate";
+  return "high";
+}
+
+/** Legacy review-case linked profiles (workflow evidence). */
+const legacySimulatedProfiles: SimulatedPatientProfile[] = [
   {
     id: "sim-patient-a",
     displayName: "Synthetic Patient A",
@@ -34,6 +56,7 @@ export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
     socialContext: "Lives independently; calls practice early when symptoms worsen.",
     riskProfile: "high",
     linkedCaseIds: ["case-001", "case-006", "case-007"],
+    clinicalProfiles: ["drug_allergy"],
     syntheticOnly: true
   },
   {
@@ -51,6 +74,7 @@ export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
     socialContext: "Works full-time; prefers short follow-up appointments.",
     riskProfile: "moderate",
     linkedCaseIds: ["case-002"],
+    clinicalProfiles: ["hypertension", "missing_clinical_info"],
     syntheticOnly: true
   },
   {
@@ -68,6 +92,7 @@ export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
     socialContext: "Self-manages mild flares with clear safety-netting.",
     riskProfile: "low",
     linkedCaseIds: ["case-003"],
+    clinicalProfiles: ["healthy"],
     syntheticOnly: true
   },
   {
@@ -85,6 +110,7 @@ export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
     socialContext: "Concerned about side effects and prefers shared decision-making.",
     riskProfile: "high",
     linkedCaseIds: ["case-004"],
+    clinicalProfiles: ["drug_allergy"],
     syntheticOnly: true
   },
   {
@@ -102,23 +128,60 @@ export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
     socialContext: "Stable follow-up context with no unresolved concerns.",
     riskProfile: "low",
     linkedCaseIds: ["case-005"],
+    clinicalProfiles: ["healthy"],
     syntheticOnly: true
   }
+];
+
+/** Dashboard / Neo4j seed patients projected into the simulated cohort view. */
+const dashboardSimulatedProfiles: SimulatedPatientProfile[] = patients.map((patient) => ({
+  id: `dash-${patient.id.toLowerCase()}`,
+  displayName: patient.name,
+  ageBand: ageBandFromAge(patient.age),
+  sex:
+    patient.gender.toLowerCase() === "female"
+      ? "female"
+      : patient.gender.toLowerCase() === "male"
+        ? "male"
+        : "not_specified",
+  locality: patient.organisation ?? patient.postcode,
+  scenarioClass: (patient.clinicalProfiles ?? ["general"]).join("+"),
+  longitudinalSummary:
+    patient.qaNotes ??
+    `${patient.activeConditions.join("; ") || "No active conditions"} · ORACLE ${patient.oracleRisk}`,
+  activeProblems: patient.activeConditions,
+  medications: patient.activeMedications,
+  allergies: patient.allergies.filter((a) => a.toLowerCase() !== "none known"),
+  recentObservations: patient.digitalTwinPrediction.deteriorationSignals.slice(0, 3),
+  socialContext: patient.qaNotes ?? "Synthetic clinical-proof fixture",
+  riskProfile: riskFromOracle(patient.oracleRisk),
+  linkedCaseIds: patient.id === "P002" ? ["patel-golden-path"] : [],
+  clinicalProfiles: patient.clinicalProfiles,
+  syntheticOnly: true as const
+}));
+
+export const simulatedPatientProfiles: SimulatedPatientProfile[] = [
+  ...legacySimulatedProfiles,
+  ...dashboardSimulatedProfiles
 ];
 
 export function getSimulatedPatientCohortSummary() {
   const linkedCaseIds = new Set(simulatedPatientProfiles.flatMap((profile) => profile.linkedCaseIds));
   const seededCaseIds = new Set(reviewCases.map((item) => item.id));
   const coveredSeedCases = [...linkedCaseIds].filter((id) => seededCaseIds.has(id)).length;
+  const clinicalProof = getClinicalProofCohortSummary();
 
   return {
     artifactType: "aksh-uk-eu-simulated-patient-cohort",
     syntheticOnly: true as const,
     realPatientData: false,
-    generatedFrom: "curated synthetic patient profiles linked to seeded review scenarios",
+    generatedFrom:
+      "legacy review-case profiles + lib/mock-data/patients clinical-proof cohort (Neo4j seed shared)",
     totalProfiles: simulatedPatientProfiles.length,
+    dashboardPatients: patients.length,
     linkedReviewCases: linkedCaseIds.size,
     coveredSeedCases,
+    clinicalProof,
     riskMix: {
       low: simulatedPatientProfiles.filter((item) => item.riskProfile === "low").length,
       moderate: simulatedPatientProfiles.filter((item) => item.riskProfile === "moderate").length,

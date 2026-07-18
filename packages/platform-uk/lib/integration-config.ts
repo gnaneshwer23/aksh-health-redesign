@@ -56,6 +56,15 @@ export function getIntegrationAdapterRegistry() {
         "Scaffold only: accepts HITL-approved FHIR R4 bundles into an internal staging queue. No live EMIS Partner API credentials or write-back."
     },
     {
+      id: "ehr-writeback-sim",
+      label: "Simulated EHR write-back (test double)",
+      status: "available" as const,
+      enabled: false,
+      defaultMode: "clinical_proof_harness",
+      boundary:
+        "POST /api/integrations/ehr-writeback-sim. Accepts writes only with a short-lived clinician approval token. Never calls live EMIS. Disabled as an external integration; used by clinical-proof harness only."
+    },
+    {
       id: "llm-synthesis",
       label: "LLM SYNTHESIS (AI Gateway)",
       status: isLlmSynthesisEnabled() ? ("enabled" as const) : ("available" as const),

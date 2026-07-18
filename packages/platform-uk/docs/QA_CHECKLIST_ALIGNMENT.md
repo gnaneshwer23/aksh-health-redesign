@@ -32,6 +32,11 @@ This document maps the **Aksh Health Deployment QA Checklist** (~188 checks acro
 | **HTTP smoke (walkthrough)** | `npm run smoke:walkthrough` | Authenticated review / demo paths |
 | **Playwright E2E** | `npm run test:e2e` | Browser journeys (this Phase E suite) |
 | **Playwright UI mode** | `npm run test:e2e:ui` | Interactive debugging |
+| **Clinical proof (unit)** | `npm run test:clinical-proof` | Cohort, FHIR shape, HITL invariants, SHIELD, RBAC |
+| **Clinical proof (E2E)** | `npm run test:e2e:clinical-proof` | HITL bypass, Patel golden path, RBAC |
+| **Clinical proof (all)** | `npm run test:e2e:clinical-proof:all` | Unit + Playwright orchestrator |
+
+See also: `docs/E2E_CLINICAL_PROOF.md`, `docs/QA_TRACEABILITY_MATRIX.md`.
 
 ### Running E2E locally
 

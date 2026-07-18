@@ -32,6 +32,28 @@ export interface PatientVitals {
   recordedBy: string;
 }
 
+/** QA / clinical-proof cohort tags — synthetic only. */
+export type ClinicalProfileId =
+  | "healthy"
+  | "t2d"
+  | "hypertension"
+  | "heart_failure"
+  | "copd"
+  | "polypharmacy"
+  | "drug_allergy"
+  | "pregnancy"
+  | "paediatric"
+  | "frailty"
+  | "renal_impairment"
+  | "liver_impairment"
+  | "mental_health_crisis"
+  | "oncology"
+  | "dvt_risk"
+  | "missing_clinical_info"
+  | "duplicate_identity"
+  | "conflicting_records"
+  | "high_risk_deterioration";
+
 export interface Patient {
   id: string;
   name: string;
@@ -55,6 +77,8 @@ export interface Patient {
     recommendedActions: string[];
   };
   flags: string[];
+  /** Clinical-proof cohort tags (synthetic QA harness). */
+  clinicalProfiles?: ClinicalProfileId[];
   appointmentTime?: string;
   supervisingGp?: string;
   organisation?: string;
@@ -62,6 +86,8 @@ export interface Patient {
   lastObsTime?: string;
   vitals?: PatientVitals;
   equityFlag?: boolean;
+  /** Notes for QA / graph seed (duplicate NHS, conflicting meds, etc.). */
+  qaNotes?: string;
 }
 
 export interface EvidenceSource {
