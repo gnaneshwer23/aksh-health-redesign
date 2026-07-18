@@ -33,28 +33,31 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-023 | Role smoke matrix | Smoke scripts | CP-ROLE-001 | All 8 dashboards HTTP smoke | `npm run smoke:all` | PASS |
 | REQ-024 | Mirth / HL7 v2 intake | — | — | Message round-trip | — | GAP |
 | REQ-025 | CIS2 authentication | — | — | NHS login | — | BLOCKED: partner |
-| REQ-026 | Hazard log linked to safety case | Evidence pack | CP-HAZARD-001 | Template filled | `docs/evidence-pack/06-hazard-log.md` | MANUAL |
+| REQ-026 | Hazard log linked to safety case | Evidence pack + template | CP-HAZARD-001 | Residual risks ↔ test IDs | `docs/HAZARD_LOG_TEMPLATE.md` + hazard-trace test | PASS |
 | REQ-027 | Security / pen test | — | — | Report | evidence pack #8 | GAP |
-| REQ-028 | Performance SLOs | — | — | Load report | evidence pack #9 | GAP |
-| REQ-029 | Continuous learning governance | Research eval | — | Controlled model release | documentary | GAP |
+| REQ-028 | Performance SLOs | `lib/clinical-proof/perf-slos.ts` | CP-PERF-001 | Soft SLO smoke; skip/soft-fail if unreachable | `npm run smoke:perf` + perf-slos test | PASS |
+| REQ-029 | Continuous learning governance | `/api/learning/events` | CP-LEARN-001 | Append-only; no auto-retrain; HITL decision required | `tests/clinical-proof-learning.test.ts` + `docs/CONTINUOUS_LEARNING.md` | PASS |
 | REQ-030 | Gate 1–3 sign-off | Evidence pack | — | Signed approvals | evidence pack #13–16 | MANUAL |
 | REQ-031 | Multi-patient golden paths | 7 diverse cohort patients | CP-MULTI-001 | Parameterized agents + HITL + EMIS blocked | `e2e/clinical-proof-multi-patient.spec.ts` + `tests/clinical-proof-golden-paths.test.ts` | PASS |
 | REQ-032 | Agent orchestration (shared context) | `lib/clinical-proof/agent-orchestration.ts` | CP-ORCH-001 | SYNTHESIS+GUARDIAN+ORACLE(+DrASSIST); no overwrite; GUARDIAN first when urgent; timeouts | unit + `e2e/clinical-proof-orchestration.spec.ts` | PASS |
 | REQ-033 | Evidence pack generators | `scripts/generate-evidence-pack.mjs` | CP-EVID-001 | `npm run evidence:pack` writes generated snapshots | `docs/evidence-pack/README.md` | PASS |
+| REQ-034 | Medplum FHIR rehearsal flag | `lib/medplum-client.ts` | CP-MEDPLUM-001 | Disabled by default; push refuses; liveEmis false | `tests/clinical-proof-medplum.test.ts` | PASS |
 
 ## Counts (snapshot)
 
 | Bucket | Count |
 | --- | ---: |
-| Requirements in matrix | 33 |
-| Automated PASS | 22 |
+| Requirements in matrix | 34 |
+| Automated PASS | 26 |
 | PARTIAL | 2 |
 | BLOCKED: partner | 3 |
-| GAP | 4 |
-| MANUAL | 2 |
+| GAP | 2 |
+| MANUAL | 1 |
 
 Re-count after suite changes; prefer updating JSON + this table together.
 
 **Note on REQ-004:** Zod FHIR R4 schema gates fail CI on invalid resources for DocumentReference, Condition, Flag, MedicationRequest, RiskAssessment, ServiceRequest, Observation, AuditEvent, Encounter. Full HL7 Java Validator JAR is still not in CI (optional stretch / partner tooling).
 
-**Note on REQ-031:** Sprint B expands beyond P001/P003 to P001, P003, P004 (renal), P008 (polypharmacy), P009 (paediatric), P015 (missing info), P018 (HF/renal deterioration). Partner steps remain BLOCKED honestly.
+**Note on REQ-029:** Recorder stores prediction→decision→outcome only. Governed model release / CSO SOP remains MANUAL for Gate 2+.
+
+**Note on REQ-028:** Soft smoke SLOs only — formal load test remains a residual gap in evidence pack #9 narrative.

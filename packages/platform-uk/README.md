@@ -155,13 +155,15 @@ See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
 Proves the HITL gate and zero-autonomous-write invariant as far as the platform goes. Does **not** fake-pass live EMIS write-back.
 
 ```bash
-npm run test:clinical-proof           # unit: cohort, FHIR, graph, HITL, golden-paths, orchestration, SHIELD, RBAC
+npm run test:clinical-proof           # unit: cohort, FHIR, graph, HITL, learning, perf SLOs, hazard, Medplum, golden-paths, orchestration
 npm run test:e2e:clinical-proof       # Playwright: HITL, Patel, multi-patient, orchestration, RBAC
 npm run test:e2e:clinical-proof:all   # orchestrator (unit + Playwright)
+PERF_SMOKE_BASE_URL=https://akshhealth.com npm run smoke:perf   # soft SLO smoke (skip if unreachable)
 npm run evidence:pack                 # snapshots → docs/evidence-pack/generated/ (gitignored)
 ```
 
-Docs: `docs/E2E_CLINICAL_PROOF.md` · `docs/QA_TRACEABILITY_MATRIX.md` · `docs/evidence-pack/`
+Docs: `docs/E2E_CLINICAL_PROOF.md` · `docs/QA_TRACEABILITY_MATRIX.md` · `docs/CONTINUOUS_LEARNING.md` · `docs/evidence-pack/`  
+API: `POST/GET /api/learning/events` (append-only; no auto-retrain)
 
 E2E and authenticated smoke tests require `DATABASE_URL`. Playwright creates fresh users via `/api/auth/signup` each run (`e2e/helpers/auth.ts`). Smoke scripts require real credentials via env vars (see `.env.example`).
 

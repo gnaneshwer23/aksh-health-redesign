@@ -1,43 +1,140 @@
-import type { FhirBundleDraft } from "./types";
-
 /**
- * Pushes a finalized FHIR bundle to the Medplum FHIR server.
- * Uses local environment variables if available, otherwise assumes local docker-compose default.
+ * Medplum FHIR rehearsal client.
+ *
+ * Default: ENABLE_MEDPLUM_SYNC=false — never called from accept path.
+ * When enabled: non-blocking push of frozen FHIR bundles to MEDPLUM_URL.
+ * Never writes to EMIS. Never claims production FHIR store readiness.
  */
-export async function pushToMedplum(bundle: any): Promise<boolean> {
-  const MEDPLUM_URL = process.env.MEDPLUM_URL || "http://localhost:8103/fhir/R4";
-  const MEDPLUM_CLIENT_ID = process.env.MEDPLUM_CLIENT_ID;
-  const MEDPLUM_CLIENT_SECRET = process.env.MEDPLUM_CLIENT_SECRET;
+
+export type MedplumRehearsalStatus = {
+  syncFlagEnabled: boolean;
+  baseUrl: string;
+  oauthTokenUrl: string;
+  credentialsConfigured: boolean;
+  mode: "disabled" | "rehearsal_ready" | "rehearsal_no_credentials";
+  liveEmis: false;
+  note: string;
+};
+
+function trimTrailingSlash(url: string) {
+  return url.replace(/\/+$/, "");
+}
+
+/** Derive OAuth token endpoint from FHIR base (…/fhir/R4 → …/oauth2/token). */
+export function resolveMedplumOAuthTokenUrl(fhirUrl: string): string {
+  const base = trimTrailingSlash(fhirUrl || "http://localhost:8103/fhir/R4");
+  const withoutFhir = base.replace(/\/fhir\/R4$/i, "");
+  return `${withoutFhir || "http://localhost:8103"}/oauth2/token`;
+}
+
+export function getMedplumConfig() {
+  const baseUrl = trimTrailingSlash(
+    process.env.MEDPLUM_URL?.trim() || "http://localhost:8103/fhir/R4"
+  );
+  const clientId = process.env.MEDPLUM_CLIENT_ID?.trim() || "";
+  const clientSecret = process.env.MEDPLUM_CLIENT_SECRET?.trim() || "";
+  return {
+    baseUrl,
+    clientId,
+    clientSecret,
+    oauthTokenUrl: resolveMedplumOAuthTokenUrl(baseUrl)
+  };
+}
+
+export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
+  const syncFlagEnabled = process.env.ENABLE_MEDPLUM_SYNC === "true";
+  const { baseUrl, clientId, clientSecret, oauthTokenUrl } = getMedplumConfig();
+  const credentialsConfigured = Boolean(clientId && clientSecret);
+
+  if (!syncFlagEnabled) {
+    return {
+      syncFlagEnabled: false,
+      baseUrl,
+      oauthTokenUrl,
+      credentialsConfigured,
+      mode: "disabled",
+      liveEmis: false,
+      note: "Medplum sync disabled (ENABLE_MEDPLUM_SYNC≠true). Accept path never pushes."
+    };
+  }
+
+  return {
+    syncFlagEnabled: true,
+    baseUrl,
+    oauthTokenUrl,
+    credentialsConfigured,
+    mode: credentialsConfigured ? "rehearsal_ready" : "rehearsal_no_credentials",
+    liveEmis: false,
+    note: credentialsConfigured
+      ? "Rehearsal mode: may push frozen accepted bundles to Medplum. Not EMIS write-back."
+      : "Flag on but credentials missing — push attempts may use unauthenticated local rehearsal only."
+  };
+}
+
+async function buildMedplumHeaders(): Promise<Record<string, string>> {
+  const { clientId, clientSecret, oauthTokenUrl } = getMedplumConfig();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/fhir+json",
+    Accept: "application/fhir+json"
+  };
+
+  if (!clientId || !clientSecret) {
+    return headers;
+  }
 
   try {
-    console.log("Preparing to push accepted FHIR bundle to Medplum...");
-    
-    let headers: Record<string, string> = {
-      "Content-Type": "application/fhir+json"
-    };
+    const authResponse = await fetch(oauthTokenUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret
+      })
+    });
 
-    // If using Medplum cloud or authenticated local, fetch an access token first
-    if (MEDPLUM_CLIENT_ID && MEDPLUM_CLIENT_SECRET) {
-      const authResponse = await fetch("http://localhost:8103/oauth2/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "client_credentials",
-          client_id: MEDPLUM_CLIENT_ID,
-          client_secret: MEDPLUM_CLIENT_SECRET
-        })
-      });
-
-      if (authResponse.ok) {
-        const { access_token } = await authResponse.json();
-        headers["Authorization"] = `Bearer ${access_token}`;
-      } else {
-        console.warn("Failed to authenticate with Medplum. Attempting unauthenticated request (for local dev).");
+    if (authResponse.ok) {
+      const { access_token } = (await authResponse.json()) as { access_token?: string };
+      if (access_token) {
+        headers.Authorization = `Bearer ${access_token}`;
       }
+    } else {
+      console.warn(
+        "[medplum] OAuth failed; attempting unauthenticated local rehearsal request."
+      );
     }
+  } catch (error) {
+    console.warn("[medplum] OAuth unreachable; attempting unauthenticated local rehearsal.", error);
+  }
 
-    // POST the bundle to Medplum
-    const response = await fetch(`${MEDPLUM_URL}/`, {
+  return headers;
+}
+
+/**
+ * Pushes a finalized FHIR bundle to Medplum when rehearsal is configured.
+ * Caller must gate with shouldSyncAcceptedCaseToMedplum / ENABLE_MEDPLUM_SYNC.
+ */
+export async function pushToMedplum(bundle: unknown): Promise<{
+  ok: boolean;
+  liveEmis: false;
+  status?: number;
+  resourceId?: string;
+  error?: string;
+}> {
+  const status = getMedplumRehearsalStatus();
+  if (!status.syncFlagEnabled) {
+    return {
+      ok: false,
+      liveEmis: false,
+      error: "Medplum sync disabled — push refused"
+    };
+  }
+
+  const { baseUrl } = getMedplumConfig();
+
+  try {
+    const headers = await buildMedplumHeaders();
+    const response = await fetch(`${baseUrl}/`, {
       method: "POST",
       headers,
       body: JSON.stringify(bundle)
@@ -45,68 +142,47 @@ export async function pushToMedplum(bundle: any): Promise<boolean> {
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error(`Medplum FHIR Server rejected the bundle: ${response.status}`, errorData);
-      return false;
+      console.error(`[medplum] FHIR server rejected bundle: ${response.status}`, errorData.slice(0, 500));
+      return { ok: false, liveEmis: false, status: response.status, error: errorData.slice(0, 200) };
     }
 
-    const responseData = await response.json();
-    console.log("Successfully persisted FHIR Bundle to Medplum!", responseData.id);
-    return true;
+    const responseData = (await response.json()) as { id?: string };
+    console.log("[medplum] Persisted FHIR Bundle (rehearsal).", responseData.id);
+    return { ok: true, liveEmis: false, status: response.status, resourceId: responseData.id };
   } catch (error) {
-    console.error("Failed to connect to Medplum FHIR Server:", error);
-    return false;
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[medplum] Failed to connect:", message);
+    return { ok: false, liveEmis: false, error: message };
   }
 }
 
 /**
- * Fetches historical encounters and conditions for a patient from the Medplum FHIR server.
- * This provides longitudinal context for the reviewing clinician.
+ * Fetches recent Encounter history for rehearsal UI context.
+ * Returns [] when disabled or unreachable — never throws into clinical UI.
  */
-export async function fetchPatientHistory(patientLabel: string): Promise<any[]> {
-  const MEDPLUM_URL = process.env.MEDPLUM_URL || "http://localhost:8103/fhir/R4";
-  const MEDPLUM_CLIENT_ID = process.env.MEDPLUM_CLIENT_ID;
-  const MEDPLUM_CLIENT_SECRET = process.env.MEDPLUM_CLIENT_SECRET;
+export async function fetchPatientHistory(_patientLabel: string): Promise<unknown[]> {
+  const status = getMedplumRehearsalStatus();
+  if (!status.syncFlagEnabled) {
+    return [];
+  }
+
+  const { baseUrl } = getMedplumConfig();
 
   try {
-    let headers: Record<string, string> = {
-      "Accept": "application/fhir+json"
-    };
-
-    if (MEDPLUM_CLIENT_ID && MEDPLUM_CLIENT_SECRET) {
-      const authResponse = await fetch("http://localhost:8103/oauth2/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "client_credentials",
-          client_id: MEDPLUM_CLIENT_ID,
-          client_secret: MEDPLUM_CLIENT_SECRET
-        })
-      });
-
-      if (authResponse.ok) {
-        const { access_token } = await authResponse.json();
-        headers["Authorization"] = `Bearer ${access_token}`;
-      }
-    }
-
-    // Query Medplum for Bundles or Encounters related to this patient label
-    // In a production FHIR environment, you would query by Patient.id
-    // For this pilot, we search Encounters where reason or clinicianSummary might contain the label,
-    // or just fetch recent Encounters to simulate a history view.
-    const response = await fetch(`${MEDPLUM_URL}/Encounter?_sort=-date&_count=5`, {
+    const headers = await buildMedplumHeaders();
+    delete headers["Content-Type"];
+    const response = await fetch(`${baseUrl}/Encounter?_sort=-date&_count=5`, {
       method: "GET",
-      headers,
+      headers
     });
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const bundle = await response.json();
-    return bundle.entry?.map((e: any) => e.resource) || [];
+    if (!response.ok) return [];
+    const bundle = (await response.json()) as {
+      entry?: Array<{ resource?: unknown }>;
+    };
+    return bundle.entry?.map((e) => e.resource).filter(Boolean) ?? [];
   } catch (error) {
-    console.error("Failed to fetch patient history from Medplum:", error);
+    console.error("[medplum] fetchPatientHistory failed:", error);
     return [];
   }
 }
-

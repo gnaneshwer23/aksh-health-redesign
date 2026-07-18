@@ -28,7 +28,8 @@ export function getIntegrationAdapterRegistry() {
       status: isMedplumSyncEnabled() ? "enabled" as const : "disabled" as const,
       enabled: isMedplumSyncEnabled(),
       defaultMode: "integration_rehearsal",
-      boundary: "Only attempts sync when ENABLE_MEDPLUM_SYNC=true and an accepted case is newly frozen."
+      boundary:
+        "Rehearsal only when ENABLE_MEDPLUM_SYNC=true and an accepted case is newly frozen. OAuth via MEDPLUM_* env. Never EMIS; push refuses when flag is off. See getMedplumRehearsalStatus()."
     },
     {
       id: "fastapi-synthesis",

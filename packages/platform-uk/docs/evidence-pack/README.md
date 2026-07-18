@@ -39,10 +39,10 @@ EVIDENCE_HEALTH_URL=https://akshhealth.com npm run evidence:pack
 | 3 | API / integration results | `03-api-integration-results.md` | `npm run verify` + paste summary |
 | 4 | FHIR conformance | `04-fhir-conformance.md` + `generated/fhir-validation-summary.json` | `npm run evidence:pack` / Zod CI; HL7 validator when available |
 | 5 | AI-agent evaluation | `05-ai-agent-evaluation.md` + `generated/agent-eval-report.json` | `npm run eval:agents` / `evidence:pack` |
-| 6 | Clinical safety hazard log | `06-hazard-log.md` | Fill template; CSO sign-off |
+| 6 | Clinical safety hazard log | `06-hazard-log.md` + `../HAZARD_LOG_TEMPLATE.md` | Template linked to test IDs; CSO sign-off still required |
 | 7 | HITL bypass report | `07-hitl-bypass-report.md` | `npm run test:e2e:clinical-proof` |
 | 8 | Security / pen-test | `08-security-pen-test.md` | External engagement — GAP until run |
-| 9 | Performance / load | `09-performance-load.md` | Load tools — GAP until run |
+| 9 | Performance / load | `09-performance-load.md` | Smoke: `npm run smoke:perf`; formal load still GAP |
 | 10 | Role-based access | `10-rbac-report.md` + `generated/rbac-matrix-snapshot.json` | Playwright RBAC + `npm run smoke:all` |
 | 11 | Audit-trail integrity | `11-audit-integrity.md` + `generated/shield-export-sample.json` | `/api/system/audit-integrity` + SHIELD tests |
 | 12 | Disaster recovery | `12-disaster-recovery.md` | Ops runbook — GAP |
@@ -50,6 +50,11 @@ EVIDENCE_HEALTH_URL=https://akshhealth.com npm run evidence:pack
 | 14 | Pilot monitoring plan | `14-pilot-monitoring.md` | Manual |
 | 15 | Known limitations / residual risk | `15-residual-risk.md` + `generated/clinical-proof-gap-summary.json` | Keep synced with E2E_CLINICAL_PROOF gap register |
 | 16 | Release / rollback plan | `16-release-rollback.md` | Vercel promote / rollback procedure |
+
+## Sprint C additions
+
+- Continuous learning: `docs/CONTINUOUS_LEARNING.md` · `/api/learning/events`
+- Perf SLOs: `lib/clinical-proof/perf-slos.ts` · `npm run smoke:perf`
 
 ## Honesty rule
 

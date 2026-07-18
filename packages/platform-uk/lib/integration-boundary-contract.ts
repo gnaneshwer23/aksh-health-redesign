@@ -34,7 +34,8 @@ export function buildIntegrationBoundaryContract(options?: { generatedAt?: strin
       "Deterministic synthetic intake generation is the default when ENABLE_FASTAPI_SYNTHESIS is false.",
       "FastAPI rehearsal failures must surface explicitly and must not silently replace synthetic proof behavior.",
       "Transcription uses simulated output until both DEEPGRAM_API_KEY and @deepgram/sdk are available.",
-      "Medplum sync only runs on newly accepted frozen cases when ENABLE_MEDPLUM_SYNC=true."
+      "Medplum sync only runs on newly accepted frozen cases when ENABLE_MEDPLUM_SYNC=true.",
+      "Medplum rehearsal never equals EMIS write-back; getMedplumRehearsalStatus().liveEmis is always false."
     ],
     disabledByDefault: adapters.filter((adapter) => !adapter.enabled).map((adapter) => adapter.id)
   };

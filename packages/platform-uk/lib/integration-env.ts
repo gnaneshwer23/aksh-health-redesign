@@ -45,7 +45,7 @@ export function getIntegrationEnvironmentVariables(): IntegrationEnvironmentVari
       required: false,
       scope: "integration_rehearsal",
       purpose: "Medplum FHIR endpoint for rehearsal sync.",
-      failureModes: ["Unreachable endpoint returns false from pushToMedplum without changing proof behavior."]
+      failureModes: ["Unreachable endpoint returns ok:false from pushToMedplum without changing proof behavior."]
     },
     {
       name: "MEDPLUM_CLIENT_ID",

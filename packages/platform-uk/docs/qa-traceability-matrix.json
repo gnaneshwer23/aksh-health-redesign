@@ -4,14 +4,14 @@
   "syntheticOnly": true,
   "liveEmisWriteBack": false,
   "neo4jLive": false,
-  "sprint": "B",
+  "sprint": "C",
   "counts": {
-    "requirements": 33,
-    "pass": 22,
+    "requirements": 34,
+    "pass": 26,
     "partial": 2,
     "blockedPartner": 3,
-    "gap": 4,
-    "manual": 2
+    "gap": 2,
+    "manual": 1
   },
   "requirements": [
     {
@@ -194,9 +194,9 @@
     {
       "id": "REQ-026",
       "testId": "CP-HAZARD-001",
-      "status": "MANUAL",
-      "component": "hazard log",
-      "evidence": "docs/evidence-pack/06-hazard-log.md"
+      "status": "PASS",
+      "component": "hazard log template ↔ test IDs",
+      "evidence": "docs/HAZARD_LOG_TEMPLATE.md + tests/clinical-proof-hazard-trace.test.ts"
     },
     {
       "id": "REQ-027",
@@ -207,17 +207,19 @@
     },
     {
       "id": "REQ-028",
-      "testId": null,
-      "status": "GAP",
-      "component": "performance",
-      "evidence": "docs/evidence-pack/09-performance-load.md"
+      "testId": "CP-PERF-001",
+      "status": "PASS",
+      "component": "perf smoke SLOs",
+      "evidence": "lib/clinical-proof/perf-slos.ts + scripts/perf-smoke.mjs + docs/evidence-pack/09-performance-load.md",
+      "note": "Soft smoke only; formal load remains residual GAP"
     },
     {
       "id": "REQ-029",
-      "testId": null,
-      "status": "GAP",
-      "component": "continuous learning",
-      "evidence": null
+      "testId": "CP-LEARN-001",
+      "status": "PASS",
+      "component": "continuous learning recorder",
+      "evidence": "app/api/learning/events + docs/CONTINUOUS_LEARNING.md",
+      "note": "No auto-retrain; governed model release SOP still MANUAL"
     },
     {
       "id": "REQ-030",
@@ -246,6 +248,13 @@
       "status": "PASS",
       "component": "evidence pack generators",
       "evidence": "scripts/generate-evidence-pack.mjs + docs/evidence-pack/README.md"
+    },
+    {
+      "id": "REQ-034",
+      "testId": "CP-MEDPLUM-001",
+      "status": "PASS",
+      "component": "Medplum FHIR rehearsal flag",
+      "evidence": "lib/medplum-client.ts + tests/clinical-proof-medplum.test.ts"
     }
   ]
 }

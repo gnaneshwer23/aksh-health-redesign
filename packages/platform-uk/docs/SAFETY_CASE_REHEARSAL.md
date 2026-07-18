@@ -28,6 +28,7 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 | Audit integrity | `/api/system/audit-integrity` |
 | Permission matrix | `/api/system/permission-matrix` |
 | Durable SHIELD events | `aksh.shield_audit_events` via `/api/audit/shield` |
+| Continuous-learning events | `/api/learning/events` · `docs/CONTINUOUS_LEARNING.md` (append-only; **no** auto-retrain) |
 | Pharmacist review trail | `/api/pharmacist/reviews` (SHIELD rows labelled medication review) |
 | SYNTHESIS drafts | `POST /api/agents/synthesis` (HITL; no EHR write) |
 | Dr.Assist drafts | `POST /api/agents/dr-assist` (HITL; Neo4j/mock + LLM/deterministic coding) |
@@ -54,26 +55,30 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 
 ## Open production gaps
 
-1. Appoint CSO and maintain hazard log with review dates
+1. Appoint CSO and maintain hazard log with review dates — start from `docs/HAZARD_LOG_TEMPLATE.md` (test IDs linked; **unsigned**)
 2. Complete DCB0129 clinical safety case report outside the synthetic proof app
 3. EMIS / SystmOne Partner onboarding + DPIA
 4. Neo4j live graph where ORACLE/GUARDIAN/Dr.Assist claims depend on it (`NEO4J_*` — resume Aura if paused)
-5. Eval gates for any LLM clinical drafts before unsupervised use
+5. Eval gates + **governed model release** for any LLM clinical drafts (learning recorder exists; auto-retrain forbidden)
+6. Formal performance load beyond `npm run smoke:perf` soft SLOs
 
 ## How to rehearse
 
 1. Sign in → complete onboarding
 2. Generate or open a review case → Accept/Edit/Reject
 3. Confirm `/api/audit/shield` returns durable rows when `DATABASE_URL` is set (admin Audit Log prefers Postgres, including empty trail)
-4. Optionally `POST /api/agents/synthesis` with a transcript (HITL still required)
-5. Optionally `POST /api/agents/dr-assist` with `{ "patientId": "P002" }` (HITL still required)
-6. Optionally `POST /api/agents/guardian` with `{ "patientId": "P002", "proposedDrug": "Apixaban" }` (HITL still required)
-7. Optionally `POST /api/agents/oracle` with `{ "patientId": "P002" }` (HITL still required)
-8. Optionally `POST /api/agents/equity` (HITL; aggregate ICS brief)
-9. Optionally `POST /api/agents/voice-care` (synthetic outbound → SHIELD + nurse task; no telephony)
-10. Optionally `POST /api/agents/referral` with a case id (HITL still required; synthetic ServiceRequest only)
-11. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
-12. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
-13. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript
-14. Golden eval: `npm run eval:agents` or `POST /api/eval/agents` (see `docs/AGENT_EVAL_HARNESS.md`)
-15. Public ICS demo: open `/dashboard/ics` without sign-in — confirm demo banner + synthetic population
+4. Optionally record a learning event: `POST /api/learning/events` with predictionId + decision + outcomeKind — confirm `autoRetrainTriggered: false`
+5. Optionally `POST /api/agents/synthesis` with a transcript (HITL still required)
+6. Optionally `POST /api/agents/dr-assist` with `{ "patientId": "P002" }` (HITL still required)
+7. Optionally `POST /api/agents/guardian` with `{ "patientId": "P002", "proposedDrug": "Apixaban" }` (HITL still required)
+8. Optionally `POST /api/agents/oracle` with `{ "patientId": "P002" }` (HITL still required)
+9. Optionally `POST /api/agents/equity` (HITL; aggregate ICS brief)
+10. Optionally `POST /api/agents/voice-care` (synthetic outbound → SHIELD + nurse task; no telephony)
+11. Optionally `POST /api/agents/referral` with a case id (HITL still required; synthetic ServiceRequest only)
+12. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
+13. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
+14. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript
+15. Golden eval: `npm run eval:agents` or `POST /api/eval/agents` (see `docs/AGENT_EVAL_HARNESS.md`)
+16. Perf smoke: `PERF_SMOKE_BASE_URL=https://akshhealth.com npm run smoke:perf`
+17. Public ICS demo: open `/dashboard/ics` without sign-in — confirm demo banner + synthetic population
+18. Review hazard residual risks in `docs/HAZARD_LOG_TEMPLATE.md` before any Gate 2 claim

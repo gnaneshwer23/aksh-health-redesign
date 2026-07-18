@@ -5,7 +5,7 @@
 
 Live site: https://akshhealth.com  
 Repo: `packages/platform-uk`  
-Sprint: **B** (multi-patient golden paths, agent orchestration, evidence pack generators)
+Sprint: **C** (continuous-learning recorder, perf smoke SLOs, hazard↔test IDs, Medplum rehearsal polish)
 
 ---
 
@@ -33,11 +33,11 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | Level | Meaning | Aksh Health today (honest) |
 | --- | --- | --- |
 | **UI complete** | Screens, dashboards, interactions exist | **Met** for marketing, 8 role dashboards, Patel demo, review queue |
-| **Functionally complete** | Buttons/agents/workflows produce expected outputs | **Met** for HITL Accept/Edit/Reject, agent draft APIs, FHIR R4 schema CI, Accept→stage→sim chain, **7-patient parameterized golden paths**, **multi-agent orchestration**, SHIELD when Postgres available, evidence pack generators |
-| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j Aura currently **paused/unreachable** (honest mock + automated graph assertions); EMIS/Mirth/CIS2 **not** live |
+| **Functionally complete** | Buttons/agents/workflows produce expected outputs | **Met** for HITL Accept/Edit/Reject, agent draft APIs, FHIR R4 schema CI, Accept→stage→sim chain, multi-patient golden paths, multi-agent orchestration, continuous-learning **recorder** (no auto-retrain), perf SLO contracts, SHIELD when Postgres available, evidence pack generators |
+| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j Aura currently **paused/unreachable** (honest mock + automated graph assertions); EMIS/Mirth/CIS2 **not** live; Medplum sync **disabled by default** |
 | **Production-ready** | Secure, governed, clinically safe | **Not met** — no CSO-signed safety case, no Partner write-back, no signed Gate 1–3 |
 
-**End-to-end built** for Aksh means all four levels for the full chain. We are **not** there. Sprint B closed multi-patient + orchestration functional proof and kept integrated Neo4j/EMIS honest.
+**End-to-end built** for Aksh means all four levels for the full chain. We are **not** there. Sprint C closed the learning recorder + perf smoke + hazard linkage on the platform side and kept Neo4j/EMIS honest.
 
 ---
 
@@ -59,8 +59,20 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | 12 | Nothing written to EHR without approval | Met (invariant) | EMIS disabled; sim write requires token; replay denied |
 | 13 | Immutable AuditEvent | Partial | SHIELD append-only Postgres when configured; no DELETE API |
 | 14 | RBAC | Partial | Middleware role dashboards; public GP/ICS allowlisted demos |
-| 15 | Outcomes return to timeline | Gap | Continuous learning loop not productionised |
-| 16 | Failures detectable / recoverable | Partial | Health probes + smoke; no full DR evidence |
+| 15 | Outcomes return to timeline | Met (recorder) | `/api/learning/events` prediction→decision→outcome; **no** auto-retrain |
+| 16 | Failures detectable / recoverable | Partial | Health probes + smoke + perf smoke; no full DR evidence |
+
+---
+
+## Performance SLO targets (smoke)
+
+| Path | Soft | Hard | How |
+| --- | ---: | ---: | --- |
+| Dashboard load | 3s | 8s | `npm run smoke:perf` |
+| Agent draft | 5s | 15s | same / unit contract |
+| Review action (HITL chain) | 2s | 6s | in-process unit |
+
+Soft-fail if env cannot hit prod latency. `PERF_SMOKE_STRICT=true` for hard enforcement. See `docs/evidence-pack/09-performance-load.md`.
 
 ---
 
@@ -71,12 +83,14 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | EMIS Partner live write-back | **BLOCKED: partner** | `/api/integrations/emis-staging` queues only; `liveWriteBack: false` |
 | SystmOne write-back | **BLOCKED: partner** | Not implemented |
 | Mirth Connect | **GAP / mock UI** | Marketing/admin status mock — no live routes |
-| Neo4j Aura (live) | **Paused / unreachable (Jul 2026)** | Creds present; `ServiceUnavailable`; clinical-proof uses honest mock until Resume + seed |
+| Neo4j Aura (live) | **Paused / unreachable (Jul 2026)** | Creds present; clinical-proof uses honest mock until Resume + seed |
 | CIS2 / NHS login | **BLOCKED: partner** | NextAuth credentials (+ optional clinical OAuth scaffold) |
 | FHIR R4 schema CI | **Met** | Zod R4 gates fail CI on invalid; HL7 Java Validator JAR still optional |
-| Medplum sync | **Disabled by default** | Flagged off in integration contract |
+| Medplum sync | **Disabled by default** | Rehearsal flag polished; `getMedplumRehearsalStatus()`; never EMIS |
 | Deepgram voice | **Optional** | Simulated transcript when key absent |
-| DCB0129 / CSO hazard log | **Documentary** | Template in evidence pack; unsigned |
+| DCB0129 / CSO hazard log | **Documentary** | Template linked to test IDs; **unsigned** |
+| Continuous learning governance | **Recorder met; release GAP** | Append-only events; no auto-retrain; CSO model-release SOP pending |
+| Perf / load (formal) | **Smoke met; load GAP** | Soft SLO smoke only |
 | Tenant isolation (multi-practice) | **Partial** | Practice context helpers; not full RLS proof |
 
 ---
@@ -87,7 +101,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 - Required clinical profiles covered (T2D, HTN, HF, COPD, polypharmacy, allergy, pregnancy, paediatric, frailty, renal/liver, MH crisis, oncology, DVT, missing info, duplicate identity, conflicting records, deterioration, healthy)
 - Neo4j seed (`npm run data:seed:neo4j`) uses the same array
 - Golden path patient: **P002 Mr James Patel** (dedicated UI spec)
-- Multi-patient golden paths (parameterized): **P001, P003, P004, P008, P009, P015, P018** — allergy/DVT, frailty/COPD, renal, polypharmacy, paediatric, missing info, HF/renal deterioration
+- Multi-patient golden paths (parameterized): **P001, P003, P004, P008, P009, P015, P018**
 
 ---
 
@@ -97,7 +111,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 cd packages/platform-uk
 
 # Unit / contract clinical-proof suite (no browser)
-# Includes: cohort, FHIR, graph, HITL chain, SHIELD, RBAC, golden-paths, orchestration
+# Includes: cohort, FHIR, graph, HITL, learning, perf SLOs, hazard trace, Medplum, golden-paths, orchestration
 npm run test:clinical-proof
 
 # Full verify (includes workflow + clinical-proof)
@@ -105,6 +119,9 @@ npm run verify
 
 # Playwright clinical-proof specs
 npm run test:e2e:clinical-proof
+
+# Perf smoke (soft-skip if no server)
+PERF_SMOKE_BASE_URL=https://akshhealth.com npm run smoke:perf
 
 # Agent eval (HITL-safe)
 npm run eval:agents
@@ -127,14 +144,16 @@ Requires `DATABASE_URL` for signup/SHIELD durable paths in Playwright.
 
 See `docs/evidence-pack/README.md` for the 16 artefact slots and how to regenerate machine snapshots (`npm run evidence:pack`).
 
-Traceability: `docs/QA_TRACEABILITY_MATRIX.md` (+ `docs/qa-traceability-matrix.json`).
+Traceability: `docs/QA_TRACEABILITY_MATRIX.md` (+ `docs/qa-traceability-matrix.json`).  
+Continuous learning: `docs/CONTINUOUS_LEARNING.md`.  
+Hazard template: `docs/HAZARD_LOG_TEMPLATE.md`.
 
 ---
 
 ## Formal gates (not signed)
 
 1. **Technical acceptance** — architecture functions; clinical-proof suite green
-2. **Clinical safety acceptance** — CSO + hazard log (template only today)
+2. **Clinical safety acceptance** — CSO + hazard log (template linked to tests; unsigned)
 3. **Operational pilot readiness** — sponsor + DPIA + Partner credentials
 
 Do not declare production-ready until Gates 1–3 are signed with inspectable evidence.

@@ -47,12 +47,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   normalized.userId = userId;
   const updated = await updateReviewCase(normalized, scopeKey, userId, tenant.practiceId);
 
-  // If the user just clicked "Accept", the status transitioned from pending to accepted
+  // Medplum rehearsal only when ENABLE_MEDPLUM_SYNC=true + newly accepted frozen case.
+  // Non-blocking; never EMIS; pushToMedplum refuses when flag is off.
   if (shouldSyncAcceptedCaseToMedplum(existing, payload, updated)) {
     if (updated.frozenArtifact && updated.frozenArtifact.exportedResources) {
-      // Background push to Medplum
-      pushToMedplum(updated.frozenArtifact.exportedResources).catch(err => {
-        console.error("Non-blocking error: Failed to push to Medplum", err);
+      void pushToMedplum(updated.frozenArtifact.exportedResources).then((result) => {
+        if (!result.ok) {
+          console.error("[medplum] Non-blocking rehearsal push failed:", result.error);
+        }
       });
     }
   }

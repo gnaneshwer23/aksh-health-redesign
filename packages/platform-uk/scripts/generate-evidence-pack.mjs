@@ -217,19 +217,22 @@ async function main() {
   writeJson("clinical-proof-gap-summary.json", {
     artifactType: "aksh-uk-clinical-proof-gap-summary",
     generatedAt,
-    sprint: "B",
+    sprint: "C",
     completionLevels: {
       uiComplete: "met",
       functionallyComplete:
-        "met (agents, HITL chain, multi-patient golden paths, orchestration, FHIR R4 CI)",
+        "met (agents, HITL chain, multi-patient, orchestration, learning recorder, perf smoke SLOs, FHIR R4 CI)",
       integratedComplete:
-        "partial (Neon real; Neo4j honest mock when Aura down; EMIS/Mirth/CIS2 not live)",
+        "partial (Neon real; Neo4j honest mock when Aura down; EMIS/Mirth/CIS2 not live; Medplum disabled by default)",
       productionReady: "not met"
     },
     passHighlights: [
       "Multi-patient golden paths (7 non-Patel + Patel dedicated)",
       "Agent orchestration (SYNTHESIS+GUARDIAN+ORACLE+DrASSIST)",
       "FHIR R4 Zod CI + HITL Accept→stage→sim",
+      "Continuous-learning recorder (no auto-retrain)",
+      "Perf smoke SLO contracts (soft)",
+      "Hazard template linked to clinical-proof test IDs",
       "SHIELD append-only API contract",
       "Evidence pack generator"
     ],
@@ -241,8 +244,8 @@ async function main() {
     gaps: [
       { id: "Mirth / HL7 v2", status: "GAP" },
       { id: "Pen test", status: "GAP" },
-      { id: "Performance / load", status: "GAP" },
-      { id: "Continuous learning governance", status: "GAP" },
+      { id: "Formal performance / load (beyond smoke)", status: "GAP" },
+      { id: "Governed model release SOP (learning recorder exists)", status: "MANUAL" },
       { id: "HL7 Java FHIR Validator JAR in CI", status: "optional" }
     ],
     neo4j: {
