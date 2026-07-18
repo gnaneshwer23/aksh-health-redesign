@@ -122,14 +122,13 @@ No fake certifications; each phase gates the next.
 - Coaching stubs expanded (exercise + mental-health) under HITL / not clinical advice — clinical MH triage still needs safety-case scope.
 - Care delivery: EMIS partner checklist + staging only (`liveEmis:false`) until signed write-back decision.
 - See `docs/PHASE2_PARTNER_CHECKLIST.md` and Phase 2 section in delivery roadmap.
-### Long term (Precision Health OS — flowchart completeness)
+### Long term (Precision Health OS — flowchart completeness) — Phase 3 scaffolding started
 
-- Continuous multimodal foundation (imaging DICOM, omics, wearables, environment) with purpose-bound consent.
-- Living knowledge graph continuously updated from care + evidence bases.
-- Causal / predictive models under regulated change control; federated or otherwise governed learning.
-- True digital twin simulation + intervention ranking with clinical validation.
-- Stakeholder ecosystem integrations (hospital, labs, pharma, payers) and measurable RWE closed loop.
-- Signed clinical safety case, DTAC, and applicable regulatory pathways **before** outcome marketing.
+- Advanced modality **contracts + stubs** in-repo (DICOM meta / omics panel / environment OpenWeather stub) — not live streams.
+- Synthetic twin **scenario ranking** (`physiologicalTwin:false`, `simulationMode:synthetic_rules`) — not a living twin.
+- Causal hypothesis stub + federated ethics-gated jobs + pharma/payer read-only placeholders.
+- Regulatory path templates: `docs/PHASE3_REGULATORY_PATH.md` (unsigned).
+- Still blocked for exit: twin validation study, signed DTAC/DCB0129/MHRA, live FL / payer / pharma pipes.
 
 ---
 
@@ -155,6 +154,11 @@ No fake certifications; each phase gates the next.
 | Consent registry | `GET/POST /api/consent/grants` |
 | Modality contracts | `lib/precision-health/modalities.ts`, `/api/precision-health/modalities` |
 | Phase 2 connectors / ingest | `/api/precision-health/connectors`, `/api/precision-health/ingest` |
+| Phase 3 twin sim (synthetic) | `/api/precision-health/twin/simulate`, `/api/precision-health/twin/status` |
+| Causal stub | `/api/agents/causal` |
+| Federated research stub | `/api/research/federated/jobs` |
+| Pharma / payer stubs | `/api/integrations/pharma-rwe`, `/api/integrations/payer-vbc` |
+| Phase 3 regulatory templates | `docs/PHASE3_REGULATORY_PATH.md` |
 | EMIS partner checklist | `/api/integrations/emis-partner-checklist`, `docs/PHASE2_PARTNER_CHECKLIST.md` |
 | ORACLE model card | `GET /api/agents/oracle`, `lib/precision-health/oracle-model-card.ts` |
 | Patient timeline | `GET /api/patients/[id]/timeline` |

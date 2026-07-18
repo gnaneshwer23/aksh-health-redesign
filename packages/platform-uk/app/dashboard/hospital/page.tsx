@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BarChart3, Building2, Users } from "lucide-react";
 
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
+import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { hospitalData } from "@/lib/mock-data";
 
@@ -83,6 +84,11 @@ export default function HospitalOverviewPage({
           </CardContent>
         </Card>
       </div>
+
+      <ScenarioRankingPanel
+        patientId="P001"
+        patientLabel="Synthetic HF demo patient (hospital rehearsal)"
+      />
 
       <section>
         <h3 className="text-sm font-semibold mb-3">Sections</h3>

@@ -81,7 +81,10 @@ export const labSampleSchema = z.object({
   provenance: provenanceSchema
 });
 
-/** Metadata only — no DICOM bytes in Phase 1. */
+/**
+ * Imaging study metadata (Phase 3: imaging_study_meta fields).
+ * DICOM metadata only — no pixel / PACS store claim (dicomPresent always false).
+ */
 export const imagingMetaSampleSchema = z.object({
   modality: z.literal("imaging_meta"),
   patientId: z.string().min(1),
@@ -91,10 +94,19 @@ export const imagingMetaSampleSchema = z.object({
   status: z.enum(["reported", "pending", "cancelled"]).default("reported"),
   summary: z.string().min(1),
   provenance: provenanceSchema,
-  dicomPresent: z.literal(false)
+  dicomPresent: z.literal(false),
+  /** Phase 3 study meta — UIDs / modality tags only; never implies pixel archive. */
+  studyInstanceUid: z.string().optional(),
+  seriesInstanceUid: z.string().optional(),
+  dicomModalityCode: z.string().optional(),
+  manufacturerModel: z.string().optional(),
+  pixelStoreClaim: z.literal(false).optional().default(false)
 });
 
-/** Metadata only — no FASTQ/VCF payloads in Phase 1. */
+/**
+ * Omics panel metadata (Phase 3: omics_panel_meta fields).
+ * Panel summary only — no FASTQ/VCF/BAM payloads (rawOmicsPresent always false).
+ */
 export const omicsMetaSampleSchema = z.object({
   modality: z.literal("omics_meta"),
   patientId: z.string().min(1),
@@ -103,9 +115,15 @@ export const omicsMetaSampleSchema = z.object({
   findingsSummary: z.string(),
   summary: z.string().min(1),
   provenance: provenanceSchema,
-  rawOmicsPresent: z.literal(false)
+  rawOmicsPresent: z.literal(false),
+  /** Phase 3 panel meta — catalogue fields only. */
+  panelVersion: z.string().optional(),
+  genesReviewedCount: z.number().int().min(0).optional(),
+  laboratoryName: z.string().optional(),
+  sequencingPipelineClaim: z.literal(false).optional().default(false)
 });
 
+/** Environment sample — OpenWeather stub may enrich AQI when key present; never invents live stream without key. */
 export const environmentSampleSchema = z.object({
   modality: z.literal("environment"),
   patientId: z.string().min(1),
@@ -114,7 +132,11 @@ export const environmentSampleSchema = z.object({
   housingStability: z.enum(["stable", "unstable", "unknown"]).optional(),
   postcodeArea: z.string().optional(),
   summary: z.string().min(1),
-  provenance: provenanceSchema
+  provenance: provenanceSchema,
+  /** Phase 3 environment fields */
+  pm25Ugm3: z.number().optional(),
+  temperatureC: z.number().optional(),
+  weatherSource: z.enum(["synthetic_fixture", "openweather_stub"]).optional()
 });
 
 export const modalitySampleSchema = z.discriminatedUnion("modality", [
@@ -205,7 +227,12 @@ export const SYNTHETIC_MODALITY_FIXTURES: ModalitySample[] = [
     status: "reported",
     summary: "Imaging metadata stub — no DICOM archive.",
     provenance: SYNTHETIC_PROVENANCE,
-    dicomPresent: false
+    dicomPresent: false,
+    studyInstanceUid: "1.2.826.0.1.3680043.8.498.SYNTHETIC.STUDY.P002",
+    seriesInstanceUid: "1.2.826.0.1.3680043.8.498.SYNTHETIC.SERIES.P002",
+    dicomModalityCode: "US",
+    manufacturerModel: "synthetic-ultrasound-meta",
+    pixelStoreClaim: false
   },
   {
     modality: "omics_meta",
@@ -215,7 +242,11 @@ export const SYNTHETIC_MODALITY_FIXTURES: ModalitySample[] = [
     findingsSummary: "Synthetic FH-risk family history flag — no raw genomic file.",
     summary: "Omics metadata stub — not a sequencing pipeline.",
     provenance: SYNTHETIC_PROVENANCE,
-    rawOmicsPresent: false
+    rawOmicsPresent: false,
+    panelVersion: "FH-panel-v0-scaffold",
+    genesReviewedCount: 4,
+    laboratoryName: "Synthetic Genomics Lab (fixture)",
+    sequencingPipelineClaim: false
   },
   {
     modality: "environment",
@@ -225,7 +256,10 @@ export const SYNTHETIC_MODALITY_FIXTURES: ModalitySample[] = [
     housingStability: "stable",
     postcodeArea: "SE15",
     summary: "Synthetic environment context for SDOH overlay demos.",
-    provenance: SYNTHETIC_PROVENANCE
+    provenance: SYNTHETIC_PROVENANCE,
+    pm25Ugm3: 18,
+    temperatureC: 17,
+    weatherSource: "synthetic_fixture"
   }
 ];
 
@@ -237,11 +271,18 @@ export function listModalityContractSummaries() {
   return MODALITY_IDS.map((id) => ({
     id,
     liveStreamSupported: false as const,
-    phase: "phase_1_contract" as const,
+    phase:
+      id === "imaging_meta" || id === "omics_meta" || id === "environment"
+        ? ("phase_3_advanced_meta" as const)
+        : ("phase_1_contract" as const),
     note:
-      id === "imaging_meta" || id === "omics_meta"
-        ? "Metadata schema only — no binary payloads in Phase 1"
-        : "Schema + synthetic fixtures / ingestion stubs only"
+      id === "imaging_meta"
+        ? "imaging_study_meta fields — DICOM metadata only; dicomPresent/pixelStoreClaim false"
+        : id === "omics_meta"
+          ? "omics_panel_meta fields — panel summary only; rawOmicsPresent/sequencingPipelineClaim false"
+          : id === "environment"
+            ? "environment_sample — OpenWeather stub may set liveStream when OPENWEATHER_API_KEY present"
+            : "Schema + synthetic fixtures / ingestion stubs only"
   }));
 }
 

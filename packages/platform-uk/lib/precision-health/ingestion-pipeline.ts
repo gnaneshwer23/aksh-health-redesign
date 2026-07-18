@@ -5,7 +5,10 @@ import { ingestModalitySampleStub } from "@/lib/repositories/modality-sample-rep
 
 import {
   CONNECTOR_IDS,
+  buildEnvironmentOpenWeatherSample,
+  buildImagingDicomMetaSample,
   buildLifestyleDiarySample,
+  buildOmicsPanelSample,
   buildSyntheticWearableSample,
   getConnector,
   type ConnectorId
@@ -55,6 +58,15 @@ function resolveSample(input: IngestRequest) {
 
   if (input.connectorId === "lifestyle_diary") {
     return buildLifestyleDiarySample(input.patientId);
+  }
+  if (input.connectorId === "imaging_dicom_meta_stub") {
+    return buildImagingDicomMetaSample(input.patientId);
+  }
+  if (input.connectorId === "omics_panel_stub") {
+    return buildOmicsPanelSample(input.patientId);
+  }
+  if (input.connectorId === "environment_openweather_stub") {
+    return buildEnvironmentOpenWeatherSample(input.patientId);
   }
 
   // wearable_synthetic_stream, fitbit_oauth_stub (no live pull), file_import → synthetic wearable

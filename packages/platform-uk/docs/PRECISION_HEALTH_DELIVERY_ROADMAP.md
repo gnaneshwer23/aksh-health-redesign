@@ -170,6 +170,18 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [ ] RWE metrics from live care (not synthetic-only) in learning loop with governed release SOP
 - [ ] Marketing claims match certified / signed scope only
 
+### Code scaffolding landed (this release) — still needs partners for exit
+
+| Area | In-repo (scaffolded) | Still blocked / needs user & partners |
+| --- | --- | --- |
+| Advanced modality contracts | `imaging_study_meta` / `omics_panel_meta` / `environment_sample` fields; connectors `imaging_dicom_meta_stub`, `omics_panel_stub`, `environment_openweather_stub`; consent-gated ingest; `liveStream` false unless OpenWeather key | Real DICOM/PACS, genomics lab, OpenWeather DPIA; never invents pixel/omics streams |
+| Twin simulation | `runScenario` rules + ORACLE risk-state; `POST /api/precision-health/twin/simulate`; `GET …/status` with `physiologicalTwin:false`, `simulationMode:"synthetic_rules"`; GP + hospital UI | Validated physiological twin study; clinical owner |
+| Causal AI | `POST /api/agents/causal` hypothesis stub; HITL + SHIELD; model card clinical owner UNASSIGNED | Causal methods partner; CSO owner; not causal proof |
+| Federated research | `GET/POST /api/research/federated/jobs`; ethics gate env; synthetic aggregates only; researcher panel | Ethics approval; real FL infra; site DPAs |
+| Pharma / payer | Read-only RWE + VBC stub APIs + admin panel | Contracts; secondary-use DPIA; live pipes |
+| Regulatory path | `docs/PHASE3_REGULATORY_PATH.md` unsigned DTAC/DCB0129/MHRA/DPIA/FL checklist | Signed packs; funded submissions |
+
+**Regulatory path doc:** [`PHASE3_REGULATORY_PATH.md`](./PHASE3_REGULATORY_PATH.md)
 ---
 
 ## Flowchart → phase map (summary)
@@ -237,9 +249,15 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ### Phase 3
 
+- [x] Advanced modality contracts + DICOM/omics/environment connector stubs (`liveStream` honest)
+- [x] Synthetic twin scenario ranking API + UI (`physiologicalTwin: false`)
+- [x] Causal AI hypothesis stub (HITL + SHIELD; clinical owner UNASSIGNED)
+- [x] Federated research jobs stub (ethics gate; synthetic aggregates; no patient-level export default)
+- [x] Pharma RWE + payer VBC read-only stubs
+- [x] `docs/PHASE3_REGULATORY_PATH.md` unsigned checklist
 - [ ] Twin validation study plan funded
-- [ ] Regulatory path selected and funded
-- [ ] Federated / pharma-payer governance designs
+- [ ] Regulatory path selected and funded (signed DTAC / DCB0129 / MHRA as applicable)
+- [ ] Federated / pharma-payer governance designs signed
 - [ ] Marketing freeze until signed safety case
 
 ---
@@ -256,4 +274,4 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ## One-line positioning (unchanged honesty)
 
-> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 contracts + Phase 2 readiness scaffolding (connectors, model card, partner checklist) are in-repo — not a living physiological digital twin or live Partner EMR.**
+> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 contracts, Phase 2 readiness scaffolding, and Phase 3 synthetic twin/causal/federated stubs are in-repo — not a living physiological digital twin, live omics, or MHRA-approved CDS.**

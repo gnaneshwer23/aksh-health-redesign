@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight, Database, FlaskConical, Settings, Shield } from "lucide-react";
 
+import { FederatedJobsPanel } from "@/components/dashboard/precision-health/FederatedJobsPanel";
 import { GovernanceBoundariesCard } from "@/components/dashboard/researcher/GovernanceBoundariesCard";
 import { ResearcherKpiRow } from "@/components/dashboard/researcher/ResearcherKpiRow";
 import { useResearcherData } from "@/components/dashboard/researcher/ResearcherDataContext";
@@ -55,6 +56,8 @@ export default function ResearcherOverviewPage() {
       ) : null}
 
       <ResearcherKpiRow />
+
+      <FederatedJobsPanel />
 
       <GovernanceBoundariesCard />
 

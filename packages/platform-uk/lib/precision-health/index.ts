@@ -52,10 +52,14 @@ export {
   CONNECTOR_IDS,
   CONNECTOR_REGISTRY,
   PHASE2_CONNECTOR_ENV_VARS,
+  PHASE3_CONNECTOR_ENV_VARS,
   listConnectorStatuses,
   getConnector,
   buildSyntheticWearableSample,
   buildLifestyleDiarySample,
+  buildImagingDicomMetaSample,
+  buildOmicsPanelSample,
+  buildEnvironmentOpenWeatherSample,
   type ConnectorId,
   type ConnectorStatus
 } from "./connectors";
@@ -67,3 +71,40 @@ export { mergeModalitySampleIntoKg, type KgIngestResult } from "./kg-ingest";
 export { getOracleModelCard, ORACLE_MODEL_CARD, type OracleModelCard } from "./oracle-model-card";
 
 export { getEmisPartnerChecklist, type EmisPartnerChecklist } from "./emis-partner-checklist";
+
+export {
+  runScenario,
+  getTwinSimulationStatus,
+  simulateRequestSchema,
+  INTERVENTION_IDS,
+  type TwinSimulationResult,
+  type TwinSimulationStatus,
+  type InterventionId,
+  type RankedScenarioOption
+} from "./twin-simulation";
+
+export {
+  buildCausalHypothesis,
+  getCausalAiStatus,
+  causalRequestSchema,
+  type CausalAiResult,
+  type CausalHypothesizedDriver
+} from "./causal-ai";
+
+export {
+  listFederatedJobs,
+  createFederatedJob,
+  getFederatedResearchStatus,
+  createFederatedJobSchema,
+  isFederatedEthicsGateOpen,
+  resetFederatedJobStoreForTests,
+  FEDERATED_ETHICS_GATE_ENV,
+  type FederatedResearchJob
+} from "./federated-research";
+
+export {
+  getPharmaRweSummary,
+  getPayerVbcMetrics,
+  type PharmaRweSummary,
+  type PayerVbcMetrics
+} from "./pharma-payer";

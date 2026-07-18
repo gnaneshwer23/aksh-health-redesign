@@ -161,9 +161,35 @@ async function run() {
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 1");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 2 readiness scaffolding");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "PHASE2_PARTNER_CHECKLIST");
+  await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "PHASE3_REGULATORY_PATH");
   await assertFileIncludes("docs/PRECISION_HEALTH_FLOWCHART_GAP.md", "PRECISION_HEALTH_DELIVERY_ROADMAP.md");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Consent / purpose grants UI");
   await assertFileIncludes("lib/precision-health/modalities.ts", "liveStream: false");
+  await assertFileIncludes("lib/precision-health/twin-simulation.ts", "synthetic_rules");
+  await assertFileIncludes("lib/precision-health/twin-simulation.ts", "physiologicalTwin: false");
+  await assertFileIncludes("app/api/precision-health/twin/simulate/route.ts", "ehrWrite: false");
+  await assertFileIncludes("app/api/precision-health/twin/status/route.ts", "getTwinSimulationStatus");
+  await assertFileIncludes("app/api/agents/causal/route.ts", "hypothesis only, not causal proof");
+  await assertFileIncludes("app/api/research/federated/jobs/route.ts", "patientLevelExport");
+  await assertFileIncludes("app/api/integrations/pharma-rwe/route.ts", "getPharmaRweSummary");
+  await assertFileIncludes("app/api/integrations/payer-vbc/route.ts", "getPayerVbcMetrics");
+  await assertFileIncludes("lib/precision-health/pharma-payer.ts", "livePharmaIntegration");
+  await assertFileIncludes("lib/precision-health/pharma-payer.ts", "livePayerIntegration");
+  await assertFileIncludes("lib/precision-health/pharma-payer.ts", "Not a live payer/pharma");
+  await assertFileIncludes("docs/PHASE3_REGULATORY_PATH.md", "UNSIGNED");
+  await assertFileIncludes(
+    "components/dashboard/precision-health/ScenarioRankingPanel.tsx",
+    "not a living digital twin"
+  );
+  await assertFileIncludes("components/dashboard/precision-health/FederatedJobsPanel.tsx", "synthetic aggregates");
+  await assertFileIncludes("components/dashboard/precision-health/PharmaPayerStubPanel.tsx", "Not a live payer/pharma");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "ScenarioRankingPanel");
+  await assertFileIncludes("app/dashboard/hospital/page.tsx", "ScenarioRankingPanel");
+  await assertFileIncludes("app/dashboard/researcher/page.tsx", "FederatedJobsPanel");
+  await assertFileIncludes("app/dashboard/admin/integrations/page.tsx", "PharmaPayerStubPanel");
+  await assertFileIncludes("lib/precision-health/connectors.ts", "imaging_dicom_meta_stub");
+  await assertFileIncludes("lib/precision-health/connectors.ts", "omics_panel_stub");
+  await assertFileIncludes("lib/precision-health/connectors.ts", "environment_openweather_stub");
   await assertFileIncludes("lib/medplum-client.ts", "dryRunMedplumStagingSync");
   await assertFileIncludes("lib/emis-staging.ts", "liveEmis: false");
   await assertFileIncludes("app/api/eval/agents/route.ts", "runGoldenEval");
