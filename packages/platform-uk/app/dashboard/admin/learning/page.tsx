@@ -1,12 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { BookOpen, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BookOpen, Download, RefreshCw } from "lucide-react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 
 type LearningEventRow = {
@@ -36,6 +43,58 @@ type LearningEventsResponse = {
   error?: string;
 };
 
+type DecisionFilter = "all" | "accept" | "edit" | "reject";
+
+function matchesDecisionFilter(decision: string, filter: DecisionFilter): boolean {
+  if (filter === "all") return true;
+  const normalized = decision.trim().toLowerCase();
+  if (filter === "accept") return normalized.includes("accept");
+  if (filter === "edit") return normalized.includes("edit");
+  if (filter === "reject") return normalized.includes("reject");
+  return true;
+}
+
+function toCsv(events: LearningEventRow[]): string {
+  const headers = [
+    "id",
+    "recordedAt",
+    "agentLabel",
+    "predictionId",
+    "predictionSummary",
+    "decision",
+    "decisionActor",
+    "decisionNotes",
+    "outcomeKind",
+    "outcomeSummary",
+    "autoRetrainTriggered",
+    "ehrWrite"
+  ];
+  const escape = (value: unknown) => {
+    const text = String(value ?? "");
+    if (/[",\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+    return text;
+  };
+  const rows = events.map((event) =>
+    [
+      event.id,
+      event.recordedAt,
+      event.agentLabel,
+      event.predictionId,
+      event.predictionSummary ?? "",
+      event.decision,
+      event.decisionActor,
+      event.decisionNotes ?? "",
+      event.outcomeKind,
+      event.outcomeSummary ?? "",
+      String(event.autoRetrainTriggered),
+      String(event.ehrWrite)
+    ]
+      .map(escape)
+      .join(",")
+  );
+  return [headers.join(","), ...rows].join("\n");
+}
+
 /**
  * Admin view of continuous-learning recorder events.
  * Read-only: prediction → clinician decision → outcome. No auto-retrain controls.
@@ -45,6 +104,7 @@ export default function AdminLearningPage() {
   const [payload, setPayload] = useState<LearningEventsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [decisionFilter, setDecisionFilter] = useState<DecisionFilter>("all");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,6 +132,21 @@ export default function AdminLearningPage() {
   }, [load]);
 
   const events = payload?.events ?? [];
+  const filteredEvents = useMemo(
+    () => events.filter((event) => matchesDecisionFilter(event.decision, decisionFilter)),
+    [events, decisionFilter]
+  );
+
+  const exportCsv = useCallback(() => {
+    const csv = toCsv(filteredEvents);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `learning-events-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }, [filteredEvents]);
 
   return (
     <DashboardShell
@@ -90,10 +165,36 @@ export default function AdminLearningPage() {
               <strong>No auto-retrain</strong>, no silent model updates, no EHR write from this view.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
-            <RefreshCw className={`mr-1 h-3 w-3 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={decisionFilter}
+              onValueChange={(value) => setDecisionFilter(value as DecisionFilter)}
+            >
+              <SelectTrigger className="w-36" data-testid="learning-decision-filter">
+                <SelectValue placeholder="Decision" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All decisions</SelectItem>
+                <SelectItem value="accept">Accept</SelectItem>
+                <SelectItem value="edit">Edit</SelectItem>
+                <SelectItem value="reject">Reject</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCsv}
+              disabled={filteredEvents.length === 0}
+              data-testid="learning-export-csv"
+            >
+              <Download className="mr-1 h-3 w-3" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
+              <RefreshCw className={`mr-1 h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         <div
@@ -117,7 +218,8 @@ export default function AdminLearningPage() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="flex items-center gap-2 text-sm">
               <BookOpen className="h-4 w-4 text-muted" />
-              Recent events ({events.length}
+              Recent events ({filteredEvents.length}
+              {events.length !== filteredEvents.length ? ` of ${events.length}` : ""}
               {payload?.source ? ` · ${payload.source}` : ""})
             </CardTitle>
           </CardHeader>
@@ -125,9 +227,24 @@ export default function AdminLearningPage() {
             {loading && events.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-muted">Loading…</p>
             ) : events.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-muted">
-                No learning events recorded yet. Events appear after HITL decisions are posted to{" "}
-                <code className="text-xs">/api/learning/events</code>.
+              <div
+                data-testid="learning-empty-state"
+                className="flex flex-col items-center gap-2 px-6 py-12 text-center"
+              >
+                <BookOpen className="h-8 w-8 text-muted/60" aria-hidden />
+                <p className="text-sm font-medium text-foreground">No learning events yet</p>
+                <p className="max-w-md text-sm text-muted">
+                  Events appear after a clinician Accept / Edit / Reject on an agent draft is posted to{" "}
+                  <code className="text-xs">/api/learning/events</code>. This recorder never
+                  auto-retrains models.
+                </p>
+              </div>
+            ) : filteredEvents.length === 0 ? (
+              <p
+                data-testid="learning-filter-empty"
+                className="px-4 py-8 text-center text-sm text-muted"
+              >
+                No events match the current decision filter. Try “All decisions”.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -142,7 +259,7 @@ export default function AdminLearningPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {events.map((event) => (
+                    {filteredEvents.map((event) => (
                       <tr key={event.id} className="border-b border-border-subtle/80 align-top">
                         <td className="whitespace-nowrap px-3 py-2 text-muted">
                           {new Date(event.recordedAt).toLocaleString()}

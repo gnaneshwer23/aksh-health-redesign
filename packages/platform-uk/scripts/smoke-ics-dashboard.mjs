@@ -97,19 +97,34 @@ async function fetchWithTimeout(path, options = {}) {
   }
 }
 
-async function assertRedirectsToSignIn(path) {
-  const response = await fetchWithTimeout(path);
-  const location = response.headers.get("location") ?? "";
-
-  if (response.status < 300 || response.status >= 400) {
-    throw new Error(`${path} expected redirect when unauthenticated, got ${response.status}`);
+async function assertPublicIcsDemo() {
+  const response = await fetchWithTimeout("/dashboard/ics");
+  if (!response.ok) {
+    throw new Error(`Public ICS demo returned ${response.status}`);
   }
-
-  if (!location.includes("/signin")) {
-    throw new Error(`${path} redirected to ${location || "unknown"}, expected /signin`);
+  const html = await response.text();
+  if (!html.includes("ICS Population Intelligence") && !html.includes("Total Patients")) {
+    throw new Error("Public ICS demo missing expected synthetic population copy");
   }
+  console.log("[ok] Public ICS demo is reachable without auth");
 
-  console.log(`[ok] Unauthenticated redirect: ${path} → signin`);
+  const api = await fetchWithTimeout("/api/neo4j/ics-population");
+  if (!api.ok) throw new Error(`Public ics-population → ${api.status}`);
+  const source = api.headers.get("X-Data-Source");
+  if (source !== "demo") {
+    throw new Error(`Public ICS API expected X-Data-Source: demo, got ${source ?? "null"}`);
+  }
+  console.log("[ok] Public ICS API returns synthetic demo header");
+}
+
+async function assertAuthenticatedIcsNeo4jHonesty() {
+  const api = await fetchWithTimeout("/api/neo4j/ics-population");
+  if (!api.ok) throw new Error(`Authenticated ics-population → ${api.status}`);
+  const source = api.headers.get("X-Data-Source");
+  if (source !== "neo4j" && source !== "mock") {
+    throw new Error(`Authenticated ICS expected neo4j|mock, got ${source ?? "null"}`);
+  }
+  console.log(`[ok] Authenticated ICS X-Data-Source=${source}`);
 }
 
 async function assertPage({ label, path, expectedText }) {
@@ -173,9 +188,10 @@ async function run() {
   console.log(`Running ICS dashboard smoke checks against ${baseUrl}`);
   console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
-  await assertRedirectsToSignIn("/dashboard/ics");
+  await assertPublicIcsDemo();
 
   await signIn();
+  await assertAuthenticatedIcsNeo4jHonesty();
 
   for (const route of protectedIcsRoutes) {
     await assertPage(route);

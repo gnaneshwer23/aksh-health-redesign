@@ -234,7 +234,8 @@ async function main() {
       "Perf smoke SLO contracts (soft)",
       "Hazard template linked to clinical-proof test IDs",
       "SHIELD append-only API contract",
-      "Evidence pack generator"
+      "Evidence pack generator",
+      "Authenticated Neo4j smoke (throwaway GP or SMOKE_GP_*)"
     ],
     blockedPartner: [
       { id: "EMIS live write-back", status: "BLOCKED: partner" },
@@ -246,14 +247,70 @@ async function main() {
       { id: "Pen test", status: "GAP" },
       { id: "Formal performance / load (beyond smoke)", status: "GAP" },
       { id: "Governed model release SOP (learning recorder exists)", status: "MANUAL" },
-      { id: "HL7 Java FHIR Validator JAR in CI", status: "optional" }
+      { id: "HL7 Java FHIR Validator JAR in CI", status: "optional" },
+      { id: "CSO clinical safety sign-off", status: "MANUAL" }
     ],
     neo4j: {
       status: "see-health-snapshot",
-      note: "clinical-proof-graph uses live|mock honestly"
+      note: "clinical-proof-graph uses live|mock honestly; smoke:neo4j asserts X-Data-Source"
     },
     liveEmisWriteBack: false,
     traceability: qaMatrix?.counts ?? null
+  });
+
+  // --- 7. Gate checklist paths (templates committed; sign-off remains MANUAL) ---
+  const gateChecklists = [
+    {
+      id: "gate-1-platform-readiness",
+      path: "docs/evidence-pack/gate-1-platform-readiness.md",
+      commandHints: ["npm run test:clinical-proof", "npm run smoke:neo4j", "npm run evidence:pack"]
+    },
+    {
+      id: "gate-2-clinical-safety",
+      path: "docs/evidence-pack/gate-2-clinical-safety.md",
+      commandHints: ["npm run test:e2e:clinical-proof", "docs/HAZARD_LOG_TEMPLATE.md"]
+    },
+    {
+      id: "gate-3-pilot-authority",
+      path: "docs/evidence-pack/gate-3-pilot-authority.md",
+      commandHints: ["Pilot authority / CSO sign-off — MANUAL"]
+    }
+  ].map((gate) => ({
+    ...gate,
+    present: fs.existsSync(path.join(root, gate.path))
+  }));
+  writeJson("gate-checklist-paths.json", {
+    artifactType: "aksh-uk-gate-checklist-paths",
+    generatedAt,
+    checklists: gateChecklists,
+    note: "Paths only — CSO/authority signatures are never invented by this generator."
+  });
+
+  // --- 8. Neo4j smoke snapshot (runs smoke:neo4j; never fake-pass live) ---
+  const neo4jSmoke = spawnSync("node", ["scripts/smoke-neo4j-live.mjs"], {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...deterministicEnv(),
+      SMOKE_BASE_URL: healthBase.replace(/\/$/, ""),
+      EVIDENCE_HEALTH_URL: healthBase.replace(/\/$/, "")
+    },
+    timeout: 60_000
+  });
+  writeJson("neo4j-smoke-snapshot.json", {
+    artifactType: "aksh-uk-neo4j-smoke-snapshot",
+    generatedAt,
+    command: "npm run smoke:neo4j",
+    probedBaseUrl: healthBase.replace(/\/$/, ""),
+    exitCode: neo4jSmoke.status,
+    passed: neo4jSmoke.status === 0,
+    stdout: (neo4jSmoke.stdout || "").slice(0, 4000),
+    stderr: (neo4jSmoke.stderr || "").slice(0, 2000),
+    optionalOverrides: ["SMOKE_GP_EMAIL", "SMOKE_GP_PASSWORD", "E2E_TEST_PASSWORD"],
+    note:
+      neo4jSmoke.status === 0
+        ? "Smoke passed (public ICS demo + authenticated X-Data-Source checks)."
+        : "Smoke failed or target unreachable — do not treat Neo4j as live without a passing run."
   });
 
   // --- Manifest ---
@@ -275,6 +332,8 @@ Generated: ${generatedAt}
 | \`health-snapshot.json\` | \`/api/health\` probe or contract |
 | \`fhir-validation-summary.json\` | Zod FHIR R4 validation of proof fixtures |
 | \`clinical-proof-gap-summary.json\` | Honest gap register snapshot |
+| \`gate-checklist-paths.json\` | Gate 1–3 checklist template paths |
+| \`neo4j-smoke-snapshot.json\` | Output of \`npm run smoke:neo4j\` |
 
 Regenerate: \`npm run evidence:pack\`
 

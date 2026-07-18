@@ -40,6 +40,8 @@ async function run() {
   assert.ok(result.patientCount >= CLINICAL_PROOF_MIN_PATIENTS);
   assert.equal(result.patelPresent, true);
   assert.equal(result.patelHasConditions, true);
+  assert.ok(Array.isArray(result.seededPatients));
+  assert.equal(result.seededPatients.length, 3, "Expect P001/P003/P004 seed assertions");
 
   // Honest contract: never claim live unless connected + seeded relationships
   if (result.mode === "live") {
@@ -48,6 +50,11 @@ async function run() {
       result.guardianInteractionsForPatel >= 1,
       "Live Aura must expose TAKES_MEDICATION→INTERACTS_WITH for P002"
     );
+    for (const seeded of result.seededPatients) {
+      assert.equal(seeded.present, true, `${seeded.id} must be present when live`);
+      assert.ok(seeded.conditionCount >= 1, `${seeded.id} needs HAS_CONDITION`);
+      assert.ok(seeded.medicationCount >= 1, `${seeded.id} needs TAKES_MEDICATION`);
+    }
     assert.ok(result.note.toLowerCase().includes("live"));
   } else {
     assert.equal(result.connected, false);
@@ -62,7 +69,7 @@ async function run() {
   }
 
   console.log(
-    `Knowledge graph clinical-proof: mode=${result.mode} connected=${result.connected} patients=${result.patientCount} guardianHits=${result.guardianInteractionsForPatel}`
+    `Knowledge graph clinical-proof: mode=${result.mode} connected=${result.connected} patients=${result.patientCount} guardianHits=${result.guardianInteractionsForPatel} seeded=${result.seededPatients.map((s) => s.id).join(",")}`
   );
 }
 

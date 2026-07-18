@@ -12,6 +12,8 @@ test.describe("Role routing", () => {
     await page.goto("/dashboard/ics");
     await expect(page).toHaveURL(/\/dashboard\/ics/);
     await expect(page.getByTestId("demo-data-banner")).toBeVisible();
+    await expect(page.getByTestId("neo4j-mock-mode-banner")).toHaveCount(0);
+    await expect(page.getByTestId("neo4j-live-mode-banner")).toHaveCount(0);
     await expect(page.getByText(/ICS Population Intelligence|Total Patients/i).first()).toBeVisible();
   });
 

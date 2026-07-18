@@ -8,7 +8,17 @@ import { checkInteractions } from "../mock-data/medications";
 import { checkNeo4jHealth, isNeo4jConfigured, runQuery } from "../neo4j";
 import { CLINICAL_PROOF_MIN_PATIENTS } from "./cohort";
 
+/** Seeded patients asserted beyond golden-path P002 when Aura is live. */
+export const LIVE_GRAPH_SEED_PATIENT_IDS = ["P001", "P003", "P004"] as const;
+
 export type GraphAssertionMode = "live" | "mock";
+
+export type SeededPatientAssertion = {
+  id: string;
+  present: boolean;
+  conditionCount: number;
+  medicationCount: number;
+};
 
 export type GraphAssertionResult = {
   mode: GraphAssertionMode;
@@ -19,6 +29,8 @@ export type GraphAssertionResult = {
   patelPresent: boolean;
   patelHasConditions: boolean;
   guardianInteractionsForPatel: number;
+  /** Extra seeded cohort members checked when mode === "live". */
+  seededPatients: SeededPatientAssertion[];
   note: string;
 };
 
@@ -50,6 +62,23 @@ function toNumber(value: unknown): number {
     return Number((value as { toNumber: () => number }).toNumber());
   }
   return Number(value ?? 0);
+}
+
+async function assertSeededPatient(id: string): Promise<SeededPatientAssertion> {
+  const result = await runQuery(
+    `MATCH (p:Patient {id: $id})
+     OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition)
+     OPTIONAL MATCH (p)-[:TAKES_MEDICATION]->(m:Medication)
+     RETURN p.name AS name, count(DISTINCT c) AS conditionCount, count(DISTINCT m) AS medicationCount`,
+    { id }
+  );
+  const record = result.records[0];
+  return {
+    id,
+    present: Boolean(record?.get("name")),
+    conditionCount: toNumber(record?.get("conditionCount")),
+    medicationCount: toNumber(record?.get("medicationCount"))
+  };
 }
 
 async function assertLiveGraph(): Promise<GraphAssertionResult> {
@@ -91,6 +120,21 @@ async function assertLiveGraph(): Promise<GraphAssertionResult> {
     );
   }
 
+  const seededPatients: SeededPatientAssertion[] = [];
+  for (const id of LIVE_GRAPH_SEED_PATIENT_IDS) {
+    const assertion = await assertSeededPatient(id);
+    if (!assertion.present) {
+      throw new Error(`Live Neo4j missing seeded patient ${id} — re-seed required.`);
+    }
+    if (assertion.conditionCount < 1) {
+      throw new Error(`Live Neo4j ${id} missing HAS_CONDITION edges — re-seed required.`);
+    }
+    if (assertion.medicationCount < 1) {
+      throw new Error(`Live Neo4j ${id} missing TAKES_MEDICATION edges — re-seed required.`);
+    }
+    seededPatients.push(assertion);
+  }
+
   return {
     mode: "live",
     configured: true,
@@ -99,7 +143,8 @@ async function assertLiveGraph(): Promise<GraphAssertionResult> {
     patelPresent,
     patelHasConditions: true,
     guardianInteractionsForPatel,
-    note: "Neo4j Aura reachable; live seed asserts HAS_CONDITION, TAKES_MEDICATION, INTERACTS_WITH."
+    seededPatients,
+    note: `Neo4j Aura reachable; live seed asserts P002 + ${LIVE_GRAPH_SEED_PATIENT_IDS.join(", ")} (HAS_CONDITION, TAKES_MEDICATION, INTERACTS_WITH).`
   };
 }
 
@@ -112,6 +157,19 @@ function assertMockGraph(reconnectHint?: string): GraphAssertionResult {
     throw new Error("Mock cohort too small for graph assertions");
   }
 
+  const seededPatients: SeededPatientAssertion[] = LIVE_GRAPH_SEED_PATIENT_IDS.map((id) => {
+    const patient = getPatientById(id);
+    if (!patient) {
+      throw new Error(`Mock graph fallback missing ${id}`);
+    }
+    return {
+      id,
+      present: true,
+      conditionCount: patient.activeConditions.length,
+      medicationCount: patient.activeMedications.length
+    };
+  });
+
   return {
     mode: "mock",
     configured: isNeo4jConfigured(),
@@ -121,6 +179,7 @@ function assertMockGraph(reconnectHint?: string): GraphAssertionResult {
     patelPresent: true,
     patelHasConditions: patel.activeConditions.length > 0,
     guardianInteractionsForPatel: countMockGuardianInteractions("P002"),
+    seededPatients,
     note:
       "Neo4j Aura unreachable or unset — using honest mock fallback. Do not treat as live graph proof."
   };

@@ -7,7 +7,7 @@ import { populationData } from "@/lib/mock-data";
 import type { PopulationData } from "@/lib/mock-data/types";
 import type { Neo4jIcsPopulationResponse } from "@/lib/neo4j/types";
 
-type DataSource = "neo4j" | "mock" | null;
+type DataSource = "neo4j" | "mock" | "demo" | null;
 
 type IcsDataContextValue = {
   data: PopulationData;

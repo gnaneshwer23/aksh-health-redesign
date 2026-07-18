@@ -20,6 +20,8 @@ Writes into `docs/evidence-pack/generated/` (**gitignored**):
 | `health-snapshot.json` | Live `/api/health` when server up, else contract-only |
 | `fhir-validation-summary.json` | Zod FHIR R4 pass/fail on clinical-proof fixtures |
 | `clinical-proof-gap-summary.json` | Honest gap / blocked-partner register |
+| `gate-checklist-paths.json` | Gate 1–3 checklist template paths (sign-off MANUAL) |
+| `neo4j-smoke-snapshot.json` | Result of `npm run smoke:neo4j` (throwaway GP or `SMOKE_GP_*`) |
 | `MANIFEST.md` | Index of generated files |
 
 Optional live health probe:
@@ -30,6 +32,11 @@ EVIDENCE_HEALTH_URL=https://akshhealth.com npm run evidence:pack
 # npm run dev & EVIDENCE_HEALTH_URL=http://127.0.0.1:3000 npm run evidence:pack
 ```
 
+Optional Neo4j smoke auth override (otherwise throwaway GP via signup):
+
+```bash
+SMOKE_GP_EMAIL=you@example.com SMOKE_GP_PASSWORD=... npm run smoke:neo4j
+```
 ## Artefact slots
 
 | # | Artefact | Path | How to generate |

@@ -17,7 +17,13 @@ export default function IcsPopulationPage() {
         <p className="text-sm text-muted">
           Risk profile and condition prevalence for {icsName} across deprivation quintiles.
           {!loading && source
-            ? ` · Data source: ${source === "neo4j" ? "live Neo4j graph" : "local fallback"}`
+            ? ` · Data source: ${
+                source === "neo4j"
+                  ? "live Neo4j graph"
+                  : source === "demo"
+                    ? "public synthetic demo"
+                    : "local fallback"
+              }`
             : null}
         </p>
       </div>

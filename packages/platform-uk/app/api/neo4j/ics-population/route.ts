@@ -9,9 +9,10 @@ import { fetchIcsPopulationFromGraph } from "@/lib/neo4j/queries";
 export async function GET() {
   const session = await getServerSession(authOptions);
   // Public ICS demo: synthetic population only (no patient-level spill).
+  // X-Data-Source: demo keeps DemoDataBanner honest and avoids Neo4j mock/live banners.
   if (!session?.user?.id) {
     return NextResponse.json(getMockIcsPopulationResponse(), {
-      headers: { "X-Data-Source": "mock" }
+      headers: { "X-Data-Source": "demo" }
     });
   }
 

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 
-type DataSource = "neo4j" | "mock" | null;
+type DataSource = "neo4j" | "mock" | "demo" | null;
 
 export function Neo4jMockModeBanner({
   source,
@@ -18,8 +18,8 @@ export function Neo4jMockModeBanner({
 }) {
   if (loading) return null;
 
-  // Unknown (null) — e.g. public demo 401 on Neo4j APIs — do not imply mock.
-  if (source === null) return null;
+  // Unknown (null) or public synthetic demo — do not imply Neo4j mock/live.
+  if (source === null || source === "demo") return null;
 
   if (source === "neo4j") {
     if (!showLive) return null;

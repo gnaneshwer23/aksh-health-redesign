@@ -8,12 +8,17 @@ import type {
   Neo4jPatientResponse,
 } from "@/lib/neo4j/types";
 
-type DataSource = "neo4j" | "mock" | null;
+type DataSource = "neo4j" | "mock" | "demo" | null;
+
+function normalizeDataSource(raw: string | null): DataSource {
+  if (raw === "neo4j" || raw === "mock" || raw === "demo") return raw;
+  return null;
+}
 
 async function fetchWithSource<T>(url: string): Promise<{ data: T | null; source: DataSource }> {
   const response = await fetch(url, { credentials: "include" });
   if (!response.ok) return { data: null, source: null };
-  const source = (response.headers.get("X-Data-Source") as DataSource) ?? null;
+  const source = normalizeDataSource(response.headers.get("X-Data-Source"));
   return { data: (await response.json()) as T, source };
 }
 

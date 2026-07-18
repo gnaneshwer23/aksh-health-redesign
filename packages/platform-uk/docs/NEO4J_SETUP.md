@@ -189,6 +189,24 @@ Response header `X-Data-Source` is `neo4j` or `mock`.
 | APIs return mock | Confirm all three `NEO4J_*` env vars are set **and** Aura is Running |
 | Mock mode banner visible | Neo4j unreachable or not configured — check Vercel env vars and Aura status (Paused vs Running) |
 
+## Authenticated Neo4j smoke
+
+```bash
+# Against production (creates throwaway GP unless SMOKE_GP_* set)
+SMOKE_BASE_URL=https://akshhealth.com npm run smoke:neo4j
+
+# Optional: reuse a known GP account instead of signup
+SMOKE_GP_EMAIL=you@example.com SMOKE_GP_PASSWORD=... npm run smoke:neo4j
+```
+
+Asserts:
+
+1. `/api/health` neo4j honesty (`live` ⇒ `connected: true`)
+2. Public `/api/neo4j/ics-population` → `X-Data-Source: demo`
+3. Signed-in patient + guardian + ICS → `X-Data-Source: neo4j` when Aura live
+
+Throwaway password defaults to `E2eTestPass1!` (override with `E2E_TEST_PASSWORD`).
+
 ### Exact fix when production shows `neo4j.configured: true` but `connected: false`
 
 1. Open Aura console → instance (`5982f4dd` / akeno health).

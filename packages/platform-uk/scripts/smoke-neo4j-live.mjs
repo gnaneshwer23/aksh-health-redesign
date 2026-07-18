@@ -3,12 +3,18 @@
  * Smoke: Neo4j live graph honesty for dashboards.
  *
  * 1. Public GET /api/health — neo4j.connected / mode
- * 2. When live + SMOKE_* credentials present: patient API must return X-Data-Source: neo4j
+ * 2. Authenticated patient/guardian APIs must return X-Data-Source: neo4j when Aura live
+ * 3. Public ICS population stays synthetic (X-Data-Source: demo)
+ *
+ * Auth:
+ *   Optional override (preferred for CI with known accounts):
+ *     SMOKE_GP_EMAIL=... SMOKE_GP_PASSWORD=...
+ *   Otherwise creates a throwaway GP via POST /api/auth/signup (same pattern as e2e helpers).
+ *   Override throwaway password with E2E_TEST_PASSWORD (default E2eTestPass1!).
  *
  * Usage:
- *   SMOKE_BASE_URL=https://akshhealth.com node scripts/smoke-neo4j-live.mjs
- *   # optional auth for live consumer check:
- *   SMOKE_GP_EMAIL=... SMOKE_GP_PASSWORD=... node scripts/smoke-neo4j-live.mjs
+ *   SMOKE_BASE_URL=https://akshhealth.com npm run smoke:neo4j
+ *   SMOKE_GP_EMAIL=... SMOKE_GP_PASSWORD=... npm run smoke:neo4j
  */
 
 const baseUrl = (process.env.SMOKE_BASE_URL ?? process.env.EVIDENCE_HEALTH_URL ?? "https://akshhealth.com").replace(
@@ -16,8 +22,9 @@ const baseUrl = (process.env.SMOKE_BASE_URL ?? process.env.EVIDENCE_HEALTH_URL ?
   ""
 );
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 15_000);
-const smokeEmail = process.env.SMOKE_GP_EMAIL ?? process.env.SMOKE_ADMIN_EMAIL ?? "";
-const smokePassword = process.env.SMOKE_GP_PASSWORD ?? process.env.SMOKE_ADMIN_PASSWORD ?? "";
+const overrideEmail = process.env.SMOKE_GP_EMAIL ?? process.env.SMOKE_ADMIN_EMAIL ?? "";
+const overridePassword = process.env.SMOKE_GP_PASSWORD ?? process.env.SMOKE_ADMIN_PASSWORD ?? "";
+const throwawayPassword = process.env.E2E_TEST_PASSWORD?.trim() || "E2eTestPass1!";
 
 const cookieJar = new Map();
 
@@ -57,19 +64,51 @@ async function fetchWithTimeout(path, init = {}) {
   }
 }
 
-async function maybeSignIn() {
-  if (!smokeEmail || !smokePassword) {
-    console.log("[skip] No SMOKE_GP_EMAIL/PASSWORD — authenticated X-Data-Source check skipped");
-    return false;
-  }
+function uniqueSmokeEmail() {
+  const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return `smoke+neo4j-gp+${stamp}@akshhealth.test`;
+}
 
+async function createThrowawayGp() {
+  const email = uniqueSmokeEmail();
+  const password = throwawayPassword;
+  const response = await fetchWithTimeout("/api/auth/signup", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password,
+      confirmPassword: password,
+      role: "gp",
+      fullName: "Neo4j Smoke GP",
+      acceptedTerms: true
+    })
+  });
+  if (response.status !== 201) {
+    const body = await response.text();
+    throw new Error(`Throwaway GP signup failed (${response.status}): ${body.slice(0, 400)}`);
+  }
+  console.log(`[ok] Created throwaway GP ${email}`);
+  return { email, password, created: true };
+}
+
+async function resolveSmokeCredentials() {
+  if (overrideEmail && overridePassword) {
+    console.log(`[ok] Using SMOKE_GP_* override for ${overrideEmail}`);
+    return { email: overrideEmail, password: overridePassword, created: false };
+  }
+  console.log("[info] No SMOKE_GP_EMAIL/PASSWORD — creating throwaway GP via /api/auth/signup");
+  return createThrowawayGp();
+}
+
+async function signIn(email, password) {
   const csrfResponse = await fetchWithTimeout("/api/auth/csrf");
   if (!csrfResponse.ok) throw new Error(`csrf ${csrfResponse.status}`);
   const { csrfToken } = await csrfResponse.json();
   const body = new URLSearchParams({
     csrfToken,
-    email: smokeEmail,
-    password: smokePassword,
+    email,
+    password,
     callbackUrl: `${baseUrl}/dashboard/gp`,
     json: "true"
   });
@@ -81,8 +120,7 @@ async function maybeSignIn() {
   if (!signInResponse.ok) throw new Error(`sign-in ${signInResponse.status}`);
   const hasSession = Array.from(cookieJar.keys()).some((name) => name.includes("session-token"));
   if (!hasSession) throw new Error("No session cookie after sign-in");
-  console.log(`[ok] Signed in as ${smokeEmail}`);
-  return true;
+  console.log(`[ok] Signed in as ${email}`);
 }
 
 async function run() {
@@ -103,22 +141,57 @@ async function run() {
     console.log(`[ok] Honest mock/fallback mode (connected=${Boolean(neo.connected)})`);
   }
 
-  const signedIn = await maybeSignIn();
-  if (signedIn) {
-    const patientRes = await fetchWithTimeout("/api/neo4j/patient?id=P002");
-    if (!patientRes.ok) throw new Error(`/api/neo4j/patient → ${patientRes.status}`);
-    const source = patientRes.headers.get("X-Data-Source");
-    console.log(`[ok] P002 X-Data-Source=${source}`);
+  // Public ICS must stay synthetic demo (no auth)
+  cookieJar.clear();
+  const publicIcs = await fetchWithTimeout("/api/neo4j/ics-population");
+  if (!publicIcs.ok) throw new Error(`public ics-population → ${publicIcs.status}`);
+  const publicSource = publicIcs.headers.get("X-Data-Source");
+  if (publicSource !== "demo") {
+    throw new Error(`Public ICS expected X-Data-Source: demo, got ${publicSource ?? "null"}`);
+  }
+  console.log("[ok] Public ICS population is synthetic demo");
 
-    if (neo.mode === "live" && neo.connected) {
-      if (source !== "neo4j") {
-        throw new Error(
-          `Expected X-Data-Source: neo4j when health is live, got ${source ?? "null"} — consumer still on mock`
-        );
-      }
-      console.log("[ok] Signed-in GP consumer receives live Neo4j patient payload");
-    } else if (source === "mock") {
+  const { email, password } = await resolveSmokeCredentials();
+  await signIn(email, password);
+
+  const patientRes = await fetchWithTimeout("/api/neo4j/patient?id=P002");
+  if (!patientRes.ok) throw new Error(`/api/neo4j/patient → ${patientRes.status}`);
+  const patientSource = patientRes.headers.get("X-Data-Source");
+  console.log(`[ok] P002 X-Data-Source=${patientSource}`);
+
+  const guardianRes = await fetchWithTimeout("/api/neo4j/guardian?patientId=P002");
+  if (!guardianRes.ok) throw new Error(`/api/neo4j/guardian → ${guardianRes.status}`);
+  const guardianSource = guardianRes.headers.get("X-Data-Source");
+  console.log(`[ok] Guardian P002 X-Data-Source=${guardianSource}`);
+
+  const authIcs = await fetchWithTimeout("/api/neo4j/ics-population");
+  if (!authIcs.ok) throw new Error(`auth ics-population → ${authIcs.status}`);
+  const authIcsSource = authIcs.headers.get("X-Data-Source");
+  console.log(`[ok] Authenticated ICS X-Data-Source=${authIcsSource}`);
+
+  if (neo.mode === "live" && neo.connected) {
+    if (patientSource !== "neo4j") {
+      throw new Error(
+        `Expected patient X-Data-Source: neo4j when health is live, got ${patientSource ?? "null"}`
+      );
+    }
+    if (guardianSource !== "neo4j") {
+      throw new Error(
+        `Expected guardian X-Data-Source: neo4j when health is live, got ${guardianSource ?? "null"}`
+      );
+    }
+    if (authIcsSource !== "neo4j") {
+      throw new Error(
+        `Expected authenticated ICS X-Data-Source: neo4j when health is live, got ${authIcsSource ?? "null"}`
+      );
+    }
+    console.log("[ok] Signed-in consumer receives live Neo4j patient/guardian/ICS payloads");
+  } else {
+    if (patientSource === "mock" && guardianSource === "mock") {
       console.log("[ok] Signed-in consumer correctly reports mock fallback");
+    }
+    if (authIcsSource === "mock") {
+      console.log("[ok] Authenticated ICS correctly reports mock fallback");
     }
   }
 

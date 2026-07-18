@@ -37,7 +37,10 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
             </SelectContent>
           </Select>
         </div>
-        <Neo4jMockModeBanner source={source} loading={loading} showLive />
+        {/* Live/mock Neo4j banners only for signed-in ICS — public demo stays synthetic. */}
+        {!isPublicDemo ? (
+          <Neo4jMockModeBanner source={source} loading={loading} showLive />
+        ) : null}
         {children}
       </div>
     </DashboardShell>

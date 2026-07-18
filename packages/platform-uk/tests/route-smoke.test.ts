@@ -142,6 +142,16 @@ async function run() {
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-live-mode-banner");
   await assertFileIncludes("lib/clinical-proof/graph-assertions.ts", "TAKES_MEDICATION");
   await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-events-table");
+  await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-export-csv");
+  await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-empty-state");
+  await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-decision-filter");
+  await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/learning");
+  await assertFileIncludes("app/api/neo4j/ics-population/route.ts", "X-Data-Source\": \"demo\"");
+  await assertFileIncludes("lib/clinical-proof/graph-assertions.ts", "LIVE_GRAPH_SEED_PATIENT_IDS");
+  await assertFileIncludes("scripts/smoke-neo4j-live.mjs", "SMOKE_GP_EMAIL");
+  await assertFileIncludes("scripts/smoke-neo4j-live.mjs", "Throwaway GP signup");
+  await assertFileIncludes("scripts/generate-evidence-pack.mjs", "neo4j-smoke-snapshot.json");
+  await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-paths.json");
   await assertFileIncludes("package.json", "\"smoke:neo4j\"");
   await assertFileIncludes("docs/evidence-pack/gate-1-platform-readiness.md", "G1-01");
   await assertFileIncludes("docs/evidence-pack/gate-2-clinical-safety.md", "G2-01");
