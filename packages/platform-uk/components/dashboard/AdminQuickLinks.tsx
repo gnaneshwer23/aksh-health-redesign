@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, BookOpen, Building2, ClipboardList, FileText, Users } from "lucide-react";
+import { Activity, BookOpen, Building2, ClipboardList, FileText, Shield, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const LINKS = [
   { href: "/dashboard/admin/users", label: "User Management", description: "Invite, activate, and manage staff accounts", icon: Users },
   { href: "/dashboard/admin/integrations", label: "Integrations", description: "EMIS, SystmOne, FHIR, and platform service health", icon: Activity },
+  {
+    href: "/dashboard/admin/consent",
+    label: "Consent registry",
+    description: "Purpose + modality grants (Phase 1) — SHIELD logged, no EHR write",
+    icon: Shield,
+  },
   { href: "/dashboard/admin/audit", label: "Audit Log", description: "Full SHIELD audit trail for clinical AI actions", icon: ClipboardList },
   {
     href: "/dashboard/admin/learning",

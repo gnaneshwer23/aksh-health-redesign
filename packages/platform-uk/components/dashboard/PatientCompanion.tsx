@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
+import { CoachingDraftPanel } from "@/components/dashboard/precision-health/CoachingDraftPanel";
+import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
+import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
   getPatientCompanionProfile,
@@ -23,6 +26,10 @@ import {
 } from "@/lib/patient-companion/profile";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 import { cn } from "@/lib/utils";
+
+/** Synthetic demo patient used for Phase 1 companion API surfaces until a linked record exists. */
+const COMPANION_DEMO_PATIENT_ID = "P001";
+const COMPANION_DEMO_PATIENT_LABEL = "Demo patient (P001)";
 
 const TAB_VALUES = ["health", "checkins", "medications", "appointments", "ask"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
@@ -191,6 +198,32 @@ export function PatientCompanion() {
               </Button>
             </CardContent>
           </Card>
+          <ConsentGrantsPanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+            mode="patient"
+          />
+          <PatientTimelinePanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+          />
+          <CoachingDraftPanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+            mode="patient"
+          />
         </TabsContent>
 
         <TabsContent value="checkins" className="mt-4 space-y-4">

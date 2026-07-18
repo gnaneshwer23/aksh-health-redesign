@@ -40,7 +40,7 @@ Positioning from product README: *synthetic-data, review-first clinical proof �
 | ---: | --- | --- | --- | --- |
 | 1 | **Individual / Patient** | **Partial** | Synthetic cohort (26 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
 | 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 six-category **fixture catalog** (`lib/synthetic-source-profiles.ts`); Phase 1 **modality contracts** + synthetic sample store (`lib/precision-health/modalities.ts`, `/api/precision-health/modalities`) | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
-| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware; Phase 1 **purpose/modality grant registry** (`GET/POST /api/consent/grants`) | NHS Login / CIS2; enforceable purpose-limitation on live streams |
+| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware; Phase 1 **purpose/modality grant registry** (`GET/POST /api/consent/grants`) + UI (GP patient, patient companion, admin consent registry) | NHS Login / CIS2; enforceable purpose-limitation on live streams |
 | 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 **schema CI** (Zod); FHIR-shaped drafts/exports; optional Deepgram transcribe; Medplum rehearsal (off); EMIS staging queue (no write); Phase 1 modality **ingestion stubs** (`liveStream: false`) | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
 | 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases; Phase 1 **merged timeline API** (`GET /api/patients/[id]/timeline`) | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
 | 6 | **Unified foundation** (longitudinal record, imaging, omics, streams, knowledge base) | **Partial** | Simulated longitudinal profiles; Neo4j patient–condition–medication–interaction graph (live when Aura up); review-case + Postgres persistence | Unified imaging/omics/stream stores; production longitudinal FHIR repository; vector/time-series moat |
@@ -156,5 +156,6 @@ No fake certifications; each phase gates the next.
 | Modality contracts | `lib/precision-health/modalities.ts`, `/api/precision-health/modalities` |
 | Patient timeline | `GET /api/patients/[id]/timeline` |
 | Health plan draft | `POST /api/patients/[id]/health-plan` |
+| Consent / timeline / plan / coaching UI | GP patient detail · patient companion · `/dashboard/admin/consent` |
 | Delivery roadmap | `docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md` |
 | Roadmap honesty (MH/biomarkers/FL) | `lib/roadmap.ts` |

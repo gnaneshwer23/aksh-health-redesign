@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 
 import { HitlActions } from "@/components/dashboard/SOAPEditor";
@@ -7,8 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CURRENT_GP } from "@/lib/mock-data";
 import type { PopulationData } from "@/lib/mock-data/types";
 import type { Patient } from "@/lib/mock-data/types";
-import { buildPatientRiskState, buildPopulationRiskState } from "@/lib/precision-health/risk-state";
-import { useState } from "react";
+import {
+  buildPatientRiskState,
+  buildPopulationRiskState,
+  type PatientRiskState,
+} from "@/lib/precision-health/risk-state";
 
 type DigitalTwinPanelProps =
   | { mode?: "patient"; patient: Patient | null; icsData?: never; readOnly?: boolean }
@@ -23,8 +27,46 @@ export function DigitalTwinPanel(props: DigitalTwinPanelProps) {
 
 export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
   const [accepted, setAccepted] = useState(false);
+  const [apiRiskState, setApiRiskState] = useState<PatientRiskState | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
   const mode = props.mode ?? "patient";
   const readOnly = props.readOnly ?? false;
+
+  useEffect(() => {
+    if (mode !== "patient" || !props.patient?.id) {
+      setApiRiskState(null);
+      setApiLoaded(false);
+      return;
+    }
+    const patientId = props.patient.id;
+    let cancelled = false;
+    setApiLoaded(false);
+
+    async function loadRiskState() {
+      try {
+        const response = await fetch(`/api/patients/${encodeURIComponent(patientId)}/risk-state`, {
+          credentials: "include",
+        });
+        if (!response.ok) return;
+        const data = (await response.json()) as {
+          riskState?: PatientRiskState;
+          notAPhysiologicalTwin?: boolean;
+        };
+        if (cancelled || !data.riskState) return;
+        if (data.notAPhysiologicalTwin === false) return;
+        setApiRiskState(data.riskState);
+      } catch {
+        // Fall back to local risk-state builder below.
+      } finally {
+        if (!cancelled) setApiLoaded(true);
+      }
+    }
+
+    void loadRiskState();
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, props.patient?.id]);
 
   if (mode === "ics" && props.icsData) {
     const icsData = props.icsData;
@@ -112,15 +154,16 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
     return <p className="text-sm text-muted">Select a patient for risk-state insights</p>;
   }
 
-  const riskState = buildPatientRiskState(patient);
+  const riskState = apiRiskState ?? buildPatientRiskState(patient);
   const data = [{ name: "risk", value: riskState.admissionRisk14Days, fill: "#003D7A" }];
 
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm" data-testid="patient-risk-state-panel">
       <CardHeader className="p-4 pb-0">
         <CardTitle className="text-sm">Patient risk state</CardTitle>
         <p className="text-xs text-muted">
           Risk-state model (ORACLE-style) — not a physiological digital twin
+          {apiLoaded && apiRiskState ? " · loaded from risk-state API" : " · local demo model"}
         </p>
       </CardHeader>
       <CardContent className="p-4 space-y-4">

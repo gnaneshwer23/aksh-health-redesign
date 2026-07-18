@@ -162,6 +162,41 @@ async function run() {
   assert.equal(sleep.isClinicalAdvice, false);
   assert.equal(sleep.agentId, "SLEEP");
 
+  // --- UI surface honesty (Phase 1 UI slice) ---
+  const { readFile } = await import("fs/promises");
+  const uiFiles = [
+    "components/dashboard/precision-health/ConsentGrantsPanel.tsx",
+    "components/dashboard/precision-health/PatientTimelinePanel.tsx",
+    "components/dashboard/precision-health/HealthPlanDraftPanel.tsx",
+    "components/dashboard/precision-health/CoachingDraftPanel.tsx",
+    "components/dashboard/DigitalTwinPanel.tsx",
+    "app/dashboard/gp/patients/[id]/page.tsx",
+    "app/dashboard/admin/consent/page.tsx",
+    "components/dashboard/PatientCompanion.tsx"
+  ];
+  for (const rel of uiFiles) {
+    const src = await readFile(path.join(process.cwd(), rel), "utf8");
+    assert.ok(src.length > 50, `${rel} should exist`);
+  }
+  const coachingUi = await readFile(
+    path.join(process.cwd(), "components/dashboard/precision-health/CoachingDraftPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(coachingUi.includes("NOT CLINICAL ADVICE"));
+  assert.ok(coachingUi.includes("Escalate to clinician"));
+  const planUi = await readFile(
+    path.join(process.cwd(), "components/dashboard/precision-health/HealthPlanDraftPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(planUi.includes("ehrWrite: false"));
+  assert.ok(planUi.includes("HitlActions"));
+  const riskUi = await readFile(
+    path.join(process.cwd(), "components/dashboard/DigitalTwinPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(riskUi.includes("not a physiological digital twin"));
+  assert.ok(riskUi.includes("/risk-state"));
+
   // Cleanup scoped files (best effort)
   for (const name of [
     `consent-grants.${scopeKey}.json`,

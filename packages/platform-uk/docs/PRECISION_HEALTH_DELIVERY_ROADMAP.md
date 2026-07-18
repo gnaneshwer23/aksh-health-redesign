@@ -91,6 +91,8 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 **Code start (this release):** scaffolding for items 1–6 above lands on `main` as schemas, repositories, APIs, and honest UI rename — synthetic fixtures only.
 
+**UI slice (follow-on):** GP patient detail, patient companion, and admin consent registry surfaces call the Phase 1 APIs with HITL Accept/Edit/Reject where clinical, and explicit “not clinical advice” / “not a physiological twin” labels.
+
 ---
 
 ## Phase 2 — Mid term (6–18 months)
@@ -200,6 +202,11 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [x] Personalised plan draft after HITL
 - [x] Risk-state UI/API (no physiological twin claim)
 - [x] Nutrition + Sleep coaching stubs
+- [x] Consent / purpose grants UI (patient companion + admin registry + GP patient page)
+- [x] Patient timeline UI (GP patient page + patient companion)
+- [x] Health plan draft UI with HITL Accept/Edit/Reject (GP patient page; SHIELD stage only)
+- [x] Risk-state panel wired to `GET /api/patients/[id]/risk-state` (honest label)
+- [x] Nutrition / Sleep coaching stubs UI (patient companion; not clinical advice + HITL escalate)
 - [ ] Gate 1–3 evidence rows complete (PASS or GAP)
 - [ ] CSO review of Phase 1 wording + coaching scope
 - [ ] Pilot outcome-link demo (optional but recommended)

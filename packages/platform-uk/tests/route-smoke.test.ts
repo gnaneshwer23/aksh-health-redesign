@@ -139,7 +139,17 @@ async function run() {
   await assertFileIncludes("app/api/patients/[id]/health-plan/route.ts", "physiologicalTwin");
   await assertFileIncludes("app/api/patients/[id]/risk-state/route.ts", "notAPhysiologicalTwin");
   await assertFileIncludes("components/dashboard/DigitalTwinPanel.tsx", "Patient risk state");
+  await assertFileIncludes("components/dashboard/DigitalTwinPanel.tsx", "/api/patients/");
+  await assertFileIncludes("components/dashboard/precision-health/ConsentGrantsPanel.tsx", "/api/consent/grants");
+  await assertFileIncludes("components/dashboard/precision-health/PatientTimelinePanel.tsx", "/timeline");
+  await assertFileIncludes("components/dashboard/precision-health/HealthPlanDraftPanel.tsx", "Request plan draft");
+  await assertFileIncludes("components/dashboard/precision-health/CoachingDraftPanel.tsx", "NOT CLINICAL ADVICE");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "HealthPlanDraftPanel");
+  await assertFileIncludes("app/dashboard/admin/consent/page.tsx", "ConsentGrantsPanel");
+  await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/consent");
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "CoachingDraftPanel");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 1");
+  await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Consent / purpose grants UI");
   await assertFileIncludes("docs/PRECISION_HEALTH_FLOWCHART_GAP.md", "PRECISION_HEALTH_DELIVERY_ROADMAP.md");
   await assertFileIncludes("lib/precision-health/modalities.ts", "liveStream: false");
   await assertFileIncludes("app/api/eval/agents/route.ts", "runGoldenEval");
