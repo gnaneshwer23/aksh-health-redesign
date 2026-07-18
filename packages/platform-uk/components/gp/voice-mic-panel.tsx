@@ -15,11 +15,14 @@ export function VoiceMicPanel({
   initialSummary?: string;
 }) {
   const [lastTranscript, setLastTranscript] = useState(initialSummary ?? "");
-  const [mode, setMode] = useState<"idle" | "stub" | "live">("idle");
+  const [mode, setMode] = useState<"idle" | "stub" | "live" | "simulated">("idle");
 
-  function handleTranscript(transcript: string) {
+  function handleTranscript(
+    transcript: string,
+    meta?: { simulated?: boolean; mode?: string }
+  ) {
     setLastTranscript(transcript);
-    setMode("live");
+    setMode(meta?.simulated || meta?.mode === "simulated" ? "simulated" : "live");
     onTranscript(transcript);
   }
 
@@ -44,7 +47,13 @@ export function VoiceMicPanel({
       <AudioRecorder onTranscriptionComplete={handleTranscript} />
       {lastTranscript ? (
         <div className="gp-intake-excerpt" style={{ marginTop: "0.75rem" }}>
-          <strong>{mode === "stub" ? "Stub transcript" : "Live transcript"}</strong>
+          <strong>
+            {mode === "stub"
+              ? "Stub transcript"
+              : mode === "simulated"
+                ? "Simulated transcript"
+                : "Live transcript"}
+          </strong>
           <p>{lastTranscript}</p>
         </div>
       ) : null}

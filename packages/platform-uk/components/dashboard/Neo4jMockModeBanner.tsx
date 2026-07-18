@@ -25,7 +25,9 @@ export function Neo4jMockModeBanner({
       )}
     >
       Clinical graph data is in <strong>local fallback mode</strong>. Neo4j is not connected. ORACLE,
-      GUARDIAN, and ICS panels use cached fallback data until the graph is linked.
+      GUARDIAN, and ICS panels use cached fallback data until the graph is linked. If Aura shows{" "}
+      <strong>Paused</strong>, resume the instance in the Neo4j Aura console, wait until it is Running,
+      then refresh — see docs/NEO4J_SETUP.md.
     </p>
   );
 }

@@ -36,6 +36,23 @@ function RoleSelectContent() {
 
   function handleContinue() {
     if (!selected) return;
+
+    const current = useOnboardingStore.getState();
+    const hasProgress =
+      Boolean(current.role) &&
+      (Object.keys(current.identity).length > 0 ||
+        Object.keys(current.organisation).length > 0 ||
+        Object.keys(current.preferences).length > 0 ||
+        Object.keys(current.consents).length > 0 ||
+        current.completedSteps.length > 1);
+
+    if (current.role && current.role !== selected && hasProgress) {
+      const confirmed = window.confirm(
+        "Changing role clears saved onboarding progress for the previous role. Continue?"
+      );
+      if (!confirmed) return;
+    }
+
     setRole(selected);
     syncStepFromId("identity");
     router.push(getStepPath("identity"));

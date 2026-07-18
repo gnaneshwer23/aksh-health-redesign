@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { resolveDashboardPath } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,8 @@ export function SandboxPreview() {
     [identity.firstName, identity.lastName].filter(Boolean).join(" ") ||
     "Your dashboard";
 
+  const odsCode = resolveOrganisationOdsCode(organisation);
+
   return (
     <div className="rounded-lg border border-dashed border-border bg-background p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -27,9 +30,7 @@ export function SandboxPreview() {
         {organisation.practiceName ? (
           <p className="text-muted">Organisation: {String(organisation.practiceName)}</p>
         ) : null}
-        {organisation.odsCode ? (
-          <p className="text-muted">ODS: {String(organisation.odsCode)}</p>
-        ) : null}
+        {odsCode ? <p className="text-muted">ODS: {odsCode}</p> : null}
         <p className={cn("text-xs text-muted")}>
           Destination: {resolveDashboardPath(role)}
         </p>

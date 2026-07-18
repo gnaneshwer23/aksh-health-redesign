@@ -51,8 +51,9 @@ export async function GET() {
         neo4j.mode === "live"
           ? "Graph connected."
           : neo4j.configured
-            ? "Neo4j env present but unreachable — dashboards use mock graph data."
-            : "Neo4j not configured — dashboards use mock graph data."
+            ? (neo4jHealth.reconnectHint ??
+              "Neo4j env present but unreachable — dashboards use mock graph data.")
+            : "Neo4j not configured — dashboards use mock graph data.",
     },
   });
 }

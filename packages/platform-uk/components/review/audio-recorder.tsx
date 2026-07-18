@@ -5,7 +5,10 @@ import { useState, useRef } from "react";
 export function AudioRecorder({
   onTranscriptionComplete
 }: {
-  onTranscriptionComplete: (transcript: string) => void;
+  onTranscriptionComplete: (
+    transcript: string,
+    meta?: { simulated?: boolean; mode?: string }
+  ) => void;
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,7 +53,10 @@ export function AudioRecorder({
           
           const data = await response.json();
           if (data.transcript) {
-            onTranscriptionComplete(data.transcript);
+            onTranscriptionComplete(data.transcript, {
+              simulated: Boolean(data.simulated || data.mode === "simulated"),
+              mode: typeof data.mode === "string" ? data.mode : undefined,
+            });
           }
         } catch (error) {
           console.error("Error transcribing audio:", error);

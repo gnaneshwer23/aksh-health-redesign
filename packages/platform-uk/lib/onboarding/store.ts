@@ -145,6 +145,17 @@ export const useOnboardingStore = create<OnboardingState>()(
       ...initialState,
       setRole: (role) => {
         const def = getRoleDefinition(role);
+        const previous = get();
+
+        // Re-selecting the same role must not wipe in-progress answers.
+        if (previous.role === role) {
+          set({
+            role,
+            totalSteps: def?.steps.length ?? 0,
+          });
+          return;
+        }
+
         set({
           role,
           totalSteps: def?.steps.length ?? 0,

@@ -1,19 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { Mic } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { resolveDashboardPath, type UserRole } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
-import { cn } from "@/lib/utils";
 
 type TutorialScreen = {
   title: string;
   body: string;
   visual: React.ReactNode;
-  cta?: { label: string; href: string };
+  /** Final-screen label — always routes through /onboarding/complete via onComplete. */
+  ctaLabel?: string;
 };
 
 function getGpScreens(doctorName: string): TutorialScreen[] {
@@ -132,7 +131,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
           ))}
         </ul>
       ),
-      cta: { label: "Open My Dashboard", href: "/dashboard/gp" },
+      ctaLabel: "Open My Dashboard",
     },
   ];
 }
@@ -197,7 +196,7 @@ function getIcsScreens(): TutorialScreen[] {
       title: "You're Ready",
       body: "Your ICS population intelligence workspace is configured.",
       visual: <p className="text-sm text-accent">✓ ICS dashboard configured and ready</p>,
-      cta: { label: "Open ICS Dashboard", href: "/dashboard/ics" },
+      ctaLabel: "Open ICS Dashboard",
     },
   ];
 }
@@ -229,7 +228,7 @@ function getHospitalScreens(): TutorialScreen[] {
       title: "You're Ready",
       body: "Hospital Command Centre and Digital Twin are active.",
       visual: <p className="text-sm text-accent">✓ Executive dashboard ready</p>,
-      cta: { label: "Open Hospital Dashboard", href: "/dashboard/hospital" },
+      ctaLabel: "Open Hospital Dashboard",
     },
   ];
 }
@@ -266,7 +265,7 @@ function getPatientScreens(): TutorialScreen[] {
           <p className="mt-2">AI: "Fatigue can occur. I'll note this for your GP to review."</p>
         </div>
       ),
-      cta: { label: "Open My Health", href: "/dashboard/patient" },
+      ctaLabel: "Open My Health",
     },
   ];
 }
@@ -328,20 +327,9 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
           Previous
         </Button>
         {isLast ? (
-          screen.cta ? (
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" asChild>
-                <Link href={screen.cta.href}>{screen.cta.label}</Link>
-              </Button>
-              <Button type="button" onClick={onComplete}>
-                Finish tutorial
-              </Button>
-            </div>
-          ) : (
-            <Button type="button" onClick={onComplete}>
-              Finish tutorial
-            </Button>
-          )
+          <Button type="button" onClick={onComplete}>
+            {screen.ctaLabel ?? "Finish tutorial"}
+          </Button>
         ) : (
           <Button type="button" onClick={() => setTutorialScreen(tutorialScreen + 1)}>
             Next

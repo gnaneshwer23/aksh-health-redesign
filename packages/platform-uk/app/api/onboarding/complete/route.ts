@@ -5,6 +5,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { completeOnboarding } from "@/lib/auth/user-repository";
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
+import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
 const roleValues = ROLES.map((role) => role.id) as [string, ...string[]];
@@ -36,12 +37,16 @@ export async function POST(request: Request) {
 
   const { role, fullName, practiceOds, preferences, identity, organisation, consents } = parsed.data;
 
+  const resolvedPracticeOds =
+    practiceOds?.trim() ||
+    resolveOrganisationOdsCode(organisation as Record<string, unknown> | undefined);
+
   try {
     const profile = await completeOnboarding({
       userId: session.user.id,
       role: role as UserRole,
       fullName: fullName ?? (typeof identity?.fullName === "string" ? identity.fullName : null),
-      practiceOds: practiceOds ?? (typeof organisation?.odsCode === "string" ? organisation.odsCode : null),
+      practiceOds: resolvedPracticeOds,
       preferences: {
         ...(preferences ?? {}),
         identity: identity ?? {},

@@ -183,8 +183,18 @@ Response header `X-Data-Source` is `neo4j` or `mock`.
 
 | Issue | Fix |
 |-------|-----|
-| `ServiceUnavailable` | Check URI uses `neo4j+s://` for Aura |
-| Auth failed | Regenerate password in Aura console |
-| Empty guardian for P002 | Re-run `npm run data:seed:neo4j` |
-| APIs return mock | Confirm all three `NEO4J_*` env vars are set |
-| Mock mode banner visible | Neo4j unreachable or not configured — check Vercel env vars and Aura status |
+| `ServiceUnavailable` / empty routing table | **Most common:** Aura instance is **Paused**. Open [Neo4j Aura](https://console.neo4j.io/) → select instance → **Resume**. Wait until status is **Running**, then re-check `GET /api/health` (`neo4j.connected` should become `true`). Also confirm URI uses `neo4j+s://`. |
+| Auth failed | Regenerate password in Aura console and update local `.env.local` + Vercel `NEO4J_PASSWORD`, then redeploy |
+| Empty guardian for P002 | Re-run `npm run data:seed:neo4j` after Aura is Running |
+| APIs return mock | Confirm all three `NEO4J_*` env vars are set **and** Aura is Running |
+| Mock mode banner visible | Neo4j unreachable or not configured — check Vercel env vars and Aura status (Paused vs Running) |
+
+### Exact fix when production shows `neo4j.configured: true` but `connected: false`
+
+1. Open Aura console → instance (`5982f4dd` / akeno health).
+2. If status is **Paused**, click **Resume** and wait for **Running** (often 30–90 seconds).
+3. From `packages/platform-uk` with matching `.env.local`, run `npm run data:seed:neo4j` if the graph was emptied on pause/recreate.
+4. Confirm:
+   - `curl -s https://akshhealth.com/api/health` → `neo4j.mode: "live"`, `connected: true`
+   - Signed-in `GET /api/neo4j/health` → `{ "connected": true, "mode": "live" }`
+5. No code deploy is required solely to resume Aura; redeploy only if you changed Vercel env vars.

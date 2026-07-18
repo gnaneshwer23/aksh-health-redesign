@@ -9,6 +9,7 @@ import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { SandboxPreview } from "@/components/onboarding/SandboxPreview";
 import { useToast } from "@/components/ui/use-toast";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirects";
+import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { getRoleDefinition } from "@/lib/onboarding/roles";
 import { markOnboardingComplete, useOnboardingStore } from "@/lib/onboarding/store";
 
@@ -57,7 +58,7 @@ export function CompleteStepClient() {
           preferences,
           consents,
           fullName: displayName,
-          practiceOds: organisation.odsCode,
+          practiceOds: resolveOrganisationOdsCode(organisation) ?? undefined,
         }),
       });
 
