@@ -97,7 +97,7 @@ export function FederatedJobsPanel() {
   };
 
   return (
-    <Card className="shadow-sm" data-testid="federated-jobs-panel">
+    <Card id="federated" className="scroll-mt-24 shadow-sm" data-testid="federated-jobs-panel">
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 p-4 pb-2">
         <div>
           <CardTitle className="text-sm">Federated research jobs (synthetic aggregates)</CardTitle>

@@ -187,6 +187,26 @@ async function run() {
   await assertFileIncludes("app/dashboard/hospital/page.tsx", "ScenarioRankingPanel");
   await assertFileIncludes("app/dashboard/researcher/page.tsx", "FederatedJobsPanel");
   await assertFileIncludes("app/dashboard/admin/integrations/page.tsx", "PharmaPayerStubPanel");
+  await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "PrecisionHealthStatusPanel");
+  await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "ConnectorsIngestPanel");
+  await assertFileIncludes(
+    "components/dashboard/precision-health/ConnectorsIngestPanel.tsx",
+    "Fitbit stub disabled"
+  );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/CausalHypothesisPanel.tsx",
+    "hypothesis only, not causal proof"
+  );
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "CausalHypothesisPanel");
+  await assertFileIncludes("app/dashboard/hospital/page.tsx", "panel === \"digital-twin\"");
+  await assertFileIncludes("app/dashboard/hospital/page.tsx", "DigitalTwinPanel");
+  await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/precision-health");
+  await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/researcher#federated");
+  await assertFileIncludes("app/resources/page.tsx", "precision-health");
+  await assertFileIncludes("app/resources/page.tsx", "not a living physiological twin");
+  await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-progress.json");
+  await assertFileIncludes("scripts/generate-evidence-pack.mjs", "precision-health-scaffold-snapshot.json");
+  await assertFileIncludes("scripts/evidence-precision-health-summary.ts", "physiologicalTwin");
   await assertFileIncludes("lib/precision-health/connectors.ts", "imaging_dicom_meta_stub");
   await assertFileIncludes("lib/precision-health/connectors.ts", "omics_panel_stub");
   await assertFileIncludes("lib/precision-health/connectors.ts", "environment_openweather_stub");

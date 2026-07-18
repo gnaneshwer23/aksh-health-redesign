@@ -62,6 +62,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
+    { href: "/dashboard/admin/precision-health", label: "Precision Health", icon: Heart },
     { href: "/dashboard/admin/consent", label: "Consent registry", icon: Shield },
     { href: "/dashboard/admin/audit", label: "Audit Log", icon: ClipboardList },
     { href: "/dashboard/admin/learning", label: "Learning events", icon: BookOpen },
@@ -87,6 +88,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   researcher: [
     { href: "/dashboard/researcher", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/researcher#federated", label: "Federated (stub)", icon: FlaskConical },
     { href: "/dashboard/researcher/evaluation", label: "Evaluation", icon: FlaskConical },
     { href: "/dashboard/researcher/data-access", label: "Data Access", icon: Database },
     { href: "/dashboard/researcher/settings", label: "Settings", icon: Settings },

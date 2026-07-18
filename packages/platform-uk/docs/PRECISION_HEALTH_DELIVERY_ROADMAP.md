@@ -80,14 +80,16 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ### Exit criteria
 
-- [ ] Consent grants API + SHIELD dual-write covered by automated tests
-- [ ] All seven modality schemas validate fixtures; ingestion stubs return `liveStream: false`
-- [ ] Patient timeline returns merged, ordered events for at least one synthetic patient
-- [ ] Health plan draft requires HITL; `ehrWrite: false` in API contract
-- [ ] Risk-state UI copy nowhere claims physiological / simulation twin
-- [ ] Nutrition + Sleep APIs: coaching-only disclaimer + HITL for clinical escalation path
-- [ ] Gate 1–3 evidence pack rows exist with GAP or PASS (no silent invent)
-- [ ] Clinical-proof suite remains green; marketing does not claim Phase 2–3
+- [x] Consent grants API + SHIELD dual-write covered by automated tests
+- [x] All seven modality schemas validate fixtures; ingestion stubs return `liveStream: false`
+- [x] Patient timeline returns merged, ordered events for at least one synthetic patient
+- [x] Health plan draft requires HITL; `ehrWrite: false` in API contract
+- [x] Risk-state UI copy nowhere claims physiological / simulation twin
+- [x] Nutrition + Sleep APIs: coaching-only disclaimer + HITL for clinical escalation path
+- [x] Gate 1–3 evidence pack rows exist with GAP or PASS (no silent invent) — auto progress UNSIGNED
+- [x] Clinical-proof suite remains green; marketing does not claim Phase 2–3 live capabilities
+
+**Still external:** CSO wording review · DPIA purpose alignment · optional pilot outcome-link demo
 
 **Code start (this release):** scaffolding for items 1–6 above lands on `main` as schemas, repositories, APIs, and honest UI rename — synthetic fixtures only.
 
@@ -229,18 +231,20 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [x] Health plan draft UI with HITL Accept/Edit/Reject (GP patient page; SHIELD stage only)
 - [x] Risk-state panel wired to `GET /api/patients/[id]/risk-state` (honest label)
 - [x] Nutrition / Sleep coaching stubs UI (patient companion; not clinical advice + HITL escalate)
-- [ ] Gate 1–3 evidence rows complete (PASS or GAP)
+- [x] Gate 1–3 evidence rows complete (PASS or GAP) — generator writes `gate-checklist-progress.json` (UNSIGNED; CSO signatures still MANUAL)
 - [ ] CSO review of Phase 1 wording + coaching scope
 - [ ] Pilot outcome-link demo (optional but recommended)
 
 ### Phase 2
 
 - [x] Connector registry + consent-gated ingest API (synthetic / stub; `liveStream` honest)
+- [x] Connector list + consent-gated ingest demo UI (admin Precision Health; Fitbit stub disabled without key)
 - [x] Living KG MERGE path when Neo4j live (skip when mock)
 - [x] ORACLE model card surfaced (clinical owner still UNASSIGNED)
 - [x] Medplum dry-run staging probe (`?probe=dry-run`); flag-off clears status
 - [x] EMIS partner checklist API + `docs/PHASE2_PARTNER_CHECKLIST.md` (`liveEmis: false`)
-- [x] Exercise + mental-health coaching stubs under HITL
+- [x] Admin Precision Health status page (connectors, consent summary, Neo4j/Medplum/EMIS/twin flags)
+- [x] Exercise + mental-health coaching stubs under HITL (API + patient companion UI)
 - [ ] DPIA for first live modality
 - [ ] Partner credentials + first consented **live** ingest
 - [ ] Clinical owner named for predictive model
@@ -251,10 +255,11 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 - [x] Advanced modality contracts + DICOM/omics/environment connector stubs (`liveStream` honest)
 - [x] Synthetic twin scenario ranking API + UI (`physiologicalTwin: false`)
-- [x] Causal AI hypothesis stub (HITL + SHIELD; clinical owner UNASSIGNED)
-- [x] Federated research jobs stub (ethics gate; synthetic aggregates; no patient-level export default)
-- [x] Pharma RWE + payer VBC read-only stubs
+- [x] Causal AI hypothesis stub (HITL + SHIELD; clinical owner UNASSIGNED) — API + GP/hospital UI
+- [x] Federated research jobs stub (ethics gate; synthetic aggregates; no patient-level export default) — researcher nav
+- [x] Pharma RWE + payer VBC read-only stubs — admin Precision Health + integrations
 - [x] `docs/PHASE3_REGULATORY_PATH.md` unsigned checklist
+- [x] Nav reachability for twin sim / causal / federated / pharma-payer panels (hospital risk-state panel fixed)
 - [ ] Twin validation study plan funded
 - [ ] Regulatory path selected and funded (signed DTAC / DCB0129 / MHRA as applicable)
 - [ ] Federated / pharma-payer governance designs signed
@@ -274,4 +279,4 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ## One-line positioning (unchanged honesty)
 
-> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 contracts, Phase 2 readiness scaffolding, and Phase 3 synthetic twin/causal/federated stubs are in-repo — not a living physiological digital twin, live omics, or MHRA-approved CDS.**
+> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 contracts, Phase 2 readiness scaffolding, and Phase 3 synthetic twin/causal/federated stubs with admin/role UI are in-repo — not a living physiological digital twin, live omics, live EMIS, or MHRA-approved CDS.**

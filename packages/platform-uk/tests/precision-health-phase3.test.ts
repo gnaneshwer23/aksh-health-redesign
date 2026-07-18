@@ -202,7 +202,11 @@ async function run() {
     "docs/PHASE3_REGULATORY_PATH.md",
     "components/dashboard/precision-health/ScenarioRankingPanel.tsx",
     "components/dashboard/precision-health/FederatedJobsPanel.tsx",
-    "components/dashboard/precision-health/PharmaPayerStubPanel.tsx"
+    "components/dashboard/precision-health/PharmaPayerStubPanel.tsx",
+    "components/dashboard/precision-health/CausalHypothesisPanel.tsx",
+    "components/dashboard/precision-health/ConnectorsIngestPanel.tsx",
+    "components/dashboard/precision-health/PrecisionHealthStatusPanel.tsx",
+    "app/dashboard/admin/precision-health/page.tsx"
   ];
   for (const rel of files) {
     const src = await readFile(path.join(process.cwd(), rel), "utf8");
@@ -229,6 +233,19 @@ async function run() {
   );
   assert.ok(ui.includes("not a living digital twin"));
   assert.ok(ui.includes("ehrWrite: false"));
+
+  const causalUi = await readFile(
+    path.join(process.cwd(), "components/dashboard/precision-health/CausalHypothesisPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(causalUi.includes("hypothesis only, not causal proof"));
+
+  const adminPh = await readFile(
+    path.join(process.cwd(), "app/dashboard/admin/precision-health/page.tsx"),
+    "utf8"
+  );
+  assert.ok(adminPh.includes("liveEmis:false"));
+  assert.ok(adminPh.includes("physiologicalTwin:false"));
 
   const roadmap = await readFile(
     path.join(process.cwd(), "docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md"),

@@ -158,12 +158,21 @@ async function run() {
     "app/api/agents/exercise/route.ts",
     "app/api/agents/mental-health/route.ts",
     "docs/PHASE2_PARTNER_CHECKLIST.md",
-    "docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md"
+    "docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md",
+    "components/dashboard/precision-health/ConnectorsIngestPanel.tsx",
+    "app/dashboard/admin/precision-health/page.tsx"
   ];
   for (const rel of files) {
     const src = await readFile(path.join(process.cwd(), rel), "utf8");
     assert.ok(src.length > 50, `${rel} should exist`);
   }
+
+  const connectorsUi = await readFile(
+    path.join(process.cwd(), "components/dashboard/precision-health/ConnectorsIngestPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(connectorsUi.includes("Fitbit stub disabled"));
+  assert.ok(connectorsUi.includes("/api/precision-health/ingest"));
 
   const oracleRoute = await readFile(
     path.join(process.cwd(), "app/api/agents/oracle/route.ts"),

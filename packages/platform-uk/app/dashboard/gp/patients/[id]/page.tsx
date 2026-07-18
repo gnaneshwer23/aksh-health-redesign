@@ -7,6 +7,7 @@ import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { OracleRiskPanel } from "@/components/dashboard/OracleRiskPanel";
+import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
@@ -105,6 +106,7 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
         </section>
         <DigitalTwinPanel patient={patient} />
         <ScenarioRankingPanel patientId={patient.id} patientLabel={patient.name} />
+        <CausalHypothesisPanel patientId={patient.id} patientLabel={patient.name} />
         <HealthPlanDraftPanel patientId={patient.id} patientLabel={patient.name} />
         <PatientTimelinePanel patientId={patient.id} patientLabel={patient.name} />
         <ConsentGrantsPanel patientId={patient.id} patientLabel={patient.name} mode="clinician" />

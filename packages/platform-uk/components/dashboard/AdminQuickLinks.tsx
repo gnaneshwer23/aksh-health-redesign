@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, BookOpen, Building2, ClipboardList, FileText, Shield, Users } from "lucide-react";
+import { Activity, BookOpen, Building2, ClipboardList, FileText, Heart, Shield, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const LINKS = [
   { href: "/dashboard/admin/users", label: "User Management", description: "Invite, activate, and manage staff accounts", icon: Users },
   { href: "/dashboard/admin/integrations", label: "Integrations", description: "EMIS, SystmOne, FHIR, and platform service health", icon: Activity },
+  {
+    href: "/dashboard/admin/precision-health",
+    label: "Precision Health",
+    description: "Connectors, twin/EMIS honesty flags, partner checklist pointers (scaffolding)",
+    icon: Heart,
+  },
   {
     href: "/dashboard/admin/consent",
     label: "Consent registry",

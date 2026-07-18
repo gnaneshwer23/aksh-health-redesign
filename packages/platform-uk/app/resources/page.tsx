@@ -61,6 +61,12 @@ const resourceCategories = [
     description: "FHIR R4 staging, EMIS Web, and SystmOne interoperability patterns.",
   },
   {
+    id: "precision-health",
+    icon: BookOpen,
+    title: "Precision Health roadmap",
+    description: "Honest phased scaffolding toward multimodal contracts — not a live digital twin claim.",
+  },
+  {
     id: "security",
     icon: Shield,
     title: "Security",
@@ -157,6 +163,19 @@ const resourceSections = [
       "RiskAssessment for ORACLE score updates",
       "AuditEvent for SHIELD compliance trail on Accept, Edit, Reject",
       "Designed for EMIS Web and SystmOne FHIR exchange patterns",
+    ],
+  },
+  {
+    id: "precision-health",
+    label: "Precision Health",
+    title: "Roadmap scaffolding — not a living physiological twin",
+    body: "Aksh Health publishes an honest delivery roadmap for Precision Health / digital twin work. What is in the product today is HITL clinical proof plus Phase 1–3 contracts, synthetic connectors, and role UI. We do not claim live Fitbit/DICOM/omics streams, live EMIS write-back, MHRA-approved CDS, or a validated physiological digital twin.",
+    bullets: [
+      "Phase 0: HITL clinical proof on synthetic cohort (staging / sim write only)",
+      "Phase 1–3: consent registry, modality contracts, connector stubs, synthetic twin ranking, causal/federated/pharma stubs",
+      "Admin Precision Health status surfaces connector and honesty flags (liveEmis:false · physiologicalTwin:false)",
+      "Partner credentials, DPIA, CSO signatures, and regulatory submissions remain outside the codebase",
+      "Internal roadmap: docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md (engineering / auditor reference)",
     ],
   },
 ] as const;
@@ -286,6 +305,7 @@ export default function ResourcesPage() {
             <ResourceDetailCard section={getSection("dcb0129")} />
             <ResourceDetailCard section={getSection("dtac")} />
             <ResourceDetailCard section={getSection("integration")} />
+            <ResourceDetailCard section={getSection("precision-health")} />
           </div>
         </div>
       </section>

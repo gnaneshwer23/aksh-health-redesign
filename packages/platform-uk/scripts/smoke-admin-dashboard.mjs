@@ -19,6 +19,12 @@ const protectedAdminRoutes = [
   { label: "Admin dashboard", path: "/dashboard/admin", expectedText: ["Practice Manager", "Admin Sections"] },
   { label: "Admin users", path: "/dashboard/admin/users", expectedText: ["User Management", "Invite User"] },
   { label: "Admin integrations", path: "/dashboard/admin/integrations", expectedText: ["Integrations", "Integration Status"] },
+  {
+    label: "Admin Precision Health",
+    path: "/dashboard/admin/precision-health",
+    expectedText: ["Precision Health", "scaffolding", "liveEmis"],
+  },
+  { label: "Admin consent", path: "/dashboard/admin/consent", expectedText: ["Consent registry", "Purpose-bound"] },
   { label: "Admin audit", path: "/dashboard/admin/audit", expectedText: ["Audit Log", "Export Full Audit Log"] },
   {
     label: "Admin organisation enquiries",
