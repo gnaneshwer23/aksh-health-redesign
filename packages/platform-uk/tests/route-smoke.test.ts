@@ -169,6 +169,11 @@ async function run() {
   await assertFileIncludes("lib/precision-health/twin-simulation.ts", "physiologicalTwin: false");
   await assertFileIncludes("app/api/precision-health/twin/simulate/route.ts", "ehrWrite: false");
   await assertFileIncludes("app/api/precision-health/twin/status/route.ts", "getTwinSimulationStatus");
+  await assertFileIncludes("lib/precision-health/whole-loop.ts", "physiologicalTwin: false");
+  await assertFileIncludes("lib/precision-health/whole-loop.ts", "liveEmis: false");
+  await assertFileIncludes("lib/precision-health/whole-loop.ts", "autoRetrain: false");
+  await assertFileIncludes("app/api/precision-health/whole-loop/route.ts", "runWholeLoop");
+  await assertFileIncludes("app/demo/precision-health-loop/page.tsx", "PrecisionHealthLoopDemo");
   await assertFileIncludes("app/api/agents/causal/route.ts", "hypothesis only, not causal proof");
   await assertFileIncludes("app/api/research/federated/jobs/route.ts", "patientLevelExport");
   await assertFileIncludes("app/api/integrations/pharma-rwe/route.ts", "getPharmaRweSummary");

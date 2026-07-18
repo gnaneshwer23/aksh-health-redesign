@@ -29,6 +29,7 @@ const PUBLIC_PATHS = [
   "/for-research",
   "/for-patients",
   "/demo/patel",
+  "/demo/precision-health-loop",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

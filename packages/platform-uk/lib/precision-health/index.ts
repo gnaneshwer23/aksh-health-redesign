@@ -108,3 +108,15 @@ export {
   type PharmaRweSummary,
   type PayerVbcMetrics
 } from "./pharma-payer";
+
+export {
+  runWholeLoop,
+  getWholeLoopCapabilities,
+  wholeLoopRequestSchema,
+  WHOLE_LOOP_STAGES,
+  type LoopRunReport,
+  type WholeLoopCapabilities,
+  type WholeLoopStageId,
+  type StageStatus,
+  type SafetyRoute
+} from "./whole-loop";

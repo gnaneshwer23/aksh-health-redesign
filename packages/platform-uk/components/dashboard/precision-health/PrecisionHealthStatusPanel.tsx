@@ -165,6 +165,12 @@ export function PrecisionHealthStatusPanel() {
           >
             Open consent registry →
           </Link>
+          <Link
+            href="/demo/precision-health-loop"
+            className="mt-1 ml-3 inline-block text-xs font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Run synthetic whole loop →
+          </Link>
         </div>
 
         {emis?.items && emis.items.length > 0 ? (

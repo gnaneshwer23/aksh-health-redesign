@@ -217,6 +217,7 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [x] Gap audit published
 - [x] HITL + zero-write invariants enforced in proof suite
 - [x] Health + Neo4j honesty on live site
+- [x] **Synthetic whole-loop demo shipped** (`/demo/precision-health-loop` + `POST /api/precision-health/whole-loop`) — exercises every Mermaid flowchart stage with honest flags; live modalities / EMR still Phase 2–3 partner
 
 ### Phase 1
 

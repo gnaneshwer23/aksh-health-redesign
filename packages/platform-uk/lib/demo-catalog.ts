@@ -30,4 +30,13 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     duration: "~5 minutes",
     category: "Population health",
   },
+  {
+    id: "precision-health-loop",
+    title: "Precision Health whole loop",
+    description:
+      "Synthetic closed loop across the Mermaid flowchart — consent → ingest → agents → twin ranking → plan → HITL/sim → learning. Not a living twin; liveEmis:false.",
+    href: "/demo/precision-health-loop",
+    duration: "~3 minutes",
+    category: "Precision Health scaffolding",
+  },
 ];

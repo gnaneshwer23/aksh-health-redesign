@@ -14,7 +14,7 @@ export const HITL_PLAIN =
   "A clinician decides what reaches the record — Accept, Edit, or Reject before FHIR write.";
 
 export const PRECISION_HEALTH_SOFT =
-  "Precision Health scaffolding (risk state, timeline, plan drafts, consent registry) is on the roadmap — not a live physiological twin or live EMR write-back.";
+  "Precision Health scaffolding includes a synthetic whole-loop demo (consent → ingest → agents → plan → HITL/sim) — not a live physiological twin or live EMR write-back.";
 
 export type JourneyPreview = {
   workspaceLabel: string;

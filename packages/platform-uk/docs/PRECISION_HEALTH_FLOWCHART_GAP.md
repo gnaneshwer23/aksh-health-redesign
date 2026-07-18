@@ -1,7 +1,7 @@
 # Precision Health / Digital Twin Flowchart — Gap Audit (Aksh Health UK)
 
-**Date:** 18 Jul 2026  
-**Repo HEAD:** `287d6d0` (or later on `main`)  
+**Date:** 19 Jul 2026  
+**Repo HEAD:** `main` (whole-loop demo on/after this date)  
 **Live:** https://akshhealth.com  
 **Health check (live):** `GET /api/health` → Postgres `mode: live`, Neo4j Aura `mode: live` (seeded synthetic cohort)
 
@@ -11,12 +11,14 @@ Related internal docs: `docs/E2E_CLINICAL_PROOF.md`, `docs/FIGMA_10_LAYER_NHS_AR
 
 **Delivery roadmap:** phased path from this baseline → Phase 1 scaffolding → Phase 2 live modalities → Phase 3 twin/regulatory — see [`PRECISION_HEALTH_DELIVERY_ROADMAP.md`](./PRECISION_HEALTH_DELIVERY_ROADMAP.md).
 
+**Synthetic whole-loop demo (shipped):** `/demo/precision-health-loop` + `POST /api/precision-health/whole-loop` runs consent → ingest → timeline → Neo4j → agents → twin ranking → plan → safety route → HITL/sim → learning in one journey. Labels remain honest (`physiologicalTwin:false`, `liveEmis:false`, `autoRetrain:false`). Live modalities and EMR write-back remain Phase 2–3 partner work.
+
 ---
 
 ## 1. Verdict
 
-**No — Aksh does not deliver this full Precision Health OS flowchart today.**  
-What is live is a **HITL clinical workflow proof layer**: synthetic multimodal *fixtures* → FHIR-shaped drafts → specialised agent drafts → mandatory clinician Accept/Edit/Reject → staging/sim write (not live EMR) → SHIELD audit + learning *recorder*, with Neon Postgres and Neo4j Aura connected for a seeded demo graph. It is **not** a continuous multimodal ingestion platform, not a living digital twin with simulation/ranking, and not a closed-loop real-world outcomes / auto-learning OS.
+**No — Aksh does not deliver this full Precision Health OS flowchart as live clinical software today.**  
+What is live is a **HITL clinical workflow proof layer** plus a **synthetic whole-loop rehearsal** that exercises every major flowchart stage end-to-end on fixtures: synthetic multimodal samples → FHIR-shaped drafts → specialised agent drafts → mandatory clinician Accept/Edit/Reject (or labelled demo Accept) → staging/sim write (not live EMR) → SHIELD audit + learning *recorder*, with Neon Postgres and Neo4j Aura connected for a seeded demo graph. It is **not** a continuous multimodal ingestion platform, not a living digital twin with validated physiology, and not a closed-loop real-world outcomes / auto-learning OS.
 
 ---
 
@@ -45,7 +47,7 @@ Positioning from product README: *synthetic-data, review-first clinical proof �
 | 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases; Phase 1 **merged timeline API** (`GET /api/patients/[id]/timeline`) | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
 | 6 | **Unified foundation** (longitudinal record, imaging, omics, streams, knowledge base) | **Partial** | Simulated longitudinal profiles; Neo4j patient–condition–medication–interaction graph (live when Aura up); review-case + Postgres persistence | Unified imaging/omics/stream stores; production longitudinal FHIR repository; vector/time-series moat |
 | 7 | **Living Health Web / knowledge graph** | **Partial** | Neo4j Aura live + seeded; Phase 2 ingest can **MERGE** `Observation` + `MEASURED` when live (skips when mock) | Continuously updating “Living Health Web”; population-scale knowledge base; ontology-backed reasoning graph beyond demo edges |
-| 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial** | Shared-context orchestrator; ORACLE risk scores + **model card** (owner UNASSIGNED until CSO); eval harness; `autoRetrain:false` | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
+| 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial / synthetic** | Shared-context orchestrator; ORACLE risk scores + **model card** (owner UNASSIGNED until CSO); eval harness; `autoRetrain:false`; **whole-loop** stitches stages | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
 | 9 | **Specialised agents** | **Partial** — see §4 | Clinical HITL agents; coaching stubs: Nutrition, Sleep, **Exercise**, **Mental-health** | Research-trial agents as flowchart boxes; clinical MH triage beyond coaching |
 | 10 | **Digital twin + simulation + ranking** | **Partial / synthetic** | UI/API now labelled **Patient / Population risk state** (`PatientRiskStatePanel`, `GET /api/patients/[id]/risk-state`) — radial risk viz over mock/ICS aggregate; hospital nav | Physics-based / physiological twin; intervention simulation; counterfactual ranking; calibrated twin validation |
 | 11 | **Personalised health plan** | **Partial / synthetic** | Care pathway tracker mock; L9 reviewer-confirmed action drafts; SYNTHESIS pathway copy; Phase 1 **HITL plan draft** (`POST /api/patients/[id]/health-plan`) | Adaptive personalised plan engine driven by twin + multimodal streams |
@@ -79,7 +81,7 @@ Flowchart “specialised agent” boxes vs current Aksh catalogue:
 | Sleep | **SLEEP** (coaching stub) | Partial / coaching only | `POST /api/agents/sleep` — wellness draft, **not clinical advice**, HITL, no live wearable stream |
 | Mental health (dedicated) | **MENTAL_HEALTH** (coaching stub) | Partial / coaching only | `POST /api/agents/mental-health` — wellbeing signposting only; crisis → HITL; not a psych assessment |
 | Research / trial matching | — | **Not built** | Research evaluation **boundary** export only (`/api/research/evaluation`) |
-| Orchestrator | Clinical-proof orchestrator | Partial | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent |
+| Orchestrator | Clinical-proof + **whole-loop** | Partial / synthetic | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent; **`runWholeLoop`** stitches consent→ingest→agents→twin→plan→HITL/sim→learning (`/demo/precision-health-loop`) |
 
 Marketing/resources historically say “seven agents”; the live API set also includes **REFERRAL** and **VOICE CARE** as first-class draft/escalation paths. All clinical agent outputs remain **draft ≠ record** until HITL Accept.
 
@@ -165,4 +167,5 @@ No fake certifications; each phase gates the next.
 | Health plan draft | `POST /api/patients/[id]/health-plan` |
 | Consent / timeline / plan / coaching UI | GP patient detail · patient companion · `/dashboard/admin/consent` |
 | Delivery roadmap | `docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md` |
+| Synthetic whole-loop demo | `/demo/precision-health-loop`, `GET/POST /api/precision-health/whole-loop`, `lib/precision-health/whole-loop.ts` |
 | Roadmap honesty (MH/biomarkers/FL) | `lib/roadmap.ts` |

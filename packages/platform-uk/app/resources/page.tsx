@@ -169,9 +169,10 @@ const resourceSections = [
     id: "precision-health",
     label: "Precision Health",
     title: "Roadmap scaffolding — not a living physiological twin",
-    body: "Aksh Health publishes an honest delivery roadmap for Precision Health / digital twin work. What is in the product today is HITL clinical proof plus Phase 1–3 contracts, synthetic connectors, and role UI. We do not claim live Fitbit/DICOM/omics streams, live EMIS write-back, MHRA-approved CDS, or a validated physiological digital twin.",
+    body: "Aksh Health publishes an honest delivery roadmap for Precision Health / digital twin work. What is in the product today is HITL clinical proof plus Phase 1–3 contracts, a synthetic whole-loop demo, connector stubs, and role UI. We do not claim live Fitbit/DICOM/omics streams, live EMIS write-back, MHRA-approved CDS, or a validated physiological digital twin.",
     bullets: [
       "Phase 0: HITL clinical proof on synthetic cohort (staging / sim write only)",
+      "Synthetic whole-loop demo shipped: /demo/precision-health-loop (every flowchart stage; live modalities/EMR still Phase 2–3 partner)",
       "Phase 1–3: consent registry, modality contracts, connector stubs, synthetic twin ranking, causal/federated/pharma stubs",
       "Admin Precision Health status surfaces connector and honesty flags (liveEmis:false · physiologicalTwin:false)",
       "Partner credentials, DPIA, CSO signatures, and regulatory submissions remain outside the codebase",
