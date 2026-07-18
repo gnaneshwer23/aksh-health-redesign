@@ -32,11 +32,11 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | Level | Meaning | Aksh Health today (honest) |
 | --- | --- | --- |
 | **UI complete** | Screens, dashboards, interactions exist | **Met** for marketing, 8 role dashboards, Patel demo, review queue |
-| **Functionally complete** | Buttons/agents/workflows produce expected outputs | **Mostly met** for HITL Accept/Edit/Reject (client store + review cases), agent draft APIs, SHIELD persist when Postgres available |
-| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j optional with mock fallback; EMIS/Mirth/CIS2 **not** live |
+| **Functionally complete** | Buttons/agents/workflows produce expected outputs | **Met** for HITL Accept/Edit/Reject, agent draft APIs, FHIR R4 schema CI, Accept→stage→sim chain, multi-patient stretch (P001/P003), SHIELD when Postgres available |
+| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j Aura currently **paused/unreachable** (honest mock + automated graph assertions); EMIS/Mirth/CIS2 **not** live |
 | **Production-ready** | Secure, governed, clinically safe | **Not met** — no CSO-signed safety case, no Partner write-back, no signed Gate 1–3 |
 
-**End-to-end built** for Aksh means all four levels for the full chain. We are **not** there. This framework proves levels 1–2 thoroughly and level 3 where adapters exist, and marks the rest `BLOCKED: partner` / `GAP`.
+**End-to-end built** for Aksh means all four levels for the full chain. We are **not** there. Sprint A closed functional proof further (FHIR R4 CI + HITL write-back chain) and kept integrated Neo4j/EMIS honest.
 
 ---
 
@@ -45,17 +45,17 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | # | Condition | Status | Evidence |
 | ---: | --- | --- | --- |
 | 1 | Patient identity resolved | Partial | Synthetic cohort + duplicate NHS fixture (P016); no live PDS |
-| 2 | Clinical data → valid FHIR R4 | Partial | FHIR-**shaped** schema gates (`lib/clinical-proof/fhir-shape.ts`); not HL7 validator |
-| 3 | Knowledge graph updated | Partial | Neo4j seed from cohort when `NEO4J_*` set; else mock fallback |
+| 2 | Clinical data → valid FHIR R4 | Met (schema CI) | Zod FHIR R4 gates for 9 resource types (`fhir-r4-validator.ts`); HL7 Java Validator JAR optional |
+| 3 | Knowledge graph updated | Partial | Live graph assertions when Aura reachable; else honest mock (`clinical-proof-graph`) |
 | 4 | Agents run on correct patient context | Functional | GUARDIAN/ORACLE/etc. APIs + eval harness |
 | 5 | Every AI output marked draft | Met | Agent APIs return `hitlRequired` / `ehrWrite: false` |
 | 6 | Confidence / evidence visible | Partial | UI + agent drafts; not all agents LLM-scored |
 | 7 | Urgent outputs prioritised | Partial | Review queue priority fields; orchestration incomplete |
 | 8 | Clinician Accept / Edit / Reject | Met (UI + store) | GP review queue + workflow review cases |
-| 9 | Rejected outputs never reach record | Met (platform) | Reject path + staging/sim write deny |
+| 9 | Rejected outputs never reach record | Met (platform) | Reject path + staging/sim write deny (chain test) |
 | 10 | Edited outputs preserve clinician version | Met (UI) | `editedContent` + re-accept |
-| 11 | Accepted → staged FHIR | Partial | EMIS staging queue (internal only) |
-| 12 | Nothing written to EHR without approval | Met (invariant) | EMIS disabled; sim write requires token |
+| 11 | Accepted → staged FHIR | Met (platform) | Accept → FHIR R4 validate → EMIS staging queue (internal only) → approval token |
+| 12 | Nothing written to EHR without approval | Met (invariant) | EMIS disabled; sim write requires token; replay denied |
 | 13 | Immutable AuditEvent | Partial | SHIELD append-only Postgres when configured; no DELETE API |
 | 14 | RBAC | Partial | Middleware role dashboards; public GP/ICS allowlisted demos |
 | 15 | Outcomes return to timeline | Gap | Continuous learning loop not productionised |
@@ -70,9 +70,9 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | EMIS Partner live write-back | **BLOCKED: partner** | `/api/integrations/emis-staging` queues only; `liveWriteBack: false` |
 | SystmOne write-back | **BLOCKED: partner** | Not implemented |
 | Mirth Connect | **GAP / mock UI** | Marketing/admin status mock — no live routes |
-| Neo4j Aura (live) | **Optional / env** | Seed + health; mock fallback when unset/paused |
+| Neo4j Aura (live) | **Paused / unreachable (Jul 2026)** | Creds present; `ServiceUnavailable`; clinical-proof uses honest mock until Resume + seed |
 | CIS2 / NHS login | **BLOCKED: partner** | NextAuth credentials (+ optional clinical OAuth scaffold) |
-| Full FHIR Validator | **GAP** | Shape/schema checks only |
+| FHIR R4 schema CI | **Met** | Zod R4 gates fail CI on invalid; HL7 Java Validator JAR still optional |
 | Medplum sync | **Disabled by default** | Flagged off in integration contract |
 | Deepgram voice | **Optional** | Simulated transcript when key absent |
 | DCB0129 / CSO hazard log | **Documentary** | Template in evidence pack; unsigned |
@@ -86,6 +86,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 - Required clinical profiles covered (T2D, HTN, HF, COPD, polypharmacy, allergy, pregnancy, paediatric, frailty, renal/liver, MH crisis, oncology, DVT, missing info, duplicate identity, conflicting records, deterioration, healthy)
 - Neo4j seed (`npm run data:seed:neo4j`) uses the same array
 - Golden path patient: **P002 Mr James Patel**
+- Stretch patients: **P001 Mrs Sarah Johnson**, **P003 Mrs Margaret Williams**
 
 ---
 
@@ -95,12 +96,13 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 cd packages/platform-uk
 
 # Unit / contract clinical-proof suite (no browser)
+# Includes: cohort, FHIR shape, FHIR R4, graph (live|mock), HITL, HITL chain, SHIELD, RBAC
 npm run test:clinical-proof
 
 # Full verify (includes workflow + clinical-proof)
 npm run verify
 
-# Playwright clinical-proof specs only
+# Playwright clinical-proof specs only (HITL chain, Patel, multi-patient, RBAC)
 npm run test:e2e:clinical-proof
 
 # Agent eval (HITL-safe)

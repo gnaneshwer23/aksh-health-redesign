@@ -61,11 +61,22 @@ export function assertSimulatedWriteRequiresApproval() {
     throw new Error("Simulated EHR write succeeded without approval token");
   }
 
+  // Staging before token (Accept path fragment)
+  const staged = queueEmisFhirStaging({
+    approvedBy: "Dr Proof",
+    caseId: "proof-accept-1",
+    bundleSummary: "Accepted SOAP DocumentReference"
+  });
+  if (staged.ehrWriteAttempted !== false) {
+    throw new Error("Staging attempted EHR write");
+  }
+
   const token = issueClinicianApprovalToken({
     clinicianId: "gp-proof-1",
     clinicianName: "Dr Proof",
     resourceSummary: "Accepted SOAP DocumentReference",
-    caseId: "proof-accept-1"
+    caseId: "proof-accept-1",
+    queueItemId: staged.id
   });
 
   const allowed = attemptSimulatedEhrWrite({
@@ -88,5 +99,5 @@ export function assertSimulatedWriteRequiresApproval() {
     throw new Error("Replay of consumed approval token must fail");
   }
 
-  return { denied, allowed, replay, simStatus: getEhrWritebackSimStatus() };
+  return { denied, allowed, replay, staged, simStatus: getEhrWritebackSimStatus() };
 }

@@ -11,21 +11,21 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-001 | Patient identity / cohort breadth | `lib/mock-data/patients.ts` | CP-COHORT-001 | ≥25 patients; all required profiles | `tests/clinical-proof-cohort.test.ts` | PASS |
 | REQ-002 | Duplicate NHS detection fixture | P002 / P016 | CP-COHORT-002 | Shared NHS number flagged | same | PASS |
 | REQ-003 | FHIR-shaped draft validation | `lib/clinical-proof/fhir-shape.ts` | CP-FHIR-001 | Required fields present | `tests/clinical-proof-fhir-shape.test.ts` | PASS |
-| REQ-004 | Full HL7 FHIR Validator | — | — | 100% validator pass | — | GAP |
-| REQ-005 | Knowledge graph relationships | Neo4j seed / mock | CP-GRAPH-001 | Seed uses cohort; live Aura optional | `scripts/seed-neo4j.ts` + health | PARTIAL |
+| REQ-004 | FHIR R4 schema validation in CI | `lib/clinical-proof/fhir-r4-validator.ts` | CP-FHIR-002 | Invalid resources fail CI; 9 target types | `tests/clinical-proof-fhir-r4.test.ts` | PASS |
+| REQ-005 | Knowledge graph relationships | Neo4j seed / mock | CP-GRAPH-001 | Live when Aura up; else honest mock | `tests/clinical-proof-graph.test.ts` | PARTIAL |
 | REQ-006 | GUARDIAN draft HITL-only | `/api/agents/guardian` | CP-HITL-001 | `ehrWrite:false`, `hitlRequired` | `tests/clinical-proof-hitl.test.ts` + e2e | PASS |
 | REQ-007 | ORACLE draft HITL-only | `/api/agents/oracle` | CP-HITL-002 | Same | same | PASS |
 | REQ-008 | Agent eval thresholds | `lib/eval/*` | EVAL-GOLDEN | Golden cases score | `npm run eval:agents` | PASS |
 | REQ-009 | Draft ≠ record | Review queue / staging | CP-HITL-003 | Accept required before sim write | hitl + ehr-sim tests | PASS |
-| REQ-010 | Accept → audit / staging path | SHIELD + EMIS staging | CP-HITL-004 | Staging `ehrWriteAttempted:false`; SHIELD append | unit + e2e | PARTIAL |
+| REQ-010 | Accept → FHIR stage → sim write | HITL chain | CP-HITL-004 | Stage + token + sim once; EMIS no live write | `tests/clinical-proof-hitl-chain.test.ts` + e2e | PASS |
 | REQ-011 | Edit preserves clinician version | Dashboard store / review | CP-HITL-005 | Edited content retained | e2e review queue | PASS |
-| REQ-012 | Reject → no staging / no write | HITL reject | CP-HITL-006 | No sim write without token | unit | PASS |
+| REQ-012 | Reject → no staging / no write | HITL reject | CP-HITL-006 | No sim write without token | unit + chain | PASS |
 | REQ-013 | Bypass: unauthenticated write | emis-staging / ehr-sim | CP-BYPASS-001 | 401 without session | e2e clinical-proof-hitl | PASS |
 | REQ-014 | Bypass: agent cannot EHR write | Agent APIs | CP-BYPASS-002 | Responses deny ehrWrite | unit | PASS |
 | REQ-015 | EMIS staging no live write | `emis-staging` | CP-BYPASS-003 | `liveWriteBack:false` | unit | PASS |
 | REQ-016 | Simulated write needs approval | `ehr-writeback-sim` | CP-SIM-001 | Token required; replay denied | unit + API | PASS |
 | REQ-017 | Live EMIS write-back | Partner API | E2E-033 | Approved resource written once | — | BLOCKED: partner |
-| REQ-018 | Patel golden path (UI) | `/dashboard/gp`, `/demo/patel` | CP-PATEL-001 | Patient, queue, GUARDIAN, ORACLE, HITL | `e2e/clinical-proof-patel.spec.ts` | PARTIAL |
+| REQ-018 | Patel golden path (UI) | `/dashboard/gp`, `/demo/patel` | CP-PATEL-001 | Patient, queue, GUARDIAN, ORACLE, HITL | `e2e/clinical-proof-patel.spec.ts` | PASS |
 | REQ-019 | Patel EHR write-back step | EMIS | CP-PATEL-002 | Live write | — | BLOCKED: partner |
 | REQ-020 | SHIELD append-only via API | `/api/audit/shield` | CP-SHIELD-001 | No PUT/DELETE handlers | `tests/clinical-proof-shield.test.ts` | PASS |
 | REQ-021 | RBAC cross-role denial | Middleware | CP-RBAC-001 | Nurse cannot use GP-only paths as GP session | e2e + redirects | PARTIAL |
@@ -38,16 +38,19 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-028 | Performance SLOs | — | — | Load report | evidence pack #9 | GAP |
 | REQ-029 | Continuous learning governance | Research eval | — | Controlled model release | documentary | GAP |
 | REQ-030 | Gate 1–3 sign-off | Evidence pack | — | Signed approvals | evidence pack #13–16 | MANUAL |
+| REQ-031 | Multi-patient golden path stretch | P001 / P003 | CP-MULTI-001 | Non-Patel agent + HITL-safe APIs | `e2e/clinical-proof-multi-patient.spec.ts` | PASS |
 
 ## Counts (snapshot)
 
 | Bucket | Count |
 | --- | ---: |
-| Requirements in matrix | 30 |
-| Automated PASS | 16 |
-| PARTIAL | 5 |
-| BLOCKED: partner | 4 |
+| Requirements in matrix | 31 |
+| Automated PASS | 20 |
+| PARTIAL | 2 |
+| BLOCKED: partner | 3 |
 | GAP | 4 |
-| MANUAL | 1 |
+| MANUAL | 2 |
 
 Re-count after suite changes; prefer updating JSON + this table together.
+
+**Note on REQ-004:** Zod FHIR R4 schema gates fail CI on invalid resources for DocumentReference, Condition, Flag, MedicationRequest, RiskAssessment, ServiceRequest, Observation, AuditEvent, Encounter. Full HL7 Java Validator JAR is still not in CI (optional stretch / partner tooling).

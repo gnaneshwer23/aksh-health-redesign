@@ -155,8 +155,8 @@ See `docs/QA_CHECKLIST_ALIGNMENT.md` for mapping to the deployment QA checklist.
 Proves the HITL gate and zero-autonomous-write invariant as far as the platform goes. Does **not** fake-pass live EMIS write-back.
 
 ```bash
-npm run test:clinical-proof           # unit: cohort, FHIR shape, HITL, SHIELD, RBAC
-npm run test:e2e:clinical-proof       # Playwright: HITL bypass, Patel golden path, RBAC
+npm run test:clinical-proof           # unit: cohort, FHIR shape/R4, graph, HITL chain, SHIELD, RBAC
+npm run test:e2e:clinical-proof       # Playwright: HITL chain, Patel, multi-patient, RBAC
 npm run test:e2e:clinical-proof:all   # orchestrator (unit + Playwright)
 ```
 

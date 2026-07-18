@@ -44,17 +44,19 @@ Clinical proof suite completed.
 
 What this proves today:
 - Synthetic cohort ≥25 with required clinical profiles
-- FHIR-shaped draft gates (not full HL7 validator)
-- HITL non-bypass + EMIS staging no live write
-- Simulated EHR write-back requires clinician approval token
-- Patel golden path through UI + agent APIs (write-back BLOCKED: partner)
+- FHIR-shaped draft gates + Zod FHIR R4 schema validation (CI fails on invalid)
+- Knowledge graph: live Aura assertions when reachable, else honest mock
+- HITL Accept → FHIR stage → approval token → sim write once
+- Reject never reaches sim; replay denied; unauthenticated fails
+- Patel + multi-patient (P001/P003) golden paths (write-back BLOCKED: partner)
 - SHIELD append-only API contract
 - RBAC path matrix + public GP/ICS allowlist
 
 What remains BLOCKED / GAP:
 - Live EMIS / SystmOne write-back (partner)
 - Mirth / HL7 v2 / CIS2
-- Full FHIR Validator + pen-test + load + signed Gates 1–3
+- HL7 Java FHIR Validator JAR + pen-test + load + signed Gates 1–3
+- Neo4j Aura live (when instance paused — resume + seed)
 
 Docs: docs/E2E_CLINICAL_PROOF.md
 `);

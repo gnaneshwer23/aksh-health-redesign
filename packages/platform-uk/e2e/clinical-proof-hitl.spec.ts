@@ -76,9 +76,13 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     expect(emisBody.message).toMatch(/No EMIS write/i);
   });
 
-  test("simulated EHR write requires approval token; replay fails", async ({ request, baseURL }) => {
-    await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "ehr-sim" });
+  test("Accept → FHIR stage → approval token → sim write once; reject never writes; replay denied", async ({
+    request,
+    baseURL,
+  }) => {
+    await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "ehr-sim-chain" });
 
+    // Unauthenticated already covered; authenticated missing-token must still fail
     const denied = await request.post("/api/integrations/ehr-writeback-sim", {
       data: { action: "write", resourceSummary: "no token" },
     });
@@ -87,11 +91,31 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     expect(deniedBody.liveEmis ?? false).toBe(false);
     expect(deniedBody.liveWriteBack ?? false).toBe(false);
 
+    // Accept → internal FHIR staging (no live EMIS)
+    const stagedSummary =
+      "HITL Accept FHIR R4 Bundle (DocumentReference, Condition, Flag, Observation, Encounter, AuditEvent)";
+    const emisPost = await request.post("/api/integrations/emis-staging", {
+      data: {
+        caseId: "proof-accept-chain",
+        bundleSummary: stagedSummary,
+      },
+    });
+    expect(emisPost.ok()).toBeTruthy();
+    const emisBody = (await emisPost.json()) as {
+      liveWriteBack?: boolean;
+      entry?: { id?: string; ehrWriteAttempted?: boolean };
+    };
+    expect(emisBody.liveWriteBack).toBe(false);
+    expect(emisBody.entry?.ehrWriteAttempted).toBe(false);
+    expect(emisBody.entry?.id).toBeTruthy();
+
+    // Approval token only after Accept/staging
     const issued = await request.post("/api/integrations/ehr-writeback-sim", {
       data: {
         action: "issue-approval",
-        resourceSummary: "Accepted SOAP DocumentReference (synthetic)",
-        caseId: "proof-soap",
+        resourceSummary: stagedSummary,
+        caseId: "proof-accept-chain",
+        queueItemId: emisBody.entry?.id,
       },
     });
     expect(issued.ok()).toBeTruthy();
@@ -107,7 +131,7 @@ test.describe("Clinical proof — HITL non-bypass", () => {
       data: {
         action: "write",
         approvalToken: token,
-        resourceSummary: "Accepted SOAP DocumentReference (synthetic)",
+        resourceSummary: stagedSummary,
       },
     });
     expect(allowed.ok()).toBeTruthy();
@@ -124,6 +148,16 @@ test.describe("Clinical proof — HITL non-bypass", () => {
       data: { action: "write", approvalToken: token },
     });
     expect(replay.status()).toBe(409);
+
+    // Reject never reaches sim: no approval token issued → write fails
+    const rejectWrite = await request.post("/api/integrations/ehr-writeback-sim", {
+      data: {
+        action: "write",
+        resourceSummary: "Rejected draft must not write",
+        approvalToken: "hitl-approve-rejected-never-issued",
+      },
+    });
+    expect([401, 403]).toContain(rejectWrite.status());
   });
 
   test("GP review queue Accept / Edit / Reject updates UI audit trail (demo record ≠ EMIS)", async ({

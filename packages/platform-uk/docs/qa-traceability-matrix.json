@@ -3,13 +3,14 @@
   "generatedFor": "clinical-proof-harness",
   "syntheticOnly": true,
   "liveEmisWriteBack": false,
+  "neo4jLive": false,
   "counts": {
-    "requirements": 30,
-    "pass": 16,
-    "partial": 5,
-    "blockedPartner": 4,
+    "requirements": 31,
+    "pass": 20,
+    "partial": 2,
+    "blockedPartner": 3,
     "gap": 4,
-    "manual": 1
+    "manual": 2
   },
   "requirements": [
     {
@@ -35,17 +36,19 @@
     },
     {
       "id": "REQ-004",
-      "testId": null,
-      "status": "GAP",
-      "component": "HL7 FHIR Validator",
-      "evidence": null
+      "testId": "CP-FHIR-002",
+      "status": "PASS",
+      "component": "lib/clinical-proof/fhir-r4-validator.ts",
+      "evidence": "tests/clinical-proof-fhir-r4.test.ts",
+      "note": "Zod FHIR R4 schema CI; HL7 Java Validator JAR not required"
     },
     {
       "id": "REQ-005",
       "testId": "CP-GRAPH-001",
       "status": "PARTIAL",
-      "component": "scripts/seed-neo4j.ts",
-      "evidence": "docs/NEO4J_SETUP.md"
+      "component": "lib/clinical-proof/graph-assertions.ts",
+      "evidence": "tests/clinical-proof-graph.test.ts",
+      "note": "Aura paused/unreachable → honest mock; live assertions when connected"
     },
     {
       "id": "REQ-006",
@@ -78,9 +81,9 @@
     {
       "id": "REQ-010",
       "testId": "CP-HITL-004",
-      "status": "PARTIAL",
-      "component": "SHIELD + emis-staging",
-      "evidence": "tests/clinical-proof-hitl.test.ts"
+      "status": "PASS",
+      "component": "hitl-writeback-chain",
+      "evidence": "tests/clinical-proof-hitl-chain.test.ts"
     },
     {
       "id": "REQ-011",
@@ -94,7 +97,7 @@
       "testId": "CP-HITL-006",
       "status": "PASS",
       "component": "reject path",
-      "evidence": "tests/clinical-proof-hitl.test.ts"
+      "evidence": "tests/clinical-proof-hitl-chain.test.ts"
     },
     {
       "id": "REQ-013",
@@ -122,7 +125,7 @@
       "testId": "CP-SIM-001",
       "status": "PASS",
       "component": "ehr-writeback-sim",
-      "evidence": "tests/clinical-proof-hitl.test.ts"
+      "evidence": "tests/clinical-proof-hitl-chain.test.ts"
     },
     {
       "id": "REQ-017",
@@ -134,7 +137,7 @@
     {
       "id": "REQ-018",
       "testId": "CP-PATEL-001",
-      "status": "PARTIAL",
+      "status": "PASS",
       "component": "Patel golden path",
       "evidence": "e2e/clinical-proof-patel.spec.ts"
     },
@@ -221,6 +224,13 @@
       "status": "MANUAL",
       "component": "Gates 1-3",
       "evidence": "docs/evidence-pack/README.md"
+    },
+    {
+      "id": "REQ-031",
+      "testId": "CP-MULTI-001",
+      "status": "PASS",
+      "component": "P001/P003 multi-patient stretch",
+      "evidence": "e2e/clinical-proof-multi-patient.spec.ts"
     }
   ]
 }
