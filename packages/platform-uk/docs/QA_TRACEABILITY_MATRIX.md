@@ -38,14 +38,16 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-028 | Performance SLOs | — | — | Load report | evidence pack #9 | GAP |
 | REQ-029 | Continuous learning governance | Research eval | — | Controlled model release | documentary | GAP |
 | REQ-030 | Gate 1–3 sign-off | Evidence pack | — | Signed approvals | evidence pack #13–16 | MANUAL |
-| REQ-031 | Multi-patient golden path stretch | P001 / P003 | CP-MULTI-001 | Non-Patel agent + HITL-safe APIs | `e2e/clinical-proof-multi-patient.spec.ts` | PASS |
+| REQ-031 | Multi-patient golden paths | 7 diverse cohort patients | CP-MULTI-001 | Parameterized agents + HITL + EMIS blocked | `e2e/clinical-proof-multi-patient.spec.ts` + `tests/clinical-proof-golden-paths.test.ts` | PASS |
+| REQ-032 | Agent orchestration (shared context) | `lib/clinical-proof/agent-orchestration.ts` | CP-ORCH-001 | SYNTHESIS+GUARDIAN+ORACLE(+DrASSIST); no overwrite; GUARDIAN first when urgent; timeouts | unit + `e2e/clinical-proof-orchestration.spec.ts` | PASS |
+| REQ-033 | Evidence pack generators | `scripts/generate-evidence-pack.mjs` | CP-EVID-001 | `npm run evidence:pack` writes generated snapshots | `docs/evidence-pack/README.md` | PASS |
 
 ## Counts (snapshot)
 
 | Bucket | Count |
 | --- | ---: |
-| Requirements in matrix | 31 |
-| Automated PASS | 20 |
+| Requirements in matrix | 33 |
+| Automated PASS | 22 |
 | PARTIAL | 2 |
 | BLOCKED: partner | 3 |
 | GAP | 4 |
@@ -54,3 +56,5 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 Re-count after suite changes; prefer updating JSON + this table together.
 
 **Note on REQ-004:** Zod FHIR R4 schema gates fail CI on invalid resources for DocumentReference, Condition, Flag, MedicationRequest, RiskAssessment, ServiceRequest, Observation, AuditEvent, Encounter. Full HL7 Java Validator JAR is still not in CI (optional stretch / partner tooling).
+
+**Note on REQ-031:** Sprint B expands beyond P001/P003 to P001, P003, P004 (renal), P008 (polypharmacy), P009 (paediatric), P015 (missing info), P018 (HF/renal deterioration). Partner steps remain BLOCKED honestly.

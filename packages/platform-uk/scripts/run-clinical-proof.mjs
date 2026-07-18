@@ -48,9 +48,11 @@ What this proves today:
 - Knowledge graph: live Aura assertions when reachable, else honest mock
 - HITL Accept → FHIR stage → approval token → sim write once
 - Reject never reaches sim; replay denied; unauthenticated fails
-- Patel + multi-patient (P001/P003) golden paths (write-back BLOCKED: partner)
+- Patel + multi-patient golden paths (7 diverse profiles; write-back BLOCKED: partner)
+- Agent orchestration (SYNTHESIS+GUARDIAN+ORACLE+DrASSIST; GUARDIAN priority when urgent)
 - SHIELD append-only API contract
 - RBAC path matrix + public GP/ICS allowlist
+- Evidence pack generators (npm run evidence:pack)
 
 What remains BLOCKED / GAP:
 - Live EMIS / SystmOne write-back (partner)

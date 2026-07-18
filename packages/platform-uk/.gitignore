@@ -22,3 +22,6 @@ playwright/.cache/
 
 # Generated readiness audit artifacts
 data/readiness-history.*.json
+
+# Evidence pack generated snapshots (regenerate via npm run evidence:pack)
+docs/evidence-pack/generated/
