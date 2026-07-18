@@ -83,7 +83,8 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!body.outcomeKind || !OUTCOMES.includes(body.outcomeKind as LearningOutcomeKind)) {
+  // outcomeKind optional — default unknown; link eventual outcome later via POST .../outcome
+  if (body.outcomeKind && !OUTCOMES.includes(body.outcomeKind as LearningOutcomeKind)) {
     return NextResponse.json(
       { error: `outcomeKind must be one of: ${OUTCOMES.join(", ")}` },
       { status: 400 }
@@ -99,7 +100,7 @@ export async function POST(request: Request) {
       decision: body.decision as LearningDecision,
       decisionActor: auth.context.userEmail ?? auth.context.userId,
       decisionNotes: body.decisionNotes,
-      outcomeKind: body.outcomeKind as LearningOutcomeKind,
+      outcomeKind: (body.outcomeKind as LearningOutcomeKind | undefined) ?? "unknown",
       outcomeSummary: body.outcomeSummary,
       outcomeMetric: body.outcomeMetric,
       patientId: body.patientId,

@@ -2,9 +2,21 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { evaluateClinicalApiAccess } from "@/lib/clinical-proof/tenant-isolation";
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { getMockGuardianResponse } from "@/lib/neo4j/mock-fallback";
 import { fetchGuardianFromGraph } from "@/lib/neo4j/queries";
+
+function resolveSessionRole(session: { user?: { role?: string | null } } | null) {
+  return (session?.user?.role as string | undefined) ?? "";
+}
+
+function resolveBoundPatientId(request: Request, session: { user?: Record<string, unknown> } | null) {
+  const headerBound = request.headers.get("x-bound-patient-id")?.trim();
+  if (headerBound) return headerBound;
+  const fromSession = session?.user?.boundPatientId;
+  return typeof fromSession === "string" ? fromSession.trim() : null;
+}
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
@@ -16,6 +28,15 @@ export async function GET(request: Request) {
   const patientId = searchParams.get("patientId")?.trim();
   if (!patientId) {
     return NextResponse.json({ error: "Missing patientId" }, { status: 400 });
+  }
+
+  const access = evaluateClinicalApiAccess({
+    role: resolveSessionRole(session),
+    boundPatientId: resolveBoundPatientId(request, session),
+    requestedPatientId: patientId
+  });
+  if (!access.allowed) {
+    return NextResponse.json({ error: access.reason, denied: true }, { status: access.status });
   }
 
   if (!isNeo4jConfigured()) {

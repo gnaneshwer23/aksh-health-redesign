@@ -31,7 +31,7 @@ Linked to: `docs/SAFETY_CASE_REHEARSAL.md` · Evidence pack artefact #6 · Gate 
 | Neo4j Aura not live | Instance paused / unreachable | Honest mock + CP-GRAPH-001 | Resume + seed + `npm run smoke:neo4j` |
 | Unsigned hazard log | No appointed CSO | This template + evidence pack #6 | CSO review dates + sign residual risk |
 | Perf / load incomplete | Only smoke SLOs | `npm run smoke:perf` soft targets | Formal load + monitoring plan (#9/#14) |
-| Continuous learning not productionised | Recorder only; no governed release | CP-LEARN-001; no auto-retrain | CSO model-release SOP |
+| Continuous learning not productionised | Recorder + outcome link; governed release SOP stub | CP-LEARN-001/002; no auto-retrain | CSO model-release SOP (`GOVERNED_MODEL_RELEASE_SOP.md`) |
 
 ## Instructions
 

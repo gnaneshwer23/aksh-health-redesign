@@ -60,9 +60,12 @@ SMOKE_GP_EMAIL=you@example.com SMOKE_GP_PASSWORD=... npm run smoke:neo4j
 
 ## Sprint C / D additions
 
-- Continuous learning: `docs/CONTINUOUS_LEARNING.md` · `/api/learning/events` · admin UI `/dashboard/admin/learning`
+- Continuous learning: `docs/CONTINUOUS_LEARNING.md` · `/api/learning/events` · eventual outcome `…/[id]/outcome` · admin UI `/dashboard/admin/learning`
+- Governed model release SOP: `../GOVERNED_MODEL_RELEASE_SOP.md` (approval gates; no auto-retrain)
+- Tenant isolation: `tests/clinical-proof-tenant-isolation.test.ts` (CP-TENANT-001)
 - Perf SLOs: `lib/clinical-proof/perf-slos.ts` · `npm run smoke:perf`
 - Neo4j live smoke: `npm run smoke:neo4j`
+- Medplum rehearsal smoke: `npm run smoke:medplum` · `/api/integrations/medplum-status`
 - Gate checklists: `gate-1-platform-readiness.md` · `gate-2-clinical-safety.md` · `gate-3-pilot-authority.md`
 
 ## Honesty rule

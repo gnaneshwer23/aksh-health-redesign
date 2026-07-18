@@ -6,12 +6,12 @@
   "neo4jLive": false,
   "sprint": "C",
   "counts": {
-    "requirements": 34,
-    "pass": 26,
-    "partial": 2,
+    "requirements": 37,
+    "pass": 30,
+    "partial": 1,
     "blockedPartner": 3,
     "gap": 2,
-    "manual": 1
+    "manual": 2
   },
   "requirements": [
     {
@@ -220,7 +220,7 @@
       "status": "PASS",
       "component": "continuous learning recorder",
       "evidence": "app/api/learning/events + docs/CONTINUOUS_LEARNING.md",
-      "note": "No auto-retrain; governed model release SOP still MANUAL"
+      "note": "No auto-retrain; eventual outcome via CP-LEARN-002; governed release SOP MANUAL (REQ-037)"
     },
     {
       "id": "REQ-030",
@@ -255,7 +255,29 @@
       "testId": "CP-MEDPLUM-001",
       "status": "PASS",
       "component": "Medplum FHIR rehearsal flag",
-      "evidence": "lib/medplum-client.ts + tests/clinical-proof-medplum.test.ts"
+      "evidence": "lib/medplum-client.ts + tests/clinical-proof-medplum.test.ts + scripts/smoke-medplum-rehearsal.mjs"
+    },
+    {
+      "id": "REQ-035",
+      "testId": "CP-TENANT-001",
+      "status": "PASS",
+      "component": "tenant / RLS isolation",
+      "evidence": "lib/clinical-proof/tenant-isolation.ts + tests/clinical-proof-tenant-isolation.test.ts",
+      "note": "App-layer + review_cases RLS scaffold; Neo4j cohort remains shared demo graph"
+    },
+    {
+      "id": "REQ-036",
+      "testId": "CP-LEARN-002",
+      "status": "PASS",
+      "component": "eventual learning outcome link",
+      "evidence": "app/api/learning/events/[id]/outcome + admin learning UI"
+    },
+    {
+      "id": "REQ-037",
+      "testId": "CP-LEARN-003",
+      "status": "MANUAL",
+      "component": "governed model release SOP",
+      "evidence": "docs/GOVERNED_MODEL_RELEASE_SOP.md"
     }
   ]
 }

@@ -27,6 +27,7 @@ type LearningEventRow = {
   decisionNotes?: string;
   outcomeKind: string;
   outcomeSummary?: string;
+  linksToEventId?: string | null;
   autoRetrainTriggered: false;
   modelUpdated: false;
   ehrWrite: false;
@@ -44,6 +45,15 @@ type LearningEventsResponse = {
 };
 
 type DecisionFilter = "all" | "accept" | "edit" | "reject";
+
+const OUTCOME_KINDS = [
+  "care_action_completed",
+  "care_action_deferred",
+  "adverse_event_none",
+  "adverse_event_suspected",
+  "follow_up_scheduled",
+  "unknown"
+] as const;
 
 function matchesDecisionFilter(decision: string, filter: DecisionFilter): boolean {
   if (filter === "all") return true;
@@ -105,6 +115,11 @@ export default function AdminLearningPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [decisionFilter, setDecisionFilter] = useState<DecisionFilter>("all");
+  const [linkTargetId, setLinkTargetId] = useState<string>("");
+  const [outcomeKind, setOutcomeKind] = useState<(typeof OUTCOME_KINDS)[number]>("care_action_completed");
+  const [outcomeSummary, setOutcomeSummary] = useState("");
+  const [linking, setLinking] = useState(false);
+  const [linkMessage, setLinkMessage] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -147,6 +162,49 @@ export default function AdminLearningPage() {
     anchor.click();
     URL.revokeObjectURL(url);
   }, [filteredEvents]);
+
+  const linkableEvents = useMemo(
+    () => events.filter((event) => !event.linksToEventId),
+    [events]
+  );
+
+  const linkOutcome = useCallback(async () => {
+    if (!linkTargetId) {
+      setLinkMessage("Select a source learning event first.");
+      return;
+    }
+    setLinking(true);
+    setLinkMessage(null);
+    try {
+      const response = await fetch(`/api/learning/events/${encodeURIComponent(linkTargetId)}/outcome`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          outcomeKind,
+          outcomeSummary: outcomeSummary.trim() || undefined
+        })
+      });
+      const data = (await response.json()) as {
+        error?: string;
+        linked?: boolean;
+        autoRetrainTriggered?: boolean;
+        event?: { id: string };
+      };
+      if (!response.ok) {
+        throw new Error(data.error ?? `HTTP ${response.status}`);
+      }
+      setLinkMessage(
+        `Linked eventual outcome (append-only). New event ${data.event?.id ?? ""} · autoRetrain=${String(data.autoRetrainTriggered ?? false)}.`
+      );
+      setOutcomeSummary("");
+      await load();
+    } catch (err) {
+      setLinkMessage(err instanceof Error ? err.message : "Failed to link outcome");
+    } finally {
+      setLinking(false);
+    }
+  }, [linkTargetId, outcomeKind, outcomeSummary, load]);
 
   return (
     <DashboardShell
@@ -205,8 +263,94 @@ export default function AdminLearningPage() {
           Governance: <strong>autoRetrain={String(payload?.autoRetrain ?? false)}</strong> ·{" "}
           modelUpdates={String(payload?.modelUpdates ?? false)} · hitlMandatory=
           {String(payload?.hitlMandatory ?? true)}. Model releases require explicit CSO/release
-          authority — not this screen.
+          authority — see <code className="text-[10px]">docs/GOVERNED_MODEL_RELEASE_SOP.md</code>.
         </div>
+
+        <Card className="shadow-sm" data-testid="learning-outcome-link-panel">
+          <CardHeader>
+            <CardTitle className="text-sm">Link eventual outcome</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted">
+              Append-only: creates a new learning event that references the source. Never updates the
+              original row and never auto-retrains.
+            </p>
+            <div className="flex flex-wrap items-end gap-3">
+              <div className="min-w-[200px] flex-1 space-y-1">
+                <label className="text-[10px] uppercase tracking-wide text-muted" htmlFor="link-source">
+                  Source event
+                </label>
+                <Select
+                  value={linkTargetId || undefined}
+                  onValueChange={setLinkTargetId}
+                >
+                  <SelectTrigger id="link-source" data-testid="learning-outcome-source">
+                    <SelectValue placeholder="Select event" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {linkableEvents.length === 0 ? (
+                      <SelectItem value="__none" disabled>
+                        No linkable events
+                      </SelectItem>
+                    ) : (
+                      linkableEvents.map((event) => (
+                        <SelectItem key={event.id} value={event.id}>
+                          {event.agentLabel} · {event.predictionId} · {event.decision}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="min-w-[180px] space-y-1">
+                <label className="text-[10px] uppercase tracking-wide text-muted" htmlFor="outcome-kind">
+                  Outcome
+                </label>
+                <Select
+                  value={outcomeKind}
+                  onValueChange={(value) => setOutcomeKind(value as (typeof OUTCOME_KINDS)[number])}
+                >
+                  <SelectTrigger id="outcome-kind" data-testid="learning-outcome-kind">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OUTCOME_KINDS.map((kind) => (
+                      <SelectItem key={kind} value={kind}>
+                        {kind}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="min-w-[220px] flex-[2] space-y-1">
+                <label className="text-[10px] uppercase tracking-wide text-muted" htmlFor="outcome-summary">
+                  Summary
+                </label>
+                <input
+                  id="outcome-summary"
+                  data-testid="learning-outcome-summary"
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  value={outcomeSummary}
+                  onChange={(event) => setOutcomeSummary(event.target.value)}
+                  placeholder="e.g. 30-day follow-up completed"
+                />
+              </div>
+              <Button
+                size="sm"
+                onClick={() => void linkOutcome()}
+                disabled={linking || !linkTargetId}
+                data-testid="learning-outcome-submit"
+              >
+                {linking ? "Linking…" : "Link outcome"}
+              </Button>
+            </div>
+            {linkMessage ? (
+              <p className="text-xs text-muted" data-testid="learning-outcome-message">
+                {linkMessage}
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
 
         {error ? (
           <p className="rounded-lg border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger">
@@ -256,6 +400,7 @@ export default function AdminLearningPage() {
                       <th className="px-3 py-2 font-medium">Prediction</th>
                       <th className="px-3 py-2 font-medium">Decision</th>
                       <th className="px-3 py-2 font-medium">Outcome</th>
+                      <th className="px-3 py-2 font-medium">Link</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -289,6 +434,9 @@ export default function AdminLearningPage() {
                             retrain={String(event.autoRetrainTriggered)} · ehr=
                             {String(event.ehrWrite)}
                           </p>
+                        </td>
+                        <td className="px-3 py-2 font-mono text-[10px] text-muted">
+                          {event.linksToEventId ? `→ ${event.linksToEventId}` : "—"}
                         </td>
                       </tr>
                     ))}

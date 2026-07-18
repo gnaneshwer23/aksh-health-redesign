@@ -39,20 +39,35 @@ export type LearningEventInput = {
   decision: LearningDecision;
   decisionActor: string;
   decisionNotes?: string;
-  outcomeKind: LearningOutcomeKind;
+  /** Defaults to unknown when deferred — link eventual outcome via append-only link */
+  outcomeKind?: LearningOutcomeKind;
   outcomeSummary?: string;
   /** Measurable signal if available (e.g. HbA1c delta) — observational only */
   outcomeMetric?: { name: string; value: number | string; unit?: string } | null;
+  /**
+   * When set, this row is an append-only eventual-outcome link to a prior event.
+   * Original rows are never UPDATEd.
+   */
+  linksToEventId?: string | null;
 };
 
 export type LearningEvent = LearningEventInput & {
   id: string;
   recordedAt: string;
+  outcomeKind: LearningOutcomeKind;
   autoRetrainTriggered: false;
   modelUpdated: false;
   ehrWrite: false;
   hitlRequired: true;
   governanceNote: string;
+};
+
+export type LearningOutcomeLinkInput = {
+  outcomeKind: LearningOutcomeKind;
+  outcomeSummary?: string;
+  outcomeMetric?: { name: string; value: number | string; unit?: string } | null;
+  decisionActor: string;
+  decisionNotes?: string;
 };
 
 export const LEARNING_GOVERNANCE_NOTE =
@@ -90,13 +105,50 @@ export function buildLearningEvent(
     queueItemId: input.queueItemId ?? null,
     practiceId: input.practiceId ?? null,
     modelVersion: input.modelVersion ?? null,
+    outcomeKind: input.outcomeKind ?? "unknown",
     outcomeMetric: input.outcomeMetric ?? null,
+    linksToEventId: input.linksToEventId ?? null,
     autoRetrainTriggered: false,
     modelUpdated: false,
     ehrWrite: false,
     hitlRequired: true,
     governanceNote: LEARNING_GOVERNANCE_NOTE
   };
+}
+
+/**
+ * Build an append-only eventual-outcome link event from a prior learning event.
+ * Never mutates the source; never triggers retrain.
+ */
+export function buildLinkedOutcomeEvent(
+  source: LearningEvent,
+  link: LearningOutcomeLinkInput,
+  idFactory: () => string = () => `learn-${randomUUID()}`
+): LearningEvent {
+  if (source.linksToEventId) {
+    throw new Error("Cannot link an outcome to an event that is already an outcome link");
+  }
+
+  return buildLearningEvent(
+    {
+      patientId: source.patientId,
+      caseId: source.caseId,
+      queueItemId: source.queueItemId,
+      practiceId: source.practiceId,
+      agentLabel: source.agentLabel,
+      predictionId: source.predictionId,
+      predictionSummary: source.predictionSummary,
+      modelVersion: source.modelVersion,
+      decision: source.decision,
+      decisionActor: link.decisionActor,
+      decisionNotes: link.decisionNotes ?? `Eventual outcome linked to ${source.id}`,
+      outcomeKind: link.outcomeKind,
+      outcomeSummary: link.outcomeSummary,
+      outcomeMetric: link.outcomeMetric,
+      linksToEventId: source.id
+    },
+    idFactory
+  );
 }
 
 /** Contract check used by clinical-proof: recorder never claims retrain/update. */

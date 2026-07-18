@@ -7,8 +7,10 @@ import { LEARNING_EVENTS_SQL } from "../db/schema-sql";
 import {
   assertNoAutoRetrain,
   buildLearningEvent,
+  buildLinkedOutcomeEvent,
   type LearningEvent,
-  type LearningEventInput
+  type LearningEventInput,
+  type LearningOutcomeLinkInput
 } from "../clinical-proof/learning-loop";
 import { persistShieldAuditEvent } from "./shield-audit-repository";
 
@@ -97,7 +99,8 @@ async function persistPostgres(event: LearningEvent): Promise<boolean> {
         JSON.stringify({
           autoRetrainTriggered: false,
           modelUpdated: false,
-          ehrWrite: false
+          ehrWrite: false,
+          linksToEventId: event.linksToEventId ?? null
         })
       ]
     );
@@ -129,11 +132,12 @@ async function listPostgres(limit: number): Promise<LearningEvent[] | null> {
       outcome_summary: string | null;
       outcome_metric: LearningEvent["outcomeMetric"];
       governance_note: string;
+      payload: { linksToEventId?: string | null } | null;
     }>(
       `SELECT id, recorded_at, practice_id, case_id, queue_item_id, patient_id,
               agent_label, prediction_id, prediction_summary, model_version,
               decision, decision_actor, decision_notes, outcome_kind, outcome_summary,
-              outcome_metric, governance_note
+              outcome_metric, governance_note, payload
        FROM aksh.learning_events
        ORDER BY recorded_at DESC, id DESC
        LIMIT $1`,
@@ -157,6 +161,7 @@ async function listPostgres(limit: number): Promise<LearningEvent[] | null> {
       outcomeKind: row.outcome_kind,
       outcomeSummary: row.outcome_summary ?? undefined,
       outcomeMetric: row.outcome_metric ?? null,
+      linksToEventId: row.payload?.linksToEventId ?? null,
       autoRetrainTriggered: false as const,
       modelUpdated: false as const,
       ehrWrite: false as const,
@@ -245,5 +250,47 @@ export async function listLearningEvents(options?: {
   return {
     source: "file",
     events: events.slice(-limit).reverse()
+  };
+}
+
+export async function findLearningEventById(
+  id: string,
+  options?: { scopeKey?: string }
+): Promise<{ source: "postgres" | "file"; event: LearningEvent | null }> {
+  const { source, events } = await listLearningEvents({
+    limit: 200,
+    scopeKey: options?.scopeKey
+  });
+  return {
+    source,
+    event: events.find((item) => item.id === id) ?? null
+  };
+}
+
+/**
+ * Append-only eventual outcome link. Never UPDATEs the source row; never auto-retrains.
+ */
+export async function linkLearningOutcome(
+  sourceEventId: string,
+  link: LearningOutcomeLinkInput,
+  options?: { scopeKey?: string; shieldDualWrite?: boolean }
+): Promise<{ event: LearningEvent; source: "postgres" | "file"; sourceEvent: LearningEvent }> {
+  const found = await findLearningEventById(sourceEventId, { scopeKey: options?.scopeKey });
+  if (!found.event) {
+    throw new Error(`Learning event not found: ${sourceEventId}`);
+  }
+
+  const linked = buildLinkedOutcomeEvent(found.event, link);
+  assertNoAutoRetrain(linked);
+
+  const recorded = await recordLearningEvent(linked, {
+    scopeKey: options?.scopeKey,
+    shieldDualWrite: options?.shieldDualWrite
+  });
+
+  return {
+    event: recorded.event,
+    source: recorded.source,
+    sourceEvent: found.event
   };
 }

@@ -13,7 +13,7 @@ See also: `docs/HAZARD_LOG_TEMPLATE.md` residual risk register · `docs/E2E_CLIN
 | Neo4j Aura live graph | Live + seeded (ops) / honest mock if paused | Ops — keep Aura Running; `npm run smoke:neo4j` |
 | CSO-signed hazard log | MANUAL / unsigned | CSO |
 | Formal load / pen test | GAP | Security / ops |
-| Continuous learning → governed model release | Recorder PASS; release SOP MANUAL | CSO + release authority |
+| Continuous learning → governed model release | Recorder + outcome link PASS; release SOP stub MANUAL | CSO + release authority (`docs/GOVERNED_MODEL_RELEASE_SOP.md`) |
 | Gates 1–3 signed | MANUAL | Sponsor + CSO |
 
 ## Last filled

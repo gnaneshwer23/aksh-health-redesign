@@ -1,14 +1,14 @@
 # Continuous learning — safe loop (Aksh Health)
 
-**Status:** Recorder implemented (Sprint C). **Not** a production model-update pipeline.
+**Status:** Recorder + eventual-outcome linking implemented. **Not** a production model-update pipeline.
 
 ## Principle
 
 ```text
 prediction (agent draft)
   → clinician decision (Accept / Edit / Reject / Defer)   ← HITL mandatory
-  → measurable / observational outcome
-  → append-only learning event
+    → measurable / observational outcome (immediate or eventual)
+    → append-only learning event (optional link row for delayed outcomes)
 ```
 
 What this loop **must never** do:
@@ -17,18 +17,20 @@ What this loop **must never** do:
 - Silently bump prompt / model versions
 - Write to the EHR
 - Promote a draft to a clinical record
+- UPDATE/DELETE prior learning rows
 
 ## API
 
 | Method | Path | Behaviour |
 | --- | --- | --- |
-| `POST` | `/api/learning/events` | Append prediction → decision → outcome (auth required) |
+| `POST` | `/api/learning/events` | Append prediction → decision → outcome (auth required). `outcomeKind` optional (defaults `unknown`) |
 | `GET` | `/api/learning/events` | List recent events |
+| `POST` | `/api/learning/events/[id]/outcome` | Append-only **eventual outcome** link (new row with `linksToEventId`; source unchanged) |
 | PUT / PATCH / DELETE | — | **Not exposed** |
 
 Response always includes `autoRetrainTriggered: false`, `modelUpdated: false`, `ehrWrite: false`, `hitlRequired: true`.
 
-### Example POST body
+### Example POST body (decision now, outcome later)
 
 ```json
 {
@@ -37,13 +39,28 @@ Response always includes `autoRetrainTriggered: false`, `modelUpdated: false`, `
   "predictionSummary": "Aspirin + Apixaban interaction draft",
   "decision": "accept",
   "decisionNotes": "Interaction acknowledged",
-  "outcomeKind": "care_action_completed",
-  "outcomeSummary": "Medication review completed",
   "patientId": "P002",
-  "caseId": "case-123",
-  "outcomeMetric": { "name": "days_to_follow_up", "value": 7, "unit": "days" }
+  "caseId": "case-123"
 }
 ```
+
+### Example eventual outcome link
+
+```http
+POST /api/learning/events/learn-…/outcome
+```
+
+```json
+{
+  "outcomeKind": "care_action_completed",
+  "outcomeSummary": "Medication review completed at 30 days",
+  "outcomeMetric": { "name": "days_to_follow_up", "value": 30, "unit": "days" }
+}
+```
+
+## Admin UI
+
+`/dashboard/admin/learning` — list, CSV export, and **Link eventual outcome** form. No retrain / version-bump controls.
 
 ## Storage
 
@@ -52,10 +69,12 @@ Response always includes `autoRetrainTriggered: false`, `modelUpdated: false`, `
 
 Dual-write: a SHIELD-adjacent audit row (`category: continuous_learning`) when Postgres is available.
 
-## Governance
+`linksToEventId` is stored in the JSON `payload` column (file store: top-level field).
+
+## Governance / governed release SOP
 
 - Learning events feed **evaluation / CSO review**, not automatic deployment.
-- Model or prompt changes require explicit release authority (see evidence pack #5 / #13).
+- Model or prompt changes require explicit release authority — see **`docs/GOVERNED_MODEL_RELEASE_SOP.md`** (approval gates G-ML-1…3 before any version bump).
 - Hazard H-011 / H-012 in `docs/HAZARD_LOG_TEMPLATE.md` track residual risk until Gate 2.
 
 ## How to verify
@@ -64,11 +83,12 @@ Dual-write: a SHIELD-adjacent audit row (`category: continuous_learning`) when P
 cd packages/platform-uk
 npm run test:clinical-proof   # includes CP-LEARN-001
 # With auth session:
-# POST /api/learning/events  … then GET /api/learning/events
+# POST /api/learning/events  … then POST /api/learning/events/{id}/outcome
 ```
 
 ## Related
 
+- Governed model release SOP: `docs/GOVERNED_MODEL_RELEASE_SOP.md`
 - SHIELD audit: `/api/audit/shield`
 - Eval harness: `docs/AGENT_EVAL_HARNESS.md`
 - Safety case rehearsal: `docs/SAFETY_CASE_REHEARSAL.md`

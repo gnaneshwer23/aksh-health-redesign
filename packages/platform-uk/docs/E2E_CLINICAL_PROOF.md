@@ -86,12 +86,12 @@ Soft-fail if env cannot hit prod latency. `PERF_SMOKE_STRICT=true` for hard enfo
 | Neo4j Aura (live) | **Live when health says live** | Seeded cohort (≥25); CP-GRAPH-001 asserts relationships; honest mock only if disconnected |
 | CIS2 / NHS login | **BLOCKED: partner** | NextAuth credentials (+ optional clinical OAuth scaffold) |
 | FHIR R4 schema CI | **Met** | Zod R4 gates fail CI on invalid; HL7 Java Validator JAR still optional |
-| Medplum sync | **Disabled by default** | Rehearsal flag polished; `getMedplumRehearsalStatus()`; never EMIS |
+| Medplum sync | **Disabled by default** | Rehearsal flag + `GET /api/integrations/medplum-status` + `npm run smoke:medplum`; never EMIS |
 | Deepgram voice | **Optional** | Simulated transcript when key absent |
 | DCB0129 / CSO hazard log | **Documentary** | Template linked to test IDs; **unsigned** |
-| Continuous learning governance | **Recorder met; release GAP** | Append-only events; no auto-retrain; CSO model-release SOP pending |
+| Continuous learning governance | **Recorder + outcome link met; release MANUAL** | Append-only events + eventual outcome API/UI; no auto-retrain; SOP stub |
 | Perf / load (formal) | **Smoke met; load GAP** | Soft SLO smoke only |
-| Tenant isolation (multi-practice) | **Partial** | Practice context helpers; not full RLS proof |
+| Tenant isolation (multi-practice) | **Met (app + RLS scaffold)** | Practice A≠B cases; patient URL deny; admin clinical API deny; Neo4j graph still shared demo |
 
 ---
 

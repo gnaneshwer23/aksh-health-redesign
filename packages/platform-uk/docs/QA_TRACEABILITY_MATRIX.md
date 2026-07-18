@@ -41,23 +41,28 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-031 | Multi-patient golden paths | 7 diverse cohort patients | CP-MULTI-001 | Parameterized agents + HITL + EMIS blocked | `e2e/clinical-proof-multi-patient.spec.ts` + `tests/clinical-proof-golden-paths.test.ts` | PASS |
 | REQ-032 | Agent orchestration (shared context) | `lib/clinical-proof/agent-orchestration.ts` | CP-ORCH-001 | SYNTHESIS+GUARDIAN+ORACLE(+DrASSIST); no overwrite; GUARDIAN first when urgent; timeouts | unit + `e2e/clinical-proof-orchestration.spec.ts` | PASS |
 | REQ-033 | Evidence pack generators | `scripts/generate-evidence-pack.mjs` | CP-EVID-001 | `npm run evidence:pack` writes generated snapshots | `docs/evidence-pack/README.md` | PASS |
-| REQ-034 | Medplum FHIR rehearsal flag | `lib/medplum-client.ts` | CP-MEDPLUM-001 | Disabled by default; push refuses; liveEmis false | `tests/clinical-proof-medplum.test.ts` | PASS |
+| REQ-034 | Medplum FHIR rehearsal flag | `lib/medplum-client.ts` | CP-MEDPLUM-001 | Disabled by default; push refuses; liveEmis false | `tests/clinical-proof-medplum.test.ts` + `npm run smoke:medplum` | PASS |
+| REQ-035 | Tenant / RLS isolation | practice filter + clinical API deny | CP-TENANT-001 | Practice A≠B; patient URL deny; admin clinical API deny | `tests/clinical-proof-tenant-isolation.test.ts` | PASS |
+| REQ-036 | Eventual learning outcome link | `/api/learning/events/[id]/outcome` | CP-LEARN-002 | Append-only link; source unchanged; no auto-retrain | learning test + admin UI | PASS |
+| REQ-037 | Governed model release SOP | `docs/GOVERNED_MODEL_RELEASE_SOP.md` | CP-LEARN-003 | Approval gates before model version bump | Documentary stub + learning test | MANUAL |
 
 ## Counts (snapshot)
 
 | Bucket | Count |
 | --- | ---: |
-| Requirements in matrix | 34 |
-| Automated PASS | 27 |
+| Requirements in matrix | 37 |
+| Automated PASS | 30 |
 | PARTIAL | 1 |
 | BLOCKED: partner | 3 |
 | GAP | 2 |
-| MANUAL | 1 |
+| MANUAL | 2 |
 
 Re-count after suite changes; prefer updating JSON + this table together.
 
 **Note on REQ-004:** Zod FHIR R4 schema gates fail CI on invalid resources for DocumentReference, Condition, Flag, MedicationRequest, RiskAssessment, ServiceRequest, Observation, AuditEvent, Encounter. Full HL7 Java Validator JAR is still not in CI (optional stretch / partner tooling).
 
-**Note on REQ-029:** Recorder stores prediction→decision→outcome only. Governed model release / CSO SOP remains MANUAL for Gate 2+.
+**Note on REQ-029 / REQ-036 / REQ-037:** Recorder + eventual outcome link are automated. Governed model release / CSO signatures remain MANUAL (SOP stub shipped; Gate 2+).
 
 **Note on REQ-028:** Soft smoke SLOs only — formal load test remains a residual gap in evidence pack #9 narrative.
+
+**Note on REQ-035:** App-layer practice filter + clinical API deny + Postgres RLS scaffold on `review_cases`. Full multi-tenant Neo4j RLS remains out of scope (synthetic cohort is shared demo graph).
