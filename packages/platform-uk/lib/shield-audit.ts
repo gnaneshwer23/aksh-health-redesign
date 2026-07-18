@@ -1,8 +1,13 @@
-import { randomUUID } from "crypto";
-
-import { persistShieldAuditEvent } from "./repositories/shield-audit-repository";
 import { formatCaseTimestamp } from "./time-format";
 import type { AuditEvent, FhirAuditEventResource, ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "./types";
+
+function newId(prefix: string) {
+  const id =
+    typeof globalThis.crypto?.randomUUID === "function"
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${prefix}-${id}`;
+}
 
 export type ShieldAction = "accept" | "edit" | "reject" | "defer";
 
@@ -29,7 +34,7 @@ export function createShieldAuditEvent({
           : "SHIELD: reviewer action deferred";
 
   return {
-    id: `shield-${randomUUID()}`,
+    id: newId("shield"),
     category: "reviewer_decision",
     label: actionLabel,
     actor: "SHIELD",
@@ -40,7 +45,12 @@ export function createShieldAuditEvent({
   };
 }
 
-/** Dual-write: keep in-case trail and append durable Postgres row when available. */
+/**
+ * Dual-write helper safe for client bundles (never imports `pg`).
+ * Persists via POST /api/audit/shield from the browser.
+ * Server routes that already have a DB connection should call
+ * `persistShieldAuditEvent` directly instead.
+ */
 export function scheduleDurableShieldWrite(options: {
   action: ShieldAction;
   actor: string;
@@ -51,19 +61,24 @@ export function scheduleDurableShieldWrite(options: {
   agentLabel?: string;
   resourceRef?: string;
 }) {
-  void persistShieldAuditEvent({
-    action: options.action,
-    actor: options.actor,
-    label: options.event.label,
-    detail: options.event.detail,
-    category: options.event.category,
-    caseId: options.caseId,
-    practiceId: options.practiceId,
-    queueItemId: options.queueItemId,
-    agentLabel: options.agentLabel,
-    resourceRef: options.resourceRef,
-    payload: { inCaseEventId: options.event.id }
-  });
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  void fetch("/api/audit/shield", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: options.action,
+      label: options.event.label,
+      detail: options.event.detail,
+      category: options.event.category,
+      caseId: options.caseId,
+      agentLabel: options.agentLabel,
+      resourceRef: options.resourceRef
+    })
+  }).catch(() => undefined);
 }
 
 export function createFhirShieldAuditEvent({
@@ -88,7 +103,7 @@ export function createFhirShieldAuditEvent({
 
   return {
     resourceType: "AuditEvent",
-    id: `shield-fhir-${randomUUID()}`,
+    id: newId("shield-fhir"),
     type: {
       system: "http://terminology.hl7.org/CodeSystem/audit-event-type",
       code: "110100",
