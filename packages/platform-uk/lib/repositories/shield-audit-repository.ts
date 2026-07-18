@@ -1,8 +1,8 @@
 import { createHash, randomUUID } from "crypto";
 
-import { getPgPool, isPostgresConfigured } from "@/lib/db/client";
-import { SHIELD_AUDIT_EVENTS_SQL } from "@/lib/db/schema-sql";
-import type { ShieldAction } from "@/lib/shield-audit";
+import { getPgPool, isPostgresConfigured } from "../db/client";
+import { SHIELD_AUDIT_EVENTS_SQL } from "../db/schema-sql";
+import type { ShieldAction } from "../shield-audit";
 
 export type DurableShieldAuditInput = {
   action: ShieldAction | string;
