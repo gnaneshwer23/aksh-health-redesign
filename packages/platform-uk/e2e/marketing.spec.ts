@@ -269,10 +269,10 @@ test.describe("Marketing smoke", () => {
     const hero = page.locator("section.owkin-hero");
     const visual = hero.locator(".owkin-hero__visual");
     await expect(visual).toBeVisible();
-    await expect(visual.getByText("Aksh Health")).toBeVisible();
-    await expect(visual.getByText("EMIS Web")).toBeVisible();
-    await expect(visual.getByText("Clinician review")).toBeVisible();
-    await expect(visual.getByText("You")).toHaveCount(0);
+    await expect(visual.getByText("Aksh Health", { exact: true })).toBeVisible();
+    await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
+    await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.getByText("clinician gate")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
