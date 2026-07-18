@@ -53,7 +53,7 @@ const sessionRequiredPrefixes = [
   "/workspace",
 ];
 
-const publicDemoDashboardPrefixes = ["/dashboard/gp"];
+const publicDemoDashboardPrefixes = ["/dashboard/gp", "/dashboard/ics"];
 
 function matchesPrefix(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => {

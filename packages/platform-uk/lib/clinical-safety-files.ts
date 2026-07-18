@@ -78,6 +78,39 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       nextStep: "Eval LLM ORACLE briefs against QRisk/clinical golden cases before any unsupervised use."
     },
     {
+      id: "equity-agent-hitl",
+      title: "EQUITY agent HITL drafts",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Aggregate ICS equity action briefs via Neo4j/mock + LLM/deterministic fallback; no patient-level spill; never EHR write.",
+      inAppRoute: "/dashboard/ics/equity",
+      exportRoute: "/api/agents/equity",
+      owner: "ICS clinical informatics + CSO",
+      nextStep: "Eval EQUITY briefs against golden disparity fixtures before board-facing unsupervised use."
+    },
+    {
+      id: "voice-care-synthetic-escalation",
+      title: "VOICE CARE synthetic outbound escalation",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Synthetic Day-3 outbound script logs SHIELD + nurse task; no telephony; no EHR write.",
+      inAppRoute: "/dashboard/nurse",
+      exportRoute: "/api/agents/voice-care",
+      owner: "Nursing lead + engineering",
+      nextStep: "Keep channel labelled synthetic until a real telephony partner is contracted."
+    },
+    {
+      id: "agent-golden-eval",
+      title: "Agent golden-case eval harness",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Lightweight SYNTHESIS/GUARDIAN/ORACLE fixture scoring; HITL-safe; no EHR write.",
+      inAppRoute: "/api/eval/agents",
+      exportRoute: "/api/eval/agents",
+      owner: "Engineering + CSO",
+      nextStep: "Expand fixtures and gate LLM mode changes on eval pass rate."
+    },
+    {
       id: "dr-assist-agent-hitl",
       title: "Dr.Assist coding HITL drafts",
       standard: "DCB0129-style rehearsal",

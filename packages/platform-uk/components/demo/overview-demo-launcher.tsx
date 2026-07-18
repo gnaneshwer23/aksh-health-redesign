@@ -67,10 +67,10 @@ const DEMO_STEPS = [
   },
   {
     id: "regional",
-    title: "Regional population view",
-    route: "/dashboard/regional",
-    publicSurface: false,
-    narrative: "Aggregate metrics + EQUITY disparity insights across practices.",
+    title: "ICS population & EQUITY view",
+    route: "/dashboard/ics",
+    publicSurface: true,
+    narrative: "Aggregate ICS metrics + EQUITY disparity insights across practices (synthetic public demo).",
     demoSection: "§5.11",
   },
 ] as const;
@@ -111,9 +111,9 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
             Mr James Patel walkthrough
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and regional
-            EQUITY view. Proof-mode only. No production claims. Clinician dashboard steps are open without sign-in;
-            admin, pharmacy, audit, and regional surfaces require an account.
+            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and public ICS
+            EQUITY view. Proof-mode only. No production claims. Clinician and ICS dashboard steps are open without
+            sign-in; admin, pharmacy, and audit surfaces require an account.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/85">

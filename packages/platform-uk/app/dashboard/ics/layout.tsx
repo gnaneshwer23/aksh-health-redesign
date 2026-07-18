@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useSession } from "next-auth/react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
+import { DemoDataBanner } from "@/components/dashboard/DemoDataBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IcsDataProvider, useIcsData } from "@/components/dashboard/ics/IcsDataContext";
 import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
@@ -11,14 +13,17 @@ import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function IcsLayoutHeader({ children }: { children: ReactNode }) {
+  const { status } = useSession();
   const { icsDateRange, setIcsDateRange } = useDashboardStore();
   const { data, source, loading } = useIcsData();
   const { profile } = useUserProfile();
   const icsTitle = profile?.organisation ?? data.icsName;
+  const isPublicDemo = status === "unauthenticated";
 
   return (
     <DashboardShell role="ics" title={icsTitle} organisation={profile?.organisation}>
       <div className="overflow-y-auto p-4 space-y-6">
+        {isPublicDemo ? <DemoDataBanner surface="ICS" /> : null}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <ConsentBanner className="flex-1" />
           <Select value={icsDateRange} onValueChange={(v) => setIcsDateRange(v as typeof icsDateRange)}>

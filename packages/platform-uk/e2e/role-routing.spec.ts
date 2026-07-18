@@ -8,6 +8,13 @@ test.describe("Role routing", () => {
     await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
   });
 
+  test("unauthenticated users can access public ICS demo dashboard", async ({ page }) => {
+    await page.goto("/dashboard/ics");
+    await expect(page).toHaveURL(/\/dashboard\/ics/);
+    await expect(page.getByTestId("demo-data-banner")).toBeVisible();
+    await expect(page.getByText(/ICS Population Intelligence|Total Patients/i).first()).toBeVisible();
+  });
+
   test("middleware still protects non-demo dashboard routes", async ({ page }) => {
     await page.goto("/dashboard/admin");
     await page.waitForURL(/\/signin/, { timeout: 15_000 });

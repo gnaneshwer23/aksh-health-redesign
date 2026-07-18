@@ -29,6 +29,7 @@
     "smoke:researcher": "node scripts/smoke-researcher-dashboard.mjs",
     "smoke:all": "node scripts/smoke-all-dashboards.mjs",
     "smoke:walkthrough": "node scripts/smoke-walkthrough-path.mjs",
+    "eval:agents": "npx tsx scripts/eval-agents.ts",
     "start": "next start",
     "lint": "npm run typecheck",
     "typecheck": "tsc -p tsconfig.verify.json --pretty false",

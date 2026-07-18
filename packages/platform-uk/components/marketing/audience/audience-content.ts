@@ -332,10 +332,10 @@ export const audiencePages = {
         },
       ],
     },
-    ctaPrimary: { label: "Talk to us", href: "/get-started" },
-    ctaSecondary: { label: "See platform", href: "/platform" },
+    ctaPrimary: { label: "Try ICS demo", href: "/dashboard/ics" },
+    ctaSecondary: { label: "Talk to us", href: "/get-started" },
     complianceNote:
-      "Population views are aggregate by default. See documentation for ICS governance pathways.",
+      "Population views are aggregate by default. Public demo uses synthetic data only. See documentation for ICS governance pathways.",
   },
   administrators: {
     eyebrow: "For administrators",

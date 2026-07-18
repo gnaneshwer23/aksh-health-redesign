@@ -8,8 +8,11 @@ import { fetchIcsPopulationFromGraph } from "@/lib/neo4j/queries";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
+  // Public ICS demo: synthetic population only (no patient-level spill).
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(getMockIcsPopulationResponse(), {
+      headers: { "X-Data-Source": "mock" }
+    });
   }
 
   if (!isNeo4jConfigured()) {

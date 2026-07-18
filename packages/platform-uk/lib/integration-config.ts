@@ -90,6 +90,24 @@ export function getIntegrationAdapterRegistry() {
       defaultMode: "hitl_draft_only",
       boundary:
         "POST /api/agents/dr-assist. Neo4j/mock conditions + AI Gateway coding suggestions when configured, else deterministic SNOMED/ICD-10 fallback. Never writes to EHR."
+    },
+    {
+      id: "llm-equity",
+      label: "LLM EQUITY (AI Gateway)",
+      status: isLlmEquityEnabled() ? ("enabled" as const) : ("available" as const),
+      enabled: isLlmEquityEnabled(),
+      defaultMode: "hitl_draft_only",
+      boundary:
+        "POST /api/agents/equity. Aggregate ICS equity brief via Neo4j/mock + AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+    },
+    {
+      id: "voice-care-synthetic",
+      label: "VOICE CARE synthetic outbound",
+      status: "available" as const,
+      enabled: false,
+      defaultMode: "hitl_escalation_only",
+      boundary:
+        "POST /api/agents/voice-care. Synthetic Day-3 outbound script → SHIELD + nurse task. No telephony. Never writes to EHR."
     }
   ];
 }
@@ -111,6 +129,11 @@ function isLlmOracleEnabled() {
 
 function isLlmDrAssistEnabled() {
   if (process.env.ENABLE_LLM_DR_ASSIST === "false") return false;
+  return isLlmSynthesisEnabled();
+}
+
+function isLlmEquityEnabled() {
+  if (process.env.ENABLE_LLM_EQUITY === "false") return false;
   return isLlmSynthesisEnabled();
 }
 
