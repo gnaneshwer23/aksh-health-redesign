@@ -10,7 +10,7 @@ See also: `docs/HAZARD_LOG_TEMPLATE.md` residual risk register · `docs/E2E_CLIN
 | --- | --- | --- |
 | EMIS / SystmOne live write-back | BLOCKED: partner | Partner + DPIA |
 | CIS2 / NHS login | BLOCKED: partner | Partner |
-| Neo4j Aura live graph | Paused / mock (Jul 2026) | Ops — resume + seed |
+| Neo4j Aura live graph | Live + seeded (ops) / honest mock if paused | Ops — keep Aura Running; `npm run smoke:neo4j` |
 | CSO-signed hazard log | MANUAL / unsigned | CSO |
 | Formal load / pen test | GAP | Security / ops |
 | Continuous learning → governed model release | Recorder PASS; release SOP MANUAL | CSO + release authority |

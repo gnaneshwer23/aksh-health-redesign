@@ -83,7 +83,7 @@ export function MedReviewQueue() {
         Medication Review Queue <Badge className="bg-[#6B46C1] text-white">{medQueue.length}</Badge>
       </h2>
       <p className="mb-3 text-sm text-muted">Reviews scoped to {pharmacyLabel}</p>
-      <Neo4jMockModeBanner source={neo4jSource} loading={neo4jLoading} />
+      <Neo4jMockModeBanner source={neo4jSource} loading={neo4jLoading} showLive />
 
       <div className="mb-4 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
         {durableSource === "loading"

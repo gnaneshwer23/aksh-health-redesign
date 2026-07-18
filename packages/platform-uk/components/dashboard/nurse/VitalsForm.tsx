@@ -155,7 +155,7 @@ export function VitalsForm() {
         <CardTitle className="text-base text-secondary">Vital Signs Entry</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Neo4jMockModeBanner source={source} loading={neo4jLoading} />
+        <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
         <div className="flex gap-2">
           <Button
             size="sm"

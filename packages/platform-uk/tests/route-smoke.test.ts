@@ -136,7 +136,16 @@ async function run() {
   await assertFileIncludes("docs/AGENT_EVAL_HARNESS.md", "npm run eval:agents");
   await assertFileIncludes("package.json", "\"eval:agents\"");
   await assertFileIncludes("middleware.ts", '"/dashboard/ics"');
+  await assertFileIncludes("middleware.ts", '"/dashboard/hospital"');
   await assertFileIncludes("components/dashboard/DemoDataBanner.tsx", "demo-data-banner");
+  await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "source === null");
+  await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-live-mode-banner");
+  await assertFileIncludes("lib/clinical-proof/graph-assertions.ts", "TAKES_MEDICATION");
+  await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-events-table");
+  await assertFileIncludes("package.json", "\"smoke:neo4j\"");
+  await assertFileIncludes("docs/evidence-pack/gate-1-platform-readiness.md", "G1-01");
+  await assertFileIncludes("docs/evidence-pack/gate-2-clinical-safety.md", "G2-01");
+  await assertFileIncludes("docs/evidence-pack/gate-3-pilot-authority.md", "G3-01");
   await assertFileIncludes("components/dashboard/SystemStatusStrip.tsx", "/api/health");
   await assertFileIncludes("components/dashboard/IntegrationStatus.tsx", "emis-staging");
   await assertFileIncludes("app/api/agents/referral/route.ts", "eReferralWrite");

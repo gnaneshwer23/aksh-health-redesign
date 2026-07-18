@@ -166,7 +166,7 @@ export function InteractionChecker() {
   return (
     <section>
       <h2 className={`text-lg font-semibold mb-3 ${PHARMACIST_ACCENT}`}>Interaction Checker</h2>
-      <Neo4jMockModeBanner source={source} loading={neo4jLoading} />
+      <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
       <Card className="shadow-sm border-[#6B46C1]/10 p-4 space-y-3">
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-muted">Patient:</span>

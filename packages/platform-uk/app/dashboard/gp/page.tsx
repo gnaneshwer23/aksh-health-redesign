@@ -3,10 +3,13 @@
 import { useMemo, useState } from "react";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
+import { useSession } from "next-auth/react";
+
 import { AgentControlPanel } from "@/components/dashboard/AgentControlPanel";
 import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { DemoDataBanner } from "@/components/dashboard/DemoDataBanner";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { PatientCard } from "@/components/dashboard/PatientCard";
@@ -37,11 +40,13 @@ function HeaderSkeleton() {
 }
 
 export default function GpDashboardPage() {
+  const { status } = useSession();
   const { selectedPatientId, setSelectedPatient, writtenToRecordToday, reviewQueueItems } = useDashboardStore();
   const { profile } = useUserProfile();
   const [searchQuery, setSearchQuery] = useState("");
   const [showWritten, setShowWritten] = useState(true);
   const [mobilePatientsOpen, setMobilePatientsOpen] = useState(true);
+  const isPublicDemo = status === "unauthenticated";
 
   const scopedAppointments = useMemo(
     () => filterGpPatientsForProfile(todaysAppointments, profile),
@@ -134,7 +139,8 @@ export default function GpDashboardPage() {
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
           <div className="flex-1 space-y-5 overflow-y-auto bg-background p-4 sm:p-5">
-          <Neo4jMockModeBanner source={oracleSource} loading={oracleLoading} />
+          {isPublicDemo ? <DemoDataBanner surface="GP" className="mb-4" /> : null}
+          <Neo4jMockModeBanner source={oracleSource} loading={oracleLoading} showLive />
           {patient && (
             <header className="dashboard-card p-5">
               {clinicalLoading ? (

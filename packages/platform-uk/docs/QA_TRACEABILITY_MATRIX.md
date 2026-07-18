@@ -12,7 +12,7 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-002 | Duplicate NHS detection fixture | P002 / P016 | CP-COHORT-002 | Shared NHS number flagged | same | PASS |
 | REQ-003 | FHIR-shaped draft validation | `lib/clinical-proof/fhir-shape.ts` | CP-FHIR-001 | Required fields present | `tests/clinical-proof-fhir-shape.test.ts` | PASS |
 | REQ-004 | FHIR R4 schema validation in CI | `lib/clinical-proof/fhir-r4-validator.ts` | CP-FHIR-002 | Invalid resources fail CI; 9 target types | `tests/clinical-proof-fhir-r4.test.ts` | PASS |
-| REQ-005 | Knowledge graph relationships | Neo4j seed / mock | CP-GRAPH-001 | Live when Aura up; else honest mock | `tests/clinical-proof-graph.test.ts` | PARTIAL |
+| REQ-005 | Knowledge graph relationships | Neo4j seed / mock | CP-GRAPH-001 | Live when Aura up; else honest mock | `tests/clinical-proof-graph.test.ts` | PASS |
 | REQ-006 | GUARDIAN draft HITL-only | `/api/agents/guardian` | CP-HITL-001 | `ehrWrite:false`, `hitlRequired` | `tests/clinical-proof-hitl.test.ts` + e2e | PASS |
 | REQ-007 | ORACLE draft HITL-only | `/api/agents/oracle` | CP-HITL-002 | Same | same | PASS |
 | REQ-008 | Agent eval thresholds | `lib/eval/*` | EVAL-GOLDEN | Golden cases score | `npm run eval:agents` | PASS |
@@ -29,7 +29,7 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-019 | Patel EHR write-back step | EMIS | CP-PATEL-002 | Live write | — | BLOCKED: partner |
 | REQ-020 | SHIELD append-only via API | `/api/audit/shield` | CP-SHIELD-001 | No PUT/DELETE handlers | `tests/clinical-proof-shield.test.ts` | PASS |
 | REQ-021 | RBAC cross-role denial | Middleware | CP-RBAC-001 | Nurse cannot use GP-only paths as GP session | e2e + redirects | PARTIAL |
-| REQ-022 | Public GP/ICS allowlist only | Middleware | CP-RBAC-002 | Admin requires auth | `e2e/role-routing.spec.ts` | PASS |
+| REQ-022 | Public GP/ICS/Hospital allowlist | Middleware | CP-RBAC-002 | Admin/pharmacist require auth; demos open | `e2e/clinical-proof-rbac.spec.ts` | PASS |
 | REQ-023 | Role smoke matrix | Smoke scripts | CP-ROLE-001 | All 8 dashboards HTTP smoke | `npm run smoke:all` | PASS |
 | REQ-024 | Mirth / HL7 v2 intake | — | — | Message round-trip | — | GAP |
 | REQ-025 | CIS2 authentication | — | — | NHS login | — | BLOCKED: partner |
@@ -48,8 +48,8 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | Bucket | Count |
 | --- | ---: |
 | Requirements in matrix | 34 |
-| Automated PASS | 26 |
-| PARTIAL | 2 |
+| Automated PASS | 27 |
+| PARTIAL | 1 |
 | BLOCKED: partner | 3 |
 | GAP | 2 |
 | MANUAL | 1 |

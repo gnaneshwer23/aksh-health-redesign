@@ -1,18 +1,18 @@
-import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
-
 /**
  * Hospital executive dashboard smoke checks.
  *
  * Requires a running app (`npm run dev` or `npm run build && npm run start`).
  *
- * Auth: set credentials for a real account created via /signup:
+ * Public demo allowlist: `/dashboard/hospital*` is open without auth (synthetic data).
+ * Optional auth pass when credentials are set:
  *   SMOKE_HOSPITAL_EMAIL=you@example.com
  *   SMOKE_HOSPITAL_PASSWORD=your-password
  *   SMOKE_BASE_URL=http://127.0.0.1:3000
  */
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
-const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_HOSPITAL", "smoke:hospital");
+const smokeEmail = process.env.SMOKE_HOSPITAL_EMAIL?.trim() ?? "";
+const smokePassword = process.env.SMOKE_HOSPITAL_PASSWORD ?? "";
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedHospitalRoutes = [
@@ -96,19 +96,25 @@ async function fetchWithTimeout(path, options = {}) {
   }
 }
 
-async function assertRedirectsToSignIn(path) {
+async function assertPublicDemo(path, expectedSnippets = []) {
   const response = await fetchWithTimeout(path);
   const location = response.headers.get("location") ?? "";
 
-  if (response.status < 300 || response.status >= 400) {
-    throw new Error(`${path} expected redirect when unauthenticated, got ${response.status}`);
+  if (response.status >= 300 && response.status < 400) {
+    throw new Error(`${path} should be public demo; redirected to ${location || "unknown"}`);
+  }
+  if (!response.ok) {
+    throw new Error(`${path} returned ${response.status} (expected public 200)`);
   }
 
-  if (!location.includes("/signin")) {
-    throw new Error(`${path} redirected to ${location || "unknown"}, expected /signin`);
+  const html = await response.text();
+  for (const text of expectedSnippets) {
+    if (!html.includes(text)) {
+      throw new Error(`${path} missing expected text: ${text}`);
+    }
   }
 
-  console.log(`[ok] Unauthenticated redirect: ${path} → signin`);
+  console.log(`[ok] Public demo accessible: ${path}`);
 }
 
 async function assertPage({ label, path, expectedText }) {
@@ -170,14 +176,24 @@ async function signIn() {
 
 async function run() {
   console.log(`Running hospital dashboard smoke checks against ${baseUrl}`);
-  console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
-  await assertRedirectsToSignIn("/dashboard/hospital");
+  await assertPublicDemo("/dashboard/hospital", [
+    "Command Centre Overview",
+    "synthetic",
+  ]);
+  await assertPublicDemo("/dashboard/hospital/wards", ["Ward Status"]);
+  await assertPublicDemo("/dashboard/hospital/capacity", ["Capacity Forecast"]);
+  await assertPublicDemo("/dashboard/hospital/staffing", ["Staffing"]);
 
-  await signIn();
-
-  for (const route of protectedHospitalRoutes) {
-    await assertPage(route);
+  // Credentials optional — public demo is the primary contract for this surface.
+  if (smokeEmail && smokePassword) {
+    console.log("Credentials present — also verifying authenticated hospital session.");
+    await signIn();
+    for (const route of protectedHospitalRoutes) {
+      await assertPage(route);
+    }
+  } else {
+    console.log("[skip] SMOKE_HOSPITAL credentials unset — authenticated pass skipped (public demo ok)");
   }
 
   console.log(`Hospital dashboard smoke checks passed for ${baseUrl}`);

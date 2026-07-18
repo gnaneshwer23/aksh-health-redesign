@@ -56,7 +56,7 @@ export function GuardianAlertsPanel({ scope = "selected" }: { scope?: "selected"
         </p>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Neo4jMockModeBanner source={source} loading={neo4jLoading} />
+        <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
 
         {!neo4jLoading && graphInteractions.length > 0 ? (
           <div className="space-y-2">

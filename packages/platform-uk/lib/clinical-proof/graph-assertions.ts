@@ -45,13 +45,16 @@ function countMockGuardianInteractions(patientId: string): number {
   return count;
 }
 
+function toNumber(value: unknown): number {
+  if (value && typeof value === "object" && "toNumber" in value) {
+    return Number((value as { toNumber: () => number }).toNumber());
+  }
+  return Number(value ?? 0);
+}
+
 async function assertLiveGraph(): Promise<GraphAssertionResult> {
   const countResult = await runQuery("MATCH (p:Patient) RETURN count(p) AS c");
-  const rawCount = countResult.records[0]?.get("c");
-  const patientCount =
-    rawCount && typeof rawCount === "object" && "toNumber" in rawCount
-      ? Number((rawCount as { toNumber: () => number }).toNumber())
-      : Number(rawCount ?? 0);
+  const patientCount = toNumber(countResult.records[0]?.get("c"));
 
   const patelResult = await runQuery(
     `MATCH (p:Patient {id: $id})
@@ -61,22 +64,15 @@ async function assertLiveGraph(): Promise<GraphAssertionResult> {
   );
   const patelRecord = patelResult.records[0];
   const patelPresent = Boolean(patelRecord?.get("name"));
-  const conditionRaw = patelRecord?.get("conditionCount");
-  const conditionCount =
-    conditionRaw && typeof conditionRaw === "object" && "toNumber" in conditionRaw
-      ? Number((conditionRaw as { toNumber: () => number }).toNumber())
-      : Number(conditionRaw ?? 0);
+  const conditionCount = toNumber(patelRecord?.get("conditionCount"));
 
+  // Seed + dashboard APIs use TAKES_MEDICATION (not TAKES)
   const guardianResult = await runQuery(
-    `MATCH (p:Patient {id: $id})-[:TAKES]->(m:Medication)-[i:INTERACTS_WITH]->(:Medication)
+    `MATCH (p:Patient {id: $id})-[:TAKES_MEDICATION]->(m:Medication)-[i:INTERACTS_WITH]->(:Medication)
      RETURN count(i) AS interactions`,
     { id: "P002" }
   );
-  const interactionsRaw = guardianResult.records[0]?.get("interactions");
-  const guardianInteractionsForPatel =
-    interactionsRaw && typeof interactionsRaw === "object" && "toNumber" in interactionsRaw
-      ? Number((interactionsRaw as { toNumber: () => number }).toNumber())
-      : Number(interactionsRaw ?? 0);
+  const guardianInteractionsForPatel = toNumber(guardianResult.records[0]?.get("interactions"));
 
   if (patientCount < CLINICAL_PROOF_MIN_PATIENTS) {
     throw new Error(
@@ -86,6 +82,14 @@ async function assertLiveGraph(): Promise<GraphAssertionResult> {
   if (!patelPresent) {
     throw new Error("Live Neo4j missing P002 Patel — re-seed required.");
   }
+  if (conditionCount < 1) {
+    throw new Error("Live Neo4j P002 missing HAS_CONDITION edges — re-seed required.");
+  }
+  if (guardianInteractionsForPatel < 1) {
+    throw new Error(
+      "Live Neo4j P002 missing TAKES_MEDICATION→INTERACTS_WITH (Aspirin/Apixaban) — re-seed required."
+    );
+  }
 
   return {
     mode: "live",
@@ -93,9 +97,9 @@ async function assertLiveGraph(): Promise<GraphAssertionResult> {
     connected: true,
     patientCount,
     patelPresent,
-    patelHasConditions: conditionCount > 0,
+    patelHasConditions: true,
     guardianInteractionsForPatel,
-    note: "Neo4j Aura reachable; graph assertions against live seed."
+    note: "Neo4j Aura reachable; live seed asserts HAS_CONDITION, TAKES_MEDICATION, INTERACTS_WITH."
   };
 }
 
@@ -124,18 +128,14 @@ function assertMockGraph(reconnectHint?: string): GraphAssertionResult {
 
 /**
  * Probe Aura; assert live seed when connected, otherwise mock fallback.
- * Never reports mode:"live" unless connectivity verified.
+ * Never reports mode:"live" unless connectivity verified and seed relationships hold.
+ * When health says live, probe failures fail closed (no silent mock fake-pass).
  */
 export async function assertClinicalProofGraph(): Promise<GraphAssertionResult> {
   const health = await checkNeo4jHealth();
 
   if (health.mode === "live" && health.connected) {
-    try {
-      return await assertLiveGraph();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return assertMockGraph(`Live probe failed after health check: ${message}`);
-    }
+    return await assertLiveGraph();
   }
 
   return assertMockGraph(health.reconnectHint);

@@ -20,7 +20,7 @@ Linked to: `docs/SAFETY_CASE_REHEARSAL.md` · Evidence pack artefact #6 · Gate 
 | H-010 | Delayed deterioration alert | Queue latency | Preventable admission | High | VOICE CARE / nurse path + perf smoke | CP-PERF-001 · MANUAL | Latency measured vs SLO soft targets | Perf smoke (soft) | High until load + monitoring | REQ-028 | Unsigned |
 | H-011 | Silent model update / auto-retrain | Uncontrolled learning loop | Drifted clinical behaviour | Critical | Continuous-learning recorder (append-only; no retrain) | CP-LEARN-001 · REQ-029 | Events store prediction→decision→outcome; `autoRetrain=false` | Unit PASS | Medium until CSO release process | CP-SHIELD-001 | Unsigned |
 | H-012 | Learning without HITL decision | Outcome logged without clinician | Unsafe feedback into eval | High | Learning API requires decision enum | CP-LEARN-001 · CP-HITL-003 | Invalid/missing decision rejected | Unit PASS | Low on platform | CP-HITL-006 | Unsigned |
-| H-013 | Graph treated as live when mock | Aura paused / unreachable | Over-trust of interaction/risk | High | Honest mock mode + reconnect hint | CP-GRAPH-001 | `mode=mock` when not connected; never fake live | Graph test PASS (mock Jul 2026) | High until Aura resumed + seed | REQ-005 | Unsigned |
+| H-013 | Graph treated as live when mock | Aura paused / unreachable | Over-trust of interaction/risk | High | Honest mock mode + reconnect hint; live only when connected + seeded edges | CP-GRAPH-001 | `mode=mock` when not connected; never fake live; TAKES_MEDICATION asserted live | Graph test PASS (live when Aura up) | Medium — keep health + banner honesty | REQ-005 | Unsigned |
 | H-014 | Medplum rehearsal mistaken for EHR | Flag confusion | False write-back confidence | Medium | `ENABLE_MEDPLUM_SYNC` default false; `liveEmis:false` | CP-MEDPLUM-001 · integration-boundary | Sync disabled by default; rehearsal ≠ EMIS | Contract tests PASS | Low | CP-BYPASS-003 | Unsigned |
 
 ## Residual risk register (Gate 2 prep)
@@ -28,7 +28,7 @@ Linked to: `docs/SAFETY_CASE_REHEARSAL.md` · Evidence pack artefact #6 · Gate 
 | Residual | Why remains | Mitigations in this build | Blocks Gate 2 until |
 | --- | --- | --- | --- |
 | Live EMIS / SystmOne write-back unproven | Partner credentials absent | Staging + sim only; CP-BYPASS / CP-SIM / CP-HITL-004 | Partner UAT + DPIA |
-| Neo4j Aura not live | Instance paused / unreachable | Honest mock + CP-GRAPH-001 | Resume + `npm run data:seed:neo4j` + live assertion |
+| Neo4j Aura not live | Instance paused / unreachable | Honest mock + CP-GRAPH-001 | Resume + seed + `npm run smoke:neo4j` |
 | Unsigned hazard log | No appointed CSO | This template + evidence pack #6 | CSO review dates + sign residual risk |
 | Perf / load incomplete | Only smoke SLOs | `npm run smoke:perf` soft targets | Formal load + monitoring plan (#9/#14) |
 | Continuous learning not productionised | Recorder only; no governed release | CP-LEARN-001; no auto-retrain | CSO model-release SOP |

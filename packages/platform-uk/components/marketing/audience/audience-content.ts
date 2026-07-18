@@ -147,10 +147,10 @@ export const audiencePages = {
         },
       ],
     },
-    ctaPrimary: { label: "Talk to us", href: "/get-started" },
-    ctaSecondary: { label: "See platform", href: "/platform" },
+    ctaPrimary: { label: "Open hospital demo", href: "/dashboard/hospital" },
+    ctaSecondary: { label: "Talk to us", href: "/get-started" },
     complianceNote:
-      "Immutable audit trails for operational recommendations. See documentation for architecture and compliance pathways.",
+      "Public command-centre demo uses synthetic capacity data only — not a live PAS/EPR feed. Immutable audit trails for operational recommendations. See documentation for architecture and compliance pathways.",
   },
   research: {
     eyebrow: "For research",

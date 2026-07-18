@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { assertClinicalProofGraph } from "../lib/clinical-proof/graph-assertions";
 import { CLINICAL_PROOF_MIN_PATIENTS } from "../lib/clinical-proof/cohort";
+import { closeNeo4jDriver } from "../lib/neo4j";
 
 /** Load local Neo4j env when present so Aura probe is honest (never commit secrets). */
 function loadLocalEnvIfPresent() {
@@ -40,9 +41,14 @@ async function run() {
   assert.equal(result.patelPresent, true);
   assert.equal(result.patelHasConditions, true);
 
-  // Honest contract: never claim live unless connected
+  // Honest contract: never claim live unless connected + seeded relationships
   if (result.mode === "live") {
     assert.equal(result.connected, true);
+    assert.ok(
+      result.guardianInteractionsForPatel >= 1,
+      "Live Aura must expose TAKES_MEDICATION→INTERACTS_WITH for P002"
+    );
+    assert.ok(result.note.toLowerCase().includes("live"));
   } else {
     assert.equal(result.connected, false);
     assert.ok(result.note.toLowerCase().includes("mock"));
@@ -60,7 +66,11 @@ async function run() {
   );
 }
 
-void run().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+void run()
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await closeNeo4jDriver().catch(() => undefined);
+  });

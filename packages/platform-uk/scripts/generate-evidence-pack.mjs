@@ -149,7 +149,7 @@ async function main() {
       "patient",
       "researcher"
     ],
-    publicAllowlist: ["/dashboard/gp", "/dashboard/ics"],
+    publicAllowlist: ["/dashboard/gp", "/dashboard/ics", "/dashboard/hospital"],
     evidenceDocs: ["docs/ROLE_SMOKE_MATRIX.md", "e2e/clinical-proof-rbac.spec.ts"],
     roleSmokeDocPresent: fs.existsSync(roleSmokePath),
     traceability: rbacReqs,

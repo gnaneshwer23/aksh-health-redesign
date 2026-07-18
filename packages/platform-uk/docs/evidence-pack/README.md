@@ -51,11 +51,13 @@ EVIDENCE_HEALTH_URL=https://akshhealth.com npm run evidence:pack
 | 15 | Known limitations / residual risk | `15-residual-risk.md` + `generated/clinical-proof-gap-summary.json` | Keep synced with E2E_CLINICAL_PROOF gap register |
 | 16 | Release / rollback plan | `16-release-rollback.md` | Vercel promote / rollback procedure |
 
-## Sprint C additions
+## Sprint C / D additions
 
-- Continuous learning: `docs/CONTINUOUS_LEARNING.md` · `/api/learning/events`
+- Continuous learning: `docs/CONTINUOUS_LEARNING.md` · `/api/learning/events` · admin UI `/dashboard/admin/learning`
 - Perf SLOs: `lib/clinical-proof/perf-slos.ts` · `npm run smoke:perf`
+- Neo4j live smoke: `npm run smoke:neo4j`
+- Gate checklists: `gate-1-platform-readiness.md` · `gate-2-clinical-safety.md` · `gate-3-pilot-authority.md`
 
 ## Honesty rule
 
-Any artefact that depends on live EMIS, Mirth, CIS2, or Aura must say **BLOCKED: partner** or **GAP** until evidence exists. Do not fake-pass.
+Any artefact that depends on live EMIS, Mirth, or CIS2 must say **BLOCKED: partner** or **GAP** until evidence exists. Neo4j is live only when `/api/health` reports `neo4j.mode: "live"` — never fake-pass.

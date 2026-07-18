@@ -46,10 +46,10 @@
     {
       "id": "REQ-005",
       "testId": "CP-GRAPH-001",
-      "status": "PARTIAL",
+      "status": "PASS",
       "component": "lib/clinical-proof/graph-assertions.ts",
       "evidence": "tests/clinical-proof-graph.test.ts",
-      "note": "Aura paused/unreachable → honest mock; live assertions when connected"
+      "note": "Live Aura asserts HAS_CONDITION, TAKES_MEDICATION, INTERACTS_WITH; honest mock only when not connected"
     },
     {
       "id": "REQ-006",
@@ -168,7 +168,8 @@
       "testId": "CP-RBAC-002",
       "status": "PASS",
       "component": "public demo allowlist",
-      "evidence": "e2e/role-routing.spec.ts"
+      "evidence": "e2e/clinical-proof-rbac.spec.ts",
+      "note": "Public allowlist: /dashboard/gp, /dashboard/ics, /dashboard/hospital"
     },
     {
       "id": "REQ-023",

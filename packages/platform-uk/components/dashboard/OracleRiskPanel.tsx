@@ -125,7 +125,7 @@ export function OracleRiskPanel({
           {running ? "Generating…" : "Generate ORACLE brief"}
         </Button>
       </div>
-      <Neo4jMockModeBanner source={source} loading={loading} />
+      <Neo4jMockModeBanner source={source} loading={loading} showLive />
       <Card className="shadow-sm border-border-subtle">
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
           <div>

@@ -19,6 +19,6 @@ All roles:
 npm run smoke:all
 ```
 
-Public allowlist (no auth): `/dashboard/gp`, `/dashboard/ics` only — see `e2e/role-routing.spec.ts`.
+Public allowlist (no auth): `/dashboard/gp`, `/dashboard/ics`, `/dashboard/hospital` — see `e2e/clinical-proof-rbac.spec.ts`.
 
 Cross-role denial: `e2e/clinical-proof-rbac.spec.ts` (nurse session blocked from admin clinical tools as configured by middleware).

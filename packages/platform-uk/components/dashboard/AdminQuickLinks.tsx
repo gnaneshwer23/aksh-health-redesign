@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, Building2, ClipboardList, FileText, Users } from "lucide-react";
+import { Activity, BookOpen, Building2, ClipboardList, FileText, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -9,6 +9,12 @@ const LINKS = [
   { href: "/dashboard/admin/users", label: "User Management", description: "Invite, activate, and manage staff accounts", icon: Users },
   { href: "/dashboard/admin/integrations", label: "Integrations", description: "EMIS, SystmOne, FHIR, and platform service health", icon: Activity },
   { href: "/dashboard/admin/audit", label: "Audit Log", description: "Full SHIELD audit trail for clinical AI actions", icon: ClipboardList },
+  {
+    href: "/dashboard/admin/learning",
+    label: "Learning events",
+    description: "Prediction → decision → outcome recorder (no auto-retrain)",
+    icon: BookOpen
+  },
   { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", description: "Access requests from NHS organisations", icon: FileText },
   { href: "/dashboard/admin/billing", label: "Billing", description: "Subscription and contract contact details", icon: Building2 },
 ] as const;

@@ -30,12 +30,15 @@ test.describe("Clinical proof — RBAC", () => {
     expect(url).not.toMatch(/\/dashboard\/gp\/review-queue/);
   });
 
-  test("public allowlist remains GP + ICS only for unauthenticated users", async ({ page }) => {
+  test("public allowlist includes GP, ICS, and Hospital for unauthenticated users", async ({ page }) => {
     await page.goto("/dashboard/gp");
     await expect(page).toHaveURL(/\/dashboard\/gp/);
 
     await page.goto("/dashboard/ics");
     await expect(page).toHaveURL(/\/dashboard\/ics/);
+
+    await page.goto("/dashboard/hospital");
+    await expect(page).toHaveURL(/\/dashboard\/hospital/);
 
     await page.goto("/dashboard/pharmacist");
     await page.waitForURL(/\/signin/, { timeout: 15_000 });

@@ -34,7 +34,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | --- | --- | --- |
 | **UI complete** | Screens, dashboards, interactions exist | **Met** for marketing, 8 role dashboards, Patel demo, review queue |
 | **Functionally complete** | Buttons/agents/workflows produce expected outputs | **Met** for HITL Accept/Edit/Reject, agent draft APIs, FHIR R4 schema CI, Accept→stage→sim chain, multi-patient golden paths, multi-agent orchestration, continuous-learning **recorder** (no auto-retrain), perf SLO contracts, SHIELD when Postgres available, evidence pack generators |
-| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j Aura currently **paused/unreachable** (honest mock + automated graph assertions); EMIS/Mirth/CIS2 **not** live; Medplum sync **disabled by default** |
+| **Integrated complete** | Real services exchange data correctly | **Partial** — Neon Postgres + NextAuth real; Neo4j Aura **live + seeded** when health reports `mode: live` (automated graph assertions); EMIS/Mirth/CIS2 **not** live; Medplum sync **disabled by default** |
 | **Production-ready** | Secure, governed, clinically safe | **Not met** — no CSO-signed safety case, no Partner write-back, no signed Gate 1–3 |
 
 **End-to-end built** for Aksh means all four levels for the full chain. We are **not** there. Sprint C closed the learning recorder + perf smoke + hazard linkage on the platform side and kept Neo4j/EMIS honest.
@@ -47,7 +47,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | ---: | --- | --- | --- |
 | 1 | Patient identity resolved | Partial | Synthetic cohort + duplicate NHS fixture (P016); no live PDS |
 | 2 | Clinical data → valid FHIR R4 | Met (schema CI) | Zod FHIR R4 gates for 9 resource types (`fhir-r4-validator.ts`); HL7 Java Validator JAR optional |
-| 3 | Knowledge graph updated | Partial | Live graph assertions when Aura reachable; else honest mock (`clinical-proof-graph`) |
+| 3 | Knowledge graph updated | Met (when Aura live) | Live graph asserts HAS_CONDITION / TAKES_MEDICATION / INTERACTS_WITH; honest mock only when disconnected (`clinical-proof-graph`) |
 | 4 | Agents run on correct patient context | Met (orchestration) | Shared-context orchestration: SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST) |
 | 5 | Every AI output marked draft | Met | Agent APIs return `hitlRequired` / `ehrWrite: false` |
 | 6 | Confidence / evidence visible | Partial | UI + agent drafts; orchestration asserts independent evidence per agent |
@@ -58,7 +58,7 @@ Invariant: **zero autonomous clinical writes**. Draft ≠ record until a named c
 | 11 | Accepted → staged FHIR | Met (platform) | Accept → FHIR R4 validate → EMIS staging queue (internal only) → approval token |
 | 12 | Nothing written to EHR without approval | Met (invariant) | EMIS disabled; sim write requires token; replay denied |
 | 13 | Immutable AuditEvent | Partial | SHIELD append-only Postgres when configured; no DELETE API |
-| 14 | RBAC | Partial | Middleware role dashboards; public GP/ICS allowlisted demos |
+| 14 | RBAC | Partial | Middleware role dashboards; public GP/ICS/Hospital allowlisted demos |
 | 15 | Outcomes return to timeline | Met (recorder) | `/api/learning/events` prediction→decision→outcome; **no** auto-retrain |
 | 16 | Failures detectable / recoverable | Partial | Health probes + smoke + perf smoke; no full DR evidence |
 
@@ -83,7 +83,7 @@ Soft-fail if env cannot hit prod latency. `PERF_SMOKE_STRICT=true` for hard enfo
 | EMIS Partner live write-back | **BLOCKED: partner** | `/api/integrations/emis-staging` queues only; `liveWriteBack: false` |
 | SystmOne write-back | **BLOCKED: partner** | Not implemented |
 | Mirth Connect | **GAP / mock UI** | Marketing/admin status mock — no live routes |
-| Neo4j Aura (live) | **Paused / unreachable (Jul 2026)** | Creds present; clinical-proof uses honest mock until Resume + seed |
+| Neo4j Aura (live) | **Live when health says live** | Seeded cohort (≥25); CP-GRAPH-001 asserts relationships; honest mock only if disconnected |
 | CIS2 / NHS login | **BLOCKED: partner** | NextAuth credentials (+ optional clinical OAuth scaffold) |
 | FHIR R4 schema CI | **Met** | Zod R4 gates fail CI on invalid; HL7 Java Validator JAR still optional |
 | Medplum sync | **Disabled by default** | Rehearsal flag polished; `getMedplumRehearsalStatus()`; never EMIS |

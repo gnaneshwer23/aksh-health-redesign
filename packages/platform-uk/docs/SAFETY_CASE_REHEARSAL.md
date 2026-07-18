@@ -44,6 +44,7 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 | Neo4j health | `/api/neo4j/health` and `/api/health` (`neo4j.mode`) |
 | System status strip | Admin dashboard probes `GET /api/health` |
 | Public ICS demo | `/dashboard/ics` (allowlisted; synthetic; demo banner) |
+| Public Hospital demo | `/dashboard/hospital` (allowlisted; synthetic capacity; demo + hospital rehearsal banners) |
 
 ## Named owners (must be filled before production)
 
