@@ -94,16 +94,17 @@ export function PrecisionHealthLoopDemo() {
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
       <header className="space-y-3 border-b border-slate-200 pb-6">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-800">
-          Synthetic closed loop
+          Aksh clinical spine · synthetic replay
         </p>
         <h1 className="font-serif text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-          Precision Health whole loop
+          Replay the Aksh clinical spine
         </h1>
         <p className="max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
-          One runnable journey across the Mermaid flowchart — consent → multimodal ingest →
-          timeline → Neo4j → agents → synthetic scenario ranking → plan draft → safety route →
-          HITL/sim staging → learning recorder. This is scaffolding on synthetic fixtures, not a
-          living physiological twin or live EMR write-back.
+          Same backend as live onboarding → GP review → SHIELD audit — not a separate stack. This
+          run walks consent → multimodal ingest → timeline → Neo4j → agents → synthetic scenario
+          ranking → plan draft → safety route → HITL/sim staging → learning on{" "}
+          <strong>synthetic modalities</strong>. Not a living physiological twin; not live EMR
+          write-back.
         </p>
         <div className="flex flex-wrap gap-2 text-[11px] font-medium">
           {[
@@ -188,10 +189,22 @@ export function PrecisionHealthLoopDemo() {
               Roadmap & honesty notes
             </Link>
             <Link
+              href="/dashboard/gp"
+              className="text-sm text-teal-800 underline-offset-2 hover:underline"
+            >
+              GP dashboard
+            </Link>
+            <Link
               href="/dashboard/admin/precision-health"
               className="text-sm text-teal-800 underline-offset-2 hover:underline"
             >
-              Admin PH status
+              Admin system spine
+            </Link>
+            <Link
+              href="/dashboard/admin/audit"
+              className="text-sm text-teal-800 underline-offset-2 hover:underline"
+            >
+              SHIELD audit
             </Link>
           </div>
 
@@ -270,9 +283,27 @@ export function PrecisionHealthLoopDemo() {
 
           <Card className="border-slate-200 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Stakeholder glimpses</CardTitle>
+              <CardTitle className="text-lg">Continue on the real spine</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2">
+              <Link
+                href={`/dashboard/gp/patients/${report.patientId}`}
+                className="rounded-md border border-slate-200 bg-white px-3 py-3 text-sm transition hover:border-teal-400 hover:bg-teal-50/40"
+              >
+                <p className="font-medium text-slate-900">GP patient surface</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Timeline, health-plan draft, consent for {report.patientId}
+                </p>
+              </Link>
+              <Link
+                href="/dashboard/admin/learning"
+                className="rounded-md border border-slate-200 bg-white px-3 py-3 text-sm transition hover:border-teal-400 hover:bg-teal-50/40"
+              >
+                <p className="font-medium text-slate-900">Learning events</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Prediction → decision recorder (autoRetrain:false)
+                </p>
+              </Link>
               {report.stakeholderGlimpses.map((g) => (
                 <Link
                   key={g.id}

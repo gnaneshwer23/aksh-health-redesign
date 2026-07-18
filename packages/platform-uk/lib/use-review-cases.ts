@@ -32,38 +32,55 @@ export function useReviewCases() {
     void loadCases();
   }, []);
 
-  const updateCase = useCallback(async (nextCase: ReviewCase) => {
-    const previousCases = cases;
-    setCases((current) => current.map((item) => (item.id === nextCase.id ? nextCase : item)));
-    setIsSaving(true);
-    setError(null);
-    setLastFailedCase(null);
-
-    try {
-      const response = await fetch(`/api/review-cases/${nextCase.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(nextCase)
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save case changes.");
-      }
-
-      const payload = (await response.json()) as { reviewCase: ReviewCase };
-      setCases((current) => current.map((item) => (item.id === payload.reviewCase.id ? payload.reviewCase : item)));
+  const updateCase = useCallback(
+    async (nextCase: ReviewCase, options?: { offerHealthPlan?: boolean }) => {
+      const previousCases = cases;
+      setCases((current) => current.map((item) => (item.id === nextCase.id ? nextCase : item)));
+      setIsSaving(true);
       setError(null);
-    } catch (saveError) {
-      setCases(previousCases);
-      setLastFailedCase(nextCase);
-      setError(saveError instanceof Error ? saveError.message : "Failed to save case changes.");
-    } finally {
-      // keep finally block for saving state reset
-      setIsSaving(false);
-    }
-  }, [cases]);
+      setLastFailedCase(null);
+
+      try {
+        const response = await fetch(`/api/review-cases/${nextCase.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ...nextCase,
+            ...(options?.offerHealthPlan ? { offerHealthPlan: true } : {})
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save case changes.");
+        }
+
+        const payload = (await response.json()) as {
+          reviewCase: ReviewCase;
+          spine?: {
+            patientId?: string;
+            learningEventIds?: string[];
+            healthPlanId?: string | null;
+          } | null;
+        };
+        setCases((current) =>
+          current.map((item) => (item.id === payload.reviewCase.id ? payload.reviewCase : item))
+        );
+        setError(null);
+        return payload;
+      } catch (saveError) {
+        setCases(previousCases);
+        setLastFailedCase(nextCase);
+        setError(saveError instanceof Error ? saveError.message : "Failed to save case changes.");
+        return null;
+      } finally {
+        // keep finally block for saving state reset
+        setIsSaving(false);
+      }
+    },
+    [cases]
+  );
 
   const resetCases = useCallback(async () => {
     setIsSaving(true);

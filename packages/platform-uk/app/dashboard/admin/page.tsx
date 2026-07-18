@@ -46,9 +46,9 @@ export default function AdminDashboardPage() {
             href="/dashboard/admin/precision-health"
             className="rounded-xl border border-primary/20 bg-primary/[0.04] p-4 transition-colors hover:border-primary/40"
           >
-            <p className="text-sm font-semibold text-foreground">Precision Health status</p>
+            <p className="text-sm font-semibold text-foreground">System spine &amp; Precision Health</p>
             <p className="mt-1 text-xs text-muted">
-              Honest connector / twin / EMIS flags — Phase 1–3 scaffolding roll-up
+              Postgres, Neo4j, agents, EMIS/Medplum honesty, loop status — one ops view
             </p>
           </Link>
           <Link

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { recordSpineQueueDecisions } from "@/lib/clinical-spine/queue-decision";
 import { shouldSyncAcceptedCaseToMedplum } from "@/lib/integration-config";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { attachPracticeIdToCase } from "@/lib/db/tenant-context";
@@ -43,9 +44,36 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const normalized = attachPracticeIdToCase(normalizeReviewCaseForPersistence(payload), tenant.practiceId);
+  const offerHealthPlan =
+    (payload as ReviewCase & { offerHealthPlan?: boolean }).offerHealthPlan === true;
+
+  // Strip client-only spine flags before persistence
+  const { offerHealthPlan: _omitOffer, ...persistable } = payload as ReviewCase & {
+    offerHealthPlan?: boolean;
+  };
+  void _omitOffer;
+
+  const normalized = attachPracticeIdToCase(
+    normalizeReviewCaseForPersistence(persistable),
+    tenant.practiceId
+  );
   normalized.userId = userId;
   const updated = await updateReviewCase(normalized, scopeKey, userId, tenant.practiceId);
+
+  // Clinical spine: SHIELD is already on the case via updateQueueItemDecision;
+  // dual-write learning (+ optional health-plan draft) so timeline matches decisions.
+  let spine: Awaited<ReturnType<typeof recordSpineQueueDecisions>> | null = null;
+  try {
+    spine = await recordSpineQueueDecisions({
+      existing,
+      next: updated,
+      scopeKey,
+      actor: auth.context.userEmail ?? userId,
+      offerHealthPlan
+    });
+  } catch (spineError) {
+    console.error("[clinical-spine] queue decision record failed", spineError);
+  }
 
   // Medplum rehearsal only when ENABLE_MEDPLUM_SYNC=true + newly accepted frozen case.
   // Non-blocking; never EMIS; pushToMedplum refuses when flag is off.
@@ -59,5 +87,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
   }
 
-  return NextResponse.json({ reviewCase: updated, evidence: buildEvidencePayload(updated) });
+  return NextResponse.json({
+    reviewCase: updated,
+    evidence: buildEvidencePayload(updated),
+    spine: spine
+      ? {
+          patientId: spine.patientId,
+          learningEventIds: spine.learningEventIds,
+          healthPlanId: spine.healthPlanId,
+          ehrWrite: false as const,
+          autoRetrain: false as const
+        }
+      : null
+  });
 }

@@ -32,11 +32,11 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
   },
   {
     id: "precision-health-loop",
-    title: "Precision Health whole loop",
+    title: "Aksh clinical spine replay",
     description:
-      "Synthetic closed loop across the Mermaid flowchart — consent → ingest → agents → twin ranking → plan → HITL/sim → learning. Not a living twin; liveEmis:false.",
+      "Synthetic closed-loop replay of the same Aksh spine — consent → ingest → agents → twin ranking → plan → HITL/sim → learning. Not a living twin; liveEmis:false.",
     href: "/demo/precision-health-loop",
     duration: "~3 minutes",
-    category: "Precision Health scaffolding",
+    category: "Clinical spine (synthetic)",
   },
 ];

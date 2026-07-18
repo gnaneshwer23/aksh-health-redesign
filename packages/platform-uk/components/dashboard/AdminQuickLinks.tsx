@@ -10,8 +10,8 @@ const LINKS = [
   { href: "/dashboard/admin/integrations", label: "Integrations", description: "EMIS, SystmOne, FHIR, and platform service health", icon: Activity },
   {
     href: "/dashboard/admin/precision-health",
-    label: "Precision Health",
-    description: "Connectors, twin/EMIS honesty flags, partner checklist pointers (scaffolding)",
+    label: "System spine",
+    description: "Postgres, Neo4j, agents, EMIS/Medplum honesty, PH loop — one ops view",
     icon: Heart,
   },
   {

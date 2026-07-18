@@ -16,6 +16,8 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
   const { cases, getCaseById, isLoaded, updateCase } = useReviewCases();
   const [reviewerName, setReviewerName] = useState("Dr Morgan");
   const [agentFilter, setAgentFilter] = useState<ReviewQueueItemType | null>(null);
+  const [offerHealthPlanOnAccept, setOfferHealthPlanOnAccept] = useState(false);
+  const [spineNotice, setSpineNotice] = useState<string | null>(null);
 
   const reviewCase = useMemo(() => {
     if (!isLoaded) return null;
@@ -51,24 +53,44 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
   const queueItems = resolveReviewQueueItems(activeCase);
   const agentCards = deriveAgentCards(activeCase);
 
-  function persist(nextCase: typeof activeCase) {
+  async function persist(
+    nextCase: typeof activeCase,
+    options?: { offerHealthPlan?: boolean }
+  ) {
     if (!nextCase) return;
-    updateCase(nextCase);
+    const result = await updateCase(nextCase, options);
+    if (result?.spine?.learningEventIds?.length) {
+      const planBit = result.spine.healthPlanId
+        ? ` · health-plan draft ${result.spine.healthPlanId} (HITL, ehrWrite:false)`
+        : "";
+      setSpineNotice(
+        `Spine recorded: ${result.spine.learningEventIds.length} learning event(s) for ${result.spine.patientId}${planBit}.`
+      );
+    }
   }
 
   function handleAccept(itemId: string) {
     if (!reviewCase) return;
-    persist(updateQueueItemDecision(activeCase, itemId, "ACCEPTED", { decidedBy: reviewerName }));
+    void persist(updateQueueItemDecision(activeCase, itemId, "ACCEPTED", { decidedBy: reviewerName }), {
+      offerHealthPlan: offerHealthPlanOnAccept
+    });
   }
 
   function handleReject(itemId: string, reason: string) {
     if (!reviewCase) return;
-    persist(updateQueueItemDecision(activeCase, itemId, "REJECTED", { decidedBy: reviewerName, rejectionReason: reason }));
+    void persist(
+      updateQueueItemDecision(activeCase, itemId, "REJECTED", {
+        decidedBy: reviewerName,
+        rejectionReason: reason
+      })
+    );
   }
 
   function handleEdit(itemId: string, content: string) {
     if (!reviewCase) return;
-    persist(updateQueueItemDecision(activeCase, itemId, "DRAFT", { decidedBy: reviewerName, content }));
+    void persist(
+      updateQueueItemDecision(activeCase, itemId, "DRAFT", { decidedBy: reviewerName, content })
+    );
   }
 
   function handleVoiceTranscript(transcript: string) {
@@ -82,7 +104,7 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           }
         : item
     );
-    persist({
+    void persist({
       ...activeCase,
       input: { ...activeCase.input, summary: transcript, sourceType: "transcript" as const },
       reviewQueueItems: items
@@ -97,7 +119,9 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           <h1>Clinician Dashboard</h1>
           <p>
             Patient context, AI review queue, and agent control panel with human-in-the-loop review.
-            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong>.
+            Scenario <strong>{activeCase.scenarioId ?? "custom"}</strong>. Every Accept / Edit /
+            Reject writes SHIELD + a learning event on the clinical spine (no auto-retrain, no live
+            EMIS).
           </p>
         </div>
         <div className="actions">
@@ -118,6 +142,15 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           <span>Reviewer name</span>
           <input onChange={(event) => setReviewerName(event.target.value)} value={reviewerName} />
         </label>
+        <label className="gp-reviewer-field" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <input
+            type="checkbox"
+            checked={offerHealthPlanOnAccept}
+            onChange={(event) => setOfferHealthPlanOnAccept(event.target.checked)}
+            data-testid="offer-health-plan-on-accept"
+          />
+          <span>After Accept, draft health plan (HITL · ehrWrite:false)</span>
+        </label>
         {reviewCase.oracleRiskScore ? (
           <div className="gp-oracle-strip">
             <span className="pill">ORACLE baseline {reviewCase.oracleRiskScore.baseline}</span>
@@ -126,6 +159,17 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
           </div>
         ) : null}
       </div>
+
+      {spineNotice ? (
+        <div className="panel" data-testid="spine-decision-notice" role="status">
+          <p>{spineNotice}</p>
+          <p className="text-muted" style={{ marginTop: "0.35rem", fontSize: "0.85rem" }}>
+            Timeline and learning surfaces update from the same events —{" "}
+            <Link href="/dashboard/admin/learning">learning</Link> ·{" "}
+            <Link href="/dashboard/admin/audit">SHIELD audit</Link>.
+          </p>
+        </div>
+      ) : null}
 
       <div className="gp-dashboard__columns">
         <div className="stack">

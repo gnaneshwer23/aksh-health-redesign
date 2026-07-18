@@ -174,6 +174,12 @@ async function run() {
   await assertFileIncludes("lib/precision-health/whole-loop.ts", "autoRetrain: false");
   await assertFileIncludes("app/api/precision-health/whole-loop/route.ts", "runWholeLoop");
   await assertFileIncludes("app/demo/precision-health-loop/page.tsx", "PrecisionHealthLoopDemo");
+  await assertFileIncludes("components/demo/PrecisionHealthLoopDemo.tsx", "Replay the Aksh clinical spine");
+  await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "SystemSpinePanel");
+  await assertFileIncludes("lib/onboarding/consent-registry-sync.ts", "syncOnboardingConsentsToRegistry");
+  await assertFileIncludes("lib/clinical-spine/queue-decision.ts", "recordSpineQueueDecisions");
+  await assertFileIncludes("app/api/onboarding/complete/route.ts", "syncOnboardingConsentsToRegistry");
+  await assertFileIncludes("app/api/review-cases/[id]/route.ts", "recordSpineQueueDecisions");
   await assertFileIncludes("app/api/agents/causal/route.ts", "hypothesis only, not causal proof");
   await assertFileIncludes("app/api/research/federated/jobs/route.ts", "patientLevelExport");
   await assertFileIncludes("app/api/integrations/pharma-rwe/route.ts", "getPharmaRweSummary");

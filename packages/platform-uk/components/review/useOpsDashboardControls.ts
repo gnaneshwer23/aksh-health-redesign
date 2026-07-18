@@ -20,7 +20,7 @@ export function useOpsDashboardControls({
   opsAnalytics
 }: {
   cases: ReviewCase[];
-  updateCase: (reviewCase: ReviewCase) => Promise<void>;
+  updateCase: (reviewCase: ReviewCase, options?: { offerHealthPlan?: boolean }) => Promise<unknown>;
   opsAnalytics: OpsAnalytics;
 }) {
   const {

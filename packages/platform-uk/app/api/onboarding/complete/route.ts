@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { completeOnboarding } from "@/lib/auth/user-repository";
+import { syncOnboardingConsentsToRegistry } from "@/lib/onboarding/consent-registry-sync";
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
@@ -57,11 +58,39 @@ export async function POST(request: Request) {
 
     await clearOnboardingProgress(session.user.id);
 
+    // Mirror onboarding checkboxes into the shared PH consent registry (same spine).
+    // Failure here must not block dashboard access — profile is already complete.
+    let consentRegistry: Awaited<ReturnType<typeof syncOnboardingConsentsToRegistry>> | null =
+      null;
+    try {
+      const consentsRecord =
+        consents && typeof consents === "object"
+          ? (consents as Record<string, unknown>)
+          : {};
+      consentRegistry = await syncOnboardingConsentsToRegistry({
+        role: role as UserRole,
+        userId: session.user.id,
+        consents: consentsRecord,
+        actor: session.user.email ?? session.user.id,
+        scopeKey: session.user.id,
+      });
+    } catch (syncError) {
+      console.error("[onboarding] consent registry sync failed", syncError);
+    }
+
     return NextResponse.json({
       ok: true,
       role: profile.role,
       onboardingComplete: profile.onboardingComplete,
       completedAt: new Date().toISOString(),
+      consentRegistry: consentRegistry
+        ? {
+            subjectId: consentRegistry.subjectId,
+            grantsCreated: consentRegistry.grantsCreated,
+            purposes: consentRegistry.purposes,
+            ehrWrite: false as const,
+          }
+        : null,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to complete onboarding";

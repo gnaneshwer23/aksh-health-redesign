@@ -1,0 +1,251 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type HealthPayload = {
+  status?: string;
+  database?: { mode?: string; connected?: boolean; configured?: boolean };
+  neo4j?: { mode?: string; connected?: boolean; note?: string; configured?: boolean };
+};
+
+type TwinStatus = {
+  physiologicalTwin?: boolean;
+  simulationMode?: string;
+};
+
+type MedplumStatus = {
+  syncFlagEnabled?: boolean;
+  liveEmis?: boolean;
+  mode?: string;
+  status?: { syncFlagEnabled?: boolean; liveEmis?: boolean; mode?: string };
+};
+
+type EmisChecklist = {
+  liveEmis?: boolean;
+  liveWriteBack?: boolean;
+  note?: string;
+};
+
+type LoopCapabilities = {
+  stages?: string[];
+  honesty?: {
+    physiologicalTwin?: boolean;
+    liveEmis?: boolean;
+    autoRetrain?: boolean;
+    ehrWrite?: boolean;
+    note?: string;
+  };
+};
+
+type AgentProbe = {
+  id: string;
+  label: string;
+  href: string;
+  ok: boolean | null;
+};
+
+const AGENT_PROBES: Array<{ id: string; label: string; href: string }> = [
+  { id: "guardian", label: "GUARDIAN", href: "/api/agents/guardian" },
+  { id: "oracle", label: "ORACLE", href: "/api/agents/oracle" },
+  { id: "dr-assist", label: "Dr.Assist", href: "/api/agents/dr-assist" },
+];
+
+/**
+ * Single ops view of the Aksh clinical spine — Postgres, Neo4j, agents, EMIS/Medplum honesty,
+ * whole-loop capabilities. Extends admin Precision Health; not a second product.
+ */
+export function SystemSpinePanel() {
+  const [health, setHealth] = useState<HealthPayload | null>(null);
+  const [twin, setTwin] = useState<TwinStatus | null>(null);
+  const [medplum, setMedplum] = useState<MedplumStatus | null>(null);
+  const [emis, setEmis] = useState<EmisChecklist | null>(null);
+  const [loop, setLoop] = useState<LoopCapabilities | null>(null);
+  const [agents, setAgents] = useState<AgentProbe[]>(
+    AGENT_PROBES.map((a) => ({ ...a, ok: null }))
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setError(null);
+    try {
+      const [healthRes, twinRes, medplumRes, emisRes, loopRes, ...agentRes] = await Promise.all([
+        fetch("/api/health"),
+        fetch("/api/precision-health/twin/status"),
+        fetch("/api/integrations/medplum-status", { credentials: "include" }),
+        fetch("/api/integrations/emis-partner-checklist", { credentials: "include" }),
+        fetch("/api/precision-health/whole-loop"),
+        ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
+      ]);
+
+      if (healthRes.ok) setHealth((await healthRes.json()) as HealthPayload);
+      if (twinRes.ok) setTwin((await twinRes.json()) as TwinStatus);
+      if (medplumRes.ok) setMedplum((await medplumRes.json()) as MedplumStatus);
+      if (emisRes.ok) setEmis((await emisRes.json()) as EmisChecklist);
+      else setEmis({ liveEmis: false, liveWriteBack: false, note: "Auth required for checklist" });
+      if (loopRes.ok) setLoop((await loopRes.json()) as LoopCapabilities);
+
+      setAgents(
+        AGENT_PROBES.map((a, i) => {
+          const res = agentRes[i];
+          const ok = res ? res.ok || res.status < 500 : false;
+          return { ...a, ok };
+        })
+      );
+    } catch {
+      setError("Could not load system spine status.");
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const medplumInner = medplum?.status ?? medplum;
+  const liveEmis = emis?.liveEmis ?? false;
+  const physiologicalTwin = twin?.physiologicalTwin ?? false;
+  const autoRetrain = loop?.honesty?.autoRetrain ?? false;
+
+  return (
+    <Card className="shadow-sm" data-testid="system-spine-panel">
+      <CardHeader className="p-4 pb-2">
+        <CardTitle className="text-sm">System spine</CardTitle>
+        <p className="text-xs text-muted">
+          One ops view of the Aksh clinical backend — same Neon, Neo4j, SHIELD, agents, and HITL
+          path used by onboarding → dashboard → review. liveEmis:false · autoRetrain:false · not a
+          parallel product.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4 p-4 pt-2">
+        {error ? <p className="text-xs text-danger">{error}</p> : null}
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Flag
+            label="Postgres"
+            value={health?.database?.mode ?? "…"}
+            ok={health?.database?.connected !== false}
+            detail={`platform: ${health?.status ?? "…"}`}
+          />
+          <Flag
+            label="Neo4j"
+            value={health?.neo4j?.mode ?? "…"}
+            ok={true}
+            detail={health?.neo4j?.note ?? "from /api/health"}
+          />
+          <Flag
+            label="liveEmis"
+            value={String(liveEmis)}
+            ok={!liveEmis}
+            detail={emis?.note ?? "Partner write-back blocked"}
+          />
+          <Flag
+            label="Medplum"
+            value={medplumInner?.syncFlagEnabled ? "flag on" : "flag off"}
+            ok={true}
+            detail={`mode:${medplumInner?.mode ?? "…"} · liveEmis:${String(medplum?.liveEmis ?? medplumInner?.liveEmis ?? false)}`}
+          />
+          <Flag
+            label="physiologicalTwin"
+            value={String(physiologicalTwin)}
+            ok={!physiologicalTwin}
+            detail={twin?.simulationMode ? `mode:${twin.simulationMode}` : "synthetic_rules"}
+          />
+          <Flag
+            label="autoRetrain"
+            value={String(autoRetrain)}
+            ok={!autoRetrain}
+            detail="Learning recorder only — governed release required for model change"
+          />
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold">Agents (route health)</p>
+          <ul className="mt-1 flex flex-wrap gap-2 text-xs">
+            {agents.map((a) => (
+              <li
+                key={a.id}
+                className={`rounded-md border px-2 py-1 ${
+                  a.ok === null
+                    ? "border-border text-muted"
+                    : a.ok
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+                      : "border-rose-300 bg-rose-50 text-rose-900"
+                }`}
+              >
+                {a.label}: {a.ok === null ? "…" : a.ok ? "reachable" : "error"}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1 text-[11px] text-muted">
+            GET capability probes only — no agent draft generation, no EHR write.
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold">Precision Health loop</p>
+          <p className="mt-1 text-xs text-muted">
+            {loop?.stages?.length
+              ? `${loop.stages.length} stages in whole-loop orchestrator — synthetic modalities replay of this spine.`
+              : "Loading loop capabilities…"}{" "}
+            {loop?.honesty?.note ?? ""}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 text-xs">
+          <Link
+            href="/dashboard/admin/audit"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            SHIELD audit →
+          </Link>
+          <Link
+            href="/dashboard/admin/learning"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Learning events →
+          </Link>
+          <Link
+            href="/dashboard/admin/consent"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Consent registry →
+          </Link>
+          <Link
+            href="/dashboard/admin/integrations"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Integrations →
+          </Link>
+          <Link
+            href="/demo/precision-health-loop"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Replay clinical spine (demo) →
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function Flag({
+  label,
+  value,
+  ok,
+  detail
+}: {
+  label: string;
+  value: string;
+  ok: boolean;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-sm border border-border p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">{label}</p>
+      <p className={`mt-1 text-sm font-semibold ${ok ? "text-foreground" : "text-danger"}`}>{value}</p>
+      <p className="mt-1 text-[11px] text-muted">{detail}</p>
+    </div>
+  );
+}
