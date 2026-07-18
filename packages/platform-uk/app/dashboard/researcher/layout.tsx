@@ -9,7 +9,7 @@ import { ResearcherDataProvider } from "@/components/dashboard/researcher/Resear
 export default function ResearcherDashboardLayout({ children }: { children: ReactNode }) {
   return (
     <ResearcherDataProvider>
-      <DashboardShell role="researcher" title="Researcher Dashboard">
+      <DashboardShell role="researcher" title="Researcher Dashboard" showFirstRun>
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <ConsentBanner />
           {children}

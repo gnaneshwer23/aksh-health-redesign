@@ -9,7 +9,7 @@ export default function PatientDashboardPage() {
   const patientTitle = profile?.fullName?.trim() ? `${profile.fullName}'s Health` : "My Health";
 
   return (
-    <DashboardShell role="patient" title={loading ? "My Health" : patientTitle} hideSidebar hideSearch>
+    <DashboardShell role="patient" title={loading ? "My Health" : patientTitle} hideSidebar hideSearch showFirstRun>
       <PatientCompanion />
     </DashboardShell>
   );

@@ -19,7 +19,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
   return [
     {
       title: "Everything AI Suggests. Nothing AI Decides.",
-      body: "Your Review Queue is the heart of Aksh Health. Every AI output (SOAP notes, diagnosis codes, drug alerts, risk scores) appears here as a draft. You Accept, Edit, or Reject. Only then does it reach the patient record.",
+      body: "Capture → draft → approve is the heart of Aksh Health. Every AI output (SOAP notes, codes, drug alerts, risk scores) lands in your Review Queue as a draft. You Accept, Edit, or Reject. Only then can it reach the patient record.",
       visual: (
         <div className="space-y-2 rounded-md border border-border p-4 text-sm">
           {[
@@ -115,23 +115,20 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
     },
     {
       title: `You're Ready, Dr ${doctorName}`,
-      body: "All agents active. FHIR connected. Human-in-the-loop enabled. Your first patients are loaded in your dashboard.",
+      body: "Your Clinician Dashboard is next: Review Queue, today's patients, and patient panels for risk state, timeline, and health-plan drafts — all HITL. Precision Health features are scaffolding, not a live twin.",
       visual: (
         <ul className="space-y-1 text-sm text-accent">
           {[
-            "SYNTHESIS: encounter summarisation active",
-            "Dr.Assist: clinical coding active",
-            "GUARDIAN: drug safety active",
-            "ORACLE: risk scoring active",
-            "VOICE: dictation active",
-            "EQUITY: disparity monitoring active",
-            "SHIELD: audit trail active",
+            "Review Queue: Capture → draft → approve",
+            "ORACLE risk scores on today's list",
+            "Patient detail: risk state · timeline · plan draft",
+            "Walkthrough & resources linked from the dashboard",
           ].map((line) => (
             <li key={line}>✓ {line}</li>
           ))}
         </ul>
       ),
-      ctaLabel: "Open My Dashboard",
+      ctaLabel: "Continue to complete",
     },
   ];
 }
@@ -182,8 +179,8 @@ function getIcsScreens(): TutorialScreen[] {
       ),
     },
     {
-      title: "Digital Twin: Winter Planning",
-      body: "What happens if admissions rise 20%? Model bed demand, staffing, and discharge capacity before winter surge.",
+      title: "Population risk state (scaffolding)",
+      body: "Model surge scenarios for winter planning. This is aggregate risk-state scaffolding on rehearsal data — not a physiological digital twin or live ICS feed.",
       visual: (
         <div className="rounded-md border border-border p-4 text-sm">
           <p className="font-medium">Simulation: +20% admissions</p>
@@ -194,9 +191,9 @@ function getIcsScreens(): TutorialScreen[] {
     },
     {
       title: "You're Ready",
-      body: "Your ICS population intelligence workspace is configured.",
-      visual: <p className="text-sm text-accent">✓ ICS dashboard configured and ready</p>,
-      ctaLabel: "Open ICS Dashboard",
+      body: "Next: ICS Population Intelligence — KPIs, equity flags, benchmarking, and Risk state / forecast.",
+      visual: <p className="text-sm text-accent">✓ ICS dashboard preview matches what you&apos;ll open after complete</p>,
+      ctaLabel: "Continue to complete",
     },
   ];
 }
@@ -215,8 +212,8 @@ function getHospitalScreens(): TutorialScreen[] {
       ),
     },
     {
-      title: "Digital Twin",
-      body: "Winter surge simulation and discharge bottleneck prediction for capacity planning.",
+      title: "Risk state scaffolding",
+      body: "Winter surge simulation and discharge bottleneck views for capacity planning — synthetic rehearsal, not a live PAS twin.",
       visual: (
         <div className="space-y-2 text-sm">
           <p>Winter surge: +18% admissions projected</p>
@@ -226,9 +223,9 @@ function getHospitalScreens(): TutorialScreen[] {
     },
     {
       title: "You're Ready",
-      body: "Hospital Command Centre and Digital Twin are active.",
-      visual: <p className="text-sm text-accent">✓ Executive dashboard ready</p>,
-      ctaLabel: "Open Hospital Dashboard",
+      body: "Next: Hospital Command Centre with ED/beds/staffing metrics and a Risk state panel when you need it.",
+      visual: <p className="text-sm text-accent">✓ Command Centre preview ready — complete onboarding to open it</p>,
+      ctaLabel: "Continue to complete",
     },
   ];
 }
@@ -257,15 +254,15 @@ function getPatientScreens(): TutorialScreen[] {
       ),
     },
     {
-      title: "Ask the AI",
-      body: "Type any health question. The AI will answer and, if important, flag it to your care team.",
+      title: "Ask Aksh",
+      body: "Type any health question. The AI will answer and, if important, flag it to your care team for GP review.",
       visual: (
         <div className="rounded-md border border-border p-4 text-sm">
-          <p className="text-muted">You: "Is it normal to feel tired after starting new medication?"</p>
-          <p className="mt-2">AI: "Fatigue can occur. I'll note this for your GP to review."</p>
+          <p className="text-muted">You: &quot;Is it normal to feel tired after starting new medication?&quot;</p>
+          <p className="mt-2">AI: &quot;Fatigue can occur. I&apos;ll note this for your GP to review.&quot;</p>
         </div>
       ),
-      ctaLabel: "Open My Health",
+      ctaLabel: "Continue to complete",
     },
   ];
 }
@@ -338,7 +335,8 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
       </div>
 
       <p className="mt-4 text-xs text-muted">
-        Dashboard: {resolveDashboardPath(role)}
+        After you finish onboarding you&apos;ll land on {resolveDashboardPath(role)}. Tutorial CTAs always complete
+        onboarding first — they do not skip that step.
       </p>
     </div>
   );

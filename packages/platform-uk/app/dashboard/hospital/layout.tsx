@@ -18,7 +18,7 @@ export default function HospitalDashboardLayout({ children }: { children: ReactN
   const isPublicDemo = status === "unauthenticated";
 
   return (
-    <DashboardShell role="hospital" title="Command Centre" organisation={hospitalName}>
+    <DashboardShell role="hospital" title="Command Centre" organisation={hospitalName} showFirstRun>
       <div className="flex flex-col h-full overflow-hidden">
         <CommandHeader data={hospitalData} hospitalName={hospitalName} />
         <SurgeAlertBanner data={hospitalData} />

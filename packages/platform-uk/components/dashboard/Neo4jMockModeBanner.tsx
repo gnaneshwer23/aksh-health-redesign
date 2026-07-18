@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { cn } from "@/lib/utils";
 
 type DataSource = "neo4j" | "mock" | "demo" | null;
@@ -33,7 +35,10 @@ export function Neo4jMockModeBanner({
         )}
       >
         Clinical graph data is <strong>live from Neo4j</strong>. ORACLE, GUARDIAN, and ICS panels
-        reflect the seeded Aura graph for this session.
+        reflect the seeded Aura graph for this session — still synthetic rehearsal patients, not a live NHS feed.{" "}
+        <Link href="/resources" className="underline underline-offset-2 hover:text-emerald-950">
+          Resources
+        </Link>
       </p>
     );
   }
@@ -50,7 +55,11 @@ export function Neo4jMockModeBanner({
       Clinical graph data is in <strong>local fallback mode</strong>. Neo4j is not connected. ORACLE,
       GUARDIAN, and ICS panels use cached fallback data until the graph is linked. If Aura shows{" "}
       <strong>Paused</strong>, resume the instance in the Neo4j Aura console, wait until it is Running,
-      then refresh — see docs/NEO4J_SETUP.md.
+      then refresh — see{" "}
+      <Link href="/resources" className="underline underline-offset-2 hover:text-amber-950">
+        Resources
+      </Link>{" "}
+      or docs/NEO4J_SETUP.md.
     </p>
   );
 }

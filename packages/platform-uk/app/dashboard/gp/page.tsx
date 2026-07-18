@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { useSession } from "next-auth/react";
@@ -70,7 +71,7 @@ export default function GpDashboardPage() {
   const clinicalLoading = oracleLoading && !oracleData;
 
   return (
-    <DashboardShell role="gp" title="Clinician Dashboard">
+    <DashboardShell role="gp" title="Clinician Dashboard" showFirstRun>
       <div className="flex h-full flex-col overflow-hidden lg:flex-row">
         {/* Mobile patient strip — collapsible, horizontal scroll */}
         <div className="shrink-0 border-b border-border-subtle bg-card lg:hidden">
@@ -209,6 +210,18 @@ export default function GpDashboardPage() {
           </section>
 
           <DigitalTwinPanel patient={patient ?? null} />
+          {patient ? (
+            <p className="text-xs text-muted">
+              Full Phase 1–3 panels (timeline, health-plan draft, consent grants) open on{" "}
+              <Link
+                href={`/dashboard/gp/patients/${patient.id}`}
+                className="font-medium text-primary underline-offset-2 hover:underline"
+              >
+                {patient.name}&apos;s patient view
+              </Link>
+              .
+            </p>
+          ) : null}
           </div>
 
           <div className="shrink-0 overflow-x-auto bg-card lg:w-72 lg:overflow-y-auto">

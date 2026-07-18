@@ -12,7 +12,7 @@ export default function PharmacistDashboardLayout({ children }: { children: Reac
   const pharmacyLabel = getPharmacyLabel(profile);
 
   return (
-    <DashboardShell role="pharmacist" title="Pharmacist Dashboard" organisation={pharmacyLabel}>
+    <DashboardShell role="pharmacist" title="Pharmacist Dashboard" organisation={pharmacyLabel} showFirstRun>
       <div className="overflow-y-auto p-4 space-y-6">
         <ConsentBanner />
         {children}

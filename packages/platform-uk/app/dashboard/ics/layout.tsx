@@ -21,7 +21,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
   const isPublicDemo = status === "unauthenticated";
 
   return (
-    <DashboardShell role="ics" title={icsTitle} organisation={profile?.organisation}>
+    <DashboardShell role="ics" title={icsTitle} organisation={profile?.organisation} showFirstRun>
       <div className="overflow-y-auto p-4 space-y-6">
         {isPublicDemo ? <DemoDataBanner surface="ICS" /> : null}
         <div className="flex flex-wrap items-center justify-between gap-4">

@@ -19,7 +19,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
         { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR R4" },
         { label: "Security & safety", href: "/security", description: "Safety case and audit posture" },
       ],
-      cta: { label: "Book a walkthrough", href: "/demo/patel" },
+      cta: { label: "See walkthrough", href: "/walkthrough" },
     },
     {
       pill: "Capabilities",

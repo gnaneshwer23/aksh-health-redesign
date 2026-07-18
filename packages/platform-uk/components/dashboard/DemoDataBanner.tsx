@@ -27,10 +27,18 @@ export function DemoDataBanner({
       <p className="mt-1 text-amber-900/90">
         This view is open without sign-in for product walkthroughs. Figures are rehearsal / synthetic
         population signals, not a live ICS feed. No EHR write-back.{" "}
+        <Link href="/walkthrough" className="underline underline-offset-2 hover:text-amber-950">
+          See walkthrough
+        </Link>
+        {" · "}
         <Link href="/signup" className="underline underline-offset-2 hover:text-amber-950">
           Create an account
         </Link>{" "}
-        for role-gated workspaces.
+        for role-gated workspaces, or{" "}
+        <Link href="/get-started" className="underline underline-offset-2 hover:text-amber-950">
+          discuss a pilot
+        </Link>
+        .
       </p>
     </div>
   );

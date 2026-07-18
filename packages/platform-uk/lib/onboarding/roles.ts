@@ -43,7 +43,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
     label: "GP",
-    description: "General Practitioner. Clinical documentation and review",
+    description: "Clinician dashboard — review queue, risk state, Capture → draft → approve",
     icon: "stethoscope",
     color: "#003D7A",
     steps: [
@@ -61,7 +61,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "nurse",
     label: "Nurse / Care Coordinator",
-    description: "Vitals, handover, and care coordination",
+    description: "Observations, handover drafts, and care coordination alerts",
     icon: "heart-pulse",
     color: "#006B4F",
     steps: [
@@ -78,7 +78,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "clinical-pharmacist",
     label: "Clinical Pharmacist",
-    description: "Medication review and GUARDIAN safety",
+    description: "Medication review with GUARDIAN safety — drafts need your approval",
     icon: "pill",
     color: "#6B46C1",
     steps: [
@@ -95,7 +95,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "practice-manager",
     label: "Practice Manager / Admin",
-    description: "Practice operations, integrations, and SHIELD",
+    description: "Integrations, SHIELD audit, Precision Health status & consent registry",
     icon: "building",
     color: "#64748B",
     steps: [
@@ -112,7 +112,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "ics-lead",
     label: "ICS Lead / Clinical Informatics",
-    description: "Population intelligence across integrated care",
+    description: "Population intelligence, equity flags, and aggregate risk state",
     icon: "network",
     color: "#0D9488",
     steps: [
@@ -131,7 +131,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "hospital-executive",
     label: "Hospital Executive",
-    description: "CEO, COO, or CMO. Command centre and capacity planning",
+    description: "Command Centre — capacity, staffing, and risk-state scaffolding",
     icon: "chart-bar",
     color: "#001A3D",
     steps: [
@@ -149,7 +149,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "patient",
     label: "Patient",
-    description: "Invited by your GP practice",
+    description: "My Health — care plan in plain English, GP-approved suggestions",
     icon: "user",
     color: "#0EA5E9",
     steps: ["role-select", "identity", "consent", "tutorial", "complete"],
@@ -159,7 +159,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "researcher",
     label: "Researcher / Analyst",
-    description: "Clinical informatics and outcome research",
+    description: "Governed evaluation and data access with audit trail",
     icon: "microscope",
     color: "#E67E22",
     steps: [

@@ -49,15 +49,19 @@ export default function HomePage() {
             Ready for your organisation?
           </h2>
           <p className="owkin-cta-band__lede mb-8 text-lg leading-relaxed md:text-xl">
-            Eight role-specific dashboards. FHIR R4 ready for EMIS Web and SystmOne. Clinician approval built in from
-            day one.
+            Eight role-specific dashboards. Capture → draft → approve with clinician gatekeeping. FHIR R4 ready for EMIS
+            Web and SystmOne. Precision Health scaffolding on the roadmap — not a live twin claim.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">
-              Talk to us
+              Discuss a pilot
             </Link>
             <Link href="/signup" className="owkin-cta-band__link">
               Create account
+              <span aria-hidden>→</span>
+            </Link>
+            <Link href="/walkthrough" className="owkin-cta-band__link">
+              See walkthrough
               <span aria-hidden>→</span>
             </Link>
           </div>

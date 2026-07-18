@@ -14,7 +14,7 @@ export default function NurseDashboardLayout({ children }: { children: ReactNode
   const orgLabel = getPersonalizedLabel(profile, PRACTICE_NAME);
 
   return (
-    <DashboardShell role="nurse" title="Nurse Dashboard" organisation={orgLabel}>
+    <DashboardShell role="nurse" title="Nurse Dashboard" organisation={orgLabel} showFirstRun>
       <div className="flex h-full flex-col overflow-hidden">
         <div className="shrink-0 px-4 pt-4">
           <VoiceCareEscalationCard />

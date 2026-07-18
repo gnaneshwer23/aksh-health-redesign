@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { EmailVerificationBanner } from "@/components/dashboard/EmailVerificationBanner";
+import { FirstRunGuidance } from "@/components/dashboard/FirstRunGuidance";
+import { ProductHelpLinks } from "@/components/dashboard/ProductHelpLinks";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,6 +36,7 @@ export function DashboardShell({
   hideSidebar,
   hideSearch,
   organisation,
+  showFirstRun = false,
 }: {
   role: DashboardRole;
   title?: string;
@@ -41,6 +44,8 @@ export function DashboardShell({
   hideSidebar?: boolean;
   hideSearch?: boolean;
   organisation?: string | null;
+  /** Dismissible post-onboarding guidance + help links — enable on role home pages. */
+  showFirstRun?: boolean;
 }) {
   const { profile, loading } = useUserProfile();
   const resolvedOrganisation = organisation ?? profile?.organisation ?? null;
@@ -61,7 +66,19 @@ export function DashboardShell({
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar role={role} />}
         <main className="flex flex-1 flex-col overflow-hidden">
-          {loading ? <DashboardShellSkeleton /> : children}
+          {loading ? (
+            <DashboardShellSkeleton />
+          ) : (
+            <>
+              {showFirstRun ? (
+                <div className="shrink-0 space-y-2 border-b border-border-subtle bg-card/80 px-4 py-3">
+                  <FirstRunGuidance role={role} />
+                  <ProductHelpLinks />
+                </div>
+              ) : null}
+              {children}
+            </>
+          )}
         </main>
       </div>
       <Toaster />

@@ -108,13 +108,16 @@ export function CompleteStepClient() {
     <OnboardingCard
       stepId="complete"
       title="You're all set"
-      description={`Welcome, ${displayName}. Your ${def?.label} workspace is ready.`}
+      description={`Welcome, ${displayName}. Your ${def?.label} workspace is ready — Capture → draft → approve with clinician control.`}
     >
       <SandboxPreview />
       <div className="mt-6 space-y-4">
         <Button type="button" onClick={handleComplete} disabled={submitting}>
-          {submitting ? "Completing…" : "Complete onboarding"}
+          {submitting ? "Opening your dashboard…" : "Go to your dashboard"}
         </Button>
+        <p className="text-xs text-muted">
+          Completing onboarding marks your profile ready and opens your role home with first-run guidance.
+        </p>
       </div>
     </OnboardingCard>
   );

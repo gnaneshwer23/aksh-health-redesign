@@ -8,8 +8,8 @@ export default function VisionStatement() {
       <div className={`${container} relative z-10 max-w-4xl text-center`}>
         <ScrollReveal>
           <p className="owkin-vision__statement">
-            Our vision is a world where clinical paperwork is governed, and research is connected to care — without
-            taking control from the clinician.
+            Our vision is governed care coordination today — Capture → draft → approve with the clinician in control —
+            and an honest path toward Precision Health scaffolding, without claiming a living twin or live EMR write-back.
           </p>
         </ScrollReveal>
       </div>

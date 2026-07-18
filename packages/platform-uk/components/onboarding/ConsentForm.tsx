@@ -138,6 +138,25 @@ export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
             Data sharing covers {String(practiceCount)} practices in your ICS boundary.
           </p>
         ) : null}
+        {(role === "gp" ||
+          role === "practice-manager" ||
+          role === "patient" ||
+          role === "ics-lead" ||
+          role === "hospital-executive") && (
+          <p
+            className="rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted"
+            data-testid="precision-health-consent-note"
+          >
+            After you sign in, purpose and modality grants for Precision Health scaffolding live in the{" "}
+            <strong className="font-medium text-foreground">consent registry</strong>
+            {role === "practice-manager"
+              ? " (Admin → Consent registry)."
+              : role === "patient"
+                ? " inside My Health."
+                : " on patient detail / admin surfaces."}{" "}
+            Onboarding checkboxes here cover clinical AI and governance — not live twin or EMR write-back consent.
+          </p>
+        )}
       </form>
     </Form>
   );

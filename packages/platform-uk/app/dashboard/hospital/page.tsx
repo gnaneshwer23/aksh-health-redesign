@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BarChart3, Building2, Users } from "lucide-react";
+import { BarChart3, Building2, Heart, Users } from "lucide-react";
 
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
@@ -139,6 +139,21 @@ export default function HospitalOverviewPage({
                 </Link>
               );
             })}
+            <Link href="/dashboard/hospital?panel=digital-twin" className="group">
+              <Card className="shadow-sm h-full border-l-4 border-l-[#006B4F] transition-colors group-hover:border-primary/40">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-[#006B4F]" />
+                    <CardTitle className="text-sm">Risk state</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted">
+                    Patient risk state + scenario ranking — scaffolding, not a physiological twin
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </section>
       ) : (

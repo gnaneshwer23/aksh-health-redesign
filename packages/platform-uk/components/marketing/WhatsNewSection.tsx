@@ -11,9 +11,9 @@ const tabs = ["Updates", "Safety", "Integrations", "Roles", "Demos"] as const;
 
 const cards: Record<(typeof tabs)[number], Array<{ tag: string; title: string; href: string; tone: "navy" | "mint" | "ink" }>> = {
   Updates: [
-    { tag: "Platform", title: "Human-in-the-loop review queue for every agent output", href: "/platform", tone: "navy" },
-    { tag: "Demo", title: "Walk the Patel practice journey end to end", href: "/demo/patel", tone: "mint" },
-    { tag: "Journey", title: "From EHR systems to governed FHIR write", href: "/how-it-works", tone: "ink" },
+    { tag: "Platform", title: "Capture → draft → approve with clinician review on every output", href: "/platform", tone: "navy" },
+    { tag: "Roadmap", title: "Precision Health scaffolding — honest Phase 1–3 status", href: "/resources#precision-health", tone: "mint" },
+    { tag: "Walkthrough", title: "See the Patel practice journey end to end", href: "/walkthrough", tone: "ink" },
   ],
   Safety: [
     { tag: "Security", title: "Clinical safety posture and audit trails", href: "/security", tone: "navy" },
@@ -31,8 +31,8 @@ const cards: Record<(typeof tabs)[number], Array<{ tag: string; title: string; h
     { tag: "Hospital", title: "Command centre for trust executives", href: "/for-hospitals", tone: "ink" },
   ],
   Demos: [
-    { tag: "Live", title: "See Aksh Health in action", href: "/demo/patel", tone: "navy" },
-    { tag: "Access", title: "Request organisation access", href: "/get-started", tone: "mint" },
+    { tag: "Walkthrough", title: "See the product walkthrough", href: "/walkthrough", tone: "navy" },
+    { tag: "Pilot", title: "Discuss a pilot with the team", href: "/get-started", tone: "mint" },
     { tag: "Account", title: "Create your account", href: "/signup", tone: "ink" },
   ],
 };

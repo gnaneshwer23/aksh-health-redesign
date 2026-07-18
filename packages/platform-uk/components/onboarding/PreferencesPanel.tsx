@@ -108,7 +108,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
       { name: "imdOverlay" as keyof FormValues, label: "IMD overlay", options: ["On", "Off"] },
       { name: "frailtyCohort" as keyof FormValues, label: "Frailty cohort", options: ["On", "Off"] },
       { name: "crossPracticeBenchmarking" as keyof FormValues, label: "Cross-practice benchmarking", options: ["On", "Off"] },
-      { name: "digitalTwinHospital" as keyof FormValues, label: "Digital Twin hospital demand", options: ["On", "Off"] },
+      { name: "digitalTwinHospital" as keyof FormValues, label: "Risk-state hospital demand (scaffolding)", options: ["On", "Off"] },
       { name: "reportCadence" as keyof FormValues, label: "Report cadence", options: ["Monthly board pack", "Quarterly", "Manual"] },
       { name: "aiAdoptionAlert" as keyof FormValues, label: "AI adoption < 50% alert", options: ["On", "Off"] }
     );
@@ -117,7 +117,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
       { name: "bedManagementAlerts" as keyof FormValues, label: "Bed management alerts", options: ["On", "Off"] },
       { name: "staffingAlerts" as keyof FormValues, label: "Staffing alerts", options: ["On", "Off"] },
       { name: "edWaitingThreshold" as keyof FormValues, label: "ED waiting threshold (hours)", options: [], type: "number" },
-      { name: "digitalTwinWinter" as keyof FormValues, label: "Digital Twin winter surge", options: ["On", "Off"] },
+      { name: "digitalTwinWinter" as keyof FormValues, label: "Risk-state winter surge (scaffolding)", options: ["On", "Off"] },
       { name: "theatreOptimisation" as keyof FormValues, label: "Theatre optimisation", options: ["On", "Off"] },
       { name: "reportCadence" as keyof FormValues, label: "Report cadence", options: ["Daily executive briefing", "Weekly", "Monthly"] }
     );

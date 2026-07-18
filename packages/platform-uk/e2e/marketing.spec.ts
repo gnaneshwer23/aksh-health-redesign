@@ -175,7 +175,8 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /What changes/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Capture, draft, approve/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to talk/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Talk to us" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "See walkthrough" }).first()).toBeVisible();
     await expect(page.getByLabel("Product trust and pilot readiness").first()).toBeVisible();
     await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
 
@@ -255,8 +256,10 @@ test.describe("Marketing smoke", () => {
       .evaluate((el) => window.getComputedStyle(el).color);
     expect(titleColor).toBe("rgb(255, 255, 255)");
 
-    const primary = band.getByRole("link", { name: "Talk to us" });
+    const primary = band.getByRole("link", { name: "Discuss a pilot" });
     await expect(primary).toBeVisible();
+    await expect(band.getByRole("link", { name: "Create account" })).toBeVisible();
+    await expect(band.getByRole("link", { name: "See walkthrough" })).toBeVisible();
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(255, 255, 255)");

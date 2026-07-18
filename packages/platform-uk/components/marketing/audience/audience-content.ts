@@ -101,7 +101,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=gp" },
-    ctaSecondary: { label: "See it in action", href: "/demo/patel" },
+    ctaSecondary: { label: "See walkthrough", href: "/walkthrough" },
     complianceNote:
       "Clinician approval on every clinical output. NHS DCB0129 safety case in progress. See documentation for architecture and compliance pathways.",
   },
@@ -148,7 +148,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Open hospital demo", href: "/dashboard/hospital" },
-    ctaSecondary: { label: "Talk to us", href: "/get-started" },
+    ctaSecondary: { label: "Discuss a pilot", href: "/get-started" },
     complianceNote:
       "Public command-centre demo uses synthetic capacity data only — not a live PAS/EPR feed. Immutable audit trails for operational recommendations. See documentation for architecture and compliance pathways.",
   },
@@ -194,7 +194,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=researcher" },
-    ctaSecondary: { label: "Talk to us", href: "/get-started" },
+    ctaSecondary: { label: "Discuss a pilot", href: "/get-started" },
     complianceNote:
       "Aggregate access by default. Ethics boundaries remain explicit. See documentation for research governance pathways.",
   },
@@ -286,7 +286,7 @@ export const audiencePages = {
         },
       ],
     },
-    ctaPrimary: { label: "Talk to us", href: "/get-started" },
+    ctaPrimary: { label: "Discuss a pilot", href: "/get-started" },
     ctaSecondary: { label: "See platform", href: "/platform" },
     complianceNote:
       "Practice oversight stays separate from clinical sign-off. See documentation for architecture and compliance pathways.",
@@ -333,7 +333,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Try ICS demo", href: "/dashboard/ics" },
-    ctaSecondary: { label: "Talk to us", href: "/get-started" },
+    ctaSecondary: { label: "Discuss a pilot", href: "/get-started" },
     complianceNote:
       "Population views are aggregate by default. Public demo uses synthetic data only. See documentation for ICS governance pathways.",
   },
@@ -379,7 +379,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Download integration brief", href: "/resources#integration" },
-    ctaSecondary: { label: "Talk to us", href: "/get-started" },
+    ctaSecondary: { label: "Discuss a pilot", href: "/get-started" },
     complianceNote:
       "Admin tools do not bypass clinician approval. See documentation for architecture and compliance pathways.",
   },

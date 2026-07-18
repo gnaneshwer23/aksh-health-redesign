@@ -80,17 +80,17 @@ export default function ProductFeatureBand() {
 
         <ScrollReveal className="owkin-product-band__copy" delayMs={140}>
           <p className="owkin-product-band__logo">AKSH PLATFORM</p>
-          <h2 id="product-band-heading">Get governed drafts in minutes, instead of hours.</h2>
+          <h2 id="product-band-heading">Capture → draft → approve, in one queue.</h2>
           <p>
-            Voice consults, risk scores, referrals, and pharmacist checks land in one review queue. Clinicians accept,
-            edit, or reject before anything reaches the record.
+            Voice consults, risk scores, referrals, and pharmacist checks land as drafts. Clinicians Accept, Edit, or
+            Reject before anything reaches the record — the same flow you&apos;ll use after onboarding.
           </p>
           <div className="owkin-product-band__actions">
-            <Link href="/platform" className="owkin-btn-ink">
-              Discover the platform
+            <Link href="/signup" className="owkin-btn-ink">
+              Create account
             </Link>
             <Link href="/walkthrough" className="owkin-text-cta">
-              Walk the Patel case
+              See walkthrough
               <span aria-hidden>→</span>
             </Link>
           </div>

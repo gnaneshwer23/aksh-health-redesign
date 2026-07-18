@@ -221,6 +221,15 @@ async function run() {
   await assertFileIncludes("components/dashboard/DemoDataBanner.tsx", "demo-data-banner");
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "source === null");
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-live-mode-banner");
+  await assertFileIncludes("components/dashboard/FirstRunGuidance.tsx", "first-run-guidance");
+  await assertFileIncludes("components/dashboard/ProductHelpLinks.tsx", "product-help-links");
+  await assertFileIncludes("lib/product-journey.ts", "Capture → draft → approve");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Create account");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Discuss a pilot");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "See walkthrough");
+  await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
+  await assertFileIncludes("components/onboarding/ConsentForm.tsx", "precision-health-consent-note");
+  await assertFileIncludes("components/dashboard/DashboardShell.tsx", "FirstRunGuidance");
   await assertFileIncludes("lib/clinical-proof/graph-assertions.ts", "TAKES_MEDICATION");
   await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-events-table");
   await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "learning-export-csv");

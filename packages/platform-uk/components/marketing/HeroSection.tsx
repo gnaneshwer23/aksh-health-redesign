@@ -16,15 +16,19 @@ export default function HeroSection() {
               <span className="block">properly coordinated.</span>
             </h1>
             <p className="owkin-hero__lede">
-              Bring consult capture, draft notes, clinical checks, and audit trails into one governed workflow for EMIS
-              Web and SystmOne — with a clinician deciding what reaches the record.
+              Capture → draft → approve: consult capture, clinical checks, and audit trails in one governed workflow for
+              EMIS Web and SystmOne — with a clinician deciding what reaches the record.
             </p>
             <div className="owkin-hero__actions">
-              <Link href="/get-started" className="owkin-btn-ink">
+              <Link href="/signup" className="owkin-btn-ink">
+                Create account
+              </Link>
+              <Link href="/get-started" className="owkin-text-cta">
                 Discuss a pilot
+                <span aria-hidden>→</span>
               </Link>
               <Link href="/walkthrough" className="owkin-text-cta">
-                See it in action
+                See walkthrough
                 <span aria-hidden>→</span>
               </Link>
             </div>

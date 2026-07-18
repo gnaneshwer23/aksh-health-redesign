@@ -35,7 +35,7 @@ const protectedIcsRoutes = [
   {
     label: "ICS forecast",
     path: "/dashboard/ics/forecast",
-    expectedText: ["Admission Forecast", "ICS Digital Twin", "read-only population view"],
+    expectedText: ["Admission Forecast", "Population risk state", "not a physiological twin"],
   },
 ];
 

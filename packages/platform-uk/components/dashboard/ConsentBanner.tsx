@@ -25,7 +25,7 @@ export function ConsentBanner({ className }: { className?: string }) {
       role="status"
       aria-label="Human-in-the-loop reminder"
     >
-      <p>AI assistance active. All outputs require your approval.</p>
+      <p>AI assistance active. Capture → draft → approve — all outputs require your decision before the record.</p>
       <button
         type="button"
         aria-label="Dismiss consent banner"
