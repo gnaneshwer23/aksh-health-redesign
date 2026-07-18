@@ -32,6 +32,11 @@ export async function POST(request: Request) {
       return NextResponse.json({
         transcript: result.transcript,
         mode: result.mode,
+        simulated: result.mode === "simulated",
+        notice:
+          result.mode === "simulated"
+            ? "Simulated transcript — set DEEPGRAM_API_KEY for live speech-to-text."
+            : "Live Deepgram transcript — clinician must still verify before save.",
         dependencyStatus: result.dependencyStatus
       });
     }
@@ -40,6 +45,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       transcript: result.transcript,
       mode: result.mode,
+      simulated: true,
+      notice: "Simulated transcript — set DEEPGRAM_API_KEY for live speech-to-text.",
       dependencyStatus: result.dependencyStatus
     });
   } catch (error) {

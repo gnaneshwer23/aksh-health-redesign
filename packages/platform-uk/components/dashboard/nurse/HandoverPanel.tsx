@@ -39,7 +39,47 @@ export function HandoverPanel({ autoOpen = false }: { autoOpen?: boolean }) {
             Generate an AI handover summary for the incoming shift on {wardLabel}. Review and approve before sharing.
             Nothing is sent without explicit nurse sign-off.
           </p>
-          <Button className="bg-secondary hover:bg-secondary/90" onClick={() => setHandoverOpen(true)}>
+          <Button
+            className="bg-secondary hover:bg-secondary/90"
+            onClick={async () => {
+              setHandoverOpen(true);
+              try {
+                const response = await fetch("/api/agents/synthesis", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    patientLabel: wardLabel,
+                    transcript: handoverDraft
+                  })
+                });
+                if (response.ok) {
+                  const data = (await response.json()) as {
+                    draft?: { subjective?: string; assessment?: string; plan?: string; mode?: string };
+                  };
+                  if (data.draft) {
+                    const next = [
+                      data.draft.subjective,
+                      data.draft.assessment,
+                      data.draft.plan,
+                      `(SYNTHESIS mode: ${data.draft.mode ?? "unknown"} — HITL required)`
+                    ]
+                      .filter(Boolean)
+                      .join("\n\n");
+                    setHandoverContent(next);
+                    setHandoverEdited(false);
+                    setHandoverAccepted(false);
+                    toast({
+                      title: "Draft ready for review",
+                      description: "SYNTHESIS produced a draft. Accept/Edit/Reject before sharing."
+                    });
+                  }
+                }
+              } catch {
+                // Keep template draft if synthesis is unavailable.
+              }
+            }}
+          >
             Generate Handover Summary
           </Button>
         </CardContent>
@@ -87,6 +127,18 @@ export function HandoverPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                   agent: "SYNTHESIS",
                   action: "Approved handover summary",
                   resource: wardLabel,
+                });
+                void fetch("/api/audit/shield", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    action: "accept",
+                    agentLabel: "SYNTHESIS",
+                    label: "SHIELD: nurse handover approved",
+                    detail: "Shared after HITL accept",
+                    resourceRef: wardLabel
+                  })
                 });
                 toast({ title: "Handover shared" });
               }}

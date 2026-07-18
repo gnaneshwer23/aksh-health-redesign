@@ -37,11 +37,34 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       id: "clinical-safety-case-report",
       title: "Clinical safety case report",
       standard: "DCB0129-style rehearsal",
-      status: "not_started",
+      status: "draft_in_app",
       purpose: "Summarize safety argument, residual risks, and release conditions.",
       inAppRoute: "/review/governance-pack",
-      owner: "Unassigned",
-      nextStep: "Draft only after hazard log ownership and audit integrity controls are assigned."
+      exportRoute: "/api/system/clinical-safety-files",
+      owner: "Unassigned — see docs/SAFETY_CASE_REHEARSAL.md",
+      nextStep: "Appoint CSO; convert docs/SAFETY_CASE_REHEARSAL.md into a signed case outside the synthetic app."
+    },
+    {
+      id: "durable-shield-audit",
+      title: "Durable SHIELD audit trail",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Append-only Postgres audit events with content hashes for reviewer decisions and role actions.",
+      inAppRoute: "/dashboard/admin/audit",
+      exportRoute: "/api/audit/shield",
+      owner: "Engineering + clinical safety joint review",
+      nextStep: "Verify chain integrity in pilot environments and retain exports with the hazard log."
+    },
+    {
+      id: "emis-partner-staging",
+      title: "EMIS partner staging boundary",
+      standard: "DCB0129-style rehearsal",
+      status: "placeholder",
+      purpose: "Document that HITL-approved FHIR bundles stage internally until Partner write-back is authorised.",
+      inAppRoute: "/integrations",
+      exportRoute: "/api/integrations/emis-staging",
+      owner: "Product + integration lead",
+      nextStep: "Begin EMIS Partner / FHIR path only after CSO and DPIA approval."
     },
     {
       id: "audit-trail-integrity-report",

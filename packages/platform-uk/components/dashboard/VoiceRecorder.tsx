@@ -63,11 +63,29 @@ export function VoiceRecorder({
             throw new Error("transcription_failed");
           }
 
-          const data = (await response.json()) as { transcript?: string };
+          const data = (await response.json()) as {
+            transcript?: string;
+            simulated?: boolean;
+            notice?: string;
+            mode?: string;
+          };
           if (data.transcript) {
             onTranscript?.(data.transcript);
           }
           onRecordingComplete?.();
+          if (data.simulated || data.mode === "simulated") {
+            toast({
+              title: "Simulated transcript",
+              description:
+                data.notice ??
+                "Deepgram is not configured. Values are for rehearsal — verify before save.",
+            });
+          } else {
+            toast({
+              title: "Live transcript ready",
+              description: data.notice ?? "Verify the transcript before saving clinical data.",
+            });
+          }
         } catch (error) {
           console.error("Voice transcription failed:", error);
           if (error instanceof Error && error.message === "sign_in_required") {

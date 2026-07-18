@@ -63,7 +63,26 @@ export function MedReviewQueue() {
                     size="sm"
                     className="bg-[#6B46C1] hover:bg-[#6B46C1]/90"
                     disabled={medicationReviewsCompleted.includes(p.id)}
-                    onClick={() => markMedicationReviewed(p.id)}
+                    onClick={async () => {
+                      markMedicationReviewed(p.id);
+                      try {
+                        await fetch("/api/audit/shield", {
+                          method: "POST",
+                          credentials: "include",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            action: "accept",
+                            agentLabel: "GUARDIAN",
+                            label: "SHIELD: pharmacist medication review completed",
+                            detail: `${p.activeMedications.length} active medications reviewed`,
+                            resourceRef: `${p.name} (${p.id})`,
+                            category: "reviewer_decision"
+                          })
+                        });
+                      } catch {
+                        // Local mark still applies; durable audit is best-effort.
+                      }
+                    }}
                   >
                     {medicationReviewsCompleted.includes(p.id) ? "Reviewed ✓" : "Mark Reviewed"}
                   </Button>

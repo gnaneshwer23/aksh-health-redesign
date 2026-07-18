@@ -1,7 +1,12 @@
 import { hash } from "bcryptjs";
 
 import { getPgPool, isPostgresConfigured } from "@/lib/db/client";
-import { EMAIL_VERIFICATION_SQL, PASSWORD_RESET_SQL, USERS_PROFILES_SQL } from "@/lib/db/schema-sql";
+import {
+  EMAIL_VERIFICATION_SQL,
+  PASSWORD_RESET_SQL,
+  SHIELD_AUDIT_EVENTS_SQL,
+  USERS_PROFILES_SQL
+} from "@/lib/db/schema-sql";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 export type DbUser = {
@@ -223,7 +228,12 @@ export async function ensureAuthSchema() {
   if (!isPostgresConfigured()) return;
 
   const pool = getPgPool();
-  for (const sql of [USERS_PROFILES_SQL, PASSWORD_RESET_SQL, EMAIL_VERIFICATION_SQL]) {
+  for (const sql of [
+    USERS_PROFILES_SQL,
+    PASSWORD_RESET_SQL,
+    EMAIL_VERIFICATION_SQL,
+    SHIELD_AUDIT_EVENTS_SQL
+  ]) {
     await pool.query(sql);
   }
 }

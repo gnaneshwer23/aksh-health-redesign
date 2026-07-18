@@ -72,7 +72,10 @@ export function buildTranscriptionDependencyStatus() {
     artifactType: "aksh-uk-eu-transcription-dependency-status",
     deepgramApiKeyConfigured: isDeepgramApiKeyConfigured(),
     packageAlignmentNote:
-      "@deepgram/sdk is optional and not installed by default; the transcribe route uses simulated output until both the SDK and DEEPGRAM_API_KEY are present.",
-    defaultMode: "simulated"
+      "@deepgram/sdk is installed when available. Without DEEPGRAM_API_KEY the route returns a clearly labelled simulated transcript.",
+    defaultMode: "simulated" as const,
+    liveModeRequires: ["DEEPGRAM_API_KEY"],
+    userFacingSimulatedMessage:
+      "Simulated transcript (Deepgram not configured). Values are for rehearsal only — verify before save."
   };
 }

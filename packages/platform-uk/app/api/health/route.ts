@@ -34,13 +34,25 @@ export async function GET() {
     mode: neo4jHealth.mode,
   };
 
+  // Neo4j is optional for the synthetic proof platform. Only fail hard when
+  // NEO4J_REQUIRED=true, or when Postgres (auth/audit) is configured but down.
+  const neo4jRequired = process.env.NEO4J_REQUIRED === "true";
   const degraded =
     (database.configured && !database.connected) ||
-    (neo4j.configured && !neo4j.connected);
+    (neo4jRequired && neo4j.configured && !neo4j.connected);
 
   return NextResponse.json({
     status: degraded ? "degraded" : "ok",
     database,
-    neo4j,
+    neo4j: {
+      ...neo4j,
+      required: neo4jRequired,
+      note:
+        neo4j.mode === "live"
+          ? "Graph connected."
+          : neo4j.configured
+            ? "Neo4j env present but unreachable — dashboards use mock graph data."
+            : "Neo4j not configured — dashboards use mock graph data."
+    },
   });
 }

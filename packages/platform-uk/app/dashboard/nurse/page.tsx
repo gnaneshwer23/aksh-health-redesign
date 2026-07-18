@@ -15,7 +15,11 @@ export default function NurseOverviewPage() {
   const openAlerts = patient.flags.includes("GUARDIAN") || patient.flags.includes("URGENT");
 
   return (
-    <div className="space-y-4">
+      <div className="space-y-4">
+      <p className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+        Nurse actions can append to the durable SHIELD audit when signed in. Observations and handovers still require
+        HITL confirmation and do not write to EMIS/SystmOne from this proof build.
+      </p>
       <NursePatientHeader />
 
       <Card className="border-secondary/20 shadow-sm">

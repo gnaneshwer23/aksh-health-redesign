@@ -1,6 +1,11 @@
 import { deriveReviewQueueItems, CLINICAL_AGENT_META } from "../agents";
 import { applyReferralAccept, maybeStageReferralPackage } from "../referral-agent";
-import { createShieldAuditEvent, applyQueueItemStatus, appendShieldAudit } from "../shield-audit";
+import {
+  createShieldAuditEvent,
+  applyQueueItemStatus,
+  appendShieldAudit,
+  scheduleDurableShieldWrite
+} from "../shield-audit";
 import { formatCaseTimestamp } from "../time-format";
 import type { ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "../types";
 
@@ -45,6 +50,17 @@ export function updateQueueItemDecision(
     },
     shieldEvent
   );
+
+  scheduleDurableShieldWrite({
+    action: shieldAction,
+    actor: options.decidedBy,
+    event: shieldEvent,
+    caseId: reviewCase.id,
+    practiceId: reviewCase.practiceId,
+    queueItemId: itemId,
+    agentLabel: CLINICAL_AGENT_META[target.agentId].label,
+    resourceRef: `${target.title} → ${status}`
+  });
 
   nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));
 

@@ -1,3 +1,6 @@
+import { randomUUID } from "crypto";
+
+import { persistShieldAuditEvent } from "./repositories/shield-audit-repository";
 import { formatCaseTimestamp } from "./time-format";
 import type { AuditEvent, FhirAuditEventResource, ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "./types";
 
@@ -26,7 +29,7 @@ export function createShieldAuditEvent({
           : "SHIELD: reviewer action deferred";
 
   return {
-    id: `shield-${Math.random().toString(36).slice(2, 10)}`,
+    id: `shield-${randomUUID()}`,
     category: "reviewer_decision",
     label: actionLabel,
     actor: "SHIELD",
@@ -35,6 +38,32 @@ export function createShieldAuditEvent({
       .filter(Boolean)
       .join(" · ")
   };
+}
+
+/** Dual-write: keep in-case trail and append durable Postgres row when available. */
+export function scheduleDurableShieldWrite(options: {
+  action: ShieldAction;
+  actor: string;
+  event: AuditEvent;
+  caseId?: string;
+  practiceId?: string;
+  queueItemId?: string;
+  agentLabel?: string;
+  resourceRef?: string;
+}) {
+  void persistShieldAuditEvent({
+    action: options.action,
+    actor: options.actor,
+    label: options.event.label,
+    detail: options.event.detail,
+    category: options.event.category,
+    caseId: options.caseId,
+    practiceId: options.practiceId,
+    queueItemId: options.queueItemId,
+    agentLabel: options.agentLabel,
+    resourceRef: options.resourceRef,
+    payload: { inCaseEventId: options.event.id }
+  });
 }
 
 export function createFhirShieldAuditEvent({
@@ -59,7 +88,7 @@ export function createFhirShieldAuditEvent({
 
   return {
     resourceType: "AuditEvent",
-    id: `shield-fhir-${Math.random().toString(36).slice(2, 12)}`,
+    id: `shield-fhir-${randomUUID()}`,
     type: {
       system: "http://terminology.hl7.org/CodeSystem/audit-event-type",
       code: "110100",
@@ -171,5 +200,14 @@ export function appendCaseLevelShieldAudit(
     practiceId: reviewCase.practiceId
   });
 
-  return appendFhirShieldAudit(appendShieldAudit(reviewCase, shieldEvent), fhirEvent);
+  const next = appendFhirShieldAudit(appendShieldAudit(reviewCase, shieldEvent), fhirEvent);
+  scheduleDurableShieldWrite({
+    action: options.action,
+    actor: options.actor,
+    event: shieldEvent,
+    caseId: reviewCase.id,
+    practiceId: reviewCase.practiceId,
+    resourceRef: `ReviewCase/${reviewCase.id}`
+  });
+  return next;
 }

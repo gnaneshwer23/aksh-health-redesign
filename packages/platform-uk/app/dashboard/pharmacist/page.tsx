@@ -46,6 +46,9 @@ export default function PharmacistOverviewPage() {
         <p className="text-sm text-muted mt-1">
           Medication safety for {pharmacyLabel} | interaction checks and BNF reference with human-in-the-loop approval.
         </p>
+        <p className="mt-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          Reviews can append durable SHIELD audit events when signed in. Marking reviewed does not write to the EHR.
+        </p>
       </div>
 
       <div className="space-y-4">

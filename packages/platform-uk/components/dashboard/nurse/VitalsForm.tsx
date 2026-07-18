@@ -46,14 +46,38 @@ export function VitalsForm() {
   const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
   const [vitals, setVitals] = useState<VitalsValues>(EMPTY_VITALS);
 
-  const saveVitals = () => {
+  const saveVitals = async () => {
     addAuditEvent({
       user: "Nurse Davies",
       agent: "Nurse",
       action: "Saved vital signs",
       resource: `${patient.name} | BP ${vitals.bpSys}/${vitals.bpDia}`,
     });
-    toast({ title: "Observations saved", description: "Mock FHIR Observation created" });
+
+    try {
+      const response = await fetch("/api/audit/shield", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "accept",
+          agentLabel: "Nurse",
+          label: "SHIELD: nurse vitals saved (HITL pending record write)",
+          detail: `BP ${vitals.bpSys}/${vitals.bpDia} HR ${vitals.hr} SpO2 ${vitals.spo2}`,
+          resourceRef: `${patient.name} (${patient.id})`,
+          category: "reviewer_decision"
+        })
+      });
+      const durable = response.ok;
+      toast({
+        title: durable ? "Observations saved + audited" : "Observations saved locally",
+        description: durable
+          ? "Appended to durable SHIELD audit. Still no EHR write-back."
+          : "Mock FHIR Observation created. Sign in with Postgres for durable audit."
+      });
+    } catch {
+      toast({ title: "Observations saved", description: "Mock FHIR Observation created" });
+    }
   };
 
   const handleVoiceComplete = () => {
