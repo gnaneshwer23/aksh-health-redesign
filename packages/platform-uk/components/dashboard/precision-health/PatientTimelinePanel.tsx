@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
+import type { BiomarkerLite } from "@/lib/precision-health/biomarkers";
+import { formatBiomarkerLite } from "@/lib/precision-health/biomarkers";
 import type { PatientTimelineEvent, TimelineEventKind } from "@/lib/precision-health/timeline";
 import { cn } from "@/lib/utils";
 
@@ -28,12 +30,21 @@ const KIND_LABELS: Record<TimelineEventKind, string> = {
   risk_state: "Risk state",
 };
 
+function biomarkersFromEvent(event: PatientTimelineEvent): BiomarkerLite | undefined {
+  const raw = event.metadata?.biomarkers;
+  if (!raw || typeof raw !== "object") return undefined;
+  return raw as BiomarkerLite;
+}
+
 export function PatientTimelinePanel({
   patientId,
   patientLabel,
+  refreshKey = 0,
 }: {
   patientId: string;
   patientLabel?: string;
+  /** Increment after a successful role ingest to reload the merged timeline. */
+  refreshKey?: number;
 }) {
   const [events, setEvents] = useState<PatientTimelineEvent[]>([]);
   const [note, setNote] = useState<string>("");
@@ -66,7 +77,7 @@ export function PatientTimelinePanel({
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, refreshKey]);
 
   return (
     <Card className="shadow-sm" data-testid="patient-timeline-panel">
@@ -75,7 +86,8 @@ export function PatientTimelinePanel({
           <CardTitle className="text-sm">Patient timeline</CardTitle>
           <p className="text-xs text-muted">
             {patientLabel ? `${patientLabel} · ` : ""}
-            Merged case · modality · learning · consent events — not a production unified health record
+            Merged case · modality · learning · consent events — biomarker-lite from ingested samples;
+            not a production unified health record
           </p>
         </div>
         <Button size="sm" variant="outline" disabled={loading} onClick={() => void load()}>
@@ -100,31 +112,54 @@ export function PatientTimelinePanel({
               {eventCount} event{eventCount === 1 ? "" : "s"} · demo merge only
             </p>
             <ol className="space-y-2" data-testid="patient-timeline-list">
-              {events.map((event) => (
-                <li
-                  key={event.id}
-                  className="rounded-sm border border-border-subtle bg-card p-3 text-xs"
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={cn(
-                        "inline-flex rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                        "bg-primary/10 text-primary"
-                      )}
-                    >
-                      {KIND_LABELS[event.kind] ?? event.kind}
-                    </span>
-                    <time className="text-muted" dateTime={event.occurredAt}>
-                      {new Date(event.occurredAt).toLocaleString("en-GB")}
-                    </time>
-                  </div>
-                  <p className="mt-1 font-medium text-foreground">{event.title}</p>
-                  <p className="mt-0.5 text-muted">{event.summary}</p>
-                  <p className="mt-1 text-[10px] text-muted">
-                    Source: {event.source} · ehrWrite: false
-                  </p>
-                </li>
-              ))}
+              {events.map((event) => {
+                const biomarkers = biomarkersFromEvent(event);
+                const chips = biomarkers ? formatBiomarkerLite(biomarkers) : [];
+                return (
+                  <li
+                    key={event.id}
+                    className="rounded-sm border border-border-subtle bg-card p-3 text-xs"
+                    data-testid={
+                      event.kind === "modality_sample" ? "timeline-modality-event" : undefined
+                    }
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={cn(
+                          "inline-flex rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                          "bg-primary/10 text-primary"
+                        )}
+                      >
+                        {KIND_LABELS[event.kind] ?? event.kind}
+                      </span>
+                      <time className="text-muted" dateTime={event.occurredAt}>
+                        {new Date(event.occurredAt).toLocaleString("en-GB")}
+                      </time>
+                    </div>
+                    <p className="mt-1 font-medium text-foreground">{event.title}</p>
+                    <p className="mt-0.5 text-muted">{event.summary}</p>
+                    {chips.length > 0 ? (
+                      <ul
+                        className="mt-2 flex flex-wrap gap-1.5"
+                        data-testid="timeline-biomarker-lite"
+                      >
+                        {chips.map((chip) => (
+                          <li
+                            key={chip}
+                            className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium text-foreground"
+                          >
+                            {chip}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    <p className="mt-1 text-[10px] text-muted">
+                      Source: {event.source} · ehrWrite: false
+                      {chips.length > 0 ? " · biomarker-lite (sample fields)" : ""}
+                    </p>
+                  </li>
+                );
+              })}
             </ol>
           </>
         )}

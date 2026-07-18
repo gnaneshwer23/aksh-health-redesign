@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
 import { CoachingDraftPanel } from "@/components/dashboard/precision-health/CoachingDraftPanel";
+import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -81,6 +82,7 @@ export function PatientCompanion() {
     },
   ]);
   const [medsTaken, setMedsTaken] = useState<Record<string, boolean>>({});
+  const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
 
   const handleComingSoon = (feature: string) => {
     toast({
@@ -207,6 +209,16 @@ export function PatientCompanion() {
             }
             mode="patient"
           />
+          <ConnectorsIngestPanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+            mode="patient"
+            onIngestSuccess={() => setTimelineRefreshKey((k) => k + 1)}
+          />
           <PatientTimelinePanel
             patientId={COMPANION_DEMO_PATIENT_ID}
             patientLabel={
@@ -214,6 +226,7 @@ export function PatientCompanion() {
                 ? COMPANION_DEMO_PATIENT_LABEL
                 : companionProfile.displayName
             }
+            refreshKey={timelineRefreshKey}
           />
           <CoachingDraftPanel
             patientId={COMPANION_DEMO_PATIENT_ID}

@@ -40,6 +40,10 @@ type LoopCapabilities = {
   };
 };
 
+type ConnectorsPayload = {
+  connectors?: Array<{ id: string; liveStream?: boolean; enabled?: boolean }>;
+};
+
 type AgentProbe = {
   id: string;
   label: string;
@@ -63,6 +67,7 @@ export function SystemSpinePanel() {
   const [medplum, setMedplum] = useState<MedplumStatus | null>(null);
   const [emis, setEmis] = useState<EmisChecklist | null>(null);
   const [loop, setLoop] = useState<LoopCapabilities | null>(null);
+  const [connectors, setConnectors] = useState<ConnectorsPayload | null>(null);
   const [agents, setAgents] = useState<AgentProbe[]>(
     AGENT_PROBES.map((a) => ({ ...a, ok: null }))
   );
@@ -71,14 +76,16 @@ export function SystemSpinePanel() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [healthRes, twinRes, medplumRes, emisRes, loopRes, ...agentRes] = await Promise.all([
-        fetch("/api/health"),
-        fetch("/api/precision-health/twin/status"),
-        fetch("/api/integrations/medplum-status", { credentials: "include" }),
-        fetch("/api/integrations/emis-partner-checklist", { credentials: "include" }),
-        fetch("/api/precision-health/whole-loop"),
-        ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
-      ]);
+      const [healthRes, twinRes, medplumRes, emisRes, loopRes, connectorsRes, ...agentRes] =
+        await Promise.all([
+          fetch("/api/health"),
+          fetch("/api/precision-health/twin/status"),
+          fetch("/api/integrations/medplum-status", { credentials: "include" }),
+          fetch("/api/integrations/emis-partner-checklist", { credentials: "include" }),
+          fetch("/api/precision-health/whole-loop"),
+          fetch("/api/precision-health/connectors", { credentials: "include" }),
+          ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
+        ]);
 
       if (healthRes.ok) setHealth((await healthRes.json()) as HealthPayload);
       if (twinRes.ok) setTwin((await twinRes.json()) as TwinStatus);
@@ -86,6 +93,8 @@ export function SystemSpinePanel() {
       if (emisRes.ok) setEmis((await emisRes.json()) as EmisChecklist);
       else setEmis({ liveEmis: false, liveWriteBack: false, note: "Auth required for checklist" });
       if (loopRes.ok) setLoop((await loopRes.json()) as LoopCapabilities);
+      if (connectorsRes.ok) setConnectors((await connectorsRes.json()) as ConnectorsPayload);
+      else setConnectors(null);
 
       setAgents(
         AGENT_PROBES.map((a, i) => {
@@ -107,6 +116,8 @@ export function SystemSpinePanel() {
   const liveEmis = emis?.liveEmis ?? false;
   const physiologicalTwin = twin?.physiologicalTwin ?? false;
   const autoRetrain = loop?.honesty?.autoRetrain ?? false;
+  const connectorRows = connectors?.connectors ?? [];
+  const liveStreamCount = connectorRows.filter((c) => c.liveStream).length;
 
   return (
     <Card className="shadow-sm" data-testid="system-spine-panel">
@@ -158,6 +169,16 @@ export function SystemSpinePanel() {
             ok={!autoRetrain}
             detail="Learning recorder only — governed release required for model change"
           />
+          <Flag
+            label="Connectors"
+            value={`${connectorRows.length || "…"} registered`}
+            ok={liveStreamCount === 0}
+            detail={
+              connectorRows.length
+                ? `liveStream:${liveStreamCount} (expect 0 without Fitbit/OpenWeather keys)`
+                : "Auth may be required for registry"
+            }
+          />
         </div>
 
         <div>
@@ -191,6 +212,26 @@ export function SystemSpinePanel() {
               : "Loading loop capabilities…"}{" "}
             {loop?.honesty?.note ?? ""}
           </p>
+        </div>
+
+        <div data-testid="spine-phase-b-ingest">
+          <p className="text-xs font-semibold">Phase B role ingest paths</p>
+          <p className="mt-1 text-xs text-muted">
+            Consent-gated synthetic wearable / lifestyle / file_import from patient companion and GP
+            patient pages → same timeline · Neo4j MEASURED (when live) · SHIELD. Fitbit stays disabled
+            without FITBIT_CLIENT_* keys. Admin connector registry below remains the full ops view.
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs">
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              Patient → /dashboard/patient
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GP → /dashboard/gp/patients/[id]
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              liveEmis:false · autoRetrain:false
+            </li>
+          </ul>
         </div>
 
         <div className="flex flex-wrap gap-3 text-xs">

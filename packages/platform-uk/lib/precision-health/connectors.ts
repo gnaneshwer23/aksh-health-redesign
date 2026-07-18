@@ -18,6 +18,16 @@ export const CONNECTOR_IDS = [
 
 export type ConnectorId = (typeof CONNECTOR_IDS)[number];
 
+/**
+ * Connectors exposed for consent-gated role ingest (patient / GP).
+ * Fitbit stays listed in the registry but is not ingestable without keys (and never invents reads).
+ */
+export const ROLE_INGEST_CONNECTOR_IDS: ConnectorId[] = [
+  "wearable_synthetic_stream",
+  "lifestyle_diary",
+  "file_import"
+];
+
 export type ConnectorStatus = {
   id: ConnectorId;
   label: string;

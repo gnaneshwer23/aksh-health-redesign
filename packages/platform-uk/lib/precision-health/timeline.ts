@@ -1,5 +1,6 @@
 import type { LearningEvent } from "../clinical-proof/learning-loop";
 import type { ReviewCase } from "../types";
+import { extractBiomarkerLite, formatBiomarkerLite, type BiomarkerLite } from "./biomarkers";
 import type { ConsentGrant } from "./consent";
 import type { StoredModalitySample } from "./modalities";
 
@@ -80,21 +81,33 @@ function caseEvents(
 }
 
 function modalityEvents(samples: StoredModalitySample[]): PatientTimelineEvent[] {
-  return samples.map((sample) => ({
-    id: `modality-${sample.id}`,
-    patientId: sample.patientId,
-    kind: "modality_sample" as const,
-    occurredAt: sample.recordedAt,
-    title: `${sample.modality} sample`,
-    summary: sample.summary,
-    source: sample.provenance.source,
-    ehrWrite: false as const,
-    metadata: {
-      modality: sample.modality,
-      liveStream: false,
-      consentedPurposeCode: sample.consentedPurposeCode
-    }
-  }));
+  return samples.map((sample) => {
+    const biomarkers: BiomarkerLite | undefined = extractBiomarkerLite(sample);
+    const biomarkerChips = biomarkers ? formatBiomarkerLite(biomarkers) : [];
+    const summary =
+      biomarkerChips.length > 0
+        ? `${sample.summary} · ${biomarkerChips.join(" · ")}`
+        : sample.summary;
+
+    return {
+      id: `modality-${sample.id}`,
+      patientId: sample.patientId,
+      kind: "modality_sample" as const,
+      occurredAt: sample.recordedAt,
+      title: `${sample.modality} sample`,
+      summary,
+      source: sample.provenance.source,
+      ehrWrite: false as const,
+      metadata: {
+        modality: sample.modality,
+        liveStream: false,
+        consentedPurposeCode: sample.consentedPurposeCode,
+        biomarkers,
+        biomarkerLite: true,
+        biomarkerNote: "Surfaced from ingested sample fields — not a biomarker derivation engine."
+      }
+    };
+  });
 }
 
 function learningEvents(patientId: string, learning: LearningEvent[]): PatientTimelineEvent[] {

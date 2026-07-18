@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useState } from "react";
 
 import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { OracleRiskPanel } from "@/components/dashboard/OracleRiskPanel";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
+import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
@@ -18,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { getPatientById, getPathwaysForPatient } from "@/lib/mock-data";
 
 export default function GpPatientDetailPage({ params }: { params: { id: string } }) {
+  const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
   const patient = getPatientById(params.id);
   if (!patient) notFound();
 
@@ -108,7 +111,17 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
         <ScenarioRankingPanel patientId={patient.id} patientLabel={patient.name} />
         <CausalHypothesisPanel patientId={patient.id} patientLabel={patient.name} />
         <HealthPlanDraftPanel patientId={patient.id} patientLabel={patient.name} />
-        <PatientTimelinePanel patientId={patient.id} patientLabel={patient.name} />
+        <ConnectorsIngestPanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          mode="clinician"
+          onIngestSuccess={() => setTimelineRefreshKey((k) => k + 1)}
+        />
+        <PatientTimelinePanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          refreshKey={timelineRefreshKey}
+        />
         <ConsentGrantsPanel patientId={patient.id} patientLabel={patient.name} mode="clinician" />
       </div>
     </DashboardShell>

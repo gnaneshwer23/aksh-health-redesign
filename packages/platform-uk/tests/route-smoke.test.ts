@@ -200,6 +200,22 @@ async function run() {
   await assertFileIncludes("app/dashboard/admin/integrations/page.tsx", "PharmaPayerStubPanel");
   await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "PrecisionHealthStatusPanel");
   await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "ConnectorsIngestPanel");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "ConnectorsIngestPanel");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", 'mode="clinician"');
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "ConnectorsIngestPanel");
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", 'mode="patient"');
+  await assertFileIncludes(
+    "components/dashboard/precision-health/PatientTimelinePanel.tsx",
+    "timeline-biomarker-lite"
+  );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/SystemSpinePanel.tsx",
+    "spine-phase-b-ingest"
+  );
+  await assertFileIncludes("lib/precision-health/biomarkers.ts", "extractBiomarkerLite");
+  await assertFileIncludes("lib/precision-health/connectors.ts", "ROLE_INGEST_CONNECTOR_IDS");
+  await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_B.md", "liveEmis: false");
+  await assertFileIncludes("components/dashboard/nurse/VitalsForm.tsx", "nurse-vitals-timeline-note");
   await assertFileIncludes(
     "components/dashboard/precision-health/ConnectorsIngestPanel.tsx",
     "Fitbit stub disabled"

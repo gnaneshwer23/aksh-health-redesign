@@ -26,6 +26,12 @@ export {
 export { buildPatientTimeline, type PatientTimeline, type PatientTimelineEvent } from "./timeline";
 
 export {
+  extractBiomarkerLite,
+  formatBiomarkerLite,
+  type BiomarkerLite
+} from "./biomarkers";
+
+export {
   buildPersonalisedHealthPlanDraft,
   healthPlanDraftSchema,
   type HealthPlanDraft,
@@ -51,6 +57,7 @@ export {
 export {
   CONNECTOR_IDS,
   CONNECTOR_REGISTRY,
+  ROLE_INGEST_CONNECTOR_IDS,
   PHASE2_CONNECTOR_ENV_VARS,
   PHASE3_CONNECTOR_ENV_VARS,
   listConnectorStatuses,

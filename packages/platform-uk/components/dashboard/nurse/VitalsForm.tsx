@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
@@ -233,6 +234,17 @@ export function VitalsForm() {
         <Button variant="accent" onClick={saveVitals}>
           Save Observations
         </Button>
+        <p className="text-[11px] text-muted" data-testid="nurse-vitals-timeline-note">
+          Vitals stay on the nurse observations spine (SHIELD audit · no EHR write). Consent-gated
+          wearable/lifestyle ingest from patient or GP also appears on the{" "}
+          <Link
+            href={`/dashboard/gp/patients/${patient.id}`}
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            patient timeline
+          </Link>
+          .
+        </p>
       </CardContent>
     </Card>
   );
