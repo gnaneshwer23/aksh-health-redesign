@@ -13,7 +13,7 @@ export function AdmissionForecast() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-sm">ICS Admission Forecast (digital twin)</CardTitle>
+        <CardTitle className="text-sm">ICS Admission Forecast (risk-state model)</CardTitle>
       </CardHeader>
       <CardContent className="h-72">
         {loading && !liveData ? (
@@ -28,7 +28,7 @@ export function AdmissionForecast() {
               <Legend />
               <Area type="monotone" dataKey="upper" stroke="none" fill="#003D7A" fillOpacity={0.1} />
               <Area type="monotone" dataKey="lower" stroke="none" fill="#FFFFFF" fillOpacity={1} />
-              <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Digital Twin" />
+              <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Risk-state forecast" />
               <Line type="monotone" dataKey="historical" stroke="#718096" strokeDasharray="4 4" name="Historical" />
             </AreaChart>
           </ResponsiveContainer>

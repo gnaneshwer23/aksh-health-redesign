@@ -10,8 +10,10 @@ export default function IcsForecastPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Admission Forecast & Digital Twin</h2>
-        <p className="text-sm text-muted">ICS-level admission trajectory with aggregate Digital Twin intelligence.</p>
+        <h2 className="text-lg font-semibold text-foreground">Admission Forecast & Population risk state</h2>
+        <p className="text-sm text-muted">
+          ICS-level admission trajectory with aggregate risk-state intelligence (not a physiological twin).
+        </p>
       </div>
       <AdmissionForecast />
       <DigitalTwinPanel mode="ics" icsData={data} readOnly />

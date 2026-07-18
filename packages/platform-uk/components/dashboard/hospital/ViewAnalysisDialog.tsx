@@ -21,7 +21,7 @@ export function ViewAnalysisDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Digital Twin: ED surge analysis</DialogTitle>
+          <DialogTitle>Population risk state: ED surge analysis</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 text-sm">
           <p>

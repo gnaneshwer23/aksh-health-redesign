@@ -33,8 +33,8 @@ const SECTIONS = [
   },
   {
     href: "/dashboard/ics/forecast",
-    title: "Admission Forecast & Digital Twin",
-    description: "14-day ICS admission forecast with aggregate Digital Twin intelligence.",
+    title: "Admission Forecast & Risk state",
+    description: "14-day ICS admission forecast with aggregate population risk-state (not a physiological twin).",
     icon: Heart,
     accent: "border-l-[#006B4F]",
   },

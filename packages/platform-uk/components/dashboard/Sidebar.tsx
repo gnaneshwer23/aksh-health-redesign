@@ -72,7 +72,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/ics/population", label: "Population Health", icon: Users },
     { href: "/dashboard/ics/equity", label: "Equity Metrics", icon: BarChart3 },
     { href: "/dashboard/ics/benchmarking", label: "Benchmarking", icon: Activity },
-    { href: "/dashboard/ics/forecast", label: "Digital Twin", icon: Heart },
+    { href: "/dashboard/ics/forecast", label: "Risk state", icon: Heart },
     { href: "/dashboard/ics?section=settings", label: "Settings", icon: Settings },
   ],
   hospital: [
@@ -80,7 +80,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/hospital/wards", label: "Ward Status", icon: Building2 },
     { href: "/dashboard/hospital/capacity", label: "Capacity", icon: BarChart3 },
     { href: "/dashboard/hospital/staffing", label: "Staffing", icon: Users },
-    { href: "/dashboard/hospital?panel=digital-twin", label: "Digital Twin", icon: Heart },
+    { href: "/dashboard/hospital?panel=digital-twin", label: "Risk state", icon: Heart },
     { href: "/dashboard/hospital?panel=reports", label: "Reports", icon: ClipboardList },
     { href: "/dashboard/hospital?section=settings", label: "Settings", icon: Settings },
   ],

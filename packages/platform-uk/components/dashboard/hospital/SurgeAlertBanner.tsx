@@ -17,8 +17,8 @@ export function SurgeAlertBanner({ data }: { data: HospitalData }) {
     <>
       <div className="bg-warning/15 border-b border-warning/30 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm">
-          Digital Twin Alert: 73% probability of ED surge in next 12 hours. Recommend: accelerate discharge reviews in
-          wards 3A, 3B, 4A
+          Risk-state alert: 73% probability of ED surge in next 12 hours (model demo — not a physiological twin).
+          Recommend: accelerate discharge reviews in wards 3A, 3B, 4A
         </p>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setAnalysisOpen(true)}>

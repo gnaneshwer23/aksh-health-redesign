@@ -31,7 +31,7 @@ const MOCK_NOTIFICATIONS = [
   {
     id: "n3",
     title: "Capacity alert",
-    body: "Digital Twin predicts ED surge probability at 73% in next 12 hours.",
+    body: "Risk-state model predicts ED surge probability at 73% in next 12 hours (demo — not a physiological twin).",
     time: "3 hrs ago",
   },
 ];

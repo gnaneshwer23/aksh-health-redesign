@@ -7,7 +7,9 @@
 
 This document maps a full Precision Health / Living Digital Twin Mermaid flowchart against what Aksh Health UK **actually** ships today. It is deliberately customer-honest: no invented wearables, omics, digital-twin physics, certifications, or live NHS write-back.
 
-Related internal docs: `docs/E2E_CLINICAL_PROOF.md`, `docs/FIGMA_10_LAYER_NHS_ARCHITECTURE_BUILD_MAP.md`, `docs/SAFETY_CASE_REHEARSAL.md`, `docs/CONTINUOUS_LEARNING.md`, `README.md`.
+Related internal docs: `docs/E2E_CLINICAL_PROOF.md`, `docs/FIGMA_10_LAYER_NHS_ARCHITECTURE_BUILD_MAP.md`, `docs/SAFETY_CASE_REHEARSAL.md`, `docs/CONTINUOUS_LEARNING.md`, `docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md`, `README.md`.
+
+**Delivery roadmap:** phased path from this baseline → Phase 1 scaffolding → Phase 2 live modalities → Phase 3 twin/regulatory — see [`PRECISION_HEALTH_DELIVERY_ROADMAP.md`](./PRECISION_HEALTH_DELIVERY_ROADMAP.md).
 
 ---
 
@@ -37,16 +39,16 @@ Positioning from product README: *synthetic-data, review-first clinical proof �
 | # | Flowchart stage | Status | What exists (evidence) | What does **not** exist |
 | ---: | --- | --- | --- | --- |
 | 1 | **Individual / Patient** | **Partial** | Synthetic cohort (26 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
-| 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 six-category **fixture catalog** (`lib/synthetic-source-profiles.ts`): voice/notes, SDOH, wearable *text*, imaging/lab *text*, genomics/family-history *text*, EHR handoff placeholder | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
-| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware | Fine-grained data-use permissions engine; NHS Login / CIS2; enforceable purpose-limitation across modalities |
-| 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 **schema CI** (Zod); FHIR-shaped drafts/exports; optional Deepgram transcribe; Medplum rehearsal (off); EMIS staging queue (no write) | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
-| 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
+| 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 six-category **fixture catalog** (`lib/synthetic-source-profiles.ts`); Phase 1 **modality contracts** + synthetic sample store (`lib/precision-health/modalities.ts`, `/api/precision-health/modalities`) | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
+| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware; Phase 1 **purpose/modality grant registry** (`GET/POST /api/consent/grants`) | NHS Login / CIS2; enforceable purpose-limitation on live streams |
+| 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 **schema CI** (Zod); FHIR-shaped drafts/exports; optional Deepgram transcribe; Medplum rehearsal (off); EMIS staging queue (no write); Phase 1 modality **ingestion stubs** (`liveStream: false`) | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
+| 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases; Phase 1 **merged timeline API** (`GET /api/patients/[id]/timeline`) | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
 | 6 | **Unified foundation** (longitudinal record, imaging, omics, streams, knowledge base) | **Partial** | Simulated longitudinal profiles; Neo4j patient–condition–medication–interaction graph (live when Aura up); review-case + Postgres persistence | Unified imaging/omics/stream stores; production longitudinal FHIR repository; vector/time-series moat |
 | 7 | **Living Health Web / knowledge graph** | **Partial** | Neo4j Aura live + seeded (`HAS_CONDITION`, `TAKES_MEDICATION`, `INTERACTS_WITH`); dashboard Neo4j hooks; honest mock fallback if disconnected | Continuously updating “Living Health Web”; population-scale knowledge base; ontology-backed reasoning graph beyond demo edges |
 | 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial** | Shared-context **orchestrator** (`lib/clinical-proof/agent-orchestration.ts`: SYNTHESIS + GUARDIAN + ORACLE + DrASSIST); LLM-or-deterministic drafts; ORACLE risk scores; eval harness | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
-| 9 | **Specialised agents** | **Partial** — see §4 | Clinical agents below (HITL drafts) | Nutrition / exercise / sleep / mental-health / research-trial agents as flowchart boxes |
-| 10 | **Digital twin + simulation + ranking** | **Partial / synthetic** | UI panel labelled “Digital Twin” (`DigitalTwinPanel`) — radial risk viz over **mock/ICS aggregate** data; hospital nav link | Physics-based / physiological twin; intervention simulation; counterfactual ranking; calibrated twin validation |
-| 11 | **Personalised health plan** | **Partial / synthetic** | Care pathway tracker mock; L9 reviewer-confirmed action drafts (safety-netting, referral, meds); SYNTHESIS pathway copy | Adaptive personalised plan engine driven by twin + multimodal streams |
+| 9 | **Specialised agents** | **Partial** — see §4 | Clinical agents below (HITL drafts); Phase 1 coaching stubs: Nutrition + Sleep (`/api/agents/nutrition`, `/api/agents/sleep`) | Exercise / mental-health / research-trial agents as flowchart boxes |
+| 10 | **Digital twin + simulation + ranking** | **Partial / synthetic** | UI/API now labelled **Patient / Population risk state** (`PatientRiskStatePanel`, `GET /api/patients/[id]/risk-state`) — radial risk viz over mock/ICS aggregate; hospital nav | Physics-based / physiological twin; intervention simulation; counterfactual ranking; calibrated twin validation |
+| 11 | **Personalised health plan** | **Partial / synthetic** | Care pathway tracker mock; L9 reviewer-confirmed action drafts; SYNTHESIS pathway copy; Phase 1 **HITL plan draft** (`POST /api/patients/[id]/health-plan`) | Adaptive personalised plan engine driven by twin + multimodal streams |
 | 12 | **Clinical safety / HITL branching** | **Built / live (proof)** | Accept / Edit / Reject / Defer; red-flag human gates; GUARDIAN urgency priority; VOICE CARE → nurse task (synthetic); zero autonomous EHR write invariant | Live urgent pathway into NHS 111/ED; automatic coaching apps; real clinician rostering beyond demo |
 | 13 | **Stakeholder ecosystem** | **Partial** | Role dashboards: GP, nurse, hospital, pharmacist, ICS, researcher, admin, patient companion; marketing audiences | Live hospital/pharmacy/lab/pharma/payer integrations; NHS App; multi-org production tenancy (Neo4j still shared demo graph) |
 | 14 | **Care delivery interventions** | **Partial** | Staged FHIR → sim write after Accept; REFERRAL draft package; pharmacist med review; nurse vitals + escalation | Live e-Referral, e-prescribe, pharmacy dispense, lab order, care-home / community delivery |
@@ -72,9 +74,9 @@ Flowchart “specialised agent” boxes vs current Aksh catalogue:
 | Population / disparity (not classic “patient agent”) | **EQUITY** | Partial | `POST /api/agents/equity`; ICS aggregate overlay |
 | Audit / compliance (overlay, not clinical agent) | **SHIELD** | Built (when Postgres live) | `/api/audit/shield`; append-only; no DELETE |
 | Post-contact / coaching escalation | **VOICE CARE** | Partial / synthetic | `POST /api/agents/voice-care`; Day-3 synthetic outbound; **no telephony** |
-| Nutrition | — | **Not built** | No agent module |
+| Nutrition | **NUTRITION** (coaching stub) | Partial / coaching only | `POST /api/agents/nutrition` — wellness draft, **not clinical advice**, HITL, no EHR write |
 | Exercise | — | **Not built** | No agent module |
-| Sleep | — | **Not built** | No agent module |
+| Sleep | **SLEEP** (coaching stub) | Partial / coaching only | `POST /api/agents/sleep` — wellness draft, **not clinical advice**, HITL, no live wearable stream |
 | Mental health (dedicated) | — | **Not built** as agent | MH crisis appears as **synthetic patient profile** only; roadmap parks IntelliProve / MH bundle |
 | Research / trial matching | — | **Not built** | Research evaluation **boundary** export only (`/api/research/evaluation`) |
 | Orchestrator | Clinical-proof orchestrator | Partial | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent |
@@ -103,10 +105,11 @@ What it **cannot** claim today: continuous wearable/omics ingestion, living digi
 
 No fake certifications; each phase gates the next.
 
-### Near term (UK pilot proof hardening)
+### Near term (UK pilot proof hardening) — see Phase 1 in delivery roadmap
 
 - Keep HITL + zero-write invariants; complete Gate 1–3 evidence packs with honest GAP labels for Partner/EMIS/Mirth/CIS2.
-- Partner UAT for **one** EMR write-back path (or explicitly stay staging-only).
+- **Phase 1 scaffolding (started):** consent purpose registry, multimodal contracts + stubs, patient timeline, health-plan draft, risk-state rename, Nutrition/Sleep coaching stubs — details in `PRECISION_HEALTH_DELIVERY_ROADMAP.md`.
+- Partner UAT for **one** EMR write-back path (or explicitly stay staging-only) — Phase 2.
 - Strengthen Neo4j beyond shared demo graph (tenant scoping) if multi-practice pilots proceed.
 - Expand learning events with real pilot outcome linking — still **no** auto-retrain; follow governed release SOP.
 - Patient companion: replace mock Q&A with approved content / clinician-approved coaching only.
@@ -147,5 +150,11 @@ No fake certifications; each phase gates the next.
 | Synthetic multimodal L1 | `lib/synthetic-source-profiles.ts` |
 | Neo4j | `docs/NEO4J_SETUP.md`, `/api/health`, `lib/neo4j/queries.ts` |
 | Learning (no auto-retrain) | `docs/CONTINUOUS_LEARNING.md` |
-| Digital twin UI | `components/dashboard/DigitalTwinPanel.tsx` |
+| Digital twin UI | `components/dashboard/DigitalTwinPanel.tsx` (labels: risk state) |
+| Risk-state API | `GET /api/patients/[id]/risk-state` |
+| Consent registry | `GET/POST /api/consent/grants` |
+| Modality contracts | `lib/precision-health/modalities.ts`, `/api/precision-health/modalities` |
+| Patient timeline | `GET /api/patients/[id]/timeline` |
+| Health plan draft | `POST /api/patients/[id]/health-plan` |
+| Delivery roadmap | `docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md` |
 | Roadmap honesty (MH/biomarkers/FL) | `lib/roadmap.ts` |

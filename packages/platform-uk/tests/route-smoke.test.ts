@@ -131,6 +131,17 @@ async function run() {
   await assertFileIncludes("app/api/agents/voice-care/route.ts", "synthetic_outbound");
   await assertFileIncludes("lib/agents/voice-care.ts", "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC)");
   await assertFileIncludes("components/dashboard/nurse/VoiceCareEscalationCard.tsx", "/api/agents/voice-care");
+  await assertFileIncludes("app/api/agents/nutrition/route.ts", "coaching_draft_only");
+  await assertFileIncludes("app/api/agents/sleep/route.ts", "isClinicalAdvice");
+  await assertFileIncludes("app/api/consent/grants/route.ts", "Purpose-bound consent registry");
+  await assertFileIncludes("app/api/precision-health/modalities/route.ts", "liveStream");
+  await assertFileIncludes("app/api/patients/[id]/timeline/route.ts", "buildPatientTimeline");
+  await assertFileIncludes("app/api/patients/[id]/health-plan/route.ts", "physiologicalTwin");
+  await assertFileIncludes("app/api/patients/[id]/risk-state/route.ts", "notAPhysiologicalTwin");
+  await assertFileIncludes("components/dashboard/DigitalTwinPanel.tsx", "Patient risk state");
+  await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 1");
+  await assertFileIncludes("docs/PRECISION_HEALTH_FLOWCHART_GAP.md", "PRECISION_HEALTH_DELIVERY_ROADMAP.md");
+  await assertFileIncludes("lib/precision-health/modalities.ts", "liveStream: false");
   await assertFileIncludes("app/api/eval/agents/route.ts", "runGoldenEval");
   await assertFileIncludes("lib/eval/golden-cases.ts", "GOLDEN_CASES");
   await assertFileIncludes("docs/AGENT_EVAL_HARNESS.md", "npm run eval:agents");
