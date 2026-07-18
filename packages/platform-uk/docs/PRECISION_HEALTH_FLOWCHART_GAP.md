@@ -1,0 +1,151 @@
+# Precision Health / Digital Twin Flowchart — Gap Audit (Aksh Health UK)
+
+**Date:** 18 Jul 2026  
+**Repo HEAD:** `287d6d0` (or later on `main`)  
+**Live:** https://akshhealth.com  
+**Health check (live):** `GET /api/health` → Postgres `mode: live`, Neo4j Aura `mode: live` (seeded synthetic cohort)
+
+This document maps a full Precision Health / Living Digital Twin Mermaid flowchart against what Aksh Health UK **actually** ships today. It is deliberately customer-honest: no invented wearables, omics, digital-twin physics, certifications, or live NHS write-back.
+
+Related internal docs: `docs/E2E_CLINICAL_PROOF.md`, `docs/FIGMA_10_LAYER_NHS_ARCHITECTURE_BUILD_MAP.md`, `docs/SAFETY_CASE_REHEARSAL.md`, `docs/CONTINUOUS_LEARNING.md`, `README.md`.
+
+---
+
+## 1. Verdict
+
+**No — Aksh does not deliver this full Precision Health OS flowchart today.**  
+What is live is a **HITL clinical workflow proof layer**: synthetic multimodal *fixtures* → FHIR-shaped drafts → specialised agent drafts → mandatory clinician Accept/Edit/Reject → staging/sim write (not live EMR) → SHIELD audit + learning *recorder*, with Neon Postgres and Neo4j Aura connected for a seeded demo graph. It is **not** a continuous multimodal ingestion platform, not a living digital twin with simulation/ranking, and not a closed-loop real-world outcomes / auto-learning OS.
+
+---
+
+## 2. Live infrastructure snapshot (evidence)
+
+| Probe | Result (18 Jul 2026) |
+| --- | --- |
+| `https://akshhealth.com/api/health` | `status: ok`; `database.mode: live`; `neo4j.mode: live` |
+| `GET /api/integrations/medplum-status` | Medplum sync **disabled**; `liveEmis: false` |
+| Public / demo GP & ICS / hospital dashboards | HTTP 200 (demo allowlists) |
+| Patient / nurse / pharmacist / researcher dashboards | Auth redirect (307) — surfaces exist behind sign-in |
+| Neo4j patient API | Auth-required; graph seeded with synthetic P001–P026 when Aura live |
+
+Positioning from product README: *synthetic-data, review-first clinical proof — not production clinical software, not live NHS integration, not real-patient-data platform.*
+
+---
+
+## 3. Stage-by-stage table
+
+| # | Flowchart stage | Status | What exists (evidence) | What does **not** exist |
+| ---: | --- | --- | --- | --- |
+| 1 | **Individual / Patient** | **Partial** | Synthetic cohort (26 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
+| 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 six-category **fixture catalog** (`lib/synthetic-source-profiles.ts`): voice/notes, SDOH, wearable *text*, imaging/lab *text*, genomics/family-history *text*, EHR handoff placeholder | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
+| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware | Fine-grained data-use permissions engine; NHS Login / CIS2; enforceable purpose-limitation across modalities |
+| 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 **schema CI** (Zod); FHIR-shaped drafts/exports; optional Deepgram transcribe; Medplum rehearsal (off); EMIS staging queue (no write) | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
+| 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
+| 6 | **Unified foundation** (longitudinal record, imaging, omics, streams, knowledge base) | **Partial** | Simulated longitudinal profiles; Neo4j patient–condition–medication–interaction graph (live when Aura up); review-case + Postgres persistence | Unified imaging/omics/stream stores; production longitudinal FHIR repository; vector/time-series moat |
+| 7 | **Living Health Web / knowledge graph** | **Partial** | Neo4j Aura live + seeded (`HAS_CONDITION`, `TAKES_MEDICATION`, `INTERACTS_WITH`); dashboard Neo4j hooks; honest mock fallback if disconnected | Continuously updating “Living Health Web”; population-scale knowledge base; ontology-backed reasoning graph beyond demo edges |
+| 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial** | Shared-context **orchestrator** (`lib/clinical-proof/agent-orchestration.ts`: SYNTHESIS + GUARDIAN + ORACLE + DrASSIST); LLM-or-deterministic drafts; ORACLE risk scores; eval harness | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
+| 9 | **Specialised agents** | **Partial** — see §4 | Clinical agents below (HITL drafts) | Nutrition / exercise / sleep / mental-health / research-trial agents as flowchart boxes |
+| 10 | **Digital twin + simulation + ranking** | **Partial / synthetic** | UI panel labelled “Digital Twin” (`DigitalTwinPanel`) — radial risk viz over **mock/ICS aggregate** data; hospital nav link | Physics-based / physiological twin; intervention simulation; counterfactual ranking; calibrated twin validation |
+| 11 | **Personalised health plan** | **Partial / synthetic** | Care pathway tracker mock; L9 reviewer-confirmed action drafts (safety-netting, referral, meds); SYNTHESIS pathway copy | Adaptive personalised plan engine driven by twin + multimodal streams |
+| 12 | **Clinical safety / HITL branching** | **Built / live (proof)** | Accept / Edit / Reject / Defer; red-flag human gates; GUARDIAN urgency priority; VOICE CARE → nurse task (synthetic); zero autonomous EHR write invariant | Live urgent pathway into NHS 111/ED; automatic coaching apps; real clinician rostering beyond demo |
+| 13 | **Stakeholder ecosystem** | **Partial** | Role dashboards: GP, nurse, hospital, pharmacist, ICS, researcher, admin, patient companion; marketing audiences | Live hospital/pharmacy/lab/pharma/payer integrations; NHS App; multi-org production tenancy (Neo4j still shared demo graph) |
+| 14 | **Care delivery interventions** | **Partial** | Staged FHIR → sim write after Accept; REFERRAL draft package; pharmacist med review; nurse vitals + escalation | Live e-Referral, e-prescribe, pharmacy dispense, lab order, care-home / community delivery |
+| 15 | **Real-world outcomes** | **Partial / synthetic** | Learning-event outcome kinds; L10 synthetic outcome-capture schema; benchmark labels | Measured RWE from live care (admissions avoided, HbA1c change, etc.) at population scale |
+| 16 | **Continuous learning loop** | **Partial** | Append-only `/api/learning/events` + eventual outcome link; admin UI; **`autoRetrain: false` always**; governed release SOP stub | Federated learning; auto model update; closed-loop improvement from RWE |
+| 17 | **Governance overlay** | **Partial** | SHIELD append-only audit (Postgres when configured); governance pack / hazard template; evidence pack gates; tenant isolation scaffold; unsigned DCB0129 rehearsal | Signed clinical safety case; DTAC; MHRA; pen-test pack complete; formal CSO sign-off |
+
+**Legend:** **Built / live** = works on production with inspectable routes/APIs (still synthetic clinical data unless stated). **Partial / synthetic** = UI, fixtures, rehearsal, or recorder only. **Not built** = no meaningful implementation for that flowchart box.
+
+---
+
+## 4. Agent mapping (flowchart boxes → Aksh agents)
+
+Flowchart “specialised agent” boxes vs current Aksh catalogue:
+
+| Flowchart agent box | Aksh agent | Status | Evidence |
+| --- | --- | --- | --- |
+| Triage / intake | **VOICE** (+ intake routes) | Partial | Transcription / note intake; optional Deepgram; deterministic fallback |
+| Clinical documentation / coding | **SYNTHESIS**, **DrASSIST** | Partial (draft APIs live) | `POST /api/agents/synthesis`, `/api/agents/dr-assist`; SOAP + coding drafts; HITL |
+| Med safety | **GUARDIAN** | Partial (draft APIs live) | `POST /api/agents/guardian`; Neo4j/mock DDI; HITL |
+| Predictive / risk | **ORACLE** | Partial (draft APIs live) | `POST /api/agents/oracle`; CVD/T2D-style risk draft; HITL |
+| Care coordination / referral | **REFERRAL** | Partial | `POST /api/agents/referral`; package draft; no e-Referral write |
+| Population / disparity (not classic “patient agent”) | **EQUITY** | Partial | `POST /api/agents/equity`; ICS aggregate overlay |
+| Audit / compliance (overlay, not clinical agent) | **SHIELD** | Built (when Postgres live) | `/api/audit/shield`; append-only; no DELETE |
+| Post-contact / coaching escalation | **VOICE CARE** | Partial / synthetic | `POST /api/agents/voice-care`; Day-3 synthetic outbound; **no telephony** |
+| Nutrition | — | **Not built** | No agent module |
+| Exercise | — | **Not built** | No agent module |
+| Sleep | — | **Not built** | No agent module |
+| Mental health (dedicated) | — | **Not built** as agent | MH crisis appears as **synthetic patient profile** only; roadmap parks IntelliProve / MH bundle |
+| Research / trial matching | — | **Not built** | Research evaluation **boundary** export only (`/api/research/evaluation`) |
+| Orchestrator | Clinical-proof orchestrator | Partial | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent |
+
+Marketing/resources historically say “seven agents”; the live API set also includes **REFERRAL** and **VOICE CARE** as first-class draft/escalation paths. All clinical agent outputs remain **draft ≠ record** until HITL Accept.
+
+---
+
+## 5. Outcomes Aksh **can** deliver today (honest)
+
+For advisors, pilots, and internal critique — **not** as a Precision Health OS claim:
+
+1. **Demonstrate a safe HITL clinical documentation loop** on synthetic consultations (intake → draft → safety flags → Accept/Edit/Reject → frozen evidence).
+2. **Show multi-agent draft orchestration** on a shared patient context with urgency prioritisation (GUARDIAN first when urgent).
+3. **Exercise FHIR R4-shaped staging** and prove **zero autonomous EMR write** (EMIS Partner write-back blocked; Medplum off).
+4. **Query a live Neo4j knowledge graph** of the synthetic cohort (conditions, meds, interactions) when Aura is running; fall back honestly to mock if not.
+5. **Persist durable SHIELD audit events** and **learning recorder** events (prediction → clinician decision → optional eventual outcome) without auto-retrain.
+6. **Walk role-based demos**: GP review queue, nurse escalation, pharmacist interaction checks, ICS EQUITY overlay, hospital capacity / “digital twin” viz, researcher data-access UI, patient companion (mock Q&A / check-ins).
+7. **Produce evidence artefacts** for a future safety case (hazard template linked to tests, evidence pack skeleton, governance rehearsal) — **unsigned**, not DTAC/DCB0129 complete.
+
+What it **cannot** claim today: continuous wearable/omics ingestion, living digital twin simulation, personalised plan optimisation from twin ranking, live NHS care delivery, measured population RWE, or autonomous continuous learning.
+
+---
+
+## 6. What would be required to move toward the vision (phased)
+
+No fake certifications; each phase gates the next.
+
+### Near term (UK pilot proof hardening)
+
+- Keep HITL + zero-write invariants; complete Gate 1–3 evidence packs with honest GAP labels for Partner/EMIS/Mirth/CIS2.
+- Partner UAT for **one** EMR write-back path (or explicitly stay staging-only).
+- Strengthen Neo4j beyond shared demo graph (tenant scoping) if multi-practice pilots proceed.
+- Expand learning events with real pilot outcome linking — still **no** auto-retrain; follow governed release SOP.
+- Patient companion: replace mock Q&A with approved content / clinician-approved coaching only.
+
+### Mid term (controlled multimodal + plan layer)
+
+- Real consented ingestion for **1–2** modalities (e.g. GP EHR + labs FHIR), not six at once.
+- Identity resolution against PDS (or equivalent) under DPIA.
+- Replace “Digital Twin” UI metaphor with either (a) clearly labelled **risk aggregate dashboard**, or (b) a validated, narrow physiological/risk model with published limitations.
+- Add only agents that have clinical owners and evaluation harness coverage (e.g. mental-health triage draft **after** safety case scope expands) — not nutrition/sleep/exercise until data + governance exist.
+- Care delivery: e-Referral or pharmacy handoff for **draft packages that clinicians already accepted**.
+
+### Long term (Precision Health OS — flowchart completeness)
+
+- Continuous multimodal foundation (imaging DICOM, omics, wearables, environment) with purpose-bound consent.
+- Living knowledge graph continuously updated from care + evidence bases.
+- Causal / predictive models under regulated change control; federated or otherwise governed learning.
+- True digital twin simulation + intervention ranking with clinical validation.
+- Stakeholder ecosystem integrations (hospital, labs, pharma, payers) and measurable RWE closed loop.
+- Signed clinical safety case, DTAC, and applicable regulatory pathways **before** outcome marketing.
+
+---
+
+## 7. One-line positioning for customers
+
+> **Aksh Health UK today is a HITL clinical intelligence and evidence layer on synthetic (and eventually pilot) data — not yet a Precision Health / Digital Twin operating system.**
+
+---
+
+## 8. Source checklist (for auditors)
+
+| Claim area | Where to look |
+| --- | --- |
+| Product boundary | `README.md` |
+| Clinical proof DoD | `docs/E2E_CLINICAL_PROOF.md` |
+| 10-layer map | `docs/FIGMA_10_LAYER_NHS_ARCHITECTURE_BUILD_MAP.md` |
+| Agents / HITL | `docs/SAFETY_CASE_REHEARSAL.md`, `app/api/agents/*`, `lib/agents.ts` |
+| Synthetic multimodal L1 | `lib/synthetic-source-profiles.ts` |
+| Neo4j | `docs/NEO4J_SETUP.md`, `/api/health`, `lib/neo4j/queries.ts` |
+| Learning (no auto-retrain) | `docs/CONTINUOUS_LEARNING.md` |
+| Digital twin UI | `components/dashboard/DigitalTwinPanel.tsx` |
+| Roadmap honesty (MH/biomarkers/FL) | `lib/roadmap.ts` |
