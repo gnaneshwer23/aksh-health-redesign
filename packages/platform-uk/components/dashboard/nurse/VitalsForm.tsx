@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 
+import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
+import { useNeo4jPatient } from "@/lib/hooks/use-neo4j-clinical";
 import { patients } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
@@ -27,31 +29,53 @@ const EMPTY_VITALS: VitalsValues = {
   rr: "",
   spo2: "",
   temp: "",
-  weight: "",
+  weight: ""
 };
 
-const MOCK_VOICE_VITALS: VitalsValues = {
-  bpSys: "128",
-  bpDia: "82",
-  hr: "78",
-  rr: "16",
-  spo2: "97",
-  temp: "36.8",
-  weight: "72.5",
-};
+/** Best-effort parse of spoken vitals from Deepgram/simulated transcript. */
+function parseVitalsFromTranscript(transcript: string): Partial<VitalsValues> {
+  const text = transcript.toLowerCase();
+  const out: Partial<VitalsValues> = {};
+
+  const bp = text.match(/\b(?:bp|blood pressure)\s*(?:is|of|=|:)?\s*(\d{2,3})\s*(?:over|\/)\s*(\d{2,3})\b/);
+  if (bp) {
+    out.bpSys = bp[1];
+    out.bpDia = bp[2];
+  }
+
+  const hr = text.match(/\b(?:hr|heart rate|pulse)\s*(?:is|of|=|:)?\s*(\d{2,3})\b/);
+  if (hr) out.hr = hr[1];
+
+  const rr = text.match(/\b(?:rr|resp(?:iratory)? rate)\s*(?:is|of|=|:)?\s*(\d{1,2})\b/);
+  if (rr) out.rr = rr[1];
+
+  const spo2 = text.match(/\b(?:spo2|sats|oxygen)\s*(?:is|of|=|:)?\s*(\d{2,3})\s*%?/);
+  if (spo2) out.spo2 = spo2[1];
+
+  const temp = text.match(/\b(?:temp(?:erature)?)\s*(?:is|of|=|:)?\s*(\d{2}(?:\.\d)?)\b/);
+  if (temp) out.temp = temp[1];
+
+  const weight = text.match(/\b(?:weight)\s*(?:is|of|=|:)?\s*(\d{2,3}(?:\.\d)?)\s*(?:kg)?\b/);
+  if (weight) out.weight = weight[1];
+
+  return out;
+}
 
 export function VitalsForm() {
   const { selectedPatientId, addAuditEvent } = useDashboardStore();
   const patient = patients.find((p) => p.id === (selectedPatientId ?? "P001")) ?? patients[0];
+  const { data: neo4jPatient, loading: neo4jLoading, source } = useNeo4jPatient(patient.id);
   const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
   const [vitals, setVitals] = useState<VitalsValues>(EMPTY_VITALS);
+  const [lastTranscript, setLastTranscript] = useState<string | null>(null);
+  const [transcriptMode, setTranscriptMode] = useState<"live" | "simulated" | null>(null);
 
   const saveVitals = async () => {
     addAuditEvent({
       user: "Nurse Davies",
       agent: "Nurse",
       action: "Saved vital signs",
-      resource: `${patient.name} | BP ${vitals.bpSys}/${vitals.bpDia}`,
+      resource: `${patient.name} | BP ${vitals.bpSys}/${vitals.bpDia}`
     });
 
     try {
@@ -80,12 +104,48 @@ export function VitalsForm() {
     }
   };
 
-  const handleVoiceComplete = () => {
-    setVitals(MOCK_VOICE_VITALS);
+  const handleTranscript = (transcript: string, meta?: { simulated?: boolean }) => {
+    setLastTranscript(transcript);
+    setTranscriptMode(meta?.simulated ? "simulated" : "live");
+    const parsed = parseVitalsFromTranscript(transcript);
+    const hasParsed = Object.keys(parsed).length > 0;
+
+    if (hasParsed) {
+      setVitals((prev) => ({ ...prev, ...parsed }));
+      setEntryMode("manual");
+      toast({
+        title: "VOICE parsed vitals — please verify before save",
+        description: meta?.simulated
+          ? "Simulated transcript used. Confirm values before saving."
+          : "Live Deepgram transcript used. Confirm values before saving."
+      });
+      return;
+    }
+
+    // Prefer Neo4j vitals as a verify-first starting point when speech parse fails.
+    if (neo4jPatient?.vitals) {
+      const [sys, dia] = (neo4jPatient.vitals.bloodPressure || "/").split("/");
+      setVitals({
+        bpSys: sys?.trim() || "",
+        bpDia: dia?.trim() || "",
+        hr: String(neo4jPatient.vitals.heartRate ?? ""),
+        rr: String(neo4jPatient.vitals.respiratoryRate ?? ""),
+        spo2: String(neo4jPatient.vitals.spo2 ?? ""),
+        temp: String(neo4jPatient.vitals.temperature ?? ""),
+        weight: ""
+      });
+      setEntryMode("manual");
+      toast({
+        title: "Transcript captured — graph vitals prefilled for verify",
+        description: "Speech did not contain clear vitals; review graph/fallback values before save."
+      });
+      return;
+    }
+
     setEntryMode("manual");
     toast({
-      title: "VOICE parsed vitals | please verify before save",
-      description: "Review auto-filled values before saving to the record.",
+      title: "Transcript captured — enter vitals manually",
+      description: "Could not parse structured vitals from speech. Type values and verify before save."
     });
   };
 
@@ -95,6 +155,7 @@ export function VitalsForm() {
         <CardTitle className="text-base text-secondary">Vital Signs Entry</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <Neo4jMockModeBanner source={source} loading={neo4jLoading} />
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -114,7 +175,18 @@ export function VitalsForm() {
           </Button>
         </div>
         {entryMode === "voice" ? (
-          <VoiceRecorder onRecordingComplete={handleVoiceComplete} />
+          <div className="space-y-2">
+            <VoiceRecorder
+              onTranscript={(transcript, meta) => {
+                handleTranscript(transcript, { simulated: meta?.simulated });
+              }}
+            />
+            {lastTranscript ? (
+              <p className="text-xs text-muted whitespace-pre-wrap rounded border border-dashed border-border p-2">
+                Last transcript{transcriptMode ? ` (${transcriptMode})` : ""}: {lastTranscript}
+              </p>
+            ) : null}
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex gap-2">
@@ -131,11 +203,31 @@ export function VitalsForm() {
                 aria-label="Diastolic BP"
               />
             </div>
-            <Input placeholder="Heart rate (bpm)" value={vitals.hr} onChange={(e) => setVitals({ ...vitals, hr: e.target.value })} />
-            <Input placeholder="Resp rate (/min)" value={vitals.rr} onChange={(e) => setVitals({ ...vitals, rr: e.target.value })} />
-            <Input placeholder="SpO2 (%)" value={vitals.spo2} onChange={(e) => setVitals({ ...vitals, spo2: e.target.value })} />
-            <Input placeholder="Temperature (°C)" value={vitals.temp} onChange={(e) => setVitals({ ...vitals, temp: e.target.value })} />
-            <Input placeholder="Weight (kg)" value={vitals.weight} onChange={(e) => setVitals({ ...vitals, weight: e.target.value })} />
+            <Input
+              placeholder="Heart rate (bpm)"
+              value={vitals.hr}
+              onChange={(e) => setVitals({ ...vitals, hr: e.target.value })}
+            />
+            <Input
+              placeholder="Resp rate (/min)"
+              value={vitals.rr}
+              onChange={(e) => setVitals({ ...vitals, rr: e.target.value })}
+            />
+            <Input
+              placeholder="SpO2 (%)"
+              value={vitals.spo2}
+              onChange={(e) => setVitals({ ...vitals, spo2: e.target.value })}
+            />
+            <Input
+              placeholder="Temperature (°C)"
+              value={vitals.temp}
+              onChange={(e) => setVitals({ ...vitals, temp: e.target.value })}
+            />
+            <Input
+              placeholder="Weight (kg)"
+              value={vitals.weight}
+              onChange={(e) => setVitals({ ...vitals, weight: e.target.value })}
+            />
           </div>
         )}
         <Button variant="accent" onClick={saveVitals}>

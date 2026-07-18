@@ -141,6 +141,8 @@ export async function persistShieldAuditEvent(
 export async function listShieldAuditEvents(options?: {
   limit?: number;
   practiceId?: string;
+  agentLabel?: string;
+  labelContains?: string;
 }): Promise<{ source: "postgres" | "unavailable"; events: DurableShieldAuditRow[] }> {
   if (!isPostgresConfigured()) {
     return { source: "unavailable", events: [] };
@@ -149,12 +151,24 @@ export async function listShieldAuditEvents(options?: {
   try {
     await ensureShieldAuditSchema();
     const limit = Math.min(Math.max(options?.limit ?? 50, 1), 200);
-    const params: unknown[] = [limit];
-    let where = "";
+    const params: unknown[] = [];
+    const clauses: string[] = [];
+
     if (options?.practiceId) {
-      where = "WHERE practice_id = $2";
       params.push(options.practiceId);
+      clauses.push(`practice_id = $${params.length}`);
     }
+    if (options?.agentLabel) {
+      params.push(options.agentLabel);
+      clauses.push(`agent_label = $${params.length}`);
+    }
+    if (options?.labelContains) {
+      params.push(`%${options.labelContains}%`);
+      clauses.push(`label ILIKE $${params.length}`);
+    }
+
+    params.push(limit);
+    const where = clauses.length > 0 ? `WHERE ${clauses.join(" AND ")}` : "";
 
     const result = await getPgPool().query<{
       id: string;
@@ -178,7 +192,7 @@ export async function listShieldAuditEvents(options?: {
        FROM aksh.shield_audit_events
        ${where}
        ORDER BY recorded_at DESC, id DESC
-       LIMIT $1`,
+       LIMIT $${params.length}`,
       params
     );
 

@@ -63,6 +63,15 @@ export function getIntegrationAdapterRegistry() {
       defaultMode: "hitl_draft_only",
       boundary:
         "POST /api/agents/synthesis. Uses AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+    },
+    {
+      id: "llm-guardian",
+      label: "LLM GUARDIAN (AI Gateway)",
+      status: isLlmGuardianEnabled() ? ("enabled" as const) : ("available" as const),
+      enabled: isLlmGuardianEnabled(),
+      defaultMode: "hitl_draft_only",
+      boundary:
+        "POST /api/agents/guardian. Neo4j/mock interactions + AI Gateway narrative when configured, else deterministic fallback. Never writes to EHR."
     }
   ];
 }
@@ -70,6 +79,11 @@ export function getIntegrationAdapterRegistry() {
 function isLlmSynthesisEnabled() {
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
   return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+}
+
+function isLlmGuardianEnabled() {
+  if (process.env.ENABLE_LLM_GUARDIAN === "false") return false;
+  return isLlmSynthesisEnabled();
 }
 
 export function shouldSyncAcceptedCaseToMedplum(existing: ReviewCase, payload: ReviewCase, updated: ReviewCase) {

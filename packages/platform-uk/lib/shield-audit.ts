@@ -61,7 +61,9 @@ export function scheduleDurableShieldWrite(options: {
   agentLabel?: string;
   resourceRef?: string;
 }) {
-  if (typeof window === "undefined") {
+  // Dual-write is browser-only; avoid bare `window` so Node test compiles (no DOM lib).
+  const browserGlobal = globalThis as typeof globalThis & { window?: unknown };
+  if (typeof browserGlobal.window === "undefined") {
     return;
   }
 

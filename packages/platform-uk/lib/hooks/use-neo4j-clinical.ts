@@ -11,7 +11,7 @@ import type {
 type DataSource = "neo4j" | "mock" | null;
 
 async function fetchWithSource<T>(url: string): Promise<{ data: T | null; source: DataSource }> {
-  const response = await fetch(url);
+  const response = await fetch(url, { credentials: "include" });
   if (!response.ok) return { data: null, source: null };
   const source = (response.headers.get("X-Data-Source") as DataSource) ?? null;
   return { data: (await response.json()) as T, source };

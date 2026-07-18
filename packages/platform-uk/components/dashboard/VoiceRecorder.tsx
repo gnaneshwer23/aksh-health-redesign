@@ -14,7 +14,10 @@ export function VoiceRecorder({
 }: {
   className?: string;
   onRecordingComplete?: () => void;
-  onTranscript?: (transcript: string) => void;
+  onTranscript?: (
+    transcript: string,
+    meta?: { simulated?: boolean; mode?: string }
+  ) => void;
 }) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -70,7 +73,10 @@ export function VoiceRecorder({
             mode?: string;
           };
           if (data.transcript) {
-            onTranscript?.(data.transcript);
+            onTranscript?.(data.transcript, {
+              simulated: Boolean(data.simulated || data.mode === "simulated"),
+              mode: typeof data.mode === "string" ? data.mode : undefined
+            });
           }
           onRecordingComplete?.();
           if (data.simulated || data.mode === "simulated") {

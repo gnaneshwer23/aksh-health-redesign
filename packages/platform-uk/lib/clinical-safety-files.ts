@@ -56,6 +56,28 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       nextStep: "Verify chain integrity in pilot environments and retain exports with the hazard log."
     },
     {
+      id: "guardian-agent-hitl",
+      title: "GUARDIAN agent HITL drafts",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Medicines interaction drafts via Neo4j/mock + LLM/deterministic fallback; never EHR write without Accept.",
+      inAppRoute: "/dashboard/pharmacist/interactions",
+      exportRoute: "/api/agents/guardian",
+      owner: "Clinical pharmacist + CSO",
+      nextStep: "Eval LLM GUARDIAN briefs against BNF golden cases before any unsupervised use."
+    },
+    {
+      id: "pharmacist-review-persistence",
+      title: "Pharmacist medication review persistence",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "Completed medication reviews persisted as SHIELD audit rows (no separate med-review table in proof build).",
+      inAppRoute: "/dashboard/pharmacist/reviews",
+      exportRoute: "/api/pharmacist/reviews",
+      owner: "Clinical pharmacist + engineering",
+      nextStep: "Promote to a dedicated review table only if pilot reporting requires structured fields beyond audit."
+    },
+    {
       id: "emis-partner-staging",
       title: "EMIS partner staging boundary",
       standard: "DCB0129-style rehearsal",
