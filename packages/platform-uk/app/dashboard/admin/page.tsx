@@ -9,6 +9,7 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IntegrationStatus } from "@/components/dashboard/IntegrationStatus";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { OrganisationEnquiriesPanel } from "@/components/dashboard/OrganisationEnquiriesPanel";
+import { SystemStatusStrip } from "@/components/dashboard/SystemStatusStrip";
 import { UrgentGuardianAlertsPanel, getUrgentGuardianAlertCount } from "@/components/dashboard/UrgentGuardianAlertsPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,19 +29,23 @@ export default function AdminDashboardPage() {
     >
       <div className="space-y-6 overflow-y-auto p-4">
         <ConsentBanner />
+        <SystemStatusStrip />
 
         <div>
           <h2 className="text-lg font-semibold text-foreground">Organisation overview</h2>
-          <p className="text-sm text-muted">Dashboard stats for {orgLabel}</p>
+          <p className="text-sm text-muted">
+            Dashboard for {orgLabel}. Metrics below mix live SHIELD/integration probes with synthetic rehearsal
+            figures — not certified DCB0129 / MHRA evidence.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <MetricCard label="Total Users" value="12" sparkline={[10, 11, 11, 12, 12, 12, 12]} />
-          <MetricCard label="Last Extraction" value="00:00 UTC ✓" trend="up" />
-          <MetricCard label="FHIR Bundles Today" value="847" sparkline={[800, 820, 830, 840, 845, 847, 847]} />
           <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />
-          <MetricCard label="DCB0129 Status" value="Active" />
-          <MetricCard label="Care Pathways" value={`4 / ${countAwaitingApproval()} pending`} />
+          <MetricCard label="Care Pathways pending" value={String(countAwaitingApproval())} />
+          <MetricCard label="SHIELD audit" value="Live trail" />
+          <MetricCard label="EMIS write-back" value="Not enabled" />
+          <MetricCard label="DCB0129" value="Rehearsal only" />
+          <MetricCard label="Certifications" value="None claimed" />
         </div>
 
         <AdminQuickLinks />
@@ -53,7 +58,7 @@ export default function AdminDashboardPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm">Recent Audit Events</CardTitle>
+              <CardTitle className="text-sm">Recent SHIELD Audit Events</CardTitle>
               <Button variant="outline" size="sm" asChild>
                 <Link href="/dashboard/admin/audit">View all</Link>
               </Button>

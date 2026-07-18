@@ -6,7 +6,8 @@ import { useResearcherData } from "@/components/dashboard/researcher/ResearcherD
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ResearcherEvaluationPage() {
-  const { evaluation } = useResearcherData();
+  const { evaluation, cohort } = useResearcherData();
+  const isDemoEmpty = !cohort.ethicsApproved;
 
   return (
     <div className="space-y-6">
@@ -20,12 +21,24 @@ export default function ResearcherEvaluationPage() {
         <ExportEvaluationButton />
       </div>
 
+      {isDemoEmpty ? (
+        <Card className="border-dashed border-[#E67E22]/40 shadow-none">
+          <CardContent className="p-4 text-xs text-muted">
+            <p className="font-medium text-foreground">Synthetic demo evaluation set</p>
+            <p className="mt-1">
+              Charts and KPIs below are boundary rehearsal artefacts — not a live study extract. Export still
+              downloads the evaluation-boundary JSON and attempts a SHIELD audit log.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Available tasks", value: evaluation.availableTasks },
           { label: "Planned tasks", value: evaluation.plannedTasks },
           { label: "Blocked tasks", value: evaluation.blockedTasks },
-          { label: "Dataset sources", value: evaluation.datasetSources },
+          { label: "Dataset sources", value: evaluation.datasetSources }
         ].map((metric) => (
           <Card key={metric.label} className="border-l-4 border-l-[#E67E22] shadow-sm">
             <CardContent className="p-4">
@@ -44,11 +57,13 @@ export default function ResearcherEvaluationPage() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted">
           <p>
-            Exports include the offline research evaluation boundary artifact: task definitions,, dataset boundaries,
-            and explicit &quot;not yet&quot; claims. No production clinical AI safety claims are included.
+            Exports include the offline research evaluation boundary artifact: task definitions, dataset
+            boundaries, and explicit &quot;not yet&quot; claims. No production clinical AI safety claims are
+            included.
           </p>
           <p>
             Use the export button above to download a JSON file authenticated to your researcher session.
+            Exports are logged via SHIELD when durable audit is available.
           </p>
         </CardContent>
       </Card>

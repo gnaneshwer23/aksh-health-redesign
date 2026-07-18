@@ -33,7 +33,28 @@ export function ExportEvaluationButton() {
       anchor.click();
       URL.revokeObjectURL(url);
 
-      toast({ title: "Evaluation export downloaded", description: filename });
+      try {
+        await fetch("/api/audit/shield", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "export",
+            agentLabel: "SHIELD",
+            label: "SHIELD: researcher evaluation JSON exported",
+            detail: filename,
+            category: "system",
+            resourceRef: `research-evaluation/${orgSlug}`
+          })
+        });
+      } catch {
+        // Download still succeeded even if audit write failed.
+      }
+
+      toast({
+        title: "Evaluation export downloaded",
+        description: `${filename} · SHIELD export logged when durable audit is available`
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Export failed";
       toast({ title: "Export failed", description: message });
@@ -46,7 +67,7 @@ export function ExportEvaluationButton() {
     <Button
       className="bg-[#E67E22] hover:bg-[#E67E22]/90"
       disabled={exporting}
-      onClick={handleExport}
+      onClick={() => void handleExport()}
       size="sm"
     >
       <Download className="mr-2 h-4 w-4" />

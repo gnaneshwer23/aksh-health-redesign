@@ -8,7 +8,7 @@
 Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / SystmOne for synthetic and pilot proof:
 
 1. Capture (consult notes / optional Deepgram voice via authenticated `POST /api/transcribe`)
-2. Draft + checks (SYNTHESIS / GUARDIAN / ORACLE — LLM or deterministic)
+2. Draft + checks (SYNTHESIS / Dr.Assist / GUARDIAN / ORACLE / REFERRAL — LLM or deterministic)
 3. Clinician Accept / Edit / Reject
 4. FHIR-shaped staging + durable SHIELD audit
 5. EHR write-back **only** after named clinician approval **and** Partner credentials (not enabled in this build)
@@ -30,6 +30,7 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 | Durable SHIELD events | `aksh.shield_audit_events` via `/api/audit/shield` |
 | Pharmacist review trail | `/api/pharmacist/reviews` (SHIELD rows labelled medication review) |
 | SYNTHESIS drafts | `POST /api/agents/synthesis` (HITL; no EHR write) |
+| Dr.Assist drafts | `POST /api/agents/dr-assist` (HITL; Neo4j/mock + LLM/deterministic coding) |
 | GUARDIAN drafts | `POST /api/agents/guardian` (HITL; Neo4j/mock + LLM/deterministic) |
 | ORACLE drafts | `POST /api/agents/oracle` (HITL; Neo4j/mock + LLM/deterministic) |
 | REFERRAL packaging | `POST /api/agents/referral` (HITL draft package; no e-Referral write) |
@@ -37,6 +38,7 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 | EMIS staging scaffold | `/api/integrations/emis-staging` |
 | Integration contract | `/api/system/integration-contract` |
 | Neo4j health | `/api/neo4j/health` and `/api/health` (`neo4j.mode`) |
+| System status strip | Admin dashboard probes `GET /api/health` |
 
 ## Named owners (must be filled before production)
 
@@ -51,7 +53,7 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 1. Appoint CSO and maintain hazard log with review dates
 2. Complete DCB0129 clinical safety case report outside the synthetic proof app
 3. EMIS / SystmOne Partner onboarding + DPIA
-4. Neo4j live graph where ORACLE/GUARDIAN claims depend on it (`NEO4J_*` — resume Aura if paused)
+4. Neo4j live graph where ORACLE/GUARDIAN/Dr.Assist claims depend on it (`NEO4J_*` — resume Aura if paused)
 5. Eval gates for any LLM clinical drafts before unsupervised use
 
 ## How to rehearse
@@ -60,9 +62,10 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 2. Generate or open a review case → Accept/Edit/Reject
 3. Confirm `/api/audit/shield` returns durable rows when `DATABASE_URL` is set (admin Audit Log prefers Postgres, including empty trail)
 4. Optionally `POST /api/agents/synthesis` with a transcript (HITL still required)
-5. Optionally `POST /api/agents/guardian` with `{ "patientId": "P002", "proposedDrug": "Apixaban" }` (HITL still required)
-6. Optionally `POST /api/agents/oracle` with `{ "patientId": "P002" }` (HITL still required)
-7. Optionally `POST /api/agents/referral` with a case id (HITL still required; synthetic ServiceRequest only)
-8. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
-9. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
-10. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript
+5. Optionally `POST /api/agents/dr-assist` with `{ "patientId": "P002" }` (HITL still required)
+6. Optionally `POST /api/agents/guardian` with `{ "patientId": "P002", "proposedDrug": "Apixaban" }` (HITL still required)
+7. Optionally `POST /api/agents/oracle` with `{ "patientId": "P002" }` (HITL still required)
+8. Optionally `POST /api/agents/referral` with a case id (HITL still required; synthetic ServiceRequest only)
+9. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
+10. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
+11. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript

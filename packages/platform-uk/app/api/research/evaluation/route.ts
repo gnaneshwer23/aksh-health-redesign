@@ -5,6 +5,7 @@ import { authOptions } from "../../../../lib/auth";
 import { buildResearchEvaluationArtifact } from "../../../../lib/research-evaluation-plan";
 import { buildUserProfile } from "../../../../lib/profile/user-profile";
 import { toOrgSlug } from "../../../../lib/profile/personalization";
+import { persistShieldAuditEvent } from "../../../../lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "../../../../lib/user-scope";
 
 const RESEARCH_EVALUATION_ROLES = new Set([
@@ -76,7 +77,7 @@ async function resolveExportOrgSlug(request: Request): Promise<string> {
 
 export async function GET(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
-  if (auth.response) return auth.response;
+  if (auth.response || !auth.context) return auth.response;
 
   const allowed = await canAccessResearchEvaluation(request);
   if (!allowed) {
@@ -89,11 +90,20 @@ export async function GET(request: Request) {
   const orgSlug = await resolveExportOrgSlug(request);
   const filename = `${orgSlug}-research-evaluation-boundary.json`;
 
-  const response = NextResponse.json(artifact, {
+  void persistShieldAuditEvent({
+    action: "export",
+    actor: generatedBy,
+    label: "SHIELD: researcher evaluation JSON exported",
+    detail: filename,
+    category: "system",
+    agentLabel: "SHIELD",
+    resourceRef: `research-evaluation/${orgSlug}`,
+    payload: { syntheticOnly: true, filename }
+  });
+
+  return NextResponse.json(artifact, {
     headers: {
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
-
-  return response;
 }

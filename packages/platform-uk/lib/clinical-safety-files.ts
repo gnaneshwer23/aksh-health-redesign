@@ -78,6 +78,17 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       nextStep: "Eval LLM ORACLE briefs against QRisk/clinical golden cases before any unsupervised use."
     },
     {
+      id: "dr-assist-agent-hitl",
+      title: "Dr.Assist coding HITL drafts",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "SNOMED/ICD-10 coding suggestions via Neo4j/mock + LLM/deterministic fallback; never EHR write without Accept.",
+      inAppRoute: "/dashboard/gp",
+      exportRoute: "/api/agents/dr-assist",
+      owner: "GP clinical lead + CSO",
+      nextStep: "Eval coding suggestions against golden SNOMED/ICD cases before any unsupervised use."
+    },
+    {
       id: "pharmacist-review-persistence",
       title: "Pharmacist medication review persistence",
       standard: "DCB0129-style rehearsal",

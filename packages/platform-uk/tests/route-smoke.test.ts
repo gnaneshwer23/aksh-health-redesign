@@ -120,8 +120,17 @@ async function run() {
   await assertFileIncludes("app/api/agents/oracle/route.ts", "runOracleAgent");
   await assertFileIncludes("lib/agents/llm-oracle.ts", "isLlmOracleConfigured");
   await assertFileIncludes("components/dashboard/OracleRiskPanel.tsx", "Generate ORACLE brief");
+  await assertFileIncludes("app/api/agents/dr-assist/route.ts", "runDrAssistAgent");
+  await assertFileIncludes("lib/agents/llm-dr-assist.ts", "isLlmDrAssistConfigured");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/dr-assist");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/synthesis");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/referral");
+  await assertFileIncludes("components/dashboard/SystemStatusStrip.tsx", "/api/health");
+  await assertFileIncludes("components/dashboard/IntegrationStatus.tsx", "emis-staging");
   await assertFileIncludes("app/api/agents/referral/route.ts", "eReferralWrite");
   await assertFileIncludes("docs/SAFETY_CASE_REHEARSAL.md", "POST /api/agents/oracle");
+  await assertFileIncludes("docs/SAFETY_CASE_REHEARSAL.md", "POST /api/agents/dr-assist");
+  await assertFileIncludes("components/dashboard/researcher/ExportEvaluationButton.tsx", "/api/audit/shield");
   await assertFileIncludes("components/dashboard/hospital/HospitalMockModeBanner.tsx", "hospital-mock-mode-banner");
   await assertFileIncludes("app/api/profile/route.ts", "buildUserProfile");
   await assertFileIncludes("lib/hooks/use-user-profile.ts", "useUserProfile");

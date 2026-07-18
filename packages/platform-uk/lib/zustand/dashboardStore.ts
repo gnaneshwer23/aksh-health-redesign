@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { auditEvents as initialAuditEvents } from "@/lib/mock-data/audit-events";
 import { reviewQueueItems as initialReviewQueue } from "@/lib/mock-data/review-queue";
-import type { AdminUser, AuditEvent, ReviewQueueItem } from "@/lib/mock-data/types";
+import type { AdminUser, AgentType, AuditEvent, ReviewQueueItem } from "@/lib/mock-data/types";
 
 export type DashboardRole = "gp" | "nurse" | "pharmacist" | "admin" | "ics" | "hospital" | "patient" | "researcher";
 
@@ -59,6 +59,17 @@ interface DashboardState {
     patientName: string;
     patientNhsNumber: string;
     transcript: string;
+    reviewerName: string;
+  }) => void;
+  stageAgentDraft: (payload: {
+    patientId: string;
+    patientName: string;
+    patientNhsNumber: string;
+    agentType: AgentType;
+    title: string;
+    content: string;
+    confidenceScore?: number | null;
+    priority?: "High" | "Normal" | "Urgent";
     reviewerName: string;
   }) => void;
   markMedicationReviewed: (patientId: string) => void;
@@ -265,6 +276,34 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       user: payload.reviewerName,
       agent: "VOICE",
       action: "Staged consultation transcript for review",
+      resource: `${id} / ${payload.patientName}`,
+    });
+  },
+
+  stageAgentDraft: (payload) => {
+    const id = `RQ${Date.now()}`;
+    const item: ReviewQueueItem = {
+      id,
+      patientId: payload.patientId,
+      patientName: payload.patientName,
+      patientNhsNumber: payload.patientNhsNumber,
+      agentType: payload.agentType,
+      title: payload.title,
+      content: payload.content,
+      confidenceScore: payload.confidenceScore ?? null,
+      evidenceSources: [],
+      createdAt: new Date().toISOString(),
+      priority: payload.priority ?? "Normal",
+      status: "Pending",
+      editedContent: null,
+      rejectionReason: null,
+      auditEventId: null,
+    };
+    set((s) => ({ reviewQueueItems: [item, ...s.reviewQueueItems] }));
+    get().addAuditEvent({
+      user: payload.reviewerName,
+      agent: payload.agentType,
+      action: `Staged ${payload.agentType} draft for review`,
       resource: `${id} / ${payload.patientName}`,
     });
   },

@@ -12,25 +12,26 @@ const QUICK_LINKS = [
   {
     href: "/dashboard/researcher/evaluation",
     title: "Outcome Evaluation",
-    description: "Cohort metrics, evaluation charts, and authenticated JSON export.",
-    icon: FlaskConical,
+    description: "Cohort metrics, evaluation charts, and authenticated JSON export with SHIELD logging.",
+    icon: FlaskConical
   },
   {
     href: "/dashboard/researcher/data-access",
     title: "Data Access",
     description: "Aggregate vs individual access level and ethics reference status.",
-    icon: Database,
+    icon: Database
   },
   {
     href: "/dashboard/researcher/settings",
     title: "Settings",
     description: "Notification preferences and export governance (Phase B stub).",
-    icon: Settings,
-  },
+    icon: Settings
+  }
 ] as const;
 
 export default function ResearcherOverviewPage() {
   const { cohort } = useResearcherData();
+  const ethicsEmpty = !cohort.ethicsApproved || !cohort.ethicsReference;
 
   return (
     <div className="space-y-6">
@@ -40,6 +41,18 @@ export default function ResearcherOverviewPage() {
           {cohort.organisationName} · {cohort.studiesActive} active studies · aggregate access by default
         </p>
       </div>
+
+      {ethicsEmpty ? (
+        <Card className="border-dashed border-[#E67E22]/40 bg-[#E67E22]/5 shadow-none">
+          <CardContent className="p-4 text-sm text-muted">
+            <p className="font-medium text-foreground">Demo / synthetic cohort — ethics not signed off</p>
+            <p className="mt-1 text-xs">
+              Metrics below are rehearsal figures from synthetic patients. No real patient identifiable data
+              and no production study export authority until ethics reference is recorded.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <ResearcherKpiRow />
 
@@ -73,8 +86,9 @@ export default function ResearcherOverviewPage() {
           <CardTitle className="text-sm text-[#E67E22]">Synthetic data only</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted">
-          All cohort metrics in this dashboard use pseudonymised synthetic patients. Benchmark drilldowns and
-          sign-off workflows are available in the research evaluation module, not via legacy review routes.
+          All cohort metrics in this dashboard use pseudonymised synthetic patients. Evaluation exports log a
+          SHIELD audit event when durable Postgres audit is available. No live EHR write-back and no
+          certification claims.
         </CardContent>
       </Card>
     </div>

@@ -81,6 +81,15 @@ export function getIntegrationAdapterRegistry() {
       defaultMode: "hitl_draft_only",
       boundary:
         "POST /api/agents/oracle. Neo4j/mock risk context + AI Gateway narrative when configured, else deterministic fallback. Never writes to EHR."
+    },
+    {
+      id: "llm-dr-assist",
+      label: "LLM Dr.Assist (AI Gateway)",
+      status: isLlmDrAssistEnabled() ? ("enabled" as const) : ("available" as const),
+      enabled: isLlmDrAssistEnabled(),
+      defaultMode: "hitl_draft_only",
+      boundary:
+        "POST /api/agents/dr-assist. Neo4j/mock conditions + AI Gateway coding suggestions when configured, else deterministic SNOMED/ICD-10 fallback. Never writes to EHR."
     }
   ];
 }
@@ -97,6 +106,11 @@ function isLlmGuardianEnabled() {
 
 function isLlmOracleEnabled() {
   if (process.env.ENABLE_LLM_ORACLE === "false") return false;
+  return isLlmSynthesisEnabled();
+}
+
+function isLlmDrAssistEnabled() {
+  if (process.env.ENABLE_LLM_DR_ASSIST === "false") return false;
   return isLlmSynthesisEnabled();
 }
 
