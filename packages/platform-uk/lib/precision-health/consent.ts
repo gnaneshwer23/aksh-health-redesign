@@ -46,7 +46,8 @@ export const PURPOSE_CATALOGUE: Record<
   },
   coaching_wellness: {
     label: "Wellness coaching",
-    description: "Nutrition/sleep coaching drafts — not clinical advice; HITL if escalated.",
+    description:
+      "Nutrition/sleep/exercise/mental-health coaching drafts — not clinical advice; HITL if escalated.",
     allowsClinicalWrite: false
   },
   risk_stratification_demo: {

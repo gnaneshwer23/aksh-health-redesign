@@ -29,8 +29,11 @@ export async function GET(request: Request, context: RouteContext) {
 
   return NextResponse.json({
     riskState,
+    modelCard: riskState.modelCard,
     displayLabel: "Patient risk state",
     notAPhysiologicalTwin: true,
+    autoRetrain: false,
+    governedReleaseSop: riskState.modelCard.governedReleaseSop,
     hitlRequired: true,
     ehrWrite: false
   });

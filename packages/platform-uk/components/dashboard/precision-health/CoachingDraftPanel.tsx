@@ -8,13 +8,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
 import type { CoachingDraft } from "@/lib/precision-health/coaching";
 
-type AgentKind = "nutrition" | "sleep";
+type AgentKind = "nutrition" | "sleep" | "exercise" | "mental-health";
 
 type CoachingResponse = {
   draft?: CoachingDraft;
   isClinicalAdvice?: boolean;
   ehrWrite?: boolean;
   error?: string;
+};
+
+const AGENT_LABELS: Record<AgentKind, string> = {
+  nutrition: "Nutrition",
+  sleep: "Sleep",
+  exercise: "Exercise",
+  "mental-health": "Mental health",
 };
 
 export function CoachingDraftPanel({
@@ -26,8 +33,7 @@ export function CoachingDraftPanel({
   patientLabel?: string;
   mode?: "patient" | "clinician";
 }) {
-  const [nutrition, setNutrition] = useState<CoachingDraft | null>(null);
-  const [sleep, setSleep] = useState<CoachingDraft | null>(null);
+  const [drafts, setDrafts] = useState<Partial<Record<AgentKind, CoachingDraft>>>({});
   const [busy, setBusy] = useState<AgentKind | null>(null);
   const [escalating, setEscalating] = useState<AgentKind | null>(null);
   const [escalated, setEscalated] = useState<Partial<Record<AgentKind, boolean>>>({});
@@ -44,7 +50,7 @@ export function CoachingDraftPanel({
       const data = (await response.json()) as CoachingResponse;
       if (!response.ok || !data.draft) {
         toast({
-          title: `${kind === "nutrition" ? "Nutrition" : "Sleep"} unavailable`,
+          title: `${AGENT_LABELS[kind]} unavailable`,
           description: data.error ?? "Could not generate coaching draft.",
         });
         return;
@@ -56,8 +62,7 @@ export function CoachingDraftPanel({
         });
         return;
       }
-      if (kind === "nutrition") setNutrition(data.draft);
-      else setSleep(data.draft);
+      setDrafts((prev) => ({ ...prev, [kind]: data.draft }));
       setEscalating(null);
       toast({
         title: `${data.draft.title} ready`,
@@ -103,41 +108,37 @@ export function CoachingDraftPanel({
     });
   };
 
+  const kinds: AgentKind[] = ["nutrition", "sleep", "exercise", "mental-health"];
+
   return (
     <Card className="shadow-sm" data-testid="coaching-draft-panel">
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="text-sm">Nutrition & sleep coaching</CardTitle>
+        <CardTitle className="text-sm">Wellness coaching drafts</CardTitle>
         <p className="text-xs text-muted">
-          Wellness coaching drafts only — <strong>not clinical advice</strong>
+          Nutrition, sleep, exercise & mental-health — <strong>not clinical advice</strong>
           {mode === "patient" ? " · escalate to your care team if concerned" : " · HITL if escalating"}
-          {" · "}no live wearable sleep stream · no EHR write
+          {" · "}no invented live wearable stream · no EHR write
         </p>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-2">
-        <DraftBlock
-          kind="nutrition"
-          label="Nutrition"
-          draft={nutrition}
-          busy={busy === "nutrition"}
-          escalating={escalating === "nutrition"}
-          escalated={Boolean(escalated.nutrition)}
-          onGenerate={() => void generate("nutrition")}
-          onStartEscalate={() => setEscalating("nutrition")}
-          onCancelEscalate={() => setEscalating(null)}
-          onConfirmEscalate={() => nutrition && void escalate("nutrition", nutrition)}
-        />
-        <DraftBlock
-          kind="sleep"
-          label="Sleep"
-          draft={sleep}
-          busy={busy === "sleep"}
-          escalating={escalating === "sleep"}
-          escalated={Boolean(escalated.sleep)}
-          onGenerate={() => void generate("sleep")}
-          onStartEscalate={() => setEscalating("sleep")}
-          onCancelEscalate={() => setEscalating(null)}
-          onConfirmEscalate={() => sleep && void escalate("sleep", sleep)}
-        />
+        {kinds.map((kind) => {
+          const draft = drafts[kind] ?? null;
+          return (
+            <DraftBlock
+              key={kind}
+              kind={kind}
+              label={AGENT_LABELS[kind]}
+              draft={draft}
+              busy={busy === kind}
+              escalating={escalating === kind}
+              escalated={Boolean(escalated[kind])}
+              onGenerate={() => void generate(kind)}
+              onStartEscalate={() => setEscalating(kind)}
+              onCancelEscalate={() => setEscalating(null)}
+              onConfirmEscalate={() => draft && void escalate(kind, draft)}
+            />
+          );
+        })}
       </CardContent>
     </Card>
   );

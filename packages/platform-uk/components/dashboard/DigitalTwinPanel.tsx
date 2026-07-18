@@ -165,6 +165,13 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
           Risk-state model (ORACLE-style) — not a physiological digital twin
           {apiLoaded && apiRiskState ? " · loaded from risk-state API" : " · local demo model"}
         </p>
+        {riskState.modelCard && (
+          <p className="text-[10px] text-muted mt-1" data-testid="oracle-model-card">
+            Model {riskState.modelCard.modelId}@{riskState.modelCard.version} · owner:{" "}
+            {riskState.modelCard.clinicalOwner} · autoRetrain: false · see{" "}
+            {riskState.modelCard.governedReleaseSop}
+          </p>
+        )}
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center gap-4">

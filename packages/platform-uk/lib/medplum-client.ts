@@ -13,8 +13,14 @@ export type MedplumRehearsalStatus = {
   credentialsConfigured: boolean;
   mode: "disabled" | "rehearsal_ready" | "rehearsal_no_credentials";
   liveEmis: false;
+  /** Clear when flag off — no pending sync claim. */
+  dryRunEligible: boolean;
+  lastDryRunAt: string | null;
   note: string;
 };
+
+/** In-memory last dry-run timestamp for status honesty (process-local). */
+let lastMedplumDryRunAt: string | null = null;
 
 function trimTrailingSlash(url: string) {
   return url.replace(/\/+$/, "");
@@ -54,7 +60,9 @@ export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
       credentialsConfigured,
       mode: "disabled",
       liveEmis: false,
-      note: "Medplum sync disabled (ENABLE_MEDPLUM_SYNC≠true). Accept path never pushes."
+      dryRunEligible: false,
+      lastDryRunAt: null,
+      note: "Medplum sync disabled (ENABLE_MEDPLUM_SYNC≠true). Accept path never pushes. Dry-run cleared."
     };
   }
 
@@ -65,9 +73,99 @@ export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
     credentialsConfigured,
     mode: credentialsConfigured ? "rehearsal_ready" : "rehearsal_no_credentials",
     liveEmis: false,
+    dryRunEligible: true,
+    lastDryRunAt: lastMedplumDryRunAt,
     note: credentialsConfigured
       ? "Rehearsal mode: may push frozen accepted bundles to Medplum. Not EMIS write-back."
       : "Flag on but credentials missing — push attempts may use unauthenticated local rehearsal only."
+  };
+}
+
+/** FHIR-shaped staging bundle for Medplum dry-run rehearsal (synthetic). */
+export function buildMedplumDryRunStagingBundle(options?: {
+  patientId?: string;
+  caseId?: string;
+}): Record<string, unknown> {
+  const patientId = options?.patientId?.trim() || "P001";
+  const caseId = options?.caseId?.trim() || "medplum-dry-run";
+  return {
+    resourceType: "Bundle",
+    type: "collection",
+    id: `aksh-medplum-dry-run-${caseId}`,
+    meta: {
+      tag: [
+        { system: "https://akshhealth.com/fhir/tag", code: "rehearsal-dry-run" },
+        { system: "https://akshhealth.com/fhir/tag", code: "not-emis" }
+      ]
+    },
+    entry: [
+      {
+        resource: {
+          resourceType: "Patient",
+          id: patientId,
+          meta: { tag: [{ code: "synthetic-fixture" }] },
+          active: true,
+          name: [{ text: `Synthetic patient ${patientId}` }]
+        }
+      },
+      {
+        resource: {
+          resourceType: "DocumentReference",
+          id: `${caseId}-doc`,
+          status: "current",
+          description: "Aksh HITL staging rehearsal — not a live EMR write",
+          subject: { reference: `Patient/${patientId}` }
+        }
+      }
+    ]
+  };
+}
+
+/**
+ * Dry-run sync of a FHIR-shaped staging bundle when ENABLE_MEDPLUM_SYNC=true.
+ * When disabled: refuses and clears dry-run eligibility in status.
+ * Never claims EMIS write-back.
+ */
+export async function dryRunMedplumStagingSync(options?: {
+  patientId?: string;
+  caseId?: string;
+}): Promise<{
+  attempted: boolean;
+  ok: boolean;
+  liveEmis: false;
+  syncFlagEnabled: boolean;
+  status?: number;
+  resourceId?: string;
+  error?: string;
+  bundleSummary: string;
+}> {
+  const status = getMedplumRehearsalStatus();
+  const bundle = buildMedplumDryRunStagingBundle(options);
+  const bundleSummary = `Bundle/${String(bundle.id)} entries=${Array.isArray(bundle.entry) ? bundle.entry.length : 0}`;
+
+  if (!status.syncFlagEnabled) {
+    lastMedplumDryRunAt = null;
+    return {
+      attempted: false,
+      ok: false,
+      liveEmis: false,
+      syncFlagEnabled: false,
+      error: "Medplum sync disabled — dry-run refused; status cleared",
+      bundleSummary
+    };
+  }
+
+  const result = await pushToMedplum(bundle);
+  lastMedplumDryRunAt = new Date().toISOString();
+  return {
+    attempted: true,
+    ok: result.ok,
+    liveEmis: false,
+    syncFlagEnabled: true,
+    status: result.status,
+    resourceId: result.resourceId,
+    error: result.error,
+    bundleSummary
   };
 }
 

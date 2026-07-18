@@ -33,6 +33,10 @@ export function getEmisIntegrationStatus() {
     configured,
     enabled: false,
     liveWriteBack: false,
+    liveEmis: false as const,
+    approvalTokenSimPath: "/api/integrations/ehr-writeback-sim",
+    partnerChecklistPath: "/api/integrations/emis-partner-checklist",
+    partnerChecklistDoc: "docs/PHASE2_PARTNER_CHECKLIST.md",
     queueDepth: memoryQueue.length,
     status: configured ? "credentials_present_writeback_disabled" : "scaffold_only",
     requiredEnv: [
@@ -41,7 +45,7 @@ export function getEmisIntegrationStatus() {
       "EMIS_PARTNER_TOKEN_URL",
       "EMIS_PARTNER_FHIR_BASE_URL"
     ],
-    note: "Aksh stages HITL-approved FHIR R4 evidence internally. Live EMIS write-back requires Partner onboarding + CSO sign-off."
+    note: "Aksh stages HITL-approved FHIR R4 evidence internally. Live EMIS write-back requires Partner onboarding + CSO sign-off. liveEmis always false."
   };
 }
 

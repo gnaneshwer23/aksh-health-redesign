@@ -1,17 +1,23 @@
 import { NextResponse } from "next/server";
 
 import { isLlmOracleConfigured, runOracleAgent } from "@/lib/agents/llm-oracle";
+import { getOracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
 
 export async function GET() {
+  const modelCard = getOracleModelCard();
   return NextResponse.json({
     available: true,
     llmConfigured: isLlmOracleConfigured(),
     mode: isLlmOracleConfigured() ? "llm_with_deterministic_fallback" : "deterministic_only",
-    note: "ORACLE drafts never write to the EHR. HITL Accept/Edit/Reject is required before staging."
+    modelCard,
+    autoRetrain: false,
+    physiologicalTwin: false,
+    governedReleaseSop: modelCard.governedReleaseSop,
+    note: "ORACLE drafts never write to the EHR. HITL Accept/Edit/Reject is required before staging. No silent auto-retrain — see GOVERNED_MODEL_RELEASE_SOP."
   });
 }
 

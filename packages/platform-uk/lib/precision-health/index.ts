@@ -42,6 +42,28 @@ export {
 export {
   buildNutritionCoachingDraft,
   buildSleepCoachingDraft,
+  buildExerciseCoachingDraft,
+  buildMentalHealthCoachingDraft,
   type CoachingDraft,
   type CoachingAgentId
 } from "./coaching";
+
+export {
+  CONNECTOR_IDS,
+  CONNECTOR_REGISTRY,
+  PHASE2_CONNECTOR_ENV_VARS,
+  listConnectorStatuses,
+  getConnector,
+  buildSyntheticWearableSample,
+  buildLifestyleDiarySample,
+  type ConnectorId,
+  type ConnectorStatus
+} from "./connectors";
+
+export { runIngestionPipeline, ingestRequestSchema, type IngestPipelineResult } from "./ingestion-pipeline";
+
+export { mergeModalitySampleIntoKg, type KgIngestResult } from "./kg-ingest";
+
+export { getOracleModelCard, ORACLE_MODEL_CARD, type OracleModelCard } from "./oracle-model-card";
+
+export { getEmisPartnerChecklist, type EmisPartnerChecklist } from "./emis-partner-checklist";

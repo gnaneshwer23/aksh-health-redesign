@@ -127,8 +127,18 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [ ] Medplum (or FHIR store) rehearsal green in CI/smoke
 - [ ] No Phase 3 claims (omics/imaging streams, causal AI, twin simulation)
 
----
+### Code scaffolding landed (this release) — still needs partners for exit
 
+| Area | In-repo | Still needs user / partners |
+| --- | --- | --- |
+| Modality connectors | Registry + ingest pipeline (`wearable_synthetic_stream`, `lifestyle_diary`, `fitbit_oauth_stub`, `file_import`); `liveStream:false` unless Fitbit env present; never invents device reads | Real Fitbit OAuth + DPIA; first live modality choice |
+| Living KG | Consent-gated Neo4j `Observation` + `MEASURED` MERGE when Aura live; skips when mock | Aura keep-alive + tenant/retention policy |
+| ORACLE model card | `modelId` / version / clinicalOwner / evalHarnessRef / lastReviewed on GET `/api/agents/oracle` + risk-state UI; `autoRetrain:false` | CSO names clinical owner; G-ML-1…3 signatures |
+| Medplum rehearsal | `ENABLE_MEDPLUM_SYNC` status + `?probe=dry-run` staging bundle; cleared when flag off; `liveEmis:false` | Staging Medplum creds + green dry-run against host |
+| EMIS write-back readiness | Partner checklist API + `docs/PHASE2_PARTNER_CHECKLIST.md`; staging queue; sim approval token; `liveEmis:false` | Partner credentials, DPIA/DPA, signed go/no-go |
+| Coaching expansion | Exercise + mental-health stubs (same HITL / not-clinical-advice pattern) | CSO scope review before any clinical claim |
+
+**Partner checklist doc:** [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md)
 ## Phase 3 — Long term (18+ months)
 
 **Horizon:** Flowchart completeness toward Precision Health OS  
@@ -213,10 +223,16 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ### Phase 2
 
+- [x] Connector registry + consent-gated ingest API (synthetic / stub; `liveStream` honest)
+- [x] Living KG MERGE path when Neo4j live (skip when mock)
+- [x] ORACLE model card surfaced (clinical owner still UNASSIGNED)
+- [x] Medplum dry-run staging probe (`?probe=dry-run`); flag-off clears status
+- [x] EMIS partner checklist API + `docs/PHASE2_PARTNER_CHECKLIST.md` (`liveEmis: false`)
+- [x] Exercise + mental-health coaching stubs under HITL
 - [ ] DPIA for first live modality
-- [ ] Partner credentials + first consented ingest
+- [ ] Partner credentials + first consented **live** ingest
 - [ ] Clinical owner named for predictive model
-- [ ] Medplum/FHIR rehearsal in staging
+- [ ] Medplum/FHIR rehearsal green against staging host
 - [ ] Write-back decision signed (go / no-go)
 
 ### Phase 3
@@ -240,4 +256,4 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 
 ## One-line positioning (unchanged honesty)
 
-> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 adds contracts and honest risk-state scaffolding, not a living physiological digital twin.**
+> **Aksh Health UK is delivering a phased path toward Precision Health — today a HITL clinical proof layer; Phase 1 contracts + Phase 2 readiness scaffolding (connectors, model card, partner checklist) are in-repo — not a living physiological digital twin or live Partner EMR.**

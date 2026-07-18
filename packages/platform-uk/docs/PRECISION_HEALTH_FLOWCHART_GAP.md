@@ -39,14 +39,14 @@ Positioning from product README: *synthetic-data, review-first clinical proof �
 | # | Flowchart stage | Status | What exists (evidence) | What does **not** exist |
 | ---: | --- | --- | --- | --- |
 | 1 | **Individual / Patient** | **Partial** | Synthetic cohort (26 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
-| 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 six-category **fixture catalog** (`lib/synthetic-source-profiles.ts`); Phase 1 **modality contracts** + synthetic sample store (`lib/precision-health/modalities.ts`, `/api/precision-health/modalities`) | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
-| 3 | **Consent & permissions** | **Partial** | Onboarding consent form (role-scoped checkboxes); privacy page; session consent banner; RBAC middleware; Phase 1 **purpose/modality grant registry** (`GET/POST /api/consent/grants`) + UI (GP patient, patient companion, admin consent registry) | NHS Login / CIS2; enforceable purpose-limitation on live streams |
-| 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 **schema CI** (Zod); FHIR-shaped drafts/exports; optional Deepgram transcribe; Medplum rehearsal (off); EMIS staging queue (no write); Phase 1 modality **ingestion stubs** (`liveStream: false`) | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
+| 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 fixture catalog; Phase 1 modality contracts; Phase 2 **connector registry** (`/api/precision-health/connectors`, `/api/precision-health/ingest`) — synthetic/stub only; `liveStream:false` unless Fitbit env present | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
+| 3 | **Consent & permissions** | **Partial** | Onboarding consent; Phase 1 purpose/modality grant registry; Phase 2 ingest **enforces** active grants before store/KG | NHS Login / CIS2; enforceable purpose-limitation on live streams |
+| 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 schema CI; Medplum rehearsal + dry-run probe; EMIS staging + **partner checklist** (`/api/integrations/emis-partner-checklist`, `docs/PHASE2_PARTNER_CHECKLIST.md`); Phase 2 connector ingest | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
 | 5 | **Data engineering pipeline** (validate→clean→identity→standardise→timeline→biomarkers) | **Partial / synthetic** | Intake generation, validation/safety rules, NHS number checksum in onboarding, FHIR shape gates, activity timelines on cases; Phase 1 **merged timeline API** (`GET /api/patients/[id]/timeline`) | Production ETL/ELT; master patient index; biomarker derivation engine; continuous clean/standardise jobs |
 | 6 | **Unified foundation** (longitudinal record, imaging, omics, streams, knowledge base) | **Partial** | Simulated longitudinal profiles; Neo4j patient–condition–medication–interaction graph (live when Aura up); review-case + Postgres persistence | Unified imaging/omics/stream stores; production longitudinal FHIR repository; vector/time-series moat |
-| 7 | **Living Health Web / knowledge graph** | **Partial** | Neo4j Aura live + seeded (`HAS_CONDITION`, `TAKES_MEDICATION`, `INTERACTS_WITH`); dashboard Neo4j hooks; honest mock fallback if disconnected | Continuously updating “Living Health Web”; population-scale knowledge base; ontology-backed reasoning graph beyond demo edges |
-| 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial** | Shared-context **orchestrator** (`lib/clinical-proof/agent-orchestration.ts`: SYNTHESIS + GUARDIAN + ORACLE + DrASSIST); LLM-or-deterministic drafts; ORACLE risk scores; eval harness | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
-| 9 | **Specialised agents** | **Partial** — see §4 | Clinical agents below (HITL drafts); Phase 1 coaching stubs: Nutrition + Sleep (`/api/agents/nutrition`, `/api/agents/sleep`) | Exercise / mental-health / research-trial agents as flowchart boxes |
+| 7 | **Living Health Web / knowledge graph** | **Partial** | Neo4j Aura live + seeded; Phase 2 ingest can **MERGE** `Observation` + `MEASURED` when live (skips when mock) | Continuously updating “Living Health Web”; population-scale knowledge base; ontology-backed reasoning graph beyond demo edges |
+| 8 | **AI intelligence** (multimodal, predictive, causal, evidence, orchestrator) | **Partial** | Shared-context orchestrator; ORACLE risk scores + **model card** (owner UNASSIGNED until CSO); eval harness; `autoRetrain:false` | True multimodal fusion; causal inference; continuous predictive models trained on RWE; autonomous CDS |
+| 9 | **Specialised agents** | **Partial** — see §4 | Clinical HITL agents; coaching stubs: Nutrition, Sleep, **Exercise**, **Mental-health** | Research-trial agents as flowchart boxes; clinical MH triage beyond coaching |
 | 10 | **Digital twin + simulation + ranking** | **Partial / synthetic** | UI/API now labelled **Patient / Population risk state** (`PatientRiskStatePanel`, `GET /api/patients/[id]/risk-state`) — radial risk viz over mock/ICS aggregate; hospital nav | Physics-based / physiological twin; intervention simulation; counterfactual ranking; calibrated twin validation |
 | 11 | **Personalised health plan** | **Partial / synthetic** | Care pathway tracker mock; L9 reviewer-confirmed action drafts; SYNTHESIS pathway copy; Phase 1 **HITL plan draft** (`POST /api/patients/[id]/health-plan`) | Adaptive personalised plan engine driven by twin + multimodal streams |
 | 12 | **Clinical safety / HITL branching** | **Built / live (proof)** | Accept / Edit / Reject / Defer; red-flag human gates; GUARDIAN urgency priority; VOICE CARE → nurse task (synthetic); zero autonomous EHR write invariant | Live urgent pathway into NHS 111/ED; automatic coaching apps; real clinician rostering beyond demo |
@@ -69,15 +69,15 @@ Flowchart “specialised agent” boxes vs current Aksh catalogue:
 | Triage / intake | **VOICE** (+ intake routes) | Partial | Transcription / note intake; optional Deepgram; deterministic fallback |
 | Clinical documentation / coding | **SYNTHESIS**, **DrASSIST** | Partial (draft APIs live) | `POST /api/agents/synthesis`, `/api/agents/dr-assist`; SOAP + coding drafts; HITL |
 | Med safety | **GUARDIAN** | Partial (draft APIs live) | `POST /api/agents/guardian`; Neo4j/mock DDI; HITL |
-| Predictive / risk | **ORACLE** | Partial (draft APIs live) | `POST /api/agents/oracle`; CVD/T2D-style risk draft; HITL |
+| Predictive / risk | **ORACLE** | Partial (draft APIs live) | `GET/POST /api/agents/oracle`; model card + CVD/T2D-style risk draft; HITL; no auto-retrain |
 | Care coordination / referral | **REFERRAL** | Partial | `POST /api/agents/referral`; package draft; no e-Referral write |
 | Population / disparity (not classic “patient agent”) | **EQUITY** | Partial | `POST /api/agents/equity`; ICS aggregate overlay |
 | Audit / compliance (overlay, not clinical agent) | **SHIELD** | Built (when Postgres live) | `/api/audit/shield`; append-only; no DELETE |
 | Post-contact / coaching escalation | **VOICE CARE** | Partial / synthetic | `POST /api/agents/voice-care`; Day-3 synthetic outbound; **no telephony** |
 | Nutrition | **NUTRITION** (coaching stub) | Partial / coaching only | `POST /api/agents/nutrition` — wellness draft, **not clinical advice**, HITL, no EHR write |
-| Exercise | — | **Not built** | No agent module |
+| Exercise | **EXERCISE** (coaching stub) | Partial / coaching only | `POST /api/agents/exercise` — wellness draft, **not clinical advice**, HITL, no EHR write |
 | Sleep | **SLEEP** (coaching stub) | Partial / coaching only | `POST /api/agents/sleep` — wellness draft, **not clinical advice**, HITL, no live wearable stream |
-| Mental health (dedicated) | — | **Not built** as agent | MH crisis appears as **synthetic patient profile** only; roadmap parks IntelliProve / MH bundle |
+| Mental health (dedicated) | **MENTAL_HEALTH** (coaching stub) | Partial / coaching only | `POST /api/agents/mental-health` — wellbeing signposting only; crisis → HITL; not a psych assessment |
 | Research / trial matching | — | **Not built** | Research evaluation **boundary** export only (`/api/research/evaluation`) |
 | Orchestrator | Clinical-proof orchestrator | Partial | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent |
 
@@ -114,14 +114,14 @@ No fake certifications; each phase gates the next.
 - Expand learning events with real pilot outcome linking — still **no** auto-retrain; follow governed release SOP.
 - Patient companion: replace mock Q&A with approved content / clinician-approved coaching only.
 
-### Mid term (controlled multimodal + plan layer)
+### Mid term (controlled multimodal + plan layer) — Phase 2 scaffolding started
 
-- Real consented ingestion for **1–2** modalities (e.g. GP EHR + labs FHIR), not six at once.
-- Identity resolution against PDS (or equivalent) under DPIA.
-- Replace “Digital Twin” UI metaphor with either (a) clearly labelled **risk aggregate dashboard**, or (b) a validated, narrow physiological/risk model with published limitations.
-- Add only agents that have clinical owners and evaluation harness coverage (e.g. mental-health triage draft **after** safety case scope expands) — not nutrition/sleep/exercise until data + governance exist.
-- Care delivery: e-Referral or pharmacy handoff for **draft packages that clinicians already accepted**.
-
+- Real consented ingestion for **1–2** modalities still needs partners/DPIA; in-repo: connector registry + consent-gated ingest (synthetic/stub).
+- Identity resolution against PDS (or equivalent) under DPIA — still GAP.
+- Risk-state UI remains honest; ORACLE **model card** present (clinical owner UNASSIGNED until CSO).
+- Coaching stubs expanded (exercise + mental-health) under HITL / not clinical advice — clinical MH triage still needs safety-case scope.
+- Care delivery: EMIS partner checklist + staging only (`liveEmis:false`) until signed write-back decision.
+- See `docs/PHASE2_PARTNER_CHECKLIST.md` and Phase 2 section in delivery roadmap.
 ### Long term (Precision Health OS — flowchart completeness)
 
 - Continuous multimodal foundation (imaging DICOM, omics, wearables, environment) with purpose-bound consent.
@@ -154,6 +154,9 @@ No fake certifications; each phase gates the next.
 | Risk-state API | `GET /api/patients/[id]/risk-state` |
 | Consent registry | `GET/POST /api/consent/grants` |
 | Modality contracts | `lib/precision-health/modalities.ts`, `/api/precision-health/modalities` |
+| Phase 2 connectors / ingest | `/api/precision-health/connectors`, `/api/precision-health/ingest` |
+| EMIS partner checklist | `/api/integrations/emis-partner-checklist`, `docs/PHASE2_PARTNER_CHECKLIST.md` |
+| ORACLE model card | `GET /api/agents/oracle`, `lib/precision-health/oracle-model-card.ts` |
 | Patient timeline | `GET /api/patients/[id]/timeline` |
 | Health plan draft | `POST /api/patients/[id]/health-plan` |
 | Consent / timeline / plan / coaching UI | GP patient detail · patient companion · `/dashboard/admin/consent` |

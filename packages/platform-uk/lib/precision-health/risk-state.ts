@@ -1,5 +1,7 @@
 import type { Patient } from "../mock-data/types";
 
+import { getOracleModelCard, type OracleModelCard } from "./oracle-model-card";
+
 /**
  * Honest risk-state model — NOT a physiological digital twin.
  * Fed by ORACLE-style scores + synthetic/graph signals already on the patient fixture.
@@ -19,6 +21,8 @@ export type PatientRiskState = {
   recommendedActions: string[];
   dataSources: string[];
   limitations: string[];
+  modelCard: OracleModelCard;
+  autoRetrain: false;
   hitlRequired: true;
   ehrWrite: false;
   generatedAt: string;
@@ -47,6 +51,7 @@ export function buildPatientRiskState(
   options?: { neo4jLive?: boolean; oracleLive?: boolean }
 ): PatientRiskState {
   const pred = patient.digitalTwinPrediction;
+  const modelCard = getOracleModelCard();
   return {
     artifactType: "aksh-patient-risk-state",
     patientId: patient.id,
@@ -68,8 +73,11 @@ export function buildPatientRiskState(
       "This is a risk-state model for clinical review demos — not a physiological digital twin.",
       "No intervention simulation or counterfactual ranking is performed.",
       "Scores are not calibrated against live NHS outcomes.",
-      "HITL required before any care action; zero autonomous EHR write."
+      "HITL required before any care action; zero autonomous EHR write.",
+      `Model ${modelCard.modelId}@${modelCard.version} — no auto-retrain; see ${modelCard.governedReleaseSop}.`
     ],
+    modelCard,
+    autoRetrain: false,
     hitlRequired: true,
     ehrWrite: false,
     generatedAt: new Date().toISOString()

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 import {
+  dryRunMedplumStagingSync,
   getMedplumRehearsalStatus,
   pushToMedplum,
   resolveMedplumOAuthTokenUrl
@@ -17,11 +18,17 @@ async function run() {
   assert.equal(disabled.mode, "disabled");
   assert.equal(disabled.liveEmis, false);
   assert.equal(disabled.syncFlagEnabled, false);
+  assert.equal(disabled.dryRunEligible, false);
 
   const refused = await pushToMedplum({ resourceType: "Bundle", type: "collection", entry: [] });
   assert.equal(refused.ok, false);
   assert.equal(refused.liveEmis, false);
   assert.ok(refused.error?.toLowerCase().includes("disabled"));
+
+  const dryDisabled = await dryRunMedplumStagingSync({ patientId: "P001" });
+  assert.equal(dryDisabled.attempted, false);
+  assert.equal(dryDisabled.syncFlagEnabled, false);
+  assert.equal(dryDisabled.liveEmis, false);
 
   assert.equal(
     resolveMedplumOAuthTokenUrl("https://api.medplum.example/fhir/R4"),
@@ -39,6 +46,7 @@ async function run() {
   const enabled = getMedplumRehearsalStatus();
   assert.equal(enabled.syncFlagEnabled, true);
   assert.equal(enabled.liveEmis, false);
+  assert.equal(enabled.dryRunEligible, true);
   assert.ok(enabled.mode === "rehearsal_ready" || enabled.mode === "rehearsal_no_credentials");
 
   // Dry-run status route exists and documents honest disabled/enabled modes
@@ -49,6 +57,7 @@ async function run() {
     "utf8"
   );
   assert.ok(statusRoute.includes("getMedplumRehearsalStatus"));
+  assert.ok(statusRoute.includes("dryRunMedplumStagingSync"));
   assert.ok(statusRoute.includes("liveEmis: false"));
   assert.ok(statusRoute.includes("liveSyncInvented: false"));
 
