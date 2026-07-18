@@ -134,7 +134,11 @@ export function DigitalTwinPanel(props: DigitalTwinPanelProps) {
                   />
                 </div>
               )}
-              {accepted && <p className="mt-1 text-accent text-[10px]">Written to Record · {CURRENT_GP}</p>}
+              {accepted && (
+                <p className="mt-1 text-accent text-[10px]">
+                  Accepted for review queue · {CURRENT_GP} · no EHR write-back
+                </p>
+              )}
             </div>
           ))}
         </div>

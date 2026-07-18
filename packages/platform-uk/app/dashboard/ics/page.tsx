@@ -41,7 +41,7 @@ const SECTIONS = [
 ] as const;
 
 export default function IcsOverviewPage() {
-  const { data } = useIcsData();
+  const { data, source, loading } = useIcsData();
   const { profile } = useUserProfile();
   const icsName = getPersonalizedLabel(profile, data.icsName);
 
@@ -51,6 +51,9 @@ export default function IcsOverviewPage() {
         <h2 className="text-lg font-semibold text-foreground">ICS Population Intelligence</h2>
         <p className="text-sm text-muted">
           {icsName}: {data.practices} practices · {data.equityFlags} equity flags · {data.totalPatients.toLocaleString()} patients
+          {!loading && source
+            ? ` · ${source === "neo4j" ? "live Neo4j" : "local fallback"}`
+            : null}
         </p>
       </div>
 

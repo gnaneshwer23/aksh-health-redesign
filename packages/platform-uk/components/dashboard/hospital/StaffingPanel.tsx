@@ -8,6 +8,28 @@ import type { HospitalData } from "@/lib/mock-data/types";
 import { wardStaffing } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
+async function logStaffingShield(payload: {
+  action: "accept" | "reject";
+  label: string;
+  detail: string;
+  resourceRef: string;
+}) {
+  try {
+    await fetch("/api/audit/shield", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...payload,
+        agentLabel: "SHIELD",
+        category: "reviewer_decision"
+      })
+    });
+  } catch {
+    // Local store still updates.
+  }
+}
+
 export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hospitalName?: string }) {
   const { dismissedAgencyAlerts, dismissAgencyAlert } = useDashboardStore();
   const label = hospitalName ?? data.hospitalName;
@@ -18,7 +40,7 @@ export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hosp
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-sm font-semibold">Staffing & Alerts</h2>
-        <p className="text-xs text-muted">{label}</p>
+        <p className="text-xs text-muted">{label} · synthetic staffing (not live e-roster)</p>
       </div>
       <Table>
         <TableHeader>
@@ -49,7 +71,16 @@ export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hosp
               size="sm"
               variant="accent"
               onClick={() => {
-                toast({ title: "Agency request submitted" });
+                void logStaffingShield({
+                  action: "accept",
+                  label: "SHIELD: hospital agency request logged (rehearsal)",
+                  detail: t.message,
+                  resourceRef: `${label} / ${t.ward}`
+                });
+                toast({
+                  title: "Agency request logged",
+                  description: "SHIELD audit only · no live roster/agency API"
+                });
                 dismissAgencyAlert(t.ward);
               }}
             >
@@ -60,7 +91,16 @@ export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hosp
               variant="outline"
               onClick={() => {
                 dismissAgencyAlert(t.ward);
-                toast({ title: "Acknowledged | no agency request logged" });
+                void logStaffingShield({
+                  action: "reject",
+                  label: "SHIELD: hospital agency alert acknowledged without request",
+                  detail: t.message,
+                  resourceRef: `${label} / ${t.ward}`
+                });
+                toast({
+                  title: "Acknowledged",
+                  description: "Logged to SHIELD · no agency request"
+                });
               }}
             >
               No

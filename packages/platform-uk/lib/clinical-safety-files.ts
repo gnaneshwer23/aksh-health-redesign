@@ -67,6 +67,17 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       nextStep: "Eval LLM GUARDIAN briefs against BNF golden cases before any unsupervised use."
     },
     {
+      id: "oracle-agent-hitl",
+      title: "ORACLE agent HITL drafts",
+      standard: "DCB0129-style rehearsal",
+      status: "draft_in_app",
+      purpose: "CVD/LTC risk narrative drafts via Neo4j/mock + LLM/deterministic fallback; never EHR write without Accept.",
+      inAppRoute: "/dashboard/gp/patients",
+      exportRoute: "/api/agents/oracle",
+      owner: "GP clinical lead + CSO",
+      nextStep: "Eval LLM ORACLE briefs against QRisk/clinical golden cases before any unsupervised use."
+    },
+    {
       id: "pharmacist-review-persistence",
       title: "Pharmacist medication review persistence",
       standard: "DCB0129-style rehearsal",

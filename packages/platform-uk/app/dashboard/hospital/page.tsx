@@ -38,7 +38,8 @@ export default function HospitalOverviewPage({
       <div>
         <h2 className="text-lg font-semibold text-primary">Command Centre Overview</h2>
         <p className="text-sm text-muted mt-1">
-          {hospitalName}: real-time operational intelligence across {hospitalData.wards.length} wards
+          {hospitalName}: synthetic operational intelligence across {hospitalData.wards.length} wards
+          (rehearsal — not a live PAS feed)
         </p>
       </div>
 

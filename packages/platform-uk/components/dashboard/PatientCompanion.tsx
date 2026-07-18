@@ -124,6 +124,17 @@ export function PatientCompanion() {
               <p className="mt-1 text-sm text-muted">Here&apos;s your health today.</p>
             </CardContent>
           </Card>
+          {companionProfile.isDemoEmptyState ? (
+            <p
+              role="status"
+              data-testid="patient-companion-demo-banner"
+              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+            >
+              Showing <strong>demo companion content</strong> — conditions, medicines, and appointments
+              below are rehearsal placeholders until your practice links a real patient record. Messaging
+              and live care-team sync are not connected in this build.
+            </p>
+          ) : null}
           {companionProfile.conditions.map((condition) => (
             <Card key={condition.title} className="shadow-sm">
               <CardHeader>

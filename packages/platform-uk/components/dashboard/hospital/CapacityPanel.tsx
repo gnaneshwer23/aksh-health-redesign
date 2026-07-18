@@ -10,6 +10,28 @@ import type { HospitalData } from "@/lib/mock-data/types";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
+async function logHospitalShield(payload: {
+  action: "accept" | "reject";
+  label: string;
+  detail: string;
+  resourceRef: string;
+}) {
+  try {
+    await fetch("/api/audit/shield", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...payload,
+        agentLabel: "ORACLE",
+        category: "reviewer_decision"
+      })
+    });
+  } catch {
+    // Local store still updates.
+  }
+}
+
 export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hospitalName?: string }) {
   const { acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalRec } = useDashboardStore();
   const label = hospitalName ?? data.hospitalName;
@@ -18,7 +40,7 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-sm font-semibold">Capacity & Forecast</h2>
-        <p className="text-xs text-muted">{label}</p>
+        <p className="text-xs text-muted">{label} · synthetic forecast (not live PAS)</p>
       </div>
       <Card className="shadow-sm">
         <CardHeader>
@@ -38,7 +60,9 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
               <Badge className={cn(rec.urgency === "Urgent" ? "bg-danger" : "bg-warning")}>{rec.urgency}</Badge>
             </div>
             {acceptedHospitalRecs.includes(rec.id) ? (
-              <p className="text-xs text-accent">Written to Record · Actioned · {CURRENT_GP}</p>
+              <p className="text-xs text-accent">
+                Logged to SHIELD · actioned by {CURRENT_GP} · no hospital system write-back
+              </p>
             ) : dismissedHospitalRecs.includes(rec.id) ? (
               <HitlActions status="Dismissed" onAccept={() => {}} onEdit={() => {}} onReject={() => {}} />
             ) : (
@@ -47,13 +71,31 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
                 status="Pending"
                 onAccept={() => {
                   acceptHospitalRec(rec.id, CURRENT_GP);
-                  toast({ title: "Recommendation actioned" });
+                  void logHospitalShield({
+                    action: "accept",
+                    label: "SHIELD: hospital capacity recommendation accepted",
+                    detail: rec.text,
+                    resourceRef: `${label} / ${rec.id}`
+                  });
+                  toast({
+                    title: "Recommendation actioned",
+                    description: "Logged to SHIELD · no PAS/EPR write"
+                  });
                 }}
                 onEdit={() => {}}
                 onReject={() => {}}
                 onDismiss={() => {
                   dismissHospitalRec(rec.id, CURRENT_GP);
-                  toast({ title: "Recommendation dismissed" });
+                  void logHospitalShield({
+                    action: "reject",
+                    label: "SHIELD: hospital capacity recommendation dismissed",
+                    detail: rec.text,
+                    resourceRef: `${label} / ${rec.id}`
+                  });
+                  toast({
+                    title: "Recommendation dismissed",
+                    description: "Logged to SHIELD · no PAS/EPR write"
+                  });
                 }}
               />
             )}

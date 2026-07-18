@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { CommandHeader } from "@/components/dashboard/hospital/CommandHeader";
+import { HospitalMockModeBanner } from "@/components/dashboard/hospital/HospitalMockModeBanner";
 import { SurgeAlertBanner } from "@/components/dashboard/hospital/SurgeAlertBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -17,6 +18,9 @@ export default function HospitalDashboardLayout({ children }: { children: ReactN
       <div className="flex flex-col h-full overflow-hidden">
         <CommandHeader data={hospitalData} hospitalName={hospitalName} />
         <SurgeAlertBanner data={hospitalData} />
+        <div className="px-4 pt-3">
+          <HospitalMockModeBanner />
+        </div>
         <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
     </DashboardShell>

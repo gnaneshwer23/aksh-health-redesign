@@ -117,6 +117,12 @@ async function run() {
   await assertFileIncludes("app/api/neo4j/health/route.ts", "checkNeo4jHealth");
   await assertFileIncludes("app/api/health/route.ts", "checkNeo4jHealth");
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-mock-mode-banner");
+  await assertFileIncludes("app/api/agents/oracle/route.ts", "runOracleAgent");
+  await assertFileIncludes("lib/agents/llm-oracle.ts", "isLlmOracleConfigured");
+  await assertFileIncludes("components/dashboard/OracleRiskPanel.tsx", "Generate ORACLE brief");
+  await assertFileIncludes("app/api/agents/referral/route.ts", "eReferralWrite");
+  await assertFileIncludes("docs/SAFETY_CASE_REHEARSAL.md", "POST /api/agents/oracle");
+  await assertFileIncludes("components/dashboard/hospital/HospitalMockModeBanner.tsx", "hospital-mock-mode-banner");
   await assertFileIncludes("app/api/profile/route.ts", "buildUserProfile");
   await assertFileIncludes("lib/hooks/use-user-profile.ts", "useUserProfile");
   await assertFileIncludes("components/dashboard/TopBar.tsx", "useUserProfile");

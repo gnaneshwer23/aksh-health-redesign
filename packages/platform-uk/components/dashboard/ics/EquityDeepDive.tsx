@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,7 +11,40 @@ import { useIcsData } from "./IcsDataContext";
 import { ChartSkeleton } from "./shared";
 
 export function EquityDeepDive() {
-  const { data, loading, liveData } = useIcsData();
+  const { data, loading, liveData, source } = useIcsData();
+  const [planLogged, setPlanLogged] = useState(false);
+
+  const generatePlan = async () => {
+    try {
+      await fetch("/api/audit/shield", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "accept",
+          agentLabel: "EQUITY",
+          label: "SHIELD: ICS equity action plan generated (rehearsal)",
+          detail: `${data.equityDeepDive.length} deep-dive rows · source=${source ?? "unknown"}`,
+          resourceRef: data.icsName,
+          category: "reviewer_decision",
+          payload: {
+            flagCount: data.equityFlags,
+            categories: data.equityDeepDive.map((row) => row.category)
+          }
+        })
+      });
+      setPlanLogged(true);
+      toast({
+        title: "Equity action plan logged",
+        description: "SHIELD audit only · PDF export not wired in this build"
+      });
+    } catch {
+      toast({
+        title: "Could not persist plan",
+        description: "SHIELD write failed; plan remains local rehearsal only"
+      });
+    }
+  };
 
   return (
     <Card className="shadow-sm">
@@ -43,13 +78,12 @@ export function EquityDeepDive() {
                 ))}
               </TableBody>
             </Table>
-            <Button
-              className="mt-4"
-              variant="outline"
-              onClick={() => toast({ title: "Equity action plan generated" })}
-            >
+            <Button className="mt-4" variant="outline" onClick={() => void generatePlan()}>
               Generate Equity Action Plan
             </Button>
+            {planLogged ? (
+              <p className="mt-2 text-xs text-accent">Plan generation logged to SHIELD · no external report export</p>
+            ) : null}
           </>
         )}
       </CardContent>

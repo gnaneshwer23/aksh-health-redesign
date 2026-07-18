@@ -11,6 +11,8 @@ export type PatientCompanionProfile = {
   upcomingAppointment: string;
   pastAppointmentSummary: string;
   nurseReviewer: string;
+  /** True when conditions/meds/appointments are demo placeholders, not linked patient record data. */
+  isDemoEmptyState: boolean;
 };
 
 type PreferenceRecord = Record<string, unknown> | undefined;
@@ -144,6 +146,10 @@ export function getPatientCompanionProfile(
       ? `${onboardingFirst} ${onboardingLast}`
       : profileName ?? sessionName ?? firstName;
 
+  const preferenceMedications = readPreferenceMedications(preferences);
+  const preferenceConditions = readPreferenceConditions(preferences);
+  const hasLinkedClinicalPrefs = Boolean(preferenceMedications || preferenceConditions);
+
   const defaultMedications = [
     { label: "Metformin 500mg", schedule: "twice daily", purpose: "For diabetes" },
     { label: "Aspirin 75mg", schedule: "once daily", purpose: "For heart health" },
@@ -158,8 +164,8 @@ export function getPatientCompanionProfile(
     },
   ];
 
-  const medications = readPreferenceMedications(preferences) ?? defaultMedications;
-  const conditions = readPreferenceConditions(preferences) ?? defaultConditions;
+  const medications = preferenceMedications ?? defaultMedications;
+  const conditions = preferenceConditions ?? defaultConditions;
 
   const appointmentDate = "2026-07-24";
   const appointmentTime = "09:30";
@@ -182,5 +188,6 @@ export function getPatientCompanionProfile(
     pastAppointmentSummary:
       "Your last GP appointment summary: Dr Morgan reviewed your diabetes medications and suspected a blood clot in your leg. You were referred for a scan.",
     nurseReviewer: "Nurse Davies",
+    isDemoEmptyState: !hasLinkedClinicalPrefs,
   };
 }

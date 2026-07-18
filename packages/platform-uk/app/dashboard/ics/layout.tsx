@@ -32,7 +32,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
             </SelectContent>
           </Select>
         </div>
-        <Neo4jMockModeBanner source={source} loading={loading} />
+        <Neo4jMockModeBanner source={source} loading={loading} showLive />
         {children}
       </div>
     </DashboardShell>

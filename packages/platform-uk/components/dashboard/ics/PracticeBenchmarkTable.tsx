@@ -36,7 +36,16 @@ export function PracticeBenchmarkTable() {
     <Card className="shadow-sm">
       <CardHeader className="flex flex-row justify-between">
         <CardTitle className="text-sm">Practice Benchmarking</CardTitle>
-        <Button variant="outline" size="sm" onClick={() => toast({ title: "Generating PDF report..." })}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            toast({
+              title: "Board PDF not wired",
+              description: "Benchmark table is on-screen only in this proof build. Export remains a pilot backlog item."
+            })
+          }
+        >
           Download Board Report
         </Button>
       </CardHeader>

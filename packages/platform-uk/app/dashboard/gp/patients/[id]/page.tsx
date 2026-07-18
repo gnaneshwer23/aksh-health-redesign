@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
+import { OracleRiskPanel } from "@/components/dashboard/OracleRiskPanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,12 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
           </div>
         </header>
 
+        <OracleRiskPanel
+          patientId={patient.id}
+          patientName={patient.name}
+          fallbackScore={patient.oracleScore}
+          fallbackRisk={patient.oracleRisk}
+        />
         <ReviewQueue patientId={patient.id} />
         <section>
           <h2 className="mb-3 text-base font-semibold">Care Pathways</h2>

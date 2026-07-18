@@ -31,6 +31,8 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 | Pharmacist review trail | `/api/pharmacist/reviews` (SHIELD rows labelled medication review) |
 | SYNTHESIS drafts | `POST /api/agents/synthesis` (HITL; no EHR write) |
 | GUARDIAN drafts | `POST /api/agents/guardian` (HITL; Neo4j/mock + LLM/deterministic) |
+| ORACLE drafts | `POST /api/agents/oracle` (HITL; Neo4j/mock + LLM/deterministic) |
+| REFERRAL packaging | `POST /api/agents/referral` (HITL draft package; no e-Referral write) |
 | Voice transcription status | `GET /api/transcribe` (auth) — Deepgram when `DEEPGRAM_API_KEY` set |
 | EMIS staging scaffold | `/api/integrations/emis-staging` |
 | Integration contract | `/api/system/integration-contract` |
@@ -51,7 +53,6 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 3. EMIS / SystmOne Partner onboarding + DPIA
 4. Neo4j live graph where ORACLE/GUARDIAN claims depend on it (`NEO4J_*` — resume Aura if paused)
 5. Eval gates for any LLM clinical drafts before unsupervised use
-6. ORACLE agent path (risk narrative) still graph-backed only — no separate LLM ORACLE route yet
 
 ## How to rehearse
 
@@ -60,6 +61,8 @@ Aksh Health is a **human-in-the-loop clinical workflow layer** above EMIS Web / 
 3. Confirm `/api/audit/shield` returns durable rows when `DATABASE_URL` is set (admin Audit Log prefers Postgres, including empty trail)
 4. Optionally `POST /api/agents/synthesis` with a transcript (HITL still required)
 5. Optionally `POST /api/agents/guardian` with `{ "patientId": "P002", "proposedDrug": "Apixaban" }` (HITL still required)
-6. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
-7. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
-8. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript
+6. Optionally `POST /api/agents/oracle` with `{ "patientId": "P002" }` (HITL still required)
+7. Optionally `POST /api/agents/referral` with a case id (HITL still required; synthetic ServiceRequest only)
+8. Pharmacist: Mark Reviewed → confirm `/api/pharmacist/reviews` lists the SHIELD row
+9. Optionally `POST /api/integrations/emis-staging` — confirms **no** live write-back
+10. Voice: authenticated `POST /api/transcribe` with audio — live Deepgram when key present, else clearly labelled simulated transcript
