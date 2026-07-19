@@ -17,6 +17,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ...getEmisPartnerChecklist(),
     stagingStatus: getEmisIntegrationStatus(),
-    liveEmis: false
+    liveEmis: false,
+    banner: getEmisIntegrationStatus().notLiveBanner
   });
 }

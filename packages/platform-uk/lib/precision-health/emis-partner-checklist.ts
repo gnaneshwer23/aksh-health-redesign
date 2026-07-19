@@ -1,7 +1,9 @@
 /**
- * EMIS Partner write-back readiness checklist (Phase 2).
+ * EMIS / SystmOne Partner write-back readiness checklist (Phase 2 + Phase F).
  * Staging only — liveEmis always false until signed partner decision.
  */
+
+import { EMIS_NOT_LIVE_BANNER } from "@/lib/emis-staging";
 
 export type EmisPartnerChecklistItem = {
   id: string;
@@ -14,10 +16,15 @@ export type EmisPartnerChecklist = {
   artifactType: "aksh-emis-partner-checklist";
   liveEmis: false;
   liveWriteBack: false;
+  notLiveBanner: string;
   approvalTokenPath: string;
   stagingApi: string;
   partnerChecklistDoc: string;
+  phaseFDoc: string;
+  partnerReadinessApi: string;
   items: EmisPartnerChecklistItem[];
+  /** What partner must provide before engineering can consider flipping liveEmis */
+  liveEmisFlipRequirements: EmisPartnerChecklistItem[];
   requiredEnv: string[];
   note: string;
 };
@@ -29,13 +36,55 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       process.env.EMIS_PARTNER_TOKEN_URL?.trim()
   );
 
+  const liveEmisFlipRequirements: EmisPartnerChecklistItem[] = [
+    {
+      id: "flip-credentials",
+      label: "Partner API credentials (EMIS and/or SystmOne track)",
+      status: credentialsPresent ? "needs_cso" : "needs_partner",
+      note: "EMIS_PARTNER_* env in secure store — never commit secrets."
+    },
+    {
+      id: "flip-fhir-scope",
+      label: "Agreed FHIR R4 Accept-only write scope",
+      status: "needs_partner",
+      note: "Out-of-band scope document with partner + CSO."
+    },
+    {
+      id: "flip-dpia",
+      label: "Signed DPIA + DPA covering EMR write-back",
+      status: "needs_partner",
+      note: "Track via /api/clinical-spine/partner-gates — not inventable in code."
+    },
+    {
+      id: "flip-uat",
+      label: "Partner UAT of HITL → staging → Partner path",
+      status: "needs_partner",
+      note: "Rehearse against sandbox; keep sim path until go decision."
+    },
+    {
+      id: "flip-go-nogo",
+      label: "Signed write-back go / no-go",
+      status: "blocked",
+      note: "CSO + release authority. Until then liveEmis stays false in code."
+    },
+    {
+      id: "flip-rollback",
+      label: "Documented disable / rollback path",
+      status: "needs_partner",
+      note: "Flag off + queue drain procedure rehearsed with partner."
+    }
+  ];
+
   return {
     artifactType: "aksh-emis-partner-checklist",
     liveEmis: false,
     liveWriteBack: false,
+    notLiveBanner: EMIS_NOT_LIVE_BANNER,
     approvalTokenPath: "POST /api/integrations/ehr-writeback-sim (issue/write) — sim only",
     stagingApi: "GET/POST /api/integrations/emis-staging",
     partnerChecklistDoc: "docs/PHASE2_PARTNER_CHECKLIST.md",
+    phaseFDoc: "docs/CLINICAL_SPINE_PHASE_F.md",
+    partnerReadinessApi: "GET /api/clinical-spine/partner-readiness",
     requiredEnv: [
       "EMIS_PARTNER_CLIENT_ID",
       "EMIS_PARTNER_CLIENT_SECRET",
@@ -57,7 +106,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       },
       {
         id: "partner-credentials",
-        label: "EMIS Partner API credentials",
+        label: "EMIS / SystmOne Partner API credentials",
         status: credentialsPresent ? "needs_cso" : "needs_partner",
         note: credentialsPresent
           ? "Env present but write-back remains disabled until CSO + partner UAT sign-off."
@@ -82,6 +131,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
         note: "Covered by clinical-proof suite; must not regress."
       }
     ],
-    note: "Partner EMR write-back readiness scaffold. Never claims live EMIS write-back."
+    liveEmisFlipRequirements,
+    note: "Partner EMR write-back readiness scaffold (EMIS + SystmOne track). Never claims live EMIS write-back."
   };
 }

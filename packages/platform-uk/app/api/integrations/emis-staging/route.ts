@@ -12,9 +12,12 @@ export async function GET(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 
+  const status = getEmisIntegrationStatus();
   return NextResponse.json({
-    ...getEmisIntegrationStatus(),
-    queue: listEmisStagingQueue(20)
+    ...status,
+    liveEmis: false,
+    queue: listEmisStagingQueue(20),
+    banner: status.notLiveBanner
   });
 }
 
@@ -53,9 +56,13 @@ export async function POST(request: Request) {
     payload: { ehrWriteAttempted: false }
   });
 
+  const status = getEmisIntegrationStatus();
   return NextResponse.json({
     entry,
     liveWriteBack: false,
-    message: "Queued internally for partner-track rehearsal. No EMIS write was attempted."
+    liveEmis: false,
+    banner: status.notLiveBanner,
+    message:
+      "Queued internally for partner-track rehearsal. No EMIS write was attempted. NOT LIVE EMIS."
   });
 }

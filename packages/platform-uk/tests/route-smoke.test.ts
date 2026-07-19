@@ -218,6 +218,21 @@ async function run() {
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_C.md", "physiologicalTwin: false");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_D.md", "liveEmis: false");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_E.md", "autoRetrain: false");
+  await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_F.md", "liveEmis: false");
+  await assertFileIncludes("app/api/clinical-spine/partner-readiness/route.ts", "buildPartnerReadinessPack");
+  await assertFileIncludes("app/api/clinical-spine/partner-gates/route.ts", "recordPartnerGateArtifact");
+  await assertFileIncludes(
+    "app/api/clinical-spine/evidence-pack-export/route.ts",
+    "getEvidencePackLinks"
+  );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/SystemSpinePanel.tsx",
+    "spine-phase-f-partners"
+  );
+  await assertFileIncludes(
+    "app/dashboard/admin/precision-health/page.tsx",
+    "PartnerReadinessPanel"
+  );
   await assertFileIncludes("app/api/clinical-spine/nurse-vitals/route.ts", "recordNurseVitalsOnSpine");
   await assertFileIncludes(
     "app/api/clinical-spine/pharmacist-review/route.ts",

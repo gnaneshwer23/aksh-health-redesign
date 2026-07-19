@@ -50,6 +50,14 @@ type OutcomesLoopStatus = {
   note?: string;
 };
 
+type PartnerReadinessSummary = {
+  notLiveBanner?: string;
+  liveEmis?: boolean;
+  tracks?: Array<{ id: string; label: string; uiStatus: string }>;
+  gateArtifacts?: { total?: number };
+  note?: string;
+};
+
 type ConnectorsPayload = {
   connectors?: Array<{ id: string; liveStream?: boolean; enabled?: boolean }>;
 };
@@ -78,6 +86,7 @@ export function SystemSpinePanel() {
   const [emis, setEmis] = useState<EmisChecklist | null>(null);
   const [loop, setLoop] = useState<LoopCapabilities | null>(null);
   const [outcomesLoop, setOutcomesLoop] = useState<OutcomesLoopStatus | null>(null);
+  const [partnerReady, setPartnerReady] = useState<PartnerReadinessSummary | null>(null);
   const [connectors, setConnectors] = useState<ConnectorsPayload | null>(null);
   const [agents, setAgents] = useState<AgentProbe[]>(
     AGENT_PROBES.map((a) => ({ ...a, ok: null }))
@@ -95,6 +104,7 @@ export function SystemSpinePanel() {
         loopRes,
         connectorsRes,
         outcomesRes,
+        partnerRes,
         ...agentRes
       ] = await Promise.all([
           fetch("/api/health"),
@@ -104,6 +114,7 @@ export function SystemSpinePanel() {
           fetch("/api/precision-health/whole-loop"),
           fetch("/api/precision-health/connectors", { credentials: "include" }),
           fetch("/api/clinical-spine/outcomes", { credentials: "include" }),
+          fetch("/api/clinical-spine/partner-readiness", { credentials: "include" }),
           ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
         ]);
 
@@ -117,6 +128,8 @@ export function SystemSpinePanel() {
       else setConnectors(null);
       if (outcomesRes.ok) setOutcomesLoop((await outcomesRes.json()) as OutcomesLoopStatus);
       else setOutcomesLoop(null);
+      if (partnerRes.ok) setPartnerReady((await partnerRes.json()) as PartnerReadinessSummary);
+      else setPartnerReady(null);
 
       setAgents(
         AGENT_PROBES.map((a, i) => {
@@ -317,6 +330,37 @@ export function SystemSpinePanel() {
             </li>
             <li className="rounded-md border border-border px-2 py-1 text-muted">
               autoRetrain:false
+            </li>
+          </ul>
+        </div>
+
+        <div data-testid="spine-phase-f-partners">
+          <p className="text-xs font-semibold">Phase F partner / regulatory track</p>
+          <p className="mt-1 text-xs text-muted">
+            In-repo readiness only — EMIS/SystmOne staging, DPIA/CSO/G-ML gate tracker, evidence pack
+            export.{" "}
+            {partnerReady?.tracks?.length
+              ? partnerReady.tracks.map((t) => `${t.id}:${t.uiStatus}`).join(" · ")
+              : "Auth required for track status."}{" "}
+            Gate artefacts noted: {partnerReady?.gateArtifacts?.total ?? 0}. liveEmis:false hard.
+          </p>
+          {partnerReady?.notLiveBanner ? (
+            <p className="mt-1 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] text-amber-950">
+              {partnerReady.notLiveBanner}
+            </p>
+          ) : null}
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs">
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET /api/clinical-spine/partner-readiness
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET/POST /api/clinical-spine/partner-gates
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET /api/clinical-spine/evidence-pack-export
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              liveEmis:false
             </li>
           </ul>
         </div>

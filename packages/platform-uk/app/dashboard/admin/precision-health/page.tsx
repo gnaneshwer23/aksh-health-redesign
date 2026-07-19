@@ -2,6 +2,7 @@
 
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
+import { PartnerReadinessPanel } from "@/components/dashboard/precision-health/PartnerReadinessPanel";
 import { PharmaPayerStubPanel } from "@/components/dashboard/precision-health/PharmaPayerStubPanel";
 import { PrecisionHealthStatusPanel } from "@/components/dashboard/precision-health/PrecisionHealthStatusPanel";
 import { SystemSpinePanel } from "@/components/dashboard/precision-health/SystemSpinePanel";
@@ -25,6 +26,7 @@ export default function AdminPrecisionHealthPage() {
           </p>
         </div>
         <SystemSpinePanel />
+        <PartnerReadinessPanel />
         <PrecisionHealthStatusPanel />
         <ConnectorsIngestPanel />
         <PharmaPayerStubPanel />

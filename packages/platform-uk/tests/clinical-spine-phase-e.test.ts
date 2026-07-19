@@ -262,7 +262,7 @@ async function run() {
   assert.ok(checklist.includes("liveEmis: false"));
   assert.ok(checklist.includes("autoRetrain: false"));
   assert.ok(checklist.includes("physiologicalTwin: false"));
-  assert.ok(checklist.includes("Phase F next"));
+  assert.ok(checklist.includes("Phase F"));
   assert.ok(checklist.includes("never auto-retrain") || checklist.includes("Never autonomous"));
 
   // cleanup scoped stores

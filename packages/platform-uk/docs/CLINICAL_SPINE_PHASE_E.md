@@ -16,8 +16,8 @@ Outcomes / learning **closed loop** on the same clinical spine: care actions (HI
 - [x] Admin learning page: `GovernedEvaluationPanel` + existing CSV / eventual-outcome link
 - [x] System spine Phase E loop status (counts + autoRetrain:false)
 - [x] Tests: `tests/clinical-spine-phase-e.test.ts` in `npm run test:clinical-proof`
-- [ ] Live EMIS write-back (parallel partner track — Phase F)
-- [ ] Partner DPIA / CSO signed Gate 2 (parallel — Phase F)
+- [ ] Live EMIS write-back (parallel partner track — Phase F) — **in-repo readiness shipped**; live path still external
+- [ ] Partner DPIA / CSO signed Gate 2 (parallel — Phase F) — **gate tracker shipped**; signatures still external
 - [ ] Named CSO who signs G-ML-2 in production (external)
 
 ## APIs
@@ -53,6 +53,7 @@ Manual UI:
 3. Admin → Learning → **Governed evaluation** → try `propose_model_update` without gates (blocked) → sign G-ML-1…3 → record (still autoRetrain:false).
 4. Admin → Precision Health → System spine → Phase E section shows loop counts.
 
-## Phase F next (partners — parallel)
+## Phase F (partners — parallel)
 
-EMIS / SystmOne write-back, DPIA, CSO Gate 2 signatures, first live modality credentials. Still no fake live EMR, physiological twin, or auto-retrain until those gates are real.
+In-repo partner / regulatory readiness shipped — see `docs/CLINICAL_SPINE_PHASE_F.md`.
+External: credentials, signed DPIA/CSO/go-no-go, live EMIS write-back. Still no fake live EMR, physiological twin, or auto-retrain.
