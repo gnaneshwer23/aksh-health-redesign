@@ -42,6 +42,12 @@ import { buildPatientTimeline, type PatientTimeline } from "./timeline";
 import { runScenario, type TwinSimulationResult } from "./twin-simulation";
 import type { HealthPlanDraft } from "./health-plan";
 import type { ConnectorId } from "./connectors";
+import {
+  resolveSafetyRouteFromOrchestration,
+  type SafetyRoute
+} from "@/lib/clinical-spine/safety-route";
+
+export type { SafetyRoute };
 
 export const WHOLE_LOOP_STAGES = [
   "consent",
@@ -59,12 +65,6 @@ export const WHOLE_LOOP_STAGES = [
 export type WholeLoopStageId = (typeof WHOLE_LOOP_STAGES)[number];
 
 export type StageStatus = "pass" | "partial" | "synthetic" | "skipped" | "blocked" | "failed";
-
-export type SafetyRoute =
-  | "low_risk_coaching"
-  | "clinical_review_queue"
-  | "urgent_flag"
-  | "request_more_data";
 
 export type LoopStageReport = {
   id: WholeLoopStageId;
@@ -253,22 +253,10 @@ function resolveSafetyRoute(
   ingestedCount: number,
   expectedModalities: number
 ): SafetyRoute {
-  if (ingestedCount < Math.max(3, Math.floor(expectedModalities * 0.5))) {
-    return "request_more_data";
-  }
-  if (!orchestration) return "clinical_review_queue";
-  if (orchestration.queuePriority === "Urgent" || orchestration.outputs.GUARDIAN.overallStatus === "red") {
-    return "urgent_flag";
-  }
-  if (
-    orchestration.queuePriority === "High" ||
-    orchestration.outputs.GUARDIAN.overallStatus === "amber" ||
-    orchestration.outputs.ORACLE.oracleRisk === "High" ||
-    orchestration.outputs.ORACLE.oracleRisk === "VeryHigh"
-  ) {
-    return "clinical_review_queue";
-  }
-  return "low_risk_coaching";
+  return resolveSafetyRouteFromOrchestration(orchestration, {
+    ingestedCount,
+    expectedModalities
+  });
 }
 
 async function stageDemoHitlAccept(options: {

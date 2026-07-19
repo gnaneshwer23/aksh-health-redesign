@@ -215,6 +215,12 @@ async function run() {
   await assertFileIncludes("lib/precision-health/biomarkers.ts", "extractBiomarkerLite");
   await assertFileIncludes("lib/precision-health/connectors.ts", "ROLE_INGEST_CONNECTOR_IDS");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_B.md", "liveEmis: false");
+  await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_C.md", "physiologicalTwin: false");
+  await assertFileIncludes("app/api/agents/orchestrate/route.ts", "runClinicalSpineOrchestrate");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "ClinicalOrchestratePanel");
+  await assertFileIncludes("app/dashboard/gp/review-queue/page.tsx", "ClinicalOrchestratePanel");
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "SafetyRouteCoachingGate");
+  await assertFileIncludes("components/dashboard/OracleRiskPanel.tsx", "oracle-risk-model-card");
   await assertFileIncludes("components/dashboard/nurse/VitalsForm.tsx", "nurse-vitals-timeline-note");
   await assertFileIncludes(
     "components/dashboard/precision-health/ConnectorsIngestPanel.tsx",

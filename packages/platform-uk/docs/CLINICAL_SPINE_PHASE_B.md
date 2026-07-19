@@ -37,4 +37,4 @@ Manual UI:
 
 ## Phase C next
 
-Partner-ready modality exit: DPIA for first live connector, named clinical owner, Medplum staging green, EMIS write-back go/no-go — still `liveEmis: false` until signed. No fake live streams.
+Intelligence on the spine (agents + twin ranking + coaching from clinical/patient flows) — see `docs/CLINICAL_SPINE_PHASE_C.md`. Partner DPIA / live modality / EMIS remain a **parallel** track — still `liveEmis: false` until signed.

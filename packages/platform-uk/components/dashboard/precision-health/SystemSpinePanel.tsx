@@ -234,6 +234,26 @@ export function SystemSpinePanel() {
           </ul>
         </div>
 
+        <div data-testid="spine-phase-c-intelligence">
+          <p className="text-xs font-semibold">Phase C intelligence paths</p>
+          <p className="mt-1 text-xs text-muted">
+            GP Orchestrate (SYNTHESIS→GUARDIAN→ORACLE) + twin ranking (synthetic_rules) on patient /
+            review pages; safety-route gates patient coaching; ORACLE model card visible. Not live EMR
+            or physiological twin.
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs">
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              POST /api/agents/orchestrate
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET /api/patients/[id]/safety-route
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              physiologicalTwin:false
+            </li>
+          </ul>
+        </div>
+
         <div className="flex flex-wrap gap-3 text-xs">
           <Link
             href="/dashboard/admin/audit"

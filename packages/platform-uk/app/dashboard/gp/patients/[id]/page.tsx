@@ -9,6 +9,7 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { OracleRiskPanel } from "@/components/dashboard/OracleRiskPanel";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
+import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-health/ClinicalOrchestratePanel";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
@@ -18,9 +19,11 @@ import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
 import { getPatientById, getPathwaysForPatient } from "@/lib/mock-data";
+import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
 
 export default function GpPatientDetailPage({ params }: { params: { id: string } }) {
   const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
+  const [twinSeed, setTwinSeed] = useState<TwinSimulationResult | null>(null);
   const patient = getPatientById(params.id);
   if (!patient) notFound();
 
@@ -96,6 +99,11 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
           </div>
         </header>
 
+        <ClinicalOrchestratePanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          onComplete={({ twin }) => setTwinSeed(twin)}
+        />
         <OracleRiskPanel
           patientId={patient.id}
           patientName={patient.name}
@@ -108,7 +116,11 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
           <CarePathwayTracker pathways={pathways} />
         </section>
         <DigitalTwinPanel patient={patient} />
-        <ScenarioRankingPanel patientId={patient.id} patientLabel={patient.name} />
+        <ScenarioRankingPanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          seedFromOrchestrate={twinSeed}
+        />
         <CausalHypothesisPanel patientId={patient.id} patientLabel={patient.name} />
         <HealthPlanDraftPanel patientId={patient.id} patientLabel={patient.name} />
         <ConnectorsIngestPanel

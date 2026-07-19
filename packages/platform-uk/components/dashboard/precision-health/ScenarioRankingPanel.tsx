@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { HitlActions } from "@/components/dashboard/SOAPEditor";
 import { Button } from "@/components/ui/button";
@@ -11,13 +11,17 @@ import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulatio
 /**
  * Scenario ranking panel — synthetic rules only.
  * Explicitly not a living physiological digital twin.
+ * Phase C: accepts seedFromOrchestrate after ORACLE / Orchestrate.
  */
 export function ScenarioRankingPanel({
   patientId,
   patientLabel,
+  seedFromOrchestrate,
 }: {
   patientId: string;
   patientLabel?: string;
+  /** When Orchestrate finishes with a twin result, seed this panel (synthetic_rules only). */
+  seedFromOrchestrate?: TwinSimulationResult | null;
 }) {
   const [result, setResult] = useState<TwinSimulationResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,6 +29,19 @@ export function ScenarioRankingPanel({
     "Pending"
   );
   const [rejectReason, setRejectReason] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!seedFromOrchestrate) return;
+    if (
+      seedFromOrchestrate.physiologicalTwin !== false ||
+      seedFromOrchestrate.simulationMode !== "synthetic_rules"
+    ) {
+      return;
+    }
+    setResult(seedFromOrchestrate);
+    setHitlStatus("Pending");
+    setRejectReason(null);
+  }, [seedFromOrchestrate]);
 
   const run = useCallback(async () => {
     setLoading(true);

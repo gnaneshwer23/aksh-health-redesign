@@ -63,6 +63,9 @@ export async function POST(request: Request) {
   return NextResponse.json({
     draft,
     hitlRequired: true,
-    ehrWrite: false
+    ehrWrite: false,
+    modelCard: getOracleModelCard(),
+    autoRetrain: false,
+    physiologicalTwin: false
   });
 }

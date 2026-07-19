@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-health/ClinicalOrchestratePanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { getPatientById } from "@/lib/mock-data";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -21,7 +22,14 @@ function GpReviewQueueContent() {
     <DashboardShell role="gp" title={title} organisation={profile?.organisation}>
       <div className="space-y-4 overflow-y-auto p-4">
         <ConsentBanner />
-        <ReviewQueue patientId={patientId} showAll={!patientId} queueLabel={buildReviewQueueLabel(profile?.fullName)} />
+        {patient && (
+          <ClinicalOrchestratePanel patientId={patient.id} patientLabel={patient.name} />
+        )}
+        <ReviewQueue
+          patientId={patientId}
+          showAll={!patientId}
+          queueLabel={buildReviewQueueLabel(profile?.fullName)}
+        />
       </div>
     </DashboardShell>
   );

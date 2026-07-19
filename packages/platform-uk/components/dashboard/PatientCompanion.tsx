@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
-import { CoachingDraftPanel } from "@/components/dashboard/precision-health/CoachingDraftPanel";
+import { SafetyRouteCoachingGate } from "@/components/dashboard/precision-health/SafetyRouteCoachingGate";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
@@ -228,7 +228,7 @@ export function PatientCompanion() {
             }
             refreshKey={timelineRefreshKey}
           />
-          <CoachingDraftPanel
+          <SafetyRouteCoachingGate
             patientId={COMPANION_DEMO_PATIENT_ID}
             patientLabel={
               companionProfile.isDemoEmptyState

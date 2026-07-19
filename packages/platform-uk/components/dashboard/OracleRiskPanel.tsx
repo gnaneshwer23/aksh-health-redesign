@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
 import { useNeo4jPatient } from "@/lib/hooks/use-neo4j-clinical";
 import type { OracleRisk } from "@/lib/mock-data/types";
+import type { OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 
 type OracleDraftView = {
   mode?: string;
@@ -41,6 +42,24 @@ export function OracleRiskPanel({
   const [edited, setEdited] = useState(false);
   const [staged, setStaged] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [modelCard, setModelCard] = useState<OracleModelCard | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await fetch("/api/agents/oracle", { credentials: "include" });
+        if (!response.ok) return;
+        const data = (await response.json()) as { modelCard?: OracleModelCard };
+        if (!cancelled && data.modelCard) setModelCard(data.modelCard);
+      } catch {
+        // Model card is informational only.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const score = neo4jPatient?.oracleScore ?? fallbackScore;
   const risk = neo4jPatient?.oracleRisk ?? fallbackRisk;
@@ -125,6 +144,12 @@ export function OracleRiskPanel({
           {running ? "Generating…" : "Generate ORACLE brief"}
         </Button>
       </div>
+      {modelCard && (
+        <p className="text-[10px] text-muted" data-testid="oracle-risk-model-card">
+          Model {modelCard.modelId}@{modelCard.version} · owner: {modelCard.clinicalOwner} ·
+          autoRetrain: false · physiologicalTwin: false · see {modelCard.governedReleaseSop}
+        </p>
+      )}
       <Neo4jMockModeBanner source={source} loading={loading} showLive />
       <Card className="shadow-sm border-border-subtle">
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
