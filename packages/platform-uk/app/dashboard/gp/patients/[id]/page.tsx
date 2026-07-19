@@ -15,6 +15,7 @@ import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/Cons
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
+import { SpineOutcomesCapturePanel } from "@/components/dashboard/precision-health/SpineOutcomesCapturePanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
@@ -123,6 +124,12 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
         />
         <CausalHypothesisPanel patientId={patient.id} patientLabel={patient.name} />
         <HealthPlanDraftPanel patientId={patient.id} patientLabel={patient.name} />
+        <SpineOutcomesCapturePanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          mode="clinician"
+          onCaptured={() => setTimelineRefreshKey((k) => k + 1)}
+        />
         <ConnectorsIngestPanel
           patientId={patient.id}
           patientLabel={patient.name}

@@ -40,6 +40,16 @@ type LoopCapabilities = {
   };
 };
 
+type OutcomesLoopStatus = {
+  careActionCount?: number;
+  awaitingOutcomeCount?: number;
+  outcomeLinkedCount?: number;
+  evaluationReviewCount?: number;
+  loopCompleteRatio?: number;
+  autoRetrain?: boolean;
+  note?: string;
+};
+
 type ConnectorsPayload = {
   connectors?: Array<{ id: string; liveStream?: boolean; enabled?: boolean }>;
 };
@@ -67,6 +77,7 @@ export function SystemSpinePanel() {
   const [medplum, setMedplum] = useState<MedplumStatus | null>(null);
   const [emis, setEmis] = useState<EmisChecklist | null>(null);
   const [loop, setLoop] = useState<LoopCapabilities | null>(null);
+  const [outcomesLoop, setOutcomesLoop] = useState<OutcomesLoopStatus | null>(null);
   const [connectors, setConnectors] = useState<ConnectorsPayload | null>(null);
   const [agents, setAgents] = useState<AgentProbe[]>(
     AGENT_PROBES.map((a) => ({ ...a, ok: null }))
@@ -76,14 +87,23 @@ export function SystemSpinePanel() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [healthRes, twinRes, medplumRes, emisRes, loopRes, connectorsRes, ...agentRes] =
-        await Promise.all([
+      const [
+        healthRes,
+        twinRes,
+        medplumRes,
+        emisRes,
+        loopRes,
+        connectorsRes,
+        outcomesRes,
+        ...agentRes
+      ] = await Promise.all([
           fetch("/api/health"),
           fetch("/api/precision-health/twin/status"),
           fetch("/api/integrations/medplum-status", { credentials: "include" }),
           fetch("/api/integrations/emis-partner-checklist", { credentials: "include" }),
           fetch("/api/precision-health/whole-loop"),
           fetch("/api/precision-health/connectors", { credentials: "include" }),
+          fetch("/api/clinical-spine/outcomes", { credentials: "include" }),
           ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
         ]);
 
@@ -95,6 +115,8 @@ export function SystemSpinePanel() {
       if (loopRes.ok) setLoop((await loopRes.json()) as LoopCapabilities);
       if (connectorsRes.ok) setConnectors((await connectorsRes.json()) as ConnectorsPayload);
       else setConnectors(null);
+      if (outcomesRes.ok) setOutcomesLoop((await outcomesRes.json()) as OutcomesLoopStatus);
+      else setOutcomesLoop(null);
 
       setAgents(
         AGENT_PROBES.map((a, i) => {
@@ -273,6 +295,28 @@ export function SystemSpinePanel() {
             </li>
             <li className="rounded-md border border-border px-2 py-1 text-muted">
               sim write-back only
+            </li>
+          </ul>
+        </div>
+
+        <div data-testid="spine-phase-e-outcomes">
+          <p className="text-xs font-semibold">Phase E outcomes / learning closed loop</p>
+          <p className="mt-1 text-xs text-muted">
+            Care actions → eventual outcomes → governed evaluation on the same learning store.
+            autoRetrain:false hard — propose_model_update blocked without G-ML-1…3.{" "}
+            {outcomesLoop
+              ? `${outcomesLoop.careActionCount ?? 0} actions · ${outcomesLoop.awaitingOutcomeCount ?? 0} awaiting · ${outcomesLoop.outcomeLinkedCount ?? 0} linked · ${outcomesLoop.evaluationReviewCount ?? 0} evals · ${Math.round((outcomesLoop.loopCompleteRatio ?? 0) * 100)}% closed.`
+              : "Auth required for live loop counts (or no events yet)."}
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs">
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET/POST /api/clinical-spine/outcomes
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET/POST /api/clinical-spine/governed-evaluation
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              autoRetrain:false
             </li>
           </ul>
         </div>

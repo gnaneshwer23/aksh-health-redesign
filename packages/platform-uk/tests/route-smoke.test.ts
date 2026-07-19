@@ -217,16 +217,33 @@ async function run() {
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_B.md", "liveEmis: false");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_C.md", "physiologicalTwin: false");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_D.md", "liveEmis: false");
+  await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_E.md", "autoRetrain: false");
   await assertFileIncludes("app/api/clinical-spine/nurse-vitals/route.ts", "recordNurseVitalsOnSpine");
   await assertFileIncludes(
     "app/api/clinical-spine/pharmacist-review/route.ts",
     "recordPharmacistReviewOnSpine"
   );
   await assertFileIncludes("app/api/clinical-spine/aggregates/route.ts", "buildSpineAggregates");
+  await assertFileIncludes("app/api/clinical-spine/outcomes/route.ts", "captureSpineOutcome");
+  await assertFileIncludes(
+    "app/api/clinical-spine/governed-evaluation/route.ts",
+    "submitGovernedEvaluation"
+  );
   await assertFileIncludes(
     "components/dashboard/precision-health/SystemSpinePanel.tsx",
     "spine-phase-d-stakeholders"
   );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/SystemSpinePanel.tsx",
+    "spine-phase-e-outcomes"
+  );
+  await assertFileIncludes(
+    "app/dashboard/gp/patients/[id]/page.tsx",
+    "SpineOutcomesCapturePanel"
+  );
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "SpineOutcomesCapturePanel");
+  await assertFileIncludes("app/dashboard/admin/learning/page.tsx", "GovernedEvaluationPanel");
+  await assertFileIncludes("lib/clinical-spine/outcomes-loop.ts", "autoRetrain: false");
   await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "HealthPlanDraftPanel");
   await assertFileIncludes("app/dashboard/nurse/observations/page.tsx", "PatientTimelinePanel");
   await assertFileIncludes("app/dashboard/ics/page.tsx", "SpineSharedEventsPanel");

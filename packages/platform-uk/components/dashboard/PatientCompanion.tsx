@@ -20,6 +20,7 @@ import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/C
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
+import { SpineOutcomesCapturePanel } from "@/components/dashboard/precision-health/SpineOutcomesCapturePanel";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
   getPatientCompanionProfile,
@@ -218,6 +219,16 @@ export function PatientCompanion() {
                 : companionProfile.displayName
             }
             mode="patient"
+          />
+          <SpineOutcomesCapturePanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+            mode="patient"
+            onCaptured={() => setTimelineRefreshKey((k) => k + 1)}
           />
           <ConnectorsIngestPanel
             patientId={COMPANION_DEMO_PATIENT_ID}

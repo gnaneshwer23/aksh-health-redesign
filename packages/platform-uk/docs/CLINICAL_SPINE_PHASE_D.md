@@ -47,4 +47,4 @@ Manual UI:
 
 ## Phase E next
 
-Outcomes / learning closed loop: link care actions → eventual outcomes → governed evaluation (still `autoRetrain: false`). Partner DPIA / live EMIS remain parallel — still no fake live EMR / twin physiology.
+Outcomes / learning closed loop — see `docs/CLINICAL_SPINE_PHASE_E.md`. Partner DPIA / live EMIS remain parallel — still no fake live EMR / twin physiology / auto-retrain.

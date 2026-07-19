@@ -5,6 +5,7 @@ import { BookOpen, Download, RefreshCw } from "lucide-react";
 
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { GovernedEvaluationPanel } from "@/components/dashboard/precision-health/GovernedEvaluationPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -265,6 +266,8 @@ export default function AdminLearningPage() {
           {String(payload?.hitlMandatory ?? true)}. Model releases require explicit CSO/release
           authority — see <code className="text-[10px]">docs/GOVERNED_MODEL_RELEASE_SOP.md</code>.
         </div>
+
+        <GovernedEvaluationPanel />
 
         <Card className="shadow-sm" data-testid="learning-outcome-link-panel">
           <CardHeader>

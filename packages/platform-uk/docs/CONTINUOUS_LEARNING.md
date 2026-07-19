@@ -88,7 +88,16 @@ npm run test:clinical-proof   # includes CP-LEARN-001
 
 ## Related
 
+- Clinical spine Phase E closed loop: `docs/CLINICAL_SPINE_PHASE_E.md`
 - Governed model release SOP: `docs/GOVERNED_MODEL_RELEASE_SOP.md`
 - SHIELD audit: `/api/audit/shield`
 - Eval harness: `docs/AGENT_EVAL_HARNESS.md`
 - Safety case rehearsal: `docs/SAFETY_CASE_REHEARSAL.md`
+
+### Clinical spine outcomes (Phase E)
+
+| Method | Path | Behaviour |
+| --- | --- | --- |
+| `GET` | `/api/clinical-spine/outcomes` | Loop status (care actions awaiting / linked) |
+| `POST` | `/api/clinical-spine/outcomes` | Capture eventual outcome (`reporterRole`: clinician \| patient \| admin) |
+| `GET/POST` | `/api/clinical-spine/governed-evaluation` | Human-gated evaluation; blocks `propose_model_update` without G-ML-1…3 |
