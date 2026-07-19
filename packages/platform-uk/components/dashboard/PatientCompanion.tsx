@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/toaster";
 import { SafetyRouteCoachingGate } from "@/components/dashboard/precision-health/SafetyRouteCoachingGate";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
+import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
@@ -201,6 +202,15 @@ export function PatientCompanion() {
             </CardContent>
           </Card>
           <ConsentGrantsPanel
+            patientId={COMPANION_DEMO_PATIENT_ID}
+            patientLabel={
+              companionProfile.isDemoEmptyState
+                ? COMPANION_DEMO_PATIENT_LABEL
+                : companionProfile.displayName
+            }
+            mode="patient"
+          />
+          <HealthPlanDraftPanel
             patientId={COMPANION_DEMO_PATIENT_ID}
             patientLabel={
               companionProfile.isDemoEmptyState

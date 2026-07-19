@@ -242,6 +242,7 @@ This roadmap maps the full Precision Health / Living Digital Twin Mermaid flowch
 - [x] Connector list + consent-gated ingest demo UI (admin Precision Health; Fitbit stub disabled without key)
 - [x] **Phase B role ingest** — patient companion + GP patient page connector picker; consent gate; timeline refresh; biomarker-lite; admin spine paths (`docs/CLINICAL_SPINE_PHASE_B.md`)
 - [x] **Phase C intelligence** — GP Orchestrate (SYNTHESIS→GUARDIAN→ORACLE), twin ranking after ORACLE, safety-route coaching gate, model card on ORACLE (`docs/CLINICAL_SPINE_PHASE_C.md`)
+- [x] **Phase D stakeholders** — nurse vitals → timeline; pharmacist → SHIELD+learning; ICS/hospital aggregates; patient plan/consent; sim write-back only (`docs/CLINICAL_SPINE_PHASE_D.md`)
 - [x] Living KG MERGE path when Neo4j live (skip when mock)
 - [x] ORACLE model card surfaced (clinical owner still UNASSIGNED)
 - [x] Medplum dry-run staging probe (`?probe=dry-run`); flag-off clears status

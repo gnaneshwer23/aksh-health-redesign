@@ -62,7 +62,7 @@ function parseVitalsFromTranscript(transcript: string): Partial<VitalsValues> {
   return out;
 }
 
-export function VitalsForm() {
+export function VitalsForm({ onSaved }: { onSaved?: () => void }) {
   const { selectedPatientId, addAuditEvent } = useDashboardStore();
   const patient = patients.find((p) => p.id === (selectedPatientId ?? "P001")) ?? patients[0];
   const { data: neo4jPatient, loading: neo4jLoading, source } = useNeo4jPatient(patient.id);
@@ -70,6 +70,7 @@ export function VitalsForm() {
   const [vitals, setVitals] = useState<VitalsValues>(EMPTY_VITALS);
   const [lastTranscript, setLastTranscript] = useState<string | null>(null);
   const [transcriptMode, setTranscriptMode] = useState<"live" | "simulated" | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const saveVitals = async () => {
     addAuditEvent({
@@ -79,29 +80,51 @@ export function VitalsForm() {
       resource: `${patient.name} | BP ${vitals.bpSys}/${vitals.bpDia}`
     });
 
+    setSaving(true);
     try {
-      const response = await fetch("/api/audit/shield", {
+      const response = await fetch("/api/clinical-spine/nurse-vitals", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "accept",
-          agentLabel: "Nurse",
-          label: "SHIELD: nurse vitals saved (HITL pending record write)",
-          detail: `BP ${vitals.bpSys}/${vitals.bpDia} HR ${vitals.hr} SpO2 ${vitals.spo2}`,
-          resourceRef: `${patient.name} (${patient.id})`,
-          category: "reviewer_decision"
+          patientId: patient.id,
+          patientLabel: patient.name,
+          vitals,
+          updateKg: true
         })
       });
-      const durable = response.ok;
+      const data = (await response.json()) as {
+        accepted?: boolean;
+        ehrWrite?: boolean;
+        liveEmis?: boolean;
+        message?: string;
+        error?: string;
+        kg?: { applied?: boolean; mode?: string };
+      };
+      if (data.ehrWrite === true || data.liveEmis === true) {
+        toast({
+          title: "Honesty check failed",
+          description: "API claimed EHR/EMIS write — refused to treat as live."
+        });
+        return;
+      }
+      const onSpine = response.ok && data.accepted;
       toast({
-        title: durable ? "Observations saved + audited" : "Observations saved locally",
-        description: durable
-          ? "Appended to durable SHIELD audit. Still no EHR write-back."
-          : "Mock FHIR Observation created. Sign in with Postgres for durable audit."
+        title: onSpine ? "Observations on clinical spine" : "Observations not on spine",
+        description: onSpine
+          ? `${data.message ?? "Timeline updated."} Sim write-back only · liveEmis:false.${
+              data.kg?.applied ? " Neo4j MEASURED applied." : ""
+            }`
+          : data.error ?? data.message ?? "Sign in required for durable spine write."
       });
+      if (onSpine) onSaved?.();
     } catch {
-      toast({ title: "Observations saved", description: "Mock FHIR Observation created" });
+      toast({
+        title: "Observations save failed",
+        description: "Could not reach clinical spine nurse-vitals API."
+      });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -231,17 +254,17 @@ export function VitalsForm() {
             />
           </div>
         )}
-        <Button variant="accent" onClick={saveVitals}>
-          Save Observations
+        <Button variant="accent" disabled={saving} onClick={() => void saveVitals()}>
+          {saving ? "Saving…" : "Save Observations"}
         </Button>
         <p className="text-[11px] text-muted" data-testid="nurse-vitals-timeline-note">
-          Vitals stay on the nurse observations spine (SHIELD audit · no EHR write). Consent-gated
-          wearable/lifestyle ingest from patient or GP also appears on the{" "}
+          Saves to the <strong>same patient timeline</strong> as GP (modality sample · SHIELD · optional
+          Neo4j MEASURED when live). Sim write-back only · liveEmis:false · ehrWrite:false. View on{" "}
           <Link
             href={`/dashboard/gp/patients/${patient.id}`}
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
-            patient timeline
+            GP patient timeline
           </Link>
           .
         </p>

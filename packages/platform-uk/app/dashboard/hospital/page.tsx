@@ -8,6 +8,7 @@ import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
 import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
+import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPatientById, hospitalData } from "@/lib/mock-data";
 
@@ -99,6 +100,14 @@ export default function HospitalOverviewPage({
             </CardContent>
           </Card>
         </div>
+      ) : null}
+
+      {!showRiskState ? (
+        <SpineSharedEventsPanel
+          title="Shared clinical spine (demo cohort)"
+          patientIds={[DEMO_PATIENT_ID, "P002"]}
+          demoPatientHref={`/dashboard/gp/patients/${DEMO_PATIENT_ID}`}
+        />
       ) : null}
 
       {showRiskState && demoPatient ? (

@@ -254,6 +254,29 @@ export function SystemSpinePanel() {
           </ul>
         </div>
 
+        <div data-testid="spine-phase-d-stakeholders">
+          <p className="text-xs font-semibold">Phase D stakeholder paths</p>
+          <p className="mt-1 text-xs text-muted">
+            Nurse vitals → timeline/KG; pharmacist review → SHIELD + learning; ICS/hospital aggregates
+            from the same stores; patient companion plan + consent from GP APIs. Write-back remains
+            sim/staging only (ehr-writeback-sim · emis-staging) — liveEmis:false.
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs">
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              POST /api/clinical-spine/nurse-vitals
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              POST /api/clinical-spine/pharmacist-review
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              GET /api/clinical-spine/aggregates
+            </li>
+            <li className="rounded-md border border-border px-2 py-1 text-muted">
+              sim write-back only
+            </li>
+          </ul>
+        </div>
+
         <div className="flex flex-wrap gap-3 text-xs">
           <Link
             href="/dashboard/admin/audit"

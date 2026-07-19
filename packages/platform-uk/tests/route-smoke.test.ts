@@ -216,6 +216,21 @@ async function run() {
   await assertFileIncludes("lib/precision-health/connectors.ts", "ROLE_INGEST_CONNECTOR_IDS");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_B.md", "liveEmis: false");
   await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_C.md", "physiologicalTwin: false");
+  await assertFileIncludes("docs/CLINICAL_SPINE_PHASE_D.md", "liveEmis: false");
+  await assertFileIncludes("app/api/clinical-spine/nurse-vitals/route.ts", "recordNurseVitalsOnSpine");
+  await assertFileIncludes(
+    "app/api/clinical-spine/pharmacist-review/route.ts",
+    "recordPharmacistReviewOnSpine"
+  );
+  await assertFileIncludes("app/api/clinical-spine/aggregates/route.ts", "buildSpineAggregates");
+  await assertFileIncludes(
+    "components/dashboard/precision-health/SystemSpinePanel.tsx",
+    "spine-phase-d-stakeholders"
+  );
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "HealthPlanDraftPanel");
+  await assertFileIncludes("app/dashboard/nurse/observations/page.tsx", "PatientTimelinePanel");
+  await assertFileIncludes("app/dashboard/ics/page.tsx", "SpineSharedEventsPanel");
+  await assertFileIncludes("app/dashboard/hospital/page.tsx", "SpineSharedEventsPanel");
   await assertFileIncludes("app/api/agents/orchestrate/route.ts", "runClinicalSpineOrchestrate");
   await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "ClinicalOrchestratePanel");
   await assertFileIncludes("app/dashboard/gp/review-queue/page.tsx", "ClinicalOrchestratePanel");

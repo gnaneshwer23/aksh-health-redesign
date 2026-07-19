@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Activity, BarChart3, ChevronRight, Heart, Users } from "lucide-react";
 
 import { IcsKpiRow } from "@/components/dashboard/ics/IcsKpiRow";
+import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIcsData } from "@/components/dashboard/ics/IcsDataContext";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -58,6 +59,12 @@ export default function IcsOverviewPage() {
       </div>
 
       <IcsKpiRow />
+
+      <SpineSharedEventsPanel
+        title="Shared clinical spine (cohort aggregates)"
+        patientIds={["P001", "P002"]}
+        demoPatientHref="/dashboard/gp/patients/P001"
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {SECTIONS.map((section) => {

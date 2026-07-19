@@ -44,4 +44,4 @@ Manual UI:
 
 ## Phase D next
 
-Stakeholders + delivery on the same events: nurse vitals → timeline/graph; pharmacist → SHIELD; ICS/hospital aggregates; patient app plan/consent from same APIs; sim write-back until EMIS live. Still no fake live EMR / twin physiology.
+Stakeholders + delivery on the same events — see `docs/CLINICAL_SPINE_PHASE_D.md`. Partner DPIA / live modality / EMIS remain a **parallel** track — still `liveEmis: false` until signed.

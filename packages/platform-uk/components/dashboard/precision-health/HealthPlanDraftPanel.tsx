@@ -29,9 +29,12 @@ function planNote(plan: HealthPlanDraft) {
 export function HealthPlanDraftPanel({
   patientId,
   patientLabel,
+  mode = "clinician",
 }: {
   patientId: string;
   patientLabel?: string;
+  /** Patient companion: read-only view of the same health-plan API (no draft request / HITL). */
+  mode?: "clinician" | "patient";
 }) {
   const [plans, setPlans] = useState<HealthPlanDraft[]>([]);
   const [active, setActive] = useState<HealthPlanDraft | null>(null);
@@ -167,14 +170,20 @@ export function HealthPlanDraftPanel({
     <Card className="shadow-sm" data-testid="health-plan-draft-panel">
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 p-4 pb-2">
         <div>
-          <CardTitle className="text-sm">Personalised health plan (DRAFT)</CardTitle>
+          <CardTitle className="text-sm">
+            {mode === "patient" ? "Your health plan (DRAFT)" : "Personalised health plan (DRAFT)"}
+          </CardTitle>
           <p className="text-xs text-muted">
-            Clinician-requested draft only — HITL required · ehrWrite: false · not a physiological twin
+            {mode === "patient"
+              ? "Same health-plan API as your GP · read-only · not clinical advice · ehrWrite: false"
+              : "Clinician-requested draft only — HITL required · ehrWrite: false · not a physiological twin"}
           </p>
         </div>
-        <Button size="sm" variant="outline" disabled={requesting} onClick={() => void requestDraft()}>
-          {requesting ? "Drafting…" : "Request plan draft"}
-        </Button>
+        {mode === "clinician" ? (
+          <Button size="sm" variant="outline" disabled={requesting} onClick={() => void requestDraft()}>
+            {requesting ? "Drafting…" : "Request plan draft"}
+          </Button>
+        ) : null}
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-2">
         {loading && !active ? (
@@ -185,7 +194,9 @@ export function HealthPlanDraftPanel({
             data-testid="health-plan-empty"
             className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted"
           >
-            No health plan drafts yet. Request a DRAFT for clinician review — nothing writes to the EHR.
+            {mode === "patient"
+              ? "No health plan drafts from your care team yet. Plans appear here from the same registry your GP uses."
+              : "No health plan drafts yet. Request a DRAFT for clinician review — nothing writes to the EHR."}
           </p>
         ) : (
           <div className="space-y-3" data-testid="health-plan-draft">
@@ -197,7 +208,7 @@ export function HealthPlanDraftPanel({
               <span>· {new Date(active.createdAt).toLocaleString("en-GB")}</span>
             </div>
 
-            {editing ? (
+            {mode === "clinician" && editing ? (
               <SOAPEditor
                 value={note}
                 onChange={setNote}
@@ -239,7 +250,11 @@ export function HealthPlanDraftPanel({
               ))}
             </ul>
 
-            {hitlStatus === "Accepted" ? (
+            {mode === "patient" ? (
+              <p className="text-xs text-muted" data-testid="health-plan-patient-view">
+                Patient view of clinician DRAFT · not medical advice · changes only via your care team HITL
+              </p>
+            ) : hitlStatus === "Accepted" ? (
               <p className="text-xs font-medium text-accent">
                 Staged to SHIELD · pending queue Accept · no EHR write
               </p>

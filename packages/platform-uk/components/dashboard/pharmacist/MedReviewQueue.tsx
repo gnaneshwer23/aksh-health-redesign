@@ -139,20 +139,19 @@ export function MedReviewQueue() {
                     size="sm"
                     className="bg-[#6B46C1] hover:bg-[#6B46C1]/90"
                     disabled={medicationReviewsCompleted.includes(p.id)}
+                    data-testid="pharmacist-mark-reviewed"
                     onClick={async () => {
                       markMedicationReviewed(p.id);
                       try {
-                        const response = await fetch("/api/audit/shield", {
+                        const response = await fetch("/api/clinical-spine/pharmacist-review", {
                           method: "POST",
                           credentials: "include",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({
-                            action: "accept",
-                            agentLabel: "GUARDIAN",
-                            label: "SHIELD: pharmacist medication review completed",
-                            detail: `${p.activeMedications.length} active medications reviewed`,
-                            resourceRef: `${p.name} (${p.id})`,
-                            category: "reviewer_decision"
+                            patientId: p.id,
+                            patientLabel: p.name,
+                            medicationCount: p.activeMedications.length,
+                            medicationSummary: `${p.activeMedications.length} active medications reviewed`
                           })
                         });
                         if (response.ok) {
@@ -160,18 +159,25 @@ export function MedReviewQueue() {
                             credentials: "include"
                           });
                           if (listed.ok) {
-                            const data = (await listed.json()) as { reviews?: DurableReview[]; durable?: boolean };
+                            const data = (await listed.json()) as {
+                              reviews?: DurableReview[];
+                              durable?: boolean;
+                            };
                             setDurableReviews(Array.isArray(data.reviews) ? data.reviews : []);
                             setDurableSource(data.durable ? "postgres" : "unavailable");
                           }
                         }
                       } catch {
-                        // Local mark still applies; durable audit is best-effort.
+                        // Local mark still applies; durable spine write is best-effort.
                       }
                     }}
                   >
                     {medicationReviewsCompleted.includes(p.id) ? "Reviewed ✓" : "Mark Reviewed"}
                   </Button>
+                  <p className="text-[11px] text-muted" data-testid="pharmacist-spine-note">
+                    Mark Reviewed → SHIELD + learning event on the same patient timeline as GP ·
+                    HITL · ehrWrite:false · liveEmis:false
+                  </p>
                 </CardContent>
               )}
             </Card>
