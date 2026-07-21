@@ -49,6 +49,7 @@ export async function runClinicalSpineOrchestrate(
     proposedDrug: input.proposedDrug,
     transcript: input.transcript,
     includeDrAssist: input.includeDrAssist ?? false,
+    includeNexus: input.includeNexus !== false,
     agentTimeoutMs: input.agentTimeoutMs,
     overallTimeoutMs: input.overallTimeoutMs
   });
@@ -99,7 +100,7 @@ export async function runClinicalSpineOrchestrate(
     autoRetrain: false,
     liveEmis: false,
     note:
-      "Clinical spine Phase C — drafts only. GUARDIAN first when urgent. Twin ranking is synthetic_rules. Model card clinical owner may be UNASSIGNED. Zero autonomous EHR write."
+      "Clinical spine Phase C — drafts only. SYNTHESIS→GUARDIAN→HORIZON→NEXUS. GUARDIAN first when urgent. Twin ranking is synthetic_rules. Model card clinical owner may be UNASSIGNED. Zero autonomous EHR write."
   };
 }
 
@@ -107,7 +108,7 @@ export function getClinicalSpineOrchestrateCapabilities() {
   const modelCard = getOracleModelCard();
   return {
     available: true,
-    agents: ["SYNTHESIS", "GUARDIAN", "ORACLE"] as const,
+    agents: ["SYNTHESIS", "GUARDIAN", "ORACLE", "NEXUS"] as const,
     twinRanking: true,
     simulationMode: "synthetic_rules" as const,
     physiologicalTwin: false as const,
@@ -116,6 +117,6 @@ export function getClinicalSpineOrchestrateCapabilities() {
     autoRetrain: false as const,
     liveEmis: false as const,
     modelCard,
-    note: "One-click SYNTHESIS→GUARDIAN→ORACLE on clinical spine. Urgent prioritises GUARDIAN. All drafts require HITL."
+    note: "One-click SYNTHESIS→GUARDIAN→HORIZON→NEXUS (api ids ORACLE/NEXUS) on clinical spine. Urgent prioritises GUARDIAN. All drafts require HITL."
   };
 }

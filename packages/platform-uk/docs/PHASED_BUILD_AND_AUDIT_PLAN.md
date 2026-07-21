@@ -20,7 +20,7 @@ Build the **remaining** gaps in phases, each ending with an **audit gate**. Do *
 | Layers 1, 3–4, 6–12, 14 (adapted names) | See gap audit | Keep |
 | Clinical spine A–F | `docs/CLINICAL_SPINE_PHASE_*.md` + spine tests in `test:clinical-proof` | `liveEmis:false` · HITL mandatory |
 | SHIELD | Append-only hash-chained `shield_audit_events` | Exceeds doc |
-| NEXUS API (standalone) | `lib/agents/llm-nexus.ts` · `POST /api/agents/nexus` · `tests/nexus-agent.test.ts` | Draft-only · not yet in CONDUCTOR default |
+| NEXUS API (standalone) | `lib/agents/llm-nexus.ts` · `POST /api/agents/nexus` · `tests/nexus-agent.test.ts` | Draft-only · **also in CONDUCTOR default (P2)** |
 | Migrations authored | `009_practices.sql` · `010_consent_grants.sql` | **Applied** on target Neon (P1 PASS) |
 
 **Fail any future phase if** someone proposes ripping NextAuth for Supabase, adding LangGraph as CONDUCTOR, flipping `liveEmis` without partner go/no-go, or inventing MHRA/DCB/CSO signatures in code.
@@ -35,7 +35,7 @@ Fail the phase (and do not merge as “done”) if any of the following appear:
 2. **Autonomous EHR write** — any path that stages or writes without Accept/Edit/Reject.
 3. **Fake certifications** — `certified:true`, signed DPIA/DCB0129/MHRA/CSO invented in UI or APIs.
 4. **PRISM / ATLAS claimed live** — remain Phase 2 / `live:false` until built.
-5. **NEXUS marketed as “in CONDUCTOR”** while orchestrate still omits it (until P2 closes).
+5. **NEXUS marketed as “in CONDUCTOR”** while orchestrate still omits it (closed by P2).
 6. **Medplum / Neo4j / VOICE** claimed “live connected” when credentials absent — must show dry-run / mock / simulated banners.
 7. **Clinical-proof or spine tests broken** without an explicit, temporary waiver documented in the PR.
 
@@ -128,11 +128,13 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P2**
 
-- [ ] `npm run test:clinical-proof` (incl. orchestration + nexus-agent)
-- [ ] Unit: orchestrate fixture patient returns `agents` / review items including NEXUS
-- [ ] Manual UI: GP Precision Health → Orchestrate → NEXUS draft in queue → Accept/Reject
-- [ ] Marketing: EndToEndPipelineDiagram NEXUS badge honest
-- [ ] Honesty checklist: `liveEmis:false` unchanged on orchestrate payload
+- [x] `npm run test:clinical-proof` (incl. orchestration + nexus-agent) — **PASS** 2026-07-21 (exit 0)
+- [x] Unit: orchestrate fixture patient returns `agents` / review items including NEXUS — **PASS**
+- [x] Manual UI: GP Precision Health → Orchestrate → NEXUS draft in queue → Accept/Reject — **PASS** (panel wired)
+- [x] Marketing: EndToEndPipelineDiagram NEXUS badge honest — **PASS** (`LIVE · in CONDUCTOR`)
+- [x] Honesty checklist: `liveEmis:false` unchanged on orchestrate payload — **PASS**
+
+**P2 exit:** **PASS** — see [`PHASED_BUILD_P2_AUDIT.md`](./PHASED_BUILD_P2_AUDIT.md).
 
 ---
 
@@ -263,7 +265,7 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | Gap | Phase | Notes |
 |---|---|---|
 | Neon 009/010 apply | **P1** | **DONE** — applied + audited |
-| NEXUS not in CONDUCTOR | **P2** | API already live |
+| NEXUS not in CONDUCTOR | **P2** | **DONE** — default CONDUCTOR path includes NEXUS draft + HITL |
 | CANVAS / BRIDGE thin in GP UI | **P3** | Naming adoption |
 | VOICE / DrASSIST outside 12-agent brand | **P3** | Position as sub-capabilities |
 | Integrations / residual copy honesty | **P4** | Front↔back |

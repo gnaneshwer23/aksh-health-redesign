@@ -1,11 +1,12 @@
 /**
- * Multi-agent orchestration for clinical-proof.
- * Same patient context → SYNTHESIS + GUARDIAN + ORACLE (+ optional DrASSIST).
+ * Multi-agent orchestration for clinical-proof / CONDUCTOR.
+ * Same patient context → SYNTHESIS + GUARDIAN + ORACLE + NEXUS (+ optional DrASSIST).
  *
  * Invariants:
  * - Shared context (patientId / label) across agents
  * - No overwrite — each agent stores an independent draft
  * - GUARDIAN priority when urgent (red/amber status or URGENT flag)
+ * - NEXUS always draft-only (status: draft) · HITL required · no EHR write
  * - Outputs independently evidenced
  * - Timeouts controlled (Promise.race per agent + overall budget)
  * - Zero autonomous EHR write (ehrWrite always false)
@@ -13,11 +14,12 @@
 
 import { runDrAssistAgent, type DrAssistDraft } from "../agents/llm-dr-assist";
 import { runGuardianAgent, type GuardianDraft } from "../agents/llm-guardian";
+import { runNexusAgent, type NexusDraft } from "../agents/llm-nexus";
 import { runOracleAgent, type OracleDraft } from "../agents/llm-oracle";
 import { runSynthesisAgent, type SynthesisDraft } from "../agents/llm-synthesis";
 import { getPatientById } from "../mock-data/patients";
 
-export type OrchestrationAgentId = "SYNTHESIS" | "GUARDIAN" | "ORACLE" | "DrASSIST";
+export type OrchestrationAgentId = "SYNTHESIS" | "GUARDIAN" | "ORACLE" | "NEXUS" | "DrASSIST";
 
 export type QueuePriority = "Urgent" | "High" | "Normal";
 
@@ -39,6 +41,8 @@ export type OrchestrationOutputs = {
   SYNTHESIS: SynthesisDraft;
   GUARDIAN: GuardianDraft;
   ORACLE: OracleDraft;
+  /** Default CONDUCTOR path includes NEXUS (draft correlations). */
+  NEXUS?: NexusDraft;
   DrASSIST?: DrAssistDraft;
 };
 
@@ -64,9 +68,11 @@ export type OrchestrationOptions = {
   proposedDrug?: string;
   transcript?: string;
   includeDrAssist?: boolean;
+  /** Include NEXUS correlations in default CONDUCTOR path (default true). */
+  includeNexus?: boolean;
   /** Per-agent timeout (default 8s — deterministic paths are fast) */
   agentTimeoutMs?: number;
-  /** Overall budget (default 25s) */
+  /** Overall budget (default 30s — four parallel agents + optional DrASSIST) */
   overallTimeoutMs?: number;
 };
 
@@ -120,18 +126,20 @@ function resolveQueuePriority(
 
 function resolveReviewOrder(
   priority: QueuePriority,
-  includeDrAssist: boolean
+  includeDrAssist: boolean,
+  includeNexus: boolean
 ): OrchestrationAgentId[] {
-  const rest: OrchestrationAgentId[] = includeDrAssist
-    ? ["ORACLE", "SYNTHESIS", "DrASSIST"]
-    : ["ORACLE", "SYNTHESIS"];
+  // NEXUS after SYNTHESIS/GUARDIAN/HORIZON (correlations after risk). GUARDIAN still leads when urgent.
   if (priority === "Urgent") {
+    const rest: OrchestrationAgentId[] = ["ORACLE", "SYNTHESIS"];
+    if (includeNexus) rest.push("NEXUS");
+    if (includeDrAssist) rest.push("DrASSIST");
     return ["GUARDIAN", ...rest];
   }
-  // Non-urgent: documentation first, then safety + risk
-  const base: OrchestrationAgentId[] = includeDrAssist
-    ? ["SYNTHESIS", "GUARDIAN", "ORACLE", "DrASSIST"]
-    : ["SYNTHESIS", "GUARDIAN", "ORACLE"];
+  // Non-urgent: documentation first, then safety + risk + correlations
+  const base: OrchestrationAgentId[] = ["SYNTHESIS", "GUARDIAN", "ORACLE"];
+  if (includeNexus) base.push("NEXUS");
+  if (includeDrAssist) base.push("DrASSIST");
   return base;
 }
 
@@ -169,6 +177,18 @@ function collectEvidence(outputs: OrchestrationOutputs): AgentEvidence[] {
     }
   ];
 
+  if (outputs.NEXUS) {
+    evidence.push({
+      agent: "NEXUS",
+      evidenced:
+        outputs.NEXUS.status === "draft" &&
+        Array.isArray(outputs.NEXUS.correlations) &&
+        outputs.NEXUS.correlations.length > 0 &&
+        Boolean(outputs.NEXUS.summary),
+      detail: `status=${outputs.NEXUS.status}; correlations=${outputs.NEXUS.correlations.length}; mode=${outputs.NEXUS.mode}`
+    });
+  }
+
   if (outputs.DrASSIST) {
     evidence.push({
       agent: "DrASSIST",
@@ -181,8 +201,8 @@ function collectEvidence(outputs: OrchestrationOutputs): AgentEvidence[] {
 }
 
 /**
- * Run SYNTHESIS + GUARDIAN + ORACLE (+ optional DrASSIST) against one patient context.
- * Drafts are independent — never mutate peer slots.
+ * Run SYNTHESIS + GUARDIAN + ORACLE + NEXUS (+ optional DrASSIST) against one patient context.
+ * Drafts are independent — never mutate peer slots. NEXUS is draft-only.
  */
 export async function runAgentOrchestration(
   options: OrchestrationOptions
@@ -194,8 +214,9 @@ export async function runAgentOrchestration(
   }
 
   const agentTimeoutMs = options.agentTimeoutMs ?? 8_000;
-  const overallTimeoutMs = options.overallTimeoutMs ?? 25_000;
+  const overallTimeoutMs = options.overallTimeoutMs ?? 30_000;
   const includeDrAssist = options.includeDrAssist ?? true;
+  const includeNexus = options.includeNexus !== false;
   const proposedDrug = options.proposedDrug?.trim() || null;
   const transcript =
     options.transcript?.trim() || buildDefaultTranscript(patient.name, patientId);
@@ -213,7 +234,7 @@ export async function runAgentOrchestration(
 
   const runAll = async (): Promise<OrchestrationOutputs> => {
     // Parallel generation — each result lands in its own slot (no shared mutable draft)
-    const [synthesisTimed, guardianTimed, oracleTimed] = await Promise.all([
+    const [synthesisTimed, guardianTimed, oracleTimed, nexusTimed] = await Promise.all([
       withTimeout(
         "SYNTHESIS",
         runSynthesisAgent({
@@ -230,15 +251,29 @@ export async function runAgentOrchestration(
         }),
         agentTimeoutMs
       ),
-      withTimeout("ORACLE", runOracleAgent({ patientId }), agentTimeoutMs)
+      withTimeout("ORACLE", runOracleAgent({ patientId }), agentTimeoutMs),
+      includeNexus
+        ? withTimeout("NEXUS", runNexusAgent({ patientId }), agentTimeoutMs)
+        : Promise.resolve(null as { value: NexusDraft; elapsedMs: number } | null)
     ]);
 
     perAgentMs.SYNTHESIS = synthesisTimed.elapsedMs;
     perAgentMs.GUARDIAN = guardianTimed.elapsedMs;
     perAgentMs.ORACLE = oracleTimed.elapsedMs;
+    if (nexusTimed) {
+      perAgentMs.NEXUS = nexusTimed.elapsedMs;
+    }
 
     if (!oracleTimed.value) {
       throw new Error(`ORACLE returned null for ${patientId}`);
+    }
+    if (includeNexus) {
+      if (!nexusTimed?.value) {
+        throw new Error(`NEXUS returned null for ${patientId}`);
+      }
+      if (nexusTimed.value.status !== "draft") {
+        throw new Error("NEXUS must return status: draft — refusing non-draft output");
+      }
     }
 
     const outputs: OrchestrationOutputs = {
@@ -246,6 +281,10 @@ export async function runAgentOrchestration(
       GUARDIAN: guardianTimed.value,
       ORACLE: oracleTimed.value
     };
+
+    if (includeNexus && nexusTimed?.value) {
+      outputs.NEXUS = nexusTimed.value;
+    }
 
     if (includeDrAssist) {
       const drAssistTimed = await withTimeout(
@@ -293,7 +332,7 @@ export async function runAgentOrchestration(
     outputs.ORACLE,
     sharedContext.flags
   );
-  const reviewOrder = resolveReviewOrder(queuePriority, includeDrAssist);
+  const reviewOrder = resolveReviewOrder(queuePriority, includeDrAssist, includeNexus);
   const evidence = collectEvidence(outputs);
   const outputSlots = Object.keys(outputs) as OrchestrationAgentId[];
 
@@ -334,6 +373,9 @@ function assertSharedContext(ctx: SharedPatientContext, outputs: OrchestrationOu
   if (outputs.ORACLE.patientId !== ctx.patientId) {
     throw new Error(`ORACLE patientId mismatch: ${outputs.ORACLE.patientId} !== ${ctx.patientId}`);
   }
+  if (outputs.NEXUS && outputs.NEXUS.patientId !== ctx.patientId) {
+    throw new Error(`NEXUS patientId mismatch: ${outputs.NEXUS.patientId} !== ${ctx.patientId}`);
+  }
   if (outputs.DrASSIST && outputs.DrASSIST.patientId !== ctx.patientId) {
     throw new Error(
       `DrASSIST patientId mismatch: ${outputs.DrASSIST.patientId} !== ${ctx.patientId}`
@@ -356,6 +398,7 @@ function assertNoOverwrite(outputs: OrchestrationOutputs) {
     outputs.SYNTHESIS,
     outputs.GUARDIAN,
     outputs.ORACLE,
+    outputs.NEXUS,
     outputs.DrASSIST
   ].filter(Boolean);
   const unique = new Set(refs);

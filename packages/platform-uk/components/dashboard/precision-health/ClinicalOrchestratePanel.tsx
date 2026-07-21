@@ -6,6 +6,7 @@ import { HitlActions } from "@/components/dashboard/SOAPEditor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
+import { resolveClinicalAgentLabel } from "@/lib/agents";
 import type { OrchestrationAgentId, QueuePriority } from "@/lib/clinical-proof/agent-orchestration";
 import type { SafetyRoute } from "@/lib/clinical-spine/safety-route";
 import type { OracleModelCard } from "@/lib/precision-health/oracle-model-card";
@@ -36,6 +37,17 @@ type OrchestrateResponse = {
         contributingFactors?: string[];
         confidence: number;
       };
+      NEXUS?: {
+        status: "draft";
+        summary: string;
+        correlations: Array<{
+          link: string;
+          significance: string;
+          suggestedConsideration: string;
+        }>;
+        confidence: number;
+        mode?: string;
+      };
     };
     ehrWrite: false;
     hitlRequired: true;
@@ -48,14 +60,15 @@ type OrchestrateResponse = {
   ehrWrite?: boolean;
   physiologicalTwin?: boolean;
   autoRetrain?: boolean;
+  liveEmis?: boolean;
   error?: string;
 };
 
 type HitlMap = Partial<Record<OrchestrationAgentId | "TWIN", "Pending" | "Accepted" | "Rejected" | "Edited">>;
 
 /**
- * Phase C — one-click SYNTHESIS → GUARDIAN → ORACLE on the clinical spine.
- * GUARDIAN first when urgent; twin ranking after ORACLE; all drafts HITL.
+ * CONDUCTOR — one-click SYNTHESIS → GUARDIAN → HORIZON → NEXUS on the clinical spine.
+ * GUARDIAN first when urgent; twin ranking after HORIZON; all drafts HITL; liveEmis:false.
  */
 export function ClinicalOrchestratePanel({
   patientId,
@@ -93,10 +106,15 @@ export function ClinicalOrchestratePanel({
         });
         return;
       }
-      if (data.ehrWrite === true || data.physiologicalTwin === true || data.autoRetrain === true) {
+      if (
+        data.ehrWrite === true ||
+        data.physiologicalTwin === true ||
+        data.autoRetrain === true ||
+        data.liveEmis === true
+      ) {
         toast({
           title: "Honesty check failed",
-          description: "API claimed EHR write, physiological twin, or auto-retrain — refused.",
+          description: "API claimed EHR write, physiological twin, auto-retrain, or live EMIS — refused.",
         });
         return;
       }
@@ -142,6 +160,7 @@ export function ClinicalOrchestratePanel({
             ehrWrite: false,
             hitlRequired: true,
             physiologicalTwin: false,
+            liveEmis: false,
             safetyRoute: result?.safetyRoute ?? null,
           },
         }),
@@ -165,8 +184,8 @@ export function ClinicalOrchestratePanel({
         <div>
           <CardTitle className="text-sm">Orchestrate clinical agents</CardTitle>
           <p className="text-xs text-muted">
-            SYNTHESIS → GUARDIAN → HORIZON · twin ranking after HORIZON · drafts only · HITL mandatory ·
-            ehrWrite: false · physiologicalTwin: false
+            SYNTHESIS → GUARDIAN → HORIZON → NEXUS · twin ranking after HORIZON · drafts only · HITL
+            mandatory · ehrWrite: false · liveEmis: false · physiologicalTwin: false
           </p>
         </div>
         <Button size="sm" disabled={loading} onClick={() => void run()} data-testid="orchestrate-run">
@@ -176,8 +195,8 @@ export function ClinicalOrchestratePanel({
       <CardContent className="space-y-4 p-4 pt-2">
         {!orch ? (
           <p role="status" className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted">
-            One control runs the shared clinical-proof orchestration on this patient. Urgent cases surface
-            GUARDIAN first. Not live EMR / CDS clearance.
+            One control runs the shared clinical-proof CONDUCTOR orchestration on this patient. Urgent cases
+            surface GUARDIAN first. NEXUS correlations are drafts. Not live EMR / CDS clearance.
           </p>
         ) : (
           <div className="space-y-4" data-testid="clinical-orchestrate-result">
@@ -197,7 +216,7 @@ export function ClinicalOrchestratePanel({
                 Route: {result?.safetyRouteLabel ?? result?.safetyRoute}
               </span>
               <span className="text-muted">
-                Review: {order.join(" → ")} · {orch.elapsedMs}ms
+                Review: {order.map((a) => resolveClinicalAgentLabel(a)).join(" → ")} · {orch.elapsedMs}ms
               </span>
             </div>
 
@@ -252,6 +271,27 @@ export function ClinicalOrchestratePanel({
                     <p className="text-xs font-semibold uppercase tracking-wide">SYNTHESIS SOAP draft</p>
                     <p className="text-xs text-muted">A: {s.assessment}</p>
                     <p className="text-xs text-muted">P: {s.plan}</p>
+                  </>
+                );
+              } else if (agent === "NEXUS") {
+                const n = orch.outputs.NEXUS;
+                if (!n) return null;
+                summary = n.summary;
+                body = (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-wide">
+                      NEXUS · draft · {n.correlations.length} correlation(s)
+                    </p>
+                    <p className="text-sm">{n.summary}</p>
+                    {n.correlations.length > 0 && (
+                      <ul className="text-[11px] text-muted">
+                        {n.correlations.slice(0, 3).map((c, idx) => (
+                          <li key={idx}>
+                            • {c.link} — {c.suggestedConsideration}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </>
                 );
               } else {

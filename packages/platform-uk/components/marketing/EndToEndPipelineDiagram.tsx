@@ -131,13 +131,14 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={cn(styles.card, styles.nexus)}>
-            <Phase kind="live">LIVE</Phase>
+            <Phase kind="live">LIVE · in CONDUCTOR</Phase>
             <div className={styles.cardName}>NEXUS</div>
             <p className={styles.cardDesc}>
               Clinical Intelligence Agent
               <br />
               Correlates labs, medications, and graph signals into draft clinical impressions via AI Gateway (with
-              deterministic fallback).
+              deterministic fallback). Included in the default CONDUCTOR path after SYNTHESIS→GUARDIAN→HORIZON —
+              always <code>status: draft</code>, HITL Accept/Edit/Reject, SHIELD-audited, no live EMR write.
             </p>
             <span className={styles.cardFhir}>ClinicalImpression · DiagnosticReport</span>
           </div>

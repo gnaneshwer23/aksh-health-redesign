@@ -16,8 +16,8 @@ export async function GET() {
 }
 
 /**
- * POST /api/agents/orchestrate — SYNTHESIS → GUARDIAN → ORACLE (+ twin ranking).
- * Drafts only; ehrWrite:false; HITL required; physiologicalTwin:false.
+ * POST /api/agents/orchestrate — SYNTHESIS → GUARDIAN → ORACLE → NEXUS (+ twin ranking).
+ * Drafts only; ehrWrite:false; HITL required; physiologicalTwin:false; liveEmis:false.
  */
 export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     proposedDrug?: string;
     transcript?: string;
     includeDrAssist?: boolean;
+    includeNexus?: boolean;
     includeTwinRanking?: boolean;
     caseId?: string;
   };
@@ -48,12 +49,18 @@ export async function POST(request: Request) {
       proposedDrug: body.proposedDrug,
       transcript: body.transcript,
       includeDrAssist: body.includeDrAssist ?? false,
+      includeNexus: body.includeNexus !== false,
       includeTwinRanking: body.includeTwinRanking !== false,
       caseId: body.caseId,
       actor: auth.context.userEmail ?? auth.context.userId
     });
 
-    if (result.ehrWrite !== false || result.physiologicalTwin !== false || result.autoRetrain !== false) {
+    if (
+      result.ehrWrite !== false ||
+      result.physiologicalTwin !== false ||
+      result.autoRetrain !== false ||
+      result.liveEmis !== false
+    ) {
       return NextResponse.json(
         { error: "Honesty invariants violated — refusing response." },
         { status: 500 }

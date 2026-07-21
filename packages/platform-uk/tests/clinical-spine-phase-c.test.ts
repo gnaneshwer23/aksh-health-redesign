@@ -24,6 +24,7 @@ async function run() {
   process.env.ENABLE_LLM_GUARDIAN = "false";
   process.env.ENABLE_LLM_ORACLE = "false";
   process.env.ENABLE_LLM_DR_ASSIST = "false";
+  process.env.ENABLE_LLM_NEXUS = "false";
 
   // --- Capabilities honesty ---
   const caps = getClinicalSpineOrchestrateCapabilities();
@@ -33,6 +34,7 @@ async function run() {
   assert.equal(caps.liveEmis, false);
   assert.equal(caps.hitlRequired, true);
   assert.equal(caps.simulationMode, "synthetic_rules");
+  assert.ok(caps.agents.includes("NEXUS"));
   assert.ok(caps.modelCard.clinicalOwner.includes("UNASSIGNED"));
 
   // --- Orchestrate (Patel — typically urgent GUARDIAN) ---
@@ -49,10 +51,13 @@ async function run() {
   assert.equal(result.autoRetrain, false);
   assert.equal(result.liveEmis, false);
   assert.equal(result.hitlRequired, true);
-  assert.ok(result.orchestration.reviewOrder.length >= 3);
+  assert.ok(result.orchestration.reviewOrder.length >= 4);
   assert.ok(result.orchestration.outputs.SYNTHESIS);
   assert.ok(result.orchestration.outputs.GUARDIAN);
   assert.ok(result.orchestration.outputs.ORACLE);
+  assert.ok(result.orchestration.outputs.NEXUS);
+  assert.equal(result.orchestration.outputs.NEXUS?.status, "draft");
+  assert.ok(result.orchestration.reviewOrder.includes("NEXUS"));
   assert.ok(result.twin);
   assert.equal(result.twin.simulationMode, "synthetic_rules");
   assert.equal(result.twin.physiologicalTwin, false);
@@ -124,8 +129,18 @@ async function run() {
   );
   assert.ok(orchUi.includes("orchestrate-run"));
   assert.ok(orchUi.includes("GUARDIAN"));
+  assert.ok(orchUi.includes("NEXUS"));
   assert.ok(orchUi.includes("HitlActions"));
   assert.ok(orchUi.includes("physiologicalTwin: false"));
+  assert.ok(orchUi.includes("liveEmis: false"));
+
+  const pipeline = fs.readFileSync(
+    path.join(process.cwd(), "components/marketing/EndToEndPipelineDiagram.tsx"),
+    "utf8"
+  );
+  assert.ok(pipeline.includes("LIVE · in CONDUCTOR"));
+  assert.ok(!pipeline.includes("LIVE · API"));
+  assert.ok(!pipeline.includes("not yet in the default CONDUCTOR"));
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),
