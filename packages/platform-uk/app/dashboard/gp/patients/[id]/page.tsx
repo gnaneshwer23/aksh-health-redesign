@@ -67,7 +67,7 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
             </div>
             <div className="flex flex-col items-center gap-1">
               <RiskScoreBadge score={patient.oracleScore} risk={patient.oracleRisk} size="lg" />
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">ORACLE</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">HORIZON</span>
             </div>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">

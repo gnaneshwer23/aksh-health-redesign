@@ -7,7 +7,7 @@ import type { Neo4jIcsPopulationResponse } from "@/lib/neo4j/types";
 
 export const EQUITY_MODEL = "openai/gpt-5.4-mini";
 
-const EQUITY_SYSTEM = `You are Aksh Health EQUITY — a population health disparity assistant for NHS ICS rehearsal.
+const EQUITY_SYSTEM = `You are Aksh Health COMPASS (population health, formerly EQUITY) — a population health disparity assistant for NHS ICS rehearsal.
 Given aggregate equity flags (no patient-level identifiers), produce a concise action brief for ICS leads.
 Rules:
 - Aggregate / practice-level only. Do not invent named patients.
@@ -62,8 +62,8 @@ function deterministicFallback(input: {
     equityFlags: input.population.equityFlags,
     deepDive: rows,
     summary: top
-      ? `${input.population.equityFlags} EQUITY flags across ${input.population.practices} practices. Highest: ${top.category} at ${top.practice} (${top.flagCount}).`
-      : `${input.population.equityFlags} EQUITY flags across the ICS (deterministic EQUITY).`,
+      ? `${input.population.equityFlags} COMPASS flags across ${input.population.practices} practices. Highest: ${top.category} at ${top.practice} (${top.flagCount}).`
+      : `${input.population.equityFlags} COMPASS flags across the ICS (deterministic COMPASS).`,
     priorities:
       priorities.length > 0
         ? priorities
@@ -73,7 +73,7 @@ function deterministicFallback(input: {
         ? recommendedActions
         : ["Generate a board-facing equity action plan for ICS review"],
     safetyNotes: [
-      `Deterministic EQUITY fallback (LLM unavailable or disabled). Data source: ${input.dataSource}.`,
+      `Deterministic COMPASS fallback (LLM unavailable or disabled). Data source: ${input.dataSource}.`,
       "Aggregate / synthetic population signals only — no patient-level spill.",
       "HITL Accept/Edit/Reject required before any operational staging. No EHR write."
     ],
@@ -157,7 +157,7 @@ Focus category hint: ${focus || "none"}`,
       safetyNotes: Array.isArray(parsed.safetyNotes)
         ? parsed.safetyNotes.map(String)
         : [
-            "LLM EQUITY draft — ICS lead must Accept/Edit/Reject before staging.",
+            "LLM COMPASS draft — ICS lead must Accept/Edit/Reject before staging.",
             "Aggregate signals only; no patient-level identifiers."
           ],
       confidence:

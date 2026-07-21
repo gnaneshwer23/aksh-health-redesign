@@ -81,7 +81,7 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
       "Risk score updated from 78 → 82 (Very High). Primary contributors: (1) New DVT diagnosis with T2D combination (+8 points), (2) Proposed anticoagulant + Aspirin combination risk (+4 points), (3) Missed HbA1c review 12 months (+2 points). Recommended: urgent medication review, 2-week follow-up.",
     confidenceScore: 82,
     evidenceSources: [
-      { resourceType: "RiskAssessment", resourceId: "oracle-p002", summary: "ORACLE composite risk model" },
+      { resourceType: "RiskAssessment", resourceId: "oracle-p002", summary: "HORIZON composite risk model" },
     ],
     createdAt: "2026-07-10T09:38:00Z",
     priority: "High",
@@ -212,7 +212,7 @@ P: Urgent community nurse review. Reinforce Furosemide adherence. Consider oral 
       "14-day admission risk: 73%. Deterioration signals detected: (1) SpO2 trending down: 96% → 94% → 92% over 3 weeks, (2) Weight gain 1.8kg (fluid retention indicator), (3) Missed Furosemide doses last 5 days (pharmacy adherence data). Digital Twin prediction: heart failure decompensation likely within 7-14 days without intervention.",
     confidenceScore: 73,
     evidenceSources: [
-      { resourceType: "RiskAssessment", resourceId: "oracle-p003", summary: "ORACLE admission model" },
+      { resourceType: "RiskAssessment", resourceId: "oracle-p003", summary: "HORIZON admission model" },
       { resourceType: "Observation", resourceId: "obs-weight-p003", summary: "Weight trend" },
     ],
     createdAt: "2026-07-09T14:35:00Z",

@@ -119,7 +119,7 @@ async function run() {
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-mock-mode-banner");
   await assertFileIncludes("app/api/agents/oracle/route.ts", "runOracleAgent");
   await assertFileIncludes("lib/agents/llm-oracle.ts", "isLlmOracleConfigured");
-  await assertFileIncludes("components/dashboard/OracleRiskPanel.tsx", "Generate ORACLE brief");
+  await assertFileIncludes("components/dashboard/OracleRiskPanel.tsx", "Generate HORIZON brief");
   await assertFileIncludes("app/api/agents/dr-assist/route.ts", "runDrAssistAgent");
   await assertFileIncludes("lib/agents/llm-dr-assist.ts", "isLlmDrAssistConfigured");
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/dr-assist");

@@ -25,7 +25,7 @@ const protectedIcsRoutes = [
   {
     label: "ICS equity",
     path: "/dashboard/ics/equity",
-    expectedText: ["Equity Metrics", "EQUITY Deep-Dive", "Generate Equity Action Plan"],
+    expectedText: ["Equity Metrics", "COMPASS Deep-Dive", "Generate Equity Action Plan"],
   },
   {
     label: "ICS benchmarking",

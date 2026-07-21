@@ -9,9 +9,62 @@ import {
   consentGrantInputSchema
 } from "../precision-health/consent";
 import type { ModalityId } from "../precision-health/modalities";
+import { getPgPool, isPostgresConfigured } from "../db/client";
+import { CONSENT_GRANTS_SQL } from "../db/schema-sql";
 import { persistShieldAuditEvent } from "./shield-audit-repository";
 
 const dataDir = path.join(process.cwd(), "data");
+
+let consentSchemaReady: Promise<void> | null = null;
+
+async function ensureConsentGrantSchema() {
+  if (!isPostgresConfigured()) return;
+  if (!consentSchemaReady) {
+    consentSchemaReady = getPgPool()
+      .query(CONSENT_GRANTS_SQL)
+      .then(() => undefined)
+      .catch((error) => {
+        consentSchemaReady = null;
+        throw error;
+      });
+  }
+  await consentSchemaReady;
+}
+
+/** Best-effort durable mirror of a consent grant to Neon. Never throws into clinical paths. */
+async function mirrorConsentGrantToPostgres(grant: ConsentGrant, scopeKey: string) {
+  if (!isPostgresConfigured()) return;
+  try {
+    await ensureConsentGrantSchema();
+    await getPgPool().query(
+      `INSERT INTO aksh.consent_grants
+         (id, scope_key, patient_id, purpose_code, modalities, status, granted_by, granted_at,
+          revoked_at, revoked_by, notes, ehr_write, hitl_required)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       ON CONFLICT (id) DO UPDATE SET
+         status = EXCLUDED.status,
+         revoked_at = EXCLUDED.revoked_at,
+         revoked_by = EXCLUDED.revoked_by`,
+      [
+        grant.id,
+        scopeKey,
+        grant.patientId,
+        grant.purposeCode,
+        grant.modalities,
+        grant.status,
+        grant.grantedBy,
+        grant.grantedAt,
+        grant.revokedAt,
+        grant.revokedBy,
+        grant.notes,
+        grant.ehrWrite,
+        grant.hitlRequired
+      ]
+    );
+  } catch (error) {
+    console.error("[consent] durable mirror failed; file store remains source of truth", error);
+  }
+}
 
 function resolveFile(scopeKey = "shared") {
   const safe = /^[a-zA-Z0-9_-]{3,64}$/.test(scopeKey) ? scopeKey : "shared";
@@ -74,6 +127,7 @@ export async function upsertConsentGrant(
     existing.revokedAt = new Date().toISOString();
     existing.revokedBy = actor;
     await writeStore(grants, scopeKey);
+    void mirrorConsentGrantToPostgres(existing, scopeKey);
 
     void persistShieldAuditEvent({
       action: "defer",
@@ -111,6 +165,7 @@ export async function upsertConsentGrant(
 
   grants.push(grant);
   await writeStore(grants, scopeKey);
+  void mirrorConsentGrantToPostgres(grant, scopeKey);
 
   void persistShieldAuditEvent({
     action: "defer",

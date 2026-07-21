@@ -46,7 +46,7 @@ export function HeroProductVisual({ className = "" }: { className?: string }) {
             </li>
             <li className="aksh-mock-queue__row">
               <span className="aksh-mock-queue__dot" />
-              <span className="aksh-mock-queue__agent">ORACLE</span>
+              <span className="aksh-mock-queue__agent">HORIZON</span>
               <span className="aksh-mock-queue__detail">14-day risk · 82</span>
             </li>
             <li className="aksh-mock-queue__row">
@@ -176,7 +176,7 @@ function VoiceConsultVisual() {
           </li>
           <li className="aksh-mock-queue__row">
             <span className="aksh-mock-queue__dot" />
-            <span className="aksh-mock-queue__agent">ORACLE</span>
+            <span className="aksh-mock-queue__agent">HORIZON</span>
             <span className="aksh-mock-queue__detail">Risk flagged</span>
           </li>
         </ul>
@@ -213,7 +213,7 @@ function OracleRiskCard() {
     <div className="aksh-mock-frame aksh-mock-oracle">
       <div className="aksh-mock-frame__chrome">
         <span className="aksh-mock-frame__dot" />
-        <span className="aksh-mock-frame__title">ORACLE risk</span>
+        <span className="aksh-mock-frame__title">HORIZON risk</span>
         <span className="aksh-mock-frame__badge aksh-mock-frame__badge--warn">High</span>
       </div>
       <div className="aksh-mock-oracle__score">

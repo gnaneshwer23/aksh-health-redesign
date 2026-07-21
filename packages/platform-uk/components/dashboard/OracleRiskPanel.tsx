@@ -81,24 +81,24 @@ export function OracleRiskPanel({
       });
 
       if (!response.ok) {
-        toast({ title: "ORACLE unavailable", description: "Could not generate a risk brief." });
+        toast({ title: "HORIZON unavailable", description: "Could not generate a risk brief." });
         return;
       }
 
       const data = (await response.json()) as { draft?: OracleDraftView };
       if (!data.draft) {
-        toast({ title: "ORACLE unavailable", description: "Empty draft returned." });
+        toast({ title: "HORIZON unavailable", description: "Empty draft returned." });
         return;
       }
 
       setDraft(data.draft);
       setNote(data.draft.summary ?? "");
       toast({
-        title: "ORACLE draft ready",
+        title: "HORIZON draft ready",
         description: "Review the risk brief, then Accept/Edit/Reject before staging."
       });
     } catch {
-      toast({ title: "ORACLE unavailable", description: "Network error generating risk brief." });
+      toast({ title: "HORIZON unavailable", description: "Network error generating risk brief." });
     } finally {
       setRunning(false);
     }
@@ -112,8 +112,8 @@ export function OracleRiskPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "accept",
-          agentLabel: "ORACLE",
-          label: "SHIELD: ORACLE risk brief staged for GP review",
+          agentLabel: "HORIZON",
+          label: "SHIELD: HORIZON risk brief staged for GP review",
           detail: note.slice(0, 280),
           resourceRef: `${patientName} (${patientId})`,
           category: "reviewer_decision",
@@ -132,16 +132,16 @@ export function OracleRiskPanel({
     setStaged(true);
     toast({
       title: "Staged for GP review",
-      description: "ORACLE brief logged to SHIELD · no EHR write-back"
+      description: "HORIZON brief logged to SHIELD · no EHR write-back"
     });
   };
 
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold">ORACLE risk brief</h2>
+        <h2 className="text-base font-semibold">HORIZON risk brief</h2>
         <Button size="sm" variant="outline" disabled={running} onClick={() => void runOracle()}>
-          {running ? "Generating…" : "Generate ORACLE brief"}
+          {running ? "Generating…" : "Generate HORIZON brief"}
         </Button>
       </div>
       {modelCard && (
@@ -172,7 +172,7 @@ export function OracleRiskPanel({
           {draft && !dismissed ? (
             <>
               <p className="text-sm rounded-md bg-muted/40 p-3">
-                <span className="font-medium">ORACLE brief</span>
+                <span className="font-medium">HORIZON brief</span>
                 <span className="text-xs text-muted">
                   {" "}
                   · {draft.mode ?? "unknown"} / {draft.dataSource ?? source ?? "unknown"}
@@ -210,14 +210,14 @@ export function OracleRiskPanel({
                   onEdit={() => setEditing(true)}
                   onReject={(reason) => {
                     setDismissed(true);
-                    toast({ title: "ORACLE brief dismissed", description: reason || "No reason provided" });
+                    toast({ title: "HORIZON brief dismissed", description: reason || "No reason provided" });
                   }}
                 />
               )}
             </>
           ) : (
             <p className="text-sm text-muted">
-              Generate an ORACLE HITL draft from Neo4j/mock risk context. Drafts never write to the EHR.
+              Generate a HORIZON HITL draft from Neo4j/mock risk context. Drafts never write to the EHR.
             </p>
           )}
         </CardContent>

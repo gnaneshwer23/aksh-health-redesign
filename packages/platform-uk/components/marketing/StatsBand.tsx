@@ -2,7 +2,7 @@ import { container } from "@/components/marketing/marketing-ui";
 
 const stats = [
   { value: "4 sec", label: "SOAP note draft", detail: "SYNTHESIS structures your note from consultation input" },
-  { value: "14 days", label: "Admission risk horizon", detail: "ORACLE predicts deterioration ahead of time" },
+  { value: "14 days", label: "Admission risk horizon", detail: "HORIZON predicts deterioration ahead of time" },
   { value: "0", label: "Auto-writes without approval", detail: "Every output waits for clinician sign-off" },
   { value: "8", label: "Role dashboards, one platform", detail: "GP, nurse, pharmacist, and more" },
 ] as const;

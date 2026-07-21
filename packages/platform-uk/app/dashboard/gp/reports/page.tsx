@@ -51,7 +51,7 @@ export default function GpReportsPage() {
           <CardContent className="space-y-3 text-sm text-muted">
             <p>AI-assisted documentation saved an estimated 6.2 hours of clinician time this week.</p>
             <p>3 care pathways advanced to supervised automation; 1 remains awaiting GP approval.</p>
-            <p>ORACLE flagged 5 patients for elevated admission risk: 4 reviewed, 1 pending follow-up.</p>
+            <p>HORIZON flagged 5 patients for elevated admission risk: 4 reviewed, 1 pending follow-up.</p>
           </CardContent>
         </Card>
       </div>

@@ -8,7 +8,7 @@ import type { OracleRisk } from "@/lib/mock-data/types";
 
 export const ORACLE_MODEL = "openai/gpt-5.4-mini";
 
-const ORACLE_SYSTEM = `You are Aksh Health ORACLE — a CVD / long-term condition risk stratification assistant for NHS primary care rehearsal.
+const ORACLE_SYSTEM = `You are Aksh Health HORIZON (predictive risk, formerly ORACLE) — a CVD / long-term condition risk stratification assistant for NHS primary care rehearsal.
 Given a patient's known risk score, conditions, medications, and contributing factors, produce a concise risk narrative for clinician review.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the score is filed.
@@ -87,7 +87,7 @@ function deterministicFallback(input: {
     medications: input.medications,
     riskFactors: input.riskFactors,
     admissionRisk14Days: input.admissionRisk14Days,
-    summary: `ORACLE risk ${input.oracleScore} (${input.oracleRisk}). ${factors[0] ?? "Review full record for contributing factors."}`,
+    summary: `HORIZON risk ${input.oracleScore} (${input.oracleRisk}). ${factors[0] ?? "Review full record for contributing factors."}`,
     contributingFactors: factors,
     clinicianActions: [
       "Review contributing factors against the clinical record",
@@ -95,7 +95,7 @@ function deterministicFallback(input: {
       "Do not write back to the EHR from this rehearsal path"
     ],
     safetyNotes: [
-      `Deterministic ORACLE fallback (LLM unavailable or disabled). Data source: ${input.dataSource}.`,
+      `Deterministic HORIZON fallback (LLM unavailable or disabled). Data source: ${input.dataSource}.`,
       "HITL Accept/Edit/Reject required before any staging or record impact."
     ],
     confidence: 0.5
@@ -150,8 +150,8 @@ export async function runOracleAgent(options: { patientId: string }): Promise<Or
       system: ORACLE_SYSTEM,
       prompt: `Patient: ${patient.name} (${patientId})
 Data source: ${dataSource}
-ORACLE score: ${patient.oracleScore}
-ORACLE risk band: ${patient.oracleRisk}
+HORIZON score: ${patient.oracleScore}
+HORIZON risk band: ${patient.oracleRisk}
 14-day admission risk %: ${patient.admissionRisk14Days}
 Conditions: ${patient.conditions.join("; ") || "none listed"}
 Medications: ${patient.medications.join("; ") || "none listed"}
@@ -187,7 +187,7 @@ ${patient.riskFactors.length > 0 ? patient.riskFactors.map((f) => `- ${f}`).join
         : fallback.clinicianActions,
       safetyNotes: Array.isArray(parsed.safetyNotes)
         ? parsed.safetyNotes.map(String)
-        : ["LLM ORACLE draft — clinician must Accept/Edit/Reject before staging."],
+        : ["LLM HORIZON draft — clinician must Accept/Edit/Reject before staging."],
       confidence:
         typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1
           ? parsed.confidence

@@ -11,7 +11,7 @@ export async function GET() {
     available: true,
     llmConfigured: isLlmEquityConfigured(),
     mode: isLlmEquityConfigured() ? "llm_with_deterministic_fallback" : "deterministic_only",
-    note: "EQUITY drafts are aggregate/synthetic only. HITL required. No EHR write."
+    note: "COMPASS (formerly EQUITY) drafts are aggregate/synthetic only. HITL required. No EHR write."
   });
 }
 
@@ -32,11 +32,11 @@ export async function POST(request: Request) {
   void persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
-    label: `SHIELD: EQUITY draft generated (${draft.mode}/${draft.dataSource})`,
+    label: `SHIELD: COMPASS draft generated (${draft.mode}/${draft.dataSource})`,
     detail: `flags=${draft.equityFlags}; priorities=${draft.priorities.length}; confidence=${draft.confidence}`,
     category: "system",
     caseId: body.caseId,
-    agentLabel: "EQUITY",
+    agentLabel: "COMPASS",
     resourceRef: draft.icsName,
     payload: {
       mode: draft.mode,

@@ -247,11 +247,11 @@ export function AgentControlPanel({
       setOracleDraft(data.draft);
       setOracleNote(data.draft.summary ?? "");
       toast({
-        title: "ORACLE draft ready",
+        title: "HORIZON draft ready",
         description: "Review the risk brief, then Accept/Edit/Reject."
       });
     } catch {
-      toast({ title: "ORACLE unavailable", description: "Could not generate a risk brief." });
+      toast({ title: "HORIZON unavailable", description: "Could not generate a risk brief." });
     } finally {
       setRunning(null);
     }
@@ -265,7 +265,7 @@ export function AgentControlPanel({
       patientName: current.name,
       patientNhsNumber: current.nhsNumber,
       agentType: "ORACLE",
-      title: "ORACLE risk brief",
+      title: "HORIZON risk brief",
       content: oracleNote,
       confidenceScore:
         typeof oracleDraft.confidence === "number" ? Math.round(oracleDraft.confidence * 100) : null,
@@ -273,8 +273,8 @@ export function AgentControlPanel({
       reviewerName
     });
     await shieldAccept({
-      agentLabel: "ORACLE",
-      label: "SHIELD: ORACLE risk brief staged for GP review",
+      agentLabel: "HORIZON",
+      label: "SHIELD: HORIZON risk brief staged for GP review",
       detail: oracleNote,
       resourceRef: `${current.name} (${current.id})`,
       extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource }
@@ -282,7 +282,7 @@ export function AgentControlPanel({
     setOracleStaged(true);
     toast({
       title: "Staged for GP review",
-      description: "ORACLE brief logged to SHIELD · no EHR write-back"
+      description: "HORIZON brief logged to SHIELD · no EHR write-back"
     });
   }
 
@@ -432,11 +432,11 @@ export function AgentControlPanel({
       if (!data.draft) throw new Error("empty draft");
       setReferralDraft(data.draft);
       toast({
-        title: "REFERRAL package ready",
+        title: "PATHWAY package ready",
         description: "Synthetic draft only — no e-Referral write-back."
       });
     } catch {
-      toast({ title: "REFERRAL unavailable", description: "Could not generate a referral package." });
+      toast({ title: "PATHWAY unavailable", description: "Could not generate a referral package." });
     } finally {
       setRunning(null);
     }
@@ -464,8 +464,8 @@ export function AgentControlPanel({
       reviewerName
     });
     await shieldAccept({
-      agentLabel: "REFERRAL",
-      label: "SHIELD: REFERRAL package staged for GP review",
+      agentLabel: "PATHWAY",
+      label: "SHIELD: PATHWAY package staged for GP review",
       detail: content,
       resourceRef: `${current.name} (${current.id})`,
       extra: { mode: referralDraft.mode, eReferralWrite: false }
@@ -473,7 +473,7 @@ export function AgentControlPanel({
     setReferralStaged(true);
     toast({
       title: "Staged for GP review",
-      description: "REFERRAL package logged to SHIELD · no e-Referral write"
+      description: "PATHWAY package logged to SHIELD · no e-Referral write"
     });
   }
 
@@ -588,7 +588,7 @@ export function AgentControlPanel({
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <AgentBadge agent="ORACLE" /> ORACLE
+              <AgentBadge agent="ORACLE" /> HORIZON
             </span>
             <Button
               variant="outline"
@@ -641,7 +641,7 @@ export function AgentControlPanel({
                       onEdit={() => setOracleEditing(true)}
                       onReject={(reason) => {
                         setOracleDraft(null);
-                        toast({ title: "ORACLE dismissed", description: reason || "No reason provided" });
+                        toast({ title: "HORIZON dismissed", description: reason || "No reason provided" });
                       }}
                     />
                   ) : null}
@@ -801,7 +801,7 @@ export function AgentControlPanel({
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <AgentBadge agent="REFERRAL" /> REFERRAL
+              <AgentBadge agent="REFERRAL" /> PATHWAY
             </span>
             <Button
               variant="outline"
@@ -843,7 +843,7 @@ export function AgentControlPanel({
                   }
                   onReject={(reason) => {
                     setReferralDraft(null);
-                    toast({ title: "REFERRAL dismissed", description: reason || "No reason provided" });
+                    toast({ title: "PATHWAY dismissed", description: reason || "No reason provided" });
                   }}
                 />
               )}

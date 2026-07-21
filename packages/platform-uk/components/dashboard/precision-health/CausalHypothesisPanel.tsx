@@ -72,7 +72,7 @@ export function CausalHypothesisPanel({
       <CardContent className="space-y-3 p-4 pt-2">
         {!result ? (
           <p className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted">
-            Stub returns rule + ORACLE risk-state hypothesized drivers. Not DAG-validated causal
+            Stub returns rule + HORIZON risk-state hypothesized drivers. Not DAG-validated causal
             identification or RCT evidence.
           </p>
         ) : (

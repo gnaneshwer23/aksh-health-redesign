@@ -11,7 +11,7 @@ import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulatio
 /**
  * Scenario ranking panel — synthetic rules only.
  * Explicitly not a living physiological digital twin.
- * Phase C: accepts seedFromOrchestrate after ORACLE / Orchestrate.
+ * Phase C: accepts seedFromOrchestrate after HORIZON / Orchestrate.
  */
 export function ScenarioRankingPanel({
   patientId,
@@ -131,7 +131,7 @@ export function ScenarioRankingPanel({
             Scenario ranking (synthetic) — not a living digital twin
           </CardTitle>
           <p className="text-xs text-muted">
-            Rules + ORACLE risk-state only · simulationMode: synthetic_rules · ehrWrite: false · HITL
+            Rules + HORIZON risk-state only · simulationMode: synthetic_rules · ehrWrite: false · HITL
             before plan promotion
           </p>
         </div>

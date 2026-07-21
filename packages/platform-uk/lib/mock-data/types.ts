@@ -10,7 +10,15 @@ export type AgentType =
   | "EQUITY"
   | "SHIELD"
   | "HEALTH_COMPANION"
-  | "COMMAND";
+  | "COMMAND"
+  // July 2026 Agent Naming Reference — renamed labels (legacy ids above kept as aliases)
+  | "HORIZON"
+  | "PATHWAY"
+  | "COMPASS"
+  | "CANVAS"
+  | "BRIDGE"
+  | "NEXUS"
+  | "CONDUCTOR";
 
 export type ReviewPriority = "Normal" | "High" | "Urgent";
 

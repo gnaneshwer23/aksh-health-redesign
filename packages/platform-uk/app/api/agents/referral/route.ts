@@ -27,7 +27,7 @@ function buildReferralDraft(options: {
     title: "Urgent referral package",
     summary: `${indication.slice(0, 120)}${indication.length > 120 ? "…" : ""}`,
     content: [
-      "REFERRAL AGENT: coordination draft",
+      "PATHWAY: coordination draft",
       `Priority: ${priority.toUpperCase()}`,
       `Patient: ${options.patientLabel} (${options.patientId})`,
       `Clinical indication: ${indication}`,
@@ -57,7 +57,7 @@ export async function GET() {
   return NextResponse.json({
     available: true,
     mode: "synthetic_packaging_only",
-    note: "REFERRAL packages are synthetic drafts only. No NHS e-Referral Service write-back. HITL Accept required before staging."
+    note: "PATHWAY (formerly REFERRAL) packages are synthetic drafts only. No NHS e-Referral Service write-back. HITL Accept required before staging."
   });
 }
 
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
     queueItem,
     serviceRequest,
     safetyNotes: [
-      "Synthetic REFERRAL packaging only — not submitted to NHS e-Referral Service.",
+      "Synthetic PATHWAY packaging only — not submitted to NHS e-Referral Service.",
       "HITL Accept/Edit/Reject required before any staging or record impact."
     ],
     confidence: 0.55
@@ -107,11 +107,11 @@ export async function POST(request: Request) {
   void persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
-    label: "SHIELD: REFERRAL package drafted (synthetic)",
+    label: "SHIELD: PATHWAY package drafted (synthetic)",
     detail: `${queueItem.title}; priority=${serviceRequest.priority}`,
     category: "system",
     caseId,
-    agentLabel: "REFERRAL",
+    agentLabel: "PATHWAY",
     resourceRef: `${patientLabel} (${patientId})`,
     payload: {
       mode: draft.mode,

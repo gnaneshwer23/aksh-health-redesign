@@ -36,7 +36,7 @@ const tiers: PricingTier[] = [
       "For an individual practice getting started with clinician-reviewed AI drafting and safety checks on a small patient list.",
     features: [
       "GP, nurse, and pharmacist dashboards",
-      "SYNTHESIS, GUARDIAN, and ORACLE agents",
+      "SYNTHESIS, GUARDIAN, and HORIZON agents",
       "Single review queue with full audit trail",
       "Standard onboarding and support",
     ],
@@ -66,7 +66,7 @@ const tiers: PricingTier[] = [
     features: [
       "Everything in Organisation, at system scale",
       "Hospital command centre and ICS dashboards",
-      "EQUITY population health and benchmarking",
+      "COMPASS population health and benchmarking",
       "Dedicated implementation and governance support",
     ],
     cta: { label: "Talk to us", href: "/contact" },

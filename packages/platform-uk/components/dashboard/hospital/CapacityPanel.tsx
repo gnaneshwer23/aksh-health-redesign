@@ -23,7 +23,7 @@ async function logHospitalShield(payload: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...payload,
-        agentLabel: "ORACLE",
+        agentLabel: "HORIZON",
         category: "reviewer_decision"
       })
     });

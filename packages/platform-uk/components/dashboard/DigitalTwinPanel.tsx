@@ -81,7 +81,7 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
       highRiskSharePercent,
       signals: [
         `${icsData.guardianAlertsGenerated} GUARDIAN alerts across ${icsData.practices} practices`,
-        `${icsData.equityFlags} EQUITY flags requiring ICS-level review`,
+        `${icsData.equityFlags} COMPASS flags requiring ICS-level review`,
         `Predicted daily admissions trending to ${Math.round(avgPredicted)} (14-day horizon)`,
         `${highRisk.toLocaleString()} patients in high/very-high risk tiers`
       ],
@@ -162,7 +162,7 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
       <CardHeader className="p-4 pb-0">
         <CardTitle className="text-sm">Patient risk state</CardTitle>
         <p className="text-xs text-muted">
-          Risk-state model (ORACLE-style) — not a physiological digital twin
+          Risk-state model (HORIZON-style) — not a physiological digital twin
           {apiLoaded && apiRiskState ? " · loaded from risk-state API" : " · local demo model"}
         </p>
         {riskState.modelCard && (

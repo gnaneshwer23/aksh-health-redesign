@@ -13,7 +13,7 @@ import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
 function buildHandoverDraft(wardLabel: string) {
   return `Night shift handover, ${wardLabel}
-3 patients with elevated ORACLE scores. Mrs Johnson (P001): breathlessness reported via Voice Care Agent, requires same-day review. Mr Green (P008) | polypharmacy alert pending pharmacist review. All vital signs documented. 2 EQUITY flags raised for review.`;
+3 patients with elevated HORIZON scores. Mrs Johnson (P001): breathlessness reported via Voice Care Agent, requires same-day review. Mr Green (P008) | polypharmacy alert pending pharmacist review. All vital signs documented. 2 COMPASS flags raised for review.`;
 }
 
 export function HandoverPanel({ autoOpen = false }: { autoOpen?: boolean }) {

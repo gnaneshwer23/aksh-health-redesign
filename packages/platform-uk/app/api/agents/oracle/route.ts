@@ -17,7 +17,7 @@ export async function GET() {
     autoRetrain: false,
     physiologicalTwin: false,
     governedReleaseSop: modelCard.governedReleaseSop,
-    note: "ORACLE drafts never write to the EHR. HITL Accept/Edit/Reject is required before staging. No silent auto-retrain — see GOVERNED_MODEL_RELEASE_SOP."
+    note: "HORIZON (formerly ORACLE) drafts never write to the EHR. HITL Accept/Edit/Reject is required before staging. No silent auto-retrain — see GOVERNED_MODEL_RELEASE_SOP."
   });
 }
 
@@ -45,11 +45,11 @@ export async function POST(request: Request) {
   void persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
-    label: `SHIELD: ORACLE draft generated (${draft.mode}/${draft.dataSource})`,
+    label: `SHIELD: HORIZON draft generated (${draft.mode}/${draft.dataSource})`,
     detail: `score=${draft.oracleScore}; risk=${draft.oracleRisk}; confidence=${draft.confidence}`,
     category: "system",
     caseId: body.caseId,
-    agentLabel: "ORACLE",
+    agentLabel: "HORIZON",
     resourceRef: `${draft.patientLabel} (${draft.patientId})`,
     payload: {
       mode: draft.mode,

@@ -47,18 +47,18 @@ export const CLINICAL_AGENT_META: Record<
     description: "Drug interaction and allergy flags on MedicationRequest."
   },
   ORACLE: {
-    label: "ORACLE",
+    label: "HORIZON",
     function: "CVD / T2D risk score",
     description: "Risk stratification with contributing factors."
   },
   REFERRAL: {
-    label: "REFERRAL",
-    function: "Pathway coordination",
+    label: "PATHWAY",
+    function: "Care coordination",
     description: "Referral package draft → ServiceRequest after GP Accept."
   },
   EQUITY: {
-    label: "EQUITY",
-    function: "Disparity overlay",
+    label: "COMPASS",
+    function: "Population health",
     description: "IMD / ethnicity disparity signals (admin review: Phase B)."
   },
   SHIELD: {
@@ -68,10 +68,41 @@ export const CLINICAL_AGENT_META: Record<
   }
 };
 
+/**
+ * Canonical 12-agent directory (Agent Naming Reference, July 2026).
+ * ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY are label renames only —
+ * internal ids, env vars, and API routes keep the legacy names as aliases.
+ * PRISM and ATLAS are Phase 2 roadmap agents and are not built.
+ */
+export const AGENT_DIRECTORY = [
+  { name: "CANVAS", role: "Clinical Intake Agent", category: "Intake", phase: 1, live: true, previously: "unnamed (intake generation / shared patient context)" },
+  { name: "SYNTHESIS", role: "Clinical Documentation Agent", category: "Documentation", phase: 1, live: true, previously: "SYNTHESIS" },
+  { name: "BRIDGE", role: "Interoperability Agent", category: "Integration", phase: 1, live: true, previously: "unnamed (Medplum staging / FHIR mapping)" },
+  { name: "NEXUS", role: "Clinical Intelligence Agent", category: "Intelligence", phase: 1, live: true, previously: "new capability" },
+  { name: "GUARDIAN", role: "Medication Intelligence Agent", category: "Safety", phase: 1, live: true, previously: "GUARDIAN" },
+  { name: "PRISM", role: "Imaging Intelligence Agent", category: "Imaging", phase: 2, live: false, previously: "new agent (roadmap)" },
+  { name: "HORIZON", role: "Predictive Risk Agent", category: "Risk", phase: 1, live: true, previously: "ORACLE" },
+  { name: "PATHWAY", role: "Care Coordination Agent", category: "Coordination", phase: 1, live: true, previously: "REFERRAL" },
+  { name: "COMPASS", role: "Population Health Agent", category: "Population", phase: 1, live: true, previously: "EQUITY" },
+  { name: "ATLAS", role: "Clinical Research Agent", category: "Research", phase: 2, live: false, previously: "new agent (roadmap)" },
+  { name: "SHIELD", role: "Regulatory & Audit Agent", category: "Governance", phase: 1, live: true, previously: "SHIELD" },
+  { name: "CONDUCTOR", role: "Supervisor Agent", category: "Orchestration", phase: 1, live: true, previously: "unnamed (clinical-spine orchestrate)" }
+] as const;
+
+/** Legacy id → renamed label lookups for copy that carries raw agent strings. */
+const AGENT_LABEL_ALIASES: Record<string, string> = {
+  ORACLE: "HORIZON",
+  EQUITY: "COMPASS",
+  REFERRAL: "PATHWAY"
+};
+
 /** Resolve a clinical agent id (or alias) to its user-facing label. */
 export function resolveClinicalAgentLabel(agent: string): string {
   if (agent in CLINICAL_AGENT_META) {
     return CLINICAL_AGENT_META[agent as ClinicalAgentId].label;
+  }
+  if (agent in AGENT_LABEL_ALIASES) {
+    return AGENT_LABEL_ALIASES[agent];
   }
   return agent;
 }

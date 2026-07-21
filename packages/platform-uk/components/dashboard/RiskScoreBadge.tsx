@@ -31,7 +31,7 @@ export function RiskScoreBadge({
 
   if (size === "lg") {
     return (
-      <div className={cn("flex flex-col items-center gap-2", className)} aria-label={`ORACLE risk score ${score}, ${risk}`}>
+      <div className={cn("flex flex-col items-center gap-2", className)} aria-label={`HORIZON risk score ${score}, ${risk}`}>
         <div className={cn("relative flex h-20 w-20 items-center justify-center rounded-full border-4 bg-card shadow-card", tone)}>
           <span className={cn("text-xl font-bold", textTone)}>{score}</span>
         </div>
@@ -57,7 +57,7 @@ export function RiskGauge({ score, risk }: { score: number; risk: OracleRisk }) 
         <span className={cn("text-sm font-bold", textTone)}>{score}</span>
       </div>
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">ORACLE Score</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-muted">HORIZON Score</p>
         <p className={cn("text-sm font-semibold", textTone)}>{risk} risk</p>
       </div>
     </div>

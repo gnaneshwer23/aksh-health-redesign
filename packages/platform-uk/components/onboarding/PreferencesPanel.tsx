@@ -76,10 +76,10 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
   if (role === "gp") {
     fields.push(
       { name: "synthesisLength" as keyof FormValues, label: "SYNTHESIS summary length", options: ["Brief", "Standard", "Detailed"] },
-      { name: "oracleAlerts" as keyof FormValues, label: "ORACLE alerts", options: ["All patients", "High risk only", "Off"] },
+      { name: "oracleAlerts" as keyof FormValues, label: "HORIZON alerts", options: ["All patients", "High risk only", "Off"] },
       { name: "guardianSensitivity" as keyof FormValues, label: "GUARDIAN sensitivity", options: ["All interactions", "Severe only"] },
       { name: "voiceAgent" as keyof FormValues, label: "VOICE agent", options: ["On", "Off"] },
-      { name: "equityReports" as keyof FormValues, label: "EQUITY reports", options: ["Monthly", "Quarterly", "Off"] },
+      { name: "equityReports" as keyof FormValues, label: "COMPASS reports", options: ["Monthly", "Quarterly", "Off"] },
       { name: "dailyDigest" as keyof FormValues, label: "Daily digest time", options: ["7am", "8am", "9am", "Off"] }
     );
   } else if (role === "nurse") {
@@ -87,7 +87,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
       { name: "guardianAlerts" as keyof FormValues, label: "GUARDIAN alerts", options: ["All", "Drug interactions only", "Off"] },
       { name: "voiceDictation" as keyof FormValues, label: "VOICE dictation", options: ["On", "Off"] },
       { name: "handoverSummary" as keyof FormValues, label: "Handover summary", options: ["Auto at shift end", "Manual"] },
-      { name: "equityFlags" as keyof FormValues, label: "EQUITY flags", options: ["Show", "Hide"] }
+      { name: "equityFlags" as keyof FormValues, label: "COMPASS flags", options: ["Show", "Hide"] }
     );
   } else if (role === "clinical-pharmacist") {
     fields.push(
@@ -98,7 +98,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
     );
   } else if (role === "practice-manager") {
     fields.push(
-      { name: "equityReports" as keyof FormValues, label: "EQUITY reports", options: ["Monthly", "Quarterly", "Off"] },
+      { name: "equityReports" as keyof FormValues, label: "COMPASS reports", options: ["Monthly", "Quarterly", "Off"] },
       { name: "extractionAlerts" as keyof FormValues, label: "Extraction job alerts", options: ["Email on failure", "None"] },
       { name: "billingContact" as keyof FormValues, label: "Billing contact", options: ["Same as me", "Different person"] },
       { name: "newUserInvitations" as keyof FormValues, label: "New user invitations", options: ["Require admin approval", "Auto-approve"] }

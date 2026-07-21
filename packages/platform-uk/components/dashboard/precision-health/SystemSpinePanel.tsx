@@ -71,7 +71,9 @@ type AgentProbe = {
 
 const AGENT_PROBES: Array<{ id: string; label: string; href: string }> = [
   { id: "guardian", label: "GUARDIAN", href: "/api/agents/guardian" },
-  { id: "oracle", label: "ORACLE", href: "/api/agents/oracle" },
+  { id: "oracle", label: "HORIZON", href: "/api/agents/oracle" },
+  { id: "nexus", label: "NEXUS", href: "/api/agents/nexus" },
+  { id: "pathway", label: "PATHWAY", href: "/api/agents/pathway" },
   { id: "dr-assist", label: "Dr.Assist", href: "/api/agents/dr-assist" },
 ];
 
@@ -272,8 +274,8 @@ export function SystemSpinePanel() {
         <div data-testid="spine-phase-c-intelligence">
           <p className="text-xs font-semibold">Phase C intelligence paths</p>
           <p className="mt-1 text-xs text-muted">
-            GP Orchestrate (SYNTHESIS→GUARDIAN→ORACLE) + twin ranking (synthetic_rules) on patient /
-            review pages; safety-route gates patient coaching; ORACLE model card visible. Not live EMR
+            GP Orchestrate (SYNTHESIS→GUARDIAN→HORIZON) + twin ranking (synthetic_rules) on patient /
+            review pages; safety-route gates patient coaching; HORIZON model card visible. Not live EMR
             or physiological twin.
           </p>
           <ul className="mt-2 flex flex-wrap gap-2 text-xs">

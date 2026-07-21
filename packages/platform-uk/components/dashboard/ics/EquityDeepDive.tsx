@@ -23,7 +23,7 @@ export function EquityDeepDive() {
     if (status !== "authenticated") {
       toast({
         title: "Sign in required",
-        description: "EQUITY agent drafts require an account so SHIELD can log HITL staging."
+        description: "COMPASS agent drafts require an account so SHIELD can log HITL staging."
       });
       return;
     }
@@ -36,20 +36,20 @@ export function EquityDeepDive() {
         body: JSON.stringify({})
       });
       if (!response.ok) {
-        toast({ title: "EQUITY unavailable", description: "Could not generate an equity action brief." });
+        toast({ title: "COMPASS unavailable", description: "Could not generate an equity action brief." });
         return;
       }
       const payload = (await response.json()) as { draft: EquityDraft };
       setDraft(payload.draft);
       setPlanLogged(true);
       toast({
-        title: "EQUITY draft ready",
+        title: "COMPASS draft ready",
         description: `${payload.draft.mode}/${payload.draft.dataSource} · SHIELD logged · no EHR write`
       });
     } catch {
       toast({
         title: "Could not generate plan",
-        description: "EQUITY agent request failed; try again when signed in."
+        description: "COMPASS agent request failed; try again when signed in."
       });
     } finally {
       setBusy(false);
@@ -59,7 +59,7 @@ export function EquityDeepDive() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-sm">EQUITY Deep-Dive</CardTitle>
+        <CardTitle className="text-sm">COMPASS Deep-Dive</CardTitle>
       </CardHeader>
       <CardContent>
         {loading && !liveData ? (
@@ -99,7 +99,7 @@ export function EquityDeepDive() {
             </Button>
             {planLogged ? (
               <p className="mt-2 text-xs text-accent">
-                EQUITY draft staged via `/api/agents/equity` · SHIELD audit · HITL only · no EHR write
+                COMPASS draft staged via `/api/agents/equity` · SHIELD audit · HITL only · no EHR write
                 {source ? ` · source=${source}` : ""}
               </p>
             ) : null}

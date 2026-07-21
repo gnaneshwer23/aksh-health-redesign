@@ -717,7 +717,7 @@ export const reviewCases: ReviewCase[] = [
         "itemType": "oracle_update",
         "status": "DRAFT",
         "title": "Risk score update",
-        "summary": "ORACLE: CVD/T2D composite risk 78 → 82 after DVT flag",
+        "summary": "HORIZON: CVD/T2D composite risk 78 → 82 after DVT flag",
         "content": "Type 2 diabetes mellitus with hyperglycaemia (HbA1c 58 mmol/mol)\nSuspected deep vein thrombosis: left leg swelling\nAntiplatelet therapy (Aspirin) with proposed anticoagulation\nPoor glycaemic control increases vascular risk",
         "metadata": {
           "baseline": 78,
@@ -758,7 +758,7 @@ export const reviewCases: ReviewCase[] = [
       {
         "id": "evt-vuk1-5",
         "category": "system",
-        "label": "ORACLE: risk score updated",
+        "label": "HORIZON: risk score updated",
         "actor": "system",
         "timestamp": "14:17"
       }

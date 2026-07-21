@@ -37,7 +37,7 @@ export default function ProblemSection() {
         "Designed for FHIR R4 and HL7 interoperability",
         "12 AI agents reason across unified clinical data",
         "Outputs staged as FHIR drafts for review, not static PDFs",
-        "ORACLE surfaces risk scores for clinician review",
+        "HORIZON surfaces risk scores for clinician review",
         "GP approves every recommendation before it acts",
       ],
     },

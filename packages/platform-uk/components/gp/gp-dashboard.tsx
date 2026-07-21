@@ -153,7 +153,7 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
         </label>
         {reviewCase.oracleRiskScore ? (
           <div className="gp-oracle-strip">
-            <span className="pill">ORACLE baseline {reviewCase.oracleRiskScore.baseline}</span>
+            <span className="pill">HORIZON baseline {reviewCase.oracleRiskScore.baseline}</span>
             <span className="pill">Current {reviewCase.oracleRiskScore.current}</span>
             <span className="pill">Δ +{reviewCase.oracleRiskScore.current - reviewCase.oracleRiskScore.baseline}</span>
           </div>

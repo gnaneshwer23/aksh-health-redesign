@@ -22,7 +22,7 @@ const DEMO_STEPS = [
     title: "Clinician dashboard | Mr Patel",
     route: "/dashboard/gp",
     publicSurface: true,
-    narrative: "Appointment list sorted by ORACLE risk: Mr James Patel (78 HIGH) at top.",
+    narrative: "Appointment list sorted by HORIZON risk: Mr James Patel (78 HIGH) at top.",
     demoSection: "§5.2–5.3",
   },
   {
@@ -38,12 +38,12 @@ const DEMO_STEPS = [
     title: "AI review queue",
     route: "/dashboard/gp?highlight=queue",
     publicSurface: true,
-    narrative: "Four DRAFT items: SOAP, codes, GUARDIAN URGENT, ORACLE 78→82.",
+    narrative: "Four DRAFT items: SOAP, codes, GUARDIAN URGENT, HORIZON 78→82.",
     demoSection: "§5.5–5.6",
   },
   {
     id: "referral",
-    title: "REFERRAL AGENT package",
+    title: "PATHWAY package",
     route: "/dashboard/gp?highlight=referral",
     publicSurface: true,
     narrative: "After SOAP + codes Accept: urgent DVT duplex + D-dimer ServiceRequest draft.",
@@ -67,10 +67,10 @@ const DEMO_STEPS = [
   },
   {
     id: "regional",
-    title: "ICS population & EQUITY view",
+    title: "ICS population & COMPASS view",
     route: "/dashboard/ics",
     publicSurface: true,
-    narrative: "Aggregate ICS metrics + EQUITY disparity insights across practices (synthetic public demo).",
+    narrative: "Aggregate ICS metrics + COMPASS disparity insights across practices (synthetic public demo).",
     demoSection: "§5.11",
   },
 ] as const;
@@ -112,7 +112,7 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
             Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and public ICS
-            EQUITY view. Proof-mode only. No production claims. Clinician and ICS dashboard steps are open without
+            COMPASS view. Proof-mode only. No production claims. Clinician and ICS dashboard steps are open without
             sign-in; admin, pharmacy, and audit surfaces require an account.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">

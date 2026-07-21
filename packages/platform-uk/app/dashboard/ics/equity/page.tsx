@@ -14,7 +14,7 @@ export default function IcsEquityPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold text-foreground">Equity Metrics</h2>
-        <p className="text-sm text-muted">EQUITY agent flags and recommended interventions for {icsName}.</p>
+        <p className="text-sm text-muted">COMPASS agent flags and recommended interventions for {icsName}.</p>
       </div>
       <EquityDeepDive />
     </div>

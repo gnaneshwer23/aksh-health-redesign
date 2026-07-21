@@ -15,7 +15,7 @@ export const DEFAULT_GP_PREFERENCES: GpPreferences = {
 
 export const GP_PREFERENCE_LABELS: Record<keyof GpPreferences, string> = {
   synthesisLength: "SYNTHESIS summary length",
-  oracleAlerts: "ORACLE alerts",
+  oracleAlerts: "HORIZON alerts",
   guardianSensitivity: "GUARDIAN sensitivity",
   voiceAgent: "Voice Care Agent",
   equityReports: "EQUITY reports",

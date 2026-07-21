@@ -48,6 +48,14 @@ export const AGENT_COLORS: Record<string, string> = {
   HEALTH_COMPANION: "#00A86B",
   REFERRAL: "#7C3AED",
   COMMAND: "#1A202C",
+  // Renamed labels (July 2026 naming reference) — same colours as legacy ids
+  HORIZON: "#E67E22",
+  COMPASS: "#0D9488",
+  PATHWAY: "#7C3AED",
+  CANVAS: "#2B6CB0",
+  BRIDGE: "#B7791F",
+  NEXUS: "#2C7A7B",
+  CONDUCTOR: "#1A202C",
 };
 
 export const RISK_COLORS: Record<string, string> = {

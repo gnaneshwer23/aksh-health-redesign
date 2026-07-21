@@ -21,7 +21,7 @@ const SECTIONS = [
   {
     href: "/dashboard/ics/equity",
     title: "Equity Metrics",
-    description: "EQUITY deep-dive flags, recommended actions, and action plan generation.",
+    description: "COMPASS deep-dive flags, recommended actions, and action plan generation.",
     icon: BarChart3,
     accent: "border-l-accent",
   },

@@ -69,7 +69,7 @@ export async function runClinicalSpineOrchestrate(
     detail: `reviewOrder=${orchestration.reviewOrder.join("→")}; twin=${twin ? "synthetic_rules" : "off"}; HITL required`,
     category: "system",
     caseId: input.caseId,
-    agentLabel: "ORCHESTRATE",
+    agentLabel: "CONDUCTOR",
     resourceRef: `${orchestration.sharedContext.patientLabel} (${orchestration.sharedContext.patientId})`,
     payload: {
       queuePriority: orchestration.queuePriority,

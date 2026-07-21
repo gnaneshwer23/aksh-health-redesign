@@ -165,7 +165,7 @@ export function ClinicalOrchestratePanel({
         <div>
           <CardTitle className="text-sm">Orchestrate clinical agents</CardTitle>
           <p className="text-xs text-muted">
-            SYNTHESIS → GUARDIAN → ORACLE · twin ranking after ORACLE · drafts only · HITL mandatory ·
+            SYNTHESIS → GUARDIAN → HORIZON · twin ranking after HORIZON · drafts only · HITL mandatory ·
             ehrWrite: false · physiologicalTwin: false
           </p>
         </div>
@@ -203,7 +203,7 @@ export function ClinicalOrchestratePanel({
 
             {result?.modelCard && (
               <p className="text-[10px] text-muted" data-testid="orchestrate-oracle-model-card">
-                ORACLE model {result.modelCard.modelId}@{result.modelCard.version} · owner:{" "}
+                HORIZON model {result.modelCard.modelId}@{result.modelCard.version} · owner:{" "}
                 {result.modelCard.clinicalOwner} · autoRetrain: false
               </p>
             )}
@@ -239,7 +239,7 @@ export function ClinicalOrchestratePanel({
                 body = (
                   <>
                     <p className="text-xs font-semibold uppercase tracking-wide">
-                      ORACLE · {o.oracleScore} ({o.oracleRisk})
+                      HORIZON · {o.oracleScore} ({o.oracleRisk})
                     </p>
                     <p className="text-sm">{o.summary}</p>
                   </>

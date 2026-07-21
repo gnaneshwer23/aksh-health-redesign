@@ -172,7 +172,7 @@ export const carePathways: CarePathway[] = [
       {
         stepNumber: 2,
         title: "Rescue inhaler trend analysis",
-        description: "ORACLE flags increasing salbutamol use",
+        description: "HORIZON flags increasing salbutamol use",
         status: "Completed",
         dueDate: "2026-07-01",
         completedDate: "2026-07-01",

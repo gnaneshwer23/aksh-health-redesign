@@ -28,7 +28,7 @@ const contacts = [
   },
   {
     title: "See the product",
-    body: "Synthetic Patel practice journey: ETL, GP consult, HITL queue, pharmacist, SHIELD, and regional EQUITY.",
+    body: "Synthetic Patel practice journey: ETL, GP consult, HITL queue, pharmacist, SHIELD, and regional COMPASS.",
     href: "/demo/patel",
     cta: "Walk the Patel demo",
   },

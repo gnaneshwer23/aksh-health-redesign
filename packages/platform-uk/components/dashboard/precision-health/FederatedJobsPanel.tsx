@@ -145,7 +145,7 @@ export function FederatedJobsPanel() {
                 </p>
                 {job.aggregate ? (
                   <p className="mt-1 text-muted">
-                    n={job.aggregate.cohortSizeSynthetic} · mean ORACLE{" "}
+                    n={job.aggregate.cohortSizeSynthetic} · mean HORIZON{" "}
                     {job.aggregate.meanOracleScore} · high-risk{" "}
                     {job.aggregate.highRiskSharePercent}% · {job.aggregate.sitesParticipating} sites
                     (synthetic)

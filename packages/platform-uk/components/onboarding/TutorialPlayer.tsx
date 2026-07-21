@@ -76,7 +76,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
     },
     {
       title: "Your highest-risk patients. Identified automatically.",
-      body: "ORACLE analyses each patient's full clinical record (conditions, medications, history, social determinants) and generates a risk score with contributing factors you can act on.",
+      body: "HORIZON analyses each patient's full clinical record (conditions, medications, history, social determinants) and generates a risk score with contributing factors you can act on.",
       visual: (
         <div className="rounded-md border border-border p-4">
           <div className="flex items-center gap-4">
@@ -98,7 +98,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
     },
     {
       title: "AI coordinates the follow-up so you don't have to.",
-      body: "When ORACLE flags a patient, Aksh Health drafts the care pathway: booking reviews, arranging screening, notifying the team. All steps await your confirmation.",
+      body: "When HORIZON flags a patient, Aksh Health drafts the care pathway: booking reviews, arranging screening, notifying the team. All steps await your confirmation.",
       visual: (
         <ol className="space-y-2 border-l-2 border-primary pl-4 text-sm">
           {[
@@ -120,7 +120,7 @@ function getGpScreens(doctorName: string): TutorialScreen[] {
         <ul className="space-y-1 text-sm text-accent">
           {[
             "Review Queue: Capture → draft → approve",
-            "ORACLE risk scores on today's list",
+            "HORIZON risk scores on today's list",
             "Patient detail: risk state · timeline · plan draft",
             "Walkthrough & resources linked from the dashboard",
           ].map((line) => (

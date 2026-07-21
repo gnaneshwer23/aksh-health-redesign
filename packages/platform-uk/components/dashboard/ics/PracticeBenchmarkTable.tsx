@@ -62,7 +62,7 @@ export function PracticeBenchmarkTable() {
                   ["aiAdoption", "AI Adoption %"],
                   ["queueClearance", "Queue Clearance"],
                   ["guardianAlerts", "GUARDIAN"],
-                  ["equityFlags", "EQUITY"],
+                  ["equityFlags", "COMPASS"],
                   ["overallScore", "Score"],
                 ].map(([key, label]) => (
                   <TableHead key={key} className="cursor-pointer" onClick={() => setIcsSort(key)}>
