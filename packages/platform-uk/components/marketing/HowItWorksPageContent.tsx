@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { EndToEndPipelineDiagram } from "@/components/marketing/EndToEndPipelineDiagram";
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
@@ -146,13 +147,19 @@ export function HowItWorksPageContent() {
 
   return (
     <>
+      <section id="pipeline" className="scroll-mt-24 bg-white py-12 md:py-16">
+        <div className={container}>
+          <EndToEndPipelineDiagram />
+        </div>
+      </section>
+
       <section id="journey" className="scroll-mt-24 py-12 md:py-16">
         <div className={container}>
           <MarketingSectionHeader
             align="left"
-            label="End-to-end flow"
-            title="From capture to governed record"
-            description="A calm pipeline: capture the consult, stage drafts and checks, then clinician approval. No unsupervised write-back."
+            label="Care journey"
+            title="Capture, draft, approve — then stage"
+            description="A calm three-step clinician path. Agent drafts never auto-write to a live EHR."
           />
 
           <PlatformFlowDiagram variant="full" />

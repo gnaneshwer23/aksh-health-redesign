@@ -12,7 +12,7 @@ import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 export const metadata: Metadata = {
   title: `How it works | ${SEO_DEFAULTS.title}`,
   description:
-    "See how Aksh Health connects EMIS Web and SystmOne: capture, draft and clinical checks, clinician approval, and governed FHIR staging.",
+    "End-to-end Aksh Health pipeline: 12 agents, capture → draft → clinician approve, SHIELD audit, FHIR staging. Synthetic demo — no live EHR write-back.",
 };
 
 export default function HowItWorksPage() {
@@ -21,9 +21,9 @@ export default function HowItWorksPage() {
       <MarketingPageHero
         eyebrow="How it works"
         title="How Aksh Health works"
-        lede="From consult capture to a governed record: draft notes and clinical checks stage for review — clinicians approve every output. This page owns the depth; the homepage only introduces the story."
+        lede="Twelve agents. One HITL gate. Capture → draft → clinician approve → FHIR staging. Synthetic demo data today — no live EMIS or SystmOne write-back."
         primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Talk to us", href: "/get-started" }}
+        secondary={{ label: "See the pipeline", href: "/how-it-works#pipeline" }}
         aside={
           <>
             <p className="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-slate/55">
@@ -40,7 +40,7 @@ export default function HowItWorksPage() {
 
       <MarketingCtaBand
         title="Ready to see it in your organisation?"
-        lede="Eight role-specific dashboards. FHIR R4 ready for EMIS Web and SystmOne. Clinician approval built in from day one."
+        lede="Role-specific dashboards, HITL review, SHIELD audit, and FHIR R4 staging. Live EHR write-back remains partner Phase 2."
         primary={{ label: "Talk to us", href: "/get-started" }}
         secondary={{ label: "Create account", href: "/signup" }}
       />
