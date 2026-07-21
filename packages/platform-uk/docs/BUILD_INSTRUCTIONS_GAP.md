@@ -4,6 +4,8 @@
 **Source doc:** "AKSH HEALTH — COMPLETE BUILD INSTRUCTIONS" (July 2026)
 **Audited against:** `packages/platform-uk` on `main` (post Clinical Spine Phase F)
 
+> **Plain-English map (preferred entry):** [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest picture of what is connected vs not, actual stack (Neon / NextAuth / AI Gateway / CONDUCTOR / SHIELD), and what to do next. Use this gap audit for the layer table; do **not** rebuild with Supabase or LangGraph.
+
 ## Headline
 
 The build-instructions doc assumes the platform is a UI shell with no auth, no backend, no

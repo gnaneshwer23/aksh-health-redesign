@@ -324,6 +324,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 
 ## Cross-links
 
+- [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — Plain-English honest picture (start here; not a Week-1 rebuild)
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — Layers 1–15 vs reality  
 - [`E2E_CLINICAL_PROOF.md`](./E2E_CLINICAL_PROOF.md) — proof harness DoD  
 - [`CLINICAL_SPINE_PHASE_F.md`](./CLINICAL_SPINE_PHASE_F.md) — partner readiness (in-repo)  
