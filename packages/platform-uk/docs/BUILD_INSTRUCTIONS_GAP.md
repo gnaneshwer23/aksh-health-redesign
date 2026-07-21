@@ -54,6 +54,11 @@ Rename scope this session: user-facing labels (dashboards, marketing, onboarding
 Internal ids, env vars (`ENABLE_LLM_ORACLE`), API field names (`oracleScore`) keep working as
 aliases so existing API consumers and the clinical-proof suite stay stable.
 
+## Next: phased build (remaining only)
+
+See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 with audit gates.
+Do **not** rebuild DONE layers; product spine → agents → front/back → partner/EHR last.
+
 ## Gaps executed this session
 
 1. `docs/BUILD_INSTRUCTIONS_GAP.md` (this file).
