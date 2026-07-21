@@ -11,6 +11,7 @@
     "data:seed:postgres": "node --env-file=.env.local scripts/data-seed-postgres.mjs",
     "data:seed:neo4j": "npx tsx --env-file=.env.local scripts/seed-neo4j.ts",
     "auth:schema": "node --env-file=.env.local scripts/ensure-auth-schema.mjs",
+    "db:migrate:p1": "node --env-file=.env.local scripts/apply-neon-migrations-009-010.mjs",
     "auth:cleanup-demo": "node --env-file=.env.local scripts/cleanup-demo-users.mjs",
     "prelaunch:check": "node scripts/prelaunch-check.mjs",
     "data:reset": "node scripts/data-reset.mjs --with-auxiliary",

@@ -18,7 +18,7 @@ the working stack (NextAuth + Neon Postgres, Vercel AI Gateway, deterministic or
 | Layer | Doc says build | Current state | Status | Adaptation |
 |---|---|---|---|---|
 | 1 — Auth | Supabase auth, fix `/signin` `/signup` "Loading…" | NextAuth (credentials + optional clinical OAuth), bcrypt users in Neon (`aksh.users`), email verification, password reset, role/onboarding-aware middleware. `/signin` and `/signup` render server-side skeleton + real client form (no Loading-only screen). | **DONE** | Do **not** switch to Supabase. Keep NextAuth + Neon. |
-| 2 — DB schema | 6 Supabase tables + RLS | Neon migrations 001–008: users, profiles, onboarding_progress, pilot_applications, password reset/verification tokens, shield_audit_events (append-only, hash-chained), learning_events. Missing: `practices` lookup, durable `consents` (currently file-based JSON in `data/`). | **PARTIAL** | Translate to Neon migrations 009 (practices) + 010 (consent_grants); dual-write consent repo to Neon best-effort. No Supabase. |
+| 2 — DB schema | 6 Supabase tables + RLS | Neon migrations 001–010: users, profiles, onboarding, pilot apps, tokens, SHIELD, learning_events, **practices** (synthetic ODS seed), **consent_grants** (durable mirror). File store remains consent SoT; Neon best-effort dual-write. | **DONE** (P1) | Applied on target Neon 2026-07-21. No Supabase / RLS rewrite. |
 | 3 — Onboarding → DB | Supabase upsert per step | `aksh.onboarding_progress` synced per step via `/api/onboarding`; middleware gates dashboards on `onboardingComplete`. | **DONE** | None. |
 | 4 — Neo4j graph | AuraDB client, seed, 2 routes | `lib/neo4j` driver + queries, `scripts/seed-neo4j.ts`, `/api/neo4j/{patient,guardian,ics-population,health}`, honest mock-fallback banner, live smoke. | **DONE** | `/api/neo4j/patient` serves the doc's "horizon" route role. |
 | 5 — CANVAS (intake) | Mock-data fetch helper | `lib/intake-generation.ts` + orchestration shared patient context does this, previously unnamed. | **PARTIAL** (naming) | Adopt **CANVAS** name in agent registry/UI; no rebuild. |
@@ -65,7 +65,7 @@ Do **not** rebuild DONE layers; product spine → agents → front/back → part
 2. Label renames ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY across UI surfaces, with alias resolution in `lib/agents.ts`.
 3. Canonical 12-agent registry (`AGENT_DIRECTORY`) in `lib/agents.ts`.
 4. **NEXUS** clinical intelligence agent: `lib/agents/llm-nexus.ts` + `POST /api/agents/nexus` (AI Gateway + deterministic fallback, draft-only, SHIELD-audited).
-5. Neon migrations `009_practices.sql` (ODS lookup, seeded) and `010_consent_grants.sql` + best-effort durable mirror of consent grants.
+5. Neon migrations `009_practices.sql` (ODS lookup, seeded) and `010_consent_grants.sql` + best-effort durable mirror of consent grants — **DONE (P1)**; re-apply with `npm run db:migrate:p1`.
 
 ## Blocked on secrets / user decisions
 

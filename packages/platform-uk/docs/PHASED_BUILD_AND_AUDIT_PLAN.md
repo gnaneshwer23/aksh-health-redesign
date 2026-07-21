@@ -21,7 +21,7 @@ Build the **remaining** gaps in phases, each ending with an **audit gate**. Do *
 | Clinical spine A–F | `docs/CLINICAL_SPINE_PHASE_*.md` + spine tests in `test:clinical-proof` | `liveEmis:false` · HITL mandatory |
 | SHIELD | Append-only hash-chained `shield_audit_events` | Exceeds doc |
 | NEXUS API (standalone) | `lib/agents/llm-nexus.ts` · `POST /api/agents/nexus` · `tests/nexus-agent.test.ts` | Draft-only · not yet in CONDUCTOR default |
-| Migrations authored | `009_practices.sql` · `010_consent_grants.sql` | **Apply** still required on target Neon |
+| Migrations authored | `009_practices.sql` · `010_consent_grants.sql` | **Applied** on target Neon (P1 PASS) |
 
 **Fail any future phase if** someone proposes ripping NextAuth for Supabase, adding LangGraph as CONDUCTOR, flipping `liveEmis` without partner go/no-go, or inventing MHRA/DCB/CSO signatures in code.
 
@@ -106,10 +106,12 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P1**
 
-- [ ] SQL: `\dt aksh.practices` · `\dt aksh.consent_grants` (or equivalent)
-- [ ] Manual: complete consent step in onboarding → row or mirror attempt logged
-- [ ] `npm run test:clinical-proof` (tenant / HITL unchanged)
-- [ ] Honesty: no claim that practices table = live EMIS practice sync
+- [x] SQL: `\dt aksh.practices` · `\dt aksh.consent_grants` (or equivalent) — **PASS** 2026-07-21
+- [x] Manual: complete consent step in onboarding → row or mirror attempt logged — **PASS** (repo `upsertConsentGrant` → Neon + file)
+- [x] `npm run test:clinical-proof` (tenant / HITL unchanged) — **PASS** 2026-07-21 (exit 0)
+- [x] Honesty: no claim that practices table = live EMIS practice sync — **PASS** (`synthetic=true`; `liveEmis:false`)
+
+**P1 exit:** **PASS** — see [`PHASED_BUILD_P1_AUDIT.md`](./PHASED_BUILD_P1_AUDIT.md). Applied via `npm run db:migrate:p1`.
 
 ---
 
@@ -260,7 +262,7 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 | Gap | Phase | Notes |
 |---|---|---|
-| Neon 009/010 apply | **P1** | Files exist; apply to Neon |
+| Neon 009/010 apply | **P1** | **DONE** — applied + audited |
 | NEXUS not in CONDUCTOR | **P2** | API already live |
 | CANVAS / BRIDGE thin in GP UI | **P3** | Naming adoption |
 | VOICE / DrASSIST outside 12-agent brand | **P3** | Position as sub-capabilities |
