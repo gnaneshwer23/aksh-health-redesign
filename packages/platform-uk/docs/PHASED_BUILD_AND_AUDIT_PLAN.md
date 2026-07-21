@@ -322,8 +322,19 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 
 ---
 
+## What’s next (after P0–P7 paperwork)
+
+P0–P7 **eng spine + paperwork** are complete. Do **not** restart this plan.
+
+**Next ordered build:** [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — phases **N1…N10** (outreach → secrets → BRIDGE rehearsal → roster honesty → Partner sandbox → UAT → controlled `liveEmis` flip last → PRISM/ATLAS → CIS2/Mirth/regulatory).
+
+Keep `liveEmis:false` until signed go/no-go. Start with **N1** (send IM1 / Partner emails from the outreach pack).
+
+---
+
 ## Cross-links
 
+- [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — **What’s next** (N1–N10 after this plan)
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — Plain-English honest picture (start here; not a Week-1 rebuild)
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — Layers 1–15 vs reality  
 - [`E2E_CLINICAL_PROOF.md`](./E2E_CLINICAL_PROOF.md) — proof harness DoD  

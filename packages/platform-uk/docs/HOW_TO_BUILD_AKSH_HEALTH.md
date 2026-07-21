@@ -137,13 +137,15 @@ EMIS Partner Programme, IM1 feasibility, CIS2, Mirth, DPIA/DPA, named CSO, partn
 
 ## What to do next (not Week 1 from zero)
 
-1. **Read** [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) and **send** the IM1 feasibility email (and progress EMIS Partner Programme).
-2. **Obtain** a real **Medplum Client Secret** if you want staging OAuth green (optional for demos; required for serious FHIR rehearsal).
-3. **Optionally** copy `DEEPGRAM_API_KEY` into local `.env.local` for live VOICE ASR.
+Full ordered plan: [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) (phases **N1–N10**).
+
+1. **Read** [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) and **send** the IM1 feasibility email (and progress EMIS Partner Programme) — **N1**.
+2. **Obtain** a real **Medplum Client Secret** if you want staging OAuth green (optional for demos; required for serious FHIR rehearsal) — **N2**.
+3. **Optionally** copy `DEEPGRAM_API_KEY` into local `.env.local` for live VOICE ASR — **N2**.
 4. **Keep** running honesty checks: `npm run test:clinical-proof`, partner readiness `liveEmis === false`.
 5. **Do not** start a Supabase / LangGraph rebuild. Fail any plan that proposes it.
 
-When partner artefacts and a signed go/no-go exist, eng follows the controlled `liveEmis` flip checklist — last, not first.
+When partner artefacts and a signed go/no-go exist, eng follows the controlled `liveEmis` flip checklist (**N7**) — last, not first.
 
 ---
 
@@ -151,6 +153,7 @@ When partner artefacts and a signed go/no-go exist, eng follows the controlled `
 
 | Doc | Use when |
 |---|---|
+| [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) | **What’s next** after P0–P7 (N1–N10) |
 | [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) | Layer-by-layer vs old instructions |
 | [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) | P0–P7 gates and what “done” means |
 | [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) | Paperwork PASS vs live NO-GO |

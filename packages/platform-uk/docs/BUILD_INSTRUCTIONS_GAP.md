@@ -58,10 +58,11 @@ aliases so existing API consumers and the clinical-proof suite stay stable.
 
 ## Next: phased build (remaining only)
 
-See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — **P0–P7 paperwork PASS** (2026-07-21); **live `liveEmis` flip remains NO-GO**.
-Do **not** rebuild DONE layers; execute external outreach from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — eng `liveEmis` flip stays last.
+P0–P7 paperwork is **PASS** (2026-07-21); **live `liveEmis` flip remains NO-GO**. See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md).
 
-**Open gaps after P7 paperwork:** Layer 15 **live** EMR (signed partner artefacts) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2).
+**What’s next:** [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — phases **N1–N10**. Do **not** rebuild DONE layers; start external outreach from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — eng `liveEmis` flip stays last (N7).
+
+**Open gaps after P7 paperwork:** Layer 15 **live** EMR (signed partner artefacts) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2) · DrASSIST/JSL as coding sub-capability only (not a live peer agent).
 
 ## Gaps executed this session
 
