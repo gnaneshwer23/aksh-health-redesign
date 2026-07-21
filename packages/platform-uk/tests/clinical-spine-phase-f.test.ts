@@ -117,6 +117,8 @@ async function run() {
   assert.ok(getLiveEmisFlipChecklist().some((i) => i.status === "blocked"));
   assert.ok(getEvidencePackLinks().some((l) => l.id === "gate-2"));
   assert.ok(getEvidencePackLinks().some((l) => l.path.includes("CLINICAL_SPINE_PHASE_F")));
+  assert.ok(getEvidencePackLinks().some((l) => l.id === "p7-outreach-pack"));
+  assert.ok(getEvidencePackLinks().some((l) => l.path.includes("P7_PARTNER_OUTREACH_PACK")));
 
   // --- Routes / UI / docs ---
   const readinessRoute = fs.readFileSync(

@@ -226,6 +226,22 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
       note: "Primary partner track checklist"
     },
     {
+      id: "p7-outreach-pack",
+      label: "P7 partner outreach / paperwork pack",
+      path: "docs/P7_PARTNER_OUTREACH_PACK.md",
+      kind: "doc",
+      partnerReviewReady: true,
+      note: "IM1 email + external action checklist — not live flip"
+    },
+    {
+      id: "p7-audit",
+      label: "P7 audit (paperwork PASS / live NO-GO)",
+      path: "docs/PHASED_BUILD_P7_AUDIT.md",
+      kind: "doc",
+      partnerReviewReady: true,
+      note: "Honesty: liveEmis remains false"
+    },
+    {
       id: "phase3-regulatory",
       label: "Phase 3 regulatory path (unsigned templates)",
       path: "docs/PHASE3_REGULATORY_PATH.md",

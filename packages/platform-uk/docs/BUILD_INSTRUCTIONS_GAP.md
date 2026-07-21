@@ -31,7 +31,7 @@ the working stack (NextAuth + Neon Postgres, Vercel AI Gateway, deterministic or
 | 12 — PATHWAY (referrals) | Claude referral drafts | Live as **REFERRAL**: `lib/referral-agent.ts` + `/api/agents/referral`, ServiceRequest drafts after Accept. | **DONE** (naming) | Rename labels REFERRAL → **PATHWAY**. |
 | 13 — NEXUS (clinical intelligence) | Claude correlation agent | `lib/agents/llm-nexus.ts` · `/api/agents/nexus` · **in default CONDUCTOR** (`agent-orchestration` + clinical-spine orchestrate). Draft-only + HITL + SHIELD. | **DONE** (P2) | Keep draft-only; do not claim live EMR write. |
 | 14 — COMPASS (population) | Neo4j aggregate route | Live as **EQUITY** + `/api/neo4j/ics-population` (risk distribution, IMD) feeding ICS dashboard. | **DONE** (naming) | Rename labels EQUITY → **COMPASS**. |
-| 15 — EHR (EMIS/SystmOne) | Separate 3-week sprint | EMIS staging simulation only; `liveEmis:false`, `autoRetrain:false`. | **DEFERRED** (correct) | Stays deferred. Requires EMIS Partner Programme + CIS2 + Mirth on-prem. Never claim live. |
+| 15 — EHR (EMIS/SystmOne) | Separate 3-week sprint | EMIS staging simulation only; `liveEmis:false`, `autoRetrain:false`. Outreach pack shipped (P7 paperwork). | **DEFERRED live** (correct) | Requires EMIS Partner Programme + CIS2 + Mirth + signed go/no-go. Never claim live. See [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md). |
 
 ## Stack conflicts — decisions
 
@@ -56,10 +56,10 @@ aliases so existing API consumers and the clinical-proof suite stay stable.
 
 ## Next: phased build (remaining only)
 
-See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — **P0–P6 PASS** (2026-07-21); **P7** partner/EHR external remains.
-Do **not** rebuild DONE layers; partner paperwork may run in parallel — eng `liveEmis` flip stays last.
+See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — **P0–P7 paperwork PASS** (2026-07-21); **live `liveEmis` flip remains NO-GO**.
+Do **not** rebuild DONE layers; execute external outreach from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — eng `liveEmis` flip stays last.
 
-**Open gaps after P6:** Layer 15 (P7) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2).
+**Open gaps after P7 paperwork:** Layer 15 **live** EMR (signed partner artefacts) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2).
 
 ## Gaps executed this session
 
@@ -73,5 +73,5 @@ Do **not** rebuild DONE layers; partner paperwork may run in parallel — eng `l
 
 - `MEDPLUM_CLIENT_ID` / **real** `MEDPLUM_CLIENT_SECRET` — local UUIDs return Medplum OAuth `Invalid client` (P5 degraded rehearsal). Layer 11 stays dry-run / flag-gated until a real Client Application secret works. See [`PHASED_BUILD_P5_AUDIT.md`](./PHASED_BUILD_P5_AUDIT.md).
 - `DEEPGRAM_API_KEY` — on Vercel Preview/Production; missing locally → labelled simulated ASR (P5). Copy into `.env.local` for local live VOICE.
-- Layer 15 — EMIS Partner Programme approval, NHS CIS2, Mirth Connect (organisational, not code).
+- Layer 15 — EMIS Partner Programme approval, NHS CIS2, Mirth Connect (organisational, not code). Start with [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md).
 - No Supabase or Anthropic keys needed — stack decision above removes both dependencies.

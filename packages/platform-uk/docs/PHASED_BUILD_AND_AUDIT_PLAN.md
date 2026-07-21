@@ -251,18 +251,30 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | **Goal** | Real EMIS/SystmOne Partner path — only after org/partner artefacts. |
 | **Estimate** | Weeks–months (external critical path) · eng spike only after go/no-go |
 | **Owner** | **user / partner / CSO** primary · eng implements flip when authorised |
-| **Work (external)** | EMIS Partner Programme · CIS2 · Mirth on-prem · signed DPIA/DPA · CSO Gate 2 · write-back go/no-go · partner UAT · DTAC/DCB/MHRA route funded. Use `docs/PHASE2_PARTNER_CHECKLIST.md` · Phase F pack · evidence-pack templates. |
+| **Work (eng, paperwork — in-repo)** | Consolidate outreach pack + audit; link Admin `PartnerReadinessPanel` / Phase F APIs. **Never** set `liveEmis:true`. |
+| **Work (external)** | IM1 email · EMIS/Optum Partner · CIS2 · Mirth on-prem · signed DPIA/DPA · CSO Gate 2 · write-back go/no-go · partner UAT · DTAC/DCB/MHRA route funded. Use [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) · [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) · Phase F pack. |
 | **Work (eng, only after go/no-go)** | Controlled `liveEmis` flip checklist; partner write path behind feature flag; rollback drill; never auto-flip from gate tracker. |
-| **Exit criteria** | Signed artefacts on file; partner UAT signed; eng flip checklist complete; monitoring + rollback rehearsed. |
-| **Fail if** | Eng flips `liveEmis` because “code is ready”; UI shows certified without signatures; Mirth mock sold as live. |
+| **Exit criteria (paperwork)** | Outreach pack + audit on `main`; honesty flags false; UI/API pointed. |
+| **Exit criteria (live EHR)** | Signed artefacts on file; partner UAT signed; eng flip checklist complete; monitoring + rollback rehearsed. |
+| **Fail if** | Eng flips `liveEmis` because “code is ready”; UI shows certified without signatures; Mirth mock sold as live; paperwork PASS claimed as live EHR. |
 
-**Audit gate P7**
+**Audit gate P7 — paperwork (in-repo)**
+
+- [x] Partner outreach / paperwork pack consolidated — **PASS** 2026-07-21 ([`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md))
+- [x] Paste-ready IM1 feasibility email + partner/CSO drafts in docs — **PASS**
+- [x] Plan/audit point at Admin `PartnerReadinessPanel` + Phase F APIs — **PASS**
+- [x] Honesty: `liveEmis:false` · `autoRetrain:false` · `canFlipLiveEmisInCode():false` · reject `certified:true` — **PASS**
+- [x] P7 audit written — **PASS** paperwork / **NO-GO** live flip — see [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md)
+
+**Audit gate P7 — live EHR (external — still open)**
 
 - [ ] Partner checklist all human boxes signed (not just `external_ref_noted`)
-- [ ] `canFlipLiveEmisInCode()` / flip SOP only after go/no-go
+- [ ] `canFlipLiveEmisInCode()` / flip SOP only after signed go/no-go
 - [ ] Clinical-proof + partner UAT script green against staging partner endpoint
 - [ ] Honesty: production claims match actual Partner connection state
-- [ ] Residual risk + release/rollback docs updated in evidence pack
+- [ ] Residual risk + release/rollback docs updated with signed evidence
+
+**P7 exit:** **PASS (paperwork)** · **NO-GO (`liveEmis` flip)** — see [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md).
 
 ---
 
@@ -278,7 +290,7 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | Medplum secrets | **P5** | **DONE (degraded)** — smoke + honesty banners; OAuth still needs real Client Secret |
 | Deepgram / VOICE live ASR | **P5** | **DONE (simulated local)** — Vercel has key; local uses labelled simulated ASR |
 | Full regression after P1–P5 | **P6** | **DONE** — clinical-proof + workflow + typecheck + E2Es green; honesty intact |
-| Layer 15 EMIS/SystmOne live | **P7** | External · deferred correctly |
+| Layer 15 EMIS/SystmOne live | **P7** | Paperwork pack **PASS** in-repo; live flip **NO-GO** until signed go/no-go |
 | PRISM / ATLAS | Phase 2 roadmap | Out of P0–P7 build unless product pulls in |
 
 ---
@@ -304,9 +316,9 @@ For this plan, success means:
 1. **Product spine:** Neon 009/010 applied; CONDUCTOR includes NEXUS; HITL + SHIELD + `liveEmis:false` intact.  
 2. **Agent completeness:** 12-agent brand consistent in GP UI; VOICE/DrASSIST honestly positioned.  
 3. **Front/back:** Marketing and integrations match APIs and honesty flags.  
-4. **Partner/EHR:** Still deferred until external gates; staging Medplum/Deepgram optional and honest.
+4. **Partner/EHR:** Paperwork/outreach pack shipped (P7 paperwork PASS); live write-back still deferred until external signed gates; staging Medplum/Deepgram optional and honest.
 
-This is **not** a claim of production-ready live EHR write-back. That remains P7 only.
+This is **not** a claim of production-ready live EHR write-back. Live Layer 15 remains **NO-GO** until signed partner go/no-go.
 
 ---
 
@@ -315,5 +327,7 @@ This is **not** a claim of production-ready live EHR write-back. That remains P7
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — Layers 1–15 vs reality  
 - [`E2E_CLINICAL_PROOF.md`](./E2E_CLINICAL_PROOF.md) — proof harness DoD  
 - [`CLINICAL_SPINE_PHASE_F.md`](./CLINICAL_SPINE_PHASE_F.md) — partner readiness (in-repo)  
+- [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — P7 outreach checklist + paste-ready emails  
+- [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) — paperwork PASS / live NO-GO  
 - [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) — external partner actions  
 - [`PRECISION_HEALTH_DELIVERY_ROADMAP.md`](./PRECISION_HEALTH_DELIVERY_ROADMAP.md) — longer delivery context  

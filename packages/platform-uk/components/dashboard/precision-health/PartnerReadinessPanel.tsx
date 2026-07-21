@@ -200,7 +200,8 @@ export function PartnerReadinessPanel() {
         <CardTitle className="text-sm">Partner / regulatory readiness (Phase F)</CardTitle>
         <p className="text-xs text-muted">
           EMIS/SystmOne · DPIA · CSO Gate 2 · G-ML · modality credentials. liveEmis:false ·
-          autoRetrain:false · physiologicalTwin:false · no invented certifications.
+          autoRetrain:false · physiologicalTwin:false · no invented certifications. Outreach
+          checklist: docs/P7_PARTNER_OUTREACH_PACK.md (paperwork ≠ live EHR).
         </p>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-2">

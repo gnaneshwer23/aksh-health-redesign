@@ -20,14 +20,21 @@ Maximum **in-repo** partner readiness that unblocks EMIS/SystmOne, DPIA, CSO Gat
 
 ## Checklist (external — partner / org actions)
 
+Use the actionable pack: [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) (IM1 email, Partner Programme, DPIA/DPA, CSO, CIS2, Mirth, UAT).
+
+- [ ] Send IM1 feasibility email (`im1.team@nhs.net`) — paste from P7 pack
 - [ ] EMIS / SystmOne Partner API credentials + FHIR write scope
 - [ ] Signed DPIA + DPA covering EMR write-back (and first live modality)
 - [ ] Named CSO assigned; Gate 2 + hazard residual risk signed
 - [ ] Signed write-back **go / no-go** (only then can engineering consider flipping `liveEmis`)
 - [ ] Partner UAT of HITL → staging → Partner path + rollback procedure
+- [ ] CIS2 / NHS authentication plan (no fake SSO in product)
+- [ ] Mirth / HL7 v2 on-prem if required by topology
 - [ ] First modality vendor credentials + modality DPIA (Fitbit/etc. — never invent streams)
 - [ ] DTAC / DCB0129 / MHRA route selected and funded (templates exist; approvals are external)
 - [ ] Production G-ML-2 / G-ML-3 named signers (UI rehearsal ≠ production CSO)
+
+**UI:** Admin → Precision Health → **Partner / regulatory readiness** (`PartnerReadinessPanel`).
 
 ## APIs
 

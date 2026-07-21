@@ -161,6 +161,15 @@ async function run() {
   await assertFileIncludes("app/api/agents/oracle/route.ts", "getOracleModelCard");
   await assertFileIncludes("lib/precision-health/oracle-model-card.ts", "autoRetrain: false");
   await assertFileIncludes("docs/PHASE2_PARTNER_CHECKLIST.md", "liveEmis");
+  await assertFileIncludes("docs/P7_PARTNER_OUTREACH_PACK.md", "liveEmis: false");
+  await assertFileIncludes("docs/P7_PARTNER_OUTREACH_PACK.md", "im1.team@nhs.net");
+  await assertFileIncludes("docs/PHASED_BUILD_P7_AUDIT.md", "NO-GO");
+  await assertFileIncludes("docs/PHASED_BUILD_P7_AUDIT.md", "liveEmis");
+  await assertFileIncludes("lib/clinical-spine/partner-readiness.ts", "p7-outreach-pack");
+  await assertFileIncludes(
+    "components/dashboard/precision-health/PartnerReadinessPanel.tsx",
+    "P7_PARTNER_OUTREACH_PACK"
+  );
   await assertFileIncludes("app/api/patients/[id]/timeline/route.ts", "buildPatientTimeline");
   await assertFileIncludes("app/api/patients/[id]/health-plan/route.ts", "physiologicalTwin");
   await assertFileIncludes("app/api/patients/[id]/risk-state/route.ts", "notAPhysiologicalTwin");
