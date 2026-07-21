@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { AgentBadge } from "@/components/dashboard/AgentBadge";
@@ -172,8 +173,8 @@ export function AgentControlPanel({
     });
     setLastDictationAt(new Date().toLocaleString("en-GB"));
     toast({
-      title: "Transcript staged",
-      description: "VOICE transcript added to your review queue."
+      title: "Transcript staged for CANVAS",
+      description: "VOICE feeds CANVAS intake · HITL review · no EHR write-back."
     });
   }
 
@@ -194,8 +195,8 @@ export function AgentControlPanel({
         "";
       setDrAssistNote(codeLines);
       toast({
-        title: "Dr.Assist draft ready",
-        description: "Review coding suggestions, then Accept/Edit/Reject."
+        title: "Dr.Assist coding draft ready",
+        description: "Coding sub-capability under HITL — not a 13th directory agent."
       });
     } catch {
       toast({ title: "Dr.Assist unavailable", description: "Could not generate coding suggestions." });
@@ -225,12 +226,12 @@ export function AgentControlPanel({
       label: "SHIELD: Dr.Assist coding draft staged for GP review",
       detail: drAssistNote,
       resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: drAssistDraft.mode, dataSource: drAssistDraft.dataSource }
+      extra: { mode: drAssistDraft.mode, dataSource: drAssistDraft.dataSource, viaBridge: true }
     });
     setDrAssistStaged(true);
     toast({
-      title: "Staged for GP review",
-      description: "Dr.Assist codes logged to SHIELD · no EHR write-back"
+      title: "Staged via BRIDGE",
+      description: "Dr.Assist codes · SHIELD logged · liveEmis:false · no EHR write-back"
     });
   }
 
@@ -277,12 +278,12 @@ export function AgentControlPanel({
       label: "SHIELD: HORIZON risk brief staged for GP review",
       detail: oracleNote,
       resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource }
+      extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource, viaBridge: true }
     });
     setOracleStaged(true);
     toast({
-      title: "Staged for GP review",
-      description: "HORIZON brief logged to SHIELD · no EHR write-back"
+      title: "Staged via BRIDGE",
+      description: "HORIZON brief · SHIELD logged · liveEmis:false · no EHR write-back"
     });
   }
 
@@ -334,12 +335,12 @@ export function AgentControlPanel({
       label: "SHIELD: GUARDIAN brief staged for GP review",
       detail: content,
       resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: guardianDraft.mode, dataSource: guardianDraft.dataSource }
+      extra: { mode: guardianDraft.mode, dataSource: guardianDraft.dataSource, viaBridge: true }
     });
     setGuardianStaged(true);
     toast({
-      title: "Staged for GP review",
-      description: "GUARDIAN brief logged to SHIELD · no EHR write-back"
+      title: "Staged via BRIDGE",
+      description: "GUARDIAN brief · SHIELD logged · liveEmis:false · no EHR write-back"
     });
   }
 
@@ -405,12 +406,12 @@ export function AgentControlPanel({
       label: "SHIELD: SYNTHESIS SOAP draft staged for GP review",
       detail: synthesisNote,
       resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: synthesisDraft.mode, level: synthesisLevel }
+      extra: { mode: synthesisDraft.mode, level: synthesisLevel, viaBridge: true }
     });
     setSynthesisStaged(true);
     toast({
-      title: "Staged for GP review",
-      description: "SYNTHESIS note logged to SHIELD · no EHR write-back"
+      title: "Staged via BRIDGE",
+      description: "SYNTHESIS note · SHIELD logged · liveEmis:false · no EHR write-back"
     });
   }
 
@@ -468,17 +469,20 @@ export function AgentControlPanel({
       label: "SHIELD: PATHWAY package staged for GP review",
       detail: content,
       resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: referralDraft.mode, eReferralWrite: false }
+      extra: { mode: referralDraft.mode, eReferralWrite: false, viaBridge: true }
     });
     setReferralStaged(true);
     toast({
-      title: "Staged for GP review",
-      description: "PATHWAY package logged to SHIELD · no e-Referral write"
+      title: "Staged via BRIDGE",
+      description: "PATHWAY package · SHIELD logged · no e-Referral write · liveEmis:false"
     });
   }
 
   const liveGuardianInteractions =
     guardianDraft?.interactions ?? guardianData?.interactions ?? [];
+  const conductorHref = patient
+    ? `/dashboard/gp/patients/${patient.id}`
+    : "/dashboard/gp/review-queue";
 
   return (
     <aside
@@ -486,101 +490,88 @@ export function AgentControlPanel({
         "flex h-full shrink-0 flex-col gap-3 overflow-y-auto bg-card p-3 lg:w-72 lg:border-l lg:border-border",
         className
       )}
+      data-testid="agent-control-panel"
     >
-      <p className="text-[10px] text-muted px-0.5">
-        Agent drafts call live <code className="text-[9px]">/api/agents/*</code> paths. HITL required · no EHR
-        write-back.
-      </p>
+      <div className="space-y-1.5 px-0.5">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground">
+          Agent Control · 12-agent directory
+        </p>
+        <p className="text-[10px] text-muted">
+          Drafts call live <code className="text-[9px]">/api/agents/*</code> · HITL required · SHIELD ·{" "}
+          <span className="font-medium text-foreground">liveEmis:false</span>
+        </p>
+        <div
+          className="flex flex-wrap gap-1"
+          aria-label="Directory spine labels"
+          data-testid="gp-agent-brand-strip"
+        >
+          <AgentBadge agent="CANVAS" />
+          <AgentBadge agent="BRIDGE" />
+          <AgentBadge agent="CONDUCTOR" />
+        </div>
+        <p className="text-[9px] text-muted">
+          VOICE and Dr.Assist are intake/coding <span className="font-medium">sub-capabilities</span> — not
+          peer 13th/14th agents.
+        </p>
+      </div>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm" data-testid="gp-canvas-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center gap-2">
-            <AgentBadge agent="VOICE" /> VOICE
+            <AgentBadge agent="CANVAS" /> CANVAS
           </CardTitle>
-        </CardHeader>
-        <CardContent className="p-3 flex flex-col items-center gap-2">
-          <VoiceRecorder onTranscript={handleVoiceTranscript} />
-          <p className="text-[10px] text-muted text-center">
-            {lastDictationAt
-              ? `Last dictation: ${lastDictationAt}. Pending approval.`
-              : "Dictation feeds the VOICE agent and stages a transcript for review."}
+          <p className="text-[10px] text-muted pt-1">
+            Clinical Intake — structures patient history, conditions, and medications for review (synthetic /
+            staged context).
           </p>
+        </CardHeader>
+        <CardContent className="p-3 space-y-3">
+          {patient ? (
+            <ul className="space-y-1 text-[11px]">
+              {patient.activeConditions.slice(0, 3).map((c) => (
+                <li key={c} className="border-b border-border pb-1">
+                  {c}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted">Select a patient to load intake context.</p>
+          )}
+
+          <div className="rounded-sm border border-border-subtle bg-muted/20 p-2 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide">VOICE · sub-capability</p>
+              <span className="text-[9px] text-muted">feeds CANVAS</span>
+            </div>
+            <p className="text-[10px] text-muted">
+              Dictation feeds CANVAS intake and stages a transcript for HITL — not a separate directory agent.
+            </p>
+            <div className="flex flex-col items-center gap-2">
+              <VoiceRecorder onTranscript={handleVoiceTranscript} />
+              <p className="text-[10px] text-muted text-center">
+                {lastDictationAt
+                  ? `Last dictation: ${lastDictationAt}. Pending approval.`
+                  : "Tap to dictate into CANVAS."}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm" data-testid="gp-conductor-panel">
         <CardHeader className="p-3 pb-0">
-          <CardTitle className="text-sm flex items-center justify-between gap-2">
-            <span className="flex items-center gap-2">
-              <AgentBadge agent="DrASSIST" /> Dr.Assist
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6 text-[10px]"
-              disabled={!patient || running === "dr-assist"}
-              onClick={() => void runDrAssist()}
-            >
-              {running === "dr-assist" ? "…" : "Suggest codes"}
-            </Button>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <AgentBadge agent="CONDUCTOR" /> CONDUCTOR
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3 space-y-2 text-xs">
-          {!patient ? (
-            <p className="text-muted">Select a patient</p>
-          ) : drAssistDraft ? (
-            <>
-              <p className="text-[10px] text-muted">
-                {drAssistDraft.mode}/{drAssistDraft.dataSource}
-                {typeof drAssistDraft.confidence === "number"
-                  ? ` · conf ${drAssistDraft.confidence.toFixed(2)}`
-                  : ""}
-              </p>
-              {drAssistEditing ? (
-                <SOAPEditor
-                  value={drAssistNote}
-                  onChange={setDrAssistNote}
-                  onSave={() => {
-                    setDrAssistEditing(false);
-                    setDrAssistEdited(true);
-                  }}
-                  onCancel={() => {
-                    setDrAssistEditing(false);
-                    setDrAssistNote(
-                      drAssistDraft.codes?.map((c) => `${c.system} ${c.code}: ${c.display}`).join("\n") ??
-                        ""
-                    );
-                  }}
-                />
-              ) : (
-                <pre className="whitespace-pre-wrap rounded-sm bg-muted/30 p-2 text-[10px] leading-relaxed">
-                  {drAssistNote}
-                </pre>
-              )}
-              {drAssistStaged ? (
-                <p className="text-[10px] text-accent">Staged · SHIELD logged · no EHR write</p>
-              ) : !drAssistEditing ? (
-                <HitlActions
-                  status={drAssistEdited ? "Edited" : "Pending"}
-                  onAccept={() => void stageDrAssist()}
-                  onEdit={() => setDrAssistEditing(true)}
-                  onReject={(reason) => {
-                    setDrAssistDraft(null);
-                    toast({ title: "Dr.Assist dismissed", description: reason || "No reason provided" });
-                  }}
-                />
-              ) : null}
-            </>
-          ) : (
-            <div className="space-y-1">
-              {patient.activeConditions.slice(0, 3).map((c) => (
-                <div key={c} className="border-b border-border pb-1 text-[11px]">
-                  {c}
-                </div>
-              ))}
-              <p className="text-[10px] text-muted pt-1">Run Dr.Assist for SNOMED / ICD-10 suggestions.</p>
-            </div>
-          )}
+        <CardContent className="p-3 space-y-2">
+          <p className="text-[10px] text-muted">
+            Supervisor — runs SYNTHESIS → GUARDIAN → HORIZON → NEXUS on the clinical spine. Drafts only · HITL
+            mandatory · liveEmis:false.
+          </p>
+          <Button variant="outline" size="sm" className="w-full h-7 text-[10px]" asChild>
+            <Link href={conductorHref}>Open CONDUCTOR · Orchestrate</Link>
+          </Button>
         </CardContent>
       </Card>
 
@@ -633,7 +624,7 @@ export function AgentControlPanel({
                     <p className="text-[10px] rounded-sm bg-muted/30 p-2">{oracleNote}</p>
                   )}
                   {oracleStaged ? (
-                    <p className="text-[10px] text-accent">Staged · SHIELD logged · no EHR write</p>
+                    <p className="text-[10px] text-accent">Staged via BRIDGE · SHIELD · no EHR write</p>
                   ) : !oracleEditing ? (
                     <HitlActions
                       status={oracleEdited ? "Edited" : "Pending"}
@@ -705,7 +696,7 @@ export function AgentControlPanel({
                 />
               ) : null}
               {guardianStaged ? (
-                <p className="text-[10px] text-accent">Staged · SHIELD logged · no EHR write</p>
+                <p className="text-[10px] text-accent">Staged via BRIDGE · SHIELD · no EHR write</p>
               ) : null}
             </>
           ) : patient.flags.includes("GUARDIAN") ? (
@@ -780,7 +771,7 @@ export function AgentControlPanel({
                 </pre>
               )}
               {synthesisStaged ? (
-                <p className="text-[10px] text-accent">Staged · SHIELD logged · no EHR write</p>
+                <p className="text-[10px] text-accent">Staged via BRIDGE · SHIELD · no EHR write</p>
               ) : !synthesisEditing ? (
                 <HitlActions
                   status={synthesisEdited ? "Edited" : "Pending"}
@@ -794,6 +785,76 @@ export function AgentControlPanel({
               ) : null}
             </>
           ) : null}
+
+          <div
+            className="rounded-sm border border-dashed border-border-subtle p-2 space-y-2"
+            data-testid="gp-drassist-subcapability"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide">Dr.Assist · coding support</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 text-[10px]"
+                disabled={!patient || running === "dr-assist"}
+                onClick={() => void runDrAssist()}
+              >
+                {running === "dr-assist" ? "…" : "Suggest codes"}
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted">
+              Sub-capability under documentation/coding — SNOMED / ICD-10 drafts for HITL. Not a peer Phase-1
+              directory agent.
+            </p>
+            {!patient ? (
+              <p className="text-muted text-[10px]">Select a patient</p>
+            ) : drAssistDraft ? (
+              <>
+                <p className="text-[10px] text-muted">
+                  {drAssistDraft.mode}/{drAssistDraft.dataSource}
+                  {typeof drAssistDraft.confidence === "number"
+                    ? ` · conf ${drAssistDraft.confidence.toFixed(2)}`
+                    : ""}
+                </p>
+                {drAssistEditing ? (
+                  <SOAPEditor
+                    value={drAssistNote}
+                    onChange={setDrAssistNote}
+                    onSave={() => {
+                      setDrAssistEditing(false);
+                      setDrAssistEdited(true);
+                    }}
+                    onCancel={() => {
+                      setDrAssistEditing(false);
+                      setDrAssistNote(
+                        drAssistDraft.codes?.map((c) => `${c.system} ${c.code}: ${c.display}`).join("\n") ??
+                          ""
+                      );
+                    }}
+                  />
+                ) : (
+                  <pre className="whitespace-pre-wrap rounded-sm bg-muted/30 p-2 text-[10px] leading-relaxed">
+                    {drAssistNote}
+                  </pre>
+                )}
+                {drAssistStaged ? (
+                  <p className="text-[10px] text-accent">Staged via BRIDGE · SHIELD · no EHR write</p>
+                ) : !drAssistEditing ? (
+                  <HitlActions
+                    status={drAssistEdited ? "Edited" : "Pending"}
+                    onAccept={() => void stageDrAssist()}
+                    onEdit={() => setDrAssistEditing(true)}
+                    onReject={(reason) => {
+                      setDrAssistDraft(null);
+                      toast({ title: "Dr.Assist dismissed", description: reason || "No reason provided" });
+                    }}
+                  />
+                ) : null}
+              </>
+            ) : (
+              <p className="text-[10px] text-muted">Run Suggest codes for SNOMED / ICD-10 drafts.</p>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -830,7 +891,7 @@ export function AgentControlPanel({
               </p>
               <p className="text-[10px] text-warning">Synthetic packaging only — no e-Referral write.</p>
               {referralStaged ? (
-                <p className="text-[10px] text-accent">Staged · SHIELD logged · no e-Referral write</p>
+                <p className="text-[10px] text-accent">Staged via BRIDGE · SHIELD · no e-Referral write</p>
               ) : (
                 <HitlActions
                   status="Pending"
@@ -853,6 +914,23 @@ export function AgentControlPanel({
               Package a synthetic ServiceRequest draft for HITL review.
             </p>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm" data-testid="gp-bridge-panel">
+        <CardHeader className="p-3 pb-0">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <AgentBadge agent="BRIDGE" /> BRIDGE
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 space-y-1">
+          <p className="text-[10px] text-muted">
+            Interoperability — after Accept, drafts stage as FHIR R4 for review. Medplum rehearsal when
+            configured; otherwise local staging / sim.
+          </p>
+          <p className="text-[10px] font-medium text-foreground">
+            liveEmis:false · no live EMIS / SystmOne write-back in this build
+          </p>
         </CardContent>
       </Card>
     </aside>

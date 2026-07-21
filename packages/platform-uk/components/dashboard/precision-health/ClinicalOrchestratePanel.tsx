@@ -182,21 +182,25 @@ export function ClinicalOrchestratePanel({
     <Card className="shadow-sm" data-testid="clinical-orchestrate-panel">
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 p-4 pb-2">
         <div>
-          <CardTitle className="text-sm">Orchestrate clinical agents</CardTitle>
+          <CardTitle className="text-sm" data-testid="conductor-panel-title">
+            CONDUCTOR · Orchestrate
+          </CardTitle>
           <p className="text-xs text-muted">
-            SYNTHESIS → GUARDIAN → HORIZON → NEXUS · twin ranking after HORIZON · drafts only · HITL
-            mandatory · ehrWrite: false · liveEmis: false · physiologicalTwin: false
+            Supervisor agent — SYNTHESIS → GUARDIAN → HORIZON → NEXUS · twin ranking after HORIZON · drafts
+            only · HITL mandatory · ehrWrite: false · liveEmis: false · physiologicalTwin: false. Accepted
+            drafts stage via BRIDGE.
           </p>
         </div>
         <Button size="sm" disabled={loading} onClick={() => void run()} data-testid="orchestrate-run">
-          {loading ? "Orchestrating…" : "Orchestrate"}
+          {loading ? "Running CONDUCTOR…" : "Run CONDUCTOR"}
         </Button>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-2">
         {!orch ? (
           <p role="status" className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted">
-            One control runs the shared clinical-proof CONDUCTOR orchestration on this patient. Urgent cases
-            surface GUARDIAN first. NEXUS correlations are drafts. Not live EMR / CDS clearance.
+            CONDUCTOR runs the shared clinical-proof orchestration on this patient. Urgent cases surface
+            GUARDIAN first. NEXUS correlations are drafts. Dr.Assist coding remains an optional
+            sub-capability (not a 13th directory agent). Not live EMR / CDS clearance.
           </p>
         ) : (
           <div className="space-y-4" data-testid="clinical-orchestrate-result">

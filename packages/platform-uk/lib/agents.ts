@@ -28,8 +28,9 @@ export const CLINICAL_AGENT_META: Record<
 > = {
   VOICE: {
     label: "VOICE",
-    function: "Transcription / intake",
-    description: "Voice note → structured transcript for clinical review."
+    function: "Dictation → CANVAS (sub-capability)",
+    description:
+      "Dictation feeds CANVAS clinical intake and stages a transcript for HITL — not a peer 12-agent directory entry."
   },
   SYNTHESIS: {
     label: "SYNTHESIS",
@@ -38,8 +39,9 @@ export const CLINICAL_AGENT_META: Record<
   },
   DrASSIST: {
     label: "Dr.Assist",
-    function: "SNOMED / ICD-10 coding",
-    description: "Diagnosis suggestions with confidence for GP review."
+    function: "Coding support (sub-capability)",
+    description:
+      "SNOMED / ICD-10 coding drafts under HITL, nested under documentation — not a peer 12-agent directory entry."
   },
   GUARDIAN: {
     label: "GUARDIAN",
@@ -73,6 +75,8 @@ export const CLINICAL_AGENT_META: Record<
  * ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY are label renames only —
  * internal ids, env vars, and API routes keep the legacy names as aliases.
  * PRISM and ATLAS are Phase 2 roadmap agents and are not built.
+ * VOICE and Dr.Assist are intake/coding sub-capabilities — intentionally not
+ * listed here as peer Phase-1 agents (see CLINICAL_AGENT_META).
  */
 export const AGENT_DIRECTORY = [
   { name: "CANVAS", role: "Clinical Intake Agent", category: "Intake", phase: 1, live: true, previously: "unnamed (intake generation / shared patient context)" },

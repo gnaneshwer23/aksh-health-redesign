@@ -76,6 +76,8 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           <div className={styles.feedBox}>
             <strong>Also feeds into CANVAS</strong>
             <div className={styles.feedList}>
+              • VOICE dictation (sub-capability — not a 13th agent)
+              <br />
               • Lab results (Observation)
               <br />
               • Imaging reports (roadmap / PRISM)
@@ -185,6 +187,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
               Clinical Documentation Agent
               <br />
               Structures voice or typed input into a SOAP note draft via Vercel AI Gateway (with rule-based fallback).
+              Dr.Assist coding drafts support documentation under HITL — a sub-capability, not a peer directory agent.
             </p>
             <span className={styles.cardFhir}>DocumentReference (SOAP)</span>
           </div>
@@ -272,9 +275,9 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={styles.fhirBox}>
-            <div className={styles.fhirTitle}>FHIR R4 staging</div>
+            <div className={styles.fhirTitle}>BRIDGE · FHIR R4 staging</div>
             <p className={styles.fhirDesc}>
-              Accepted outputs stage as draft FHIR resources — clinician-attributed, timestamped, status{" "}
+              After Accept, BRIDGE stages draft FHIR resources — clinician-attributed, timestamped, status{" "}
               <em>preliminary</em>. Medplum sync is optional and off by default.
             </p>
             <div>

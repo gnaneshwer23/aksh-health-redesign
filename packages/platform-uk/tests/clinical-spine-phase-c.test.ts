@@ -128,19 +128,43 @@ async function run() {
     "utf8"
   );
   assert.ok(orchUi.includes("orchestrate-run"));
+  assert.ok(orchUi.includes("CONDUCTOR · Orchestrate"));
   assert.ok(orchUi.includes("GUARDIAN"));
   assert.ok(orchUi.includes("NEXUS"));
   assert.ok(orchUi.includes("HitlActions"));
   assert.ok(orchUi.includes("physiologicalTwin: false"));
   assert.ok(orchUi.includes("liveEmis: false"));
 
+  const agentControl = fs.readFileSync(
+    path.join(process.cwd(), "components/dashboard/AgentControlPanel.tsx"),
+    "utf8"
+  );
+  assert.ok(agentControl.includes("gp-agent-brand-strip"));
+  assert.ok(agentControl.includes("CANVAS"));
+  assert.ok(agentControl.includes("BRIDGE"));
+  assert.ok(agentControl.includes("CONDUCTOR"));
+  assert.ok(agentControl.includes("sub-capability"));
+  assert.ok(agentControl.includes("liveEmis:false"));
+  assert.ok(!agentControl.includes("14 live agents"));
+
+  const agentDirectory = fs.readFileSync(path.join(process.cwd(), "lib/agents.ts"), "utf8");
+  assert.ok(agentDirectory.includes('name: "CANVAS"'));
+  assert.ok(agentDirectory.includes('name: "BRIDGE"'));
+  assert.ok(agentDirectory.includes('name: "CONDUCTOR"'));
+  assert.ok(!agentDirectory.includes('name: "VOICE"'));
+  assert.ok(!agentDirectory.includes('name: "DrASSIST"'));
+
   const pipeline = fs.readFileSync(
     path.join(process.cwd(), "components/marketing/EndToEndPipelineDiagram.tsx"),
     "utf8"
   );
   assert.ok(pipeline.includes("LIVE · in CONDUCTOR"));
+  assert.ok(pipeline.includes("VOICE dictation (sub-capability"));
+  assert.ok(pipeline.includes("BRIDGE · FHIR R4 staging"));
+  assert.ok(pipeline.includes("Dr.Assist coding drafts support documentation"));
   assert.ok(!pipeline.includes("LIVE · API"));
   assert.ok(!pipeline.includes("not yet in the default CONDUCTOR"));
+  assert.ok(!pipeline.includes("14 live agents"));
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),

@@ -274,9 +274,9 @@ export function SystemSpinePanel() {
         <div data-testid="spine-phase-c-intelligence">
           <p className="text-xs font-semibold">Phase C intelligence paths</p>
           <p className="mt-1 text-xs text-muted">
-            GP Orchestrate (SYNTHESIS→GUARDIAN→HORIZON→NEXUS) + twin ranking (synthetic_rules) on patient /
-            review pages; safety-route gates patient coaching; HORIZON model card visible. Not live EMR
-            or physiological twin.
+            GP CONDUCTOR · Orchestrate (SYNTHESIS→GUARDIAN→HORIZON→NEXUS) + twin ranking (synthetic_rules)
+            on patient / review pages; CANVAS intake + BRIDGE staging labels in Agent Control; safety-route
+            gates patient coaching; HORIZON model card visible. Not live EMR or physiological twin.
           </p>
           <ul className="mt-2 flex flex-wrap gap-2 text-xs">
             <li className="rounded-md border border-border px-2 py-1 text-muted">

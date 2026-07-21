@@ -151,13 +151,13 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P3**
 
-- [ ] Manual: GP dashboard agent panel — CANVAS / BRIDGE / CONDUCTOR visible
-- [ ] Manual: VOICE / DrASSIST described as supporting capabilities
-- [ ] `e2e/marketing.spec.ts` still green (12-agent grid)
-- [ ] `npm run test:clinical-proof`
-- [ ] Honesty: no “14 live agents” claim
+- [x] Manual: GP dashboard agent panel — CANVAS / BRIDGE / CONDUCTOR visible — **PASS** 2026-07-21 (`gp-agent-brand-strip` + panels)
+- [x] Manual: VOICE / DrASSIST described as supporting capabilities — **PASS** (sub-capability copy under CANVAS / SYNTHESIS)
+- [x] `e2e/marketing.spec.ts` still green (12-agent grid) — **PASS** 2026-07-21 (platform “Twelve agents” section)
+- [x] `npm run test:clinical-proof` — **PASS** 2026-07-21 (exit 0)
+- [x] Honesty: no “14 live agents” claim — **PASS** (asserted in Phase C + route-smoke)
 
----
+**P3 exit:** **PASS** — see [`PHASED_BUILD_P3_AUDIT.md`](./PHASED_BUILD_P3_AUDIT.md).
 
 ### P4 — Front ↔ back consistency (honesty pass)
 
@@ -266,8 +266,8 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 |---|---|---|
 | Neon 009/010 apply | **P1** | **DONE** — applied + audited |
 | NEXUS not in CONDUCTOR | **P2** | **DONE** — default CONDUCTOR path includes NEXUS draft + HITL |
-| CANVAS / BRIDGE thin in GP UI | **P3** | Naming adoption |
-| VOICE / DrASSIST outside 12-agent brand | **P3** | Position as sub-capabilities |
+| CANVAS / BRIDGE thin in GP UI | **P3** | **DONE** — Agent Control + CONDUCTOR panel + pipeline |
+| VOICE / DrASSIST outside 12-agent brand | **P3** | **DONE** — framed as intake/coding sub-capabilities |
 | Integrations / residual copy honesty | **P4** | Front↔back |
 | Medplum secrets | **P5** | User-owned |
 | Deepgram / VOICE live ASR | **P5** | User-owned · optional |

@@ -10,6 +10,12 @@ async function assertFileIncludes(relativePath: string, expectedText: string) {
   assert.ok(source.includes(expectedText), `${relativePath} should include "${expectedText}"`);
 }
 
+async function assertFileExcludes(relativePath: string, unexpectedText: string) {
+  const absolutePath = path.join(projectRoot, relativePath);
+  const source = await readFile(absolutePath, "utf8");
+  assert.ok(!source.includes(unexpectedText), `${relativePath} should not include "${unexpectedText}"`);
+}
+
 async function run() {
   const criticalRoutes = [
     ["app/page.tsx", "HomePage"],
@@ -125,6 +131,18 @@ async function run() {
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/dr-assist");
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/synthesis");
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "/api/agents/referral");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "gp-agent-brand-strip");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "CANVAS");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "BRIDGE");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "CONDUCTOR");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "sub-capability");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "liveEmis:false");
+  await assertFileIncludes("components/dashboard/precision-health/ClinicalOrchestratePanel.tsx", "CONDUCTOR · Orchestrate");
+  await assertFileIncludes("lib/agents.ts", "AGENT_DIRECTORY");
+  await assertFileIncludes("lib/agents.ts", 'name: "CANVAS"');
+  await assertFileExcludes("lib/agents.ts", 'name: "VOICE"');
+  await assertFileExcludes("lib/agents.ts", 'name: "DrASSIST"');
+  await assertFileExcludes("lib/agents.ts", "14 live agents");
   await assertFileIncludes("app/api/agents/equity/route.ts", "runEquityAgent");
   await assertFileIncludes("lib/agents/llm-equity.ts", "isLlmEquityConfigured");
   await assertFileIncludes("components/dashboard/ics/EquityDeepDive.tsx", "/api/agents/equity");
