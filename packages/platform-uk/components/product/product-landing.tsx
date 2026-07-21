@@ -70,9 +70,9 @@ const capabilities = [
     title: "Integration-Ready Architecture",
     text: "The platform demonstrates how future NHS GP Connect and EMIS integration fits: while keeping current proof boundaries clearly visible, honest, and non-overclaiming.",
     items: [
-      "FHIR R4 export shape ready for live integration",
+      "FHIR R4 export shape for staging / partner integration paths",
       "Synthetic-only labels throughout all surfaces",
-      "Clear integration readiness roadmap"
+      "Clear integration readiness roadmap (liveEmis:false)"
     ]
   }
 ];
@@ -146,10 +146,10 @@ export function ProductLanding() {
             every decision. Evidence flows forward to governance without gaps.
           </p>
           <div className="pill-row product-pill-row">
-            <span className="pill">NHS-ready</span>
-            <span className="pill">FHIR R4</span>
+            <span className="pill">Built for NHS</span>
+            <span className="pill">FHIR R4 staging</span>
             <span className="pill">GDPR Art. 9</span>
-            <span className="pill">MHRA-aware</span>
+            <span className="pill">HITL review</span>
           </div>
           <div className="product-actions">
             <Link className="product-button product-button--primary" href="/demo/patel">

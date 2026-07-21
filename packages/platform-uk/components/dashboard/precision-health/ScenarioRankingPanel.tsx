@@ -154,7 +154,7 @@ export function ScenarioRankingPanel({
                 {result.simulationMode}
               </span>
               <span>physiologicalTwin: false</span>
-              <span>· ORACLE {result.oracleScoreUsed ?? "—"} ({result.oracleRiskUsed ?? "n/a"})</span>
+              <span>· HORIZON {result.oracleScoreUsed ?? "—"} ({result.oracleRiskUsed ?? "n/a"})</span>
             </div>
 
             <ol className="space-y-2">

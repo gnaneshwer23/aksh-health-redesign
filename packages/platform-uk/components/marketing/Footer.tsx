@@ -42,6 +42,7 @@ const footerColumns = [
     links: [
       { label: "Discuss a pilot", href: "/get-started" },
       { label: "Create account", href: "/signup" },
+      { label: "See demo", href: "/demo/patel" },
       { label: "See walkthrough", href: "/walkthrough" },
       { label: "Contact", href: "/contact" },
       { label: "Sign in", href: "/signin" },

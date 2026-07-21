@@ -1,13 +1,12 @@
-/** Neutral compliance copy. No country-specific regulatory naming in user-facing strings. */
+/** UK-facing compliance copy. Pathways only — never certification or non-UK regime leakage. */
 
 export const COMPLIANCE_BADGES = [
-  { id: "gdpr", label: "GDPR-aligned design", detail: "European data protection pathway with consent and purpose limitation mapping." },
-  { id: "hipaa", label: "HIPAA-ready design", detail: "Administrative, technical, and audit controls mapped for US healthcare privacy pathways." },
-  { id: "abdm", label: "ABDM-aligned", detail: "National health ID and FHIR exchange patterns for digital health ecosystem integration." },
-  { id: "european", label: "European data protection", detail: "Regional residency, minimisation, and subject-rights workflow scaffolding." },
-  { id: "fhir", label: "FHIR R4", detail: "Clinical resources staged as draft until human review completes." },
-  { id: "clinical-safety", label: "Clinical safety governance", detail: "Hazard-aware workflow with human-in-the-loop gates. Not a signed safety case." },
-  { id: "iso27001", label: "ISO 27001 pathway", detail: "Information security control mapping for enterprise readiness planning." }
+  { id: "gdpr", label: "UK GDPR / GDPR-aligned design", detail: "UK and European data protection pathway with consent and purpose limitation mapping." },
+  { id: "dspt", label: "NHS DSPT pathway", detail: "Data Security and Protection Toolkit control mapping for NHS organisational assurance planning — not a completed DSPT submission." },
+  { id: "uk-residency", label: "UK/EU data residency framing", detail: "Residency, minimisation, and subject-rights workflow scaffolding for NHS workloads." },
+  { id: "fhir", label: "FHIR R4 staging", detail: "Clinical resources staged as draft until human review completes — not live EHR sync." },
+  { id: "clinical-safety", label: "Clinical safety governance", detail: "Hazard-aware workflow with human-in-the-loop gates. Not a signed DCB0129 / MHRA case." },
+  { id: "iso27001", label: "ISO 27001 pathway", detail: "Information security control mapping for enterprise readiness planning — not certification." }
 ] as const;
 
 export const COMPLIANCE_DISCLAIMER =

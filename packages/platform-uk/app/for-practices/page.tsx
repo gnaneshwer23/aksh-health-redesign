@@ -6,7 +6,7 @@ import { audiencePages } from "@/components/marketing/audience/audience-content"
 export const metadata: Metadata = {
   title: "For Practices | Aksh Health",
   description:
-    "Practice management and admin operations for NHS primary care. Tenancy, integration health, and SHIELD audit views. FHIR R4 ready design.",
+    "Practice management and admin operations for NHS primary care. Tenancy, integration health, and SHIELD audit views. FHIR R4 staging design.",
 };
 
 export default function ForPracticesPage() {

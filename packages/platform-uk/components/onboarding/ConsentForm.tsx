@@ -30,25 +30,25 @@ const CONSENT_COPY: Record<
   gp: [
     { key: "aiDocumentation", label: "I consent to AI-assisted clinical documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before FHIR write", required: true },
-    { key: "dcb0129", label: "I agree to DCB0129 clinical safety data terms", required: true },
+    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   nurse: [
     { key: "aiDocumentation", label: "I consent to AI-assisted care documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before patient record updates", required: true },
-    { key: "dcb0129", label: "I agree to DCB0129 clinical safety data terms", required: true },
+    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   "clinical-pharmacist": [
     { key: "aiDocumentation", label: "I consent to AI-assisted medication review documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before FHIR write", required: true },
-    { key: "dcb0129", label: "I agree to DCB0129 clinical safety data terms", required: true },
+    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   "practice-manager": [
     { key: "dpa", label: "I accept the Data Processing Agreement as practice data controller", required: true },
-    { key: "dspt", label: "I confirm NHS DSPT compliance for this practice", required: true },
-    { key: "ehrIntegration", label: "I consent to integration with EMIS Web / SystmOne on behalf of the practice", required: true },
+    { key: "dspt", label: "I understand NHS DSPT obligations apply for this practice — this checkbox is not a completed DSPT submission", required: true },
+    { key: "ehrIntegration", label: "I consent to EMIS / SystmOne staging pathways on behalf of the practice (liveEmis:false — no live write-back)", required: true },
   ],
   "ics-lead": [
     { key: "dataSharing", label: "I accept data sharing terms across practices in my ICS boundary", required: true },

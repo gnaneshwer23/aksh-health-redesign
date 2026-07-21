@@ -92,7 +92,7 @@ export function SafetyRouteCoachingGate({
           <p className="text-xs text-muted">
             {route?.title ?? route?.safetyRoute ?? "unknown"}
             {route?.guardianStatus ? ` · GUARDIAN ${route.guardianStatus}` : ""}
-            {route?.oracleRisk ? ` · ORACLE ${route.oracleRisk}` : ""}
+            {route?.oracleRisk ? ` · HORIZON ${route.oracleRisk}` : ""}
             {" · "}ehrWrite: false
           </p>
         </CardHeader>

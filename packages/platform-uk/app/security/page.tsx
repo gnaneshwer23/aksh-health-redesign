@@ -82,7 +82,7 @@ const sections = [
     body: "Outputs stage as FHIR R4 drafts designed for EMIS Web and SystmOne exchange patterns. Production write-back is not enabled until organisation governance and clinical safety sign-off complete.",
     bullets: [
       "FHIR R4 staging for clinician-approved outputs",
-      "Integration health monitoring for connected practices",
+      "Integration health monitoring for staging / adapter readiness",
       "External integrations configurable per tenancy",
       "Designed for EMIS Web and SystmOne — connections not live by default",
     ],

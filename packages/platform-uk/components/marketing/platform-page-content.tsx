@@ -13,7 +13,7 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 const platformLayers = [
   {
     title: "Capture",
-    body: "Connect patient context from EMIS Web and SystmOne via FHIR R4 ready integration paths.",
+    body: "Designed for EMIS Web and SystmOne via FHIR R4 staging paths — synthetic / staged context today; no live EHR pull in this build.",
     icon: Inbox,
   },
   {
@@ -151,7 +151,7 @@ export function PlatformPageContent() {
 
       <MarketingCtaBand
         title="Ready to explore the platform?"
-        lede="FHIR R4 ready design for EMIS Web and SystmOne. Clinical safety built in from day one."
+        lede="Designed for EMIS Web and SystmOne via FHIR R4 staging. Clinical safety gates from day one — liveEmis:false."
         primary={{ label: "Create account", href: "/signup" }}
         secondary={{ label: "Request organisation access", href: "/get-started" }}
       />

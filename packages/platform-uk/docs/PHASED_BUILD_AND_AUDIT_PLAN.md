@@ -172,21 +172,23 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P4**
 
-- [ ] Manual UI honesty checklist (below)
-- [ ] `npx playwright test e2e/marketing.spec.ts`
-- [ ] `GET /api/clinical-spine/partner-readiness` + emis partner checklist → `liveEmis:false`
-- [ ] Route smoke / `test:workflow` if copy changes touch asserted strings
-- [ ] Diff review: no invented cert badges on UK pages
+- [x] Manual UI honesty checklist (below) — **PASS** 2026-07-21
+- [x] `npx playwright test e2e/marketing.spec.ts` — **PASS** 2026-07-21 (35 passed)
+- [x] `GET /api/clinical-spine/partner-readiness` + emis partner checklist → `liveEmis:false` — **PASS** (`honesty.liveEmis:false`)
+- [x] Route smoke / clinical-proof if copy changes touch asserted strings — **PASS** (`test:clinical-proof` exit 0)
+- [x] Diff review: no invented cert badges on UK pages — **PASS** (HIPAA/ABDM removed from UK badges)
 
 **Manual UI honesty checklist (P4+)**
 
-1. Trust strip: “Designed for” not “ready” for EMIS/SystmOne.  
-2. Pipeline: HITL before any staging language.  
-3. Integrations: staging / sim only; `liveEmis:false` visible.  
-4. Consent: rehearsal / staging — not signed DCB0129.  
-5. Neo4j: mock banner when not live.  
-6. Medplum: dry-run / credentials-needed when unset.  
-7. Partner panel: unsigned / needs_partner — never certified unlock.
+1. Trust strip: “Designed for” not “ready” for EMIS/SystmOne. — **PASS**
+2. Pipeline: HITL before any staging language. — **PASS**
+3. Integrations: staging / sim only; `liveEmis:false` visible. — **PASS**
+4. Consent: rehearsal / staging — not signed DCB0129. — **PASS**
+5. Neo4j: mock banner when not live. — **PASS**
+6. Medplum: dry-run / credentials-needed when unset. — **PASS**
+7. Partner panel: unsigned / needs_partner — never certified unlock. — **PASS**
+
+**P4 exit:** **PASS** — see [`PHASED_BUILD_P4_AUDIT.md`](./PHASED_BUILD_P4_AUDIT.md).
 
 ---
 
@@ -268,7 +270,7 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | NEXUS not in CONDUCTOR | **P2** | **DONE** — default CONDUCTOR path includes NEXUS draft + HITL |
 | CANVAS / BRIDGE thin in GP UI | **P3** | **DONE** — Agent Control + CONDUCTOR panel + pipeline |
 | VOICE / DrASSIST outside 12-agent brand | **P3** | **DONE** — framed as intake/coding sub-capabilities |
-| Integrations / residual copy honesty | **P4** | Front↔back |
+| Integrations / residual copy honesty | **P4** | **DONE** — honesty pass audited |
 | Medplum secrets | **P5** | User-owned |
 | Deepgram / VOICE live ASR | **P5** | User-owned · optional |
 | Layer 15 EMIS/SystmOne live | **P7** | External · deferred correctly |

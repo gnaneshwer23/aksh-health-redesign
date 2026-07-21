@@ -37,7 +37,7 @@ const platformStages: Array<{
     icon: Mic,
     label: "Capture",
     title: "Capture once",
-    body: "Consultation notes or voice, with clinical context from EMIS Web or SystmOne. No rip-and-replace of your EHR.",
+    body: "Consultation notes or voice, with clinical context designed for EMIS Web / SystmOne pathways (staging today — no live EHR pull). No rip-and-replace of your EHR.",
   },
   {
     num: "02",
@@ -53,7 +53,7 @@ const platformStages: Array<{
     icon: UserCheck,
     label: "Approve",
     title: "Clinician approves",
-    body: "Accept, edit, or reject every output. Only then can content stage as FHIR toward EMIS or SystmOne.",
+    body: "Accept, edit, or reject every output. Only then can content stage as FHIR toward EMIS or SystmOne (sim/staging — liveEmis:false).",
   },
 ];
 
@@ -73,7 +73,7 @@ const roleFlows = {
         icon: Mic,
         label: "Capture",
         title: "Consult comes in",
-        description: "Notes or voice during the appointment. EMR context loads from EMIS or SystmOne.",
+        description: "Notes or voice during the appointment. Synthetic / staged context today — live EMIS/SystmOne pull is partner Phase 2.",
       },
       {
         icon: ClipboardList,

@@ -130,7 +130,7 @@ test.describe("Marketing smoke", () => {
     await expect(trustStrip.getByText("Built for NHS primary care").first()).toBeVisible();
     await expect(trustStrip.getByText("FHIR R4-ready architecture").first()).toBeVisible();
     await expect(trustStrip.getByText("Clinician-reviewed outputs").first()).toBeVisible();
-    await expect(trustStrip.getByText("EMIS Web & SystmOne ready").first()).toBeVisible();
+    await expect(trustStrip.getByText("Designed for EMIS Web & SystmOne").first()).toBeVisible();
     await expect(trustStrip.getByText("Pilot access open").first()).toBeVisible();
   });
 
@@ -190,7 +190,7 @@ test.describe("Marketing smoke", () => {
   test("homepage shows platform flow diagram with link to full journey", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: /Capture → draft → approve/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Capture → draft → approve", exact: true })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Care journey/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /See full journey/i })).toHaveAttribute("href", "/how-it-works");
   });
@@ -311,7 +311,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /How Aksh Health works/i })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Care journey/i }).first()).toBeVisible();
     await expect(page.getByRole("figure", { name: /End-to-end journey/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Capture, draft, approve/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Capture, draft, approve", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How it works for your team/i })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Clinician" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Practice manager" })).toBeVisible();
@@ -334,7 +334,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned care/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Built for every role/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Eight capabilities\. One review queue/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Twelve agents\. One review queue/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Clinician approval\. Always\./i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();

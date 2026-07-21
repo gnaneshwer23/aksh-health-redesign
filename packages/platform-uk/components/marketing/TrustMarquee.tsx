@@ -3,7 +3,7 @@ const TRUST_PHRASES = [
   "FHIR R4-ready architecture",
   "Clinician-reviewed outputs",
   "Pilot access open",
-  "EMIS Web & SystmOne ready",
+  "Designed for EMIS Web & SystmOne",
   "Human-in-the-loop review",
   "GDPR Art. 9 aware",
   "Audit trail on every decision",

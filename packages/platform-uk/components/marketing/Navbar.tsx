@@ -26,7 +26,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       links: [
         { label: "Clinician review", href: "/platform#hitl" },
         { label: "FHIR R4 staging", href: "/how-it-works#pipeline" },
-        { label: "12-agent pipeline", href: "/how-it-works#pipeline" },
+        { label: "Capture → draft → approve", href: "/how-it-works#journey" },
         { label: "Clinical checks", href: "/platform#agents" },
       ],
     },

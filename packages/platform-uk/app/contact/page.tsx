@@ -34,7 +34,7 @@ const contacts = [
   },
   {
     title: "Security & clinical safety",
-    body: "GDPR Art. 9 framing, HITL gates, MHRA-aware positioning, and DCB0129 safety case status (in progress).",
+    body: "GDPR Art. 9 framing, HITL gates, MHRA-aware positioning, and DCB0129-style safety rehearsal (not a signed clinical safety case).",
     href: "/security",
     cta: "View security",
   },
@@ -84,7 +84,7 @@ export default function ContactPage() {
 
       <MarketingCtaBand
         title="Prefer a live walkthrough?"
-        lede="Eight role dashboards. FHIR R4 ready design for EMIS Web and SystmOne. Human approval on every output."
+        lede="Eight role dashboards. Designed for EMIS Web and SystmOne via FHIR R4 staging. Human approval on every output."
         primary={{ label: "Get in touch", href: "/get-started" }}
         secondary={{ label: "Platform overview", href: "/platform" }}
       />

@@ -5,7 +5,7 @@ import { CompliancePageLayout } from "@/components/marketing/compliance-page-lay
 export const metadata: Metadata = {
   title: "Integrations & Interoperability | Aksh Health",
   description:
-    "FHIR R4 resources, EMIS Web and SystmOne integration pathways, HL7 v2 messaging, NHS CIS2 SSO readiness, and API architecture for NHS healthtech deployments.",
+    "FHIR R4 staging resources, EMIS Web and SystmOne integration pathways, HL7 v2 messaging patterns, NHS CIS2 SSO pathway mapping, and API architecture — staging / sim only (liveEmis:false).",
 };
 
 export default function IntegrationsPage() {
@@ -13,7 +13,7 @@ export default function IntegrationsPage() {
     <CompliancePageLayout
       eyebrow="Integrations"
       headline="Integration-ready architecture for NHS care settings."
-      subline="Aksh Health is designed to sit above your existing systems. FHIR R4 resources, HL7 v2 messaging patterns, and NHS identity pathways are mapped for procurement conversations. Production EHR connections are on the roadmap."
+      subline="Aksh Health is designed to sit above your existing systems. FHIR R4 resources, HL7 v2 messaging patterns, and NHS identity pathways are mapped for procurement conversations. Live EMIS/SystmOne connections are not available in this build (liveEmis:false)."
       sections={[
         {
           title: "FHIR R4 resources",
@@ -62,17 +62,17 @@ export default function IntegrationsPage() {
         },
         {
           title: "EHR connection pathways",
-          body: "Aksh Health connects to EMIS Web and SystmOne through FHIR R4 ready integration paths. Integration health views show connection status, adapter readiness, and staged write-back controls per organisation.",
+          body: "Aksh Health is designed for EMIS Web and SystmOne through FHIR R4 staging paths. Admin integration views show adapter readiness and staged write-back controls — not live partner connections in this build (liveEmis:false).",
           bullets: [
-            "FHIR R4 bundle export on clinician-approved outputs",
-            "Integration health dashboard for connected practices",
-            "Write-back gated behind organisation governance",
+            "FHIR R4 bundle staging on clinician-approved outputs",
+            "Integration health views for rehearsal / adapter readiness",
+            "Write-back gated behind organisation governance and partner go/no-go",
           ],
         },
       ]}
       ctaPrimary={{ label: "Book a demo", href: "/get-started" }}
       ctaSecondary={{ label: "View resources", href: "/resources" }}
-      complianceNote="Integration status reflects design readiness and roadmap position. See platform resources for contracts and architecture detail."
+      complianceNote="Integration status reflects design readiness and staging / sim pathways only — not live partner connections or certifications. See platform resources for contracts and architecture detail."
     />
   );
 }
