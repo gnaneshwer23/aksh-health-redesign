@@ -200,6 +200,10 @@ export function VitalsForm({ onSaved }: { onSaved?: () => void }) {
         </div>
         {entryMode === "voice" ? (
           <div className="space-y-2">
+            <p className="text-[11px] text-muted" data-testid="vitals-voice-honesty">
+              VOICE dictation — live Deepgram when configured; otherwise a clearly labelled simulated
+              transcript. Always verify vitals before save · liveEmis:false.
+            </p>
             <VoiceRecorder
               onTranscript={(transcript, meta) => {
                 handleTranscript(transcript, { simulated: meta?.simulated });

@@ -11,11 +11,25 @@ export type MedplumRehearsalStatus = {
   baseUrl: string;
   oauthTokenUrl: string;
   credentialsConfigured: boolean;
+  /**
+   * Presence of CLIENT_ID/SECRET only — not proof OAuth works.
+   * Use probeMedplumOAuth / ?probe=auth before claiming live staging sync.
+   */
   mode: "disabled" | "rehearsal_ready" | "rehearsal_no_credentials";
   liveEmis: false;
   /** Clear when flag off — no pending sync claim. */
   dryRunEligible: boolean;
   lastDryRunAt: string | null;
+  note: string;
+};
+
+export type MedplumOAuthProbeResult = {
+  attempted: boolean;
+  ok: boolean;
+  liveEmis: false;
+  status?: number;
+  error?: string;
+  tokenUrlHost: string;
   note: string;
 };
 
@@ -76,9 +90,94 @@ export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
     dryRunEligible: true,
     lastDryRunAt: lastMedplumDryRunAt,
     note: credentialsConfigured
-      ? "Rehearsal mode: may push frozen accepted bundles to Medplum. Not EMIS write-back."
-      : "Flag on but credentials missing — push attempts may use unauthenticated local rehearsal only."
+      ? "Rehearsal mode: CLIENT_ID/SECRET present — OAuth not verified until ?probe=auth. Not EMIS write-back."
+      : "Flag on but credentials missing — dry-run/push will fail auth; set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET."
   };
+}
+
+/**
+ * Client-credentials OAuth probe — does not write FHIR.
+ * Reports Invalid client / missing secret honestly; never claims EMIS.
+ */
+export async function probeMedplumOAuth(): Promise<MedplumOAuthProbeResult> {
+  const { clientId, clientSecret, oauthTokenUrl } = getMedplumConfig();
+  let tokenUrlHost = "unknown";
+  try {
+    tokenUrlHost = new URL(oauthTokenUrl).host;
+  } catch {
+    tokenUrlHost = oauthTokenUrl.slice(0, 64);
+  }
+
+  if (!clientId || !clientSecret) {
+    return {
+      attempted: false,
+      ok: false,
+      liveEmis: false,
+      tokenUrlHost,
+      error: "MEDPLUM_CLIENT_ID / MEDPLUM_CLIENT_SECRET not configured",
+      note: "Credentials missing — staging OAuth skipped. Not live EMIS."
+    };
+  }
+
+  try {
+    const authResponse = await fetch(oauthTokenUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret
+      })
+    });
+
+    if (authResponse.ok) {
+      const payload = (await authResponse.json()) as { access_token?: string };
+      const ok = Boolean(payload.access_token);
+      return {
+        attempted: true,
+        ok,
+        liveEmis: false,
+        status: authResponse.status,
+        tokenUrlHost,
+        error: ok ? undefined : "Token response missing access_token",
+        note: ok
+          ? "OAuth client_credentials succeeded — staging rehearsal only; not EMIS."
+          : "OAuth HTTP ok but no access_token — check Medplum Client Application."
+      };
+    }
+
+    const bodyText = await authResponse.text();
+    let errorHint = bodyText.slice(0, 160);
+    try {
+      const parsed = JSON.parse(bodyText) as {
+        error?: string;
+        error_description?: string;
+      };
+      errorHint = [parsed.error, parsed.error_description].filter(Boolean).join(": ") || errorHint;
+    } catch {
+      // keep raw slice
+    }
+
+    return {
+      attempted: true,
+      ok: false,
+      liveEmis: false,
+      status: authResponse.status,
+      tokenUrlHost,
+      error: errorHint,
+      note: "OAuth failed — provide a real Medplum Client Secret (UUID placeholders return Invalid client). Not EMIS."
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      attempted: true,
+      ok: false,
+      liveEmis: false,
+      tokenUrlHost,
+      error: message.slice(0, 200),
+      note: "OAuth unreachable — Medplum host down or network blocked. Not EMIS."
+    };
+  }
 }
 
 /** FHIR-shaped staging bundle for Medplum dry-run rehearsal (synthetic). */

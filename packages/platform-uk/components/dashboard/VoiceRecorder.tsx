@@ -1,11 +1,13 @@
 "use client";
 
 import { Mic, Square } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+
+type AsrMode = "simulated" | "deepgram" | "unknown";
 
 export function VoiceRecorder({
   className,
@@ -21,9 +23,41 @@ export function VoiceRecorder({
 }) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [asrMode, setAsrMode] = useState<AsrMode>("unknown");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await fetch("/api/transcribe", { credentials: "include" });
+        if (!response.ok || cancelled) {
+          if (!cancelled && response.status === 401) {
+            // Unauthenticated: still assume simulated rehearsal until live key is confirmed.
+            setAsrMode("simulated");
+          }
+          return;
+        }
+        const data = (await response.json()) as {
+          resolvedMode?: string;
+          deepgramApiKeyConfigured?: boolean;
+        };
+        if (cancelled) return;
+        if (data.resolvedMode === "deepgram" || data.deepgramApiKeyConfigured === true) {
+          setAsrMode("deepgram");
+        } else {
+          setAsrMode("simulated");
+        }
+      } catch {
+        if (!cancelled) setAsrMode("simulated");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const stopStream = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -72,14 +106,16 @@ export function VoiceRecorder({
             notice?: string;
             mode?: string;
           };
+          const simulated = Boolean(data.simulated || data.mode === "simulated");
+          setAsrMode(simulated ? "simulated" : "deepgram");
           if (data.transcript) {
             onTranscript?.(data.transcript, {
-              simulated: Boolean(data.simulated || data.mode === "simulated"),
+              simulated,
               mode: typeof data.mode === "string" ? data.mode : undefined
             });
           }
           onRecordingComplete?.();
-          if (data.simulated || data.mode === "simulated") {
+          if (simulated) {
             toast({
               title: "Simulated transcript",
               description:
@@ -102,7 +138,8 @@ export function VoiceRecorder({
           } else {
             toast({
               title: "Transcription failed",
-              description: "Check microphone access and that DEEPGRAM_API_KEY is configured in production.",
+              description:
+                "Check microphone access. Without DEEPGRAM_API_KEY the route uses a labelled simulated transcript.",
             });
           }
         } finally {
@@ -140,6 +177,25 @@ export function VoiceRecorder({
 
   return (
     <div className={cn("flex flex-col items-center gap-2", className)}>
+      {asrMode === "simulated" ? (
+        <p
+          role="status"
+          data-testid="voice-simulated-asr-banner"
+          className="w-full rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-950"
+        >
+          <strong>Simulated ASR</strong> — <code className="text-[10px]">DEEPGRAM_API_KEY</code> not
+          configured locally. Dictation returns a labelled rehearsal transcript, not live speech-to-text.
+        </p>
+      ) : null}
+      {asrMode === "deepgram" ? (
+        <p
+          role="status"
+          data-testid="voice-live-asr-banner"
+          className="w-full rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-950"
+        >
+          <strong>Live Deepgram ASR</strong> — clinician must still verify before save. Not an EHR write.
+        </p>
+      ) : null}
       <Button
         type="button"
         aria-label={recording ? "Stop dictation" : "Start dictation"}

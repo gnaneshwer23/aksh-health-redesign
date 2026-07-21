@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   dryRunMedplumStagingSync,
   getMedplumRehearsalStatus,
+  probeMedplumOAuth,
   pushToMedplum
 } from "@/lib/medplum-client";
 import { resolveOptionalAuthenticatedUserScope } from "@/lib/user-scope";
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
  * Honest Medplum rehearsal status.
  * Reports ENABLE_MEDPLUM_SYNC enabled/disabled without inventing live sync.
  * Never calls EMIS.
+ * ?probe=auth — client_credentials OAuth only (no FHIR write)
  * ?probe=push — empty collection push (legacy)
  * ?probe=dry-run — FHIR-shaped staging bundle dry-run when flag on; cleared when off
  */
@@ -31,7 +33,11 @@ export async function GET(request: Request) {
     bundleSummary?: string;
   } | null = null;
 
-  if (probe === "dry-run") {
+  let authProbe: Awaited<ReturnType<typeof probeMedplumOAuth>> | null = null;
+
+  if (probe === "auth") {
+    authProbe = await probeMedplumOAuth();
+  } else if (probe === "dry-run") {
     const result = await dryRunMedplumStagingSync({
       patientId: url.searchParams.get("patientId") ?? undefined,
       caseId: url.searchParams.get("caseId") ?? undefined
@@ -69,10 +75,13 @@ export async function GET(request: Request) {
     liveSyncInvented: false,
     emrWriteBack: false,
     status: refreshed,
+    authProbe,
     pushProbe,
     note:
       refreshed.mode === "disabled"
         ? "Flag off — accept path never pushes. Dry-run cleared. This endpoint is status-only."
-        : "Flag on — rehearsal mode only; not EMIS write-back."
+        : refreshed.mode === "rehearsal_no_credentials"
+          ? "Flag on · credentials missing — set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET; not EMIS."
+          : "Flag on · credentials present — verify OAuth with ?probe=auth; not EMIS write-back."
   });
 }

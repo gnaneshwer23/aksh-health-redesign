@@ -20,7 +20,15 @@ type MedplumStatus = {
   syncFlagEnabled?: boolean;
   liveEmis?: boolean;
   mode?: string;
-  status?: { syncFlagEnabled?: boolean; liveEmis?: boolean; mode?: string };
+  note?: string;
+  status?: {
+    syncFlagEnabled?: boolean;
+    liveEmis?: boolean;
+    mode?: string;
+    credentialsConfigured?: boolean;
+    note?: string;
+    dryRunEligible?: boolean;
+  };
 };
 
 type EmisChecklist = {
@@ -169,6 +177,28 @@ export function SystemSpinePanel() {
       <CardContent className="space-y-4 p-4 pt-2">
         {error ? <p className="text-xs text-danger">{error}</p> : null}
 
+        {medplumInner ? (
+          <p
+            role="status"
+            data-testid="medplum-honesty-banner"
+            className={
+              medplumInner.mode === "disabled" || !medplumInner.syncFlagEnabled
+                ? "rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted"
+                : medplumInner.mode === "rehearsal_no_credentials"
+                  ? "rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950"
+                  : "rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950"
+            }
+          >
+            <strong>Medplum:</strong>{" "}
+            {medplumInner.mode === "disabled" || !medplumInner.syncFlagEnabled
+              ? "Sync flag off (default) — accept path never pushes; dry-run cleared. Not live EMIS."
+              : medplumInner.mode === "rehearsal_no_credentials"
+                ? "Flag on but credentials missing — set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET. Staging rehearsal only · liveEmis:false."
+                : "CLIENT_ID/SECRET present — verify with smoke:medplum / ?probe=auth before claiming staging sync. Not EMIS write-back · liveEmis:false."}{" "}
+            {medplumInner.note ?? medplum?.note ?? ""}
+          </p>
+        ) : null}
+
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Flag
             label="Postgres"
@@ -190,7 +220,15 @@ export function SystemSpinePanel() {
           />
           <Flag
             label="Medplum"
-            value={medplumInner?.syncFlagEnabled ? "flag on" : "flag off"}
+            value={
+              medplumInner?.mode === "rehearsal_no_credentials"
+                ? "credentials needed"
+                : medplumInner?.mode === "rehearsal_ready"
+                  ? "keys present · verify OAuth"
+                  : medplumInner?.syncFlagEnabled
+                    ? "flag on"
+                    : "flag off · dry-run"
+            }
             ok={true}
             detail={`mode:${medplumInner?.mode ?? "…"} · liveEmis:${String(medplum?.liveEmis ?? medplumInner?.liveEmis ?? false)}`}
           />

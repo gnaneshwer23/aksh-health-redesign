@@ -205,11 +205,13 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P5**
 
-- [ ] `npm run smoke:medplum` (with and without credentials documented)
-- [ ] `npm run test:clinical-proof` (Medplum clinical-proof piece)
-- [ ] Manual: SystemSpinePanel Medplum row matches reality
-- [ ] VOICE: simulated transcript banner when no Deepgram key
-- [ ] Honesty: `liveEmis:false` hard
+- [x] `npm run smoke:medplum` (with and without credentials documented) — **PASS** 2026-07-21 (with-creds: degraded OAuth `Invalid client`; without: `disabled_honest`)
+- [x] `npm run test:clinical-proof` (Medplum clinical-proof piece) — **PASS** 2026-07-21 (exit 0)
+- [x] Manual: SystemSpinePanel Medplum row matches reality — **PASS** (`medplum-honesty-banner` · mode labels)
+- [x] VOICE: simulated transcript banner when no Deepgram key — **PASS** (`voice-simulated-asr-banner`)
+- [x] Honesty: `liveEmis:false` hard — **PASS**
+
+**P5 exit:** **PASS (degraded rehearsal)** — see [`PHASED_BUILD_P5_AUDIT.md`](./PHASED_BUILD_P5_AUDIT.md). Live Medplum OAuth + local Deepgram still need real secrets from user.
 
 ---
 
@@ -271,8 +273,8 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | CANVAS / BRIDGE thin in GP UI | **P3** | **DONE** — Agent Control + CONDUCTOR panel + pipeline |
 | VOICE / DrASSIST outside 12-agent brand | **P3** | **DONE** — framed as intake/coding sub-capabilities |
 | Integrations / residual copy honesty | **P4** | **DONE** — honesty pass audited |
-| Medplum secrets | **P5** | User-owned |
-| Deepgram / VOICE live ASR | **P5** | User-owned · optional |
+| Medplum secrets | **P5** | **DONE (degraded)** — smoke + honesty banners; OAuth still needs real Client Secret |
+| Deepgram / VOICE live ASR | **P5** | **DONE (simulated local)** — Vercel has key; local uses labelled simulated ASR |
 | Layer 15 EMIS/SystmOne live | **P7** | External · deferred correctly |
 | PRISM / ATLAS | Phase 2 roadmap | Out of P0–P7 build unless product pulls in |
 

@@ -69,7 +69,7 @@ Do **not** rebuild DONE layers; product spine → agents → front/back → part
 
 ## Blocked on secrets / user decisions
 
-- `MEDPLUM_CLIENT_ID` / `MEDPLUM_CLIENT_SECRET` — live FHIR staging (Layer 11 stays dry-run without them).
-- Deepgram key — VOICE live ASR (config scaffold exists).
+- `MEDPLUM_CLIENT_ID` / **real** `MEDPLUM_CLIENT_SECRET` — local UUIDs return Medplum OAuth `Invalid client` (P5 degraded rehearsal). Layer 11 stays dry-run / flag-gated until a real Client Application secret works. See [`PHASED_BUILD_P5_AUDIT.md`](./PHASED_BUILD_P5_AUDIT.md).
+- `DEEPGRAM_API_KEY` — on Vercel Preview/Production; missing locally → labelled simulated ASR (P5). Copy into `.env.local` for local live VOICE.
 - Layer 15 — EMIS Partner Programme approval, NHS CIS2, Mirth Connect (organisational, not code).
 - No Supabase or Anthropic keys needed — stack decision above removes both dependencies.

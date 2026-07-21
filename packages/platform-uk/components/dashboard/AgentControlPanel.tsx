@@ -544,7 +544,9 @@ export function AgentControlPanel({
               <span className="text-[9px] text-muted">feeds CANVAS</span>
             </div>
             <p className="text-[10px] text-muted">
-              Dictation feeds CANVAS intake and stages a transcript for HITL — not a separate directory agent.
+              Dictation feeds CANVAS intake and stages a transcript for HITL — not a separate directory
+              agent. Without <code className="text-[9px]">DEEPGRAM_API_KEY</code> the mic uses a labelled{" "}
+              <strong>simulated ASR</strong> path.
             </p>
             <div className="flex flex-col items-center gap-2">
               <VoiceRecorder onTranscript={handleVoiceTranscript} />
