@@ -84,10 +84,12 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P0**
 
-- [ ] `npm run test:clinical-proof`
-- [ ] `npm run typecheck`
-- [ ] Spot-check: Partner readiness `liveEmis:false`; no `certified:true` in responses
-- [ ] Honesty checklist: HITL mandatory still true in orchestrate capabilities
+- [x] `npm run test:clinical-proof` — **PASS** 2026-07-21 (exit 0)
+- [x] `npm run typecheck` — **PASS** 2026-07-21 (exit 0)
+- [x] Spot-check: Partner readiness `liveEmis:false`; no `certified:true` in responses — **PASS**
+- [x] Honesty checklist: HITL mandatory still true in orchestrate capabilities — **PASS** (`hitlRequired:true`)
+
+**P0 exit:** **PASS** — see [`PHASED_BUILD_P0_AUDIT.md`](./PHASED_BUILD_P0_AUDIT.md). No blockers; no feature work.
 
 ---
 
