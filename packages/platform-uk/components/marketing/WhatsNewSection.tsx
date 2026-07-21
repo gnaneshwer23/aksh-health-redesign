@@ -22,7 +22,7 @@ const cards: Record<(typeof tabs)[number], Array<{ tag: string; title: string; h
   ],
   Integrations: [
     { tag: "EMIS", title: "Designed for EMIS Web integration paths", href: "/integrations", tone: "navy" },
-    { tag: "SystmOne", title: "SystmOne-ready coordination flows", href: "/integrations", tone: "mint" },
+    { tag: "SystmOne", title: "Designed for SystmOne coordination flows", href: "/integrations", tone: "mint" },
     { tag: "FHIR", title: "R4 resources staged after approval", href: "/how-it-works", tone: "ink" },
   ],
   Roles: [

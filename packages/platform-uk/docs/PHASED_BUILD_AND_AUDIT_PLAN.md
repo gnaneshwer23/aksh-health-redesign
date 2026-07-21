@@ -228,17 +228,19 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 
 **Audit gate P6 (full)**
 
-| Check | Pass bar |
-|---|---|
-| `npm run test:clinical-proof` | Exit 0 |
-| `npm run test:workflow` | Exit 0 |
-| `npm run typecheck` | Exit 0 |
-| `npm run test:e2e:clinical-proof` | Exit 0 (CI or local against staging) |
-| `e2e/marketing.spec.ts` | Exit 0 |
-| `npm run smoke:all` | Soft-ok per env; hard failures investigated |
-| Partner readiness API | `liveEmis:false` · `autoRetrain:false` · no certified unlock |
-| Manual Capture→Draft→Approve | Orchestrate incl. NEXUS → HITL → stage/sim only |
-| Gap doc | Remaining items = P7 / secrets / Phase 2 only |
+| Check | Pass bar | Result |
+|---|---|---|
+| `npm run test:clinical-proof` | Exit 0 | [x] **PASS** 2026-07-21 |
+| `npm run test:workflow` | Exit 0 | [x] **PASS** 2026-07-21 (route-smoke coaching assert fixed) |
+| `npm run typecheck` | Exit 0 | [x] **PASS** 2026-07-21 |
+| `npm run test:e2e:clinical-proof` | Exit 0 (CI or local against staging) | [x] **PASS** 2026-07-21 (19 passed) |
+| `e2e/marketing.spec.ts` | Exit 0 | [x] **PASS** 2026-07-21 (35 passed) |
+| `npm run smoke:all` | Soft-ok per env; hard failures investigated | [x] **SOFT-SKIP** — no `SMOKE_*`; `smoke:medplum` degraded · `smoke:neo4j` PASS |
+| Partner readiness API | `liveEmis:false` · `autoRetrain:false` · no certified unlock | [x] **PASS** |
+| Manual Capture→Draft→Approve | Orchestrate incl. NEXUS → HITL → stage/sim only | [x] **PASS** (spot + tests) |
+| Gap doc | Remaining items = P7 / secrets / Phase 2 only | [x] **PASS** |
+
+**P6 exit:** **PASS** — see [`PHASED_BUILD_P6_AUDIT.md`](./PHASED_BUILD_P6_AUDIT.md). Partner eng flip remains **NO-GO** until P7 signed artefacts.
 
 ---
 
@@ -275,6 +277,7 @@ Estimates are eng calendar days for one focused engineer unless noted. Owners: *
 | Integrations / residual copy honesty | **P4** | **DONE** — honesty pass audited |
 | Medplum secrets | **P5** | **DONE (degraded)** — smoke + honesty banners; OAuth still needs real Client Secret |
 | Deepgram / VOICE live ASR | **P5** | **DONE (simulated local)** — Vercel has key; local uses labelled simulated ASR |
+| Full regression after P1–P5 | **P6** | **DONE** — clinical-proof + workflow + typecheck + E2Es green; honesty intact |
 | Layer 15 EMIS/SystmOne live | **P7** | External · deferred correctly |
 | PRISM / ATLAS | Phase 2 roadmap | Out of P0–P7 build unless product pulls in |
 

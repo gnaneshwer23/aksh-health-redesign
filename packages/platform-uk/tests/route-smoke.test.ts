@@ -175,7 +175,10 @@ async function run() {
   await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "HealthPlanDraftPanel");
   await assertFileIncludes("app/dashboard/admin/consent/page.tsx", "ConsentGrantsPanel");
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/consent");
-  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "CoachingDraftPanel");
+  await assertFileIncludes(
+    "components/dashboard/precision-health/SafetyRouteCoachingGate.tsx",
+    "CoachingDraftPanel"
+  );
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 1");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "Phase 2 readiness scaffolding");
   await assertFileIncludes("docs/PRECISION_HEALTH_DELIVERY_ROADMAP.md", "PHASE2_PARTNER_CHECKLIST");

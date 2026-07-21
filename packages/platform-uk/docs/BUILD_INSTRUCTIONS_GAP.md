@@ -56,8 +56,10 @@ aliases so existing API consumers and the clinical-proof suite stay stable.
 
 ## Next: phased build (remaining only)
 
-See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 with audit gates.
-Do **not** rebuild DONE layers; product spine → agents → front/back → partner/EHR last.
+See [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — **P0–P6 PASS** (2026-07-21); **P7** partner/EHR external remains.
+Do **not** rebuild DONE layers; partner paperwork may run in parallel — eng `liveEmis` flip stays last.
+
+**Open gaps after P6:** Layer 15 (P7) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2).
 
 ## Gaps executed this session
 
