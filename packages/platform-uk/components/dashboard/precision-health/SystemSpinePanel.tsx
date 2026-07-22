@@ -184,9 +184,7 @@ export function SystemSpinePanel() {
             className={
               medplumInner.mode === "disabled" || !medplumInner.syncFlagEnabled
                 ? "rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted"
-                : medplumInner.mode === "rehearsal_no_credentials"
-                  ? "rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950"
-                  : "rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950"
+                : "rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950"
             }
           >
             <strong>Medplum:</strong>{" "}
@@ -194,7 +192,7 @@ export function SystemSpinePanel() {
               ? "Sync flag off (default) — accept path never pushes; dry-run cleared. Not live EMIS."
               : medplumInner.mode === "rehearsal_no_credentials"
                 ? "Flag on but credentials missing — set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET. Staging rehearsal only · liveEmis:false."
-                : "CLIENT_ID/SECRET present — verify with smoke:medplum / ?probe=auth before claiming staging sync. Not EMIS write-back · liveEmis:false."}{" "}
+                : "CLIENT_ID/SECRET present — OAuth not verified. If smoke:medplum / ?probe=auth returns Invalid client, regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EMIS · liveEmis:false."}{" "}
             {medplumInner.note ?? medplum?.note ?? ""}
           </p>
         ) : null}

@@ -82,6 +82,6 @@ export async function GET(request: Request) {
         ? "Flag off — accept path never pushes. Dry-run cleared. This endpoint is status-only."
         : refreshed.mode === "rehearsal_no_credentials"
           ? "Flag on · credentials missing — set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET; not EMIS."
-          : "Flag on · credentials present — verify OAuth with ?probe=auth; not EMIS write-back."
+          : "Flag on · credentials present — verify OAuth with ?probe=auth; Invalid client → regenerate Client Secret in Medplum App → Clients; not EMIS write-back."
   });
 }

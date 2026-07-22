@@ -105,13 +105,14 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Set real Medplum Client Application secret in Vercel/local; copy Deepgram key to `.env.local` if desired; run `npm run smoke:medplum`; confirm SystemSpinePanel / VOICE banners match reality. **Never** set `liveEmis`. |
 | **Exit criteria** | With secrets: Medplum OAuth smoke green (not `Invalid client`); without: dry-run / simulated paths still green and labelled. |
 | **Fail if** | Medplum success used to claim live EMIS; missing-key path errors instead of honest fallback; secrets committed to git. |
+| **In-repo status** | **PARTIAL** — honest dry-run / simulated ASR · Medplum OAuth still needs real Client Secret (user: Medplum App → Clients → regenerate) · audit [`NEXT_BUILD_N2_AUDIT.md`](./NEXT_BUILD_N2_AUDIT.md) |
 
 **Audit gate N2**
 
-- [ ] `npm run smoke:medplum` documents with-creds **green** vs without **disabled_honest**
-- [ ] VOICE: live ASR when key present · simulated banner when absent
-- [ ] `npm run test:clinical-proof` exit 0
-- [ ] Honesty: `liveEmis:false` hard
+- [x] `npm run smoke:medplum` documents with-creds **green** vs without **disabled_honest** — **PARTIAL 2026-07-22**: with-creds `degraded_rehearsal_oauth_failed` (`Invalid client`); without `disabled_honest`
+- [x] VOICE: live ASR when key present · simulated banner when absent — **PASS (simulated locally)**; `DEEPGRAM_API_KEY` missing in `.env.local` (Vercel may already have key)
+- [x] `npm run test:clinical-proof` exit 0 — **PASS** 2026-07-22
+- [x] Honesty: `liveEmis:false` hard
 
 ---
 
@@ -290,6 +291,8 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 - [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) — paperwork PASS / live NO-GO  
 - [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — emails + external checklist  
 - [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) — N1 READY_TO_SEND (not SENT)  
+- [`NEXT_BUILD_N2_AUDIT.md`](./NEXT_BUILD_N2_AUDIT.md) — N2 PARTIAL (OAuth Invalid client; Deepgram simulated local)  
+
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — plain-English honest picture  
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — layers 1–15 vs reality  
 - [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) — external partner actions  

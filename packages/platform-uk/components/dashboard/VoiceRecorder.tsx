@@ -184,7 +184,8 @@ export function VoiceRecorder({
           className="w-full rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-950"
         >
           <strong>Simulated ASR</strong> — <code className="text-[10px]">DEEPGRAM_API_KEY</code> not
-          configured locally. Dictation returns a labelled rehearsal transcript, not live speech-to-text.
+          configured locally (Vercel Preview/Production may already have it). Dictation returns a
+          labelled rehearsal transcript, not live speech-to-text.
         </p>
       ) : null}
       {asrMode === "deepgram" ? (

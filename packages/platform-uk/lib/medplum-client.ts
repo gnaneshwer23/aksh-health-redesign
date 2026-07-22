@@ -90,7 +90,7 @@ export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
     dryRunEligible: true,
     lastDryRunAt: lastMedplumDryRunAt,
     note: credentialsConfigured
-      ? "Rehearsal mode: CLIENT_ID/SECRET present — OAuth not verified until ?probe=auth. Not EMIS write-back."
+      ? "Rehearsal mode: CLIENT_ID/SECRET present — OAuth not verified until ?probe=auth. Invalid client → regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EMIS write-back."
       : "Flag on but credentials missing — dry-run/push will fail auth; set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET."
   };
 }
