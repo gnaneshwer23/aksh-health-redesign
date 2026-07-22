@@ -84,12 +84,14 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Send IM1 email from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) §B; apply/progress Partner Programme (§C); kick off CSO/IG note (§D); record thread refs in Admin `PartnerReadinessPanel` (`external_ref_noted` ≠ signed). |
 | **Exit criteria** | IM1 (and/or Partner) email sent with reply or ticket ref; gate tracker notes updated; honesty flags still false. |
 | **Fail if** | UI/API set `certified:true` or `liveEmis:true` because “email was sent”; Mirth mock sold as live. |
+| **In-repo status** | **READY_TO_SEND** — pack + N1 send checklist ready · **NOT SENT** (user mail client) · audit [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) |
 
 **Audit gate N1**
 
-- [ ] IM1 and/or Partner outreach sent (evidence: email/ticket ref in Partner panel)
-- [ ] `GET /api/clinical-spine/partner-readiness` → `honesty.liveEmis === false`
-- [ ] No marketing claim of live EMIS / certified
+- [x] In-repo pack execution-ready (`P7_PARTNER_OUTREACH_PACK.md` §B + N1 send checklist; `liveEmis:false` documented)
+- [ ] IM1 and/or Partner outreach **sent** (evidence: email/ticket ref in Partner panel) — **user action outstanding**
+- [x] `GET /api/clinical-spine/partner-readiness` → `honesty.liveEmis === false` (invariant; not flipped)
+- [x] No marketing claim of live EMIS / certified (pack + audit language)
 
 ---
 
@@ -287,6 +289,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 - [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 complete (paperwork)  
 - [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) — paperwork PASS / live NO-GO  
 - [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — emails + external checklist  
+- [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) — N1 READY_TO_SEND (not SENT)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — plain-English honest picture  
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — layers 1–15 vs reality  
 - [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) — external partner actions  

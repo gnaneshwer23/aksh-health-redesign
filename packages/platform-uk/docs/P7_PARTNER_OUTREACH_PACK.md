@@ -29,7 +29,7 @@ Track pending refs in Admin **PartnerReadinessPanel** gate tracker (`external_re
 
 | # | Action | Owner | Status | Where to record |
 |---|---|---|---|---|
-| P7-01 | Send **IM1 feasibility email** (§B below) to `im1.team@nhs.net` | Org lead | ☐ Send | Gate note / email thread ref |
+| P7-01 | Send **IM1 feasibility email** (§B below) to `im1.team@nhs.net` | Org lead | ☐ **READY_TO_SEND** (pack ready; not yet sent) | Gate note / email thread ref |
 | P7-02 | Apply / progress **EMIS / Optum Partner Programme** (sandbox → Partner API) | Org + partner | ☐ | Credentials later → Vercel env (never commit) |
 | P7-03 | Confirm **TPP SystmOne** path separately (developer account ≠ live write) | Org + TPP | ☐ | Scope doc + test base URL |
 | P7-04 | Draft + **sign DPIA** covering EMR write-back (+ first modality if in scope) | IG / DPO | ☐ | Gate `DPIA_EMR` / `DPIA_MODALITY` |
@@ -47,6 +47,24 @@ Track pending refs in Admin **PartnerReadinessPanel** gate tracker (`external_re
 ---
 
 ## B. Paste-ready — IM1 feasibility email (EMIS-first)
+
+### N1 send checklist (before you hit Send)
+
+| Field | Value |
+|---|---|
+| **To** | `im1.team@nhs.net` |
+| **Subject** | `Feasibility enquiry — Aksh Health clinical decision-support write-back (EMIS Partner API vs IM1 Transaction API)` |
+| **Body** | Copy from the template below (through Kind regards + signature placeholders). Optionally paste the **Use-case appendix** in the same email or as a short attachment. |
+
+**Before-send checks**
+
+1. Replace every placeholder: `[Organisation]`, `[Your name]`, `[Role]`, `[Email]`, `[Phone]`.
+2. Send from an organisational mailbox (not a personal throwaway); CC your IG/CSO contact if they should see the thread.
+3. Do **not** claim live EMIS, certification, or MHRA/DCB approval — the template already states staging/`liveEmis: false` only.
+
+After send: record the Sent date + Message-ID / ticket ref in Admin → Precision Health → **PartnerReadinessPanel** (`external_ref_noted` ≠ signed). Keep `liveEmis: false`.
+
+---
 
 **To:** im1.team@nhs.net  
 **Subject:** Feasibility enquiry — Aksh Health clinical decision-support write-back (EMIS Partner API vs IM1 Transaction API)
