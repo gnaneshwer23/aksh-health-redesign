@@ -50,6 +50,8 @@ the working stack (NextAuth + Neon Postgres, Vercel AI Gateway, deterministic or
 ORACLE→**HORIZON**, EQUITY→**COMPASS**, REFERRAL→**PATHWAY** (renames);
 **CANVAS**, **BRIDGE**, **NEXUS**, **CONDUCTOR** (newly named existing capabilities);
 **PRISM**, **ATLAS** (Phase 2 roadmap — not built, do not fake);
+**VOICE**, **Dr.Assist** (intake/coding **sub-capabilities** under CANVAS / SYNTHESIS — not peer Phase-1 agents);
+John Snow Labs NLP path — **Phase 2 / not wired** (do not claim JSL live).
 SYNTHESIS, GUARDIAN, SHIELD unchanged.
 
 Rename scope this session: user-facing labels (dashboards, marketing, onboarding, resources).
@@ -62,7 +64,7 @@ P0–P7 paperwork is **PASS** (2026-07-21); **live `liveEmis` flip remains NO-GO
 
 **What’s next:** [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — phases **N1–N10**. Do **not** rebuild DONE layers; start external outreach from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — eng `liveEmis` flip stays last (N7).
 
-**Open gaps after P7 paperwork:** Layer 15 **live** EMR (signed partner artefacts) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2) · DrASSIST/JSL as coding sub-capability only (not a live peer agent).
+**Open gaps after P7 paperwork:** Layer 15 **live** EMR (signed partner artefacts) · real Medplum Client Secret (optional staging) · local Deepgram (optional) · PRISM/ATLAS (Phase 2) · DrASSIST coding sub-capability only (not a live peer agent) · **JSL NLP not wired**.
 
 ## Gaps executed this session
 

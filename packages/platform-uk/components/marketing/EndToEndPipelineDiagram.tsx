@@ -188,6 +188,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
               <br />
               Structures voice or typed input into a SOAP note draft via Vercel AI Gateway (with rule-based fallback).
               Dr.Assist coding drafts support documentation under HITL — a sub-capability, not a peer directory agent.
+              John Snow Labs NLP is not wired in this build.
             </p>
             <span className={styles.cardFhir}>DocumentReference (SOAP)</span>
           </div>

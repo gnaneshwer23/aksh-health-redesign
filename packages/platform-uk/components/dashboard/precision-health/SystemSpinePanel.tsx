@@ -82,7 +82,7 @@ const AGENT_PROBES: Array<{ id: string; label: string; href: string }> = [
   { id: "oracle", label: "HORIZON", href: "/api/agents/oracle" },
   { id: "nexus", label: "NEXUS", href: "/api/agents/nexus" },
   { id: "pathway", label: "PATHWAY", href: "/api/agents/pathway" },
-  { id: "dr-assist", label: "Dr.Assist", href: "/api/agents/dr-assist" },
+  { id: "dr-assist", label: "Dr.Assist (sub-cap)", href: "/api/agents/dr-assist" },
 ];
 
 /**

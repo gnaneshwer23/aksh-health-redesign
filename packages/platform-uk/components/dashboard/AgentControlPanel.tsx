@@ -805,8 +805,9 @@ export function AgentControlPanel({
               </Button>
             </div>
             <p className="text-[10px] text-muted">
-              Sub-capability under documentation/coding — SNOMED / ICD-10 drafts for HITL. Not a peer Phase-1
-              directory agent.
+              Coding sub-capability under SYNTHESIS — SNOMED / ICD-10 drafts for HITL. Not a peer Phase-1 directory
+              agent. John Snow Labs NLP is <span className="font-medium">not wired</span> (deterministic / AI Gateway
+              drafts only).
             </p>
             {!patient ? (
               <p className="text-muted text-[10px]">Select a patient</p>

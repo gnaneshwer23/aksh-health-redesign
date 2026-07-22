@@ -145,12 +145,17 @@ async function run() {
   assert.ok(agentControl.includes("CONDUCTOR"));
   assert.ok(agentControl.includes("sub-capability"));
   assert.ok(agentControl.includes("liveEmis:false"));
+  assert.ok(agentControl.includes("John Snow Labs NLP is"));
+  assert.ok(agentControl.includes("not wired"));
   assert.ok(!agentControl.includes("14 live agents"));
 
   const agentDirectory = fs.readFileSync(path.join(process.cwd(), "lib/agents.ts"), "utf8");
   assert.ok(agentDirectory.includes('name: "CANVAS"'));
   assert.ok(agentDirectory.includes('name: "BRIDGE"'));
   assert.ok(agentDirectory.includes('name: "CONDUCTOR"'));
+  assert.ok(agentDirectory.includes('name: "PRISM"'));
+  assert.ok(agentDirectory.includes('name: "ATLAS"'));
+  assert.ok(agentDirectory.includes("phase: 2, live: false"));
   assert.ok(!agentDirectory.includes('name: "VOICE"'));
   assert.ok(!agentDirectory.includes('name: "DrASSIST"'));
 
@@ -162,9 +167,24 @@ async function run() {
   assert.ok(pipeline.includes("VOICE dictation (sub-capability"));
   assert.ok(pipeline.includes("BRIDGE · FHIR R4 staging"));
   assert.ok(pipeline.includes("Dr.Assist coding drafts support documentation"));
+  assert.ok(pipeline.includes("John Snow Labs NLP is not wired"));
+  assert.ok(pipeline.includes("PHASE 2"));
   assert.ok(!pipeline.includes("LIVE · API"));
   assert.ok(!pipeline.includes("not yet in the default CONDUCTOR"));
   assert.ok(!pipeline.includes("14 live agents"));
+
+  const resources = fs.readFileSync(path.join(process.cwd(), "app/resources/page.tsx"), "utf8");
+  assert.ok(resources.includes("Twelve Phase-1 directory agents"));
+  assert.ok(resources.includes("sub-capabilities"));
+  assert.ok(!resources.includes("Seven agents"));
+
+  const agentGrid = fs.readFileSync(
+    path.join(process.cwd(), "components/marketing/AgentGrid.tsx"),
+    "utf8"
+  );
+  assert.ok(agentGrid.includes("Twelve agents"));
+  assert.ok(agentGrid.includes("sub-capabilities"));
+  assert.ok(agentGrid.includes("PRISM and ATLAS stay Phase 2"));
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),

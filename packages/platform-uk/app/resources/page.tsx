@@ -96,7 +96,8 @@ const resourceSections = [
     body: "Aksh Health organises clinical AI into five layers: intake, agent orchestration, synthesis, review queue, and export. Consultation data flows through named clinical agents. Outputs land in a draft review queue. No autonomous write-back to active clinical records.",
     bullets: [
       "Five layers: intake, agents, synthesis, review, export",
-      "Seven agents: VOICE, SYNTHESIS, Dr.Assist, GUARDIAN, HORIZON, COMPASS, SHIELD",
+      "Twelve Phase-1 directory agents; PRISM / ATLAS remain Phase 2 roadmap (not live)",
+      "VOICE and Dr.Assist are intake/coding sub-capabilities under CANVAS / SYNTHESIS — not peer agents; John Snow Labs NLP is not wired",
       "FHIR R4 resources staged as DRAFT until named reviewer approval",
       "Human-in-the-loop on every clinical output before record impact",
     ],

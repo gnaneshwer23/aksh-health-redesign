@@ -78,7 +78,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
       { name: "synthesisLength" as keyof FormValues, label: "SYNTHESIS summary length", options: ["Brief", "Standard", "Detailed"] },
       { name: "oracleAlerts" as keyof FormValues, label: "HORIZON alerts", options: ["All patients", "High risk only", "Off"] },
       { name: "guardianSensitivity" as keyof FormValues, label: "GUARDIAN sensitivity", options: ["All interactions", "Severe only"] },
-      { name: "voiceAgent" as keyof FormValues, label: "VOICE agent", options: ["On", "Off"] },
+      { name: "voiceAgent" as keyof FormValues, label: "VOICE dictation (CANVAS sub-capability)", options: ["On", "Off"] },
       { name: "equityReports" as keyof FormValues, label: "COMPASS reports", options: ["Monthly", "Quarterly", "Off"] },
       { name: "dailyDigest" as keyof FormValues, label: "Daily digest time", options: ["7am", "8am", "9am", "Off"] }
     );

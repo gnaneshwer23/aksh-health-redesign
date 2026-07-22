@@ -41,7 +41,7 @@ export const CLINICAL_AGENT_META: Record<
     label: "Dr.Assist",
     function: "Coding support (sub-capability)",
     description:
-      "SNOMED / ICD-10 coding drafts under HITL, nested under documentation — not a peer 12-agent directory entry."
+      "SNOMED / ICD-10 coding drafts under SYNTHESIS / HITL — not a peer 12-agent directory entry. John Snow Labs NLP path is not wired (deterministic / AI Gateway drafts only)."
   },
   GUARDIAN: {
     label: "GUARDIAN",

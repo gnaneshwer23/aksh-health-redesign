@@ -56,8 +56,9 @@ export default function AgentGrid() {
             Twelve agents. One review queue.
           </h2>
           <p className="text-base leading-relaxed text-slate/75 md:text-lg">
-            Capture → draft → clinician approve. Phase 1 agents run in-product; PRISM and ATLAS stay roadmap. Nothing
-            reaches a live EHR without HITL — and this build keeps liveEmis:false.
+            Capture → draft → clinician approve. Phase 1 agents run in-product; PRISM and ATLAS stay Phase 2 roadmap
+            (not built). VOICE and Dr.Assist are intake/coding sub-capabilities under CANVAS / SYNTHESIS — not a 13th
+            or 14th peer agent. Nothing reaches a live EHR without HITL — and this build keeps liveEmis:false.
           </p>
         </div>
 

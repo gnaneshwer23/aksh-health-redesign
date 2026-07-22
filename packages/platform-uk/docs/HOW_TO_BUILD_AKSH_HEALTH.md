@@ -38,8 +38,9 @@ Aksh Health is a **GP-as-valve** clinical assist layer: agents may **draft**, th
 2. **IM1 / Partner Programme / CIS2 / Mirth** — Organisational and partner work, not a weekend code sprint. Pack is ready; emails/sign-offs are yours.
 3. **Medplum live OAuth** — Needs a real Client Application secret; local UUID stubs return `Invalid client`.
 4. **Local Deepgram VOICE** — Key may exist on Vercel; locally ASR is often **labelled simulated**.
-5. **PRISM / ATLAS** — Phase 2 roadmap agents; do **not** market as live.
-6. **MHRA / DCB / DTAC “certified”** — Templates and honesty flags exist; **no invented signatures**.
+5. **PRISM / ATLAS** — Phase 2 roadmap agents (`live:false`); do **not** market as live.
+6. **John Snow Labs NLP** — **Not wired**; Dr.Assist coding is a sub-capability under SYNTHESIS, not a peer agent or live JSL product.
+7. **MHRA / DCB / DTAC “certified”** — Templates and honesty flags exist; **no invented signatures**.
 
 ### Ignore from older docs (unless you are deliberately migrating)
 
@@ -96,6 +97,10 @@ Patient / guardian interaction / ICS population routes. Seed script exists. Mock
 
 Structured intake / note generation feeds the pipeline. VOICE is dictation assist into CANVAS — **not** a 13th peer agent in the Phase-1 directory.
 
+### 4b. Coding assist — Dr.Assist (+ JSL path not wired)
+
+Optional SNOMED / ICD-10 coding drafts under SYNTHESIS / CONDUCTOR (`includeDrAssist`) — **sub-capability**, not a 14th peer agent. John Snow Labs NLP microservice is **Phase 2 / not wired**; drafts use deterministic + AI Gateway paths only under HITL.
+
 ### 5. Draft agents — AI Gateway
 
 SYNTHESIS, GUARDIAN, HORIZON (was ORACLE), NEXUS, PATHWAY (was REFERRAL), COMPASS (was EQUITY population side), etc. Models go through **Vercel AI Gateway**; if the gateway fails, deterministic fallbacks keep demos and tests honest.  
@@ -131,7 +136,7 @@ EMIS Partner Programme, IM1 feasibility, CIS2, Mirth, DPIA/DPA, named CSO, partn
 | Neo4j client + honest mock | CIS2 / Mirth / signed DPIA–DPA–CSO |
 | Medplum dry-run / BRIDGE sim | Signed EMR go/no-go → eng `liveEmis` checklist |
 | P0–P7 paperwork + clinical-proof suite | MHRA / DCB / DTAC funded route (templates only) |
-| CANVAS / BRIDGE / CONDUCTOR GP labels | PRISM / ATLAS (Phase 2) |
+| CANVAS / BRIDGE / CONDUCTOR GP labels | PRISM / ATLAS (Phase 2) · JSL NLP (not wired) |
 
 ---
 

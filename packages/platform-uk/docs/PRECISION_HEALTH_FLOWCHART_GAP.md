@@ -68,8 +68,8 @@ Flowchart “specialised agent” boxes vs current Aksh catalogue:
 
 | Flowchart agent box | Aksh agent | Status | Evidence |
 | --- | --- | --- | --- |
-| Triage / intake | **VOICE** (+ intake routes) | Partial | Transcription / note intake; optional Deepgram; deterministic fallback |
-| Clinical documentation / coding | **SYNTHESIS**, **DrASSIST** | Partial (draft APIs live) | `POST /api/agents/synthesis`, `/api/agents/dr-assist`; SOAP + coding drafts; HITL |
+| Triage / intake | **CANVAS** (+ **VOICE** sub-capability) | Partial | VOICE feeds CANVAS dictation — not a peer directory agent; optional Deepgram; simulated ASR when key absent |
+| Clinical documentation / coding | **SYNTHESIS** (+ **Dr.Assist** coding sub-capability) | Partial (draft APIs live) | `POST /api/agents/synthesis`, `/api/agents/dr-assist`; SOAP + coding drafts under HITL; **JSL NLP not wired** — not a peer Phase-1 agent |
 | Med safety | **GUARDIAN** | Partial (draft APIs live) | `POST /api/agents/guardian`; Neo4j/mock DDI; HITL |
 | Predictive / risk | **ORACLE** | Partial (draft APIs live) | `GET/POST /api/agents/oracle`; model card + CVD/T2D-style risk draft; HITL; no auto-retrain |
 | Care coordination / referral | **REFERRAL** | Partial | `POST /api/agents/referral`; package draft; no e-Referral write |
@@ -83,7 +83,7 @@ Flowchart “specialised agent” boxes vs current Aksh catalogue:
 | Research / trial matching | — | **Not built** | Research evaluation **boundary** export only (`/api/research/evaluation`) |
 | Orchestrator | Clinical-proof + **whole-loop** | Partial / synthetic | SYNTHESIS + GUARDIAN + ORACLE (+ DrASSIST); GUARDIAN first when urgent; **`runWholeLoop`** stitches consent→ingest→agents→twin→plan→HITL/sim→learning (`/demo/precision-health-loop`) |
 
-Marketing/resources historically say “seven agents”; the live API set also includes **REFERRAL** and **VOICE CARE** as first-class draft/escalation paths. All clinical agent outputs remain **draft ≠ record** until HITL Accept.
+Marketing/resources historically said “seven agents”; the canonical story is the **12-agent Phase-1 directory** (`AGENT_DIRECTORY`) with **PRISM / ATLAS** Phase 2 (`live:false`) and **VOICE / Dr.Assist** as intake/coding **sub-capabilities** (not peers). Live draft APIs also include PATHWAY and VOICE CARE escalation paths. All clinical agent outputs remain **draft ≠ record** until HITL Accept.
 
 ---
 

@@ -59,7 +59,7 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 N1 External outreach execution (user/partner)     ← start immediately
  → N2 Staging secrets (Medplum / Deepgram)        ← optional but high leverage
  → N3 BRIDGE staging rehearsal green              ← eng after N2 Medplum
- → N4 Sub-capability honesty + coding assist      ← eng (small; can parallel N2–N3)
+ → N4 Sub-capability honesty + coding assist      ← **PASS** (2026-07-22)
  → N5 Partner sandbox wire (flags on; liveEmis:false)
  → N6 Partner UAT + rollback drill
  → N7 Signed go/no-go → controlled liveEmis flip  ← LAST eng critical path
@@ -145,12 +145,14 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Spot-audit GP/marketing copy for “14 live agents” / “JSL live”; keep `AGENT_DIRECTORY` Phase-2 PRISM/ATLAS `live:false`; optional: improve coding-draft quality behind existing CONDUCTOR opt-in — still draft-only + SHIELD. |
 | **Exit criteria** | Roster honesty matches table above; marketing E2E still asserts 12-agent Phase-1 story; no silent peer-agent promotion. |
 | **Fail if** | PRISM/ATLAS marked live; VOICE/DrASSIST added as peer Phase-1 agents without product decision; JSL claimed as integrated product. |
+| **In-repo status** | **PASS** — VOICE/Dr.Assist sub-caps; JSL **not wired**; PRISM/ATLAS `live:false` · audit [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) |
 
 **Audit gate N4**
 
-- [ ] `e2e/marketing.spec.ts` green (12-agent honesty)
-- [ ] Manual: VOICE / DrASSIST copy = sub-capability; PRISM/ATLAS = Phase 2 / not live
-- [ ] `npm run test:clinical-proof` exit 0
+- [x] `e2e/marketing.spec.ts` green (12-agent honesty) — **PASS** 2026-07-22 (resources + AgentGrid assertions)
+- [x] Manual: VOICE / DrASSIST copy = sub-capability; PRISM/ATLAS = Phase 2 / not live — **PASS**
+- [x] `npm run test:clinical-proof` exit 0 — **PASS** 2026-07-22
+- [x] JSL NLP explicitly **not wired** (no live product / peer-agent claim)
 
 ---
 
@@ -265,7 +267,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 |---|---|---|
 | **This week** | **N1** | Send IM1 / Partner emails from the pack |
 | **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal |
-| **Anytime (small)** | **N4** | Roster honesty / optional coding assist |
+| **Anytime (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
 | **After sandbox creds** | **N5 → N6** | Flagged Partner wire → UAT + rollback |
 | **Only after signed GO** | **N7** | Controlled `liveEmis` flip |
 | **Product pull-in** | **N8 / N9** | PRISM / ATLAS |
@@ -292,6 +294,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 - [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — emails + external checklist  
 - [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) — N1 READY_TO_SEND (not SENT)  
 - [`NEXT_BUILD_N2_AUDIT.md`](./NEXT_BUILD_N2_AUDIT.md) — N2 PARTIAL (OAuth Invalid client; Deepgram simulated local)  
+- [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) — N4 PASS (sub-capability honesty; JSL not wired)  
 
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — plain-English honest picture  
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — layers 1–15 vs reality  

@@ -371,6 +371,28 @@ test.describe("Marketing smoke", () => {
     await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
   });
 
+  test("resources page keeps 12-agent roster honesty", async ({ page }) => {
+    await page.goto("/resources");
+
+    await expect(
+      page.getByRole("heading", { name: /Architecture, compliance, and integration documentation/i })
+    ).toBeVisible();
+    await expect(page.getByText(/Twelve Phase-1 directory agents/i)).toBeVisible();
+    await expect(page.getByText(/VOICE and Dr\.Assist are intake\/coding sub-capabilities/i)).toBeVisible();
+    await expect(page.getByText(/John Snow Labs NLP is not wired/i)).toBeVisible();
+    await expect(page.getByText(/Seven agents:/i)).toHaveCount(0);
+  });
+
+  test("platform agent grid keeps Phase-2 and sub-capability honesty", async ({ page }) => {
+    await page.goto("/platform");
+
+    const agents = page.getByRole("heading", { name: /Twelve agents\. One review queue/i });
+    await expect(agents).toBeVisible();
+    await expect(page.getByText(/PRISM and ATLAS stay Phase 2 roadmap/i)).toBeVisible();
+    await expect(page.getByText(/VOICE and Dr\.Assist are intake\/coding sub-capabilities/i)).toBeVisible();
+    await expect(page.getByText("Phase 2", { exact: true }).first()).toBeVisible();
+  });
+
   test("get-started page is organisation enquiry, distinct from signup", async ({ page }) => {
     await page.goto("/get-started");
 

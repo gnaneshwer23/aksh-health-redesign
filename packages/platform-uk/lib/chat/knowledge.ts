@@ -29,9 +29,9 @@ Tone for answers: calm clinical ops / built for NHS. Avoid AI product hype, buzz
 
 ## Clinical agents (12 Phase-1 directory + Phase-2 roadmap)
 Canonical Phase-1 brands include CANVAS, SYNTHESIS, GUARDIAN, HORIZON (formerly ORACLE), PATHWAY (formerly REFERRAL), COMPASS (formerly EQUITY), NEXUS, BRIDGE, CONDUCTOR, SHIELD, and related intake/coding surfaces.
-- VOICE — Sub-capability that feeds CANVAS (not a 13th peer agent).
+- VOICE — Sub-capability that feeds CANVAS (not a 13th peer agent). Live ASR only with Deepgram; otherwise labelled simulated.
 - SYNTHESIS — Encounter narrative → SOAP DocumentReference (draft).
-- Dr.Assist — Coding support under SYNTHESIS / HITL (not a peer directory agent).
+- Dr.Assist — Coding support under SYNTHESIS / HITL (not a peer directory agent). John Snow Labs NLP path is not wired.
 - GUARDIAN — Drug interaction and allergy flags on MedicationRequest (BNF-aware framing).
 - HORIZON — CVD / T2D risk stratification with contributing factors (internal id may still be ORACLE).
 - PATHWAY — Referral package draft → ServiceRequest after GP Accept (internal id may still be REFERRAL).
@@ -39,7 +39,7 @@ Canonical Phase-1 brands include CANVAS, SYNTHESIS, GUARDIAN, HORIZON (formerly 
 - NEXUS — Clinical correlation drafts in default CONDUCTOR path — draft-only + HITL.
 - CONDUCTOR — In-app clinical-spine orchestrator (deterministic — not LangGraph).
 - SHIELD — Immutable AuditEvent on every reviewer action.
-- PRISM / ATLAS — Phase 2 roadmap only (live:false).
+- PRISM / ATLAS — Phase 2 roadmap only (live:false · not built). Do not claim live imaging or clinical research agents.
 
 ## Roles / audiences
 Role dashboards cover: GP/clinician, nurse, pharmacist, practice admin, ICS/regional, hospital executive, patient (invite-only), and researcher.

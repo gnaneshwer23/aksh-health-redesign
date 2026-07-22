@@ -147,8 +147,10 @@ export const roadmapItems: RoadmapItem[] = [
     validationGate: "Voice SOAP generation <3.5min",
     workbookStatus: "Planned",
     buildStatus: "partial",
-    currentReality: "A transcription route and simulated fallback exist. John Snow Labs NLP, measured voice SOAP performance, and vendor-grade voice validation are not complete.",
-    nextBuild: "Add voice/transcription dependency checks and synthetic timing evidence before any vendor commitment is treated as live."
+    currentReality:
+      "VOICE is a CANVAS dictation sub-capability (Deepgram when keyed, else labelled simulated). John Snow Labs NLP microservice is Phase 2 / not wired — not a live product integration and not a peer directory agent.",
+    nextBuild:
+      "Keep simulated/live ASR honesty banners. Do not market JSL as integrated until a real vendor path exists."
   },
   {
     month: "M4 (Jul 26)",
@@ -347,7 +349,7 @@ export const defaultRoadmapTrackerItems: RoadmapTrackerItem[] = [
     buildStatus: "not_started",
     risk: "high",
     evidenceLink: "",
-    notes: "VOICE agent and SystmOne preparation are future roadmap items.",
+    notes: "VOICE dictation (CANVAS sub-capability) and SystmOne preparation are future roadmap items. JSL NLP remains not wired.",
     lastUpdated: "2026-04-29"
   },
   {
@@ -587,7 +589,7 @@ export const budgetLines: BudgetLine[] = [
   { category: "Personnel", item: "Engineering, AI/ML, frontend, DevOps, QA, clinical, NHS BD", totalK: 492, months: 12, monthlyK: 41, buildStatus: "planned" },
   { category: "Regulatory", item: "DCB0129, DTAC, ISO 27001, DSPT", totalK: 168, months: 12, monthlyK: 14, buildStatus: "not_started" },
   { category: "Cloud", item: "AWS EKS, RDS, egress, backup", totalK: 144, months: 12, monthlyK: 12, buildStatus: "not_started" },
-  { category: "APIs & Licenses", item: "JSL NLP, Deepgram, ElevenLabs, Claude/GPT", totalK: 132, months: 12, monthlyK: 11, buildStatus: "partial" },
+  { category: "APIs & Licenses", item: "Deepgram (+ planned JSL NLP — not wired), ElevenLabs, Claude/GPT", totalK: 132, months: 12, monthlyK: 11, buildStatus: "partial" },
   { category: "Infrastructure", item: "Neo4j, Weaviate, Mirth Connect", totalK: 72, months: 12, monthlyK: 6, buildStatus: "not_started" },
   { category: "Clinical", item: "GP pilot sites and Phase 1 validation studies", totalK: 90, months: 12, monthlyK: 7.5, buildStatus: "blocked" },
   { category: "Commercial", item: "EMIS + SystmOne partner engagement", totalK: 36, months: 12, monthlyK: 3, buildStatus: "not_started" },
