@@ -25,5 +25,19 @@ data/readiness-history.*.json
 data/learning-events.*.json
 data/governed-evaluations.*.json
 
+# Local runtime / verify dumps (keep tracked seed + fixture JSON; ignore run artifacts)
+data/consent-grants.*.json
+data/health-plans.*.json
+data/modality-samples.*.json
+data/review-cases.phase_a_*.json
+data/review-cases.whole_loop_*.json
+data/review-cases.benchmark_concurrency_*.json
+data/review-cases.readiness_contract_*.json
+data/bridge-staging-bundles.json
+data/benchmark-signoffs.benchmark_concurrency_*.json
+data/benchmark-signoffs.readiness_contract_*.json
+data/feedback-state.benchmark_concurrency_*.json
+data/feedback-state.readiness_contract_*.json
+
 # Evidence pack generated snapshots (regenerate via npm run evidence:pack)
 docs/evidence-pack/generated/

@@ -163,28 +163,46 @@ async function run() {
     path.join(process.cwd(), "components/marketing/EndToEndPipelineDiagram.tsx"),
     "utf8"
   );
-  assert.ok(pipeline.includes("LIVE · in CONDUCTOR"));
-  assert.ok(pipeline.includes("VOICE dictation (sub-capability"));
+  assert.ok(pipeline.includes("Clinical-spine orchestrator"));
+  assert.ok(pipeline.includes("not LangGraph"));
+  assert.ok(pipeline.includes("Voice dictation"));
   assert.ok(pipeline.includes("BRIDGE · FHIR R4 staging"));
-  assert.ok(pipeline.includes("Dr.Assist coding drafts support documentation"));
+  assert.ok(pipeline.includes("Coding drafts support documentation under clinician review"));
   assert.ok(pipeline.includes("John Snow Labs NLP is not wired"));
   assert.ok(pipeline.includes("PHASE 2"));
   assert.ok(!pipeline.includes("LIVE · API"));
-  assert.ok(!pipeline.includes("not yet in the default CONDUCTOR"));
+  assert.ok(!pipeline.includes("LIVE · in CONDUCTOR"));
   assert.ok(!pipeline.includes("14 live agents"));
 
+  const heroPipeline = fs.readFileSync(
+    path.join(process.cwd(), "components/marketing/InteroperabilityDiagram.tsx"),
+    "utf8"
+  );
+  assert.ok(heroPipeline.includes("CANVAS"));
+  assert.ok(heroPipeline.includes("CONDUCTOR"));
+  assert.ok(heroPipeline.includes("clinician decides"));
+  assert.ok(heroPipeline.includes("Drafts only — no live EMR write"));
+  assert.ok(heroPipeline.includes("SYNTHESIS"));
+  assert.ok(heroPipeline.includes("SHIELD"));
+
   const resources = fs.readFileSync(path.join(process.cwd(), "app/resources/page.tsx"), "utf8");
-  assert.ok(resources.includes("Twelve Phase-1 directory agents"));
-  assert.ok(resources.includes("sub-capabilities"));
+  assert.ok(resources.includes("Five layers from intake to export"));
+  assert.ok(resources.includes("named clinical agents"));
+  assert.ok(resources.includes("Named reviewer approval on every output"));
+  assert.ok(!resources.includes("Twelve Phase-1 directory agents"));
   assert.ok(!resources.includes("Seven agents"));
+  assert.ok(!resources.includes("100 patients"));
 
   const agentGrid = fs.readFileSync(
     path.join(process.cwd(), "components/marketing/AgentGrid.tsx"),
     "utf8"
   );
-  assert.ok(agentGrid.includes("Twelve agents"));
-  assert.ok(agentGrid.includes("sub-capabilities"));
-  assert.ok(/PRISM and ATLAS[\s\S]*stay Phase 2/.test(agentGrid));
+  assert.ok(agentGrid.includes("Supporting intelligence. One review queue."));
+  assert.ok(agentGrid.includes("Capture → draft → approve"));
+  assert.ok(agentGrid.includes("Clinical Capture"));
+  assert.ok(agentGrid.includes("Safety Review"));
+  assert.ok(!agentGrid.includes("Twelve agents"));
+  assert.ok(!agentGrid.includes("sub-capabilities"));
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),

@@ -189,8 +189,20 @@ async function run() {
   await assertFileExcludes("lib/agents.ts", 'name: "DrASSIST"');
   await assertFileExcludes("lib/agents.ts", "14 live agents");
   await assertFileExcludes("app/resources/page.tsx", "Seven agents");
-  await assertFileIncludes("app/resources/page.tsx", "Twelve Phase-1 directory agents");
-  await assertFileIncludes("components/marketing/AgentGrid.tsx", "sub-capabilities");
+  await assertFileExcludes("app/resources/page.tsx", "Twelve Phase-1 directory agents");
+  await assertFileIncludes("app/resources/page.tsx", "Five layers from intake to export");
+  await assertFileIncludes("app/resources/page.tsx", "named clinical agents");
+  await assertFileIncludes(
+    "components/marketing/InteroperabilityDiagram.tsx",
+    "Drafts only — no live EMR write"
+  );
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CANVAS");
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CONDUCTOR");
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");
+  await assertFileIncludes(
+    "components/marketing/AgentGrid.tsx",
+    "Supporting intelligence. One review queue."
+  );
   await assertFileIncludes("components/gp/voice-mic-panel.tsx", "feeds CANVAS");
   await assertFileExcludes("components/gp/voice-mic-panel.tsx", "feeds VOICE agent");
   await assertFileIncludes("app/api/agents/equity/route.ts", "runEquityAgent");
@@ -367,7 +379,8 @@ async function run() {
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/precision-health");
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/researcher#federated");
   await assertFileIncludes("app/resources/page.tsx", "precision-health");
-  await assertFileIncludes("app/resources/page.tsx", "not a living physiological twin");
+  await assertFileIncludes("app/resources/page.tsx", "not a live digital twin claim");
+  await assertFileIncludes("app/resources/page.tsx", "validated physiological digital twin");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-progress.json");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "precision-health-scaffold-snapshot.json");
   await assertFileIncludes("scripts/evidence-precision-health-summary.ts", "physiologicalTwin");
@@ -395,9 +408,10 @@ async function run() {
   await assertFileIncludes("lib/onboarding/roles.ts", "hasTutorial: true");
   await assertFileIncludes("components/onboarding/OnboardingCard.tsx", "onboarding-honesty-banner");
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", "Skip tutorial");
-  await assertFileIncludes("components/marketing/HeroSection.tsx", "Create account");
-  await assertFileIncludes("components/marketing/HeroSection.tsx", "Discuss a pilot");
-  await assertFileIncludes("components/marketing/HeroSection.tsx", "See walkthrough");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Get started");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Book a walkthrough");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "InteroperabilityDiagram");
+  await assertFileExcludes("components/marketing/HeroSection.tsx", "100 patients");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "You approve:");
   await assertFileIncludes("components/onboarding/ConsentForm.tsx", "precision-health-consent-note");
