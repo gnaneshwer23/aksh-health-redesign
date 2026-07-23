@@ -7574,7 +7574,7 @@ input:focus, textarea:focus {
   padding-block: var(--mk-section-tight) !important;
 }
 
-.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band):not(.owkin-story) {
+.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band):not(.owkin-story):not(.owkin-clinician-gate) {
   padding-block: var(--mk-section) !important;
 }
 
@@ -8990,10 +8990,11 @@ input:focus, textarea:focus {
   font-variant-numeric: tabular-nums;
 }
 
+/* Dark gate band — must beat .marketing-site h2 / .owkin-btn-ink / .owkin-text-cta !important ink. */
 .owkin-clinician-gate {
   background: #0d1f14;
   color: #fff;
-  padding-block: 4rem;
+  padding-block: 4rem; /* ~64px */
 }
 
 .marketing-site--editorial main > section.owkin-clinician-gate {
@@ -9015,14 +9016,15 @@ input:focus, textarea:focus {
   color: rgba(20, 224, 164, 0.9);
 }
 
-.owkin-clinician-gate__title {
+.owkin-clinician-gate__title,
+.marketing-site .owkin-clinician-gate :is(h1, h2, h3) {
   margin: 0 0 1rem;
   font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
   font-size: clamp(1.75rem, 3.2vw, 2.5rem);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.12;
-  color: #fff;
+  color: #ffffff !important;
   text-wrap: balance;
 }
 
@@ -9032,7 +9034,7 @@ input:focus, textarea:focus {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .owkin-clinician-gate__actions {
@@ -9044,16 +9046,23 @@ input:focus, textarea:focus {
 }
 
 .owkin-clinician-gate .owkin-btn-ink {
-  background: #fff;
-  color: #0a2a25;
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #0a2a25 !important;
+}
+
+.owkin-clinician-gate .owkin-btn-ink:hover {
+  background: #f2f7f4 !important;
+  border-color: #f2f7f4 !important;
+  color: #0a2a25 !important;
 }
 
 .owkin-clinician-gate .owkin-text-cta {
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(20, 224, 164, 0.95) !important;
 }
 
 .owkin-clinician-gate .owkin-text-cta:hover {
-  color: #fff;
+  color: #ffffff !important;
 }
 
 .owkin-footer__newsletter {
