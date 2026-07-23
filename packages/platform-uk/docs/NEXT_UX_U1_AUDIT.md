@@ -63,6 +63,6 @@ npx playwright test e2e/marketing.spec.ts \
 
 ## Next
 
-**U2** — Audience `for-*` pages agent-mapped (which agents help **me**, what do I approve?).
+**U3** — Personalised onboarding (U2 PASS — see [`NEXT_UX_U2_AUDIT.md`](./NEXT_UX_U2_AUDIT.md)).
 
-Do **not** start U3 until U2 exit criteria pass.
+Do **not** start U4 until U3 exit criteria pass.

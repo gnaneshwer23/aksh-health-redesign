@@ -173,18 +173,61 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { name: /What slows care today/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /What changes/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Which agents help in clinic/i })).toBeVisible();
+    await expect(page.getByText("What you approve", { exact: true })).toBeVisible();
+    await expect(page.getByText("CANVAS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("liveEmis:false").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /Capture, draft, approve/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to talk/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "See walkthrough" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Guided demo script" }).first()).toHaveAttribute(
+      "href",
+      "/demo/script"
+    );
     await expect(page.getByLabel("Product trust and pilot readiness").first()).toBeVisible();
     await expect(page.locator(".marketing-pastel-card").first()).toBeVisible();
 
     await page.goto("/for-practices");
+    await expect(page.getByRole("heading", { name: /Ops agents you oversee/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Set up, oversee, evidence/i })).toBeVisible();
+    await expect(page.getByText("SHIELD", { exact: true }).first()).toBeVisible();
 
     await page.goto("/for-hospitals");
+    await expect(page.getByRole("heading", { name: /Command-centre agents/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Connect, monitor, act/i })).toBeVisible();
+    await expect(page.getByText(/synthetic PAS|not a live PAS/i).first()).toBeVisible();
+
+    await page.goto("/for-research");
+    await expect(page.getByRole("heading", { name: /ATLAS stays Phase 2/i })).toBeVisible();
+    await expect(page.getByText("Phase 2").first()).toBeVisible();
+    await expect(page.getByText("ATLAS", { exact: true }).first()).toBeVisible();
+
+    await page.goto("/for-ics");
+    await expect(page.getByRole("heading", { name: /Population agents/i })).toBeVisible();
+    await expect(page.getByText("COMPASS", { exact: true }).first()).toBeVisible();
+
+    await page.goto("/for-administrators");
+    await expect(page.getByRole("heading", { name: /Integration and audit agents/i })).toBeVisible();
+    await expect(page.getByText("liveEmis:false").first()).toBeVisible();
+
+    await page.goto("/for-patients");
+    await expect(page.getByRole("heading", { name: /How agents support your plan/i })).toBeVisible();
+  });
+
+  test("audience agent maps keep honesty locks", async ({ page }) => {
+    await page.goto("/for-clinicians#agents-for-you");
+    await expect(page.getByText("Sub-cap").first()).toBeVisible();
+    await expect(page.getByText("VOICE", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Dr.Assist", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/PRISM.*ATLAS|Phase 2/i).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Full twelve-agent roster/i })).toHaveAttribute(
+      "href",
+      "/platform#agents"
+    );
+
+    await page.goto("/for-research#agents-for-you");
+    await expect(page.getByText(/not built|never claim live/i).first()).toBeVisible();
+    await expect(page.locator("#agents-for-you").getByText("Phase 2").first()).toBeVisible();
   });
 
   test("homepage shows platform flow diagram with link to full journey", async ({ page }) => {
@@ -544,12 +587,21 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("navigation").getByRole("link", { name: "Pricing", exact: true })).toHaveCount(0);
   });
 
-  test("for-administrators offers the integration architecture brief as primary CTA", async ({ page }) => {
+  test("for-administrators offers admin dashboard and signup CTAs", async ({ page }) => {
     await page.goto("/for-administrators");
 
-    const cta = page.getByRole("link", { name: /Download integration brief/i }).first();
-    await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute("href", "/resources#integration");
+    await expect(page.getByRole("link", { name: /Open admin dashboard/i }).first()).toHaveAttribute(
+      "href",
+      "/dashboard/admin"
+    );
+    await expect(page.getByRole("link", { name: /Create account/i }).first()).toHaveAttribute(
+      "href",
+      "/signup?role=practice-manager"
+    );
+    await expect(page.getByRole("link", { name: /Guided demo script/i }).first()).toHaveAttribute(
+      "href",
+      "/demo/script"
+    );
   });
 
   test("cookie consent banner appears on first visit", async ({ page }) => {

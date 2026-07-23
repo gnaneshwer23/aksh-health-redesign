@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import { container } from "@/components/marketing/marketing-ui";
+import { container, linkUnderline } from "@/components/marketing/marketing-ui";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import type { AudiencePageContent } from "@/components/marketing/audience/audience-content";
+import { AudienceAgentMapSection } from "@/components/marketing/audience/AudienceAgentMapSection";
 import { AudienceWorkflowSection } from "@/components/marketing/audience/AudienceWorkflowSection";
 import { MarketingSectionHeader } from "@/components/marketing/MarketingSectionHeader";
 import { PastelCapabilityCard } from "@/components/marketing/PastelCapabilityCard";
@@ -19,9 +20,11 @@ export function AudiencePageLayout({
   roles,
   problem,
   outcome,
+  agentMap,
   workflow,
   ctaPrimary,
   ctaSecondary,
+  ctaTertiary,
   complianceNote,
 }: AudiencePageLayoutProps) {
   return (
@@ -41,6 +44,16 @@ export function AudiencePageLayout({
               </span>
             ))}
           </div>
+        ) : null}
+        {ctaTertiary ? (
+          <p className="mt-4">
+            <Link href={ctaTertiary.href} className={linkUnderline}>
+              {ctaTertiary.label}
+              <span aria-hidden className="ml-2">
+                →
+              </span>
+            </Link>
+          </p>
         ) : null}
       </MarketingPageHero>
 
@@ -81,13 +94,21 @@ export function AudiencePageLayout({
               description={outcome.body}
             />
           </div>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href={ctaPrimary.href} className="owkin-btn-ink">
               {ctaPrimary.label}
+            </Link>
+            <Link href="/platform#agents" className={linkUnderline}>
+              Twelve-agent roster
+              <span aria-hidden className="ml-2">
+                →
+              </span>
             </Link>
           </div>
         </div>
       </section>
+
+      <AudienceAgentMapSection agentMap={agentMap} />
 
       <AudienceWorkflowSection workflow={workflow} />
 

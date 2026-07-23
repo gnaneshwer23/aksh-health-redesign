@@ -46,8 +46,8 @@
 
 | Surface | Gap |
 |---|---|
-| **Agent story depth** | **U1 PASS** — job-in-loop blurbs, stage groups, two-minute script; audience `for-*` agent mapping still **U2** |
-| **Audience `for-*` pages** | Shared `AudiencePageLayout` + content blobs — competent but **generic** (problem / outcome / 3-step workflow). Weak mapping of **which agents matter to this audience** |
+| **Agent story depth** | **U1 PASS** — job-in-loop blurbs, stage groups, two-minute script |
+| **Audience `for-*` pages** | **U2 PASS** — role agent maps + HITL/approve framing on every `for-*` route |
 | **How-it-works ↔ product** | Diagram is strong; still weak bridge into **role-specific demo entry** (“I’m a nurse — show me my 90-second path”) |
 | **Personalised onboarding** | Steps exist; **tutorial only for GP**; other roles jump to dashboard with thin `FirstRunGuidance`. Preferences / org capture don’t deeply reshape the first dashboard session |
 | **Nurse dashboard** | Overview + observations / handover / alerts — mock-data, functional but **not demo-scripted** like GP |
@@ -93,6 +93,16 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Goal** | Each audience page answers: “which agents help **me**, and what do I approve?” |
 | **Work** | Enrich `audience-content` for clinicians, practices, patients, hospitals, administrators, ICS, research: role-relevant agent chips + one workflow that names agents; primary CTA → role-appropriate signup/onboarding or demo. |
 | **Exit criteria** | Spot-check every `for-*` route; e2e marketing audience links still pass; honesty notes intact. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U2_AUDIT.md`](./NEXT_UX_U2_AUDIT.md) |
+
+**U2 audit gate**
+
+- [x] Agent chips + “what you approve” on every major `for-*` page
+- [x] Workflow steps name role-relevant agents (CANVAS → HITL → BRIDGE / COMPASS / SHIELD as appropriate)
+- [x] Honesty: PRISM/ATLAS Phase 2; VOICE/Dr.Assist sub-caps; `liveEmis:false`; synthetic PAS/ICS
+- [x] CTAs to `/demo/script`, signup (valid role ids), and/or role dashboard
+- [x] Marketing e2e audience + honesty assertions green
+- [x] No “14 agents” / JSL live / PRISM-ATLAS live / live EMR write claims
 
 ### U3 — Personalised onboarding
 
@@ -149,8 +159,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Start now** | **U1 → U2** | Marketing story for agents + audiences |
-| **Then** | **U3** | Personalised onboarding |
+| **Start now** | **U3** | Personalised onboarding (U1–U2 PASS) |
 | **Then** | **U4 → U5 → U6** | Clinical + admin dashboards |
 | **Then** | **U7 → U8** | Population / hospital / patient / research |
 | **Do not block on** | N1–N3, N5–N7 | Partner/Medplum/`liveEmis` stay paused |
@@ -204,5 +213,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — D1 PASS (do not redo)  
 - [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) — roster honesty lock  
 - [`NEXT_UX_U1_AUDIT.md`](./NEXT_UX_U1_AUDIT.md) — U1 PASS (agents + how-it-works marketing depth)  
+- [`NEXT_UX_U2_AUDIT.md`](./NEXT_UX_U2_AUDIT.md) — U2 PASS (audience `for-*` agent maps)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  
