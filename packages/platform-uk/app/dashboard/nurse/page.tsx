@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { GuardianAlertsPanel } from "@/components/dashboard/nurse/GuardianAlertsPanel";
+import { NurseHeroDemoPath } from "@/components/dashboard/nurse/NurseHeroDemoPath";
 import { NursePatientHeader } from "@/components/dashboard/nurse/NursePatientHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +16,16 @@ export default function NurseOverviewPage() {
   const openAlerts = patient.flags.includes("GUARDIAN") || patient.flags.includes("URGENT");
 
   return (
-      <div className="space-y-4">
-      <p className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-        Nurse actions can append to the durable SHIELD audit when signed in. Observations and handovers still require
-        HITL confirmation and do not write to EMIS/SystmOne from this proof build.
+    <div className="space-y-4">
+      <NurseHeroDemoPath />
+      <p
+        className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+        data-testid="nurse-honesty-banner"
+      >
+        Synthetic patient panel · HITL required · liveEmis:false. Observations and handovers can
+        append to the durable SHIELD audit when signed in; they do not write to EMIS/SystmOne from
+        this proof build. Spine:{" "}
+        <code className="text-[10px]">POST /api/clinical-spine/nurse-vitals</code>.
       </p>
       <NursePatientHeader />
 
@@ -28,7 +35,8 @@ export default function NurseOverviewPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted">
-            Last observations: {patient.lastObsTime ?? "Not recorded"} · Open AI items: {patient.openAiItems}
+            Last observations: {patient.lastObsTime ?? "Not recorded"} · Open AI items:{" "}
+            {patient.openAiItems}
           </p>
           <div className="flex flex-wrap gap-2">
             <Button asChild className="bg-secondary hover:bg-secondary/90">

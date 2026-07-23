@@ -153,8 +153,8 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "You're ready",
-        body: "Nurse Dashboard opens with first-run guidance pointed at handover and alerts.",
-        bullets: ["Open handover", "Scan GUARDIAN alerts", "Nothing auto-writes to the EHR"],
+        body: "Nurse Dashboard opens with a 3-beat hero path: observations → handover → GUARDIAN alerts.",
+        bullets: ["Start observations", "Confirm handover draft", "Clear GUARDIAN alerts · liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },
@@ -199,8 +199,8 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "You're ready",
-        body: "Pharmacist Dashboard opens with first-run guidance on the interaction checker.",
-        bullets: ["Open interactions", "Clear med-review drafts", "liveEmis:false"],
+        body: "Pharmacist Dashboard opens with a med-safety hero path: review → GUARDIAN → HITL stage.",
+        bullets: ["Open med review", "Run GUARDIAN check", "Accept · SHIELD · liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },

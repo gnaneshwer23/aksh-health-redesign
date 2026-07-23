@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { GuardianAlertsPanel } from "@/components/dashboard/nurse/GuardianAlertsPanel";
+import { NurseHeroDemoPath } from "@/components/dashboard/nurse/NurseHeroDemoPath";
 import { NursePatientHeader } from "@/components/dashboard/nurse/NursePatientHeader";
 import { VitalsForm } from "@/components/dashboard/nurse/VitalsForm";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
@@ -20,10 +21,11 @@ export default function NurseObservationsPage() {
 
   return (
     <div className="space-y-4">
+      <NurseHeroDemoPath />
       <div>
         <h2 className="text-lg font-semibold text-secondary">Observations</h2>
         <p className="text-sm text-muted">
-          Vitals and alerts for {orgLabel} — same clinical spine timeline as GP
+          Vitals and alerts for {orgLabel} — same clinical spine timeline as GP · liveEmis:false
         </p>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">

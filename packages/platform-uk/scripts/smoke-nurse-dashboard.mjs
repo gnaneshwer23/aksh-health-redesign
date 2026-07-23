@@ -16,10 +16,26 @@ const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedNurseRoutes = [
-  { label: "Nurse dashboard", path: "/dashboard/nurse", expectedText: ["Nurse Dashboard", "Patient overview"] },
-  { label: "Nurse observations", path: "/dashboard/nurse/observations", expectedText: ["Vital Signs Entry", "VOICE Dictation"] },
-  { label: "Nurse handover", path: "/dashboard/nurse/handover", expectedText: ["Shift Handover", "Generate Handover Summary"] },
-  { label: "Nurse alerts", path: "/dashboard/nurse/alerts", expectedText: ["GUARDIAN Alerts"] },
+  {
+    label: "Nurse dashboard",
+    path: "/dashboard/nurse",
+    expectedText: ["Nurse Dashboard", "Patient overview", "3-beat demo", "liveEmis:false"],
+  },
+  {
+    label: "Nurse observations",
+    path: "/dashboard/nurse/observations",
+    expectedText: ["Vital Signs Entry", "VOICE Dictation", "3-beat demo"],
+  },
+  {
+    label: "Nurse handover",
+    path: "/dashboard/nurse/handover",
+    expectedText: ["Shift Handover", "Generate Handover Summary", "3-beat demo"],
+  },
+  {
+    label: "Nurse alerts",
+    path: "/dashboard/nurse/alerts",
+    expectedText: ["GUARDIAN Alerts", "3-beat demo"],
+  },
 ];
 
 const cookieJar = new Map();

@@ -158,7 +158,10 @@ export function InteractionChecker() {
       // Staging still applies locally.
     }
 
-    toast({ title: "Staged for GP review queue", description: "GUARDIAN alert added | pending Accept" });
+    toast({
+      title: "Staged for GP review queue",
+      description: "GUARDIAN alert staged · SHIELD audited when signed in · liveEmis:false"
+    });
   };
 
   const liveInteractions = neo4jGuardian?.interactions ?? [];
@@ -166,6 +169,17 @@ export function InteractionChecker() {
   return (
     <section>
       <h2 className={`text-lg font-semibold mb-3 ${PHARMACIST_ACCENT}`}>Interaction Checker</h2>
+      <div
+        id="pharmacist-hitl-stage"
+        data-testid="pharmacist-hitl-stage"
+        className="mb-3 scroll-mt-24 rounded-lg border border-[#6B46C1]/25 bg-[#6B46C1]/[0.05] px-3 py-2 text-xs text-muted-foreground"
+      >
+        <p className="font-medium text-foreground">HITL stage · GUARDIAN + SHIELD</p>
+        <p className="mt-1">
+          Run a drug check, then Accept / Edit / Reject. Accept stages a GUARDIAN alert for the GP
+          review queue and best-effort SHIELD audit when signed in — liveEmis:false · no EHR write.
+        </p>
+      </div>
       <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
       <Card className="shadow-sm border-[#6B46C1]/10 p-4 space-y-3">
         <div className="flex flex-wrap gap-2 items-center">

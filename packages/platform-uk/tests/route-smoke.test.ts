@@ -146,6 +146,16 @@ async function run() {
   await assertFileIncludes("app/dashboard/gp/review-queue/page.tsx", "GpHeroDemoPath");
   await assertFileIncludes("lib/product-journey.ts", "/demo/script");
   await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "gp-hero-script-panel");
+  await assertFileIncludes("components/dashboard/nurse/NurseHeroDemoPath.tsx", "nurse-hero-demo-path");
+  await assertFileIncludes("components/dashboard/nurse/NurseHeroDemoPath.tsx", "liveEmis:false");
+  await assertFileIncludes("app/dashboard/nurse/page.tsx", "NurseHeroDemoPath");
+  await assertFileIncludes(
+    "components/dashboard/pharmacist/PharmacistHeroDemoPath.tsx",
+    "pharmacist-hero-demo-path"
+  );
+  await assertFileIncludes("app/dashboard/pharmacist/page.tsx", "PharmacistHeroDemoPath");
+  await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "nurse-hero-script-panel");
+  await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "pharmacist-hero-script-panel");
   await assertFileIncludes("components/dashboard/precision-health/ClinicalOrchestratePanel.tsx", "CONDUCTOR · Orchestrate");
   await assertFileIncludes("lib/agents.ts", "AGENT_DIRECTORY");
   await assertFileIncludes("lib/agents.ts", 'name: "CANVAS"');

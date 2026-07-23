@@ -2,6 +2,7 @@
  * D1-c: Controlled demo script — Capture → Draft → Approve → SHIELD → sim → export.
  * Honest banners: synthetic · HITL · liveEmis:false · no live NHS write-back claims.
  * U4: GP hero path (<10 min) wired to dashboard review queue → Accept → Bundle export.
+ * U5: Nurse 3-beat + pharmacist med-safety paths on role dashboards.
  */
 
 import Link from "next/link";
@@ -29,6 +30,34 @@ const gpHeroPath = {
   ]
 };
 
+const nurseHeroPath = {
+  title: "Nurse 3-beat path",
+  talkTrack:
+    "Sign in as nurse. Follow Observations (vitals + shared timeline via nurse-vitals spine) → Shift handover draft → GUARDIAN alerts. CANVAS / SYNTHESIS / GUARDIAN draft; nurse confirms; SHIELD audits. Synthetic panel · liveEmis:false — no EMIS write.",
+  beats: [
+    { label: "Nurse dashboard", href: "/dashboard/nurse", note: "Hero strip" },
+    { label: "Vitals + timeline", href: "/dashboard/nurse/observations", note: "Beat 1" },
+    { label: "Handover", href: "/dashboard/nurse/handover", note: "Beat 2" },
+    { label: "GUARDIAN alerts", href: "/dashboard/nurse/alerts", note: "Beat 3" }
+  ]
+};
+
+const pharmacistHeroPath = {
+  title: "Pharmacist med-safety path",
+  talkTrack:
+    "Sign in as pharmacist. Med review queue (Mark Reviewed → pharmacist-review spine + SHIELD) → GUARDIAN interaction check → Accept / Edit / Reject (HITL stage). GUARDIAN-focused; SHIELD on decisions; liveEmis:false.",
+  beats: [
+    { label: "Pharmacist dashboard", href: "/dashboard/pharmacist", note: "Hero strip" },
+    { label: "Med review", href: "/dashboard/pharmacist/reviews", note: "Beat 1" },
+    { label: "GUARDIAN check", href: "/dashboard/pharmacist/interactions", note: "Beat 2" },
+    {
+      label: "HITL stage",
+      href: "/dashboard/pharmacist/interactions#pharmacist-hitl-stage",
+      note: "Accept · SHIELD"
+    }
+  ]
+};
+
 const demoStops = [
   {
     time: "00:00",
@@ -45,6 +74,22 @@ const demoStops = [
     action: "Open Clinician Dashboard → follow the hero strip: Review Queue → Accept → Export / sim.",
     talkTrack:
       "Hero demo stays under 10 minutes. Point at CANVAS / BRIDGE / CONDUCTOR / HORIZON on Agent Control. VOICE and Dr.Assist are sub-capabilities — not peer agents. DemoDataBanner / Neo4j honesty stay visible; liveEmis:false."
+  },
+  {
+    time: "00:45",
+    title: "Nurse 3-beat (supporting clinical)",
+    route: "/dashboard/nurse",
+    action: "After nurse sign-in: Observations → Handover → GUARDIAN alerts via the hero strip.",
+    talkTrack:
+      "Show vitals landing on the shared timeline (nurse-vitals spine when signed in), handover as SYNTHESIS draft, then GUARDIAN alerts for follow-up. Synthetic · HITL · liveEmis:false."
+  },
+  {
+    time: "00:55",
+    title: "Pharmacist med-safety (supporting clinical)",
+    route: "/dashboard/pharmacist",
+    action: "After pharmacist sign-in: Med review → GUARDIAN interactions → Accept (HITL + SHIELD).",
+    talkTrack:
+      "GUARDIAN drafts interactions; pharmacist Accept/Edit/Reject. Mark Reviewed and Accept audit via SHIELD / pharmacist-review spine — not EHR write-back. liveEmis:false."
   },
   {
     time: "01:00",
@@ -128,12 +173,14 @@ export function DemoLaunchScript() {
         <div className="product-sky" aria-hidden="true" />
 
         <section className="product-simple-hero">
-          <p className="product-kicker">D1 demo script · 10–15 minutes · GP hero &lt;10 min</p>
+          <p className="product-kicker">
+            D1 demo script · 10–15 minutes · GP hero &lt;10 min · nurse / pharmacist supporting
+          </p>
           <h1>Capture → Draft → Approve → SHIELD → sim → export</h1>
           <p>
             Guided walkthrough for akshhealth.com demos without IM1, EMIS Partner credentials, or Medplum
             OAuth. Stay inside the synthetic HITL boundary. Prefer the GP hero path when the audience is
-            clinical.
+            clinical; use nurse / pharmacist strips for supporting-role demos (sign-in required).
           </p>
           <div className="pill-row" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>
             {honestyFlags.map((flag) => (
@@ -150,6 +197,36 @@ export function DemoLaunchScript() {
           <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
             {gpHeroPath.beats.map((beat) => (
               <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="nurse-hero-script-panel">
+          <p className="product-kicker">{nurseHeroPath.title}</p>
+          <p>{nurseHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {nurseHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="pharmacist-hero-script-panel">
+          <p className="product-kicker">{pharmacistHeroPath.title}</p>
+          <p>{pharmacistHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {pharmacistHeroPath.beats.map((beat) => (
+              <Link
+                key={`${beat.href}-${beat.label}`}
+                className="product-button product-button--secondary"
+                href={beat.href}
+              >
                 {beat.label}
                 <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
               </Link>
@@ -206,6 +283,12 @@ export function DemoLaunchScript() {
                 </Link>
                 <Link className="product-button product-button--secondary" href="/dashboard/gp/review-queue">
                   GP review queue
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/nurse">
+                  Nurse dashboard (3-beat)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/pharmacist">
+                  Pharmacist dashboard (med-safety)
                 </Link>
                 <Link className="product-button product-button--secondary" href="/demo/precision-health-loop">
                   Whole-loop demo

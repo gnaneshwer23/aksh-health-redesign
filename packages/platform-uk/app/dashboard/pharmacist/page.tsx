@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ClipboardList, Pill, Shield } from "lucide-react";
 
+import { PharmacistHeroDemoPath } from "@/components/dashboard/pharmacist/PharmacistHeroDemoPath";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -41,13 +42,20 @@ export default function PharmacistOverviewPage() {
 
   return (
     <div className="space-y-6">
+      <PharmacistHeroDemoPath />
       <div>
         <h2 className={`text-lg font-semibold ${PHARMACIST_ACCENT}`}>Pharmacist workspace</h2>
         <p className="text-sm text-muted mt-1">
-          Medication safety for {pharmacyLabel} | interaction checks and BNF reference with human-in-the-loop approval.
+          Medication safety for {pharmacyLabel} | interaction checks and BNF reference with
+          human-in-the-loop approval.
         </p>
-        <p className="mt-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-          Reviews can append durable SHIELD audit events when signed in. Marking reviewed does not write to the EHR.
+        <p
+          className="mt-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+          data-testid="pharmacist-honesty-banner"
+        >
+          Synthetic meds panel · GUARDIAN drafts · HITL Accept/Edit/Reject · SHIELD on decisions ·
+          liveEmis:false. Mark Reviewed does not write to the EHR. Spine:{" "}
+          <code className="text-[10px]">POST /api/clinical-spine/pharmacist-review</code>.
         </p>
       </div>
 

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { GuardianAlertsPanel } from "@/components/dashboard/nurse/GuardianAlertsPanel";
+import { NurseHeroDemoPath } from "@/components/dashboard/nurse/NurseHeroDemoPath";
 import { NursePatientHeader } from "@/components/dashboard/nurse/NursePatientHeader";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
@@ -15,6 +16,7 @@ export default function NurseAlertsPage() {
 
   return (
     <div className="space-y-4">
+      <NurseHeroDemoPath />
       <NursePatientHeader />
       <GuardianAlertsPanel scope="filtered" />
     </div>
