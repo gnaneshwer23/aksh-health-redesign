@@ -240,8 +240,8 @@ test.describe("Marketing smoke", () => {
 
     const roles = page.locator("section#roles");
     await expect(roles.getByRole("heading", { name: /Designed for every role/i })).toBeVisible();
-    await expect(roles.getByText("Care delivery")).toBeVisible();
-    await expect(roles.getByText("Governance")).toBeVisible();
+    await expect(roles.locator(".owkin-roles__band-label", { hasText: "Care delivery" })).toBeVisible();
+    await expect(roles.locator(".owkin-roles__band-label", { hasText: "Governance" })).toBeVisible();
 
     await expect(roles.getByRole("link", { name: /GP/i }).first()).toHaveAttribute("href", "/for-clinicians");
     await expect(roles.getByText("Clinician dashboard")).toBeVisible();
@@ -422,7 +422,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Supporting intelligence in the loop/i })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Care journey/i }).first()).toBeVisible();
     await expect(page.getByRole("figure", { name: /End-to-end journey/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Capture, draft, approve", exact: true })).toBeVisible();
+    await expect(page.locator("#journey").getByRole("heading", { name: "Capture, draft, approve", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /How it works for your team/i })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Clinician" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Practice manager" })).toBeVisible();
@@ -546,7 +546,7 @@ test.describe("Marketing smoke", () => {
   });
 
   test("case walkthrough page frames the Patel demo", async ({ page }) => {
-    await page.goto("/resources");
+    await page.goto("/walkthrough");
     await expect(page.getByRole("heading", { name: /Walk the Patel practice end to end/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Open live demo" }).first()).toHaveAttribute("href", "/demo/patel");
     await expect(page.getByRole("link", { name: "Launch Patel demo" })).toHaveAttribute("href", "/demo/patel");
@@ -598,7 +598,10 @@ test.describe("Marketing smoke", () => {
     await expect(footer.getByRole("link", { name: "View demo" })).toHaveAttribute("href", "/demo/patel");
     await expect(footer.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(footer.getByRole("link", { name: "How we price" })).toHaveAttribute("href", "/pricing");
-    await expect(footer.getByRole("link", { name: "Book a walkthrough" })).toHaveAttribute("href", "/walkthrough");
+    await expect(footer.getByRole("link", { name: "Book a walkthrough" }).first()).toHaveAttribute(
+      "href",
+      "/walkthrough"
+    );
     await expect(footer.getByRole("link", { name: "Clinicians", exact: true })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Security & safety" })).toHaveAttribute("href", "/security");
     await expect(footer.getByRole("link", { name: "Integrations" })).toBeVisible();
