@@ -32,28 +32,33 @@ export function MetricCard({
 
   return (
     <Card className={cn(TONE_CLASSES[tone], "border-0 shadow-none", className)}>
-      <CardContent className="p-5">
+      <CardContent className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">{label}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">{label}</p>
           {Icon && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-signal/15 text-primary">
               <Icon className="h-4 w-4" />
             </span>
           )}
         </div>
-        <div className="mt-2 flex items-end justify-between gap-2">
-          <p className="text-3xl font-bold tracking-tight text-primary">{value}</p>
+        <div className="mt-3 flex items-end justify-between gap-2">
+          <p className="text-4xl font-bold tracking-tight text-primary tabular-nums leading-none">{value}</p>
           {trend && trend !== "neutral" && (
-            <span className={cn("flex items-center rounded-full px-2 py-0.5 text-xs font-semibold", trend === "up" ? "bg-accent/10 text-accent" : "bg-danger/10 text-danger")}>
+            <span
+              className={cn(
+                "mb-0.5 flex items-center rounded-full px-2 py-0.5 text-xs font-semibold",
+                trend === "up" ? "bg-signal/15 text-primary" : "bg-danger/10 text-danger"
+              )}
+            >
               {trend === "up" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
             </span>
           )}
         </div>
         {chartData.length > 0 && (
-          <div className="mt-3 h-10">
+          <div className="mt-4 h-10">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <Line type="monotone" dataKey="v" stroke="#003D7A" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="v" stroke="#0B9E7F" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

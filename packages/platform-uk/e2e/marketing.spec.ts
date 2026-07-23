@@ -323,12 +323,15 @@ test.describe("Marketing smoke", () => {
     await expect(visual.getByText("PATHWAY", { exact: true })).toBeVisible();
     await expect(visual.getByText("CONDUCTOR", { exact: true })).toBeVisible();
     await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
-    await expect(visual.getByText("FHIR staging", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Record staging", { exact: true })).toBeVisible();
     await expect(visual.getByText("SHIELD", { exact: true })).toBeVisible();
     await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
     await expect(visual.getByText("SystmOne", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Parallel drafts", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Drafts only · no live EMR write", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Parallel checks", { exact: true }).first()).toBeVisible();
+    await expect(visual.getByText("Clinician-approved only · not a live record write", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Parallel drafts", { exact: true })).toHaveCount(0);
+    await expect(visual.getByText(/Drafts only/i)).toHaveCount(0);
+    await expect(visual.getByText("draft resources", { exact: true })).toHaveCount(0);
     await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
@@ -364,7 +367,7 @@ test.describe("Marketing smoke", () => {
     expect(canvasBox!.y).toBeLessThan(conductorBox!.y);
     expect(conductorBox!.y).toBeLessThan(reviewBox!.y);
 
-    // Parallel drafts: 2×2 with clear gaps (no smashed 4-across overlap).
+    // Parallel checks: 2×2 with clear gaps (no smashed 4-across overlap).
     const synth = await visual.getByText("SYNTHESIS", { exact: true }).boundingBox();
     const guardian = await visual.getByText("GUARDIAN", { exact: true }).boundingBox();
     const horizon = await visual.getByText("HORIZON", { exact: true }).boundingBox();
@@ -373,6 +376,11 @@ test.describe("Marketing smoke", () => {
     expect(guardian).not.toBeNull();
     expect(horizon).not.toBeNull();
     expect(pathway).not.toBeNull();
+    // Full agent names must be painted (no ellipsis truncation).
+    expect(synth!.width).toBeGreaterThan(70);
+    expect(guardian!.width).toBeGreaterThan(70);
+    expect(horizon!.width).toBeGreaterThan(60);
+    expect(pathway!.width).toBeGreaterThan(60);
     expect(Math.abs(synth!.y - guardian!.y)).toBeLessThan(12);
     expect(Math.abs(horizon!.y - pathway!.y)).toBeLessThan(12);
     expect(horizon!.y).toBeGreaterThan(synth!.y + synth!.height - 4);

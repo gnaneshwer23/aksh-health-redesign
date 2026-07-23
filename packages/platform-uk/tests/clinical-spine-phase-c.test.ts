@@ -181,7 +181,11 @@ async function run() {
   assert.ok(heroPipeline.includes("CANVAS"));
   assert.ok(heroPipeline.includes("CONDUCTOR"));
   assert.ok(heroPipeline.includes("clinician decides"));
-  assert.ok(heroPipeline.includes("Drafts only — no live EMR write"));
+  assert.ok(heroPipeline.includes("Clinician-approved only · not a live record write"));
+  assert.ok(heroPipeline.includes("Parallel checks"));
+  assert.ok(heroPipeline.includes("Record staging"));
+  assert.ok(!heroPipeline.includes("Drafts only"));
+  assert.ok(!heroPipeline.includes("Parallel drafts"));
   assert.ok(heroPipeline.includes("SYNTHESIS"));
   assert.ok(heroPipeline.includes("SHIELD"));
 

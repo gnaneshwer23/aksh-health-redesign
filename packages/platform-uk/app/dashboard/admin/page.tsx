@@ -29,11 +29,11 @@ export default function AdminDashboardPage() {
       organisation={profile?.organisation}
       showFirstRun
     >
-      <div className="space-y-6 overflow-y-auto p-4">
+      <div className="space-y-6 overflow-y-auto p-5 sm:p-6">
         <ConsentBanner />
         <AdminHeroDemoPath />
         <p
-          className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+          className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
           data-testid="admin-honesty-banner"
         >
           Not live EMIS · liveEmis:false · designed for EMIS Web / SystmOne pathways (staging / sim).
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <MetricCard label="Demo users" value="100" />
           <MetricCard label="Demo patients" value="100" />
           <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />

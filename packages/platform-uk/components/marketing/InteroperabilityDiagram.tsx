@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const ARIA_LABEL =
-  "Interoperability diagram: EMIS Web and SystmOne context feeds CANVAS intake. CONDUCTOR orchestrates parallel drafts from SYNTHESIS, GUARDIAN, HORIZON, and PATHWAY. A clinician accepts, edits, or rejects every draft before FHIR R4 staging and SHIELD audit. Drafts only — no live EMR write.";
+  "Interoperability diagram: EMIS Web and SystmOne context feeds CANVAS intake. CONDUCTOR orchestrates parallel checks from SYNTHESIS, GUARDIAN, HORIZON, and PATHWAY. A clinician accepts, edits, or rejects every output before record staging (FHIR R4) and SHIELD audit. Clinician-approved only — not a live record write.";
 
 type InteropNodeProps = {
   label: string;
@@ -106,7 +106,7 @@ function FlowArrow({
   );
 }
 
-/** Product illustration — EMR context → CANVAS → CONDUCTOR + parallel drafts → clinician gate → FHIR + SHIELD. */
+/** Product illustration — EMR context → CANVAS → CONDUCTOR + parallel checks → clinician gate → FHIR + SHIELD. */
 export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
     <figure
@@ -147,12 +147,12 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
         </li>
 
         <li className="aksh-pipeline__connector" aria-hidden>
-          <FlowArrow label="parallel drafts" />
+          <FlowArrow label="parallel checks" />
         </li>
 
         <li className="aksh-pipeline__stage aksh-pipeline__stage--drafts">
           <div className="aksh-pipeline__drafts-band">
-            <p className="aksh-pipeline__drafts-label">Parallel drafts</p>
+            <p className="aksh-pipeline__drafts-label">Parallel checks</p>
             <div className="aksh-pipeline__drafts">
               <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
               <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
@@ -181,11 +181,13 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
 
         <li className="aksh-pipeline__stage aksh-pipeline__stage--out">
           <div className="aksh-pipeline__out-row">
-            <InteropNode label="FHIR staging" sub="R4 · draft resources" icon={FileCode2} />
+            <InteropNode label="Record staging" sub="FHIR R4" icon={FileCode2} />
             <FlowArrow direction="right" />
             <InteropNode label="SHIELD" sub="Audit trail" icon={Shield} />
           </div>
-          <p className="aksh-pipeline__footer-honesty">Drafts only · no live EMR write</p>
+          <p className="aksh-pipeline__footer-honesty">
+            Clinician-approved only · not a live record write
+          </p>
         </li>
       </ol>
     </figure>

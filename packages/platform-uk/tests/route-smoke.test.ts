@@ -194,8 +194,12 @@ async function run() {
   await assertFileIncludes("app/resources/page.tsx", "named clinical agents");
   await assertFileIncludes(
     "components/marketing/InteroperabilityDiagram.tsx",
-    "Drafts only — no live EMR write"
+    "Clinician-approved only · not a live record write"
   );
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel checks");
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Record staging");
+  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Drafts only");
+  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel drafts");
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CANVAS");
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CONDUCTOR");
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");

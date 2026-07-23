@@ -16,10 +16,10 @@ export default function NurseOverviewPage() {
   const openAlerts = patient.flags.includes("GUARDIAN") || patient.flags.includes("URGENT");
 
   return (
-    <div className="space-y-4">
+      <div className="space-y-5">
       <NurseHeroDemoPath />
       <p
-        className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+        className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
         data-testid="nurse-honesty-banner"
       >
         Synthetic patient panel · HITL required · liveEmis:false. Observations and handovers can
@@ -29,7 +29,7 @@ export default function NurseOverviewPage() {
       </p>
       <NursePatientHeader />
 
-      <Card className="border-secondary/20 shadow-sm">
+      <Card className="dashboard-card border-0 shadow-none">
         <CardHeader>
           <CardTitle className="text-base text-secondary">Patient overview</CardTitle>
         </CardHeader>

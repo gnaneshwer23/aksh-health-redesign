@@ -51,7 +51,7 @@ export default function IcsOverviewPage() {
     <div className="space-y-6">
       <IcsHeroDemoPath />
       <p
-        className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+        className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
         data-testid="ics-honesty-banner"
       >
         Synthetic ICS cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
@@ -75,12 +75,12 @@ export default function IcsOverviewPage() {
         patientIds={["P001", "P002"]}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         {SECTIONS.map((section) => {
           const Icon = section.icon;
           return (
             <Link key={section.href} href={section.href}>
-              <Card className={`h-full shadow-sm transition-shadow hover:shadow-md border-l-4 ${section.accent}`}>
+              <Card className={`dashboard-card h-full border-0 border-l-4 shadow-none ${section.accent}`}>
                 <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                   <div className="flex items-center gap-2">
                     <Icon className="h-4 w-4 text-warning" />

@@ -50,7 +50,7 @@ export default function PharmacistOverviewPage() {
           human-in-the-loop approval.
         </p>
         <p
-          className="mt-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+          className="mt-2 rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
           data-testid="pharmacist-honesty-banner"
         >
           Synthetic meds panel · GUARDIAN drafts · HITL Accept/Edit/Reject · SHIELD on decisions ·
@@ -64,11 +64,11 @@ export default function PharmacistOverviewPage() {
           const Icon = section.icon;
           return (
             <Link key={section.href} href={section.href} className="block">
-              <Card className="shadow-sm border-[#6B46C1]/15 hover:border-[#6B46C1]/40 transition-colors">
+              <Card className="dashboard-card border-0 shadow-none hover:border-[#6B46C1]/25 transition-colors">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#6B46C1]/10">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#6B46C1]/10">
                         <Icon className="h-5 w-5 text-[#6B46C1]" />
                       </span>
                       <CardTitle className={`text-base ${PHARMACIST_ACCENT}`}>{section.title}</CardTitle>

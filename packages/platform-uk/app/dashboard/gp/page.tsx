@@ -123,8 +123,8 @@ export default function GpDashboardPage() {
         </div>
 
         {/* Desktop sidebar */}
-        <div className="hidden w-sidebar shrink-0 flex-col border-r border-border-subtle bg-card lg:flex">
-          <div className="p-3">
+        <div className="hidden w-sidebar shrink-0 flex-col border-r border-border-subtle/70 bg-card/90 lg:flex">
+          <div className="p-4">
             <ConsentBanner />
           </div>
           <PatientPanel
@@ -140,12 +140,12 @@ export default function GpDashboardPage() {
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
-          <div className="flex-1 space-y-5 overflow-y-auto bg-background p-4 sm:p-5">
+          <div className="flex-1 space-y-6 overflow-y-auto bg-transparent p-4 sm:p-6">
           {isPublicDemo ? <DemoDataBanner surface="GP" className="mb-4" /> : null}
           <Neo4jMockModeBanner source={oracleSource} loading={oracleLoading} showLive />
           <GpHeroDemoPath />
           {patient && (
-            <header className="dashboard-card p-5">
+            <header className="dashboard-card p-6">
               {clinicalLoading ? (
                 <HeaderSkeleton />
               ) : (

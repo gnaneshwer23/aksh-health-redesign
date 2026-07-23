@@ -172,14 +172,14 @@ export function Sidebar({ role }: { role: DashboardRole }) {
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle bg-card shadow-sidebar transition-all duration-200",
+          "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle/70 bg-card/95 shadow-sidebar transition-all duration-200 backdrop-blur-sm",
           collapsed ? "w-16" : "w-sidebar"
         )}
         aria-label="Dashboard navigation"
       >
-        <div className="border-b border-border-subtle px-4 py-5">
+        <div className="border-b border-border-subtle/70 px-4 py-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white shadow-sm">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-white shadow-sm">
               {collapsed ? "A" : "A"}
             </span>
             {!collapsed && (
@@ -196,8 +196,8 @@ export function Sidebar({ role }: { role: DashboardRole }) {
             )}
           </div>
           {!collapsed && (
-            <div className="mt-4 flex items-center gap-2 rounded-xl bg-surface-muted px-3 py-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+            <div className="mt-5 flex items-center gap-2 rounded-2xl bg-[#F3F7FA] px-3 py-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-signal/20 text-xs font-bold text-primary">
                 {loading ? "…" : (userName.split(" ").pop()?.[0] ?? "U")}
               </span>
               <div className="min-w-0 flex-1">
@@ -218,7 +218,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
             </div>
           )}
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto p-3.5">
           {items.map((item) => {
             const active = isNavItemActive(pathname, searchParams, item.href);
             const Icon = item.icon;
@@ -233,11 +233,17 @@ export function Sidebar({ role }: { role: DashboardRole }) {
                 className={cn(
                   "dashboard-nav-item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                   active ? "dashboard-nav-item--active" : "dashboard-nav-item--inactive",
-                  active && "border-l-[3px] border-accent pl-[9px]",
                   collapsed && showEnquiryBadge && "relative"
                 )}
               >
-                <Icon className={cn("h-[18px] w-[18px] shrink-0", active ? "text-white" : "text-steel")} />
+                <span
+                  className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
+                    active ? "bg-signal text-primary shadow-sm" : "bg-transparent text-steel"
+                  )}
+                >
+                  <Icon className="h-[18px] w-[18px]" />
+                </span>
                 {!collapsed ? (
                   <>
                     <span className="flex-1 truncate">{item.label}</span>
