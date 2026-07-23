@@ -10,7 +10,7 @@ test.describe("Marketing smoke", () => {
     await expect(nav).toHaveAttribute("data-solid-navbar", "false");
     const brandTitle = page.locator("nav a.owkin-nav__brand .owkin-nav__wordmark");
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
-    expect(brandColor).toBe("rgb(20, 20, 20)");
+    expect(brandColor).toBe("rgb(10, 42, 37)");
 
     await expect(page.getByRole("heading", { name: /Clinical work, properly coordinated/i })).toBeVisible();
     await expect(page.getByText("Care coordination for NHS primary care", { exact: true })).toBeVisible();
@@ -299,7 +299,7 @@ test.describe("Marketing smoke", () => {
     await expect(band.getByRole("heading", { name: /Ready for your organisation/i })).toBeVisible();
 
     const bg = await band.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(bg).toBe("rgb(16, 33, 29)");
+    expect(bg).toBe("rgb(10, 42, 37)");
 
     const titleColor = await band
       .getByRole("heading", { name: /Ready for your organisation/i })
@@ -313,7 +313,7 @@ test.describe("Marketing smoke", () => {
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(255, 255, 255)");
-    expect(primaryColor).toBe("rgb(16, 33, 29)");
+    expect(primaryColor).toBe("rgb(10, 42, 37)");
   });
 
   test("homepage hero does not render readable labels behind the headline", async ({ page }) => {

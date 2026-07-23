@@ -11,8 +11,8 @@
 @layer components {
   .dashboard-surface {
     @apply bg-background;
-    background-image: radial-gradient(circle at 100% 0%, rgb(0 168 107 / 0.04), transparent 42%),
-      radial-gradient(circle at 0% 100%, rgb(0 61 122 / 0.03), transparent 38%);
+    background-image: radial-gradient(circle at 100% 0%, rgb(20 224 164 / 0.07), transparent 44%),
+      radial-gradient(circle at 0% 100%, rgb(11 74 66 / 0.05), transparent 40%);
   }
 
   .dashboard-card {

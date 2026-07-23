@@ -1,20 +1,22 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Instrument_Sans, Manrope } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
 import { CookieConsent } from "@/components/marketing/CookieConsent";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
-const instrumentSans = Instrument_Sans({
+// Body: Hanken Grotesk — warm, precise, highly legible clinical UI face.
+const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--font-aksh-body",
   display: "swap",
 });
 
-const manrope = Manrope({
+// Display: Bricolage Grotesque — expressive editorial grotesque for brand + headlines.
+const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-aksh-display",
   display: "swap",
@@ -52,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${instrumentSans.variable} ${manrope.variable}`}>
+    <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable}`}>
       <body>
         <AuthProvider>
           {children}

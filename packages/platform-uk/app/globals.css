@@ -5462,13 +5462,16 @@ input:focus, textarea:focus {
 /* ===== Owkin-caliber marketing system (screenshot-driven) ===== */
 
 :root {
-  --owkin-cream: #faf7f2;
-  --owkin-cream-deep: #f3efe8;
-  --owkin-ink: #141414;
-  --owkin-muted: rgba(20, 20, 20, 0.68);
-  --owkin-accent: #1f4bff;
-  --owkin-royal: #1038d6;
-  --owkin-pill: #ebe4d8;
+  /* Aksh "Clinical Signal" — spruce ink, clinical mist paper, electric signal accent.
+     Deliberately not cream/terracotta and not NHS-blue: distinctive clinical trust. */
+  --owkin-cream: #eef3f1;
+  --owkin-cream-deep: #e2eae7;
+  --owkin-ink: #0a2a25;
+  --owkin-muted: rgba(10, 42, 37, 0.66);
+  --owkin-accent: #0b7d6b;
+  --owkin-royal: #0a5f53;
+  --owkin-pill: #dce8e3;
+  --owkin-signal: #14e0a4;
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -7403,7 +7406,7 @@ input:focus, textarea:focus {
 }
 
 .marketing-site--editorial .marketing-accent-stripe {
-  background: linear-gradient(90deg, #1038d6 0%, #1f4bff 45%, #00a86b 100%);
+  background: linear-gradient(90deg, var(--owkin-royal) 0%, var(--owkin-accent) 45%, var(--owkin-signal) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -7434,12 +7437,15 @@ input:focus, textarea:focus {
 
 /* ===== Aksh marketing craft system — single source of truth ===== */
 .marketing-site {
-  --mk-surface: #f8f6f1;
+  --mk-surface: #eef3f1;
   --mk-raised: #ffffff;
-  --mk-ink: #10211d;
-  --mk-muted: #52635e;
-  --mk-accent: #075f50;
-  --mk-line: rgba(16, 33, 29, 0.12);
+  --mk-ink: #0a2a25;
+  --mk-ink-deep: #06201c;
+  --mk-muted: #4c635d;
+  --mk-accent: #0b7d6b;
+  --mk-accent-strong: #0a5f53;
+  --mk-signal: #14e0a4;
+  --mk-line: rgba(10, 42, 37, 0.12);
   --mk-section: clamp(4.5rem, 8vw, 7rem);
   --mk-section-tight: clamp(3.5rem, 6vw, 5rem);
   --mk-radius-sm: 0.75rem;
@@ -8293,7 +8299,9 @@ input:focus, textarea:focus {
 
 .owkin-nav--solid {
   border-color: var(--mk-line);
-  background: rgba(248, 246, 241, 0.9);
+  background: rgba(238, 243, 241, 0.85);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
 }
 
 .owkin-nav__pill,
@@ -8306,7 +8314,7 @@ input:focus, textarea:focus {
 
 .owkin-mega {
   border-color: var(--mk-line);
-  background: rgba(248, 246, 241, 0.98);
+  background: rgba(238, 243, 241, 0.98);
   box-shadow: var(--mk-shadow-frame);
 }
 
@@ -8492,5 +8500,162 @@ input:focus, textarea:focus {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===================================================================
+   Aksh "Clinical Signal" — v1 visual refresh
+   Light clinical-mist hero with layered gradient mesh, an instrument
+   precision grid, and a signal glow behind the product visual.
+   Atmosphere is drawn with pseudo-elements only (no extra DOM).
+   =================================================================== */
+
+.marketing-homepage-hero.owkin-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: min(92vh, 50rem) !important;
+  overflow: hidden;
+  background:
+    radial-gradient(118% 90% at 84% 6%, rgba(20, 224, 164, 0.16), transparent 46%),
+    radial-gradient(92% 80% at 6% 2%, rgba(11, 125, 107, 0.13), transparent 42%),
+    radial-gradient(150% 130% at 50% 122%, rgba(6, 32, 28, 0.12), transparent 60%),
+    linear-gradient(180deg, #f4f8f6 0%, var(--mk-surface) 52%, #e6efea 100%) !important;
+}
+
+/* Instrument-grade measurement grid, faded toward the fold. */
+.marketing-homepage-hero.owkin-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(10, 42, 37, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 42, 37, 0.05) 1px, transparent 1px);
+  background-size: 3.25rem 3.25rem;
+  -webkit-mask-image: radial-gradient(125% 105% at 50% -5%, #000 32%, transparent 80%);
+  mask-image: radial-gradient(125% 105% at 50% -5%, #000 32%, transparent 80%);
+}
+
+/* Drifting signal aurora — one calm ambient motion. */
+.marketing-homepage-hero.owkin-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: -12%;
+  bottom: -20%;
+  width: 46rem;
+  height: 46rem;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 224, 164, 0.2), transparent 62%);
+  filter: blur(34px);
+  animation: aksh-hero-aurora 20s ease-in-out infinite alternate;
+}
+
+@keyframes aksh-hero-aurora {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
+  to { transform: translate3d(-3rem, -2.25rem, 0) scale(1.09); opacity: 1; }
+}
+
+/* Content and the trust strip sit above the atmosphere. */
+.marketing-homepage-hero.owkin-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Signal halo behind the interoperability product card. */
+.marketing-homepage-hero .owkin-hero__visual::before {
+  content: "";
+  position: absolute;
+  inset: -9% -7% -11%;
+  z-index: -1;
+  border-radius: 2.75rem;
+  background:
+    radial-gradient(58% 54% at 50% 40%, rgba(20, 224, 164, 0.24), transparent 70%),
+    radial-gradient(72% 62% at 50% 62%, rgba(11, 125, 107, 0.17), transparent 72%);
+  filter: blur(16px);
+}
+
+/* Brand kicker becomes a signal-tinted lockup line. */
+.marketing-homepage-hero .owkin-hero__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--mk-accent-strong) !important;
+}
+
+.marketing-homepage-hero .owkin-hero__brand::before {
+  content: "";
+  width: 1.85rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--mk-signal), var(--mk-accent));
+}
+
+/* Homepage trust marquee sits flush at the fold with a hairline. */
+.marketing-homepage-hero .aksh-trust-marquee {
+  background: transparent;
+  border-top: 1px solid var(--mk-line);
+}
+
+/* Closing CTA band keeps its solid ink base (asserted) plus a signal wash. */
+.owkin-cta-band[data-cta-band] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.owkin-cta-band[data-cta-band]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 120% at 88% 0%, rgba(20, 224, 164, 0.16), transparent 55%),
+    radial-gradient(60% 120% at 6% 100%, rgba(11, 125, 107, 0.2), transparent 58%);
+}
+
+/* Primary CTA gains a subtle signal ring on hover across marketing. */
+.owkin-btn-ink:focus-visible,
+.owkin-cta-band__btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mk-signal) 45%, transparent) !important;
+}
+
+/* Nav brand mark → filled spruce chip with a signal pip (logo-grade). */
+.marketing-site nav.owkin-nav .owkin-nav__mark {
+  position: relative;
+  border: 0;
+  border-radius: 0.6rem;
+  background: linear-gradient(155deg, var(--owkin-ink), var(--owkin-royal));
+  color: #fff !important;
+  box-shadow: 0 1px 2px rgba(6, 32, 28, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.marketing-site nav.owkin-nav .owkin-nav__mark::after {
+  content: "";
+  position: absolute;
+  top: 0.34rem;
+  right: 0.34rem;
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: var(--owkin-signal);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--owkin-signal) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-homepage-hero.owkin-hero::after {
+    animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .marketing-homepage-hero.owkin-hero {
+    min-height: auto !important;
+    background:
+      radial-gradient(120% 60% at 90% 0%, rgba(20, 224, 164, 0.16), transparent 50%),
+      linear-gradient(180deg, #f4f8f6 0%, var(--mk-surface) 60%, #e6efea 100%) !important;
   }
 }
