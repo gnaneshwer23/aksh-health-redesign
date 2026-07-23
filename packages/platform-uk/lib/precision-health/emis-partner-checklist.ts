@@ -1,9 +1,10 @@
 /**
- * EMIS / SystmOne Partner write-back readiness checklist (Phase 2 + Phase F).
- * Staging only — liveEmis always false until signed partner decision.
+ * EMIS / SystmOne Partner write-back readiness checklist (Phase 2 + Phase F + N5).
+ * Staging / sandbox only — liveEmis always false until signed partner decision.
  */
 
 import { EMIS_NOT_LIVE_BANNER } from "@/lib/emis-staging";
+import { getEmisPartnerSandboxStatus } from "@/lib/emis-partner-sandbox";
 
 export type EmisPartnerChecklistItem = {
   id: string;
@@ -19,9 +20,17 @@ export type EmisPartnerChecklist = {
   notLiveBanner: string;
   approvalTokenPath: string;
   stagingApi: string;
+  sandboxApi: string;
   partnerChecklistDoc: string;
   phaseFDoc: string;
   partnerReadinessApi: string;
+  sandbox: {
+    mode: string;
+    writePath: string;
+    sandboxFlagEnabled: boolean;
+    credentialsConfigured: boolean;
+    missingEnv: string[];
+  };
   items: EmisPartnerChecklistItem[];
   /** What partner must provide before engineering can consider flipping liveEmis */
   liveEmisFlipRequirements: EmisPartnerChecklistItem[];
@@ -30,13 +39,18 @@ export type EmisPartnerChecklist = {
 };
 
 export function getEmisPartnerChecklist(): EmisPartnerChecklist {
-  const credentialsPresent = Boolean(
-    process.env.EMIS_PARTNER_CLIENT_ID?.trim() &&
-      process.env.EMIS_PARTNER_CLIENT_SECRET?.trim() &&
-      process.env.EMIS_PARTNER_TOKEN_URL?.trim()
-  );
+  const sandbox = getEmisPartnerSandboxStatus();
+  const credentialsPresent = sandbox.credentialsConfigured;
 
   const liveEmisFlipRequirements: EmisPartnerChecklistItem[] = [
+    {
+      id: "flip-sandbox-flag",
+      label: "ENABLE_EMIS_PARTNER_SANDBOX (sandbox rehearsal only)",
+      status: sandbox.sandboxFlagEnabled ? "scaffold_ready" : "needs_partner",
+      note: sandbox.sandboxFlagEnabled
+        ? `Flag on · mode=${sandbox.mode} — still not liveEmis.`
+        : "Default off = sim path. Enable only for Partner sandbox."
+    },
     {
       id: "flip-credentials",
       label: "Partner API credentials (EMIS and/or SystmOne track)",
@@ -82,10 +96,19 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
     notLiveBanner: EMIS_NOT_LIVE_BANNER,
     approvalTokenPath: "POST /api/integrations/ehr-writeback-sim (issue/write) — sim only",
     stagingApi: "GET/POST /api/integrations/emis-staging",
+    sandboxApi: "GET/POST /api/integrations/emis-partner-sandbox",
     partnerChecklistDoc: "docs/PHASE2_PARTNER_CHECKLIST.md",
     phaseFDoc: "docs/CLINICAL_SPINE_PHASE_F.md",
     partnerReadinessApi: "GET /api/clinical-spine/partner-readiness",
+    sandbox: {
+      mode: sandbox.mode,
+      writePath: sandbox.writePath,
+      sandboxFlagEnabled: sandbox.sandboxFlagEnabled,
+      credentialsConfigured: sandbox.credentialsConfigured,
+      missingEnv: sandbox.missingEnv
+    },
     requiredEnv: [
+      "ENABLE_EMIS_PARTNER_SANDBOX",
       "EMIS_PARTNER_CLIENT_ID",
       "EMIS_PARTNER_CLIENT_SECRET",
       "EMIS_PARTNER_TOKEN_URL",
@@ -103,6 +126,17 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
         label: "FHIR R4–shaped staging bundle",
         status: "scaffold_ready",
         note: "Schema CI + EMIS staging queue accept bundle summaries."
+      },
+      {
+        id: "partner-sandbox",
+        label: "Partner sandbox flag + client (N5)",
+        status:
+          sandbox.mode === "disabled"
+            ? "scaffold_ready"
+            : sandbox.mode === "needs_partner"
+              ? "needs_partner"
+              : "needs_cso",
+        note: `mode=${sandbox.mode} · writePath=${sandbox.writePath}. Flag off = sim; flag on without creds = needs_partner.`
       },
       {
         id: "partner-credentials",
@@ -132,6 +166,6 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       }
     ],
     liveEmisFlipRequirements,
-    note: "Partner EMR write-back readiness scaffold (EMIS + SystmOne track). Never claims live EMIS write-back."
+    note: "Partner EMR write-back readiness scaffold (EMIS + SystmOne track). N5 sandbox is flag-gated. Never claims live EMIS write-back."
   };
 }

@@ -166,12 +166,13 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Implement Partner client against sandbox base URL; feature flag; Accept-only write scopes; never auto-flip `liveEmis`; keep sim path as default. |
 | **Exit criteria** | Sandbox smoke documented; flag off = sim path; flag on = sandbox only; `canFlipLiveEmisInCode()` still false until N7. |
 | **Fail if** | Env presence flips `liveEmis`; writes without HITL Accept; credentials in git. |
+| **In-repo status** | **PASS (scaffold)** — flag-gated client + honesty UI; Partner creds **not yet issued** → `needs_partner` when flag on · audit [`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md) |
 
 **Audit gate N5**
 
-- [ ] Partner sandbox smoke (flag on) · sim path (flag off)
-- [ ] `honesty.liveEmis === false` · `canFlipLiveEmisInCode() === false`
-- [ ] Clinical-proof + partner honesty tests green
+- [x] Partner sandbox smoke (flag on) · sim path (flag off) — **PASS (scaffold)** 2026-07-23: flag off = sim; flag on without creds = `needs_partner`
+- [x] `honesty.liveEmis === false` · `canFlipLiveEmisInCode() === false`
+- [x] Clinical-proof + partner honesty tests green — **PASS** 2026-07-23
 
 ---
 
@@ -268,7 +269,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **This week** | **N1** | Send IM1 / Partner emails from the pack |
 | **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal |
 | **Anytime (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
-| **After sandbox creds** | **N5 → N6** | Flagged Partner wire → UAT + rollback |
+| **After sandbox creds** | **N5 → N6** | N5 **PASS (scaffold)** ([`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md)); N6 UAT when creds land |
 | **Only after signed GO** | **N7** | Controlled `liveEmis` flip |
 | **Product pull-in** | **N8 / N9** | PRISM / ATLAS |
 | **Parallel external** | **N10** | CIS2 / Mirth / regulatory funding |
@@ -295,6 +296,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 - [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) — N1 READY_TO_SEND (not SENT)  
 - [`NEXT_BUILD_N2_AUDIT.md`](./NEXT_BUILD_N2_AUDIT.md) — N2 PARTIAL (OAuth Invalid client; Deepgram simulated local)  
 - [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) — N4 PASS (sub-capability honesty; JSL not wired)  
+- [`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md) — N5 PASS (scaffold) (Partner sandbox flag; needs_partner until creds)  
 
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — plain-English honest picture  
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — layers 1–15 vs reality  

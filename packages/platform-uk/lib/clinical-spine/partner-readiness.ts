@@ -5,6 +5,7 @@
  */
 
 import { getEmisIntegrationStatus } from "@/lib/emis-staging";
+import { getEmisPartnerSandboxStatus } from "@/lib/emis-partner-sandbox";
 import { getEmisPartnerChecklist } from "@/lib/precision-health/emis-partner-checklist";
 import type { PartnerGateArtifact } from "@/lib/repositories/partner-gate-artifact-repository";
 
@@ -76,6 +77,8 @@ export type PartnerReadinessPack = {
   evidencePackLinks: EvidencePackLink[];
   emis: ReturnType<typeof getEmisPartnerChecklist>;
   staging: ReturnType<typeof getEmisIntegrationStatus>;
+  /** N5 — Partner sandbox flag / creds honesty (never liveEmis). */
+  sandbox: ReturnType<typeof getEmisPartnerSandboxStatus>;
   gateArtifacts: {
     total: number;
     byStatus: Record<string, number>;
@@ -91,11 +94,8 @@ const NOT_LIVE_BANNER =
   "NOT LIVE EMIS — staging / sim write-back only. liveEmis:false until partner credentials + DPIA + CSO go/no-go are real and signed out-of-band.";
 
 export function getLiveEmisFlipChecklist(): LiveEmisFlipRequirement[] {
-  const credentialsPresent = Boolean(
-    process.env.EMIS_PARTNER_CLIENT_ID?.trim() &&
-      process.env.EMIS_PARTNER_CLIENT_SECRET?.trim() &&
-      process.env.EMIS_PARTNER_TOKEN_URL?.trim()
-  );
+  const sandbox = getEmisPartnerSandboxStatus();
+  const credentialsPresent = sandbox.credentialsConfigured;
 
   return [
     {
@@ -105,6 +105,16 @@ export function getLiveEmisFlipChecklist(): LiveEmisFlipRequirement[] {
       metInCode: true,
       status: "scaffold_ready",
       note: "ehr-writeback-sim + emis-staging + clinical-proof HITL chain."
+    },
+    {
+      id: "partner-sandbox-flag",
+      label: "ENABLE_EMIS_PARTNER_SANDBOX feature flag (sandbox only)",
+      owner: "Engineering",
+      metInCode: sandbox.sandboxFlagEnabled,
+      status: sandbox.sandboxFlagEnabled ? "scaffold_ready" : "needs_partner",
+      note: sandbox.sandboxFlagEnabled
+        ? `Flag on · mode=${sandbox.mode} · writePath=${sandbox.writePath} — still liveEmis:false.`
+        : "Flag off (default) = sim path. Set ENABLE_EMIS_PARTNER_SANDBOX=true only for Partner sandbox rehearsal."
     },
     {
       id: "partner-api-credentials",
@@ -282,6 +292,14 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
       note: "liveEmis:false always"
     },
     {
+      id: "emis-partner-sandbox-api",
+      label: "EMIS Partner sandbox status (N5)",
+      path: "GET /api/integrations/emis-partner-sandbox",
+      kind: "api",
+      partnerReviewReady: true,
+      note: "Flag off=sim · flag on without creds=needs_partner · liveEmis:false"
+    },
+    {
       id: "partner-readiness-api",
       label: "Partner readiness API",
       path: "GET /api/clinical-spine/partner-readiness",
@@ -307,26 +325,31 @@ function deriveTrackStatus(
 }
 
 export function buildPartnerTracks(artifacts: PartnerGateArtifact[] = []): PartnerTrack[] {
-  const credentialsPresent = Boolean(
-    process.env.EMIS_PARTNER_CLIENT_ID?.trim() &&
-      process.env.EMIS_PARTNER_CLIENT_SECRET?.trim() &&
-      process.env.EMIS_PARTNER_TOKEN_URL?.trim()
-  );
+  const sandbox = getEmisPartnerSandboxStatus();
+  const credentialsPresent = sandbox.credentialsConfigured;
+  const emisUiStatus: PartnerTrackUiStatus =
+    sandbox.mode === "needs_partner"
+      ? "needs_partner"
+      : credentialsPresent
+        ? "needs_cso"
+        : "needs_partner";
 
   return [
     {
       id: "emis_systmone",
       label: "EMIS / SystmOne write-back",
-      uiStatus: credentialsPresent ? "needs_cso" : "needs_partner",
+      uiStatus: emisUiStatus,
       owner: "Partner + engineering",
       inRepoEvidence: [
+        "lib/emis-partner-sandbox.ts",
         "lib/emis-staging.ts",
+        "GET/POST /api/integrations/emis-partner-sandbox",
         "POST /api/integrations/emis-staging",
         "POST /api/integrations/ehr-writeback-sim",
         "docs/PHASE2_PARTNER_CHECKLIST.md §A"
       ],
       externalAction: "Supply Partner API credentials, FHIR write scope, UAT, signed go/no-go",
-      note: "Staging queue only — never calls EMIS. SystmOne shares this partner track (no separate live adapter)."
+      note: `N5 sandbox: mode=${sandbox.mode} · writePath=${sandbox.writePath} · flag=${sandbox.sandboxFlagEnabled}. Staging/sim default — never live EMIS. SystmOne shares this partner track.`
     },
     {
       id: "dpia",
@@ -405,6 +428,8 @@ export function buildPartnerReadinessPack(input?: {
     byStatus[a.status] = (byStatus[a.status] ?? 0) + 1;
   }
 
+  const sandbox = getEmisPartnerSandboxStatus();
+
   return {
     artifactType: "aksh-partner-readiness-pack",
     phase: "F",
@@ -414,6 +439,7 @@ export function buildPartnerReadinessPack(input?: {
     evidencePackLinks: getEvidencePackLinks(),
     emis: getEmisPartnerChecklist(),
     staging: getEmisIntegrationStatus(),
+    sandbox,
     gateArtifacts: {
       total: artifacts.length,
       byStatus,
@@ -421,8 +447,7 @@ export function buildPartnerReadinessPack(input?: {
       anyCertified: false
     },
     notLiveBanner: NOT_LIVE_BANNER,
-    note:
-      "Phase F in-repo readiness for partners. External: credentials, signed DPIA/CSO/DTAC/DCB0129/MHRA, live write-back. liveEmis never flips from this pack alone."
+    note: `Phase F + N5 sandbox honesty (mode=${sandbox.mode}, writePath=${sandbox.writePath}). External: credentials, signed DPIA/CSO/DTAC/DCB0129/MHRA, live write-back. liveEmis never flips from this pack alone.`
   };
 }
 

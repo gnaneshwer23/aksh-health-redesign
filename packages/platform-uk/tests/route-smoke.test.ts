@@ -166,6 +166,10 @@ async function run() {
   await assertFileIncludes("app/api/precision-health/connectors/route.ts", "listConnectorStatuses");
   await assertFileIncludes("app/api/precision-health/ingest/route.ts", "runIngestionPipeline");
   await assertFileIncludes("app/api/integrations/emis-partner-checklist/route.ts", "liveEmis: false");
+  await assertFileIncludes("app/api/integrations/emis-partner-sandbox/route.ts", "liveEmis: false");
+  await assertFileIncludes("lib/emis-partner-sandbox.ts", "ENABLE_EMIS_PARTNER_SANDBOX");
+  await assertFileIncludes("lib/emis-partner-sandbox.ts", "needs_partner");
+  await assertFileIncludes("docs/P7_PARTNER_OUTREACH_PACK.md", "ENABLE_EMIS_PARTNER_SANDBOX");
   await assertFileIncludes("app/api/agents/oracle/route.ts", "getOracleModelCard");
   await assertFileIncludes("lib/precision-health/oracle-model-card.ts", "autoRetrain: false");
   await assertFileIncludes("docs/PHASE2_PARTNER_CHECKLIST.md", "liveEmis");

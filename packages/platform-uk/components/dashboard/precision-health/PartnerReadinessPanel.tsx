@@ -51,6 +51,14 @@ type ReadinessPayload = {
   liveEmis?: boolean;
   autoRetrain?: boolean;
   physiologicalTwin?: boolean;
+  sandbox?: {
+    mode?: string;
+    writePath?: string;
+    sandboxFlagEnabled?: boolean;
+    credentialsConfigured?: boolean;
+    missingEnv?: string[];
+    note?: string;
+  };
   note?: string;
   error?: string;
 };
@@ -211,6 +219,21 @@ export function PartnerReadinessPanel() {
         >
           {pack?.notLiveBanner ??
             "NOT LIVE EMIS — staging / sim write-back only. liveEmis:false until partner actions complete."}
+        </div>
+
+        <div
+          className="rounded-sm border border-border bg-muted/30 px-3 py-2 text-xs text-muted"
+          data-testid="partner-sandbox-status"
+        >
+          <span className="font-semibold text-foreground">Partner sandbox (N5):</span>{" "}
+          {pack?.sandbox
+            ? `mode=${pack.sandbox.mode} · writePath=${pack.sandbox.writePath} · flag=${String(pack.sandbox.sandboxFlagEnabled)} · creds=${String(pack.sandbox.credentialsConfigured)}${
+                pack.sandbox.missingEnv?.length
+                  ? ` · missing:${pack.sandbox.missingEnv.join(",")}`
+                  : ""
+              }`
+            : "Loading…"}{" "}
+          — liveEmis:false hard. Flag off = sim; flag on without Partner env = needs_partner.
         </div>
 
         {loading ? <p className="text-xs text-muted">Loading partner readiness…</p> : null}

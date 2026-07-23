@@ -56,10 +56,13 @@ Code in this repo can only mark scaffolding rows. Partner credentials, DPIA, and
 - `FITBIT_REDIRECT_URI`
 - `WEARABLE_IMPORT_BUCKET`
 - `LIFESTYLE_DIARY_WEBHOOK_SECRET`
+- `ENABLE_EMIS_PARTNER_SANDBOX` (default false = sim path; true = sandbox rehearsal only)
 - `EMIS_PARTNER_CLIENT_ID`
 - `EMIS_PARTNER_CLIENT_SECRET`
 - `EMIS_PARTNER_TOKEN_URL`
 - `EMIS_PARTNER_FHIR_BASE_URL`
+
+Presence of Partner env ≠ `liveEmis` flip. Smoke: `npm run smoke:emis-partner`.
 
 ---
 

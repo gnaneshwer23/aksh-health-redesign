@@ -152,6 +152,7 @@ async function run() {
   );
   assert.ok(panel.includes("partner-readiness-panel"));
   assert.ok(panel.includes("partner-not-live-banner"));
+  assert.ok(panel.includes("partner-sandbox-status"));
   assert.ok(panel.includes("/api/clinical-spine/partner-gates"));
   assert.ok(panel.includes("certified:false") || panel.includes("Not certified"));
 
@@ -160,7 +161,24 @@ async function run() {
     "utf8"
   );
   assert.ok(spine.includes("spine-phase-f-partners"));
+  assert.ok(spine.includes("spine-partner-sandbox"));
   assert.ok(spine.includes("/api/clinical-spine/partner-readiness"));
+  assert.ok(spine.includes("emis-partner-sandbox"));
+
+  const sandboxLib = fs.readFileSync(
+    path.join(process.cwd(), "lib/emis-partner-sandbox.ts"),
+    "utf8"
+  );
+  assert.ok(sandboxLib.includes("liveEmis: false"));
+  assert.ok(sandboxLib.includes("ENABLE_EMIS_PARTNER_SANDBOX"));
+  assert.ok(sandboxLib.includes("needs_partner"));
+
+  const sandboxRoute = fs.readFileSync(
+    path.join(process.cwd(), "app/api/integrations/emis-partner-sandbox/route.ts"),
+    "utf8"
+  );
+  assert.ok(sandboxRoute.includes("liveEmis: false"));
+  assert.ok(sandboxRoute.includes("canFlipLiveEmisInCode"));
 
   const adminPage = fs.readFileSync(
     path.join(process.cwd(), "app/dashboard/admin/precision-health/page.tsx"),

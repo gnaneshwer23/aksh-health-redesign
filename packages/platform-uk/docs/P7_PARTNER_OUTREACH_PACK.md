@@ -188,12 +188,13 @@ In-repo trackers: Admin → Precision Health → Partner readiness panel; docs i
 
 When partners issue sandbox credentials, set in Vercel / secure env only:
 
+- `ENABLE_EMIS_PARTNER_SANDBOX` — set `true` only for Partner **sandbox** rehearsal (default off = sim path)
 - `EMIS_PARTNER_CLIENT_ID`
 - `EMIS_PARTNER_CLIENT_SECRET`
 - `EMIS_PARTNER_TOKEN_URL`
 - `EMIS_PARTNER_FHIR_BASE_URL`
 
-Presence of env ≠ permission to flip `liveEmis`. CSO go/no-go still required.
+**Honesty:** Flag off → `ehr-writeback-sim` / emis-staging. Flag on without all four Partner vars → `needs_partner` / blocked. Presence of env ≠ permission to flip `liveEmis`. CSO go/no-go still required (N7). Smoke: `npm run smoke:emis-partner`.
 
 ---
 

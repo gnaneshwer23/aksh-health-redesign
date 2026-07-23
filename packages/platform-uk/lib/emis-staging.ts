@@ -2,8 +2,14 @@
  * EMIS / SystmOne partner-track scaffolding.
  * This is intentionally non-functional for live write-back.
  * HITL-approved FHIR bundles can be queued for a future Partner API.
- * Phase F: explicit not-live banner + flip checklist — never claims live EMIS.
+ * Phase F + N5: explicit not-live banner + sandbox flag path — never claims live EMIS.
  */
+
+import {
+  getEmisPartnerSandboxStatus,
+  isEmisPartnerSandboxCredentialsConfigured,
+  type EmisPartnerSandboxStatus
+} from "./emis-partner-sandbox";
 
 export type EmisStagingEnvelope = {
   id: string;
@@ -12,7 +18,10 @@ export type EmisStagingEnvelope = {
   caseId?: string;
   approvedBy: string;
   bundleSummary: string;
-  status: "queued_internal" | "blocked_no_partner_credentials";
+  status:
+    | "queued_internal"
+    | "blocked_needs_partner"
+    | "sandbox_flag_on_creds_present_write_deferred";
   ehrWriteAttempted: false;
   liveEmis: false;
   note: string;
@@ -23,16 +32,15 @@ const memoryQueue: EmisStagingEnvelope[] = [];
 export const EMIS_NOT_LIVE_BANNER =
   "NOT LIVE EMIS — internal staging / sim only. No Partner network call. liveEmis:false until credentials + DPIA + CSO go/no-go are signed out-of-band.";
 
+/** @deprecated Prefer isEmisPartnerSandboxCredentialsConfigured — kept for checklist callers. */
 export function isEmisPartnerConfigured() {
-  return Boolean(
-    process.env.EMIS_PARTNER_CLIENT_ID?.trim() &&
-      process.env.EMIS_PARTNER_CLIENT_SECRET?.trim() &&
-      process.env.EMIS_PARTNER_TOKEN_URL?.trim()
-  );
+  return isEmisPartnerSandboxCredentialsConfigured();
 }
 
 export function getEmisIntegrationStatus() {
-  const configured = isEmisPartnerConfigured();
+  const sandbox: EmisPartnerSandboxStatus = getEmisPartnerSandboxStatus();
+  const configured = sandbox.credentialsConfigured;
+
   return {
     adapterId: "emis-fhir-staging",
     configured,
@@ -43,19 +51,32 @@ export function getEmisIntegrationStatus() {
     notLiveBanner: EMIS_NOT_LIVE_BANNER,
     approvalTokenSimPath: "/api/integrations/ehr-writeback-sim",
     partnerChecklistPath: "/api/integrations/emis-partner-checklist",
+    partnerSandboxPath: "/api/integrations/emis-partner-sandbox",
     partnerReadinessPath: "/api/clinical-spine/partner-readiness",
     partnerChecklistDoc: "docs/PHASE2_PARTNER_CHECKLIST.md",
     phaseFDoc: "docs/CLINICAL_SPINE_PHASE_F.md",
     queueDepth: memoryQueue.length,
-    status: configured ? "credentials_present_writeback_disabled" : "scaffold_only",
-    path: "HITL Accept → emis-staging queue → ehr-writeback-sim (never live Partner API)",
-    requiredEnv: [
-      "EMIS_PARTNER_CLIENT_ID",
-      "EMIS_PARTNER_CLIENT_SECRET",
-      "EMIS_PARTNER_TOKEN_URL",
-      "EMIS_PARTNER_FHIR_BASE_URL"
-    ],
-    note: "Aksh stages HITL-approved FHIR R4 evidence internally. Live EMIS / SystmOne write-back requires Partner onboarding + CSO sign-off. liveEmis always false."
+    status: configured
+      ? sandbox.sandboxFlagEnabled
+        ? "sandbox_ready_live_writeback_disabled"
+        : "credentials_present_sandbox_flag_off"
+      : "scaffold_only",
+    path:
+      sandbox.writePath === "sim"
+        ? "HITL Accept → emis-staging queue → ehr-writeback-sim (never live Partner API)"
+        : sandbox.writePath === "blocked_needs_partner"
+          ? "Sandbox flag on · needs_partner — set EMIS_PARTNER_* then re-probe"
+          : "HITL Accept → Partner sandbox only (liveEmis:false until N7)",
+    sandbox: {
+      mode: sandbox.mode,
+      writePath: sandbox.writePath,
+      sandboxFlagEnabled: sandbox.sandboxFlagEnabled,
+      credentialsConfigured: sandbox.credentialsConfigured,
+      missingEnv: sandbox.missingEnv,
+      canFlipLiveEmisFromEnv: false as const
+    },
+    requiredEnv: [...sandbox.requiredEnv, "ENABLE_EMIS_PARTNER_SANDBOX"],
+    note: `${sandbox.note} Aksh stages HITL-approved FHIR R4 evidence internally. Live EMIS / SystmOne write-back requires Partner onboarding + CSO sign-off. liveEmis always false.`
   };
 }
 
@@ -66,6 +87,14 @@ export function queueEmisFhirStaging(input: {
   practiceOds?: string;
   bundleSummary: string;
 }): EmisStagingEnvelope {
+  const sandbox = getEmisPartnerSandboxStatus();
+  let status: EmisStagingEnvelope["status"] = "queued_internal";
+  if (sandbox.sandboxFlagEnabled && !sandbox.credentialsConfigured) {
+    status = "blocked_needs_partner";
+  } else if (sandbox.sandboxFlagEnabled && sandbox.credentialsConfigured) {
+    status = "sandbox_flag_on_creds_present_write_deferred";
+  }
+
   const entry: EmisStagingEnvelope = {
     id: `emis-stage-${crypto.randomUUID()}`,
     queuedAt: new Date().toISOString(),
@@ -73,10 +102,10 @@ export function queueEmisFhirStaging(input: {
     caseId: input.caseId,
     approvedBy: input.approvedBy,
     bundleSummary: input.bundleSummary,
-    status: isEmisPartnerConfigured() ? "blocked_no_partner_credentials" : "queued_internal",
+    status,
     ehrWriteAttempted: false,
     liveEmis: false,
-    note: `${EMIS_NOT_LIVE_BANNER} Scaffold queue only — no EMIS network call was made.`
+    note: `${EMIS_NOT_LIVE_BANNER} Scaffold queue only — no EMIS network call was made. writePath:${sandbox.writePath}.`
   };
   memoryQueue.unshift(entry);
   if (memoryQueue.length > 100) memoryQueue.length = 100;
