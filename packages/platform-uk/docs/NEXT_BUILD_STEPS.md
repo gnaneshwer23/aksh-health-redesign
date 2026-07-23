@@ -3,7 +3,7 @@
 **Date:** July 2026  
 **Scope:** `packages/platform-uk` on `main`  
 **Prerequisite:** P0–P6 product spine **PASS**; P7 paperwork **PASS** / live EMIS **NO-GO**  
-**Companion:** [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) · [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) · [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)
+**Companion:** [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) · [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) · [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) · [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md)
 
 ## Purpose
 
@@ -25,6 +25,8 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 | **N7** `liveEmis` flip | **Paused** — blocked on signed go/no-go |
 
 **Recommended next eng phase:** D1 demo hardening is **PASS** ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)). Resume N1 only if IM1/Partner credentials appear later. Full plan + alternatives: [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md).
+
+**Recommended next product/UX track:** **U1** — landing agents + how-they-work → onboarding → per-role dashboards. Do **not** rebuild the clinical spine. Plan: [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md).
 
 ---
 
@@ -287,6 +289,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | Track | Phases | Notes |
 |---|---|---|
 | **Done (demo)** | **D1** | **PASS** — FHIR-in-Neon, Accept→export, `/demo/script` ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)) |
+| **Next (UX / demo surface)** | **U1 → U8** | Landing agents · onboarding · role dashboards — [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) · start **U1** |
 | **Deferred** | **N1** | IM1 / Partner emails only if credentials / capacity appear |
 | **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal (**N3 paused** until then) |
 | **Done (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
@@ -312,6 +315,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 ## Cross-links
 
 - [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) — **demo path without IM1 / EMIS / Medplum** · D1 tasks  
+- [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) — **U1–U8** landing · personalised onboarding · stakeholder dashboards  
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — **D1 PASS** (BRIDGE Neon staging · export · demo script)  
 - [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md) — signup / smoke credentials  
 - [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 complete (paperwork)  

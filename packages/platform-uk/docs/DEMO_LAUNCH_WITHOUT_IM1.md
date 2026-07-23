@@ -2,7 +2,7 @@
 
 **Date:** July 2026  
 **Scope:** `packages/platform-uk` on `main` · target surface: **akshhealth.com** (Vercel)  
-**Companion:** [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) · [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md)
+**Companion:** [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) · [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) · [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md)
 
 ---
 
@@ -148,6 +148,14 @@ Partner-blocked phases **N3 / N5 live wire / N6 / N7** stay paused. Eng D1 demo 
 
 ---
 
+## Next after D1 — UX / stakeholder surfaces (U-phases)
+
+Clinical spine + D1 are done. For demo polish, enhance **landing (agents + how they work)**, **personalised onboarding**, and **per-role dashboards** — do **not** rebuild the spine.
+
+Full plan: [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) · start with **U1**.
+
+---
+
 ## Partner track (paused, not cancelled)
 
 | Phase | Demo-path status |
@@ -166,6 +174,7 @@ Full partner path remains in [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) and 
 ## Cross-links
 
 - [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — N1–N10 + Demo path (no IM1)  
+- [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) — **U1–U8** landing · onboarding · role dashboards  
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — **D1 PASS**  
 - [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md) — signup / smoke creds  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed cases + rehearsal runbook  
