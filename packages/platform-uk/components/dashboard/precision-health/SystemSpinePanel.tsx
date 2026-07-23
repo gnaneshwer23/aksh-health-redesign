@@ -105,6 +105,12 @@ export function SystemSpinePanel() {
   const [outcomesLoop, setOutcomesLoop] = useState<OutcomesLoopStatus | null>(null);
   const [partnerReady, setPartnerReady] = useState<PartnerReadinessSummary | null>(null);
   const [connectors, setConnectors] = useState<ConnectorsPayload | null>(null);
+  const [bridge, setBridge] = useState<{
+    queueDepth?: number;
+    storagePreference?: string;
+    note?: string;
+    liveEmis?: boolean;
+  } | null>(null);
   const [agents, setAgents] = useState<AgentProbe[]>(
     AGENT_PROBES.map((a) => ({ ...a, ok: null }))
   );
@@ -122,6 +128,7 @@ export function SystemSpinePanel() {
         connectorsRes,
         outcomesRes,
         partnerRes,
+        bridgeRes,
         ...agentRes
       ] = await Promise.all([
           fetch("/api/health"),
@@ -132,6 +139,7 @@ export function SystemSpinePanel() {
           fetch("/api/precision-health/connectors", { credentials: "include" }),
           fetch("/api/clinical-spine/outcomes", { credentials: "include" }),
           fetch("/api/clinical-spine/partner-readiness", { credentials: "include" }),
+          fetch("/api/integrations/bridge-staging", { credentials: "include" }),
           ...AGENT_PROBES.map((a) => fetch(a.href).catch(() => null))
         ]);
 
@@ -147,6 +155,16 @@ export function SystemSpinePanel() {
       else setOutcomesLoop(null);
       if (partnerRes.ok) setPartnerReady((await partnerRes.json()) as PartnerReadinessSummary);
       else setPartnerReady(null);
+      if (bridgeRes.ok) {
+        setBridge(
+          (await bridgeRes.json()) as {
+            queueDepth?: number;
+            storagePreference?: string;
+            note?: string;
+            liveEmis?: boolean;
+          }
+        );
+      } else setBridge(null);
 
       setAgents(
         AGENT_PROBES.map((a, i) => {
@@ -204,6 +222,18 @@ export function SystemSpinePanel() {
           </p>
         ) : null}
 
+        <p
+          role="status"
+          data-testid="bridge-honesty-banner"
+          className="rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950"
+        >
+          <strong>BRIDGE:</strong> In-app FHIR staging (Neon JSONB or durable file) after HITL Accept —
+          labelled preliminary/staging. Medplum OAuth not required.{" "}
+          {bridge?.note ?? "liveEmis:false · handoff export via /api/review-cases/{id}/export/fhir"}
+          {typeof bridge?.queueDepth === "number" ? ` · recent ${bridge.queueDepth}` : ""}
+          {bridge?.storagePreference ? ` · storage=${bridge.storagePreference}` : ""}
+        </p>
+
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Flag
             label="Postgres"
@@ -222,6 +252,12 @@ export function SystemSpinePanel() {
             value={String(liveEmis)}
             ok={!liveEmis}
             detail={emis?.note ?? "Partner write-back blocked"}
+          />
+          <Flag
+            label="BRIDGE staging"
+            value={bridge?.storagePreference ?? "Neon/file"}
+            ok={bridge?.liveEmis !== true}
+            detail={`preliminary · queue≈${bridge?.queueDepth ?? "…"} · liveEmis:false`}
           />
           <Flag
             label="Medplum"
@@ -457,6 +493,12 @@ export function SystemSpinePanel() {
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
             Replay clinical spine (demo) →
+          </Link>
+          <Link
+            href="/demo/script"
+            className="font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Guided demo script (Capture→export) →
           </Link>
         </div>
       </CardContent>

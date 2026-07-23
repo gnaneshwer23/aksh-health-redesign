@@ -47,16 +47,26 @@ export default async function CaseReportPage({
         <ReportActions
           backHref={`/cases/${params.id}${query}`}
           exportHref={`/api/review-cases/${params.id}/export`}
+          fhirExportHref={`/api/review-cases/${params.id}/export/fhir`}
         />
         <h1>Case Evidence Report</h1>
         <p>
           Printable synthetic proof summary for {evidence.patientLabel}, including validation readiness, reviewer
           decisions, and human-gate status.
         </p>
+        <div
+          className="panel"
+          data-testid="report-handoff-honesty"
+          style={{ background: "var(--accent-soft)", boxShadow: "none" }}
+        >
+          Handoff summary only — Download FHIR Bundle or Print/Save PDF for demo filing. Not live EMIS /
+          Partner write-back · liveEmis:false · HITL Accept required before staging.
+        </div>
         <div className="pill-row">
           <span className="pill">{evidence.finalizationState}</span>
           <span className="pill">{evidence.artifactState}</span>
           <span className="pill">{evidence.validationReadiness.label}</span>
+          <span className="pill">liveEmis:false</span>
         </div>
       </div>
 

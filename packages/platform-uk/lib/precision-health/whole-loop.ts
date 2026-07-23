@@ -11,20 +11,14 @@
 
 import { z } from "zod";
 
+import { stageAcceptedCaseToBridge } from "@/lib/bridge-staging";
 import { runAgentOrchestration, type OrchestrationResult } from "@/lib/clinical-proof/agent-orchestration";
-import {
-  attemptSimulatedEhrWrite,
-  issueClinicianApprovalToken
-} from "@/lib/clinical-proof/ehr-writeback-sim";
-import { buildAcceptedFhirR4StagingBundle, summariseStagedBundle } from "@/lib/clinical-proof/staged-fhir";
-import { queueEmisFhirStaging } from "@/lib/emis-staging";
 import { getPatientById } from "@/lib/mock-data";
 import { checkNeo4jHealth } from "@/lib/neo4j";
 import { upsertConsentGrant, listConsentGrants } from "@/lib/repositories/consent-grant-repository";
 import { createHealthPlanDraft } from "@/lib/repositories/health-plan-repository";
 import { recordLearningEvent } from "@/lib/repositories/learning-event-repository";
 import { ingestModalitySampleStub, listModalitySamples } from "@/lib/repositories/modality-sample-repository";
-import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { readReviewCases } from "@/lib/review-case-repository";
 
 import {
@@ -267,74 +261,30 @@ async function stageDemoHitlAccept(options: {
   actor: string;
 }): Promise<{
   stagingEntryId: string;
+  bridgeStagingId: string;
   simWriteId: string;
   fhirResourceCount: number;
   liveEmis: false;
 }> {
-  const bundle = buildAcceptedFhirR4StagingBundle({
+  const result = await stageAcceptedCaseToBridge({
     caseId: options.caseId,
     acceptedBy: options.actor,
-    resourceTypes: [
-      "DocumentReference",
-      "Condition",
-      "Flag",
-      "MedicationRequest",
-      "RiskAssessment",
-      "Observation",
-      "Encounter",
-      "AuditEvent"
-    ]
-  });
-  const staged = summariseStagedBundle(bundle);
-
-  const stagingEntry = queueEmisFhirStaging({
-    approvedBy: options.actor,
-    caseId: options.caseId,
-    bundleSummary: `Whole-loop demo Accept · plan=${options.planId} · ${staged.resourceCount} FHIR resources — sim only`
-  });
-
-  const approval = issueClinicianApprovalToken({
     clinicianId: "demo-loop-clinician",
-    clinicianName: options.actor,
-    resourceSummary: stagingEntry.bundleSummary,
-    caseId: options.caseId,
-    queueItemId: stagingEntry.id
+    scopeKey: "shared",
+    runSimWriteback: true
   });
 
-  const simWrite = attemptSimulatedEhrWrite({
-    approvalToken: approval.token,
-    actorId: "demo-loop-clinician",
-    resourceSummary: stagingEntry.bundleSummary
-  });
-
-  if (!simWrite.ok) {
-    throw new Error(`Demo sim write failed: ${simWrite.error}`);
+  if (!result.simWriteId) {
+    throw new Error(
+      `Demo sim write failed for ${options.patientLabel} (${options.patientId}) plan=${options.planId}`
+    );
   }
 
-  void persistShieldAuditEvent({
-    action: "accept",
-    actor: options.actor,
-    label: "SHIELD: whole-loop demo clinician Accept (sim write only)",
-    detail: `patient=${options.patientId}; plan=${options.planId}; staging=${stagingEntry.id}; liveEmis=false`,
-    category: "clinical",
-    agentLabel: "SHIELD",
-    resourceRef: `${options.patientLabel} (${options.patientId})`,
-    caseId: options.caseId,
-    payload: {
-      planId: options.planId,
-      stagingEntryId: stagingEntry.id,
-      simWriteId: simWrite.write.id,
-      liveEmis: false,
-      ehrWrite: false,
-      demoAccept: true,
-      physiologicalTwin: false
-    }
-  });
-
   return {
-    stagingEntryId: stagingEntry.id,
-    simWriteId: simWrite.write.id,
-    fhirResourceCount: staged.resourceCount,
+    stagingEntryId: result.emisStagingEntryId,
+    bridgeStagingId: result.bridgeRecord.id,
+    simWriteId: result.simWriteId,
+    fhirResourceCount: result.fhirResourceCount,
     liveEmis: false
   };
 }

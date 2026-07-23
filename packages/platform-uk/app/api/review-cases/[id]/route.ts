@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { stageAcceptedCaseToBridge } from "@/lib/bridge-staging";
 import { recordSpineQueueDecisions } from "@/lib/clinical-spine/queue-decision";
 import { shouldSyncAcceptedCaseToMedplum } from "@/lib/integration-config";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
@@ -75,6 +76,26 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     console.error("[clinical-spine] queue decision record failed", spineError);
   }
 
+  // D1-a: HITL Accept → BRIDGE FHIR-in-Neon/file staging + emis-staging + sim write-back.
+  // Never live EMIS; Medplum not required.
+  let bridgeStaging: Awaited<ReturnType<typeof stageAcceptedCaseToBridge>> | null = null;
+  const newlyAccepted = existing.status !== "accepted" && updated.status === "accepted";
+  if (newlyAccepted) {
+    try {
+      bridgeStaging = await stageAcceptedCaseToBridge({
+        caseId: updated.id,
+        acceptedBy: auth.context.userEmail ?? userId,
+        clinicianId: userId,
+        practiceId: tenant.practiceId,
+        scopeKey,
+        reviewCase: updated,
+        runSimWriteback: true
+      });
+    } catch (bridgeError) {
+      console.error("[bridge-staging] Accept staging failed (non-blocking)", bridgeError);
+    }
+  }
+
   // Medplum rehearsal only when ENABLE_MEDPLUM_SYNC=true + newly accepted frozen case.
   // Non-blocking; never EMIS; pushToMedplum refuses when flag is off.
   if (shouldSyncAcceptedCaseToMedplum(existing, payload, updated)) {
@@ -97,6 +118,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           healthPlanId: spine.healthPlanId,
           ehrWrite: false as const,
           autoRetrain: false as const
+        }
+      : null,
+    bridgeStaging: bridgeStaging
+      ? {
+          id: bridgeStaging.bridgeRecord.id,
+          status: bridgeStaging.status,
+          storage: bridgeStaging.bridgeRecord.storage,
+          fhirResourceCount: bridgeStaging.fhirResourceCount,
+          emisStagingEntryId: bridgeStaging.emisStagingEntryId,
+          simWriteId: bridgeStaging.simWriteId,
+          liveEmis: false as const,
+          medplumRequired: false as const,
+          fhirExportPath: `/api/review-cases/${updated.id}/export/fhir`
         }
       : null
   });

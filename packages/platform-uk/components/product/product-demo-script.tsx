@@ -8,7 +8,7 @@ const demoStops = [
     title: "Frame the product",
     route: "/",
     action: "Use the landing page only to position Aksh Health as a review-first clinical workflow product and to state the synthetic proof boundary.",
-    talkTrack: "Keep this short. The landing page explains category, workflow, and boundaries. It should not become the operational demo itself."
+    talkTrack: "Keep this short. The landing page explains category, workflow, and boundaries. It should not become the operational demo itself. For the clinical Capture→export script, prefer /demo/script."
   },
   {
     time: "01:00",
@@ -29,21 +29,21 @@ const demoStops = [
     title: "Show one reviewer decision",
     route: "/review",
     action: "Open the clinical queue and one case so you can explain how blockers, checklist confirmation, and reviewer action flow actually work.",
-    talkTrack: "This is the core workflow wedge: structured draft plus clinician-controlled decisioning instead of black-box output."
+    talkTrack: "This is the core workflow wedge: structured draft plus clinician-controlled decisioning instead of black-box output. HITL Accept is mandatory before any staging."
   },
   {
     time: "05:30",
-    title: "Show one frozen artifact",
+    title: "Show one frozen artifact + export",
     route: "/cases/case-005/evidence",
-    action: "Open an accepted synthetic case and show finalization, validation, and FHIR-shaped export evidence.",
-    talkTrack: "The output is inspectable: final draft, reviewer decision, safety state, source trace, and export quality."
+    action: "Open an accepted synthetic case and show finalization, SHIELD, Download FHIR Bundle, and Print/Save PDF handoff.",
+    talkTrack: "The output is inspectable: final draft, reviewer decision, safety state, BRIDGE preliminary staging, and export quality. liveEmis:false — handoff only, not live GP write-back."
   },
   {
     time: "07:00",
     title: "Close on evidence readiness",
-    route: "/review/readiness",
-    action: "Show readiness gate, benchmark context, and the honest synthetic-only boundary.",
-    talkTrack: "The next milestone is credibility and controlled deployment preparation, not premature live integration."
+    route: "/review/demo-readiness",
+    action: "Show demo readiness gate, honesty banners, and the synthetic-only boundary.",
+    talkTrack: "The next milestone is partner credentials + signed go/no-go — not premature live integration. Prefer /demo/script for the full Capture→sim→export run."
   }
 ];
 

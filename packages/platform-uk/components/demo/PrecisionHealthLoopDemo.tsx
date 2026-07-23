@@ -183,6 +183,18 @@ export function PrecisionHealthLoopDemo() {
               {running ? "Running whole loop…" : "Run whole loop"}
             </Button>
             <Link
+              href="/demo/script"
+              className="text-sm text-teal-800 underline-offset-2 hover:underline"
+            >
+              Guided demo script
+            </Link>
+            <Link
+              href="/review/pilot?demo=1"
+              className="text-sm text-teal-800 underline-offset-2 hover:underline"
+            >
+              Pilot HITL cases
+            </Link>
+            <Link
               href="/resources#precision-health"
               className="text-sm text-teal-800 underline-offset-2 hover:underline"
             >

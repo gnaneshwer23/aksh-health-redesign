@@ -23,6 +23,13 @@ type EmisStatus = {
   note?: string;
 };
 
+type BridgeStatus = {
+  queueDepth?: number;
+  storagePreference?: string;
+  note?: string;
+  liveEmis?: boolean;
+};
+
 type HealthPayload = {
   database?: { connected?: boolean; mode?: string };
   neo4j?: { connected?: boolean; mode?: string; configured?: boolean; note?: string };
@@ -43,14 +50,16 @@ export function IntegrationStatus() {
     setLoading(true);
     setError(null);
     try {
-      const [healthRes, emisRes, contractRes] = await Promise.all([
+      const [healthRes, emisRes, bridgeRes, contractRes] = await Promise.all([
         fetch("/api/health", { cache: "no-store" }),
         fetch("/api/integrations/emis-staging", { credentials: "include", cache: "no-store" }),
+        fetch("/api/integrations/bridge-staging", { credentials: "include", cache: "no-store" }),
         fetch("/api/system/integration-contract", { credentials: "include", cache: "no-store" })
       ]);
 
       const health = healthRes.ok ? ((await healthRes.json()) as HealthPayload) : null;
       const emis = emisRes.ok ? ((await emisRes.json()) as EmisStatus) : null;
+      const bridge = bridgeRes.ok ? ((await bridgeRes.json()) as BridgeStatus) : null;
       const contract = contractRes.ok
         ? ((await contractRes.json()) as {
             externalAdapters?: Array<{
@@ -90,6 +99,18 @@ export function IntegrationStatus() {
             : "Not configured",
         detail: health?.neo4j?.note ?? `mode=${health?.neo4j?.mode ?? "unknown"}`,
         tone: health?.neo4j?.connected ? "ok" : "warn"
+      });
+
+      next.push({
+        id: "bridge-staging",
+        label: "BRIDGE FHIR staging",
+        status: "Preliminary · Neon/file",
+        detail: bridge?.note
+          ? `${bridge.note}${typeof bridge.queueDepth === "number" ? ` · recent ${bridge.queueDepth}` : ""} · storage=${bridge.storagePreference ?? "…"}`
+          : bridgeRes.ok
+            ? "In-app FHIR staging · Medplum not required · liveEmis:false"
+            : "Sign in required to load BRIDGE staging status.",
+        tone: bridge?.liveEmis ? "warn" : "muted"
       });
 
       next.push({

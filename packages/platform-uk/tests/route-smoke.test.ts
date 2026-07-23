@@ -417,6 +417,14 @@ async function run() {
   await assertFileIncludes("components/review/case-evidence-clinical-sections.tsx", "showGates={false}");
   await assertFileIncludes("components/review/synthetic-outcome-capture-panel.tsx", "synthetic-outcome-capture");
   await assertFileIncludes("components/review/case-evidence-export-sections.tsx", "FHIR Export Bundle");
+  await assertFileIncludes("components/review/case-evidence-header.tsx", "Download FHIR Bundle");
+  await assertFileIncludes("components/review/case-evidence-header.tsx", "export/fhir");
+  await assertFileIncludes("app/api/integrations/bridge-staging/route.ts", "liveEmis: false");
+  await assertFileIncludes("app/api/integrations/bridge-staging/route.ts", "clinicianAccept");
+  await assertFileIncludes("app/api/review-cases/[id]/export/fhir/route.ts", "application/fhir+json");
+  await assertFileIncludes("app/demo/script/page.tsx", "DemoLaunchScript");
+  await assertFileIncludes("docs/DEMO_LAUNCH_D1_AUDIT.md", "PASS");
+  await assertFileIncludes("docs/DEMO_LAUNCH_CREDENTIALS.md", "/signup");
   await assertFileIncludes("components/review/case-evidence-clinical-sections.tsx", "Safety And Acceptance");
   await assertFileIncludes("app/cases/[id]/evidence/page.tsx", "CaseEvidenceHeader");
   await assertFileIncludes("app/cases/[id]/evidence/page.tsx", "CaseEvidenceHumanGateSection");

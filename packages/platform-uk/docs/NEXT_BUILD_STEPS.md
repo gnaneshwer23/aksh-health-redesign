@@ -24,7 +24,7 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 | **N6** Partner UAT | **Paused** — blocked on Partner creds + clinical lead |
 | **N7** `liveEmis` flip | **Paused** — blocked on signed go/no-go |
 
-**Recommended next eng phase: D1** — demo hardening (FHIR-in-Neon staging, Accept→export Bundle, demo script polish). Full plan + alternatives: [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md). Resume N1 only if IM1/Partner credentials appear later.
+**Recommended next eng phase:** D1 demo hardening is **PASS** ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)). Resume N1 only if IM1/Partner credentials appear later. Full plan + alternatives: [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md).
 
 ---
 
@@ -33,8 +33,9 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 | Priority | Items |
 |---|---|
 | **Must (demo)** | Ship honest synthetic HITL demo on Vercel; keep `liveEmis:false`; no fake NHS write-back claims — see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) |
-| **Should (eng now)** | **D1** demo hardening; optional Deepgram for live VOICE ASR |
+| **Should (eng now)** | Demo ops rehearsal on production; optional Deepgram for live VOICE ASR |
 | **Later (partner)** | N1 outreach if creds appear; N2 Medplum secret; N3/N5–N7 when Partner + signed go/no-go; PRISM; ATLAS; CIS2 / Mirth; funded DTAC / DCB0129 / MHRA |
+| **Done (demo eng)** | **D1 PASS** — FHIR-in-Neon BRIDGE, Accept→export, `/demo/script` ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)) |
 
 ---
 
@@ -71,7 +72,7 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 ## Phase roadmap (D1 + N1…N10)
 
 ```text
-D1 Demo hardening (no IM1/EMIS/Medplum)           ← **preferred eng now**
+D1 Demo hardening (no IM1/EMIS/Medplum)           ← **PASS** 2026-07-23
 N1 External outreach (user/partner)               ← deferred unless creds appear
  → N2 Staging secrets (Medplum / Deepgram)        ← optional
  → N3 BRIDGE staging rehearsal                    ← **PAUSED** (Medplum OAuth)
@@ -84,7 +85,7 @@ N1 External outreach (user/partner)               ← deferred unless creds appe
  → N10 CIS2 / Mirth / funded regulatory route     ← external parallel anytime
 ```
 
-**Demo path:** D1 first — see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md). N1/N10 remain optional parallel when org capacity exists. **N7 never starts** without signed artefacts.
+**Demo path:** D1 **PASS** — see [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md). N1/N10 remain optional parallel when org capacity exists. **N7 never starts** without signed artefacts.
 
 Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engineering; **user/partner** = credentials, emails, IG/CSO, Partner Programme.
 
@@ -285,7 +286,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Now (demo)** | **D1** | Demo hardening — FHIR-in-Neon, Accept→export, script ([`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)) |
+| **Done (demo)** | **D1** | **PASS** — FHIR-in-Neon, Accept→export, `/demo/script` ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)) |
 | **Deferred** | **N1** | IM1 / Partner emails only if credentials / capacity appear |
 | **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal (**N3 paused** until then) |
 | **Done (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
@@ -299,7 +300,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 ## Definition of success for “next”
 
 1. **Demo launch ready** — synthetic HITL loop on akshhealth.com with honesty banners; see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md).  
-2. **D1 hardening** — BRIDGE without Medplum; export handoff; demo script.  
+2. **D1 hardening PASS** — BRIDGE without Medplum; export handoff; demo script ([`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)).  
 3. **Roster honesty locked** — VOICE / DrASSIST(/JSL) sub-capabilities; PRISM/ATLAS Phase 2 / not live.  
 4. **Partner path gated / paused** — N3/N5–N7 wait on creds + signed go/no-go; `liveEmis:false`.  
 5. **No rebuild** of NextAuth / Neon / SHIELD / CONDUCTOR / LangGraph-or-Supabase swap.
@@ -311,6 +312,8 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 ## Cross-links
 
 - [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) — **demo path without IM1 / EMIS / Medplum** · D1 tasks  
+- [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — **D1 PASS** (BRIDGE Neon staging · export · demo script)  
+- [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md) — signup / smoke credentials  
 - [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 complete (paperwork)  
 - [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) — paperwork PASS / live NO-GO  
 - [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — emails + external checklist  

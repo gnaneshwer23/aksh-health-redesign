@@ -41,6 +41,17 @@ export function CaseEvidenceHeader({
         <a className="button primary" href={`/api/review-cases/${caseId}/export`} target="_blank">
           Export JSON
         </a>
+        <a
+          className="button primary"
+          href={`/api/review-cases/${caseId}/export/fhir`}
+          target="_blank"
+          data-testid="download-fhir-bundle"
+        >
+          Download FHIR Bundle
+        </a>
+        <a className="button secondary" href={`/cases/${caseId}/report${query}`} data-testid="print-summary-pdf">
+          Print / Save PDF summary
+        </a>
       </div>
       {demoMode || recordingMode ? (
         <div className="panel" style={{ background: "var(--accent-soft)", boxShadow: "none" }}>

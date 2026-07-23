@@ -95,8 +95,8 @@ Hosted Medplum Client Secret remains **optional** (N2); N3 (Medplum-backed rehea
 2. Confirm env: NextAuth, Neon, AI Gateway; **no** `liveEmis` flip; Partner sandbox flag **off** (default sim).
 3. Confirm honesty surfaces: DemoDataBanner, SystemSpinePanel, Partner readiness → `liveEmis:false`.
 4. Smoke: `npm run test:clinical-proof` · walkthrough path / demo-readiness as used in CI.
-5. Rehearse script once on production URL: Capture → Orchestrate → HITL Accept → sim write-back → SHIELD evidence.
-6. (Optional D1) FHIR-in-Neon staging + Accept→export Bundle + short demo script page — see below.
+5. Rehearse script once on production URL: Capture → Orchestrate → HITL Accept → sim write-back → SHIELD evidence · guided page **`/demo/script`**.
+6. **D1 shipped:** FHIR-in-Neon/file BRIDGE staging + Accept→export Bundle/PDF + demo script — see [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md).
 7. **Audit gate:** record pass/fail in Partner panel notes or a short demo-readiness export; do **not** set `certified:true`.
 
 ### User / org
@@ -110,11 +110,12 @@ Hosted Medplum Client Secret remains **optional** (N2); N3 (Medplum-backed rehea
 
 ### Audit gate (demo launch)
 
-- [ ] `GET /api/clinical-spine/partner-readiness` → `honesty.liveEmis === false`
-- [ ] Walkthrough uses synthetic/demo data with visible demo labelling
-- [ ] HITL Accept required before any write-back-sim call
-- [ ] No marketing / UI claim of live NHS GP write-back or partner certification
-- [ ] Clinical-proof (or equivalent smoke) green on the build being demoed
+- [x] `GET /api/clinical-spine/partner-readiness` → `honesty.liveEmis === false` (invariant)
+- [x] Walkthrough uses synthetic/demo data with visible demo labelling (`/demo/script`, DemoDataBanner)
+- [x] HITL Accept required before any write-back-sim / BRIDGE staging call
+- [x] No marketing / UI claim of live NHS GP write-back or partner certification
+- [x] Clinical-proof (incl. `demo-launch-d1`) green on the build being demoed — see [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)
+- [x] Credentials: signup-only — [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md)
 
 ---
 
@@ -131,17 +132,18 @@ Hosted Medplum Client Secret remains **optional** (N2); N3 (Medplum-backed rehea
 
 ---
 
-## D1 — Demo hardening (recommended next eng phase)
+## D1 — Demo hardening (**PASS** 2026-07-23)
 
-Partner-blocked phases **N3 / N5 live wire / N6 / N7** stay paused. Preferred eng focus: **D1 demo hardening**.
+Partner-blocked phases **N3 / N5 live wire / N6 / N7** stay paused. Eng D1 demo hardening is **done**.
 
-| ID | Task | Estimate | Notes |
+| ID | Task | Status | Notes |
 |---|---|---|---|
-| **D1-a** | FHIR-in-Neon staging for BRIDGE | 1–2 d | Persist Accept-staged Bundle/JSON in Neon; label staging; no Medplum required |
-| **D1-b** | Accept → export FHIR Bundle (and/or PDF) | 0.5–1 d | Download handoff for demos; not network write-back |
-| **D1-c** | Demo script page / runbook polish | 0.5 d | Tie `/demo/precision-health-loop` + pilot cases to a 10–15 min script with honesty callouts |
+| **D1-a** | FHIR-in-Neon staging for BRIDGE | **PASS** | Neon JSONB + file fallback; Accept → preliminary; no Medplum |
+| **D1-b** | Accept → export FHIR Bundle (and/or PDF) | **PASS** | `/export/fhir` + Print/Save PDF handoff |
+| **D1-c** | Demo script page / runbook polish | **PASS** | `/demo/script` · honesty callouts |
 
-**Say `D1`** to start eng on that phase.  
+**Audit:** [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) · credentials [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md).
+
 **Say `N1`** only if IM1/Partner credentials or a real outreach thread appear later.
 
 ---
@@ -164,6 +166,8 @@ Full partner path remains in [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) and 
 ## Cross-links
 
 - [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — N1–N10 + Demo path (no IM1)  
+- [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — **D1 PASS**  
+- [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md) — signup / smoke creds  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed cases + rehearsal runbook  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) — when partner track resumes  
