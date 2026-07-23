@@ -74,31 +74,31 @@ function FlowArrow({
       {label ? <span className="aksh-flow-arrow__label">{label}</span> : null}
       <svg
         className="aksh-flow-arrow__svg"
-        viewBox={isDown ? "0 0 28 44" : "0 0 44 28"}
-        width={isDown ? 28 : 44}
-        height={isDown ? 44 : 28}
+        viewBox={isDown ? "0 0 24 32" : "0 0 32 24"}
+        width={isDown ? 24 : 32}
+        height={isDown ? 32 : 24}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         {isDown ? (
           <>
             <path
-              d="M14 3v26"
+              d="M12 2v18"
               stroke="currentColor"
-              strokeWidth="4"
+              strokeWidth="3.5"
               strokeLinecap="round"
             />
-            <path d="M5 24l9 16 9-16H5z" fill="currentColor" />
+            <path d="M4 17l8 12 8-12H4z" fill="currentColor" />
           </>
         ) : (
           <>
             <path
-              d="M3 14h26"
+              d="M2 12h18"
               stroke="currentColor"
-              strokeWidth="4"
+              strokeWidth="3.5"
               strokeLinecap="round"
             />
-            <path d="M24 5l16 9-16 9V5z" fill="currentColor" />
+            <path d="M17 4l12 8-12 8V4z" fill="currentColor" />
           </>
         )}
       </svg>
