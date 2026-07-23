@@ -3,7 +3,7 @@
 **Date:** July 2026  
 **Scope:** `packages/platform-uk` on `main`  
 **Prerequisite:** P0–P6 product spine **PASS**; P7 paperwork **PASS** / live EMIS **NO-GO**  
-**Companion:** [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) · [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md)
+**Companion:** [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) · [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) · [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) · [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)
 
 ## Purpose
 
@@ -13,13 +13,28 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 
 ---
 
+## Demo path (no IM1)
+
+**Verdict:** Demo launch on akshhealth.com / Vercel is possible **without** IM1, EMIS Partner credentials, or hosted Medplum OAuth. Use synthetic HITL + `ehr-writeback-sim`; keep `liveEmis:false`.
+
+| Blocked partner phase | Status |
+|---|---|
+| **N3** BRIDGE vs Medplum staging | **Paused** — blocked on Medplum OAuth |
+| **N5** live sandbox wire (beyond scaffold) | **Paused** — blocked on Partner creds |
+| **N6** Partner UAT | **Paused** — blocked on Partner creds + clinical lead |
+| **N7** `liveEmis` flip | **Paused** — blocked on signed go/no-go |
+
+**Recommended next eng phase: D1** — demo hardening (FHIR-in-Neon staging, Accept→export Bundle, demo script polish). Full plan + alternatives: [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md). Resume N1 only if IM1/Partner credentials appear later.
+
+---
+
 ## Priority stack
 
 | Priority | Items |
 |---|---|
-| **Must** | Execute P7 external outreach (IM1 + EMIS Partner Programme); keep honesty / `liveEmis:false`; run partner UAT + signed go/no-go **before** any eng flip |
-| **Should** | Real Medplum Client Secret (staging OAuth green); local Deepgram for live VOICE ASR; harden BRIDGE staging rehearsal once Medplum works; Partner sandbox wire **behind flags** when credentials exist |
-| **Later** | Controlled `liveEmis` flip (only after N6–N7 gates); PRISM; ATLAS; CIS2 / Mirth on-prem; funded DTAC / DCB0129 / MHRA route |
+| **Must (demo)** | Ship honest synthetic HITL demo on Vercel; keep `liveEmis:false`; no fake NHS write-back claims — see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) |
+| **Should (eng now)** | **D1** demo hardening; optional Deepgram for live VOICE ASR |
+| **Later (partner)** | N1 outreach if creds appear; N2 Medplum secret; N3/N5–N7 when Partner + signed go/no-go; PRISM; ATLAS; CIS2 / Mirth; funded DTAC / DCB0129 / MHRA |
 
 ---
 
@@ -53,22 +68,23 @@ Ordered phases for **what to build next**. Do **not** rebuild DONE layers (NextA
 
 ---
 
-## Phase roadmap (N1…N10)
+## Phase roadmap (D1 + N1…N10)
 
 ```text
-N1 External outreach execution (user/partner)     ← start immediately
- → N2 Staging secrets (Medplum / Deepgram)        ← optional but high leverage
- → N3 BRIDGE staging rehearsal green              ← eng after N2 Medplum
+D1 Demo hardening (no IM1/EMIS/Medplum)           ← **preferred eng now**
+N1 External outreach (user/partner)               ← deferred unless creds appear
+ → N2 Staging secrets (Medplum / Deepgram)        ← optional
+ → N3 BRIDGE staging rehearsal                    ← **PAUSED** (Medplum OAuth)
  → N4 Sub-capability honesty + coding assist      ← **PASS** (2026-07-22)
- → N5 Partner sandbox wire (flags on; liveEmis:false)
- → N6 Partner UAT + rollback drill
- → N7 Signed go/no-go → controlled liveEmis flip  ← LAST eng critical path
+ → N5 Partner sandbox scaffold                    ← **PASS (scaffold)**; live wire **PAUSED**
+ → N6 Partner UAT + rollback drill                ← **PAUSED** (partner)
+ → N7 Signed go/no-go → controlled liveEmis flip  ← **PAUSED** until signed GO
  → N8 PRISM (Phase 2, product pull-in)
  → N9 ATLAS (Phase 2, product pull-in)
  → N10 CIS2 / Mirth / funded regulatory route     ← external parallel anytime
 ```
 
-N1 and N10 run **in parallel** with eng work. **N7 never starts** without signed artefacts.
+**Demo path:** D1 first — see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md). N1/N10 remain optional parallel when org capacity exists. **N7 never starts** without signed artefacts.
 
 Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engineering; **user/partner** = credentials, emails, IG/CSO, Partner Programme.
 
@@ -84,12 +100,12 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Send IM1 email from [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) §B; apply/progress Partner Programme (§C); kick off CSO/IG note (§D); record thread refs in Admin `PartnerReadinessPanel` (`external_ref_noted` ≠ signed). |
 | **Exit criteria** | IM1 (and/or Partner) email sent with reply or ticket ref; gate tracker notes updated; honesty flags still false. |
 | **Fail if** | UI/API set `certified:true` or `liveEmis:true` because “email was sent”; Mirth mock sold as live. |
-| **In-repo status** | **READY_TO_SEND** — pack + N1 send checklist ready · **NOT SENT** (user mail client) · audit [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) |
+| **In-repo status** | **READY_TO_SEND / DEFERRED for demo** — pack ready · **NOT SENT** · not a demo-launch gate · audit [`NEXT_BUILD_N1_AUDIT.md`](./NEXT_BUILD_N1_AUDIT.md) · see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) |
 
 **Audit gate N1**
 
 - [x] In-repo pack execution-ready (`P7_PARTNER_OUTREACH_PACK.md` §B + N1 send checklist; `liveEmis:false` documented)
-- [ ] IM1 and/or Partner outreach **sent** (evidence: email/ticket ref in Partner panel) — **user action outstanding**
+- [ ] IM1 and/or Partner outreach **sent** (evidence: email/ticket ref in Partner panel) — **deferred** (demo does not wait)
 - [x] `GET /api/clinical-spine/partner-readiness` → `honesty.liveEmis === false` (invariant; not flipped)
 - [x] No marketing claim of live EMIS / certified (pack + audit language)
 
@@ -126,6 +142,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Exercise staged-FHIR + write-back-sim against live Medplum staging; tighten SystemSpinePanel / Partner panels if modes change; keep `ehr-writeback-sim` off Partner network. |
 | **Exit criteria** | Documented rehearsal script green; UI modes match API; clinical-proof still green. |
 | **Fail if** | Staging FHIR marketed as live EMIS; autonomous write without HITL. |
+| **In-repo status** | **PAUSED** — blocked on Medplum OAuth (N2). For demo, use **D1** FHIR-in-Neon / skip external FHIR instead ([`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)). |
 
 **Audit gate N3**
 
@@ -166,7 +183,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Implement Partner client against sandbox base URL; feature flag; Accept-only write scopes; never auto-flip `liveEmis`; keep sim path as default. |
 | **Exit criteria** | Sandbox smoke documented; flag off = sim path; flag on = sandbox only; `canFlipLiveEmisInCode()` still false until N7. |
 | **Fail if** | Env presence flips `liveEmis`; writes without HITL Accept; credentials in git. |
-| **In-repo status** | **PASS (scaffold)** — flag-gated client + honesty UI; Partner creds **not yet issued** → `needs_partner` when flag on · audit [`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md) |
+| **In-repo status** | **PASS (scaffold) · live wire PAUSED** — flag-gated client + honesty UI; Partner creds **not issued** → leave flag off for demo · audit [`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md) |
 
 **Audit gate N5**
 
@@ -186,6 +203,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | UAT script from Phase F / P7; HITL Accept/Edit/Reject cases; rollback / kill-switch rehearsal; residual-risk notes for Gate 2. |
 | **Exit criteria** | Signed UAT script + rollback evidence recorded in Partner panel (still `certified:false` until formal go/no-go). |
 | **Fail if** | UAT skipped “because sandbox worked”; residual risk invented as signed. |
+| **In-repo status** | **PAUSED** — blocked on Partner sandbox credentials + clinical lead calendar. |
 
 **Audit gate N6**
 
@@ -205,6 +223,7 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 | **Work** | Verify signed artefacts; enable production Partner path per SOP; monitoring + rollback ready; update honesty claims to match **actual** connection state. |
 | **Exit criteria** | Signed go/no-go on file; flip checklist complete; production claims match reality; rollback rehearsed. |
 | **Fail if** | Eng flips because “code is ready”; UI shows certified without signatures; flip without N6 UAT. |
+| **In-repo status** | **PAUSED** — blocked on signed partner go/no-go. Demo launch must not flip. |
 
 **Audit gate N7**
 
@@ -266,11 +285,12 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 
 | Track | Phases | Notes |
 |---|---|---|
-| **This week** | **N1** | Send IM1 / Partner emails from the pack |
-| **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal |
-| **Anytime (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
-| **After sandbox creds** | **N5 → N6** | N5 **PASS (scaffold)** ([`NEXT_BUILD_N5_AUDIT.md`](./NEXT_BUILD_N5_AUDIT.md)); N6 UAT when creds land |
-| **Only after signed GO** | **N7** | Controlled `liveEmis` flip |
+| **Now (demo)** | **D1** | Demo hardening — FHIR-in-Neon, Accept→export, script ([`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)) |
+| **Deferred** | **N1** | IM1 / Partner emails only if credentials / capacity appear |
+| **When secrets land** | **N2 → N3** | Medplum + Deepgram → BRIDGE rehearsal (**N3 paused** until then) |
+| **Done (small)** | **N4** | **PASS** — roster honesty locked ([`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md)) |
+| **After sandbox creds** | **N5 → N6** | N5 scaffold **PASS**; live wire + N6 **paused** until creds |
+| **Only after signed GO** | **N7** | Controlled `liveEmis` flip (**paused**) |
 | **Product pull-in** | **N8 / N9** | PRISM / ATLAS |
 | **Parallel external** | **N10** | CIS2 / Mirth / regulatory funding |
 
@@ -278,10 +298,10 @@ Estimates are eng calendar days unless noted. Owners: **eng** = platform-uk engi
 
 ## Definition of success for “next”
 
-1. **Outreach started** — N1 evidence in Partner panel.  
-2. **Staging quality optional but honest** — N2–N3 Medplum/VOICE match banners.  
+1. **Demo launch ready** — synthetic HITL loop on akshhealth.com with honesty banners; see [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md).  
+2. **D1 hardening** — BRIDGE without Medplum; export handoff; demo script.  
 3. **Roster honesty locked** — VOICE / DrASSIST(/JSL) sub-capabilities; PRISM/ATLAS Phase 2 / not live.  
-4. **Partner path gated** — N5–N6 before any N7 flip; `liveEmis:false` until signed go/no-go.  
+4. **Partner path gated / paused** — N3/N5–N7 wait on creds + signed go/no-go; `liveEmis:false`.  
 5. **No rebuild** of NextAuth / Neon / SHIELD / CONDUCTOR / LangGraph-or-Supabase swap.
 
 This is **not** a claim of production-ready live EHR write-back. Live Layer 15 remains **NO-GO** until N7.
@@ -290,6 +310,7 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 
 ## Cross-links
 
+- [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) — **demo path without IM1 / EMIS / Medplum** · D1 tasks  
 - [`PHASED_BUILD_AND_AUDIT_PLAN.md`](./PHASED_BUILD_AND_AUDIT_PLAN.md) — P0–P7 complete (paperwork)  
 - [`PHASED_BUILD_P7_AUDIT.md`](./PHASED_BUILD_P7_AUDIT.md) — paperwork PASS / live NO-GO  
 - [`P7_PARTNER_OUTREACH_PACK.md`](./P7_PARTNER_OUTREACH_PACK.md) — emails + external checklist  
@@ -302,3 +323,4 @@ This is **not** a claim of production-ready live EHR write-back. Live Layer 15 r
 - [`BUILD_INSTRUCTIONS_GAP.md`](./BUILD_INSTRUCTIONS_GAP.md) — layers 1–15 vs reality  
 - [`PHASE2_PARTNER_CHECKLIST.md`](./PHASE2_PARTNER_CHECKLIST.md) — external partner actions  
 - [`CLINICAL_SPINE_PHASE_F.md`](./CLINICAL_SPINE_PHASE_F.md) — partner readiness APIs / Admin panel  
+- [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases + rehearsal runbook  
