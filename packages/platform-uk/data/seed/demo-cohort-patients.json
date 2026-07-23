@@ -1,0 +1,3790 @@
+{
+  "syntheticOnly": true,
+  "liveEmis": false,
+  "note": "Extended cohort P027–P100. Core P001–P026 remain in lib/mock-data/patients.ts.",
+  "count": 74,
+  "patients": [
+    {
+      "id": "P027",
+      "name": "Mr Aisha Ahmed",
+      "nhsNumber": "700 000 3740",
+      "dob": "1971-04-01",
+      "age": 55,
+      "gender": "Female",
+      "postcode": "SE15",
+      "oracleScore": 8,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-10",
+      "nextAppointmentDate": "2026-07-12",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 3,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q1",
+      "icsRegion": "South East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P027 · liveEmis:false · IMD Q1 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-10 09:00",
+      "vitals": {
+        "bloodPressure": "110/70",
+        "heartRate": 60,
+        "temperature": 36.4,
+        "spo2": 96,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-10 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P028",
+      "name": "Mrs Benjamin Davies",
+      "nhsNumber": "700 000 3877",
+      "dob": "1970-05-02",
+      "age": 56,
+      "gender": "Male",
+      "postcode": "HG1",
+      "oracleScore": 46,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-11",
+      "nextAppointmentDate": "2026-08-13",
+      "openAiItems": 1,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 30,
+        "deteriorationSignals": [
+          "Synthetic signal 28: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q2",
+      "icsRegion": "West Yorkshire",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P028 · liveEmis:false · IMD Q2 · West Yorkshire"
+    },
+    {
+      "id": "P029",
+      "name": "Ms Chloe Gupta",
+      "nhsNumber": "700 000 4014",
+      "dob": "1969-06-03",
+      "age": 57,
+      "gender": "Non-binary",
+      "postcode": "LS8",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-12",
+      "nextAppointmentDate": "2026-07-14",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 54,
+        "deteriorationSignals": [
+          "Synthetic signal 29: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q3",
+      "icsRegion": "Birmingham & Solihull",
+      "qaNotes": "Demo cohort synthetic patient P029 · liveEmis:false · IMD Q3 · Birmingham & Solihull"
+    },
+    {
+      "id": "P030",
+      "name": "Mx Daniel Jones",
+      "nhsNumber": "700 000 4151",
+      "dob": "1942-07-04",
+      "age": 84,
+      "gender": "Female",
+      "postcode": "BD1",
+      "oracleScore": 60,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-04-13",
+      "nextAppointmentDate": "2026-08-15",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 42,
+        "deteriorationSignals": [
+          "Synthetic signal 30: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q4",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P030 · liveEmis:false · IMD Q4 · Greater Manchester"
+    },
+    {
+      "id": "P031",
+      "name": "Mr Elena Murphy",
+      "nhsNumber": "700 000 4288",
+      "dob": "1967-08-05",
+      "age": 59,
+      "gender": "Male",
+      "postcode": "B15",
+      "oracleScore": 77,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-14",
+      "nextAppointmentDate": "2026-07-16",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 55,
+        "deteriorationSignals": [
+          "Synthetic signal 31: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q5",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P031 · liveEmis:false · IMD Q5 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-14 13:00",
+      "vitals": {
+        "bloodPressure": "114/74",
+        "heartRate": 64,
+        "temperature": 36.8,
+        "spo2": 97,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-14 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P032",
+      "name": "Mrs Farah Patel",
+      "nhsNumber": "700 000 4425",
+      "dob": "1966-09-06",
+      "age": 60,
+      "gender": "Non-binary",
+      "postcode": "M14",
+      "oracleScore": 71,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-06-15",
+      "nextAppointmentDate": "2026-08-17",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 52,
+        "deteriorationSignals": [
+          "Synthetic signal 32: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q1",
+      "icsRegion": "Surrey Heartlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P032 · liveEmis:false · IMD Q1 · Surrey Heartlands"
+    },
+    {
+      "id": "P033",
+      "name": "Ms George Singh",
+      "nhsNumber": "700 000 4562",
+      "dob": "1965-10-07",
+      "age": 61,
+      "gender": "Female",
+      "postcode": "E1",
+      "oracleScore": 50,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-16",
+      "nextAppointmentDate": "2026-07-18",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 38,
+        "deteriorationSignals": [
+          "Synthetic signal 33: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q2",
+      "icsRegion": "Cheshire & Merseyside",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P033 · liveEmis:false · IMD Q2 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P034",
+      "name": "Mx Hannah Vaughan",
+      "nhsNumber": "700 000 4699",
+      "dob": "1964-11-08",
+      "age": 62,
+      "gender": "Male",
+      "postcode": "CR0",
+      "oracleScore": 59,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-17",
+      "nextAppointmentDate": "2026-08-19",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 38,
+        "deteriorationSignals": [
+          "Synthetic signal 34: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q3",
+      "icsRegion": "West Midlands",
+      "qaNotes": "Demo cohort synthetic patient P034 · liveEmis:false · IMD Q3 · West Midlands"
+    },
+    {
+      "id": "P035",
+      "name": "Mr Ibrahim Zimmerman",
+      "nhsNumber": "700 000 4836",
+      "dob": "1987-12-09",
+      "age": 39,
+      "gender": "Female",
+      "postcode": "L8",
+      "oracleScore": 24,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-18",
+      "nextAppointmentDate": "2026-07-20",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 15,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q4",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P035 · liveEmis:false · IMD Q4 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-13 09:00",
+      "vitals": {
+        "bloodPressure": "118/78",
+        "heartRate": 68,
+        "temperature": 36.699999999999996,
+        "spo2": 98,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-13 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P036",
+      "name": "Master Jessica MacLeod",
+      "nhsNumber": "700 000 4973",
+      "dob": "2014-01-10",
+      "age": 12,
+      "gender": "Female",
+      "postcode": "CV1",
+      "oracleScore": 17,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-19",
+      "nextAppointmentDate": "2026-08-21",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 11,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q5",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P036 · liveEmis:false · IMD Q5 · West Yorkshire"
+    },
+    {
+      "id": "P037",
+      "name": "Ms Kwame Ahmed",
+      "nhsNumber": "700 000 5110",
+      "dob": "1961-02-11",
+      "age": 65,
+      "gender": "Male",
+      "postcode": "NE1",
+      "oracleScore": 10,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-20",
+      "nextAppointmentDate": "2026-07-22",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 7,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q1",
+      "icsRegion": "Birmingham & Solihull",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P037 · liveEmis:false · IMD Q1 · Birmingham & Solihull"
+    },
+    {
+      "id": "P038",
+      "name": "Mx Layla Davies",
+      "nhsNumber": "700 000 5247",
+      "dob": "1960-03-12",
+      "age": 66,
+      "gender": "Non-binary",
+      "postcode": "BS1",
+      "oracleScore": 54,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-21",
+      "nextAppointmentDate": "2026-08-23",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 39,
+        "deteriorationSignals": [
+          "Synthetic signal 38: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q2",
+      "icsRegion": "Greater Manchester",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P038 · liveEmis:false · IMD Q2 · Greater Manchester"
+    },
+    {
+      "id": "P039",
+      "name": "Mr Marcus Gupta",
+      "nhsNumber": "700 000 5384",
+      "dob": "1959-04-13",
+      "age": 67,
+      "gender": "Female",
+      "postcode": "CF10",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-22",
+      "nextAppointmentDate": "2026-07-24",
+      "openAiItems": 0,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 57,
+        "deteriorationSignals": [
+          "Synthetic signal 39: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q3",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P039 · liveEmis:false · IMD Q3 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-12 13:00",
+      "vitals": {
+        "bloodPressure": "122/82",
+        "heartRate": 72,
+        "temperature": 36.6,
+        "spo2": 92,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-12 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P040",
+      "name": "Mrs Nia Jones",
+      "nhsNumber": "700 000 5521",
+      "dob": "1944-05-14",
+      "age": 82,
+      "gender": "Male",
+      "postcode": "EX1",
+      "oracleScore": 69,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-02-23",
+      "nextAppointmentDate": "2026-08-25",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 51,
+        "deteriorationSignals": [
+          "Synthetic signal 40: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q4",
+      "icsRegion": "Surrey Heartlands",
+      "qaNotes": "Demo cohort synthetic patient P040 · liveEmis:false · IMD Q4 · Surrey Heartlands"
+    },
+    {
+      "id": "P041",
+      "name": "Ms Oliver Murphy",
+      "nhsNumber": "700 000 5658",
+      "dob": "1957-06-15",
+      "age": 69,
+      "gender": "Non-binary",
+      "postcode": "PL1",
+      "oracleScore": 63,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-24",
+      "nextAppointmentDate": "2026-07-26",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 41,
+        "deteriorationSignals": [
+          "Synthetic signal 41: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q5",
+      "icsRegion": "Cheshire & Merseyside",
+      "qaNotes": "Demo cohort synthetic patient P041 · liveEmis:false · IMD Q5 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P042",
+      "name": "Mx Priya Patel",
+      "nhsNumber": "700 000 5795",
+      "dob": "1956-07-16",
+      "age": 70,
+      "gender": "Female",
+      "postcode": "YO1",
+      "oracleScore": 57,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-04-25",
+      "nextAppointmentDate": "2026-08-27",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 38,
+        "deteriorationSignals": [
+          "Synthetic signal 42: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q1",
+      "icsRegion": "West Midlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P042 · liveEmis:false · IMD Q1 · West Midlands"
+    },
+    {
+      "id": "P043",
+      "name": "Mr Quinn Singh",
+      "nhsNumber": "700 000 5932",
+      "dob": "1955-08-17",
+      "age": 71,
+      "gender": "Male",
+      "postcode": "N4",
+      "oracleScore": 31,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-26",
+      "nextAppointmentDate": "2026-07-12",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 21,
+        "deteriorationSignals": [
+          "Synthetic signal 43: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q2",
+      "icsRegion": "South East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P043 · liveEmis:false · IMD Q2 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-11 09:00",
+      "vitals": {
+        "bloodPressure": "126/71",
+        "heartRate": 76,
+        "temperature": 36.5,
+        "spo2": 97,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-11 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P044",
+      "name": "Mrs Rosa Vaughan",
+      "nhsNumber": "700 000 6069",
+      "dob": "1954-09-18",
+      "age": 72,
+      "gender": "Non-binary",
+      "postcode": "SW11",
+      "oracleScore": 68,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-27",
+      "nextAppointmentDate": "2026-08-13",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 48,
+        "deteriorationSignals": [
+          "Synthetic signal 44: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q3",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P044 · liveEmis:false · IMD Q3 · West Yorkshire"
+    },
+    {
+      "id": "P045",
+      "name": "Ms Samir Zimmerman",
+      "nhsNumber": "700 000 6206",
+      "dob": "1995-10-19",
+      "age": 31,
+      "gender": "Female",
+      "postcode": "W12",
+      "oracleScore": 26,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-10",
+      "nextAppointmentDate": "2026-07-14",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 19,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q4",
+      "icsRegion": "Birmingham & Solihull",
+      "qaNotes": "Demo cohort synthetic patient P045 · liveEmis:false · IMD Q4 · Birmingham & Solihull"
+    },
+    {
+      "id": "P046",
+      "name": "Master Tanya MacLeod",
+      "nhsNumber": "700 000 6343",
+      "dob": "2018-11-20",
+      "age": 8,
+      "gender": "Male",
+      "postcode": "NG1",
+      "oracleScore": 19,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-11",
+      "nextAppointmentDate": "2026-08-15",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 15,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q5",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P046 · liveEmis:false · IMD Q5 · Greater Manchester"
+    },
+    {
+      "id": "P047",
+      "name": "Mr Umar Ahmed",
+      "nhsNumber": "700 000 6480",
+      "dob": "1951-12-21",
+      "age": 75,
+      "gender": "Non-binary",
+      "postcode": "SE15",
+      "oracleScore": 12,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-12",
+      "nextAppointmentDate": "2026-07-16",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 11,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q1",
+      "icsRegion": "North East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P047 · liveEmis:false · IMD Q1 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-10 13:00",
+      "vitals": {
+        "bloodPressure": "130/75",
+        "heartRate": 80,
+        "temperature": 36.4,
+        "spo2": 98,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-10 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P048",
+      "name": "Mrs Vera Davies",
+      "nhsNumber": "700 000 6617",
+      "dob": "1950-01-22",
+      "age": 76,
+      "gender": "Female",
+      "postcode": "HG1",
+      "oracleScore": 35,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-13",
+      "nextAppointmentDate": "2026-08-17",
+      "openAiItems": 0,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 22,
+        "deteriorationSignals": [
+          "Synthetic signal 48: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q2",
+      "icsRegion": "Surrey Heartlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P048 · liveEmis:false · IMD Q2 · Surrey Heartlands"
+    },
+    {
+      "id": "P049",
+      "name": "Ms William Gupta",
+      "nhsNumber": "700 000 6754",
+      "dob": "1949-02-23",
+      "age": 77,
+      "gender": "Male",
+      "postcode": "LS8",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-14",
+      "nextAppointmentDate": "2026-07-18",
+      "openAiItems": 1,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 53,
+        "deteriorationSignals": [
+          "Synthetic signal 49: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q3",
+      "icsRegion": "Cheshire & Merseyside",
+      "qaNotes": "Demo cohort synthetic patient P049 · liveEmis:false · IMD Q3 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P050",
+      "name": "Mx Yasmin Jones",
+      "nhsNumber": "700 000 6891",
+      "dob": "1946-03-24",
+      "age": 80,
+      "gender": "Non-binary",
+      "postcode": "BD1",
+      "oracleScore": 78,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-06-15",
+      "nextAppointmentDate": "2026-08-19",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 54,
+        "deteriorationSignals": [
+          "Synthetic signal 50: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q4",
+      "icsRegion": "West Midlands",
+      "qaNotes": "Demo cohort synthetic patient P050 · liveEmis:false · IMD Q4 · West Midlands"
+    },
+    {
+      "id": "P051",
+      "name": "Mr Zara Murphy",
+      "nhsNumber": "700 000 7028",
+      "dob": "1997-04-25",
+      "age": 29,
+      "gender": "Female",
+      "postcode": "B15",
+      "oracleScore": 72,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-16",
+      "nextAppointmentDate": "2026-07-20",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 50,
+        "deteriorationSignals": [
+          "Synthetic signal 51: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q5",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P051 · liveEmis:false · IMD Q5 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-14 09:00",
+      "vitals": {
+        "bloodPressure": "134/79",
+        "heartRate": 84,
+        "temperature": 36.8,
+        "spo2": 96,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-14 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P052",
+      "name": "Mrs Amelia Patel",
+      "nhsNumber": "700 000 7165",
+      "dob": "1996-05-26",
+      "age": 30,
+      "gender": "Male",
+      "postcode": "M14",
+      "oracleScore": 66,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-02-17",
+      "nextAppointmentDate": "2026-08-21",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 47,
+        "deteriorationSignals": [
+          "Synthetic signal 52: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q1",
+      "icsRegion": "West Yorkshire",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P052 · liveEmis:false · IMD Q1 · West Yorkshire"
+    },
+    {
+      "id": "P053",
+      "name": "Ms Callum Singh",
+      "nhsNumber": "700 000 7302",
+      "dob": "1995-06-27",
+      "age": 31,
+      "gender": "Non-binary",
+      "postcode": "E1",
+      "oracleScore": 39,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-18",
+      "nextAppointmentDate": "2026-07-22",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 29,
+        "deteriorationSignals": [
+          "Synthetic signal 53: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q2",
+      "icsRegion": "Birmingham & Solihull",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P053 · liveEmis:false · IMD Q2 · Birmingham & Solihull"
+    },
+    {
+      "id": "P054",
+      "name": "Mx Devi Vaughan",
+      "nhsNumber": "700 000 7439",
+      "dob": "1994-07-01",
+      "age": 32,
+      "gender": "Female",
+      "postcode": "CR0",
+      "oracleScore": 77,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-19",
+      "nextAppointmentDate": "2026-08-23",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 57,
+        "deteriorationSignals": [
+          "Synthetic signal 54: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q3",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P054 · liveEmis:false · IMD Q3 · Greater Manchester"
+    },
+    {
+      "id": "P055",
+      "name": "Mr Ethan Zimmerman",
+      "nhsNumber": "700 000 7576",
+      "dob": "2003-08-02",
+      "age": 23,
+      "gender": "Female",
+      "postcode": "L8",
+      "oracleScore": 28,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-20",
+      "nextAppointmentDate": "2026-07-24",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 17,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q4",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P055 · liveEmis:false · IMD Q4 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-13 13:00",
+      "vitals": {
+        "bloodPressure": "138/83",
+        "heartRate": 88,
+        "temperature": 36.699999999999996,
+        "spo2": 97,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-13 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P056",
+      "name": "Master Freya MacLeod",
+      "nhsNumber": "700 000 7713",
+      "dob": "2022-09-03",
+      "age": 4,
+      "gender": "Non-binary",
+      "postcode": "CV1",
+      "oracleScore": 21,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-21",
+      "nextAppointmentDate": "2026-08-25",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 13,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q5",
+      "icsRegion": "Surrey Heartlands",
+      "qaNotes": "Demo cohort synthetic patient P056 · liveEmis:false · IMD Q5 · Surrey Heartlands"
+    },
+    {
+      "id": "P057",
+      "name": "Ms Gita Ahmed",
+      "nhsNumber": "700 000 7850",
+      "dob": "1991-10-04",
+      "age": 35,
+      "gender": "Female",
+      "postcode": "NE1",
+      "oracleScore": 14,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-22",
+      "nextAppointmentDate": "2026-07-26",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 9,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q1",
+      "icsRegion": "Cheshire & Merseyside",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P057 · liveEmis:false · IMD Q1 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P058",
+      "name": "Mx Harvey Davies",
+      "nhsNumber": "700 000 7987",
+      "dob": "1990-11-05",
+      "age": 36,
+      "gender": "Male",
+      "postcode": "BS1",
+      "oracleScore": 43,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-23",
+      "nextAppointmentDate": "2026-08-27",
+      "openAiItems": 1,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 30,
+        "deteriorationSignals": [
+          "Synthetic signal 58: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q2",
+      "icsRegion": "West Midlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P058 · liveEmis:false · IMD Q2 · West Midlands"
+    },
+    {
+      "id": "P059",
+      "name": "Mr Isla Gupta",
+      "nhsNumber": "700 000 8124",
+      "dob": "1989-12-06",
+      "age": 37,
+      "gender": "Non-binary",
+      "postcode": "CF10",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-24",
+      "nextAppointmentDate": "2026-07-12",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 56,
+        "deteriorationSignals": [
+          "Synthetic signal 59: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q3",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P059 · liveEmis:false · IMD Q3 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-12 09:00",
+      "vitals": {
+        "bloodPressure": "112/72",
+        "heartRate": 92,
+        "temperature": 36.6,
+        "spo2": 92,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-12 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P060",
+      "name": "Mrs Jonah Jones",
+      "nhsNumber": "700 000 8261",
+      "dob": "1948-01-07",
+      "age": 78,
+      "gender": "Female",
+      "postcode": "EX1",
+      "oracleScore": 64,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-04-25",
+      "nextAppointmentDate": "2026-08-13",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 47,
+        "deteriorationSignals": [
+          "Synthetic signal 60: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q4",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P060 · liveEmis:false · IMD Q4 · West Yorkshire"
+    },
+    {
+      "id": "P061",
+      "name": "Ms Aisha Murphy",
+      "nhsNumber": "700 000 8398",
+      "dob": "1987-02-08",
+      "age": 39,
+      "gender": "Male",
+      "postcode": "PL1",
+      "oracleScore": 58,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-26",
+      "nextAppointmentDate": "2026-07-14",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 44,
+        "deteriorationSignals": [
+          "Synthetic signal 61: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q5",
+      "icsRegion": "Birmingham & Solihull",
+      "qaNotes": "Demo cohort synthetic patient P061 · liveEmis:false · IMD Q5 · Birmingham & Solihull"
+    },
+    {
+      "id": "P062",
+      "name": "Mx Benjamin Patel",
+      "nhsNumber": "700 000 8535",
+      "dob": "1986-03-09",
+      "age": 40,
+      "gender": "Non-binary",
+      "postcode": "YO1",
+      "oracleScore": 75,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-06-27",
+      "nextAppointmentDate": "2026-08-15",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 50,
+        "deteriorationSignals": [
+          "Synthetic signal 62: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q1",
+      "icsRegion": "Greater Manchester",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P062 · liveEmis:false · IMD Q1 · Greater Manchester"
+    },
+    {
+      "id": "P063",
+      "name": "Mr Chloe Singh",
+      "nhsNumber": "700 000 8672",
+      "dob": "1985-04-10",
+      "age": 41,
+      "gender": "Female",
+      "postcode": "N4",
+      "oracleScore": 47,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-10",
+      "nextAppointmentDate": "2026-07-16",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 31,
+        "deteriorationSignals": [
+          "Synthetic signal 63: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q2",
+      "icsRegion": "North East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P063 · liveEmis:false · IMD Q2 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-11 13:00",
+      "vitals": {
+        "bloodPressure": "116/76",
+        "heartRate": 96,
+        "temperature": 36.5,
+        "spo2": 96,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-11 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P064",
+      "name": "Mrs Daniel Vaughan",
+      "nhsNumber": "700 000 8809",
+      "dob": "1984-05-11",
+      "age": 42,
+      "gender": "Male",
+      "postcode": "SW11",
+      "oracleScore": 63,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-11",
+      "nextAppointmentDate": "2026-08-17",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 43,
+        "deteriorationSignals": [
+          "Synthetic signal 64: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q3",
+      "icsRegion": "Surrey Heartlands",
+      "qaNotes": "Demo cohort synthetic patient P064 · liveEmis:false · IMD Q3 · Surrey Heartlands"
+    },
+    {
+      "id": "P065",
+      "name": "Ms Elena Zimmerman",
+      "nhsNumber": "700 000 8946",
+      "dob": "1993-06-12",
+      "age": 33,
+      "gender": "Female",
+      "postcode": "W12",
+      "oracleScore": 6,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-12",
+      "nextAppointmentDate": "2026-07-18",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 4,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q4",
+      "icsRegion": "Cheshire & Merseyside",
+      "qaNotes": "Demo cohort synthetic patient P065 · liveEmis:false · IMD Q4 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P066",
+      "name": "Master Farah MacLeod",
+      "nhsNumber": "700 000 9083",
+      "dob": "2012-07-13",
+      "age": 14,
+      "gender": "Female",
+      "postcode": "NG1",
+      "oracleScore": 23,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-13",
+      "nextAppointmentDate": "2026-08-19",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 17,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q5",
+      "icsRegion": "West Midlands",
+      "qaNotes": "Demo cohort synthetic patient P066 · liveEmis:false · IMD Q5 · West Midlands"
+    },
+    {
+      "id": "P067",
+      "name": "Mr George Ahmed",
+      "nhsNumber": "700 000 9220",
+      "dob": "1981-08-14",
+      "age": 45,
+      "gender": "Male",
+      "postcode": "SE15",
+      "oracleScore": 16,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-14",
+      "nextAppointmentDate": "2026-07-20",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 13,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q1",
+      "icsRegion": "South East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P067 · liveEmis:false · IMD Q1 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-10 09:00",
+      "vitals": {
+        "bloodPressure": "120/80",
+        "heartRate": 60,
+        "temperature": 36.4,
+        "spo2": 97,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-10 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P068",
+      "name": "Mrs Hannah Davies",
+      "nhsNumber": "700 000 9357",
+      "dob": "1980-09-15",
+      "age": 46,
+      "gender": "Non-binary",
+      "postcode": "HG1",
+      "oracleScore": 51,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-15",
+      "nextAppointmentDate": "2026-08-21",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 39,
+        "deteriorationSignals": [
+          "Synthetic signal 68: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q2",
+      "icsRegion": "West Yorkshire",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P068 · liveEmis:false · IMD Q2 · West Yorkshire"
+    },
+    {
+      "id": "P069",
+      "name": "Ms Ibrahim Gupta",
+      "nhsNumber": "700 000 9494",
+      "dob": "1979-10-16",
+      "age": 47,
+      "gender": "Female",
+      "postcode": "LS8",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-16",
+      "nextAppointmentDate": "2026-07-22",
+      "openAiItems": 0,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 52,
+        "deteriorationSignals": [
+          "Synthetic signal 69: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q3",
+      "icsRegion": "Birmingham & Solihull",
+      "qaNotes": "Demo cohort synthetic patient P069 · liveEmis:false · IMD Q3 · Birmingham & Solihull"
+    },
+    {
+      "id": "P070",
+      "name": "Mx Jessica Jones",
+      "nhsNumber": "700 000 9631",
+      "dob": "1938-11-17",
+      "age": 88,
+      "gender": "Male",
+      "postcode": "BD1",
+      "oracleScore": 73,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-02-17",
+      "nextAppointmentDate": "2026-08-23",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 49,
+        "deteriorationSignals": [
+          "Synthetic signal 70: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q4",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P070 · liveEmis:false · IMD Q4 · Greater Manchester"
+    },
+    {
+      "id": "P071",
+      "name": "Mr Kwame Murphy",
+      "nhsNumber": "700 000 9768",
+      "dob": "1977-12-18",
+      "age": 49,
+      "gender": "Non-binary",
+      "postcode": "B15",
+      "oracleScore": 67,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-18",
+      "nextAppointmentDate": "2026-07-24",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 46,
+        "deteriorationSignals": [
+          "Synthetic signal 71: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q5",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P071 · liveEmis:false · IMD Q5 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-14 13:00",
+      "vitals": {
+        "bloodPressure": "124/84",
+        "heartRate": 64,
+        "temperature": 36.8,
+        "spo2": 98,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-14 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P072",
+      "name": "Mrs Layla Patel",
+      "nhsNumber": "700 000 9905",
+      "dob": "1976-01-19",
+      "age": 50,
+      "gender": "Female",
+      "postcode": "M14",
+      "oracleScore": 61,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-04-19",
+      "nextAppointmentDate": "2026-08-25",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 43,
+        "deteriorationSignals": [
+          "Synthetic signal 72: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q1",
+      "icsRegion": "Surrey Heartlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P072 · liveEmis:false · IMD Q1 · Surrey Heartlands"
+    },
+    {
+      "id": "P073",
+      "name": "Ms Marcus Singh",
+      "nhsNumber": "700 001 0042",
+      "dob": "1975-02-20",
+      "age": 51,
+      "gender": "Male",
+      "postcode": "E1",
+      "oracleScore": 55,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-20",
+      "nextAppointmentDate": "2026-07-26",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 40,
+        "deteriorationSignals": [
+          "Synthetic signal 73: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q2",
+      "icsRegion": "Cheshire & Merseyside",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P073 · liveEmis:false · IMD Q2 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P074",
+      "name": "Mx Nia Vaughan",
+      "nhsNumber": "700 001 0179",
+      "dob": "1974-03-21",
+      "age": 52,
+      "gender": "Non-binary",
+      "postcode": "CR0",
+      "oracleScore": 72,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-21",
+      "nextAppointmentDate": "2026-08-27",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 52,
+        "deteriorationSignals": [
+          "Synthetic signal 74: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q3",
+      "icsRegion": "West Midlands",
+      "qaNotes": "Demo cohort synthetic patient P074 · liveEmis:false · IMD Q3 · West Midlands"
+    },
+    {
+      "id": "P075",
+      "name": "Mr Oliver Zimmerman",
+      "nhsNumber": "700 001 0316",
+      "dob": "2001-04-22",
+      "age": 25,
+      "gender": "Female",
+      "postcode": "L8",
+      "oracleScore": 8,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-22",
+      "nextAppointmentDate": "2026-07-12",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 9,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q4",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P075 · liveEmis:false · IMD Q4 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-13 09:00",
+      "vitals": {
+        "bloodPressure": "128/73",
+        "heartRate": 68,
+        "temperature": 36.699999999999996,
+        "spo2": 96,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-13 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P076",
+      "name": "Master Priya MacLeod",
+      "nhsNumber": "700 001 0453",
+      "dob": "2016-05-23",
+      "age": 10,
+      "gender": "Male",
+      "postcode": "CV1",
+      "oracleScore": 25,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-23",
+      "nextAppointmentDate": "2026-08-13",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 15,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q5",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P076 · liveEmis:false · IMD Q5 · West Yorkshire"
+    },
+    {
+      "id": "P077",
+      "name": "Ms Quinn Ahmed",
+      "nhsNumber": "700 001 0590",
+      "dob": "1971-06-24",
+      "age": 55,
+      "gender": "Non-binary",
+      "postcode": "NE1",
+      "oracleScore": 18,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-24",
+      "nextAppointmentDate": "2026-07-14",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 11,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q1",
+      "icsRegion": "Birmingham & Solihull",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P077 · liveEmis:false · IMD Q1 · Birmingham & Solihull"
+    },
+    {
+      "id": "P078",
+      "name": "Mx Rosa Davies",
+      "nhsNumber": "700 001 0727",
+      "dob": "1970-07-25",
+      "age": 56,
+      "gender": "Female",
+      "postcode": "BS1",
+      "oracleScore": 32,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-25",
+      "nextAppointmentDate": "2026-08-15",
+      "openAiItems": 0,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 21,
+        "deteriorationSignals": [
+          "Synthetic signal 78: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q2",
+      "icsRegion": "Greater Manchester",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P078 · liveEmis:false · IMD Q2 · Greater Manchester"
+    },
+    {
+      "id": "P079",
+      "name": "Mr Samir Gupta",
+      "nhsNumber": "700 001 0864",
+      "dob": "1969-08-26",
+      "age": 57,
+      "gender": "Male",
+      "postcode": "CF10",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-26",
+      "nextAppointmentDate": "2026-07-16",
+      "openAiItems": 1,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 55,
+        "deteriorationSignals": [
+          "Synthetic signal 79: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q3",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P079 · liveEmis:false · IMD Q3 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-12 13:00",
+      "vitals": {
+        "bloodPressure": "132/77",
+        "heartRate": 72,
+        "temperature": 36.6,
+        "spo2": 92,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-12 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P080",
+      "name": "Mrs Tanya Jones",
+      "nhsNumber": "700 001 1001",
+      "dob": "1940-09-27",
+      "age": 86,
+      "gender": "Non-binary",
+      "postcode": "EX1",
+      "oracleScore": 59,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-06-27",
+      "nextAppointmentDate": "2026-08-17",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 42,
+        "deteriorationSignals": [
+          "Synthetic signal 80: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q4",
+      "icsRegion": "Surrey Heartlands",
+      "qaNotes": "Demo cohort synthetic patient P080 · liveEmis:false · IMD Q4 · Surrey Heartlands"
+    },
+    {
+      "id": "P081",
+      "name": "Ms Umar Murphy",
+      "nhsNumber": "700 001 1138",
+      "dob": "1967-10-01",
+      "age": 59,
+      "gender": "Female",
+      "postcode": "PL1",
+      "oracleScore": 76,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-10",
+      "nextAppointmentDate": "2026-07-18",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 55,
+        "deteriorationSignals": [
+          "Synthetic signal 81: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q5",
+      "icsRegion": "Cheshire & Merseyside",
+      "qaNotes": "Demo cohort synthetic patient P081 · liveEmis:false · IMD Q5 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P082",
+      "name": "Mx Vera Patel",
+      "nhsNumber": "700 001 1275",
+      "dob": "1966-11-02",
+      "age": 60,
+      "gender": "Male",
+      "postcode": "YO1",
+      "oracleScore": 70,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-02-11",
+      "nextAppointmentDate": "2026-08-19",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 52,
+        "deteriorationSignals": [
+          "Synthetic signal 82: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q1",
+      "icsRegion": "West Midlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P082 · liveEmis:false · IMD Q1 · West Midlands"
+    },
+    {
+      "id": "P083",
+      "name": "Mr William Singh",
+      "nhsNumber": "700 001 1412",
+      "dob": "1965-12-03",
+      "age": 61,
+      "gender": "Non-binary",
+      "postcode": "N4",
+      "oracleScore": 36,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-12",
+      "nextAppointmentDate": "2026-07-20",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 22,
+        "deteriorationSignals": [
+          "Synthetic signal 83: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q2",
+      "icsRegion": "South East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P083 · liveEmis:false · IMD Q2 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-11 09:00",
+      "vitals": {
+        "bloodPressure": "136/81",
+        "heartRate": 76,
+        "temperature": 36.5,
+        "spo2": 98,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-11 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P084",
+      "name": "Mrs Yasmin Vaughan",
+      "nhsNumber": "700 001 1549",
+      "dob": "1964-01-04",
+      "age": 62,
+      "gender": "Female",
+      "postcode": "SW11",
+      "oracleScore": 58,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-13",
+      "nextAppointmentDate": "2026-08-21",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 39,
+        "deteriorationSignals": [
+          "Synthetic signal 84: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q3",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P084 · liveEmis:false · IMD Q3 · West Yorkshire"
+    },
+    {
+      "id": "P085",
+      "name": "Ms Zara Zimmerman",
+      "nhsNumber": "700 001 1686",
+      "dob": "1991-02-05",
+      "age": 35,
+      "gender": "Female",
+      "postcode": "W12",
+      "oracleScore": 10,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-14",
+      "nextAppointmentDate": "2026-07-22",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 6,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q4",
+      "icsRegion": "Birmingham & Solihull",
+      "qaNotes": "Demo cohort synthetic patient P085 · liveEmis:false · IMD Q4 · Birmingham & Solihull"
+    },
+    {
+      "id": "P086",
+      "name": "Master Amelia MacLeod",
+      "nhsNumber": "700 001 1823",
+      "dob": "2020-03-06",
+      "age": 6,
+      "gender": "Non-binary",
+      "postcode": "NG1",
+      "oracleScore": 27,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-15",
+      "nextAppointmentDate": "2026-08-23",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 19,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q5",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P086 · liveEmis:false · IMD Q5 · Greater Manchester"
+    },
+    {
+      "id": "P087",
+      "name": "Mr Callum Ahmed",
+      "nhsNumber": "700 001 1960",
+      "dob": "1961-04-07",
+      "age": 65,
+      "gender": "Female",
+      "postcode": "SE15",
+      "oracleScore": 20,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-16",
+      "nextAppointmentDate": "2026-07-24",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 15,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q1",
+      "icsRegion": "North East London",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P087 · liveEmis:false · IMD Q1 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-10 13:00",
+      "vitals": {
+        "bloodPressure": "110/70",
+        "heartRate": 80,
+        "temperature": 36.4,
+        "spo2": 96,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-10 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P088",
+      "name": "Mrs Devi Davies",
+      "nhsNumber": "700 001 2097",
+      "dob": "1960-05-08",
+      "age": 66,
+      "gender": "Male",
+      "postcode": "HG1",
+      "oracleScore": 40,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-17",
+      "nextAppointmentDate": "2026-08-25",
+      "openAiItems": 1,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 30,
+        "deteriorationSignals": [
+          "Synthetic signal 88: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q2",
+      "icsRegion": "Surrey Heartlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P088 · liveEmis:false · IMD Q2 · Surrey Heartlands"
+    },
+    {
+      "id": "P089",
+      "name": "Ms Ethan Gupta",
+      "nhsNumber": "700 001 2234",
+      "dob": "1959-06-09",
+      "age": 67,
+      "gender": "Non-binary",
+      "postcode": "LS8",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-18",
+      "nextAppointmentDate": "2026-07-26",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 58,
+        "deteriorationSignals": [
+          "Synthetic signal 89: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q3",
+      "icsRegion": "Cheshire & Merseyside",
+      "qaNotes": "Demo cohort synthetic patient P089 · liveEmis:false · IMD Q3 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P090",
+      "name": "Mx Freya Jones",
+      "nhsNumber": "700 001 2371",
+      "dob": "1942-07-10",
+      "age": 84,
+      "gender": "Female",
+      "postcode": "BD1",
+      "oracleScore": 68,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-04-19",
+      "nextAppointmentDate": "2026-08-27",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 45,
+        "deteriorationSignals": [
+          "Synthetic signal 90: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q4",
+      "icsRegion": "West Midlands",
+      "qaNotes": "Demo cohort synthetic patient P090 · liveEmis:false · IMD Q4 · West Midlands"
+    },
+    {
+      "id": "P091",
+      "name": "Mr Gita Murphy",
+      "nhsNumber": "700 001 2508",
+      "dob": "1957-08-11",
+      "age": 69,
+      "gender": "Male",
+      "postcode": "B15",
+      "oracleScore": 62,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "CKD Stage 4",
+        "Osteoarthritis",
+        "Gout"
+      ],
+      "activeMedications": [
+        "Allopurinol 100mg OD",
+        "Paracetamol 1g QDS",
+        "Omeprazole 20mg OD",
+        "Amlodipine 5mg OD",
+        "Atorvastatin 40mg ON",
+        "Colecalciferol 800 IU OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-20",
+      "nextAppointmentDate": "2026-07-12",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 41,
+        "deteriorationSignals": [
+          "Synthetic signal 91: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "polypharmacy",
+        "renal_impairment"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q5",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P091 · liveEmis:false · IMD Q5 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-14 09:00",
+      "vitals": {
+        "bloodPressure": "114/74",
+        "heartRate": 84,
+        "temperature": 36.8,
+        "spo2": 97,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-14 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P092",
+      "name": "Mrs Harvey Patel",
+      "nhsNumber": "700 001 2645",
+      "dob": "1956-09-12",
+      "age": 70,
+      "gender": "Non-binary",
+      "postcode": "M14",
+      "oracleScore": 56,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Deep vein thrombosis risk",
+        "Asthma"
+      ],
+      "activeMedications": [
+        "Apixaban 5mg BD",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "Penicillin",
+        "Aspirin"
+      ],
+      "lastEncounterDate": "2026-06-21",
+      "nextAppointmentDate": "2026-08-13",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 38,
+        "deteriorationSignals": [
+          "Synthetic signal 92: risk band High",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "drug_allergy",
+        "dvt_risk"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q1",
+      "icsRegion": "West Yorkshire",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P092 · liveEmis:false · IMD Q1 · West Yorkshire"
+    },
+    {
+      "id": "P093",
+      "name": "Ms Isla Singh",
+      "nhsNumber": "700 001 2782",
+      "dob": "1955-10-13",
+      "age": 71,
+      "gender": "Female",
+      "postcode": "E1",
+      "oracleScore": 44,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Major depressive disorder",
+        "Anxiety disorder"
+      ],
+      "activeMedications": [
+        "Sertraline 100mg OD",
+        "Zopiclone 3.75mg ON PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-22",
+      "nextAppointmentDate": "2026-07-14",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 31,
+        "deteriorationSignals": [
+          "Synthetic signal 93: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "mental_health_crisis"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q2",
+      "icsRegion": "Birmingham & Solihull",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P093 · liveEmis:false · IMD Q2 · Birmingham & Solihull"
+    },
+    {
+      "id": "P094",
+      "name": "Mx Jonah Vaughan",
+      "nhsNumber": "700 001 2919",
+      "dob": "1954-11-14",
+      "age": 72,
+      "gender": "Male",
+      "postcode": "CR0",
+      "oracleScore": 67,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "Breast cancer: adjuvant therapy",
+        "NAFLD"
+      ],
+      "activeMedications": [
+        "Letrozole 2.5mg OD",
+        "Ondansetron PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-02-23",
+      "nextAppointmentDate": "2026-08-15",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 48,
+        "deteriorationSignals": [
+          "Synthetic signal 94: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "oncology",
+        "liver_impairment"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "East Leeds Family Practice",
+      "imdQuintile": "Q3",
+      "icsRegion": "Greater Manchester",
+      "qaNotes": "Demo cohort synthetic patient P094 · liveEmis:false · IMD Q3 · Greater Manchester"
+    },
+    {
+      "id": "P095",
+      "name": "Mr Aisha Zimmerman",
+      "nhsNumber": "700 001 3056",
+      "dob": "1999-12-15",
+      "age": 27,
+      "gender": "Female",
+      "postcode": "L8",
+      "oracleScore": 12,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Pregnancy — second trimester",
+        "Gestational diabetes screening"
+      ],
+      "activeMedications": [
+        "Folic acid 400mcg OD",
+        "Aspirin 75mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-03-24",
+      "nextAppointmentDate": "2026-07-16",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 10,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "pregnancy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "The Oakfield Surgery",
+      "imdQuintile": "Q4",
+      "icsRegion": "North East London",
+      "qaNotes": "Demo cohort synthetic patient P095 · liveEmis:false · IMD Q4 · North East London",
+      "appointmentTime": "13:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-13 13:00",
+      "vitals": {
+        "bloodPressure": "118/78",
+        "heartRate": 88,
+        "temperature": 36.699999999999996,
+        "spo2": 98,
+        "respiratoryRate": 18,
+        "recordedAt": "2026-07-13 13:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P096",
+      "name": "Ms Benjamin MacLeod",
+      "nhsNumber": "700 001 3193",
+      "dob": "2010-01-16",
+      "age": 16,
+      "gender": "Female",
+      "postcode": "CV1",
+      "oracleScore": 5,
+      "oracleRisk": "Low",
+      "activeConditions": [
+        "Asthma — paediatric"
+      ],
+      "activeMedications": [
+        "Clenil Modulite",
+        "Salbutamol inhaler PRN"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-04-25",
+      "nextAppointmentDate": "2026-08-17",
+      "openAiItems": 0,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 7,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [],
+      "clinicalProfiles": [
+        "paediatric"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Medical Centre",
+      "imdQuintile": "Q5",
+      "icsRegion": "Surrey Heartlands",
+      "qaNotes": "Demo cohort synthetic patient P096 · liveEmis:false · IMD Q5 · Surrey Heartlands"
+    },
+    {
+      "id": "P097",
+      "name": "Ms Chloe Ahmed",
+      "nhsNumber": "700 001 3330",
+      "dob": "1951-02-17",
+      "age": 75,
+      "gender": "Male",
+      "postcode": "NE1",
+      "oracleScore": 22,
+      "oracleRisk": "Low",
+      "activeConditions": [],
+      "activeMedications": [],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-05-26",
+      "nextAppointmentDate": "2026-07-18",
+      "openAiItems": 2,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 12,
+        "deteriorationSignals": [],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "healthy"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Riverside Medical Centre",
+      "imdQuintile": "Q1",
+      "icsRegion": "Cheshire & Merseyside",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P097 · liveEmis:false · IMD Q1 · Cheshire & Merseyside"
+    },
+    {
+      "id": "P098",
+      "name": "Mx Daniel Davies",
+      "nhsNumber": "700 001 3467",
+      "dob": "1950-03-18",
+      "age": 76,
+      "gender": "Non-binary",
+      "postcode": "BS1",
+      "oracleScore": 48,
+      "oracleRisk": "Medium",
+      "activeConditions": [
+        "Type 2 diabetes mellitus",
+        "Essential hypertension"
+      ],
+      "activeMedications": [
+        "Metformin 1g BD",
+        "Ramipril 5mg OD",
+        "Atorvastatin 20mg ON"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-06-27",
+      "nextAppointmentDate": "2026-08-19",
+      "openAiItems": 2,
+      "carePathways": [
+        "CP001"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 32,
+        "deteriorationSignals": [
+          "Synthetic signal 98: risk band Medium",
+          "IMD deprivation marker (synthetic)"
+        ],
+        "recommendedActions": [
+          "Routine follow-up"
+        ]
+      },
+      "flags": [
+        "EQUITY"
+      ],
+      "clinicalProfiles": [
+        "t2d",
+        "hypertension"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Oakwood Health Practice",
+      "imdQuintile": "Q2",
+      "icsRegion": "West Midlands",
+      "equityFlag": true,
+      "qaNotes": "Demo cohort synthetic patient P098 · liveEmis:false · IMD Q2 · West Midlands"
+    },
+    {
+      "id": "P099",
+      "name": "Mr Elena Gupta",
+      "nhsNumber": "700 001 3604",
+      "dob": "1949-04-19",
+      "age": 77,
+      "gender": "Female",
+      "postcode": "CF10",
+      "oracleScore": 79,
+      "oracleRisk": "VeryHigh",
+      "activeConditions": [
+        "Heart failure with reduced ejection fraction",
+        "CKD Stage 3"
+      ],
+      "activeMedications": [
+        "Furosemide 40mg OD",
+        "Bisoprolol 2.5mg OD",
+        "Ramipril 2.5mg OD"
+      ],
+      "allergies": [
+        "None known"
+      ],
+      "lastEncounterDate": "2026-01-10",
+      "nextAppointmentDate": "2026-07-20",
+      "openAiItems": 0,
+      "carePathways": [
+        "CP002"
+      ],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 54,
+        "deteriorationSignals": [
+          "Synthetic signal 99: risk band VeryHigh",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN",
+        "URGENT"
+      ],
+      "clinicalProfiles": [
+        "heart_failure",
+        "high_risk_deterioration"
+      ],
+      "supervisingGp": "Dr Morgan",
+      "organisation": "Valley View Surgery",
+      "imdQuintile": "Q3",
+      "icsRegion": "South East London",
+      "qaNotes": "Demo cohort synthetic patient P099 · liveEmis:false · IMD Q3 · South East London",
+      "appointmentTime": "09:00",
+      "room": "Consulting Room 1",
+      "lastObsTime": "2026-07-12 09:00",
+      "vitals": {
+        "bloodPressure": "122/82",
+        "heartRate": 92,
+        "temperature": 36.6,
+        "spo2": 92,
+        "respiratoryRate": 14,
+        "recordedAt": "2026-07-12 09:00",
+        "recordedBy": "Practice Nurse Adeyemi"
+      }
+    },
+    {
+      "id": "P100",
+      "name": "Mrs Farah Jones",
+      "nhsNumber": "700 001 3741",
+      "dob": "1944-05-20",
+      "age": 82,
+      "gender": "Male",
+      "postcode": "EX1",
+      "oracleScore": 77,
+      "oracleRisk": "High",
+      "activeConditions": [
+        "COPD",
+        "Frailty syndrome"
+      ],
+      "activeMedications": [
+        "Salbutamol inhaler PRN",
+        "Tiotropium 18mcg OD",
+        "Prednisolone 5mg OD"
+      ],
+      "allergies": [
+        "Sulfonamides"
+      ],
+      "lastEncounterDate": "2026-02-11",
+      "nextAppointmentDate": "2026-08-21",
+      "openAiItems": 1,
+      "carePathways": [],
+      "digitalTwinPrediction": {
+        "admissionRisk14Days": 54,
+        "deteriorationSignals": [
+          "Synthetic signal 100: risk band High",
+          "Routine monitoring due"
+        ],
+        "recommendedActions": [
+          "Same-week clinical review (synthetic)",
+          "Medication adherence check"
+        ]
+      },
+      "flags": [
+        "GUARDIAN"
+      ],
+      "clinicalProfiles": [
+        "copd",
+        "frailty"
+      ],
+      "supervisingGp": "Dr Patel",
+      "organisation": "Harrogate Road GP",
+      "imdQuintile": "Q4",
+      "icsRegion": "West Yorkshire",
+      "qaNotes": "Demo cohort synthetic patient P100 · liveEmis:false · IMD Q4 · West Yorkshire"
+    }
+  ]
+}

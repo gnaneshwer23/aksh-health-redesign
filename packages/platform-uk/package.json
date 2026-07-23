@@ -18,6 +18,8 @@
     "data:reset": "node scripts/data-reset.mjs --with-auxiliary",
     "data:audit-integrity": "npx tsx scripts/data-audit-cli.ts",
     "seed:demo-evidence": "node scripts/seed-demo-evidence-scope.mjs",
+    "seed:demo-cohort": "npx tsx --env-file=.env.local scripts/seed-demo-cohort.ts",
+    "test:demo-cohort": "npx tsx --test tests/demo-cohort-generator.test.ts",
     "smoke:browser": "node scripts/smoke-browser-loop.mjs",
     "smoke:loop": "node scripts/smoke-mutation-loop.mjs",
     "smoke:public": "node scripts/smoke-public-pages.mjs",

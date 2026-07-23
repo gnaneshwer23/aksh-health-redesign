@@ -97,7 +97,7 @@ Soft-fail if env cannot hit prod latency. `PERF_SMOKE_STRICT=true` for hard enfo
 
 ## Synthetic cohort
 
-- **26 patients** in `lib/mock-data/patients.ts` (P001–P026)
+- **100 patients** in `lib/mock-data/patients.ts` (P001–P026 fixtures + P027–P100 demo cohort)
 - Required clinical profiles covered (T2D, HTN, HF, COPD, polypharmacy, allergy, pregnancy, paediatric, frailty, renal/liver, MH crisis, oncology, DVT, missing info, duplicate identity, conflicting records, deterioration, healthy)
 - Neo4j seed (`npm run data:seed:neo4j`) uses the same array
 - Golden path patient: **P002 Mr James Patel** (dedicated UI spec)

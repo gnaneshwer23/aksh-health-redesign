@@ -1,6 +1,8 @@
 import type { Patient } from "./types";
+import { generateExtendedDemoPatients } from "./demo-cohort-generator";
 
-export const patients: Patient[] = [
+/** Hand-authored clinical-proof fixtures P001–P026 — do not renumber. */
+const corePatients: Patient[] = [
   {
     id: "P001",
     name: "Mrs Sarah Johnson",
@@ -881,6 +883,15 @@ export const patients: Patient[] = [
     clinicalProfiles: ["paediatric", "t2d"],
     qaNotes: "Paediatric diabetes tagged under t2d profile family for cohort coverage (T1D variant).",
   },
+];
+
+/**
+ * Full synthetic cohort: P001–P026 (hand fixtures) + P027–P100 (demo cohort generator).
+ * Total 100 — liveEmis:false · never real patient data.
+ */
+export const patients: Patient[] = [
+  ...corePatients,
+  ...generateExtendedDemoPatients(),
 ];
 
 export function getPatientById(id: string): Patient | undefined {

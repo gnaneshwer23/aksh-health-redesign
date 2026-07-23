@@ -23,7 +23,7 @@ export async function GET() {
  * POST /api/precision-health/whole-loop
  * Run synthetic Precision Health whole loop.
  *
- * - Authenticated: any cohort patient (P001–P026); optional demoAccept
+ * - Authenticated: any cohort patient (P001–P100); optional demoAccept
  * - Unauthenticated public demo: P001 only, rate-limited, synthetic-only
  */
 export async function POST(request: Request) {

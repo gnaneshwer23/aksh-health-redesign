@@ -96,6 +96,10 @@ export interface Patient {
   equityFlag?: boolean;
   /** Notes for QA / graph seed (duplicate NHS, conflicting meds, etc.). */
   qaNotes?: string;
+  /** Synthetic IMD quintile for COMPASS / equity demos (Q1 most deprived). */
+  imdQuintile?: "Q1" | "Q2" | "Q3" | "Q4" | "Q5";
+  /** Synthetic ICS / region label — not live organisation sync. */
+  icsRegion?: string;
 }
 
 export interface EvidenceSource {

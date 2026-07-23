@@ -32,7 +32,7 @@ Use the Neo4j Aura console for **akeno health** when you need the live connectio
 MATCH (p:Patient) RETURN count(p)
 ```
 
-Expected after `npm run data:seed:neo4j`: **26** patients (P001–P026 clinical-proof cohort).
+Expected after `npm run data:seed:neo4j` (or `npm run seed:demo-cohort -- --apply --with-neo4j`): **100** patients (P001–P026 fixtures + P027–P100 demo cohort).
 
 ### Vercel production checklist (3 steps)
 
@@ -133,7 +133,7 @@ npm run data:seed:neo4j
 
 The script is idempotent (`MERGE`) and loads, all sourced from `lib/mock-data/` so the graph always mirrors the dashboard fixtures:
 
-- 26 synthetic patients (P001–P026) with conditions, medications, and observations (BP, heart rate, temperature, SpO₂, respiratory rate) — clinical-proof cohort covering T2D, HTN, HF, COPD, polypharmacy, allergy, pregnancy, paediatric, frailty, renal/liver, MH crisis, oncology, DVT, missing info, duplicate identity, conflicting records, deterioration, and healthy profiles — never real patient data
+- 100 synthetic patients (P001–P100) with conditions, medications, and observations (BP, heart rate, temperature, SpO₂, respiratory rate) — clinical-proof fixtures P001–P026 plus demo cohort P027–P100 (varied IMD / ICS) — never real patient data. See [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md).
 - Patel **P002** with DVT + T2D, aspirin + apixaban, and `INTERACTS_WITH` (GUARDIAN)
 - Medication interaction edges from `lib/mock-data/medications.ts` (BNF section references and dosing)
 - ICS aggregates and 5 practice benchmarks from `lib/mock-data/population.ts`

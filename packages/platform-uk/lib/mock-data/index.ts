@@ -8,8 +8,15 @@ export { auditEvents } from "./audit-events";
 export { commonDrugs, medications, bnfEntries, checkInteractions, searchDrugs } from "./medications";
 export { hospitalData, wardStaffing } from "./hospital";
 export { populationData, metricSparklines } from "./population";
+export {
+  generateDemoCohortUsers,
+  generateExtendedDemoPatients,
+  DEMO_COHORT_DEFAULT_PASSWORD,
+  DEMO_COHORT_EMAIL_DOMAIN,
+} from "./demo-cohort-generator";
 
 import type { AdminUser, IntegrationService } from "./types";
+import { generateDemoCohortUsers } from "./demo-cohort-generator";
 
 export const integrationServices: IntegrationService[] = [
   { name: "EMIS Web", status: "Healthy", lastSync: "2026-07-10 00:00 UTC", latencyMs: 120 },
@@ -22,7 +29,19 @@ export const integrationServices: IntegrationService[] = [
   { name: "AWS EKS", status: "Healthy", lastSync: "2026-07-10 00:00 UTC", latencyMs: 8 },
 ];
 
-export const adminUsers: AdminUser[] = [
+const ROLE_LABEL: Record<string, string> = {
+  gp: "GP",
+  nurse: "Nurse",
+  "clinical-pharmacist": "Pharmacist",
+  "practice-manager": "Admin",
+  "ics-lead": "ICS Lead",
+  "hospital-executive": "Hospital Exec",
+  patient: "Patient",
+  researcher: "Researcher",
+};
+
+/** Legacy Riverside mock roster (kept for compatibility). */
+const legacyAdminUsers: AdminUser[] = [
   { id: "U001", name: "Dr Morgan", role: "GP", email: "morgan@riverside.nhs.uk", status: "Active", lastActive: "2026-07-10 09:42", mfa: true },
   { id: "U002", name: "Dr Patel", role: "GP", email: "patel@riverside.nhs.uk", status: "Active", lastActive: "2026-07-10 08:30", mfa: true },
   { id: "U003", name: "Dr Williams", role: "GP", email: "williams@riverside.nhs.uk", status: "Active", lastActive: "2026-07-09 16:00", mfa: true },
@@ -36,6 +55,19 @@ export const adminUsers: AdminUser[] = [
   { id: "U011", name: "Pharmacist Ahmed", role: "Pharmacist", email: "ahmed@oakwood.nhs.uk", status: "Invited", lastActive: "Not set", mfa: false },
   { id: "U012", name: "Dr Chen", role: "GP", email: "chen@valleyview.nhs.uk", status: "Active", lastActive: "2026-07-05 11:00", mfa: true },
 ];
+
+/** 100 synthetic demo-cohort users (profiles also seedable into Neon). */
+const demoCohortAdminUsers: AdminUser[] = generateDemoCohortUsers().map((u, idx) => ({
+  id: `DC${String(idx + 1).padStart(3, "0")}`,
+  name: u.fullName,
+  role: ROLE_LABEL[u.role] ?? u.role,
+  email: u.email,
+  status: "Active" as const,
+  lastActive: "2026-07-20 09:00",
+  mfa: idx % 3 !== 0,
+}));
+
+export const adminUsers: AdminUser[] = [...legacyAdminUsers, ...demoCohortAdminUsers];
 
 export const AGENT_COLORS: Record<string, string> = {
   SYNTHESIS: "#003D7A",

@@ -13,7 +13,7 @@
 | **D1-a** | FHIR-in-Neon (or durable file) BRIDGE staging | **PASS** | `aksh.fhir_staging_bundles` + file fallback; Accept → preliminary label; `liveEmis:false`; Medplum not required |
 | **D1-b** | Accept → export FHIR Bundle (+ PDF summary) | **PASS** | `GET /api/review-cases/[id]/export/fhir`; evidence + report Download Bundle / Print PDF; handoff-only honesty |
 | **D1-c** | Demo script polish | **PASS** | `/demo/script` Capture→Draft→Approve→SHIELD→sim→export; `/product/demo` wired; whole-loop cross-links |
-| **Honesty / creds** | Marketing honesty + credentials docs | **PASS** | BRIDGE banners; [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md); no baked-in passwords |
+| **Honesty / creds** | Marketing honesty + credentials docs | **PASS** | BRIDGE banners; [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md); signup path + synthetic `@demo.akshhealth.com` cohort only |
 
 **Hard invariants held:** `liveEmis:false` · HITL Accept mandatory · never `certified:true` · Partner N3/N6/N7 untouched.
 

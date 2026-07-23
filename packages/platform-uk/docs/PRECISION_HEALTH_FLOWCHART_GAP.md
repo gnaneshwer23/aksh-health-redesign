@@ -30,7 +30,7 @@ What is live is a **HITL clinical workflow proof layer** plus a **synthetic whol
 | `GET /api/integrations/medplum-status` | Medplum sync **disabled**; `liveEmis: false` |
 | Public / demo GP & ICS / hospital dashboards | HTTP 200 (demo allowlists) |
 | Patient / nurse / pharmacist / researcher dashboards | Auth redirect (307) — surfaces exist behind sign-in |
-| Neo4j patient API | Auth-required; graph seeded with synthetic P001–P026 when Aura live |
+| Neo4j patient API | Auth-required; graph seeded with synthetic P001–P100 when Aura live |
 
 Positioning from product README: *synthetic-data, review-first clinical proof — not production clinical software, not live NHS integration, not real-patient-data platform.*
 
@@ -40,7 +40,7 @@ Positioning from product README: *synthetic-data, review-first clinical proof �
 
 | # | Flowchart stage | Status | What exists (evidence) | What does **not** exist |
 | ---: | --- | --- | --- | --- |
-| 1 | **Individual / Patient** | **Partial** | Synthetic cohort (26 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
+| 1 | **Individual / Patient** | **Partial** | Synthetic cohort (100 patients); patient companion UI (`/dashboard/patient`); GP/nurse/pharmacist role views | Real PDS identity; live NHS number linkage; real patient-generated data loop |
 | 2 | **Multimodal data** (wearables, lifestyle, clinical, labs/imaging, multi-omics, environment) | **Partial / synthetic** | L1 fixture catalog; Phase 1 modality contracts; Phase 2 **connector registry** (`/api/precision-health/connectors`, `/api/precision-health/ingest`) — synthetic/stub only; `liveStream:false` unless Fitbit env present | Live wearable streams, DICOM archives, multi-omics pipelines, environmental IoT, real EHR pull |
 | 3 | **Consent & permissions** | **Partial** | Onboarding consent; Phase 1 purpose/modality grant registry; Phase 2 ingest **enforces** active grants before store/KG | NHS Login / CIS2; enforceable purpose-limitation on live streams |
 | 4 | **Secure ingestion** (APIs, FHIR, HL7, DICOM, devices) | **Partial** | FHIR R4 schema CI; Medplum rehearsal + dry-run probe; EMIS staging + **partner checklist** (`/api/integrations/emis-partner-checklist`, `docs/PHASE2_PARTNER_CHECKLIST.md`); Phase 2 connector ingest | Live FHIR store sync; Mirth/HL7 v2; DICOM; device SDKs; Partner EMR credentials |
