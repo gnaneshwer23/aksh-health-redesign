@@ -6,6 +6,7 @@ import { BarChart3, Building2, Heart, Users } from "lucide-react";
 
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
+import { HospitalHeroDemoPath } from "@/components/dashboard/hospital/HospitalHeroDemoPath";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
 import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
 import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
@@ -16,19 +17,19 @@ const sections = [
   {
     href: "/dashboard/hospital/wards",
     label: "Ward Status",
-    description: "Live ward grid with occupancy and discharge backlog",
+    description: "Synthetic ward grid with occupancy and discharge backlog",
     icon: Building2,
   },
   {
     href: "/dashboard/hospital/capacity",
     label: "Capacity",
-    description: "14-day forecast and AI recommendations with HITL approval",
+    description: "14-day forecast and AI recommendations with HITL approval (HORIZON)",
     icon: BarChart3,
   },
   {
     href: "/dashboard/hospital/staffing",
     label: "Staffing",
-    description: "Ward staffing ratios and agency trigger alerts",
+    description: "Ward staffing ratios and agency trigger alerts (PATHWAY framing)",
     icon: Users,
   },
 ];
@@ -48,6 +49,17 @@ export default function HospitalOverviewPage({
 
   return (
     <div className="p-4 space-y-6">
+      {!showRiskState ? <HospitalHeroDemoPath /> : null}
+      {!showRiskState ? (
+        <p
+          className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+          data-testid="hospital-honesty-banner"
+        >
+          Not live PAS · synthetic PAS rehearsal · liveEmis:false. PATHWAY / HORIZON draft operational
+          foresight; CONDUCTOR keeps HITL on capacity recommendations — no hospital system write-back.
+        </p>
+      ) : null}
+
       <div>
         <h2 className="text-lg font-semibold text-primary">
           {showRiskState ? "Risk state + scenario ranking" : "Command Centre Overview"}

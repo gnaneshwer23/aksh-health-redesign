@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Activity, BarChart3, ChevronRight, Heart, Users } from "lucide-react";
 
+import { IcsHeroDemoPath } from "@/components/dashboard/ics/IcsHeroDemoPath";
 import { IcsKpiRow } from "@/components/dashboard/ics/IcsKpiRow";
 import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,7 @@ const SECTIONS = [
   {
     href: "/dashboard/ics/benchmarking",
     title: "Practice Benchmarking",
-    description: "Sortable practice scorecard: AI adoption,, queue clearance, and overall score.",
+    description: "Sortable practice scorecard: AI adoption, queue clearance, and overall score.",
     icon: Activity,
     accent: "border-l-primary",
   },
@@ -48,12 +49,21 @@ export default function IcsOverviewPage() {
 
   return (
     <div className="space-y-6">
+      <IcsHeroDemoPath />
+      <p
+        className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+        data-testid="ics-honesty-banner"
+      >
+        Synthetic ICS cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
+        COMPASS leads equity; HORIZON / PATHWAY frame forecast scaffolding — not a live ICS feed or twin.
+      </p>
+
       <div>
         <h2 className="text-lg font-semibold text-foreground">ICS Population Intelligence</h2>
         <p className="text-sm text-muted">
           {icsName}: {data.practices} practices · {data.equityFlags} equity flags · {data.totalPatients.toLocaleString()} patients
           {!loading && source
-            ? ` · ${source === "neo4j" ? "live Neo4j" : "local fallback"}`
+            ? ` · ${source === "neo4j" ? "live Neo4j" : source === "demo" ? "public synthetic demo" : "local fallback"}`
             : null}
         </p>
       </div>
@@ -63,7 +73,6 @@ export default function IcsOverviewPage() {
       <SpineSharedEventsPanel
         title="Shared clinical spine (cohort aggregates)"
         patientIds={["P001", "P002"]}
-        demoPatientHref="/dashboard/gp/patients/P001"
       />
 
       <div className="grid gap-4 sm:grid-cols-2">

@@ -19,22 +19,30 @@ const protectedHospitalRoutes = [
   {
     label: "Hospital overview",
     path: "/dashboard/hospital",
-    expectedText: ["Command Centre Overview", "Leeds General Infirmary", "Sections"],
+    expectedText: [
+      "Command Centre Overview",
+      "Leeds General Infirmary",
+      "Sections",
+      "Command-centre demo",
+      "liveEmis:false",
+      "Not live PAS",
+      "synthetic PAS",
+    ],
   },
   {
     label: "Hospital wards",
     path: "/dashboard/hospital/wards",
-    expectedText: ["Ward Status", "medically fit but awaiting discharge"],
+    expectedText: ["Ward Status", "medically fit but awaiting discharge", "Command-centre demo", "synthetic PAS"],
   },
   {
     label: "Hospital capacity",
     path: "/dashboard/hospital/capacity",
-    expectedText: ["Capacity Forecast", "AI Recommendations"],
+    expectedText: ["Capacity Forecast", "AI Recommendations", "Command-centre demo"],
   },
   {
     label: "Hospital staffing",
     path: "/dashboard/hospital/staffing",
-    expectedText: ["Staffing & Alerts", "Trigger agency request"],
+    expectedText: ["Staffing & Alerts", "Trigger agency request", "Command-centre demo"],
   },
 ];
 
@@ -180,10 +188,14 @@ async function run() {
   await assertPublicDemo("/dashboard/hospital", [
     "Command Centre Overview",
     "synthetic",
+    "Command-centre demo",
+    "liveEmis:false",
+    "Not live PAS",
+    "synthetic PAS",
   ]);
-  await assertPublicDemo("/dashboard/hospital/wards", ["Ward Status"]);
-  await assertPublicDemo("/dashboard/hospital/capacity", ["Capacity Forecast"]);
-  await assertPublicDemo("/dashboard/hospital/staffing", ["Staffing"]);
+  await assertPublicDemo("/dashboard/hospital/wards", ["Ward Status", "Command-centre demo", "synthetic PAS"]);
+  await assertPublicDemo("/dashboard/hospital/capacity", ["Capacity Forecast", "Command-centre demo"]);
+  await assertPublicDemo("/dashboard/hospital/staffing", ["Staffing", "Command-centre demo"]);
 
   // Credentials optional — public demo is the primary contract for this surface.
   if (smokeEmail && smokePassword) {

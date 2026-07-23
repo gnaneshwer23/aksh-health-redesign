@@ -4,6 +4,7 @@
  * U4: GP hero path (<10 min) wired to dashboard review queue → Accept → Bundle export.
  * U5: Nurse 3-beat + pharmacist med-safety paths on role dashboards.
  * U6: Practice admin ops path — integrations honesty → SHIELD → users/enquiries.
+ * U7: ICS population (COMPASS) + hospital command-centre (synthetic PAS) paths.
  */
 
 import Link from "next/link";
@@ -75,6 +76,30 @@ const adminHeroPath = {
   ]
 };
 
+const icsHeroPath = {
+  title: "ICS population path (COMPASS)",
+  talkTrack:
+    "Open ICS (public demo or ics-lead sign-in). Population → COMPASS equity → forecast. Aggregate synthetic cohorts only — no patient-level spill. HORIZON / PATHWAY frame foresight scaffolding — not a live ICS feed or physiological twin. liveEmis:false.",
+  beats: [
+    { label: "ICS dashboard", href: "/dashboard/ics", note: "Population hero strip" },
+    { label: "Population", href: "/dashboard/ics/population", note: "Beat 1" },
+    { label: "Equity (COMPASS)", href: "/dashboard/ics/equity", note: "Beat 2" },
+    { label: "Forecast", href: "/dashboard/ics/forecast", note: "Beat 3 · HORIZON" }
+  ]
+};
+
+const hospitalHeroPath = {
+  title: "Hospital command-centre path",
+  talkTrack:
+    "Open Hospital Command Centre (public synthetic PAS). Wards → capacity → staffing. PATHWAY frames flow; HORIZON drafts demand foresight; HITL on recommendations. Say “not live PAS” from the page — liveEmis:false · no EPR write-back.",
+  beats: [
+    { label: "Hospital dashboard", href: "/dashboard/hospital", note: "Command-centre strip" },
+    { label: "Wards", href: "/dashboard/hospital/wards", note: "Beat 1" },
+    { label: "Capacity", href: "/dashboard/hospital/capacity", note: "Beat 2 · HORIZON" },
+    { label: "Staffing", href: "/dashboard/hospital/staffing", note: "Beat 3 · PATHWAY" }
+  ]
+};
+
 const demoStops = [
   {
     time: "00:00",
@@ -115,6 +140,22 @@ const demoStops = [
     action: "After admin sign-in: Integrations honesty → SHIELD audit → users/enquiries via the ops hero strip.",
     talkTrack:
       "Say “not live EMIS” from the page itself (liveEmis:false badges). CONDUCTOR/BRIDGE are ops framing; Precision Health stays scaffolding. Partner readiness never equals write-back."
+  },
+  {
+    time: "01:15",
+    title: "ICS population (COMPASS)",
+    route: "/dashboard/ics",
+    action: "Follow population → COMPASS equity → forecast on the ICS hero strip (public demo or ics-lead).",
+    talkTrack:
+      "COMPASS-led equity story on synthetic cohorts. Aggregate only — no patient-level spill. Forecast is HORIZON / PATHWAY scaffolding, not a twin. liveEmis:false."
+  },
+  {
+    time: "01:25",
+    title: "Hospital command centre (synthetic PAS)",
+    route: "/dashboard/hospital",
+    action: "Follow wards → capacity → staffing via the command-centre hero strip.",
+    talkTrack:
+      "Say “not live PAS” from the page. PATHWAY / HORIZON draft operational foresight; HITL on capacity. Synthetic PAS · liveEmis:false · no EPR write-back."
   },
   {
     time: "01:00",
@@ -199,14 +240,15 @@ export function DemoLaunchScript() {
 
         <section className="product-simple-hero">
           <p className="product-kicker">
-            D1 demo script · 10–15 minutes · GP hero &lt;10 min · nurse / pharmacist / admin supporting
+            D1 demo script · 10–15 minutes · GP hero &lt;10 min · nurse / pharmacist / admin / ICS /
+            hospital supporting
           </p>
           <h1>Capture → Draft → Approve → SHIELD → sim → export</h1>
           <p>
             Guided walkthrough for akshhealth.com demos without IM1, EMIS Partner credentials, or Medplum
             OAuth. Stay inside the synthetic HITL boundary. Prefer the GP hero path when the audience is
-            clinical; use nurse / pharmacist / practice-admin strips for supporting-role demos (sign-in
-            required).
+            clinical; use nurse / pharmacist / practice-admin / ICS / hospital strips for supporting-role
+            demos (ICS and hospital are public synthetic; other roles need sign-in).
           </p>
           <div className="pill-row" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>
             {honestyFlags.map((flag) => (
@@ -273,6 +315,32 @@ export function DemoLaunchScript() {
           </div>
         </section>
 
+        <section className="product-section" data-testid="ics-hero-script-panel">
+          <p className="product-kicker">{icsHeroPath.title}</p>
+          <p>{icsHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {icsHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="hospital-hero-script-panel">
+          <p className="product-kicker">{hospitalHeroPath.title}</p>
+          <p>{hospitalHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {hospitalHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <section className="product-section product-rule-grid">
           <article className="product-rule-card">
             <p className="product-kicker">OK to claim</p>
@@ -331,6 +399,12 @@ export function DemoLaunchScript() {
                 </Link>
                 <Link className="product-button product-button--secondary" href="/dashboard/admin">
                   Practice admin (ops)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/ics">
+                  ICS (COMPASS population)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/hospital">
+                  Hospital (synthetic PAS)
                 </Link>
                 <Link className="product-button product-button--secondary" href="/demo/precision-health-loop">
                   Whole-loop demo

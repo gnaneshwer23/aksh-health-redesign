@@ -16,16 +16,27 @@ const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedIcsRoutes = [
-  { label: "ICS overview", path: "/dashboard/ics", expectedText: ["ICS Population Intelligence", "Total Patients"] },
+  {
+    label: "ICS overview",
+    path: "/dashboard/ics",
+    expectedText: [
+      "ICS Population Intelligence",
+      "Total Patients",
+      "Population demo",
+      "liveEmis:false",
+      "no patient-level spill",
+      "COMPASS",
+    ],
+  },
   {
     label: "ICS population",
     path: "/dashboard/ics/population",
-    expectedText: ["Population Health", "Patient Risk Profile Across ICS"],
+    expectedText: ["Population Health", "Patient Risk Profile Across ICS", "Population demo", "liveEmis:false"],
   },
   {
     label: "ICS equity",
     path: "/dashboard/ics/equity",
-    expectedText: ["Equity Metrics", "COMPASS Deep-Dive", "Generate Equity Action Plan"],
+    expectedText: ["Equity Metrics", "COMPASS Deep-Dive", "Generate Equity Action Plan", "Population demo"],
   },
   {
     label: "ICS benchmarking",
@@ -35,7 +46,7 @@ const protectedIcsRoutes = [
   {
     label: "ICS forecast",
     path: "/dashboard/ics/forecast",
-    expectedText: ["Admission Forecast", "Population risk state", "not a physiological twin"],
+    expectedText: ["Admission Forecast", "Population risk state", "not a physiological twin", "Population demo"],
   },
 ];
 
@@ -103,8 +114,16 @@ async function assertPublicIcsDemo() {
     throw new Error(`Public ICS demo returned ${response.status}`);
   }
   const html = await response.text();
-  if (!html.includes("ICS Population Intelligence") && !html.includes("Total Patients")) {
-    throw new Error("Public ICS demo missing expected synthetic population copy");
+  for (const text of [
+    "ICS Population Intelligence",
+    "Population demo",
+    "liveEmis:false",
+    "synthetic cohorts",
+    "no patient-level spill",
+  ]) {
+    if (!html.includes(text)) {
+      throw new Error(`Public ICS demo missing expected text: ${text}`);
+    }
   }
   console.log("[ok] Public ICS demo is reachable without auth");
 

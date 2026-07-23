@@ -290,8 +290,8 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "You're ready",
-        body: "ICS Dashboard opens with first-run guidance toward equity and forecast.",
-        bullets: ["Scan equity flags", "Open risk state / forecast", "liveEmis:false"],
+        body: "ICS Dashboard opens with first-run guidance on the population → COMPASS equity → forecast hero path.",
+        bullets: ["Start population demo", "COMPASS equity beat", "liveEmis:false · no patient-level spill"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },
@@ -336,8 +336,8 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "You're ready",
-        body: "Hospital Command Centre opens with first-run guidance on risk state.",
-        bullets: ["Review metrics", "Open risk state when ready", "Not a live PAS"],
+        body: "Hospital Command Centre opens with first-run guidance on the wards → capacity → staffing hero path.",
+        bullets: ["Start wards demo", "Capacity HITL (HORIZON)", "Not a live PAS · liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },

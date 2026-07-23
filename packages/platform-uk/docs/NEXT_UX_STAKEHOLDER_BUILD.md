@@ -53,8 +53,8 @@
 | **Nurse dashboard** | **U5 PASS** — 3-beat hero (obs → handover → GUARDIAN); see [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) |
 | **Pharmacist** | **U5 PASS** — med-safety HITL path (review → GUARDIAN → stage); see [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) |
 | **Admin** | **U6 PASS** — practice-manager ops hero (integrations → SHIELD → enquiries); see [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) |
-| **ICS** | Population / equity / benchmark / forecast sections — synthetic intelligence; COMPASS story under-sold for demos |
-| **Hospital** | Ward / capacity / staffing + risk-state panels — synthetic command centre; easy to over-claim “live PAS” |
+| **ICS** | **U7 PASS** — COMPASS-led population → equity → forecast; synthetic / no patient-level spill; see [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) |
+| **Hospital** | **U7 PASS** — wards → capacity → staffing; synthetic PAS front-and-centre; see [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) |
 | **Patient** | Companion shell — lightest stakeholder surface |
 | **Researcher** | Cohort KPIs + federated jobs + ethics empty-state — honesty good; ATLAS must stay Phase 2 / not claimed |
 
@@ -187,6 +187,18 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Goal** | Population / command-centre stories that sell COMPASS / PATHWAY / HORIZON aggregates without over-claiming live feeds. |
 | **Work** | ICS: one guided path population → equity (COMPASS) → forecast. Hospital: wards → capacity → staffing with synthetic PAS disclaimer front-and-centre. |
 | **Exit criteria** | ICS + hospital smoke pass; banners state synthetic / not live PAS. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) |
+
+**U7 audit gate**
+
+- [x] ICS `IcsHeroDemoPath`: population → COMPASS equity → forecast
+- [x] Hospital `HospitalHeroDemoPath`: wards → capacity → staffing
+- [x] Honesty: synthetic cohorts / Not live PAS · `liveEmis:false` · no patient-level spill on ICS
+- [x] PATHWAY / HORIZON / COMPASS framing; no live PAS / ICS feed claims
+- [x] First-run primary → population / wards; secondary → `/demo/script`; onboarding tutorials name beats
+- [x] `/demo/script` ICS + hospital panels + `01:15` / `01:25` stops; U7 unit + route-smoke + clinical-proof green
+- [x] Smoke scripts assert hero copy (`smoke:ics` / `smoke:hospital` when app + credentials available)
+- [x] No `liveEmis` flip / PRISM-ATLAS live / VOICE-Dr.Assist as peers
 
 ### U8 — Patient + researcher dashboards
 
@@ -202,10 +214,10 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Start now** | **U7** | ICS + hospital dashboards (U1–U6 PASS) |
-| **Then** | **U8** | Patient + researcher |
+| **Start now** | **U8** | Patient + researcher (U1–U7 PASS) |
+| **Then** | — | Track complete after U8 |
 | **Do not block on** | N1–N3, N5–N7 | Partner/Medplum/`liveEmis` stay paused |
-| **Keep locked** | D1, N4, U1–U6 | Demo hardening + roster honesty + role heroes |
+| **Keep locked** | D1, N4, U1–U7 | Demo hardening + roster honesty + role heroes |
 
 ---
 
@@ -217,8 +229,8 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Nurse** | **U5 PASS** — 3-beat obs → handover → GUARDIAN; spine nurse-vitals | Keep rehearsable; no live PAS/EMR claims |
 | **Pharmacist** | **U5 PASS** — review → GUARDIAN → HITL/SHIELD; pharmacist-review spine | Keep med-safety talk-track honest |
 | **Admin** | **U6 PASS** — ops hero: integrations → SHIELD → enquiries; not eng console | Keep rehearsable; Precision Health stays scaffolding |
-| **ICS** | Population / equity / benchmark / forecast sections | COMPASS-led equity + forecast walkthrough on synthetic cohorts |
-| **Hospital** | Ward / capacity / staffing + risk-state panels | Command-centre demo with explicit “synthetic PAS” framing |
+| **ICS** | **U7 PASS** — COMPASS-led population → equity → forecast; synthetic / no spill | Keep aggregate-only talk-track |
+| **Hospital** | **U7 PASS** — wards → capacity → staffing; synthetic PAS honesty | Keep “not live PAS” from the page |
 | **Patient** | Companion shell under DashboardShell | Invite-by-practice companion: check-in + plan visibility |
 | **Researcher** | Cohort KPIs + ethics empty-state + export paths | Aggregate research demo; ATLAS Phase 2 only — never live |
 
@@ -240,7 +252,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 1. **U1–U2** — Marketing alone can sell the 12-agent + HITL story honestly.  
 2. **U3** — Every role gets a personalised path into their dashboard. **PASS** — [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md)  
-3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U6 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) · [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md)  
+3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U7 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) · [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) · [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md)  
 4. **Honesty** — `liveEmis:false`; Phase 2 agents labelled; sub-capabilities not peers.  
 5. **No clinical-spine rebuild** — UX sits on D1/N4 foundations.
 
@@ -260,5 +272,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) — U4 PASS (GP dashboard hero demo polish)  
 - [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) — U5 PASS (nurse + pharmacist dashboard demos)  
 - [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) — U6 PASS (practice admin ops demo)  
+- [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) — U7 PASS (ICS + hospital dashboards)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  

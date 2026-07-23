@@ -14,8 +14,8 @@ export function HospitalMockModeBanner({ className }: { className?: string }) {
       )}
     >
       Hospital Command Centre is in <strong>synthetic rehearsal mode</strong>. Ward, capacity, and
-      staffing figures are demo data — not a live PAS/EPR feed. Accept/Dismiss actions log to SHIELD
-      only; there is no write-back to hospital systems.
+      staffing figures are demo data — <strong>Not live PAS</strong> / EPR feed. Accept/Dismiss actions
+      log to SHIELD only; there is no write-back to hospital systems. liveEmis:false.
     </p>
   );
 }
