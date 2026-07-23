@@ -5,6 +5,7 @@
  * U5: Nurse 3-beat + pharmacist med-safety paths on role dashboards.
  * U6: Practice admin ops path — integrations honesty → SHIELD → users/enquiries.
  * U7: ICS population (COMPASS) + hospital command-centre (synthetic PAS) paths.
+ * U8: Patient companion (My Health → plan → consent) + researcher ethics / evaluation (ATLAS Phase 2).
  */
 
 import Link from "next/link";
@@ -100,6 +101,28 @@ const hospitalHeroPath = {
   ]
 };
 
+const patientHeroPath = {
+  title: "Patient companion path",
+  talkTrack:
+    "Sign in as patient (practice-invited companion). My Health → care plan DRAFT → consent purpose grants. Clinicians keep HITL on record changes — patient check-ins only. Synthetic demo content · liveEmis:false · no patient-app EHR write.",
+  beats: [
+    { label: "My Health", href: "/dashboard/patient", note: "Companion hero strip" },
+    { label: "Care plan", href: "/dashboard/patient#companion-care-plan", note: "Beat 2 · DRAFT" },
+    { label: "Consent", href: "/dashboard/patient#companion-consent", note: "Beat 3 · SHIELD" }
+  ]
+};
+
+const researcherHeroPath = {
+  title: "Researcher ethics / evaluation path",
+  talkTrack:
+    "Sign in as researcher. Ethics empty-state → outcome evaluation → data access. COMPASS / SHIELD support governed aggregates and audited exports. ATLAS stays Phase 2 (not live) — never claim a live research agent. Synthetic cohorts · liveEmis:false.",
+  beats: [
+    { label: "Ethics overview", href: "/dashboard/researcher", note: "Beat 1 · empty-state" },
+    { label: "Evaluation", href: "/dashboard/researcher/evaluation", note: "Beat 2 · SHIELD" },
+    { label: "Data access", href: "/dashboard/researcher/data-access", note: "Beat 3 · COMPASS" }
+  ]
+};
+
 const demoStops = [
   {
     time: "00:00",
@@ -156,6 +179,22 @@ const demoStops = [
     action: "Follow wards → capacity → staffing via the command-centre hero strip.",
     talkTrack:
       "Say “not live PAS” from the page. PATHWAY / HORIZON draft operational foresight; HITL on capacity. Synthetic PAS · liveEmis:false · no EPR write-back."
+  },
+  {
+    time: "01:35",
+    title: "Patient companion (invite-by-practice)",
+    route: "/dashboard/patient",
+    action: "After patient sign-in: My Health → care plan → consent via the companion hero strip.",
+    talkTrack:
+      "Practice-invited companion. Patient sees plan / consent in plain English; clinicians keep HITL. Synthetic · liveEmis:false — no patient-app EHR write."
+  },
+  {
+    time: "01:45",
+    title: "Researcher ethics / evaluation",
+    route: "/dashboard/researcher",
+    action: "After researcher sign-in: ethics → evaluation → data access via the research hero strip.",
+    talkTrack:
+      "COMPASS / SHIELD support governed aggregates. ATLAS stays Phase 2 — never claim live. Synthetic cohorts · liveEmis:false."
   },
   {
     time: "01:00",
@@ -341,6 +380,32 @@ export function DemoLaunchScript() {
           </div>
         </section>
 
+        <section className="product-section" data-testid="patient-hero-script-panel">
+          <p className="product-kicker">{patientHeroPath.title}</p>
+          <p>{patientHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {patientHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="researcher-hero-script-panel">
+          <p className="product-kicker">{researcherHeroPath.title}</p>
+          <p>{researcherHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {researcherHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <section className="product-section product-rule-grid">
           <article className="product-rule-card">
             <p className="product-kicker">OK to claim</p>
@@ -405,6 +470,12 @@ export function DemoLaunchScript() {
                 </Link>
                 <Link className="product-button product-button--secondary" href="/dashboard/hospital">
                   Hospital (synthetic PAS)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/patient">
+                  Patient companion
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/researcher">
+                  Researcher (ethics / evaluation)
                 </Link>
                 <Link className="product-button product-button--secondary" href="/demo/precision-health-loop">
                   Whole-loop demo

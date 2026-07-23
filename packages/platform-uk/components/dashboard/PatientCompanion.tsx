@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   HeartPulse,
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
+import { PatientHeroDemoPath } from "@/components/dashboard/patient/PatientHeroDemoPath";
 import { SafetyRouteCoachingGate } from "@/components/dashboard/precision-health/SafetyRouteCoachingGate";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
@@ -86,6 +87,20 @@ export function PatientCompanion() {
   const [medsTaken, setMedsTaken] = useState<Record<string, boolean>>({});
   const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
 
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (!hash.startsWith("companion-")) return;
+      setActiveTab("health");
+      window.requestAnimationFrame(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    };
+    scrollToHash();
+    window.addEventListener("hashchange", scrollToHash);
+    return () => window.removeEventListener("hashchange", scrollToHash);
+  }, []);
+
   const handleComingSoon = (feature: string) => {
     toast({
       title: "Coming soon",
@@ -109,6 +124,15 @@ export function PatientCompanion() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 p-4 pb-24">
+      <PatientHeroDemoPath />
+      <p
+        role="status"
+        data-testid="patient-honesty-banner"
+        className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+      >
+        Practice-invited companion · synthetic demo content · clinicians keep HITL on record changes ·
+        liveEmis:false — no patient-app EHR write.
+      </p>
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} className="w-full">
         <TabsList className="flex h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto rounded-xl bg-muted/40 p-1 scrollbar-none lg:grid lg:grid-cols-5 lg:overflow-visible">
           <TabsTrigger value="health" className="shrink-0 min-w-[4.75rem] text-xs sm:text-sm">
@@ -129,97 +153,103 @@ export function PatientCompanion() {
         </TabsList>
 
         <TabsContent value="health" className="mt-4 space-y-4">
-          <Card className="border-accent/20 bg-gradient-to-br from-accent/5 to-card shadow-sm">
-            <CardContent className="p-6">
-              <h1 className="text-xl font-semibold text-primary">{greeting}</h1>
-              <p className="mt-1 text-sm text-muted">Here&apos;s your health today.</p>
-            </CardContent>
-          </Card>
-          {companionProfile.isDemoEmptyState ? (
-            <p
-              role="status"
-              data-testid="patient-companion-demo-banner"
-              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
-            >
-              Showing <strong>demo companion content</strong> — conditions, medicines, and appointments
-              below are rehearsal placeholders until your practice links a real patient record. Messaging
-              and live care-team sync are not connected in this build.
-            </p>
-          ) : null}
-          {companionProfile.conditions.map((condition) => (
-            <Card key={condition.title} className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base">{condition.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted">
-                <p>
-                  Status:{" "}
-                  <span className="font-medium text-warning">{condition.status}</span>
-                </p>
-                <p className="mt-2">{condition.summary}</p>
+          <div id="companion-my-health" className="scroll-mt-24 space-y-4">
+            <Card className="border-accent/20 bg-gradient-to-br from-accent/5 to-card shadow-sm">
+              <CardContent className="p-6">
+                <h1 className="text-xl font-semibold text-primary">{greeting}</h1>
+                <p className="mt-1 text-sm text-muted">Here&apos;s your health today.</p>
               </CardContent>
             </Card>
-          ))}
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Your medications today</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {companionProfile.medications.map((med) => {
-                const medKey = `${med.label} | ${med.schedule}`;
-                return (
-                  <div key={medKey} className="flex items-center justify-between gap-2 text-sm">
-                    <span>{medKey}</span>
-                    <Button
-                      size="sm"
-                      variant={medsTaken[medKey] ? "accent" : "outline"}
-                      onClick={() => setMedsTaken((t) => ({ ...t, [medKey]: !t[medKey] }))}
-                    >
-                      {medsTaken[medKey] ? "Taken ✓" : "Mark as Taken"}
-                    </Button>
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">My Care Team</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1 text-sm">
-              {companionProfile.careTeam.map((member) => (
-                <p key={member.role}>
-                  {member.role}: {member.name}
-                </p>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={() => handleComingSoon("Message Team")}
+            {companionProfile.isDemoEmptyState ? (
+              <p
+                role="status"
+                data-testid="patient-companion-demo-banner"
+                className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
               >
-                Message Team
-              </Button>
-            </CardContent>
-          </Card>
-          <ConsentGrantsPanel
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
-            mode="patient"
-          />
-          <HealthPlanDraftPanel
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
-            mode="patient"
-          />
+                Showing <strong>demo companion content</strong> — conditions, medicines, and appointments
+                below are rehearsal placeholders until your practice links a real patient record (invite-by-practice).
+                Messaging and live care-team sync are not connected · liveEmis:false.
+              </p>
+            ) : null}
+            {companionProfile.conditions.map((condition) => (
+              <Card key={condition.title} className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-base">{condition.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted">
+                  <p>
+                    Status:{" "}
+                    <span className="font-medium text-warning">{condition.status}</span>
+                  </p>
+                  <p className="mt-2">{condition.summary}</p>
+                </CardContent>
+              </Card>
+            ))}
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base">Your medications today</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {companionProfile.medications.map((med) => {
+                  const medKey = `${med.label} | ${med.schedule}`;
+                  return (
+                    <div key={medKey} className="flex items-center justify-between gap-2 text-sm">
+                      <span>{medKey}</span>
+                      <Button
+                        size="sm"
+                        variant={medsTaken[medKey] ? "accent" : "outline"}
+                        onClick={() => setMedsTaken((t) => ({ ...t, [medKey]: !t[medKey] }))}
+                      >
+                        {medsTaken[medKey] ? "Taken ✓" : "Mark as Taken"}
+                      </Button>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base">My Care Team</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1 text-sm">
+                {companionProfile.careTeam.map((member) => (
+                  <p key={member.role}>
+                    {member.role}: {member.name}
+                  </p>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => handleComingSoon("Message Team")}
+                >
+                  Message Team
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+          <div id="companion-care-plan" className="scroll-mt-24">
+            <HealthPlanDraftPanel
+              patientId={COMPANION_DEMO_PATIENT_ID}
+              patientLabel={
+                companionProfile.isDemoEmptyState
+                  ? COMPANION_DEMO_PATIENT_LABEL
+                  : companionProfile.displayName
+              }
+              mode="patient"
+            />
+          </div>
+          <div id="companion-consent" className="scroll-mt-24">
+            <ConsentGrantsPanel
+              patientId={COMPANION_DEMO_PATIENT_ID}
+              patientLabel={
+                companionProfile.isDemoEmptyState
+                  ? COMPANION_DEMO_PATIENT_LABEL
+                  : companionProfile.displayName
+              }
+              mode="patient"
+            />
+          </div>
           <SpineOutcomesCapturePanel
             patientId={COMPANION_DEMO_PATIENT_ID}
             patientLabel={

@@ -19,22 +19,30 @@ const protectedResearcherRoutes = [
   {
     label: "Researcher overview",
     path: "/dashboard/researcher",
-    expectedText: ["Research Cohort Overview", "Governance boundaries", "Patients in Scope"],
+    expectedText: [
+      "Research Cohort Overview",
+      "Governance boundaries",
+      "Patients in Scope",
+      "Research demo",
+      "liveEmis:false",
+      "ATLAS Phase 2",
+      "COMPASS",
+    ],
   },
   {
     label: "Researcher evaluation",
     path: "/dashboard/researcher/evaluation",
-    expectedText: ["Outcome Evaluation", "Export evaluation JSON", "Synthetic evaluation metrics"],
+    expectedText: ["Outcome Evaluation", "Export evaluation JSON", "Synthetic evaluation metrics", "Research demo", "ATLAS Phase 2"],
   },
   {
     label: "Researcher data access",
     path: "/dashboard/researcher/data-access",
-    expectedText: ["Data Access", "Current access level", "Ethics reference"],
+    expectedText: ["Data Access", "Current access level", "Ethics reference", "Research demo"],
   },
   {
     label: "Researcher settings",
     path: "/dashboard/researcher/settings",
-    expectedText: ["Researcher Settings", "Coming in Phase B"],
+    expectedText: ["Researcher Settings", "Coming in Phase B", "Research demo"],
   },
 ];
 

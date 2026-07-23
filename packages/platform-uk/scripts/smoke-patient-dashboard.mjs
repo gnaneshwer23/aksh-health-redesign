@@ -19,7 +19,15 @@ const protectedPatientRoutes = [
   {
     label: "Patient dashboard",
     path: "/dashboard/patient",
-    expectedText: ["My Health", "Ask Aksh", "My Care Team"],
+    expectedText: [
+      "My Health",
+      "Ask Aksh",
+      "My Care Team",
+      "Companion demo",
+      "liveEmis:false",
+      "invite-by-practice",
+      "clinicians keep HITL",
+    ],
   },
 ];
 

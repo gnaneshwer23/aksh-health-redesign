@@ -55,10 +55,10 @@
 | **Admin** | **U6 PASS** — practice-manager ops hero (integrations → SHIELD → enquiries); see [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) |
 | **ICS** | **U7 PASS** — COMPASS-led population → equity → forecast; synthetic / no patient-level spill; see [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) |
 | **Hospital** | **U7 PASS** — wards → capacity → staffing; synthetic PAS front-and-centre; see [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) |
-| **Patient** | Companion shell — lightest stakeholder surface |
-| **Researcher** | Cohort KPIs + federated jobs + ethics empty-state — honesty good; ATLAS must stay Phase 2 / not claimed |
+| **Patient** | **U8 PASS** — My Health → plan → consent companion; invite-by-practice · clinicians keep HITL; see [`NEXT_UX_U8_AUDIT.md`](./NEXT_UX_U8_AUDIT.md) |
+| **Researcher** | **U8 PASS** — ethics → evaluation → data access; ATLAS Phase 2; COMPASS/SHIELD supporting; see [`NEXT_UX_U8_AUDIT.md`](./NEXT_UX_U8_AUDIT.md) |
 
-**Bottom line:** Clinical spine and GP demo path are ahead of marketing depth, onboarding personalisation, and non-GP role dashboards. Next build is **product surface for demo launch**, not more spine.
+**Bottom line:** U1–U8 product-surface track is **complete**. Clinical spine (D1/N4) stays locked; partner/`liveEmis` stay paused. Next is demo ops rehearsal, not more UX phases.
 
 ---
 
@@ -207,6 +207,18 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Goal** | Lightest stakeholders still look intentional in a multi-role demo. |
 | **Work** | Patient companion: check-in + care-plan visibility with invite-by-practice framing. Researcher: cohort metrics + ethics empty-state; **no ATLAS-as-live**. |
 | **Exit criteria** | Patient + researcher smoke pass; ATLAS remains Phase 2 in copy. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U8_AUDIT.md`](./NEXT_UX_U8_AUDIT.md) |
+
+**U8 audit gate**
+
+- [x] Patient `PatientHeroDemoPath`: My Health → care plan → consent
+- [x] Researcher `ResearcherHeroDemoPath`: ethics → evaluation → data access
+- [x] Honesty: invite-by-practice · clinicians keep HITL · synthetic · `liveEmis:false` · ATLAS Phase 2
+- [x] COMPASS / SHIELD supporting on researcher; no ATLAS-as-live
+- [x] First-run primary → companion / ethics; secondary → `/demo/script`; onboarding tutorials name beats
+- [x] `/demo/script` patient + researcher panels + `01:35` / `01:45` stops; U8 unit + route-smoke + clinical-proof green
+- [x] Smoke scripts assert hero copy (`smoke:patient` / `smoke:researcher` when app + credentials available)
+- [x] No `liveEmis` flip / PRISM-ATLAS live / VOICE-Dr.Assist as peers
 
 ---
 
@@ -214,10 +226,10 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Start now** | **U8** | Patient + researcher (U1–U7 PASS) |
-| **Then** | — | Track complete after U8 |
+| **Start now** | — | **U1–U8 complete** — UX stakeholder track done |
+| **Then** | Demo ops | Rehearse `/demo/script` multi-role; create smoke accounts per [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md) |
 | **Do not block on** | N1–N3, N5–N7 | Partner/Medplum/`liveEmis` stay paused |
-| **Keep locked** | D1, N4, U1–U7 | Demo hardening + roster honesty + role heroes |
+| **Keep locked** | D1, N4, U1–U8 | Demo hardening + roster honesty + role heroes |
 
 ---
 
@@ -231,8 +243,8 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Admin** | **U6 PASS** — ops hero: integrations → SHIELD → enquiries; not eng console | Keep rehearsable; Precision Health stays scaffolding |
 | **ICS** | **U7 PASS** — COMPASS-led population → equity → forecast; synthetic / no spill | Keep aggregate-only talk-track |
 | **Hospital** | **U7 PASS** — wards → capacity → staffing; synthetic PAS honesty | Keep “not live PAS” from the page |
-| **Patient** | Companion shell under DashboardShell | Invite-by-practice companion: check-in + plan visibility |
-| **Researcher** | Cohort KPIs + ethics empty-state + export paths | Aggregate research demo; ATLAS Phase 2 only — never live |
+| **Patient** | **U8 PASS** — companion hero My Health → plan → consent; invite-by-practice | Keep rehearsable; clinicians keep HITL |
+| **Researcher** | **U8 PASS** — ethics → evaluation → data access; ATLAS Phase 2 | Keep aggregate research talk-track; never claim ATLAS live |
 
 ---
 
@@ -252,7 +264,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 1. **U1–U2** — Marketing alone can sell the 12-agent + HITL story honestly.  
 2. **U3** — Every role gets a personalised path into their dashboard. **PASS** — [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md)  
-3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U7 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) · [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) · [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md)  
+3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U8 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) · [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) · [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) · [`NEXT_UX_U8_AUDIT.md`](./NEXT_UX_U8_AUDIT.md)  
 4. **Honesty** — `liveEmis:false`; Phase 2 agents labelled; sub-capabilities not peers.  
 5. **No clinical-spine rebuild** — UX sits on D1/N4 foundations.
 
@@ -273,5 +285,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) — U5 PASS (nurse + pharmacist dashboard demos)  
 - [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) — U6 PASS (practice admin ops demo)  
 - [`NEXT_UX_U7_AUDIT.md`](./NEXT_UX_U7_AUDIT.md) — U7 PASS (ICS + hospital dashboards)  
+- [`NEXT_UX_U8_AUDIT.md`](./NEXT_UX_U8_AUDIT.md) — U8 PASS (patient + researcher dashboards) · **UX track complete**  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  

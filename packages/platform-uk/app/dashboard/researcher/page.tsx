@@ -43,13 +43,26 @@ export default function ResearcherOverviewPage() {
         </p>
       </div>
 
+      <p
+        role="status"
+        data-testid="researcher-honesty-banner"
+        className="rounded-lg border border-[#E67E22]/30 bg-[#E67E22]/5 px-3 py-2 text-xs text-[#6B3A0A]"
+      >
+        Synthetic cohorts · ATLAS Phase 2 (not live) · COMPASS / SHIELD support governed aggregates ·
+        liveEmis:false — no patient-level spill by default.
+      </p>
+
       {ethicsEmpty ? (
-        <Card className="border-dashed border-[#E67E22]/40 bg-[#E67E22]/5 shadow-none">
+        <Card
+          className="border-dashed border-[#E67E22]/40 bg-[#E67E22]/5 shadow-none"
+          data-testid="researcher-ethics-empty"
+        >
           <CardContent className="p-4 text-sm text-muted">
             <p className="font-medium text-foreground">Demo / synthetic cohort — ethics not signed off</p>
             <p className="mt-1 text-xs">
               Metrics below are rehearsal figures from synthetic patients. No real patient identifiable data
-              and no production study export authority until ethics reference is recorded.
+              and no production study export authority until ethics reference is recorded. ATLAS is Phase 2 —
+              not a live research agent in this build.
             </p>
           </CardContent>
         </Card>

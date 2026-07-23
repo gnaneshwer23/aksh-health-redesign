@@ -353,7 +353,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   patient: {
     role: "patient",
     dashboardRole: "patient",
-    pathPromise: "My Health check-ins — your care team keeps clinical approval",
+    pathPromise: "My Health → care plan → consent — clinicians keep HITL",
     agents: [
       { name: "CANVAS", why: "Helps your practice capture visits consistently." },
       { name: "SYNTHESIS", why: "Drafts the note your clinician reviews." },
@@ -367,21 +367,22 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     tutorialScreens: [
       {
         title: "My Health in plain English",
-        body: "See conditions, medications, and your care plan. Clinical changes still need your GP's approval.",
+        body: "See conditions, medications, and your care team. Clinical changes still need your GP's approval.",
         agents: ["SYNTHESIS", "PATHWAY"],
-        bullets: ["Care plan visibility", "Ask Aksh with GP-gated escalation"],
+        bullets: ["Companion demo: My Health beat", "Ask Aksh with GP-gated escalation"],
         honesty: LIVE_EMIS,
       },
       {
-        title: "Check-ins",
-        body: "Reply to how-you're-doing prompts. Important answers can be flagged to your care team.",
-        agents: ["CANVAS", "SHIELD"],
-        bullets: ["Text / app check-ins", "Clinicians keep HITL"],
+        title: "Care plan + consent",
+        body: "View your care-plan DRAFT and purpose consent grants. Clinicians keep HITL — you do not write to the EHR.",
+        agents: ["PATHWAY", "SHIELD"],
+        bullets: ["Care plan visibility", "Consent purpose grants", "Invite-by-practice"],
+        honesty: LIVE_EMIS,
       },
       {
         title: "You're ready",
-        body: "My Health opens with first-run guidance to explore your plan.",
-        bullets: ["Confirm your care plan", "Your GP approves record changes"],
+        body: "My Health opens with first-run guidance on the My Health → plan → consent hero path.",
+        bullets: ["Start companion demo", "Clinicians keep HITL", "liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },
@@ -391,7 +392,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   researcher: {
     role: "researcher",
     dashboardRole: "researcher",
-    pathPromise: "Governed cohorts + ethics gates — ATLAS stays Phase 2",
+    pathPromise: "Ethics → evaluation → data access — ATLAS stays Phase 2",
     agents: [
       { name: "ATLAS", why: "Phase 2 clinical research agent — not built.", badge: "phase2" },
       { name: "COMPASS", why: "Population / equity aggregates under governance." },
@@ -404,22 +405,23 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     honestyNote: `${LIVE_EMIS} ATLAS is Phase 2 (live:false). Aggregate access by default. Demo data is synthetic.`,
     tutorialScreens: [
       {
-        title: "Governed research workspace",
-        body: "Cohort KPIs and evaluation exports are audited. ATLAS is roadmap — never claim live.",
+        title: "Ethics first",
+        body: "Synthetic cohort ethics empty-state is the honest demo start. Aggregate access by default.",
+        agents: ["COMPASS", "SHIELD"],
+        bullets: ["Ethics empty-state", "No patient-level spill by default"],
+        honesty: "ATLAS Phase 2 · liveEmis:false",
+      },
+      {
+        title: "Evaluation + data access",
+        body: "Cohort KPIs and evaluation exports are audited (SHIELD). COMPASS supports aggregates. ATLAS is roadmap — never claim live.",
         agents: ["ATLAS", "COMPASS", "SHIELD"],
         bullets: ["Outcome evaluation", "Data-access terms", "Federated jobs = read-only stubs"],
         honesty: "ATLAS Phase 2 · liveEmis:false",
       },
       {
-        title: "Ethics before individual access",
-        body: "Aggregate is the default. Individual access requires ethics confirmation in your preferences.",
-        agents: ["SHIELD", "BRIDGE"],
-        bullets: ["Review data-access level", "SHIELD logs exports"],
-      },
-      {
         title: "You're ready",
-        body: "Researcher Dashboard opens with first-run guidance on evaluation.",
-        bullets: ["Open evaluation", "Confirm ethics status", "ATLAS not live"],
+        body: "Researcher Dashboard opens with first-run guidance on the ethics → evaluation → data access hero path.",
+        bullets: ["Start ethics demo", "Confirm ATLAS not live", "liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },

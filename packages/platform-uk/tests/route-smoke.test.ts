@@ -159,8 +159,19 @@ async function run() {
   await assertFileIncludes("components/dashboard/hospital/HospitalHeroDemoPath.tsx", "synthetic PAS");
   await assertFileIncludes("app/dashboard/hospital/page.tsx", "HospitalHeroDemoPath");
   await assertFileIncludes("app/dashboard/hospital/page.tsx", "Not live PAS");
+  await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "patient-hero-demo-path");
+  await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "liveEmis:false");
+  await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "invite-by-practice");
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "PatientHeroDemoPath");
+  await assertFileIncludes("components/dashboard/PatientCompanion.tsx", "patient-honesty-banner");
+  await assertFileIncludes("components/dashboard/researcher/ResearcherHeroDemoPath.tsx", "researcher-hero-demo-path");
+  await assertFileIncludes("components/dashboard/researcher/ResearcherHeroDemoPath.tsx", "ATLAS Phase 2");
+  await assertFileIncludes("app/dashboard/researcher/layout.tsx", "ResearcherHeroDemoPath");
+  await assertFileIncludes("app/dashboard/researcher/page.tsx", "researcher-honesty-banner");
   await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "ics-hero-script-panel");
   await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "hospital-hero-script-panel");
+  await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "patient-hero-script-panel");
+  await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "researcher-hero-script-panel");
   await assertFileIncludes("app/dashboard/nurse/page.tsx", "NurseHeroDemoPath");
   await assertFileIncludes(
     "components/dashboard/pharmacist/PharmacistHeroDemoPath.tsx",
