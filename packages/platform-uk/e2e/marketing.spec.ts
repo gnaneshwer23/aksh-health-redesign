@@ -193,6 +193,13 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: "Capture → draft → approve", exact: true })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Care journey/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /See full journey/i })).toHaveAttribute("href", "/how-it-works");
+    await expect(page.getByText("Agents in the loop")).toBeVisible();
+    await expect(page.getByText("HORIZON", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Twelve-agent roster/i })).toHaveAttribute("href", "/platform#agents");
+    await expect(page.getByRole("link", { name: /Guided demo script/i }).first()).toHaveAttribute(
+      "href",
+      "/demo/script"
+    );
   });
 
   test("homepage roles section highlights product-aligned role dashboards", async ({ page }) => {
@@ -309,6 +316,8 @@ test.describe("Marketing smoke", () => {
     await page.goto("/how-it-works");
 
     await expect(page.getByRole("heading", { name: /How Aksh Health works/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Explain it in two minutes/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Agents named in the loop/i })).toBeVisible();
     await expect(page.getByRole("figure", { name: /Care journey/i }).first()).toBeVisible();
     await expect(page.getByRole("figure", { name: /End-to-end journey/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Capture, draft, approve", exact: true })).toBeVisible();
@@ -318,6 +327,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Clinician approval on every output/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Data flow from EHR to governed record/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Ready to see it in your organisation/i })).toBeVisible();
+    await expect(page.getByText(/liveEmis:false/i).first()).toBeVisible();
   });
 
   test("platform page loads with cohesive sections", async ({ page }) => {
@@ -332,12 +342,12 @@ test.describe("Marketing smoke", () => {
     await expect(howItWorks).toHaveAttribute("href", "/how-it-works");
 
     await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned care/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /How the platform works/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Capture → draft → approve → stage/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Built for every role/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Twelve agents\. One review queue/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Clinician approval\. Always\./i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create account" }).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "Request organisation access" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Guided demo script/i }).first()).toBeVisible();
     await expect(page.locator("section#roles")).toBeVisible();
     await expect(page.getByLabel("Product trust and pilot readiness").first()).toBeVisible();
   });
@@ -391,6 +401,14 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText(/PRISM and ATLAS stay Phase 2 roadmap/i)).toBeVisible();
     await expect(page.getByText(/VOICE and Dr\.Assist are intake\/coding sub-capabilities/i)).toBeVisible();
     await expect(page.getByText("Phase 2", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/Formerly ORACLE/i)).toBeVisible();
+    await expect(page.getByText(/Sub-capabilities — not peer agents/i)).toBeVisible();
+    await expect(page.getByText(/John Snow Labs NLP is not wired/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Guided demo script/i }).first()).toHaveAttribute(
+      "href",
+      "/demo/script"
+    );
+    await expect(page.getByText(/14 agents|fourteen agents/i)).toHaveCount(0);
   });
 
   test("get-started page is organisation enquiry, distinct from signup", async ({ page }) => {

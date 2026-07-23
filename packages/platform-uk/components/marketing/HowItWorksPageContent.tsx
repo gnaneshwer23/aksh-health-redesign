@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  ArrowRight,
   CheckCircle2,
   ClipboardCheck,
   ClipboardList,
@@ -21,6 +23,7 @@ import { container } from "@/components/marketing/marketing-ui";
 import { PastelCapabilityCard, pastelVariantAt } from "@/components/marketing/PastelCapabilityCard";
 import type { PastelVariant } from "@/components/marketing/PastelCapabilityCard";
 import { PlatformFlowDiagram } from "@/components/marketing/PlatformFlowDiagram";
+import { TWO_MINUTE_MARKETING_SCRIPT } from "@/lib/marketing/agent-job-in-loop";
 import { cn } from "@/lib/utils";
 
 const platformStages: Array<{
@@ -37,7 +40,7 @@ const platformStages: Array<{
     icon: Mic,
     label: "Capture",
     title: "Capture once",
-    body: "Consultation notes or voice, with clinical context designed for EMIS Web / SystmOne pathways (staging today — no live EHR pull). No rip-and-replace of your EHR.",
+    body: "CANVAS structures consult context (VOICE dictation is a sub-capability under CANVAS). Designed for EMIS Web / SystmOne pathways — staging today, no live EHR pull.",
   },
   {
     num: "02",
@@ -45,7 +48,7 @@ const platformStages: Array<{
     icon: ClipboardList,
     label: "Draft",
     title: "Draft + checks",
-    body: "Structured notes, safety flags, and referral packages stage for review. Nothing auto-writes to the record.",
+    body: "CONDUCTOR runs SYNTHESIS, GUARDIAN, HORIZON, PATHWAY, and NEXUS in parallel. Dr.Assist coding drafts sit under SYNTHESIS. Nothing auto-writes to the record.",
   },
   {
     num: "03",
@@ -53,7 +56,7 @@ const platformStages: Array<{
     icon: UserCheck,
     label: "Approve",
     title: "Clinician approves",
-    body: "Accept, edit, or reject every output. Only then can content stage as FHIR toward EMIS or SystmOne (sim/staging — liveEmis:false).",
+    body: "Accept, edit, or reject every output. SHIELD audits the decision. Only then can BRIDGE stage FHIR toward EMIS or SystmOne (sim/staging — liveEmis:false).",
   },
 ];
 
@@ -73,19 +76,20 @@ const roleFlows = {
         icon: Mic,
         label: "Capture",
         title: "Consult comes in",
-        description: "Notes or voice during the appointment. Synthetic / staged context today — live EMIS/SystmOne pull is partner Phase 2.",
+        description:
+          "Notes or voice into CANVAS. Synthetic / staged context today — live EMIS/SystmOne pull is partner Phase 2.",
       },
       {
         icon: ClipboardList,
         label: "Draft",
         title: "Drafts and checks stage",
-        description: "SOAP structure, interaction flags, and referrals land in one review queue.",
+        description: "SOAP (SYNTHESIS), safety (GUARDIAN), risk (HORIZON), referrals (PATHWAY) land in one review queue.",
       },
       {
         icon: ClipboardCheck,
         label: "Approve",
         title: "You decide",
-        description: "Accept, edit, or reject. Only approved content progresses toward the record.",
+        description: "Accept, edit, or reject. SHIELD audits; BRIDGE stages only approved drafts — liveEmis:false.",
       },
     ] satisfies RoleStep[],
   },
@@ -103,13 +107,13 @@ const roleFlows = {
         icon: ClipboardCheck,
         label: "Oversee",
         title: "Queue health visible",
-        description: "See backlog and integration status without bypassing clinical sign-off.",
+        description: "See backlog and integration status without bypassing clinical sign-off (HITL stays clinician-owned).",
       },
       {
         icon: FileCheck2,
         label: "Evidence",
         title: "Audit for assurance",
-        description: "Exportable trails support ICS governance and internal review.",
+        description: "SHIELD trails support ICS governance and internal review — not a certification claim.",
       },
     ] satisfies RoleStep[],
   },
@@ -141,15 +145,83 @@ const hitlActions = [
   },
 ] as const;
 
+const headlineAgents = [
+  { name: "HORIZON", note: "ex-ORACLE · risk drafts" },
+  { name: "PATHWAY", note: "referrals · coordination" },
+  { name: "COMPASS", note: "population · equity" },
+  { name: "NEXUS", note: "clinical impression" },
+  { name: "CANVAS", note: "intake (+ VOICE)" },
+  { name: "BRIDGE", note: "FHIR staging" },
+  { name: "CONDUCTOR", note: "orchestrates HITL" },
+  { name: "SHIELD", note: "immutable audit" },
+] as const;
+
 export function HowItWorksPageContent() {
   const [activeRole, setActiveRole] = useState<RoleKey>("clinician");
   const role = roleFlows[activeRole];
 
   return (
     <>
+      <section id="two-minute-script" className="scroll-mt-24 border-b border-navy/[0.06] bg-white py-12 md:py-16">
+        <div className={container}>
+          <MarketingSectionHeader
+            align="left"
+            label="Demo host script"
+            title="Explain it in two minutes"
+            description="Home → how it works → platform → guided script. No dashboard required. Stay honest: synthetic data, HITL, liveEmis:false."
+          />
+          <ol className="grid gap-4 md:grid-cols-2">
+            {TWO_MINUTE_MARKETING_SCRIPT.map((step) => (
+              <li
+                key={step.beat}
+                className="flex flex-col rounded-2xl border border-navy/[0.08] bg-surface-muted/50 p-5"
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-emerald">{step.beat}</p>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate/80">{step.say}</p>
+                <Link
+                  href={step.href}
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-navy-dark underline-offset-4 hover:underline"
+                >
+                  Open
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
       <section id="pipeline" className="scroll-mt-24 bg-white py-12 md:py-16">
         <div className={container}>
           <EndToEndPipelineDiagram />
+        </div>
+      </section>
+
+      <section id="agents-in-loop" className="scroll-mt-24 bg-surface-muted py-12 md:py-16">
+        <div className={container}>
+          <MarketingSectionHeader
+            align="left"
+            label="Who does what"
+            title="Agents named in the loop"
+            description="Call these out in a two-minute pitch. Full roster with job-in-loop blurbs on the platform page. PRISM and ATLAS stay Phase 2."
+          />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {headlineAgents.map((agent) => (
+              <div key={agent.name} className="rounded-xl border border-navy/[0.08] bg-white/80 px-4 py-3">
+                <p className="font-[family-name:var(--font-marketing-display)] text-base font-semibold text-navy-dark">
+                  {agent.name}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-slate/70">{agent.note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-slate/70">
+            <Link href="/platform#agents" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+              Open the twelve-agent grid
+            </Link>
+            {" · "}
+            VOICE and Dr.Assist are sub-capabilities — not peer agents.
+          </p>
         </div>
       </section>
 
@@ -204,7 +276,8 @@ export function HowItWorksPageContent() {
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-steel">
                   Every draft is staged for review. Clinicians choose Accept, Edit, or Reject. Only approved content
-                  progresses toward FHIR staging and EHR write-back.
+                  progresses toward FHIR staging and EHR write-back — and this build keeps liveEmis:false (sim/staging
+                  only).
                 </p>
               </div>
 

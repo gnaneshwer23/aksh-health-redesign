@@ -21,8 +21,8 @@ export default function HowItWorksPage() {
       <MarketingPageHero
         eyebrow="How it works"
         title="How Aksh Health works"
-        lede="Twelve agents. One HITL gate. Capture → draft → clinician approve → FHIR staging. Synthetic demo data today — no live EMIS or SystmOne write-back."
-        primary={{ label: "Create account", href: "/signup" }}
+        lede="Twelve agents. One HITL gate. Capture → draft → clinician approve → FHIR staging. Synthetic demo data today — no live EMIS or SystmOne write-back (liveEmis:false)."
+        primary={{ label: "Two-minute script", href: "/how-it-works#two-minute-script" }}
         secondary={{ label: "See the pipeline", href: "/how-it-works#pipeline" }}
         aside={
           <>
@@ -40,8 +40,8 @@ export default function HowItWorksPage() {
 
       <MarketingCtaBand
         title="Ready to see it in your organisation?"
-        lede="Role-specific dashboards, HITL review, SHIELD audit, and FHIR R4 staging. Live EHR write-back remains partner Phase 2."
-        primary={{ label: "Talk to us", href: "/get-started" }}
+        lede="Role-specific dashboards, HITL review, SHIELD audit, and FHIR R4 staging. Live EHR write-back remains partner Phase 2 — liveEmis:false."
+        primary={{ label: "Guided demo script", href: "/demo/script" }}
         secondary={{ label: "Create account", href: "/signup" }}
       />
 

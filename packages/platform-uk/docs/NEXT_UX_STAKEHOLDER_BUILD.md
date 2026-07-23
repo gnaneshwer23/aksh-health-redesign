@@ -46,7 +46,7 @@
 
 | Surface | Gap |
 |---|---|
-| **Agent story depth** | AgentGrid is a **card grid** — little per-agent “what it does in a consult” narrative; no dedicated agent explainer pages or interactive “how agents collaborate” beyond the pipeline diagram |
+| **Agent story depth** | **U1 PASS** — job-in-loop blurbs, stage groups, two-minute script; audience `for-*` agent mapping still **U2** |
 | **Audience `for-*` pages** | Shared `AudiencePageLayout` + content blobs — competent but **generic** (problem / outcome / 3-step workflow). Weak mapping of **which agents matter to this audience** |
 | **How-it-works ↔ product** | Diagram is strong; still weak bridge into **role-specific demo entry** (“I’m a nurse — show me my 90-second path”) |
 | **Personalised onboarding** | Steps exist; **tutorial only for GP**; other roles jump to dashboard with thin `FirstRunGuidance`. Preferences / org capture don’t deeply reshape the first dashboard session |
@@ -74,6 +74,17 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Work** | Deepen `/platform` AgentGrid + `/how-it-works` pipeline: short per-agent “job in the loop” blurbs; call out HORIZON (ex-ORACLE), PATHWAY, COMPASS, NEXUS, CANVAS, BRIDGE, CONDUCTOR, SHIELD; Phase 2 PRISM/ATLAS badges; VOICE/DrASSIST as sub-caps; CTAs into `/demo/script` and signup. |
 | **Exit criteria** | Manual 2-minute script from home → how-it-works → platform without opening a dashboard; marketing e2e still green; no honesty regressions. |
 | **Fail if** | “14 agents”, JSL live, PRISM/ATLAS live, or live EMR write claims. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U1_AUDIT.md`](./NEXT_UX_U1_AUDIT.md) |
+
+**U1 audit gate**
+
+- [x] Per-agent job-in-loop blurbs on `/platform` (AgentGrid staged by Capture→Draft→…→Phase 2)
+- [x] `/how-it-works` two-minute script + agents-named-in-loop + Capture→Draft→Approve agent names
+- [x] Home journey strip names agents + links to platform / demo script
+- [x] HORIZON (ex-ORACLE); VOICE/Dr.Assist sub-caps; PRISM/ATLAS Phase 2; `liveEmis:false`
+- [x] CTAs to `/demo/script` + signup
+- [x] Marketing e2e green (honesty assertions extended)
+- [x] No “14 agents” / JSL live / PRISM-ATLAS live / live EMR write claims
 
 ### U2 — Audience landing pages (`for-*`) agent-mapped
 
@@ -192,5 +203,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — N/D eng phases; U-phases are the parallel **product surface** track  
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md) — D1 PASS (do not redo)  
 - [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) — roster honesty lock  
+- [`NEXT_UX_U1_AUDIT.md`](./NEXT_UX_U1_AUDIT.md) — U1 PASS (agents + how-it-works marketing depth)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  
