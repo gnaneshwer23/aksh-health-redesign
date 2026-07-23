@@ -7,12 +7,12 @@ const footerColumns = [
     title: "Explore",
     links: [
       { label: "Platform", href: "/platform" },
-      { label: "How it works", href: "/how-it-works" },
+      { label: "Workflow", href: "/how-it-works" },
       { label: "Resources", href: "/resources" },
       { label: "FAQ", href: "/faq" },
       { label: "Ask Aksh Health", href: "/chat" },
       { label: "How we price", href: "/pricing" },
-      { label: "Case walkthrough", href: "/walkthrough" },
+      { label: "Book a walkthrough", href: "/walkthrough" },
     ],
   },
   {
@@ -40,10 +40,10 @@ const footerColumns = [
   {
     title: "Get started",
     links: [
-      { label: "Discuss a pilot", href: "/get-started" },
+      { label: "Book a demonstration", href: "/get-started" },
       { label: "Create account", href: "/signup" },
-      { label: "See demo", href: "/demo/patel" },
-      { label: "See walkthrough", href: "/walkthrough" },
+      { label: "View demo", href: "/demo/patel" },
+      { label: "Book a walkthrough", href: "/walkthrough" },
       { label: "Contact", href: "/contact" },
       { label: "Sign in", href: "/signin" },
     ],
@@ -86,7 +86,7 @@ export default function Footer() {
             </Link>
           </p>
           <p className="mt-4 text-sm text-white/45">
-            © 2026 Aksh Health Ltd · Registered in England & Wales · Pilot-stage platform · Clinician review required
+            © 2026 Aksh Health Ltd · Registered in England & Wales · Designed for NHS organisations
           </p>
         </div>
       </div>

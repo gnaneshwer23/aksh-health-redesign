@@ -67,7 +67,7 @@ export const audiencePages = {
     eyebrow: "For clinicians",
     headline: "Spend time with patients, not paperwork.",
     subline:
-      "CANVAS → SYNTHESIS / GUARDIAN / HORIZON / PATHWAY under CONDUCTOR. You Approve before BRIDGE stages — liveEmis:false.",
+      "Capture consultations, review structured drafts, and approve referrals from one workspace — every change under your control.",
     roles: ["GP", "Nurse", "Pharmacist"],
     problem: {
       title: "Notes and checks steal the evening",
@@ -76,40 +76,40 @@ export const audiencePages = {
     },
     outcome: {
       title: "One review queue before the record",
-      body: "Named agents draft SOAP, safety, risk, and referrals. Accept, edit, or reject — SHIELD audits; nothing writes without you.",
+      body: "Structured drafts for documentation, safety, risk, and referrals. Accept, edit, or reject — nothing writes without you.",
       icon: Stethoscope,
     },
     agentMap: AUDIENCE_AGENT_MAPS.clinicians,
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Capture, draft, approve",
-      sectionDescription: "Three calm steps naming the agents in your loop.",
+      sectionDescription: "Three calm steps from capture to clinician review.",
       disclaimer:
-        "No outputs are written to the EHR without clinician approval. VOICE feeds CANVAS; Dr.Assist codes under SYNTHESIS — both are sub-capabilities. PRISM/ATLAS Phase 2. liveEmis:false.",
+        "No outputs are written to the record without clinician approval.",
       steps: [
         {
           label: "01",
-          title: "Capture (CANVAS)",
-          description: "VOICE or notes during the consult. CANVAS structures shared intake context.",
+          title: "Capture",
+          description: "Notes or voice during the consult. Shared intake context for structured drafts.",
           icon: Activity,
         },
         {
           label: "02",
-          title: "Draft (agents)",
+          title: "Draft",
           description:
-            "SYNTHESIS SOAP, GUARDIAN safety, HORIZON risk, PATHWAY referrals, NEXUS impression — CONDUCTOR orders the run.",
+            "Documentation, safety, risk, referrals, and clinical correlation land in one review queue.",
           icon: FileText,
         },
         {
           label: "03",
-          title: "You approve (HITL)",
-          description: "Accept, edit, or reject. SHIELD audits; BRIDGE stages only approved drafts — liveEmis:false.",
+          title: "You approve",
+          description: "Accept, edit, or reject. Only approved drafts proceed for exchange with existing systems.",
           icon: CheckSquare,
         },
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=gp" },
-    ctaSecondary: { label: "Guided demo script", href: "/demo/script" },
+    ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
     ctaTertiary: { label: "Open GP dashboard", href: "/dashboard/gp" },
     complianceNote:
       "Clinician approval on every clinical output. NHS DCB0129 safety case in progress. See documentation for architecture and compliance pathways.",
@@ -118,7 +118,7 @@ export const audiencePages = {
     eyebrow: "For hospitals",
     headline: "One command view for trust pressure.",
     subline:
-      "HORIZON foresight, PATHWAY flow, COMPASS equity — with SHIELD audit. Synthetic PAS demo · not a live EPR feed.",
+      "Operational foresight, pathway flow, and equity views — with full audit. Designed for trust oversight.",
     roles: ["Hospital Executive", "Medical Director", "COO"],
     problem: {
       title: "Operational data lives in silos",
@@ -127,40 +127,40 @@ export const audiencePages = {
     },
     outcome: {
       title: "A single view before the surge",
-      body: "See capacity and demand together via named agents, act earlier, and keep every recommendation auditable.",
+      body: "See capacity and demand together, act earlier, and keep every recommendation auditable.",
       icon: BarChart3,
     },
     agentMap: AUDIENCE_AGENT_MAPS.hospitals,
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Connect, monitor, act",
-      sectionDescription: "Three steps from fragmented feeds to governed executive action — agents named.",
+      sectionDescription: "Three steps from fragmented feeds to governed executive action.",
       disclaimer:
-        "Production deployment requires trust governance sign-off. Public demo uses synthetic capacity only — not live PAS/EPR. liveEmis:false.",
+        "Production deployment requires trust governance sign-off. Public demos use illustrative capacity data.",
       steps: [
         {
           label: "01",
-          title: "Connect (BRIDGE)",
-          description: "Bring ED, ward, and workforce signals toward one command view — staging, not live PAS write-back.",
+          title: "Connect",
+          description: "Bring ED, ward, and workforce signals toward one command view.",
           icon: Link2,
         },
         {
           label: "02",
-          title: "Monitor (HORIZON · PATHWAY)",
+          title: "Monitor",
           description: "Track waits, beds, and staffing gaps with foresight and flow drafts.",
           icon: Building2,
         },
         {
           label: "03",
-          title: "Act with audit (SHIELD)",
+          title: "Act with audit",
           description: "Recommendations stay visible and logged for medical directors and CIOs.",
           icon: Shield,
         },
       ],
     },
     ctaPrimary: { label: "Open hospital demo", href: "/dashboard/hospital" },
-    ctaSecondary: { label: "Guided demo script", href: "/demo/script" },
-    ctaTertiary: { label: "Discuss a pilot", href: "/get-started" },
+    ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
+    ctaTertiary: { label: "Talk to us", href: "/get-started" },
     complianceNote:
       "Public command-centre demo uses synthetic capacity data only — not a live PAS/EPR feed. Immutable audit trails for operational recommendations. See documentation for architecture and compliance pathways.",
   },
@@ -168,7 +168,7 @@ export const audiencePages = {
     eyebrow: "For research",
     headline: "Evaluate outcomes with governed access.",
     subline:
-      "COMPASS aggregates and SHIELD audit today. ATLAS is Phase 2 — not built. Never claim live research agent.",
+      "Governed aggregate views and audit trails for outcome evaluation and service improvement.",
     roles: ["Researcher", "Clinical Informatics"],
     problem: {
       title: "Evaluation data without clear gates",
@@ -184,8 +184,8 @@ export const audiencePages = {
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Request, review, study",
-      sectionDescription: "Three steps from access request to governed analysis — ATLAS stays roadmap.",
-      disclaimer: "ATLAS Phase 2 (live:false). Aggregate access by default. Synthetic demo cohorts. liveEmis:false.",
+      sectionDescription: "Three steps from access request to governed analysis.",
+      disclaimer: "Aggregate access by default. Demo cohorts are illustrative.",
       steps: [
         {
           label: "01",
@@ -195,29 +195,29 @@ export const audiencePages = {
         },
         {
           label: "02",
-          title: "Governance (SHIELD)",
-          description: "Ethics and data-minimisation checks gate what can be seen; SHIELD audits access.",
+          title: "Governance",
+          description: "Ethics and data-minimisation checks gate what can be seen; access stays auditable.",
           icon: Shield,
         },
         {
           label: "03",
-          title: "Study (COMPASS · not ATLAS)",
-          description: "Work in governed aggregate views. ATLAS remains Phase 2 — not live in this build.",
+          title: "Study",
+          description: "Work in governed aggregate views under research governance.",
           icon: TrendingUp,
         },
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=researcher" },
     ctaSecondary: { label: "Open research demo", href: "/dashboard/researcher" },
-    ctaTertiary: { label: "See platform agents", href: "/platform#agents" },
+    ctaTertiary: { label: "View platform", href: "/platform#agents" },
     complianceNote:
-      "Aggregate access by default. ATLAS is Phase 2 — not built. Ethics boundaries remain explicit. See documentation for research governance pathways.",
+      "Aggregate access by default. Ethics boundaries remain explicit. See documentation for research governance pathways.",
   },
   patients: {
     eyebrow: "For patients",
     headline: "Your health, understood and supported.",
     subline:
-      "Invited by your GP practice. Clinicians Approve CANVAS / SYNTHESIS / PATHWAY drafts — you follow the agreed plan.",
+      "Invited by your GP practice. Clinicians approve clinical drafts — you follow the agreed plan.",
     roles: ["Patient"],
     problem: {
       title: "Care fades after the appointment",
@@ -233,9 +233,9 @@ export const audiencePages = {
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Invite, follow, stay supported",
-      sectionDescription: "Three steps from practice invite to ongoing support — clinicians keep HITL.",
+      sectionDescription: "Three steps from practice invite to ongoing support — clinicians keep review.",
       disclaimer:
-        "Patient access is practice-invited. Clinical decisions and EHR writes remain with your care team. liveEmis:false.",
+        "Patient access is practice-invited. Clinical decisions remain with your care team.",
       steps: [
         {
           label: "01",
@@ -246,7 +246,7 @@ export const audiencePages = {
         {
           label: "02",
           title: "See your plan",
-          description: "View next steps after clinicians Approve PATHWAY / SYNTHESIS drafts.",
+          description: "View next steps after clinicians approve documentation and referral drafts.",
           icon: ClipboardList,
         },
         {
@@ -258,16 +258,16 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=patient" },
-    ctaSecondary: { label: "How it works", href: "/how-it-works" },
+    ctaSecondary: { label: "View workflow", href: "/how-it-works" },
     ctaTertiary: { label: "Patient companion", href: "/dashboard/patient" },
     complianceNote:
-      "Patient access is practice-invited. Clinical decisions remain with your care team. Agents draft for clinicians — not for patient self-write to the record.",
+      "Patient access is practice-invited. Clinical decisions remain with your care team. Drafts support clinicians — not patient self-write to the record.",
   },
   practices: {
     eyebrow: "For practices",
     headline: "Run the practice with clear oversight.",
     subline:
-      "Oversee CONDUCTOR queue health, BRIDGE integrations, and SHIELD audit — clinicians still Approve clinical drafts. liveEmis:false.",
+      "Oversee review queue health, integrations, and audit — clinicians still approve clinical drafts.",
     roles: ["Practice Manager", "Admin"],
     problem: {
       title: "Ops visibility is scattered",
@@ -276,16 +276,16 @@ export const audiencePages = {
     },
     outcome: {
       title: "One operations view with audit",
-      body: "Monitor team workload, BRIDGE health, and SHIELD approval trails from a single practice dashboard.",
+      body: "Monitor team workload, integration health, and approval trails from a single practice dashboard.",
       icon: Shield,
     },
     agentMap: AUDIENCE_AGENT_MAPS.practices,
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Set up, oversee, evidence",
-      sectionDescription: "Three steps from practice setup to governance-ready reporting — agents named.",
+      sectionDescription: "Three steps from practice setup to governance-ready reporting.",
       disclaimer:
-        "Clinical approval remains with named clinicians. Partner EMIS write-back is not enabled (liveEmis:false).",
+        "Clinical approval remains with named clinicians.",
       steps: [
         {
           label: "01",
@@ -295,30 +295,30 @@ export const audiencePages = {
         },
         {
           label: "02",
-          title: "Oversee the queue (CONDUCTOR)",
+          title: "Oversee the queue",
           description:
-            "See review backlog and BRIDGE integration health without peeking into clinical detail you do not need.",
+            "See review backlog and integration health without peeking into clinical detail you do not need.",
           icon: ClipboardList,
         },
         {
           label: "03",
-          title: "Evidence governance (SHIELD)",
+          title: "Evidence governance",
           description: "Exportable audit trails for ICS and internal assurance.",
           icon: FileText,
         },
       ],
     },
     ctaPrimary: { label: "Create practice account", href: "/signup?role=practice-manager" },
-    ctaSecondary: { label: "Guided demo script", href: "/demo/script" },
+    ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
     ctaTertiary: { label: "Open admin dashboard", href: "/dashboard/admin" },
     complianceNote:
-      "Practice oversight stays separate from clinical sign-off. liveEmis:false. See documentation for architecture and compliance pathways.",
+      "Practice oversight stays separate from clinical sign-off. See documentation for architecture and compliance pathways.",
   },
   ics: {
     eyebrow: "For ICS leads",
     headline: "See population health across your system.",
     subline:
-      "COMPASS equity, HORIZON foresight, PATHWAY patterns — aggregates by default. Synthetic demo cohorts.",
+      "Equity, foresight, and pathway patterns — aggregates by default. Designed for ICS planning.",
     roles: ["ICS Lead", "Clinical Informatics"],
     problem: {
       title: "System intelligence arrives too late",
@@ -327,25 +327,25 @@ export const audiencePages = {
     },
     outcome: {
       title: "System view without losing trust",
-      body: "COMPASS-led equity and capacity views help leaders plan earlier while keeping patient detail out of population dashboards.",
+      body: "Equity and capacity views help leaders plan earlier while keeping patient detail out of population dashboards.",
       icon: BarChart3,
     },
     agentMap: AUDIENCE_AGENT_MAPS.ics,
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Connect, compare, plan",
-      sectionDescription: "Three steps from site connection to ICS planning — COMPASS first.",
-      disclaimer: "Population views are aggregate by default. Public demo uses synthetic data only. liveEmis:false.",
+      sectionDescription: "Three steps from site connection to ICS planning.",
+      disclaimer: "Population views are aggregate by default. Public demos use illustrative data.",
       steps: [
         {
           label: "01",
-          title: "Connect sites (BRIDGE)",
-          description: "Bring practices into a shared regional view — staging posture, not live EMR scrape.",
+          title: "Connect sites",
+          description: "Bring practices into a shared regional view.",
           icon: Link2,
         },
         {
           label: "02",
-          title: "Compare (COMPASS · HORIZON)",
+          title: "Compare",
           description: "See demand, outcomes, and equity gaps across the system.",
           icon: BarChart3,
         },
@@ -358,8 +358,8 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Try ICS demo", href: "/dashboard/ics" },
-    ctaSecondary: { label: "Guided demo script", href: "/demo/script" },
-    ctaTertiary: { label: "Discuss a pilot", href: "/get-started" },
+    ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
+    ctaTertiary: { label: "Talk to us", href: "/get-started" },
     complianceNote:
       "Population views are aggregate by default. Public demo uses synthetic data only. See documentation for ICS governance pathways.",
   },
@@ -367,7 +367,7 @@ export const audiencePages = {
     eyebrow: "For administrators",
     headline: "Keep integrations healthy and auditable.",
     subline:
-      "BRIDGE staging health, SHIELD audit, CONDUCTOR gate intact. Admins never bypass clinician Accept. liveEmis:false.",
+      "Integration health, audit trails, and clinician review gates intact. Admins never bypass clinician Accept.",
     roles: ["Administrator", "IT Lead"],
     problem: {
       title: "Integration failure is silent until clinics stall",
@@ -376,31 +376,31 @@ export const audiencePages = {
     },
     outcome: {
       title: "Ops health you can prove",
-      body: "Monitor BRIDGE connectors, tenancy controls, and immutable SHIELD audit events from one admin surface.",
+      body: "Monitor connectors, tenancy controls, and immutable audit events from one admin surface.",
       icon: Shield,
     },
     agentMap: AUDIENCE_AGENT_MAPS.administrators,
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Connect, monitor, evidence",
-      sectionDescription: "Three steps from integration setup to governance evidence — agents named.",
-      disclaimer: "Admin tools do not bypass clinician approval. EMIS write-back Not enabled. liveEmis:false.",
+      sectionDescription: "Three steps from integration setup to governance evidence.",
+      disclaimer: "Admin tools do not bypass clinician approval.",
       steps: [
         {
           label: "01",
-          title: "Connect systems (BRIDGE)",
-          description: "Configure FHIR-ready paths and organisation tenancy — sim/staging today.",
+          title: "Connect systems",
+          description: "Configure FHIR-ready paths and organisation tenancy.",
           icon: Link2,
         },
         {
           label: "02",
-          title: "Monitor health (CONDUCTOR)",
+          title: "Monitor health",
           description: "See ETL, connector, and orchestration status before clinic hours start.",
           icon: Activity,
         },
         {
           label: "03",
-          title: "Evidence control (SHIELD)",
+          title: "Evidence control",
           description: "Audit who accessed what and which writes clinicians approved.",
           icon: Shield,
         },
@@ -408,8 +408,8 @@ export const audiencePages = {
     },
     ctaPrimary: { label: "Open admin dashboard", href: "/dashboard/admin" },
     ctaSecondary: { label: "Create account", href: "/signup?role=practice-manager" },
-    ctaTertiary: { label: "Guided demo script", href: "/demo/script" },
+    ctaTertiary: { label: "Book demonstration", href: "/demo/script" },
     complianceNote:
-      "Admin tools do not bypass clinician approval. liveEmis:false. See documentation for architecture and compliance pathways.",
+      "Admin tools do not bypass clinician approval. See documentation for architecture and compliance pathways.",
   },
 } as const satisfies Record<string, AudiencePageContent>;

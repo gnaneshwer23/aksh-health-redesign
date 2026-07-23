@@ -103,22 +103,22 @@ export const AGENT_SUB_CAPABILITIES = [
 export const TWO_MINUTE_MARKETING_SCRIPT = [
   {
     beat: "1 · Home",
-    say: "Capture → draft → approve. Clinician gate on every output. Synthetic demo — liveEmis:false.",
+    say: "Capture → draft → approve. Clinician review on every output across EMIS Web and SystmOne pathways.",
     href: "/",
   },
   {
-    beat: "2 · How it works",
-    say: "Twelve agents in one pipeline. CONDUCTOR orchestrates; HITL Accept/Edit/Reject; BRIDGE stages FHIR; SHIELD audits. PRISM and ATLAS stay Phase 2.",
+    beat: "2 · Workflow",
+    say: "Supporting intelligence in one pipeline. Review coordination; Accept, Edit, or Reject; FHIR exchange; immutable audit.",
     href: "/how-it-works#pipeline",
   },
   {
     beat: "3 · Platform",
-    say: "Each agent’s job in the loop — HORIZON (ex-ORACLE), PATHWAY, COMPASS, NEXUS, CANVAS, BRIDGE, CONDUCTOR, SHIELD. VOICE and Dr.Assist are sub-caps under CANVAS / SYNTHESIS.",
+    say: "Clinical Capture, Documentation, Safety Review, Risk Signals, Referral Support, FHIR Exchange, and Audit — clinicians remain responsible.",
     href: "/platform#agents",
   },
   {
-    beat: "4 · Rehearse",
-    say: "Walk Capture → Draft → Approve on the guided demo script — still no live EHR write.",
+    beat: "4 · Demonstrate",
+    say: "Walk Capture → Draft → Approve on the demonstration script — clinician control throughout.",
     href: "/demo/script",
   },
 ] as const;

@@ -25,7 +25,7 @@ const careRoles: RoleSignal[] = [
     href: "/for-clinicians",
     dashboard: "Clinician dashboard",
     description:
-      "Risk-ranked appointments, consult capture, SOAP drafts, and referral packages — all in one clinician review queue.",
+      "Manage consultations, review structured drafts, approve referrals, and monitor clinical risk from one workspace.",
     signals: ["Consult capture", "SOAP drafts", "Risk signals", "Review queue"],
     featured: true,
   },
@@ -34,7 +34,7 @@ const careRoles: RoleSignal[] = [
     label: "Nurse / Care Coordinator",
     href: "/for-clinicians",
     dashboard: "Nurse dashboard",
-    description: "Observations, structured handover, and safety alerts so care coordination stays with the patient.",
+    description: "Manage observations, handovers, and safety alerts across the patient journey.",
     signals: ["Vitals", "Handover", "Safety alerts"],
     featured: true,
   },
@@ -43,7 +43,7 @@ const careRoles: RoleSignal[] = [
     label: "Clinical Pharmacist",
     href: "/for-clinicians",
     dashboard: "Pharmacist dashboard",
-    description: "Medication review queue with interaction checks — flag aspirin + apixaban before it reaches the script.",
+    description: "Review medications, identify interactions, and support safer prescribing.",
     signals: ["Med review", "Interactions", "BNF"],
     featured: true,
   },
@@ -55,7 +55,7 @@ const governanceRoles: RoleSignal[] = [
     label: "Practice Admin",
     href: "/for-practices",
     dashboard: "Admin · Audit",
-    description: "Integration health, tenancy controls, and immutable audit trails. Zero auto-writes.",
+    description: "Integration health, tenancy controls, and immutable audit trails across the practice.",
     signals: ["Audit", "Integrations", "ETL"],
   },
   {
@@ -63,7 +63,7 @@ const governanceRoles: RoleSignal[] = [
     label: "ICS / Regional Lead",
     href: "/for-ics",
     dashboard: "Regional dashboard",
-    description: "Population aggregates and equity insights across practices — no patient-level spill.",
+    description: "Monitor service performance and population health across connected organisations.",
     signals: ["Equity", "Cohorts", "Capacity"],
   },
 ];
@@ -74,7 +74,7 @@ const reachRoles: RoleSignal[] = [
     label: "Hospital Executive",
     href: "/for-hospitals",
     dashboard: "Command centre",
-    description: "Capacity planning and trust-level oversight across connected pathways.",
+    description: "View operational performance, service demand, and system wide capacity.",
     signals: ["Capacity", "Command"],
   },
   {
@@ -90,7 +90,7 @@ const reachRoles: RoleSignal[] = [
     label: "Researcher / Analyst",
     href: "/for-research",
     dashboard: "Informatics view",
-    description: "Governed outcome research with equity analysis and safety monitoring.",
+    description: "Explore governed datasets for service improvement and clinical research.",
     signals: ["Equity", "Cohorts"],
   },
 ];
@@ -110,13 +110,14 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
     <section id="roles" className="owkin-roles scroll-mt-24" aria-labelledby="roles-heading">
       <div className={container}>
         <ScrollReveal className="owkin-roles__intro">
-          <p className="owkin-roles__eyebrow">Every role, one platform</p>
+          <p className="owkin-roles__eyebrow">One platform</p>
           <h2 id="roles-heading" className="owkin-roles__title">
-            Built for every role
+            One platform.
+            <span className="block">Designed for every role.</span>
           </h2>
           <p className="owkin-roles__lede">
-            Eight purpose-built dashboards — from the Patel practice consult floor to regional equity views. Same
-            governed care journey. Different work.
+            Purpose-built workspaces for care teams, governance leads, and partners — same coordinated journey,
+            different work.
           </p>
         </ScrollReveal>
 
@@ -141,7 +142,7 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
                     <RoleSignals signals={role.signals} />
                   </div>
                   <span className="owkin-roles__cta">
-                    Explore
+                    View workspace
                     <span aria-hidden>→</span>
                   </span>
                 </Link>
@@ -166,7 +167,7 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
                   <p>{role.description}</p>
                   <RoleSignals signals={role.signals} />
                   <span className="owkin-roles__cta">
-                    Explore
+                    Open dashboard
                     <span aria-hidden>→</span>
                   </span>
                 </Link>
@@ -201,17 +202,17 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
         <ScrollReveal delayMs={140} className="owkin-roles__footer">
           {variant === "home" ? (
             <Link href="/platform#roles" className="owkin-text-cta">
-              Explore roles on the platform
+              View roles on the platform
               <span aria-hidden>→</span>
             </Link>
           ) : (
             <Link href="/for-clinicians" className="owkin-text-cta">
-              Clinician workflows in depth
+              View clinician workspace
               <span aria-hidden>→</span>
             </Link>
           )}
           <Link href="/demo/patel" className="owkin-text-cta">
-            Walk the Patel demo
+            Open Patel demo
             <span aria-hidden>→</span>
           </Link>
         </ScrollReveal>

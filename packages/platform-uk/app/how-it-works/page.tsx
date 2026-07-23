@@ -10,23 +10,23 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 export const metadata: Metadata = {
-  title: `How it works | ${SEO_DEFAULTS.title}`,
+  title: `Workflow | ${SEO_DEFAULTS.title}`,
   description:
-    "End-to-end Aksh Health pipeline: 12 agents, capture → draft → clinician approve, SHIELD audit, FHIR staging. Synthetic demo — no live EHR write-back.",
+    "How Aksh Health works: capture → draft → clinician approve, audit trails, and FHIR exchange across EMIS Web and SystmOne pathways.",
 };
 
 export default function HowItWorksPage() {
   return (
     <MarketingShell editorial>
       <MarketingPageHero
-        eyebrow="How it works"
+        eyebrow="Workflow"
         title="How Aksh Health works"
-        lede="Twelve agents. One HITL gate. Capture → draft → clinician approve → FHIR staging. Synthetic demo data today — no live EMIS or SystmOne write-back (liveEmis:false)."
-        primary={{ label: "Two-minute script", href: "/how-it-works#two-minute-script" }}
-        secondary={{ label: "See the pipeline", href: "/how-it-works#pipeline" }}
+        lede="Supporting intelligence. One clinician review gate. Capture → draft → approve, then exchange using FHIR standards — clinicians remain responsible for every approved outcome."
+        primary={{ label: "Book demonstration", href: "/how-it-works#two-minute-script" }}
+        secondary={{ label: "View workflow", href: "/how-it-works#pipeline" }}
         aside={
           <>
-            <p className="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-slate/55">
+            <p className="mb-4 text-center text-xs font-semibold tracking-wide text-slate/55">
               Care journey preview
             </p>
             <PlatformFlowDiagram variant="journey" showDescriptions={false} />
@@ -40,8 +40,8 @@ export default function HowItWorksPage() {
 
       <MarketingCtaBand
         title="Ready to see it in your organisation?"
-        lede="Role-specific dashboards, HITL review, SHIELD audit, and FHIR R4 staging. Live EHR write-back remains partner Phase 2 — liveEmis:false."
-        primary={{ label: "Guided demo script", href: "/demo/script" }}
+        lede="Role-specific workspaces, clinician review, audit trails, and FHIR exchange — designed for NHS organisations."
+        primary={{ label: "Book demonstration", href: "/demo/script" }}
         secondary={{ label: "Create account", href: "/signup" }}
       />
 

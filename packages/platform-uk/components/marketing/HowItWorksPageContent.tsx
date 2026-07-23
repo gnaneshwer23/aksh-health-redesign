@@ -40,7 +40,7 @@ const platformStages: Array<{
     icon: Mic,
     label: "Capture",
     title: "Capture once",
-    body: "CANVAS structures consult context (VOICE dictation is a sub-capability under CANVAS). Designed for EMIS Web / SystmOne pathways — staging today, no live EHR pull.",
+    body: "Capture consultation context once. Designed for EMIS Web and SystmOne pathways — structured for clinician review.",
   },
   {
     num: "02",
@@ -48,7 +48,7 @@ const platformStages: Array<{
     icon: ClipboardList,
     label: "Draft",
     title: "Draft + checks",
-    body: "CONDUCTOR runs SYNTHESIS, GUARDIAN, HORIZON, PATHWAY, and NEXUS in parallel. Dr.Assist coding drafts sit under SYNTHESIS. Nothing auto-writes to the record.",
+    body: "Documentation, safety, risk, referrals, and clinical correlation run as supporting drafts. Nothing auto-writes to the record.",
   },
   {
     num: "03",
@@ -56,7 +56,7 @@ const platformStages: Array<{
     icon: UserCheck,
     label: "Approve",
     title: "Clinician approves",
-    body: "Accept, edit, or reject every output. SHIELD audits the decision. Only then can BRIDGE stage FHIR toward EMIS or SystmOne (sim/staging — liveEmis:false).",
+    body: "Accept, edit, or reject every output. Audit records the decision. Only approved content proceeds for exchange with existing clinical systems.",
   },
 ];
 
@@ -77,19 +77,19 @@ const roleFlows = {
         label: "Capture",
         title: "Consult comes in",
         description:
-          "Notes or voice into CANVAS. Synthetic / staged context today — live EMIS/SystmOne pull is partner Phase 2.",
+          "Notes or voice into shared intake. Structured context for drafts — clinician review before the record.",
       },
       {
         icon: ClipboardList,
         label: "Draft",
         title: "Drafts and checks stage",
-        description: "SOAP (SYNTHESIS), safety (GUARDIAN), risk (HORIZON), referrals (PATHWAY) land in one review queue.",
+        description: "Documentation, safety, risk, and referrals land in one review queue.",
       },
       {
         icon: ClipboardCheck,
         label: "Approve",
         title: "You decide",
-        description: "Accept, edit, or reject. SHIELD audits; BRIDGE stages only approved drafts — liveEmis:false.",
+        description: "Accept, edit, or reject. Audit records the decision; only approved drafts proceed.",
       },
     ] satisfies RoleStep[],
   },
@@ -113,7 +113,7 @@ const roleFlows = {
         icon: FileCheck2,
         label: "Evidence",
         title: "Audit for assurance",
-        description: "SHIELD trails support ICS governance and internal review — not a certification claim.",
+        description: "Audit trails support ICS governance and internal review.",
       },
     ] satisfies RoleStep[],
   },
@@ -145,15 +145,15 @@ const hitlActions = [
   },
 ] as const;
 
-const headlineAgents = [
-  { name: "HORIZON", note: "ex-ORACLE · risk drafts" },
-  { name: "PATHWAY", note: "referrals · coordination" },
-  { name: "COMPASS", note: "population · equity" },
-  { name: "NEXUS", note: "clinical impression" },
-  { name: "CANVAS", note: "intake (+ VOICE)" },
-  { name: "BRIDGE", note: "FHIR staging" },
-  { name: "CONDUCTOR", note: "orchestrates HITL" },
-  { name: "SHIELD", note: "immutable audit" },
+const headlineCapabilities = [
+  { name: "Risk Signals", note: "clinical risk drafts" },
+  { name: "Referral Support", note: "referrals · coordination" },
+  { name: "Population Insights", note: "population · equity" },
+  { name: "Clinical Correlation", note: "clinical impression" },
+  { name: "Clinical Capture", note: "intake" },
+  { name: "FHIR Exchange", note: "system exchange" },
+  { name: "Review Coordination", note: "clinician review gate" },
+  { name: "Audit", note: "immutable record" },
 ] as const;
 
 export function HowItWorksPageContent() {
@@ -168,7 +168,7 @@ export function HowItWorksPageContent() {
             align="left"
             label="Demo host script"
             title="Explain it in two minutes"
-            description="Home → how it works → platform → guided script. No dashboard required. Stay honest: synthetic data, HITL, liveEmis:false."
+            description="Home → workflow → platform → demonstration. No dashboard required."
           />
           <ol className="grid gap-4 md:grid-cols-2">
             {TWO_MINUTE_MARKETING_SCRIPT.map((step) => (
@@ -202,11 +202,11 @@ export function HowItWorksPageContent() {
           <MarketingSectionHeader
             align="left"
             label="Who does what"
-            title="Agents named in the loop"
-            description="Call these out in a two-minute pitch. Full roster with job-in-loop blurbs on the platform page. PRISM and ATLAS stay Phase 2."
+            title="Supporting intelligence in the loop"
+            description="Capabilities that support capture, draft, and approve. Full detail on the platform page."
           />
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {headlineAgents.map((agent) => (
+            {headlineCapabilities.map((agent) => (
               <div key={agent.name} className="rounded-xl border border-navy/[0.08] bg-white/80 px-4 py-3">
                 <p className="font-[family-name:var(--font-marketing-display)] text-base font-semibold text-navy-dark">
                   {agent.name}
@@ -217,10 +217,9 @@ export function HowItWorksPageContent() {
           </div>
           <p className="mt-6 text-sm text-slate/70">
             <Link href="/platform#agents" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-              Open the twelve-agent grid
+              View clinical capabilities
             </Link>
-            {" · "}
-            VOICE and Dr.Assist are sub-capabilities — not peer agents.
+            .
           </p>
         </div>
       </section>
@@ -230,8 +229,8 @@ export function HowItWorksPageContent() {
           <MarketingSectionHeader
             align="left"
             label="Care journey"
-            title="Capture, draft, approve — then stage"
-            description="A calm three-step clinician path. Agent drafts never auto-write to a live EHR."
+            title="Capture, draft, approve"
+            description="A calm three-step clinician path. Drafts never auto-write to the record."
           />
 
           <PlatformFlowDiagram variant="full" />
@@ -276,8 +275,7 @@ export function HowItWorksPageContent() {
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-steel">
                   Every draft is staged for review. Clinicians choose Accept, Edit, or Reject. Only approved content
-                  progresses toward FHIR staging and EHR write-back — and this build keeps liveEmis:false (sim/staging
-                  only).
+                  progresses for exchange with existing clinical systems.
                 </p>
               </div>
 
@@ -370,8 +368,8 @@ export function HowItWorksPageContent() {
           <MarketingSectionHeader
             align="left"
             label="Architecture"
-            title="Data flow from EHR to governed record"
-            description="How clinical systems connect to Aksh Health, pass clinician review, and stage as FHIR R4."
+            title="Data flow from clinical systems to governed record"
+            description="How clinical systems connect to Aksh Health, pass clinician review, and exchange using FHIR standards."
           />
 
           <PlatformFlowDiagram variant="architecture" />

@@ -1,8 +1,8 @@
 const TRUST_PHRASES = [
   "Built for NHS primary care",
-  "FHIR R4-ready architecture",
+  "FHIR-ready architecture",
   "Clinician-reviewed outputs",
-  "Pilot access open",
+  "Designed for NHS organisations",
   "Designed for EMIS Web & SystmOne",
   "Human-in-the-loop review",
   "GDPR Art. 9 aware",
@@ -29,7 +29,7 @@ function MarqueeTrack({ ariaHidden }: { ariaHidden?: boolean }) {
 /** Slim right-to-left trust ticker for the homepage hero band. */
 export default function TrustMarquee() {
   return (
-    <div className="aksh-trust-marquee" aria-label="Product trust and pilot readiness">
+    <div className="aksh-trust-marquee" aria-label="Product trust signals">
       <ul className="sr-only">
         {TRUST_PHRASES.map((phrase) => (
           <li key={phrase}>{phrase}</li>

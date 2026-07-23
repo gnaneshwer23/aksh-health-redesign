@@ -11,21 +11,21 @@ type MegaLink = { label: string; href: string; description?: string; badge?: str
 type MegaColumn = { pill: string; links: MegaLink[]; cta?: { label: string; href: string } };
 
 const megaMenus: Record<string, MegaColumn[]> = {
-  "What it is": [
+  Platform: [
     {
       pill: "Platform",
       links: [
-        { label: "Overview", href: "/platform", description: "Care coordination, review, and FHIR staging" },
-        { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR R4" },
+        { label: "Overview", href: "/platform", description: "Care coordination, review, and FHIR exchange" },
+        { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR standards" },
         { label: "Security & safety", href: "/security", description: "Safety case and audit posture" },
       ],
-      cta: { label: "See walkthrough", href: "/walkthrough" },
+      cta: { label: "Book a walkthrough", href: "/walkthrough" },
     },
     {
       pill: "Capabilities",
       links: [
         { label: "Clinician review", href: "/platform#hitl" },
-        { label: "FHIR R4 staging", href: "/how-it-works#pipeline" },
+        { label: "FHIR exchange", href: "/how-it-works#pipeline" },
         { label: "Capture → draft → approve", href: "/how-it-works#journey" },
         { label: "Clinical checks", href: "/platform#agents" },
       ],
@@ -39,7 +39,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
       ],
     },
   ],
-  "Who for": [
+  Solutions: [
     {
       pill: "Care delivery",
       links: [
@@ -63,7 +63,7 @@ const megaMenus: Record<string, MegaColumn[]> = {
     {
       pill: "Partners",
       links: [
-        { label: "Research", href: "/for-research", description: "Governed outcome evaluation", badge: "Open" },
+        { label: "Research", href: "/for-research", description: "Governed outcome evaluation" },
         { label: "View all roles", href: "/platform#roles" },
       ],
     },
@@ -71,11 +71,11 @@ const megaMenus: Record<string, MegaColumn[]> = {
 };
 
 const centerLinks = [
-  { label: "What it is", href: "/platform", mega: true },
-  { label: "How it works", href: "/how-it-works", mega: false },
-  { label: "Who for", href: "/for-clinicians", mega: true },
-  { label: "Safety", href: "/security", mega: false },
-  { label: "See it", href: "/walkthrough", mega: false },
+  { label: "Platform", href: "/platform", mega: true },
+  { label: "Workflow", href: "/how-it-works", mega: false },
+  { label: "Solutions", href: "/for-clinicians", mega: true },
+  { label: "Security", href: "/security", mega: false },
+  { label: "Resources", href: "/resources", mega: false },
 ] as const;
 
 type NavbarProps = {
@@ -265,7 +265,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 </Link>
               </SheetClose>
             ))}
-            {megaMenus["Who for"].flatMap((col) =>
+            {megaMenus["Solutions"].flatMap((col) =>
               col.links.map((link) => (
                 <SheetClose key={link.href + link.label} asChild>
                   <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
@@ -287,11 +287,6 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
             <SheetClose asChild>
               <Link href="/contact" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                 Contact
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link href="/resources" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                Resources
               </Link>
             </SheetClose>
           </nav>

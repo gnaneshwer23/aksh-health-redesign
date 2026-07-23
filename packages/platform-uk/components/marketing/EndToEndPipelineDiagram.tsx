@@ -36,7 +36,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           How it works — capture to governed record
         </h2>
         <p className={styles.subtitle}>
-          Capture → Draft → Approve · 12 agents · One governed pipeline · Zero auto-writes
+          Capture → Draft → Approve · Supporting intelligence · One governed pipeline
         </p>
       </div>
 
@@ -57,13 +57,13 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
             </div>
             <div className={styles.ehrItem}>
               <span className={cn(styles.ehrDot, styles.ehrDotMuted)} aria-hidden />
-              Epic / Oracle Health — roadmap
+              Epic / Oracle Health — planned
             </div>
           </div>
 
           <div className={cn(styles.card, styles.canvas)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>CANVAS</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Clinical Capture</div>
             <p className={styles.cardDesc}>
               Clinical Intake Agent
               <br />
@@ -74,18 +74,18 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={styles.feedBox}>
-            <strong>Also feeds into CANVAS</strong>
+            <strong>Also feeds into Clinical Capture</strong>
             <div className={styles.feedList}>
-              • VOICE dictation (sub-capability — not a 13th agent)
+              • Voice dictation
               <br />
               • Lab results (Observation)
               <br />
-              • Imaging reports (roadmap / PRISM)
+              • Imaging reports
               <br />
               • Appointment reason
               <br />
               • Allergy &amp; alert records
-              <br />• Wearables (Phase 2)
+              <br />• Wearables
             </div>
           </div>
         </div>
@@ -104,8 +104,8 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           <div className={cn(styles.colHeader, styles.colIntel)}>② Intelligence layer</div>
 
           <div className={cn(styles.card, styles.bridge)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>BRIDGE</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>FHIR Exchange</div>
             <p className={styles.cardDesc}>
               Interoperability Agent
               <br />
@@ -119,7 +119,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
             <div className={styles.neoTitle}>Neo4j knowledge graph</div>
             <p className={styles.neoDesc}>
               Patients linked to conditions, medications, risk factors, and interactions when Neo4j is configured.
-              Falls back to local synthetic data otherwise. CONDUCTOR uses this graph for agent context.
+              Falls back to local synthetic data otherwise. Review coordination uses this graph for clinical context.
             </p>
             <div className={styles.chipRow}>
               <span className={styles.chip}>Patient nodes</span>
@@ -128,30 +128,30 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
               <span className={styles.chip}>Risk traversal</span>
             </div>
             <span className={cn(styles.inlineBadge, styles.badgeLive)} style={{ position: "static", marginTop: 8 }}>
-              LIVE when configured
+              Available when configured
             </span>
           </div>
 
           <div className={cn(styles.card, styles.nexus)}>
-            <Phase kind="live">LIVE · in CONDUCTOR</Phase>
-            <div className={styles.cardName}>NEXUS</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Clinical Correlation</div>
             <p className={styles.cardDesc}>
               Clinical Intelligence Agent
               <br />
               Correlates labs, medications, and graph signals into draft clinical impressions via AI Gateway (with
-              deterministic fallback). Included in the default CONDUCTOR path after SYNTHESIS→GUARDIAN→HORIZON —
+              deterministic fallback). Included in the default review path after Documentation → Safety Review → Risk Signals —
               always <code>status: draft</code>, HITL Accept/Edit/Reject, SHIELD-audited, no live EMR write.
             </p>
             <span className={styles.cardFhir}>ClinicalImpression · DiagnosticReport</span>
           </div>
 
           <div className={cn(styles.card, styles.prism)}>
-            <Phase kind="phase2">PHASE 2</Phase>
-            <div className={styles.cardName}>PRISM</div>
+            <Phase kind="phase2">Planned</Phase>
+            <div className={styles.cardName}>Imaging Support</div>
             <p className={styles.cardDesc}>
               Imaging Intelligence Agent
               <br />
-              Roadmap: radiology / DICOM → structured FHIR. Not built in the current product.
+              Imaging intelligence for structured clinical exchange — planned capability.
             </p>
             <span className={styles.cardFhir}>ImagingStudy · Observation</span>
           </div>
@@ -173,7 +173,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           <div className={cn(styles.colHeader, styles.colAgents)}>③ AI agents (parallel)</div>
 
           <div className={styles.conductorBanner}>
-            <div className={styles.conductorTitle}>CONDUCTOR orchestrates all agents</div>
+            <div className={styles.conductorTitle}>Review coordination across supporting intelligence</div>
             <p className={styles.conductorDesc}>
               Clinical-spine orchestrator (in-app) — not LangGraph. Chooses agent order per consult type, aggregates
               priority, and enforces the HITL gate before any staging.
@@ -181,21 +181,21 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={cn(styles.card, styles.synthesis)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>SYNTHESIS</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Documentation</div>
             <p className={styles.cardDesc}>
               Clinical Documentation Agent
               <br />
               Structures voice or typed input into a SOAP note draft via Vercel AI Gateway (with rule-based fallback).
-              Dr.Assist coding drafts support documentation under HITL — a sub-capability, not a peer directory agent.
+              Coding drafts support documentation under clinician review.
               John Snow Labs NLP is not wired in this build.
             </p>
             <span className={styles.cardFhir}>DocumentReference (SOAP)</span>
           </div>
 
           <div className={cn(styles.card, styles.guardian)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>GUARDIAN</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Safety Review</div>
             <p className={styles.cardDesc}>
               Medication Intelligence Agent
               <br />
@@ -205,20 +205,20 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={cn(styles.card, styles.horizon)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>HORIZON</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Risk Signals</div>
             <p className={styles.cardDesc}>
               Predictive Risk Agent
               <br />
-              CVD / long-term-condition risk stratification (formerly ORACLE). Graph-backed when Neo4j is live; draft
+              CVD / long-term-condition risk stratification (risk). Graph-backed when Neo4j is live; draft
               only until clinician Accept.
             </p>
             <span className={styles.cardFhir}>RiskAssessment</span>
           </div>
 
           <div className={cn(styles.card, styles.pathway)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>PATHWAY</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Referral Support</div>
             <p className={styles.cardDesc}>
               Care Coordination Agent
               <br />
@@ -248,7 +248,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
             <p className={styles.hitlBody}>
               Every agent output lands here as <strong>DRAFT</strong>.
               <br />
-              Sorted: URGENT → HIGH → NORMAL.
+              Sorted by clinical urgency.
               <br />
               Each item shows agent · confidence · evidence · “Draft — not yet in record”.
             </p>
@@ -264,8 +264,8 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           </div>
 
           <div className={cn(styles.card, styles.shield)}>
-            <Phase kind="live">LIVE</Phase>
-            <div className={styles.cardName}>SHIELD</div>
+            <Phase kind="live">Available</Phase>
+            <div className={styles.cardName}>Audit</div>
             <p className={styles.cardDesc}>
               Regulatory &amp; Audit Agent
               <br />
@@ -298,7 +298,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
             <div className={styles.writeBackTitle}>EHR write-back</div>
             <p className={styles.writeBackDesc}>
               Partner path: after confirmation, staged FHIR may move toward EMIS Web or SystmOne. Today the product
-              runs <strong>ehr-writeback-sim</strong> and emis-staging only — <strong>liveEmis: false</strong>. Mirth
+              uses governed staging pathways for demonstration. Mirth
               Connect is roadmap.
             </p>
             <div className={styles.writeBackNote}>PHASE 2 / ROADMAP · EMIS Partner Programme required · no live write</div>
@@ -310,22 +310,22 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
         <div className={styles.bottomLabel}>Population, research &amp; governance agents</div>
         <div className={styles.bottomGrid}>
           <div className={cn(styles.bottomCard, styles.compassBorder)}>
-            <div className={cn(styles.bottomCardName, styles.compassName)}>COMPASS — Population Health</div>
+            <div className={cn(styles.bottomCardName, styles.compassName)}>Population Insights</div>
             <p className={styles.bottomCardRole}>
               Aggregates risk and equity signals across the ICS footprint for the ICS dashboard. No patient-level spill
               to ICS users.
             </p>
             <div className={styles.bottomCardFhir}>Observation · MeasureReport · Group</div>
-            <span className={cn(styles.inlineBadge, styles.compassBadge)}>LIVE — ICS dashboard</span>
+            <span className={cn(styles.inlineBadge, styles.compassBadge)}>Available — ICS dashboard</span>
           </div>
 
           <div className={cn(styles.bottomCard, styles.atlasBorder)}>
-            <div className={cn(styles.bottomCardName, styles.atlasName)}>ATLAS — Clinical Research</div>
+            <div className={cn(styles.bottomCardName, styles.atlasName)}>Research Support</div>
             <p className={styles.bottomCardRole}>
-              Roadmap: trial eligibility, biomarker discovery, federated analytics. Not built in the current product.
+              Research analytics for trial eligibility and federated evaluation — planned capability.
             </p>
             <div className={styles.bottomCardFhir}>ResearchStudy · ResearchSubject · Consent</div>
-            <span className={cn(styles.inlineBadge, styles.atlasBadge)}>PHASE 2 — Roadmap</span>
+            <span className={cn(styles.inlineBadge, styles.atlasBadge)}>Planned</span>
           </div>
 
           <div className={cn(styles.bottomCard, styles.shieldBottom)}>
@@ -335,17 +335,17 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
               evidence pack — not MHRA/DCB certification.
             </p>
             <div className={styles.bottomCardFhir}>AuditEvent · Provenance · Consent</div>
-            <span className={cn(styles.inlineBadge, styles.shieldBadge)}>LIVE — All dashboards</span>
+            <span className={cn(styles.inlineBadge, styles.shieldBadge)}>Available — All dashboards</span>
           </div>
 
           <div className={cn(styles.bottomCard, styles.conductorBottom)}>
-            <div className={cn(styles.bottomCardName, styles.conductorName)}>CONDUCTOR — Supervisor</div>
+            <div className={cn(styles.bottomCardName, styles.conductorName)}>Review Coordination</div>
             <p className={styles.bottomCardRole}>
               Clinical-spine orchestrator. Enforces HITL before FHIR staging and requires a SHIELD audit event. No
               LangGraph dependency in this build.
             </p>
             <div className={styles.bottomCardFhir}>No direct FHIR — orchestration only</div>
-            <span className={cn(styles.inlineBadge, styles.conductorBadge)}>LIVE — Clinical spine</span>
+            <span className={cn(styles.inlineBadge, styles.conductorBadge)}>Available — Clinical spine</span>
           </div>
         </div>
       </div>
@@ -357,7 +357,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
         <div className={styles.invariantText}>
           <h3>The invariant — enforced at every layer</h3>
           <p>
-            Zero AI outputs are written to a live EHR without explicit clinician approval. CONDUCTOR enforces the HITL
+            Zero AI outputs are written to a clinical record without explicit clinician approval. Review coordination enforces the
             gate in the clinical spine; BRIDGE stages only approved drafts; SHIELD records every action. There is no
             bypass, no timer, and no bulk-approve. Current builds use synthetic demo data and sim/staging write-back
             only.
@@ -368,7 +368,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
       <div className={styles.legend}>
         <div className={styles.legendItem}>
           <span className={styles.legendDot} style={{ background: "#E8F5F0", border: "1.5px solid #006B4F" }} />
-          Phase 1 · Live in product
+          Available in product
         </div>
         <div className={styles.legendItem}>
           <span className={styles.legendDot} style={{ background: "#EBF4FF", border: "1.5px solid #003D7A" }} />
@@ -376,7 +376,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
         </div>
         <div className={styles.legendItem}>
           <span className={styles.legendDot} style={{ background: "#FEF3E2", border: "1.5px solid #E67E22" }} />
-          Phase 2 · Roadmap
+          Planned capabilities
         </div>
         <div className={styles.legendItem}>
           <span className={styles.legendDot} style={{ background: "#F4ECF7", border: "1.5px solid #6B46C1" }} />
@@ -387,7 +387,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           HITL required
         </div>
         <p className={styles.disclaimer}>
-          Aksh Health Ltd · Registered in England &amp; Wales · Pilot-stage synthetic demo · Clinician review required
+          Aksh Health Ltd · Registered in England &amp; Wales · Designed for NHS organisations
           on all outputs · No live EMIS/SystmOne write-back in this build
         </p>
       </div>

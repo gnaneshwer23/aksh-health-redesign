@@ -2,9 +2,9 @@ import { cn } from "@/lib/utils";
 
 const trustBadges = [
   "Built for NHS primary care",
-  "FHIR R4-ready architecture",
+  "FHIR-ready architecture",
   "Clinician-reviewed outputs",
-  "Pilot access open",
+  "Designed for NHS organisations",
 ] as const;
 
 type TrustStripProps = {
@@ -22,7 +22,7 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
           ? "border-t border-black/[0.06] bg-white/35 backdrop-blur-md"
           : "border-y border-navy/10 bg-white shadow-sm"
       )}
-      aria-label="Product trust and pilot readiness"
+      aria-label="Product trust signals"
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-1 gap-y-2 sm:gap-x-0">
         {trustBadges.map((badge, index) => (

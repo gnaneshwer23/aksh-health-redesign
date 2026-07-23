@@ -4902,10 +4902,10 @@ input:focus, textarea:focus {
 
 /* Dental-landing inspired marketing utilities (Aksh navy/emerald) */
 .marketing-section-label {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: #00915d;
 }
 
@@ -5704,10 +5704,10 @@ input:focus, textarea:focus {
   border-radius: 999px;
   background: var(--owkin-pill);
   color: #5a4630;
-  font-size: 0.68rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .owkin-mega__list {
@@ -6786,10 +6786,11 @@ input:focus, textarea:focus {
 
 .owkin-product-band__logo {
   margin: 0 0 0.85rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(20, 20, 20, 0.45);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: rgba(20, 20, 20, 0.55);
 }
 
 .owkin-product-band__copy h2 {
@@ -7143,10 +7144,10 @@ input:focus, textarea:focus {
 
 .owkin-roles__eyebrow {
   margin: 0 0 0.85rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: var(--owkin-royal);
 }
 
@@ -7179,11 +7180,11 @@ input:focus, textarea:focus {
 
 .owkin-roles__band-label {
   margin: 0 0 1rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(20, 20, 20, 0.45);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: rgba(20, 20, 20, 0.55);
 }
 
 .owkin-roles__featured {
@@ -7446,8 +7447,8 @@ input:focus, textarea:focus {
   --mk-accent-strong: #0a5f53;
   --mk-signal: #14e0a4;
   --mk-line: rgba(10, 42, 37, 0.12);
-  --mk-section: clamp(4.5rem, 8vw, 7rem);
-  --mk-section-tight: clamp(3.5rem, 6vw, 5rem);
+  --mk-section: clamp(5.4rem, 9.6vw, 8.4rem);
+  --mk-section-tight: clamp(4.2rem, 7.2vw, 6rem);
   --mk-radius-sm: 0.75rem;
   --mk-radius-md: 1rem;
   --mk-radius-lg: 1.5rem;
@@ -7458,7 +7459,7 @@ input:focus, textarea:focus {
   color: var(--mk-ink);
   font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
   font-size: 1rem;
-  line-height: 1.55;
+  line-height: 1.7;
 }
 
 .marketing-site--editorial {
@@ -7483,7 +7484,7 @@ input:focus, textarea:focus {
 }
 
 .marketing-container {
-  width: min(100% - 2.5rem, 76rem);
+  width: min(100% - 2.5rem, 64.6rem);
   margin-inline: auto;
 }
 
@@ -7617,11 +7618,11 @@ input:focus, textarea:focus {
 .owkin-hero__brand {
   margin-bottom: 1.25rem;
   font-family: var(--font-aksh-body), "Instrument Sans", system-ui, sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 600;
   line-height: 1.2;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: var(--mk-accent);
 }
 
@@ -8596,8 +8597,9 @@ input:focus, textarea:focus {
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 1rem !important;
-  font-size: 0.7rem !important;
-  letter-spacing: 0.16em !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
   color: var(--mk-accent-strong) !important;
   animation: marketing-hero-rise 920ms var(--mk-ease) both;
 }

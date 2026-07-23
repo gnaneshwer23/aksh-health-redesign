@@ -5,21 +5,21 @@ import { container, linkUnderline } from "@/components/marketing/marketing-ui";
 const beats = [
   {
     title: "Clinical work is profoundly fragmented",
-    body: "Notes, meds, referrals, and handovers still live across EMIS Web, SystmOne, and inbox chaos. Teams spend the day reconciling systems instead of practising medicine.",
+    body: "Clinical information is spread across multiple systems, making coordination difficult and increasing administrative burden.",
     href: "/platform",
-    cta: "Explore the platform",
+    cta: "View platform",
   },
   {
-    title: "A governed agent layer is the answer",
-    body: "Eight specialist agents draft and check work against clinical context. Nothing reaches the record until a human accepts, edits, or rejects it — with a full audit trail.",
+    title: "Coordinated drafts with a clinician gate",
+    body: "Every consultation becomes a structured draft with supporting clinical checks, ready for clinician review before entering the record.",
     href: "/how-it-works",
-    cta: "See how it works",
+    cta: "View workflow",
   },
   {
-    title: "Powered by FHIR. Continuously reviewed.",
-    body: "Approved outputs stage as FHIR R4 resources ready for EMIS Web and SystmOne paths. Every decision is accountable; every write waits for clinician sign-off.",
+    title: "Built for EMIS, SystmOne, and FHIR",
+    body: "Structured clinical information is prepared using FHIR standards and integrated with existing clinical systems through governed workflows.",
     href: "/security",
-    cta: "Review safety posture",
+    cta: "View security",
   },
 ] as const;
 

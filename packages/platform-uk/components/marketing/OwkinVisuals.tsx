@@ -46,7 +46,7 @@ export function HeroProductVisual({ className = "" }: { className?: string }) {
             </li>
             <li className="aksh-mock-queue__row">
               <span className="aksh-mock-queue__dot" />
-              <span className="aksh-mock-queue__agent">HORIZON</span>
+              <span className="aksh-mock-queue__agent">Risk Signals</span>
               <span className="aksh-mock-queue__detail">14-day risk · 82</span>
             </li>
             <li className="aksh-mock-queue__row">
@@ -158,7 +158,7 @@ function VoiceConsultVisual() {
         <div className="aksh-mock-frame__chrome">
           <span className="aksh-mock-frame__dot" />
           <span className="aksh-mock-frame__title">Voice consult</span>
-          <span className="aksh-mock-frame__badge">Live</span>
+          <span className="aksh-mock-frame__badge">In progress</span>
         </div>
         <div className="aksh-mock-voice">
           <div className="aksh-mock-voice__wave" aria-hidden>
@@ -171,12 +171,12 @@ function VoiceConsultVisual() {
         <ul className="aksh-mock-queue aksh-mock-queue--compact">
           <li className="aksh-mock-queue__row">
             <span className="aksh-mock-queue__dot" />
-            <span className="aksh-mock-queue__agent">SYNTHESIS</span>
+            <span className="aksh-mock-queue__agent">Documentation</span>
             <span className="aksh-mock-queue__detail">SOAP draft ready</span>
           </li>
           <li className="aksh-mock-queue__row">
             <span className="aksh-mock-queue__dot" />
-            <span className="aksh-mock-queue__agent">HORIZON</span>
+            <span className="aksh-mock-queue__agent">Risk Signals</span>
             <span className="aksh-mock-queue__detail">Risk flagged</span>
           </li>
         </ul>
@@ -213,7 +213,7 @@ function OracleRiskCard() {
     <div className="aksh-mock-frame aksh-mock-oracle">
       <div className="aksh-mock-frame__chrome">
         <span className="aksh-mock-frame__dot" />
-        <span className="aksh-mock-frame__title">HORIZON risk</span>
+        <span className="aksh-mock-frame__title">Risk Signals risk</span>
         <span className="aksh-mock-frame__badge aksh-mock-frame__badge--warn">High</span>
       </div>
       <div className="aksh-mock-oracle__score">
@@ -251,7 +251,7 @@ function ShieldAuditCard({ compact = false }: { compact?: boolean }) {
         {!compact ? (
           <li>
             <span>ETL</span>
-            <span>Midnight run · SUCCESS</span>
+            <span>Midnight run · Verified</span>
           </li>
         ) : null}
       </ul>

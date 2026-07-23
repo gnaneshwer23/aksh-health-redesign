@@ -46,22 +46,18 @@ export default function HomePage() {
       <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band>
         <div className={`${container} max-w-2xl`}>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
-            Ready for your organisation?
+            Build a more coordinated healthcare system.
           </h2>
           <p className="owkin-cta-band__lede mb-8 text-lg leading-relaxed md:text-xl">
-            Eight role-specific dashboards. Capture → draft → approve with clinician gatekeeping. Designed for EMIS
-            Web and SystmOne via FHIR R4 staging. Precision Health scaffolding on the roadmap — not a live twin claim.
+            Aksh Health helps organisations capture, review, govern, and coordinate clinical work across existing
+            healthcare systems.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">
-              Discuss a pilot
+              Book a demonstration
             </Link>
-            <Link href="/signup" className="owkin-cta-band__link">
-              Create account
-              <span aria-hidden>→</span>
-            </Link>
-            <Link href="/walkthrough" className="owkin-cta-band__link">
-              See walkthrough
+            <Link href="/contact" className="owkin-cta-band__link">
+              Talk to us
               <span aria-hidden>→</span>
             </Link>
           </div>

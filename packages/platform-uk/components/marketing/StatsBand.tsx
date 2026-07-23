@@ -1,10 +1,26 @@
 import { container } from "@/components/marketing/marketing-ui";
 
 const stats = [
-  { value: "4 sec", label: "SOAP note draft", detail: "SYNTHESIS structures your note from consultation input" },
-  { value: "14 days", label: "Admission risk horizon", detail: "HORIZON predicts deterioration ahead of time" },
-  { value: "0", label: "Auto-writes without approval", detail: "Every output waits for clinician sign-off" },
-  { value: "8", label: "Role dashboards, one platform", detail: "GP, nurse, pharmacist, and more" },
+  {
+    value: "Drafts",
+    label: "Structured clinical drafts",
+    detail: "Consultations become review-ready clinical documentation",
+  },
+  {
+    value: "Horizon",
+    label: "Risk horizon",
+    detail: "Surface deterioration signals for clinician attention",
+  },
+  {
+    value: "Review",
+    label: "Clinician approval required",
+    detail: "Every output waits for Accept, Edit, or Reject",
+  },
+  {
+    value: "Roles",
+    label: "Role specific workspaces",
+    detail: "Purpose-built views for GP, nurse, pharmacist, and more",
+  },
 ] as const;
 
 export default function StatsBand() {

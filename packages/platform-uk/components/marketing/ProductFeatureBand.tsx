@@ -11,7 +11,7 @@ export default function ProductFeatureBand() {
           <div className="owkin-product-card aksh-product-mock">
             <div className="aksh-product-mock__header">
               <p className="owkin-product-card__eyebrow">GP dashboard · Patel practice</p>
-              <span className="aksh-product-mock__pill">Awaiting GP</span>
+              <span className="aksh-product-mock__pill">Needs Review</span>
             </div>
             <p className="owkin-product-card__title">Today&apos;s review queue</p>
 
@@ -22,29 +22,29 @@ export default function ProductFeatureBand() {
                   <p>Consult transcript · Mr J. Patel</p>
                   <p className="aksh-product-mock__meta">Calf swelling · sugars 12–14</p>
                 </div>
-                <span className="aksh-product-mock__status">Live</span>
+                <span className="aksh-product-mock__status">In progress</span>
               </div>
               <div className="aksh-product-mock__row">
                 <span className="aksh-product-mock__agent aksh-product-mock__agent--synth">SOAP</span>
                 <div>
                   <p>SOAP draft ready</p>
-                  <p className="aksh-product-mock__meta">DocumentReference · awaiting GP</p>
+                  <p className="aksh-product-mock__meta">DocumentReference · Needs Review</p>
                 </div>
                 <span className="aksh-product-mock__status aksh-product-mock__status--draft">Draft</span>
               </div>
               <div className="aksh-product-mock__row">
                 <span className="aksh-product-mock__agent aksh-product-mock__agent--oracle">RISK</span>
                 <div>
-                  <p>Admission risk 78 → 82</p>
-                  <p className="aksh-product-mock__meta">14-day horizon · HIGH</p>
+                  <p>Admission risk signal</p>
+                  <p className="aksh-product-mock__meta">Risk horizon · Requires attention</p>
                 </div>
                 <span className="aksh-product-mock__status aksh-product-mock__status--risk">Review</span>
               </div>
               <div className="aksh-product-mock__row">
                 <span className="aksh-product-mock__agent aksh-product-mock__agent--shield">AUDIT</span>
                 <div>
-                  <p>Audit trail · zero auto-writes</p>
-                  <p className="aksh-product-mock__meta">Overnight sync · SUCCESS</p>
+                  <p>Audit trail · no auto-writes</p>
+                  <p className="aksh-product-mock__meta">Overnight sync · Verified</p>
                 </div>
                 <span className="aksh-product-mock__status aksh-product-mock__status--ok">Clear</span>
               </div>
@@ -53,44 +53,41 @@ export default function ProductFeatureBand() {
             <div className="aksh-product-mock__panels" aria-hidden>
               <div className="aksh-product-mock__mini">
                 <p className="aksh-product-mock__mini-label">Risk</p>
-                <p className="aksh-product-mock__mini-value">82</p>
-                <p className="aksh-product-mock__mini-meta">14-day</p>
+                <p className="aksh-product-mock__mini-value">Attention</p>
+                <p className="aksh-product-mock__mini-meta">Horizon</p>
               </div>
               <div className="aksh-product-mock__mini">
                 <p className="aksh-product-mock__mini-label">Audit</p>
-                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--ok">0</p>
-                <p className="aksh-product-mock__mini-meta">Auto-writes</p>
+                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--ok">Verified</p>
+                <p className="aksh-product-mock__mini-meta">Governance</p>
               </div>
               <div className="aksh-product-mock__mini">
                 <p className="aksh-product-mock__mini-label">Capture</p>
-                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--voice">Live</p>
+                <p className="aksh-product-mock__mini-value aksh-product-mock__mini-value--voice">Active</p>
                 <p className="aksh-product-mock__mini-meta">Consult</p>
               </div>
             </div>
 
             <div className="owkin-product-card__bubble">
-              <p>
-                Draft SOAP + urgent DVT duplex referral, stage for FHIR Condition &amp; ServiceRequest, hold for GP
-                approval.
-              </p>
+              <p>SOAP draft prepared with referral recommendation awaiting clinician review.</p>
               <div className="owkin-product-card__bubble-bar" aria-hidden />
             </div>
           </div>
         </ScrollReveal>
 
         <ScrollReveal className="owkin-product-band__copy" delayMs={140}>
-          <p className="owkin-product-band__logo">AKSH PLATFORM</p>
+          <p className="owkin-product-band__logo">Aksh platform</p>
           <h2 id="product-band-heading">Capture → draft → approve, in one queue.</h2>
           <p>
-            Voice consults, risk scores, referrals, and pharmacist checks land as drafts. Clinicians Accept, Edit, or
-            Reject before anything reaches the record — the same flow you&apos;ll use after onboarding.
+            Consultations, risk signals, referrals, and pharmacist checks land as drafts. Clinicians Accept, Edit, or
+            Reject before anything reaches the record.
           </p>
           <div className="owkin-product-band__actions">
             <Link href="/signup" className="owkin-btn-ink">
               Create account
             </Link>
             <Link href="/walkthrough" className="owkin-text-cta">
-              See walkthrough
+              Book a walkthrough
               <span aria-hidden>→</span>
             </Link>
           </div>

@@ -8,22 +8,22 @@ const scenes = [
   {
     id: "fragmented",
     title: "Clinical work is profoundly fragmented",
-    body: "Notes, meds, referrals, and handovers still live across EMIS Web, SystmOne, and inbox chaos. Teams spend the day reconciling systems instead of practising medicine.",
-    cta: { href: "/platform", label: "What it is" },
+    body: "Clinical information is spread across multiple systems, making coordination difficult and increasing administrative burden.",
+    cta: { href: "/platform", label: "View platform" },
     visual: "fragmented" as const,
   },
   {
     id: "answer",
     title: "Coordinated drafts with a clinician gate",
-    body: "Capture the consult once. Structured notes and clinical checks stage for review. Nothing reaches the record until a named clinician accepts, edits, or rejects — with a full audit trail.",
-    cta: { href: "/how-it-works", label: "How it works" },
+    body: "Every consultation becomes a structured draft with supporting clinical checks, ready for clinician review before entering the record.",
+    cta: { href: "/how-it-works", label: "View workflow" },
     visual: "voice" as const,
   },
   {
     id: "improving",
     title: "Built for EMIS, SystmOne, and FHIR",
-    body: "Approved outputs stage as FHIR R4 resources ready for existing EHR paths. Risk signals surface for review; every write waits for clinician sign-off. Honest safety language — no certification shortcuts.",
-    cta: { href: "/security", label: "Safety & trust" },
+    body: "Structured clinical information is prepared using FHIR standards and integrated with existing clinical systems through governed workflows.",
+    cta: { href: "/security", label: "View security" },
     visual: "fhir" as const,
   },
 ] as const;

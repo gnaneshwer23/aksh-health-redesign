@@ -21,29 +21,29 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 const platformLayers = [
   {
     title: "Capture",
-    body: "CANVAS structures consult context. VOICE dictation feeds CANVAS as a sub-capability — not a peer agent. Synthetic / staged pathways today; no live EHR pull.",
+    body: "Structures consult context from notes or voice. Designed for EMIS Web and SystmOne pathways.",
     icon: Inbox,
   },
   {
     title: "Draft",
-    body: "CONDUCTOR runs SYNTHESIS, GUARDIAN, HORIZON (ex-ORACLE), PATHWAY, and NEXUS. Dr.Assist coding drafts sit under SYNTHESIS. All outputs stay draft until review.",
+    body: "Documentation, safety, risk, referrals, and clinical correlation run as supporting drafts. All outputs stay draft until review.",
     icon: ClipboardCheck,
   },
   {
     title: "Approve",
-    body: "Clinician Accept, Edit, or Reject. SHIELD writes an immutable audit event. Zero auto-writes — HITL is the gate.",
+    body: "Clinician Accept, Edit, or Reject. An immutable audit event is recorded. Zero auto-writes — clinician review is the gate.",
     icon: ShieldCheck,
   },
   {
     title: "Stage",
-    body: "BRIDGE maps accepted drafts to FHIR R4 and stages them. Sim / emis-staging only in this build — liveEmis:false. No rip-and-replace of your EHR.",
+    body: "Maps accepted drafts using FHIR standards for exchange with existing clinical systems. No rip-and-replace of your EHR.",
     icon: Link2,
   },
 ] as const;
 
 const sectionNav = [
-  { id: "layers", label: "Capture→Stage" },
-  { id: "agents", label: "12 agents" },
+  { id: "layers", label: "Capture → approve" },
+  { id: "agents", label: "Capabilities" },
   { id: "roles", label: "Roles" },
   { id: "hitl", label: "Review" },
 ] as const;
@@ -60,9 +60,9 @@ export function PlatformPageContent() {
       <MarketingPageHero
         eyebrow="Platform"
         title="One platform, eight roles, clinician-owned care"
-        lede="Twelve agents. Capture → draft → approve → stage. Designed for EMIS Web and SystmOne workflows — every output needs clinician approval before FHIR staging. Synthetic demo · liveEmis:false."
+        lede="Capture → draft → approve. Designed for EMIS Web and SystmOne workflows — every output needs clinician approval before exchange. Supporting intelligence under clinician control."
         primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Guided demo script", href: "/demo/script" }}
+        secondary={{ label: "Book demonstration", href: "/demo/script" }}
       >
         <nav className="mt-10 flex flex-wrap gap-2" aria-label="Platform page sections">
           {sectionNav.map((item) => (
@@ -80,8 +80,8 @@ export function PlatformPageContent() {
           <MarketingSectionHeader
             align="left"
             label="Platform layers"
-            title="Capture → draft → approve → stage"
-            description="Four layers from patient context to governed FHIR staging. Each names the agents that own the step."
+            title="Capture → draft → approve → exchange"
+            description="Four layers from patient context to governed clinical exchange."
           />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {platformLayers.map((layer, index) => (
@@ -98,11 +98,11 @@ export function PlatformPageContent() {
           <p className="mt-8 text-sm text-slate/70">
             Prefer the end-to-end diagram?{" "}
             <Link href="/how-it-works#pipeline" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-              See how it works
+              View workflow
             </Link>
             {" · "}
             <Link href="/how-it-works#two-minute-script" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-              Two-minute demo script
+              Book demonstration
             </Link>
             .
           </p>
@@ -128,8 +128,8 @@ export function PlatformPageContent() {
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-slate/75">
                   Every clinical draft is staged for review. The clinician clicks Accept, Edit, or Reject. Nothing writes
-                  to the FHIR record without explicit human approval. Aksh Health supports clinical judgement; it does
-                  not make autonomous diagnoses or treatment decisions. This build keeps liveEmis:false.
+                  to the record without explicit human approval. Aksh Health supports clinical judgement; it does
+                  not make autonomous diagnoses or treatment decisions.
                 </p>
                 <p className="mt-4 text-sm text-slate/70">
                   <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
@@ -137,7 +137,7 @@ export function PlatformPageContent() {
                   </Link>
                   {" · "}
                   <Link href="/demo/script" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                    Guided demo script
+                    Book demonstration
                   </Link>
                   {" · "}
                   <Link href="/faq" className="font-medium text-navy-dark underline-offset-4 hover:underline">
@@ -167,9 +167,9 @@ export function PlatformPageContent() {
 
       <MarketingCtaBand
         title="Ready to explore the platform?"
-        lede="Designed for EMIS Web and SystmOne via FHIR R4 staging. Clinical safety gates from day one — liveEmis:false."
+        lede="Designed for EMIS Web and SystmOne via FHIR standards. Clinical safety gates from day one."
         primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Guided demo script", href: "/demo/script" }}
+        secondary={{ label: "Book demonstration", href: "/demo/script" }}
       />
     </>
   );
