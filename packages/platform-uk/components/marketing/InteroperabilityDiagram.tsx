@@ -50,7 +50,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
     <figure
       role="img"
-      className={cn("aksh-interop-diagram marketing-frame", className)}
+      className={cn("aksh-interop-diagram", className)}
       aria-label={ARIA_LABEL}
     >
       <figcaption className="sr-only">{ARIA_LABEL}</figcaption>

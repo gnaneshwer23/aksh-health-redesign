@@ -8504,58 +8504,72 @@ input:focus, textarea:focus {
 }
 
 /* ===================================================================
-   Aksh "Clinical Signal" — v1 visual refresh
-   Light clinical-mist hero with layered gradient mesh, an instrument
-   precision grid, and a signal glow behind the product visual.
-   Atmosphere is drawn with pseudo-elements only (no extra DOM).
+   Aksh "Clinical Signal" — v2 hero enhancement
+   Brand-first type hierarchy, spruce/mist atmosphere (pseudo-only),
+   full visual plane (no inset card), sharper CTAs, 3 ambient motions.
    =================================================================== */
 
 .marketing-homepage-hero.owkin-hero {
   position: relative;
   isolation: isolate;
-  min-height: min(92vh, 50rem) !important;
+  min-height: min(94vh, 52rem) !important;
   overflow: hidden;
   background:
-    radial-gradient(118% 90% at 84% 6%, rgba(20, 224, 164, 0.16), transparent 46%),
-    radial-gradient(92% 80% at 6% 2%, rgba(11, 125, 107, 0.13), transparent 42%),
-    radial-gradient(150% 130% at 50% 122%, rgba(6, 32, 28, 0.12), transparent 60%),
-    linear-gradient(180deg, #f4f8f6 0%, var(--mk-surface) 52%, #e6efea 100%) !important;
+    radial-gradient(90% 70% at 92% 8%, rgba(20, 224, 164, 0.22), transparent 48%),
+    radial-gradient(70% 55% at 8% 12%, rgba(6, 32, 28, 0.14), transparent 46%),
+    radial-gradient(110% 80% at 62% 48%, rgba(11, 125, 107, 0.1), transparent 58%),
+    radial-gradient(140% 100% at 50% 118%, rgba(6, 32, 28, 0.16), transparent 58%),
+    linear-gradient(165deg, #e8f1ed 0%, #f2f7f4 38%, var(--mk-surface) 68%, #dde8e3 100%) !important;
 }
 
-/* Instrument-grade measurement grid, faded toward the fold. */
+/* Instrument grid + soft mist wash — motion 1: slow drift. */
 .marketing-homepage-hero.owkin-hero::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -4%;
   z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, rgba(10, 42, 37, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(10, 42, 37, 0.05) 1px, transparent 1px);
-  background-size: 3.25rem 3.25rem;
-  -webkit-mask-image: radial-gradient(125% 105% at 50% -5%, #000 32%, transparent 80%);
-  mask-image: radial-gradient(125% 105% at 50% -5%, #000 32%, transparent 80%);
+    radial-gradient(ellipse 55% 40% at 30% 20%, rgba(255, 255, 255, 0.55), transparent 70%),
+    linear-gradient(to right, rgba(10, 42, 37, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 42, 37, 0.055) 1px, transparent 1px);
+  background-size: auto, 3rem 3rem, 3rem 3rem;
+  -webkit-mask-image: radial-gradient(120% 100% at 55% 0%, #000 28%, transparent 78%);
+  mask-image: radial-gradient(120% 100% at 55% 0%, #000 28%, transparent 78%);
+  animation: aksh-hero-mist 28s var(--mk-ease) infinite alternate;
 }
 
-/* Drifting signal aurora — one calm ambient motion. */
+/* Drifting signal aurora — motion 2. */
 .marketing-homepage-hero.owkin-hero::after {
   content: "";
   position: absolute;
   z-index: 0;
-  right: -12%;
-  bottom: -20%;
-  width: 46rem;
-  height: 46rem;
+  right: -14%;
+  bottom: -22%;
+  width: 50rem;
+  height: 50rem;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(20, 224, 164, 0.2), transparent 62%);
-  filter: blur(34px);
-  animation: aksh-hero-aurora 20s ease-in-out infinite alternate;
+  background:
+    radial-gradient(circle at 40% 40%, rgba(20, 224, 164, 0.28), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(11, 125, 107, 0.18), transparent 62%);
+  filter: blur(36px);
+  animation: aksh-hero-aurora 18s ease-in-out infinite alternate;
+}
+
+@keyframes aksh-hero-mist {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(1.5%, 1.25%, 0); }
 }
 
 @keyframes aksh-hero-aurora {
-  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
-  to { transform: translate3d(-3rem, -2.25rem, 0) scale(1.09); opacity: 1; }
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.75; }
+  to { transform: translate3d(-3.5rem, -2.5rem, 0) scale(1.1); opacity: 1; }
+}
+
+@keyframes aksh-hero-signal-pulse {
+  from { opacity: 0.7; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1.04); }
 }
 
 /* Content and the trust strip sit above the atmosphere. */
@@ -8564,33 +8578,159 @@ input:focus, textarea:focus {
   z-index: 1;
 }
 
-/* Signal halo behind the interoperability product card. */
-.marketing-homepage-hero .owkin-hero__visual::before {
-  content: "";
-  position: absolute;
-  inset: -9% -7% -11%;
-  z-index: -1;
-  border-radius: 2.75rem;
-  background:
-    radial-gradient(58% 54% at 50% 40%, rgba(20, 224, 164, 0.24), transparent 70%),
-    radial-gradient(72% 62% at 50% 62%, rgba(11, 125, 107, 0.17), transparent 72%);
-  filter: blur(16px);
+/* Brand-first: Aksh Health is the hero signal; headline is secondary. */
+.marketing-homepage-hero .owkin-hero__wordmark {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-size: clamp(2.85rem, 7.2vw, 5.4rem);
+  font-weight: 700;
+  letter-spacing: -0.058em;
+  line-height: 0.92;
+  color: var(--mk-ink);
+  text-wrap: balance;
+  animation: marketing-hero-rise 820ms var(--mk-ease) both;
 }
 
-/* Brand kicker becomes a signal-tinted lockup line. */
 .marketing-homepage-hero .owkin-hero__brand {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  margin-bottom: 1rem !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.16em !important;
   color: var(--mk-accent-strong) !important;
+  animation: marketing-hero-rise 920ms var(--mk-ease) both;
 }
 
 .marketing-homepage-hero .owkin-hero__brand::before {
   content: "";
-  width: 1.85rem;
+  width: 1.65rem;
   height: 2px;
-  border-radius: 999px;
+  flex-shrink: 0;
+  border-radius: 1px;
   background: linear-gradient(90deg, var(--mk-signal), var(--mk-accent));
+}
+
+.marketing-homepage-hero .owkin-hero__title {
+  margin-bottom: 1.15rem !important;
+  font-size: clamp(1.65rem, 3.4vw, 2.65rem) !important;
+  font-weight: 550 !important;
+  letter-spacing: -0.038em !important;
+  line-height: 1.12 !important;
+  color: var(--mk-ink-deep) !important;
+  animation: marketing-hero-rise 1020ms var(--mk-ease) both;
+}
+
+.marketing-homepage-hero .owkin-hero__lede {
+  max-width: 36rem;
+  margin-bottom: 1.65rem !important;
+  font-size: clamp(1rem, 1.35vw, 1.125rem) !important;
+  line-height: 1.6 !important;
+  color: var(--mk-muted) !important;
+  animation: marketing-hero-rise 1120ms var(--mk-ease) both;
+}
+
+.marketing-homepage-hero .owkin-hero__actions {
+  animation: marketing-hero-rise 1220ms var(--mk-ease) both;
+}
+
+/* Squarer primary CTA — avoid pill chrome. */
+.marketing-homepage-hero .owkin-btn-ink {
+  border-radius: 0.5rem !important;
+  padding-inline: 1.25rem;
+  letter-spacing: -0.015em;
+}
+
+.marketing-site nav.owkin-nav .owkin-nav__pill {
+  border-radius: 0.5rem !important;
+}
+
+/* Full visual plane: no white inset card; bleed into the mist. */
+.marketing-homepage-hero .owkin-hero__visual {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  animation: marketing-hero-rise 1320ms var(--mk-ease) both;
+}
+
+/* Signal halo behind the diagram — motion 3: gentle pulse. */
+.marketing-homepage-hero .owkin-hero__visual::before {
+  content: "";
+  position: absolute;
+  inset: -6% -4% -8%;
+  z-index: -1;
+  border-radius: 0;
+  background:
+    radial-gradient(52% 48% at 50% 38%, rgba(20, 224, 164, 0.32), transparent 68%),
+    radial-gradient(70% 58% at 48% 58%, rgba(11, 125, 107, 0.2), transparent 74%);
+  filter: blur(22px);
+  animation: aksh-hero-signal-pulse 9s ease-in-out infinite alternate;
+}
+
+.marketing-homepage-hero .owkin-hero__visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--mk-surface) 0%, transparent 18%);
+  opacity: 0.55;
+}
+
+.marketing-homepage-hero .aksh-interop-diagram--plane {
+  position: relative;
+  z-index: 1;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: clamp(0.25rem, 1.5vw, 0.75rem) 0 !important;
+  overflow: visible;
+}
+
+.marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-diagram__wash {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255, 255, 255, 0.35), transparent 72%),
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(232, 241, 237, 0.5), transparent 65%);
+}
+
+.marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node {
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(242, 247, 244, 0.55));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 12px 32px -22px rgba(16, 33, 29, 0.35);
+}
+
+.marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node--hub {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(11, 125, 107, 0.14));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 16px 40px -18px rgba(7, 95, 80, 0.42),
+    0 0 0 1px color-mix(in srgb, var(--mk-signal) 22%, transparent);
+}
+
+@media (min-width: 960px) {
+  .marketing-homepage-hero .owkin-hero__grid {
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+    align-items: center;
+  }
+
+  .marketing-homepage-hero .owkin-hero__visual {
+    /* Edge-bleed the product plane toward the viewport right. */
+    margin-right: calc(-1 * max(0px, (100vw - 76rem) / 2 + 1.25rem));
+    padding-right: max(0px, (100vw - 76rem) / 2 + 0.5rem);
+  }
+
+  .marketing-homepage-hero .owkin-hero__visual::after {
+    opacity: 0.7;
+  }
 }
 
 /* Homepage trust marquee sits flush at the fold with a hairline. */
@@ -8627,7 +8767,7 @@ input:focus, textarea:focus {
 .marketing-site nav.owkin-nav .owkin-nav__mark {
   position: relative;
   border: 0;
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   background: linear-gradient(155deg, var(--owkin-ink), var(--owkin-royal));
   color: #fff !important;
   box-shadow: 0 1px 2px rgba(6, 32, 28, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
@@ -8645,8 +8785,16 @@ input:focus, textarea:focus {
   box-shadow: 0 0 6px color-mix(in srgb, var(--owkin-signal) 70%, transparent);
 }
 
+.marketing-site nav.owkin-nav .owkin-nav__wordmark {
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .marketing-homepage-hero.owkin-hero::after {
+  .marketing-homepage-hero.owkin-hero::before,
+  .marketing-homepage-hero.owkin-hero::after,
+  .marketing-homepage-hero .owkin-hero__visual::before {
     animation: none;
   }
 }
@@ -8655,7 +8803,21 @@ input:focus, textarea:focus {
   .marketing-homepage-hero.owkin-hero {
     min-height: auto !important;
     background:
-      radial-gradient(120% 60% at 90% 0%, rgba(20, 224, 164, 0.16), transparent 50%),
-      linear-gradient(180deg, #f4f8f6 0%, var(--mk-surface) 60%, #e6efea 100%) !important;
+      radial-gradient(120% 55% at 100% 0%, rgba(20, 224, 164, 0.2), transparent 52%),
+      radial-gradient(90% 40% at 0% 8%, rgba(6, 32, 28, 0.1), transparent 48%),
+      linear-gradient(180deg, #e8f1ed 0%, var(--mk-surface) 58%, #dde8e3 100%) !important;
+  }
+
+  .marketing-homepage-hero .owkin-hero__wordmark {
+    font-size: clamp(2.5rem, 12vw, 3.5rem);
+  }
+
+  .marketing-homepage-hero .owkin-hero__title {
+    font-size: clamp(1.45rem, 6.5vw, 1.85rem) !important;
+  }
+
+  .marketing-homepage-hero .owkin-hero__visual::after {
+    background: linear-gradient(180deg, var(--mk-surface) 0%, transparent 22%);
+    opacity: 0.45;
   }
 }

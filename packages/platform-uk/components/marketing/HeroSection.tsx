@@ -10,6 +10,7 @@ export default function HeroSection() {
       <div className={`relative z-10 flex flex-1 flex-col justify-center ${container} pb-4 pt-24 md:pt-28`}>
         <div className="owkin-hero__grid">
           <div className="owkin-hero__copy">
+            <p className="owkin-hero__wordmark">Aksh Health</p>
             <p className="owkin-hero__brand">Care coordination for NHS primary care</p>
             <h1 className="owkin-hero__title">
               Clinical work,
@@ -35,7 +36,7 @@ export default function HeroSection() {
           </div>
 
           <div className="owkin-hero__visual">
-            <InteroperabilityDiagram />
+            <InteroperabilityDiagram className="aksh-interop-diagram--plane" />
           </div>
         </div>
       </div>
