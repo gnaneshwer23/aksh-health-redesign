@@ -49,7 +49,7 @@
 | **Agent story depth** | **U1 PASS** — job-in-loop blurbs, stage groups, two-minute script |
 | **Audience `for-*` pages** | **U2 PASS** — role agent maps + HITL/approve framing on every `for-*` route |
 | **How-it-works ↔ product** | Diagram is strong; still weak bridge into **role-specific demo entry** (“I’m a nurse — show me my 90-second path”) |
-| **Personalised onboarding** | Steps exist; **tutorial only for GP**; other roles jump to dashboard with thin `FirstRunGuidance`. Preferences / org capture don’t deeply reshape the first dashboard session |
+| **Personalised onboarding** | **U3 PASS** — all 8 roles get tutorial + first-run (agents / approve / `liveEmis:false`); see [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md) |
 | **Nurse dashboard** | Overview + observations / handover / alerts — mock-data, functional but **not demo-scripted** like GP |
 | **Pharmacist** | Queue / interactions / BNF cards — usable rehearsal; thin clinical storytelling |
 | **Admin** | Broad ops surface; partner-readiness exists; still feels like an **internal ops dump** more than a “practice manager demo” |
@@ -112,6 +112,17 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Work** | Per-role tutorial or guided checklist (extend beyond GP-only); wire preferences into first dashboard empty/first-run states; keep Neon onboarding progress; optional skip for returning demo users. |
 | **Exit criteria** | Smoke: each of 8 roles completes onboarding → correct dashboard; first-run guidance visible once; progress persists. |
 | **Fail if** | Onboarding claims live EMIS connection or certification. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md) |
+
+**U3 audit gate**
+
+- [x] Tutorials for all 8 roles (nurse / pharmacist / admin / researcher added; skip available)
+- [x] Role paths name agents + what you approve; complete preview + first-run tips
+- [x] Preferences shape first-run body tips when set
+- [x] Neon progress + `onboarding_complete` / role persist unchanged
+- [x] Honesty: `liveEmis:false` onboarding banner + first-run; ATLAS Phase 2; VOICE/Dr.Assist sub-caps
+- [x] Unit + route-smoke + clinical-proof rbac green
+- [x] No live EMIS / certification claims
 
 ### U4 — GP dashboard demo polish
 
@@ -159,8 +170,8 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Start now** | **U3** | Personalised onboarding (U1–U2 PASS) |
-| **Then** | **U4 → U5 → U6** | Clinical + admin dashboards |
+| **Start now** | **U4** | GP dashboard demo polish (U1–U3 PASS) |
+| **Then** | **U5 → U6** | Clinical supporting + admin dashboards |
 | **Then** | **U7 → U8** | Population / hospital / patient / research |
 | **Do not block on** | N1–N3, N5–N7 | Partner/Medplum/`liveEmis` stay paused |
 | **Keep locked** | D1, N4 | Demo hardening + roster honesty |
@@ -197,7 +208,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 ## 5. Definition of success for this track
 
 1. **U1–U2** — Marketing alone can sell the 12-agent + HITL story honestly.  
-2. **U3** — Every role gets a personalised path into their dashboard.  
+2. **U3** — Every role gets a personalised path into their dashboard. **PASS** — [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md)  
 3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat.  
 4. **Honesty** — `liveEmis:false`; Phase 2 agents labelled; sub-capabilities not peers.  
 5. **No clinical-spine rebuild** — UX sits on D1/N4 foundations.
@@ -214,5 +225,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`NEXT_BUILD_N4_AUDIT.md`](./NEXT_BUILD_N4_AUDIT.md) — roster honesty lock  
 - [`NEXT_UX_U1_AUDIT.md`](./NEXT_UX_U1_AUDIT.md) — U1 PASS (agents + how-it-works marketing depth)  
 - [`NEXT_UX_U2_AUDIT.md`](./NEXT_UX_U2_AUDIT.md) — U2 PASS (audience `for-*` agent maps)  
+- [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md) — U3 PASS (personalised onboarding)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  

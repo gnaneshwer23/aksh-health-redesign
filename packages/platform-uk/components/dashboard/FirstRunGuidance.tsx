@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { X } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FIRST_RUN_BY_DASHBOARD } from "@/lib/product-journey";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { resolveFirstRunCopy } from "@/lib/product-journey";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
@@ -20,8 +22,13 @@ export function FirstRunGuidance({
   className?: string;
 }) {
   const { status, data } = useSession();
+  const { profile } = useUserProfile();
   const [dismissed, setDismissed] = useState(true);
-  const copy = FIRST_RUN_BY_DASHBOARD[role];
+
+  const copy = resolveFirstRunCopy(role, {
+    userRole: profile?.role ?? data?.user?.role ?? null,
+    preferences: profile?.preferences ?? null,
+  });
 
   useEffect(() => {
     if (status !== "authenticated" || !data?.user?.onboardingComplete) {
@@ -59,10 +66,38 @@ export function FirstRunGuidance({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
+        <div className="min-w-0 space-y-2">
           <p className="font-semibold text-foreground">{copy.title}</p>
           <p className="text-xs leading-relaxed text-muted sm:text-sm">{copy.body}</p>
-          <div className="flex flex-wrap gap-2 pt-2">
+
+          {copy.youApprove ? (
+            <p className="text-xs text-foreground">
+              <span className="font-medium">You approve: </span>
+              {copy.youApprove}
+            </p>
+          ) : null}
+
+          {copy.agents && copy.agents.length > 0 ? (
+            <div className="flex flex-wrap gap-1" aria-label="Agents for your role">
+              {copy.agents.slice(0, 8).map((name) => (
+                <Badge key={name} variant="outline" className="text-[10px]">
+                  {name}
+                </Badge>
+              ))}
+            </div>
+          ) : null}
+
+          {copy.honesty ? (
+            <p className="text-[11px] text-muted" data-testid="first-run-honesty">
+              {copy.honesty.includes("liveEmis") ? copy.honesty : `${copy.honesty} · liveEmis:false`}
+            </p>
+          ) : (
+            <p className="text-[11px] text-muted" data-testid="first-run-honesty">
+              liveEmis:false
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-2 pt-1">
             <Button size="sm" asChild>
               <Link href={copy.primaryHref}>{copy.primaryLabel}</Link>
             </Button>

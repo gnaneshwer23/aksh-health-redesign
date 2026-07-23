@@ -62,7 +62,7 @@ function RoleSelectContent() {
     <OnboardingCard
       stepId="role-select"
       title="Choose your role"
-      description="Select how you will use Aksh Health. Your path is tailored — each role lands on a matching dashboard after Capture → draft → approve onboarding."
+      description="Select how you will use Aksh Health. Each role gets a short guided path (agents that matter + what you approve), then lands on the matching dashboard with first-run tips — liveEmis:false."
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map((role) => (

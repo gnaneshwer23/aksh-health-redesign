@@ -108,7 +108,7 @@ export function CompleteStepClient() {
     <OnboardingCard
       stepId="complete"
       title="You're all set"
-      description={`Welcome, ${displayName}. Your ${def?.label} workspace is ready — Capture → draft → approve with clinician control.`}
+      description={`Welcome, ${displayName}. Your ${def?.label} workspace is ready — role-shaped path complete. Capture → draft → approve with clinician control · liveEmis:false.`}
     >
       <SandboxPreview />
       <div className="mt-6 space-y-4">

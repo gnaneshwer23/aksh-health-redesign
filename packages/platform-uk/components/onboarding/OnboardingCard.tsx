@@ -47,6 +47,14 @@ export function OnboardingCard({
 
       <div className="onboarding-card-surface">
         <StepIndicator role={role} currentStepId={stepId} />
+        <p
+          className="mb-4 rounded-md border border-warning/25 bg-warning/5 px-3 py-2 text-xs text-foreground"
+          data-testid="onboarding-honesty-banner"
+        >
+          Demo / staging onboarding — synthetic data · clinician HITL ·{" "}
+          <span className="font-medium">liveEmis:false</span>. No live EMIS or SystmOne connection
+          claimed.
+        </p>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
         {description ? <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p> : null}
         <div className="mt-6">{children}</div>
