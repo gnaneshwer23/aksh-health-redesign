@@ -328,7 +328,15 @@ test.describe("Marketing smoke", () => {
     const diagramBox = await diagram.boundingBox();
     expect(headlineBox).not.toBeNull();
     expect(diagramBox).not.toBeNull();
-    expect(diagramBox!.y).toBeGreaterThanOrEqual(headlineBox!.y - 4);
+    // Brand-first Clinical Signal hero places the diagram beside (or optically above) the
+    // headline — not stacked under it. Assert readable labels do not overlap the headline.
+    const overlapX =
+      Math.min(headlineBox!.x + headlineBox!.width, diagramBox!.x + diagramBox!.width) -
+      Math.max(headlineBox!.x, diagramBox!.x);
+    const overlapY =
+      Math.min(headlineBox!.y + headlineBox!.height, diagramBox!.y + diagramBox!.height) -
+      Math.max(headlineBox!.y, diagramBox!.y);
+    expect(overlapX <= 0 || overlapY <= 0).toBe(true);
   });
 
   test("homepage agent and FHIR scenes use quiet product mocks", async ({ page }) => {
