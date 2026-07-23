@@ -12,16 +12,18 @@ test.describe("Marketing smoke", () => {
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
     expect(brandColor).toBe("rgb(10, 42, 37)");
 
-    await expect(page.getByRole("heading", { name: /Clinical work\.\s*Properly coordinated/i })).toBeVisible();
-    await expect(page.getByText("Care coordination for NHS primary care", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i })).toBeVisible();
+    await expect(page.getByText("Care coordination for UK primary care", { exact: true })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "Platform" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Workflow" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Security" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("button", { name: "For you" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("link", { name: "Resources" })).toBeVisible();
-    await expect(page.getByRole("navigation").getByRole("link", { name: "Sign In" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Ask" })).toHaveCount(0);
+    await expect(page.getByRole("navigation").getByRole("button", { name: "Solutions" })).toHaveCount(0);
 
-    const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Talk to us" });
+    const primaryCta = page.getByRole("navigation").getByRole("link", { name: "Get started" });
     await expect(primaryCta).toBeVisible();
     await expect(primaryCta).toHaveAttribute("href", "/get-started");
 
@@ -43,17 +45,17 @@ test.describe("Marketing smoke", () => {
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Workflow" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Solutions" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "For you" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Security" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
-    await expect(mobileMenu.getByRole("link", { name: "Sign In" })).toBeVisible();
-    await expect(mobileMenu.getByRole("link", { name: "Talk to us" })).toBeVisible();
+    await expect(mobileMenu.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(mobileMenu.getByRole("link", { name: "Get started" })).toBeVisible();
   });
 
   test("who-for mega-menu exposes unique audience links", async ({ page }) => {
     await page.goto("/");
 
-    const whoForButton = page.locator("nav").getByRole("button", { name: "Solutions", exact: true });
+    const whoForButton = page.locator("nav").getByRole("button", { name: "For you", exact: true });
     await whoForButton.hover();
     const menu = page.locator(".owkin-mega");
     await expect(menu).toBeVisible();
@@ -64,9 +66,8 @@ test.describe("Marketing smoke", () => {
     await expect(menu.locator('a[href="/for-patients"]')).toBeVisible();
     await expect(menu.locator('a[href="/for-hospitals"]')).toBeVisible();
     await expect(menu.locator('a[href="/for-ics"]')).toBeVisible();
-    await expect(menu.locator('a[href="/for-administrators"]')).toBeVisible();
     await expect(menu.locator('a[href="/for-research"]')).toBeVisible();
-    await expect(menu.locator('a[href="/platform#roles"]')).toBeVisible();
+    await expect(menu.locator('a[href="/for-administrators"]')).toHaveCount(0);
 
     const hrefs = await menu.locator("a[href]").evaluateAll((anchors) =>
       anchors.map((a) => a.getAttribute("href")).filter((href): href is string => Boolean(href))
@@ -105,21 +106,20 @@ test.describe("Marketing smoke", () => {
       "href",
       "/for-clinicians"
     );
-    await expect(mobileNav.getByRole("link", { name: "Administrators", exact: true })).toHaveAttribute(
+    await expect(mobileNav.getByRole("link", { name: "Practices", exact: true })).toHaveAttribute(
       "href",
-      "/for-administrators"
+      "/for-practices"
     );
     await expect(mobileNav.getByRole("link", { name: "Patients", exact: true })).toHaveAttribute(
       "href",
       "/for-patients"
     );
     await expect(mobileNav.getByRole("link", { name: "FAQ", exact: true })).toHaveAttribute("href", "/faq");
-    await expect(mobileNav.getByRole("link", { name: "Ask", exact: true })).toHaveAttribute("href", "/chat");
+    await expect(mobileNav.getByRole("link", { name: "Ask", exact: true })).toHaveCount(0);
     await expect(mobileNav.getByRole("link", { name: "Security", exact: true })).toHaveAttribute("href", "/security");
     await expect(mobileNav.getByRole("link", { name: "Resources", exact: true })).toHaveAttribute("href", "/resources");
     await expect(mobileNav.getByRole("link", { name: "Contact", exact: true })).toHaveAttribute("href", "/contact");
     await expect(mobileNav.getByRole("link", { name: "Pharmacists" })).toHaveCount(0);
-    await expect(mobileNav.getByRole("link", { name: "Practices", exact: true })).toHaveCount(0);
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
@@ -127,10 +127,10 @@ test.describe("Marketing smoke", () => {
 
     const trustStrip = page.getByLabel("Product trust signals");
     await expect(trustStrip).toBeVisible();
+    await expect(trustStrip.getByText("Audit trail on every decision").first()).toBeVisible();
+    await expect(trustStrip.getByText("Draft until a clinician decides").first()).toBeVisible();
+    await expect(trustStrip.getByText("UK data residency").first()).toBeVisible();
     await expect(trustStrip.getByText("Built for NHS primary care").first()).toBeVisible();
-    await expect(trustStrip.getByText("FHIR-ready architecture").first()).toBeVisible();
-    await expect(trustStrip.getByText("Clinician-reviewed outputs").first()).toBeVisible();
-    await expect(trustStrip.getByText("Designed for NHS organisations").first()).toBeVisible();
   });
 
   test("custom 404 page renders branded message", async ({ page }) => {
@@ -224,16 +224,15 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText(/Aggregate access by default/i).first()).toBeVisible();
   });
 
-  test("homepage shows platform flow diagram with link to full journey", async ({ page }) => {
+  test("homepage clinician gate emphasises named clinician control without cohort marketing", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "Capture → draft → approve", exact: true })).toBeVisible();
-    await expect(page.getByRole("figure", { name: /Care journey/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /View workflow/i })).toHaveAttribute("href", "/how-it-works");
-    await expect(page.getByRole("link", { name: /Book demonstration/i }).first()).toHaveAttribute(
-      "href",
-      "/demo/script"
-    );
+    const gate = page.locator("section.owkin-clinician-gate");
+    await expect(gate.getByRole("heading", { name: /Every output is a draft/i })).toBeVisible();
+    await expect(gate.getByRole("link", { name: "Get started" })).toHaveAttribute("href", "/get-started");
+    await expect(gate.getByRole("link", { name: /Open Patel walkthrough/i })).toHaveAttribute("href", "/demo/patel");
+    await expect(page.getByText(/tested with 100 patients/i)).toHaveCount(0);
+    await expect(page.getByText(/100 patients and 100 users/i)).toHaveCount(0);
   });
 
   test("homepage roles section highlights product-aligned role dashboards", async ({ page }) => {
@@ -246,15 +245,16 @@ test.describe("Marketing smoke", () => {
 
     await expect(roles.getByRole("link", { name: /GP/i }).first()).toHaveAttribute("href", "/for-clinicians");
     await expect(roles.getByText("Clinician dashboard")).toBeVisible();
-    await expect(roles.locator(".owkin-roles__signals li", { hasText: "Consult capture" })).toBeVisible();
-    await expect(roles.locator(".owkin-roles__signals li", { hasText: "SOAP drafts" })).toBeVisible();
+    await expect(roles.locator(".owkin-roles__signals")).toHaveCount(0);
+    await expect(roles.getByText(/From the moment you open an appointment/i)).toBeVisible();
 
-    await expect(roles.getByRole("link", { name: /Practice Admin/i })).toHaveAttribute("href", "/for-practices");
+    await expect(roles.getByRole("link", { name: /Practice Administrator/i })).toHaveAttribute(
+      "href",
+      "/for-practices"
+    );
     await expect(roles.getByText("Admin · Audit")).toBeVisible();
-    await expect(roles.locator(".owkin-roles__signals li", { hasText: "Audit" }).first()).toBeVisible();
 
     await expect(roles.getByRole("link", { name: /ICS \/ Regional Lead/i })).toHaveAttribute("href", "/for-ics");
-    await expect(roles.locator(".owkin-roles__signals li", { hasText: "Equity" }).first()).toBeVisible();
 
     await expect(roles.getByRole("link", { name: /View roles on the platform/i })).toHaveAttribute(
       "href",
@@ -263,11 +263,11 @@ test.describe("Marketing smoke", () => {
     await expect(roles.getByRole("link", { name: /Open Patel demo/i })).toHaveAttribute("href", "/demo/patel");
   });
 
-  test("homepage surfaces platform story and outcome stats after the hero", async ({ page }) => {
+  test("homepage surfaces platform story and how-it-works pillars after the hero", async ({ page }) => {
     await page.goto("/");
 
-    const hero = page.getByRole("heading", { name: /Clinical work\.\s*Properly coordinated/i });
-    const story = page.getByRole("heading", { name: /Clinical work is profoundly fragmented/i });
+    const hero = page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
+    const story = page.getByRole("heading", { name: /Clinical work lives/i });
     await expect(hero).toBeVisible();
     await expect(story).toBeVisible();
 
@@ -277,9 +277,12 @@ test.describe("Marketing smoke", () => {
     expect(storyBox).not.toBeNull();
     expect(storyBox!.y).toBeGreaterThan(heroBox!.y);
 
-    await expect(page.getByText("Structured clinical drafts")).toBeVisible();
-    await expect(page.getByText("Risk horizon")).toBeVisible();
-    await expect(page.getByText("Clinician approval required")).toBeVisible();
+    await expect(page.getByText("How it works", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Capture", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Review", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Govern", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Integrate", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Horizon", { exact: true })).toHaveCount(0);
   });
 
   test("homepage closing CTA band has readable dark contrast", async ({ page }) => {
@@ -287,19 +290,19 @@ test.describe("Marketing smoke", () => {
 
     const band = page.locator("[data-cta-band]");
     await expect(band).toBeVisible();
-    await expect(band.getByRole("heading", { name: /Build a more coordinated healthcare system/i })).toBeVisible();
+    await expect(band.getByRole("heading", { name: /Clinical work that stays under control/i })).toBeVisible();
 
     const bg = await band.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     expect(bg).toBe("rgb(10, 42, 37)");
 
     const titleColor = await band
-      .getByRole("heading", { name: /Build a more coordinated healthcare system/i })
+      .getByRole("heading", { name: /Clinical work that stays under control/i })
       .evaluate((el) => window.getComputedStyle(el).color);
     expect(titleColor).toBe("rgb(255, 255, 255)");
 
-    const primary = band.getByRole("link", { name: "Book a demonstration" });
+    const primary = band.getByRole("link", { name: "Get started" });
     await expect(primary).toBeVisible();
-    await expect(band.getByRole("link", { name: "Talk to us" })).toBeVisible();
+    await expect(band.getByRole("link", { name: /Book a demonstration/i })).toBeVisible();
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(255, 255, 255)");
@@ -312,24 +315,23 @@ test.describe("Marketing smoke", () => {
     const hero = page.locator("section.owkin-hero");
     const visual = hero.locator(".owkin-hero__visual");
     await expect(visual).toBeVisible();
-    await expect(visual.getByText("Aksh Health", { exact: true })).toBeVisible();
-    await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Aksh Health", { exact: true })).toHaveCount(0);
+    await expect(visual.getByText("CANVAS", { exact: true })).toBeVisible();
+    await expect(visual.getByText("SYNTHESIS", { exact: true })).toBeVisible();
+    await expect(visual.getByText("CONDUCTOR", { exact: true })).toBeVisible();
     await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
     await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
-    await expect(hero.getByText("clinician gate")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
 
-    const headline = hero.getByRole("heading", { name: /Clinical work\.\s*Properly coordinated/i });
+    const headline = hero.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
     const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });
     await expect(diagram).toBeVisible();
     const headlineBox = await headline.boundingBox();
     const diagramBox = await diagram.boundingBox();
     expect(headlineBox).not.toBeNull();
     expect(diagramBox).not.toBeNull();
-    // Brand-first Clinical Signal hero places the diagram beside (or optically above) the
-    // headline — not stacked under it. Assert readable labels do not overlap the headline.
     const overlapX =
       Math.min(headlineBox!.x + headlineBox!.width, diagramBox!.x + diagramBox!.width) -
       Math.max(headlineBox!.x, diagramBox!.x);
@@ -346,11 +348,24 @@ test.describe("Marketing smoke", () => {
     await expect(voiceMock).toBeVisible();
     await expect(page.locator(".aksh-mock-frame__title", { hasText: "Voice consult" })).toBeVisible();
 
-    const fhirMock = page.locator(".aksh-mock-stack");
+    const fhirMock = page.locator(".aksh-mock-stack--flow");
     await expect(fhirMock).toBeVisible();
     await expect(fhirMock.getByText("Clinician queue")).toBeVisible();
     await expect(fhirMock.getByText("FHIR staging")).toBeVisible();
+    await expect(fhirMock.getByText("SHIELD audit")).toBeVisible();
     await expect(page.locator(".owkin-float-chip")).toHaveCount(0);
+  });
+
+  test("footer hosts newsletter and practice admins label", async ({ page }) => {
+    await page.goto("/");
+
+    const footer = page.locator("footer.owkin-footer");
+    await expect(footer.getByLabel("Newsletter signup")).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Practice admins" })).toHaveAttribute(
+      "href",
+      "/for-administrators"
+    );
+    await expect(footer.getByRole("link", { name: "Administrators", exact: true })).toHaveCount(0);
   });
 
   test("how-it-works page loads with diagram and platform stages", async ({ page }) => {

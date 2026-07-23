@@ -1,16 +1,13 @@
 const TRUST_PHRASES = [
+  "Audit trail on every decision",
+  "Capture, draft, approve",
+  "Named review before the record",
+  "Draft until a clinician decides",
+  "UK data residency",
   "Built for NHS primary care",
   "FHIR-ready architecture",
   "Clinician-reviewed outputs",
-  "Designed for NHS organisations",
   "Designed for EMIS Web & SystmOne",
-  "Human-in-the-loop review",
-  "GDPR Art. 9 aware",
-  "Audit trail on every decision",
-  "Capture → draft → approve",
-  "Named review before the record",
-  "Draft until a clinician decides",
-  "Designed for UK data protection",
 ] as const;
 
 function MarqueeTrack({ ariaHidden }: { ariaHidden?: boolean }) {

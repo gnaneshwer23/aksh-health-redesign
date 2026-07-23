@@ -23,7 +23,7 @@ export const linkUnderline = "marketing-link-underline";
 
 /** Outer max-width + responsive gutters used by every marketing section. */
 export const container = "marketing-container";
-/** Standard vertical rhythm for full sections: py-20 md:py-28 lg:py-32. */
+/** Standard vertical rhythm for full sections: 48px mobile / 64px desktop. */
 export const section = "marketing-section";
 /** Tighter rhythm for bands that don't need the full section height (e.g. CTA strips). */
 export const sectionTight = "marketing-section-tight";

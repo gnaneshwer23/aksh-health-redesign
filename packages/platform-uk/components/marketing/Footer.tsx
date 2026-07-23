@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import NewsletterBand from "@/components/marketing/NewsletterBand";
 import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
 
 const footerColumns = [
@@ -20,7 +21,7 @@ const footerColumns = [
     links: [
       { label: "Clinicians", href: "/for-clinicians" },
       { label: "Practices", href: "/for-practices" },
-      { label: "Administrators", href: "/for-administrators" },
+      { label: "Practice admins", href: "/for-administrators" },
       { label: "Hospitals", href: "/for-hospitals" },
       { label: "ICS leads", href: "/for-ics" },
       { label: "Research", href: "/for-research" },
@@ -53,22 +54,26 @@ const footerColumns = [
 export default function Footer() {
   return (
     <footer className="owkin-footer">
+      <div className="owkin-footer__newsletter">
+        <NewsletterBand embedded />
+      </div>
+
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="mb-12 flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30">
-            <span className="text-sm font-bold text-white">A</span>
+            <span className="text-sm font-medium text-white">A</span>
           </div>
-          <span className="text-lg font-semibold tracking-wide text-white">Aksh Health</span>
+          <span className="text-lg font-medium tracking-wide text-white">Aksh Health</span>
         </div>
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
-              <h4 className="mb-4 text-base font-semibold text-white">{col.title}</h4>
+              <h4 className="mb-4 text-base font-medium text-white">{col.title}</h4>
               <ul className="list-none space-y-3 p-0">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-white/75 transition-colors hover:text-white">
+                    <Link href={link.href} className="text-sm font-normal text-white/75 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   </li>

@@ -125,23 +125,19 @@ function FragmentedSystemsVisual() {
   return (
     <div className="aksh-visual aksh-visual--scene aksh-visual--fragmented" aria-hidden>
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--amber" />
-      <div className="aksh-mock-frame">
-        <div className="aksh-mock-frame__chrome">
-          <span className="aksh-mock-frame__dot" />
-          <span className="aksh-mock-frame__title">Scattered systems</span>
-        </div>
+      <div className="aksh-mock-frame aksh-mock-frame--problem">
         <div className="aksh-mock-scatter">
           <div className="aksh-mock-scatter__card">
             <p>EMIS Web</p>
-            <span>notes · meds</span>
+            <span>notes · medications</span>
           </div>
           <div className="aksh-mock-scatter__card">
             <p>SystmOne</p>
-            <span>appointments</span>
+            <span>appointments · history</span>
           </div>
           <div className="aksh-mock-scatter__card aksh-mock-scatter__card--warn">
             <p>Inbox</p>
-            <span>handovers · chaos</span>
+            <span>handovers · tasks</span>
           </div>
         </div>
       </div>
@@ -259,23 +255,19 @@ function ShieldAuditCard({ compact = false }: { compact?: boolean }) {
   );
 }
 
-/** Stacked product panels — clear gaps, no absolute overlap. */
+/** Stacked product panels with flow arrows — clinician queue → FHIR → SHIELD. */
 function FhirStagingVisual() {
   return (
     <div className="aksh-visual aksh-visual--scene aksh-visual--fhir-mock" aria-hidden>
       <div className="aksh-visual__scene-glow aksh-visual__scene-glow--teal" />
-      <div className="aksh-mock-stack">
+      <div className="aksh-mock-stack aksh-mock-stack--flow">
         <div className="aksh-mock-panel">
           <p className="aksh-mock-panel__eyebrow">Clinician queue</p>
-          <div className="owkin-mini-graph" aria-hidden>
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
           <p className="aksh-mock-panel__meta">Accept · edit · reject</p>
         </div>
+        <span className="aksh-mock-flow-arrow" aria-hidden>
+          ↓
+        </span>
         <div className="aksh-mock-panel">
           <p className="aksh-mock-panel__eyebrow">FHIR staging</p>
           <div className="owkin-filter-pills" aria-hidden>
@@ -285,7 +277,24 @@ function FhirStagingVisual() {
           </div>
           <p className="aksh-mock-panel__meta">R4 · EMIS / SystmOne</p>
         </div>
-        <ShieldAuditCard compact />
+        <span className="aksh-mock-flow-arrow" aria-hidden>
+          ↓
+        </span>
+        <div className="aksh-mock-frame aksh-mock-shield aksh-mock-shield--compact">
+          <div className="aksh-mock-frame__chrome">
+            <span className="aksh-mock-frame__title">SHIELD audit</span>
+          </div>
+          <ul className="aksh-mock-shield__events">
+            <li>
+              <span>09:41</span>
+              <span>Draft staged · no auto-write</span>
+            </li>
+            <li>
+              <span>09:44</span>
+              <span>Clinician accepted · AuditEvent created</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );

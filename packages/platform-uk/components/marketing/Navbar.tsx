@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-type MegaLink = { label: string; href: string; description?: string; badge?: string };
+type MegaLink = { label: string; href: string; description?: string };
 type MegaColumn = { pill: string; links: MegaLink[]; cta?: { label: string; href: string } };
 
 const megaMenus: Record<string, MegaColumn[]> = {
@@ -39,32 +39,16 @@ const megaMenus: Record<string, MegaColumn[]> = {
       ],
     },
   ],
-  Solutions: [
+  "For you": [
     {
-      pill: "Care delivery",
+      pill: "For you",
       links: [
-        {
-          label: "Clinicians",
-          href: "/for-clinicians",
-          description: "GPs, nurses, and pharmacists",
-        },
-        { label: "Practice managers", href: "/for-practices", description: "Operations and governance" },
-        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
-      ],
-    },
-    {
-      pill: "Systems",
-      links: [
+        { label: "Clinicians", href: "/for-clinicians", description: "GPs, nurses, and pharmacists" },
+        { label: "Practices", href: "/for-practices", description: "Operations and governance" },
+        { label: "ICS", href: "/for-ics", description: "Population health intelligence" },
         { label: "Hospitals", href: "/for-hospitals", description: "Command centre and capacity" },
-        { label: "ICS leads", href: "/for-ics", description: "Population health intelligence" },
-        { label: "Administrators", href: "/for-administrators", description: "Integrations and uptime" },
-      ],
-    },
-    {
-      pill: "Partners",
-      links: [
+        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
         { label: "Research", href: "/for-research", description: "Governed outcome evaluation" },
-        { label: "View all roles", href: "/platform#roles" },
       ],
     },
   ],
@@ -73,8 +57,8 @@ const megaMenus: Record<string, MegaColumn[]> = {
 const centerLinks = [
   { label: "Platform", href: "/platform", mega: true },
   { label: "Workflow", href: "/how-it-works", mega: false },
-  { label: "Solutions", href: "/for-clinicians", mega: true },
   { label: "Security", href: "/security", mega: false },
+  { label: "For you", href: "/for-clinicians", mega: true },
   { label: "Resources", href: "/resources", mega: false },
 ] as const;
 
@@ -176,22 +160,11 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/chat" className={cn("owkin-nav__ghost-link", focusRing)}>
-            Ask
-          </Link>
           <Link href="/signin" className={cn("owkin-nav__ghost-link", focusRing)}>
-            Sign In
+            Sign in
           </Link>
           <Link href="/get-started" className={cn("owkin-nav__pill", focusRing)}>
-            Talk to us
-          </Link>
-          <Link
-            href="/resources"
-            className={cn("owkin-nav__search", focusRing)}
-            aria-label="Search resources"
-            title="Resources"
-          >
-            <Search className="h-4 w-4" aria-hidden />
+            Get started
           </Link>
         </div>
 
@@ -215,7 +188,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
           onMouseLeave={scheduleClose}
         >
           <div className="owkin-mega__panel mx-auto max-w-7xl px-6 py-8">
-            <div className="owkin-mega__grid">
+            <div className={cn("owkin-mega__grid", openMega === "For you" && "owkin-mega__grid--single")}>
               {megaMenus[openMega].map((column) => (
                 <div key={column.pill} className="owkin-mega__col">
                   <span className="owkin-mega__pill">{column.pill}</span>
@@ -223,10 +196,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                     {column.links.map((link) => (
                       <li key={link.label}>
                         <Link href={link.href} className="owkin-mega__item" onClick={() => setOpenMega(null)}>
-                          <span className="owkin-mega__item-label">
-                            {link.label}
-                            {link.badge ? <span className="owkin-mega__badge">{link.badge}</span> : null}
-                          </span>
+                          <span className="owkin-mega__item-label">{link.label}</span>
                           {link.description ? (
                             <span className="owkin-mega__item-desc">{link.description}</span>
                           ) : null}
@@ -253,7 +223,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
           className="flex w-[min(100vw,22rem)] flex-col border-l border-black/5 bg-[var(--owkin-cream)] p-0"
         >
           <div className="border-b border-black/5 px-6 py-5">
-            <p className="text-sm font-semibold text-[var(--owkin-ink)]">Menu</p>
+            <p className="text-sm font-medium text-[var(--owkin-ink)]">Menu</p>
             <p className="text-xs text-black/50">Aksh Health</p>
           </div>
 
@@ -265,7 +235,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
                 </Link>
               </SheetClose>
             ))}
-            {megaMenus["Solutions"].flatMap((col) =>
+            {megaMenus["For you"].flatMap((col) =>
               col.links.map((link) => (
                 <SheetClose key={link.href + link.label} asChild>
                   <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
@@ -280,11 +250,6 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/chat" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                Ask
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
               <Link href="/contact" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
                 Contact
               </Link>
@@ -293,13 +258,13 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">
             <SheetClose asChild>
-              <Link href="/signin" className={cn("owkin-nav__pill text-center", focusRing)}>
-                Sign In
+              <Link href="/signin" className={cn("owkin-nav__ghost-link text-center", focusRing)}>
+                Sign in
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/get-started" className={cn("owkin-btn-ink text-center", focusRing)}>
-                Talk to us
+              <Link href="/get-started" className={cn("owkin-nav__pill text-center", focusRing)}>
+                Get started
               </Link>
             </SheetClose>
           </div>

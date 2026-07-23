@@ -52,12 +52,15 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <MetricCard label="Demo users" value="100" />
+          <MetricCard label="Demo patients" value="100" />
           <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />
           <MetricCard label="Care Pathways pending" value={String(countAwaitingApproval())} />
           <MetricCard label="SHIELD audit" value="Live trail" />
           <MetricCard label="EMIS write-back" value="Not enabled" />
           <MetricCard label="DCB0129" value="Rehearsal only" />
           <MetricCard label="Certifications" value="None claimed" />
+          <MetricCard label="Auto-writes" value="0" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">

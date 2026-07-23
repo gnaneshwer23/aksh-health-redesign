@@ -5,10 +5,8 @@ import Link from "next/link";
 import AccentStripe from "@/components/marketing/AccentStripe";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import HeroSection from "@/components/marketing/HeroSection";
-import NewsletterBand from "@/components/marketing/NewsletterBand";
 import ProductFeatureBand from "@/components/marketing/ProductFeatureBand";
 import StatsBand from "@/components/marketing/StatsBand";
-import VisionStatement from "@/components/marketing/VisionStatement";
 import WhatsNewSection from "@/components/marketing/WhatsNewSection";
 import { container, sectionTight } from "@/components/marketing/marketing-ui";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
@@ -34,7 +32,6 @@ export default function HomePage() {
   return (
     <MarketingShell overLightHero>
       <HeroSection />
-      <VisionStatement />
       <ScrollStorySection />
       <AccentStripe />
       <ProductFeatureBand />
@@ -43,28 +40,26 @@ export default function HomePage() {
       <PlatformFlowSection />
       <RolesGridSection />
 
-      <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band>
+      <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band data-section="10">
         <div className={`${container} max-w-2xl`}>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
-            Build a more coordinated healthcare system.
+            Clinical work that stays under control.
           </h2>
           <p className="owkin-cta-band__lede mb-8 text-lg leading-relaxed md:text-xl">
-            Aksh Health helps organisations capture, review, govern, and coordinate clinical work across existing
-            healthcare systems.
+            Capture consultations, coordinate care, and keep every decision attributed and auditable — across EMIS Web
+            and SystmOne.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">
-              Book a demonstration
+              Get started
             </Link>
-            <Link href="/contact" className="owkin-cta-band__link">
-              Talk to us
+            <Link href="/demo/script" className="owkin-cta-band__link">
+              Book a demonstration
               <span aria-hidden>→</span>
             </Link>
           </div>
         </div>
       </section>
-
-      <NewsletterBand />
     </MarketingShell>
   );
 }

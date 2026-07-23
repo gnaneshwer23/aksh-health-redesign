@@ -1,40 +1,32 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
-import { container, sectionTight } from "@/components/marketing/marketing-ui";
-import { PlatformFlowDiagram } from "@/components/marketing/PlatformFlowDiagram";
+import { container } from "@/components/marketing/marketing-ui";
 
+/**
+ * Clinician gate band — replaces the redundant third Capture → draft → approve journey.
+ * Intentionally does NOT claim demo cohort size (100 patients/users stay on dashboards only).
+ */
 export default function PlatformFlowSection() {
   return (
-    <section className={`${sectionTight} marketing-editorial-band`}>
-      <div className={container}>
-        <div className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
-          <p className="marketing-section-label mb-3">The journey</p>
-          <h2 className="marketing-display-title mb-3 text-[clamp(1.85rem,3.4vw,2.75rem)] text-navy-dark">
-            Capture → draft → approve
-          </h2>
-          <p className="text-base leading-relaxed text-slate/75 sm:text-lg">
-            Supporting intelligence. Clinical intelligence supports every workflow while clinicians remain responsible
-            for every approved outcome.
-          </p>
-        </div>
+    <section className="owkin-clinician-gate" aria-labelledby="clinician-gate-heading" data-section="08">
+      <div className={`${container} owkin-clinician-gate__inner`}>
+        <p className="owkin-clinician-gate__eyebrow">Clinician control</p>
+        <h2 id="clinician-gate-heading" className="owkin-clinician-gate__title">
+          Every output is a draft
+          <span className="block">until a named clinician decides.</span>
+        </h2>
+        <p className="owkin-clinician-gate__lede">
+          Accept, edit, or reject before anything reaches the record. Attribution and audit sit on every decision —
+          not after the fact.
+        </p>
 
-        <PlatformFlowDiagram variant="journey" />
-
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:gap-6">
-          <Link
-            href="/how-it-works"
-            className="inline-flex items-center gap-2 text-sm font-medium text-navy-dark underline decoration-navy/25 underline-offset-[6px] transition-colors hover:decoration-emerald"
-          >
-            View workflow
-            <ArrowRight className="h-4 w-4" aria-hidden />
+        <div className="owkin-clinician-gate__actions">
+          <Link href="/get-started" className="owkin-btn-ink">
+            Get started
           </Link>
-          <Link
-            href="/demo/script"
-            className="inline-flex items-center gap-2 text-sm font-medium text-navy-dark underline decoration-navy/25 underline-offset-[6px] transition-colors hover:decoration-emerald"
-          >
-            Book demonstration
-            <ArrowRight className="h-4 w-4" aria-hidden />
+          <Link href="/demo/patel" className="owkin-text-cta">
+            Open Patel walkthrough
+            <span aria-hidden>→</span>
           </Link>
         </div>
       </div>

@@ -9,8 +9,6 @@ type RoleSignal = {
   href: string;
   dashboard: string;
   description: string;
-  signals: string[];
-  featured?: boolean;
 };
 
 type RolesGridSectionProps = {
@@ -25,46 +23,42 @@ const careRoles: RoleSignal[] = [
     href: "/for-clinicians",
     dashboard: "Clinician dashboard",
     description:
-      "Manage consultations, review structured drafts, approve referrals, and monitor clinical risk from one workspace.",
-    signals: ["Consult capture", "SOAP drafts", "Risk signals", "Review queue"],
-    featured: true,
+      "From the moment you open an appointment, the clinical context is ready. Documentation, drug safety, and risk signals are waiting in your review queue. You approve what goes in the record.",
   },
   {
     id: "nurse",
     label: "Nurse / Care Coordinator",
     href: "/for-clinicians",
     dashboard: "Nurse dashboard",
-    description: "Manage observations, handovers, and safety alerts across the patient journey.",
-    signals: ["Vitals", "Handover", "Safety alerts"],
-    featured: true,
+    description:
+      "Vitals, observations, and handover notes in one place. Safety alerts appear before the ward round. Handover drafts from your entries — you review and approve before the night team receives them.",
   },
   {
     id: "pharmacist",
     label: "Clinical Pharmacist",
     href: "/for-clinicians",
     dashboard: "Pharmacist dashboard",
-    description: "Review medications, identify interactions, and support safer prescribing.",
-    signals: ["Med review", "Interactions", "BNF"],
-    featured: true,
+    description:
+      "Medication reviews and interaction checks without switching tools. Type a proposed drug and get a BNF-referenced result. Every clinical rationale is recorded with your name attached.",
   },
 ];
 
 const governanceRoles: RoleSignal[] = [
   {
     id: "admin",
-    label: "Practice Admin",
+    label: "Practice Administrator",
     href: "/for-practices",
     dashboard: "Admin · Audit",
-    description: "Integration health, tenancy controls, and immutable audit trails across the practice.",
-    signals: ["Audit", "Integrations", "ETL"],
+    description:
+      "Integration health, user management, and an immutable audit log in one view. Every clinical decision made on the platform is attributable, timestamped, and exportable.",
   },
   {
     id: "regional",
     label: "ICS / Regional Lead",
     href: "/for-ics",
     dashboard: "Regional dashboard",
-    description: "Monitor service performance and population health across connected organisations.",
-    signals: ["Equity", "Cohorts", "Capacity"],
+    description:
+      "Population signals aggregated from every connected practice. Condition prevalence, risk distribution, and service benchmarking — without patient-level data crossing organisational boundaries.",
   },
 ];
 
@@ -74,40 +68,30 @@ const reachRoles: RoleSignal[] = [
     label: "Hospital Executive",
     href: "/for-hospitals",
     dashboard: "Command centre",
-    description: "View operational performance, service demand, and system wide capacity.",
-    signals: ["Capacity", "Command"],
+    description:
+      "Operational performance, service demand, and 14-day capacity signals in one command view. Every recommendation is logged and attributable.",
   },
   {
     id: "patient",
-    label: "Patient",
+    label: "Patient (invited by your practice)",
     href: "/for-patients",
     dashboard: "My Health",
-    description: "Invited by your GP practice. Support between appointments, never alone.",
-    signals: ["Check-ins", "Plans"],
+    description:
+      "Your conditions, medications, and care plan in plain language. Check-ins, appointment records, and a way to tell your care team when something changes.",
   },
   {
     id: "research",
     label: "Researcher / Analyst",
     href: "/for-research",
     dashboard: "Informatics view",
-    description: "Explore governed datasets for service improvement and clinical research.",
-    signals: ["Equity", "Cohorts"],
+    description:
+      "Governed access to aggregate clinical data for service improvement and research. Individual patient data requires separate ethics approval. Provenance is recorded on every dataset.",
   },
 ];
 
-function RoleSignals({ signals }: { signals: string[] }) {
-  return (
-    <ul className="owkin-roles__signals" aria-label="Product signals">
-      {signals.map((signal) => (
-        <li key={signal}>{signal}</li>
-      ))}
-    </ul>
-  );
-}
-
 export default function RolesGridSection({ variant = "home" }: RolesGridSectionProps) {
   return (
-    <section id="roles" className="owkin-roles scroll-mt-24" aria-labelledby="roles-heading">
+    <section id="roles" className="owkin-roles scroll-mt-24" aria-labelledby="roles-heading" data-section="09">
       <div className={container}>
         <ScrollReveal className="owkin-roles__intro">
           <p className="owkin-roles__eyebrow">One platform</p>
@@ -139,7 +123,6 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
                       <span className="owkin-roles__dashboard">{role.dashboard}</span>
                     </div>
                     <p>{role.description}</p>
-                    <RoleSignals signals={role.signals} />
                   </div>
                   <span className="owkin-roles__cta">
                     View workspace
@@ -165,7 +148,6 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
                     <span className="owkin-roles__dashboard">{role.dashboard}</span>
                   </div>
                   <p>{role.description}</p>
-                  <RoleSignals signals={role.signals} />
                   <span className="owkin-roles__cta">
                     Open dashboard
                     <span aria-hidden>→</span>

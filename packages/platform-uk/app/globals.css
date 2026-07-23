@@ -6535,7 +6535,62 @@ input:focus, textarea:focus {
 }
 
 .owkin-story__scene {
-  padding: clamp(2.25rem, 5vw, 4rem) 0;
+  padding: 3rem 0; /* 48px mobile default */
+  border-left: 2px solid transparent;
+}
+
+@media (min-width: 768px) {
+  .owkin-story__scene {
+    padding: 4rem 0; /* 64px desktop */
+  }
+}
+
+.owkin-story__scene[data-section] {
+  border-left-color: rgba(11, 125, 107, 0.28);
+  padding-left: 1rem;
+  margin-left: 0.25rem;
+}
+
+.owkin-story__section-label {
+  margin: 0 0 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mk-accent-strong, var(--owkin-accent));
+}
+
+.owkin-story__split {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .owkin-story__split {
+    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+    gap: 3rem;
+  }
+}
+
+.owkin-story__split-copy h2 {
+  margin: 0 0 1rem;
+  font-family: var(--font-marketing-display);
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  color: var(--owkin-ink);
+  text-wrap: balance;
+}
+
+.owkin-story__split-copy p {
+  margin: 0 0 1.25rem;
+  max-width: 28rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--owkin-muted);
 }
 
 .owkin-story__grid {
@@ -6555,7 +6610,7 @@ input:focus, textarea:focus {
   margin: 0;
   font-family: var(--font-marketing-display);
   font-size: clamp(1.65rem, 3vw, 2.4rem);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.08;
   color: var(--owkin-ink);
@@ -6570,8 +6625,26 @@ input:focus, textarea:focus {
 }
 
 .owkin-story__visual-frame .aksh-visual--agents-mock,
-.owkin-story__visual-frame .aksh-visual--fhir-mock {
+.owkin-story__visual-frame .aksh-visual--fhir-mock,
+.owkin-story__visual-frame .aksh-visual--fragmented {
   width: min(100%, 22rem);
+}
+
+.aksh-mock-frame--problem {
+  border: 1px solid rgba(180, 60, 50, 0.35);
+  box-shadow: 0 24px 48px -28px rgba(120, 40, 30, 0.28);
+}
+
+.aksh-mock-stack--flow {
+  gap: 0.65rem;
+}
+
+.aksh-mock-flow-arrow {
+  display: flex;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  color: rgba(20, 20, 20, 0.35);
 }
 
 @media (max-width: 720px) {
@@ -6592,7 +6665,7 @@ input:focus, textarea:focus {
 /* ---- Closing CTA band (must beat editorial transparent-section override) ---- */
 .owkin-cta-band,
 .marketing-site--editorial .owkin-cta-band.marketing-section-tight {
-  background: #141414 !important;
+  background: #0a2a25 !important;
   color: #fff;
 }
 
@@ -7447,8 +7520,8 @@ input:focus, textarea:focus {
   --mk-accent-strong: #0a5f53;
   --mk-signal: #14e0a4;
   --mk-line: rgba(10, 42, 37, 0.12);
-  --mk-section: clamp(5.4rem, 9.6vw, 8.4rem);
-  --mk-section-tight: clamp(4.2rem, 7.2vw, 6rem);
+  --mk-section: 4rem; /* 64px desktop */
+  --mk-section-tight: 3.25rem;
   --mk-radius-sm: 0.75rem;
   --mk-radius-md: 1rem;
   --mk-radius-lg: 1.5rem;
@@ -7470,7 +7543,12 @@ input:focus, textarea:focus {
 
 .marketing-site :is(h1, h2, h3, .owkin-display) {
   font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-weight: 500;
   color: var(--mk-ink);
+}
+
+.marketing-site {
+  font-weight: 400;
 }
 
 .marketing-site :is(h1, h2) {
@@ -8398,8 +8476,8 @@ input:focus, textarea:focus {
 
 @media (max-width: 767px) {
   .marketing-site {
-    --mk-section: 4rem;
-    --mk-section-tight: 3.5rem;
+    --mk-section: 3rem; /* 48px mobile */
+    --mk-section-tight: 2.75rem;
   }
 
   .marketing-container {
@@ -8579,17 +8657,9 @@ input:focus, textarea:focus {
   z-index: 1;
 }
 
-/* Brand-first: Aksh Health is the hero signal; headline is secondary. */
+/* Brand eyebrow — small caps green; nav owns the wordmark. */
 .marketing-homepage-hero .owkin-hero__wordmark {
-  margin: 0 0 0.85rem;
-  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
-  font-size: clamp(2.85rem, 7.2vw, 5.4rem);
-  font-weight: 700;
-  letter-spacing: -0.058em;
-  line-height: 0.92;
-  color: var(--mk-ink);
-  text-wrap: balance;
-  animation: marketing-hero-rise 820ms var(--mk-ease) both;
+  display: none;
 }
 
 .marketing-homepage-hero .owkin-hero__brand {
@@ -8597,9 +8667,10 @@ input:focus, textarea:focus {
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 1rem !important;
-  font-size: 0.8rem !important;
-  letter-spacing: 0.02em !important;
-  text-transform: none !important;
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
   color: var(--mk-accent-strong) !important;
   animation: marketing-hero-rise 920ms var(--mk-ease) both;
 }
@@ -8615,24 +8686,26 @@ input:focus, textarea:focus {
 
 .marketing-homepage-hero .owkin-hero__title {
   margin-bottom: 1.15rem !important;
-  font-size: clamp(1.65rem, 3.4vw, 2.65rem) !important;
-  font-weight: 550 !important;
+  font-size: clamp(2rem, 4.5vw, 3.5rem) !important; /* ~56px desktop */
+  font-weight: 500 !important;
   letter-spacing: -0.038em !important;
-  line-height: 1.12 !important;
+  line-height: 1.08 !important;
   color: var(--mk-ink-deep) !important;
   animation: marketing-hero-rise 1020ms var(--mk-ease) both;
 }
 
 .marketing-homepage-hero .owkin-hero__lede {
-  max-width: 36rem;
+  max-width: 32.5rem; /* ~520px */
   margin-bottom: 1.65rem !important;
-  font-size: clamp(1rem, 1.35vw, 1.125rem) !important;
-  line-height: 1.6 !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  line-height: 1.65 !important;
   color: var(--mk-muted) !important;
   animation: marketing-hero-rise 1120ms var(--mk-ease) both;
 }
 
 .marketing-homepage-hero .owkin-hero__actions {
+  justify-content: flex-start;
   animation: marketing-hero-rise 1220ms var(--mk-ease) both;
 }
 
@@ -8811,15 +8884,219 @@ input:focus, textarea:focus {
   }
 
   .marketing-homepage-hero .owkin-hero__wordmark {
-    font-size: clamp(2.5rem, 12vw, 3.5rem);
+    display: none;
   }
 
   .marketing-homepage-hero .owkin-hero__title {
-    font-size: clamp(1.45rem, 6.5vw, 1.85rem) !important;
+    font-size: clamp(1.85rem, 8vw, 2.35rem) !important;
   }
 
   .marketing-homepage-hero .owkin-hero__visual::after {
     background: linear-gradient(180deg, var(--mk-surface) 0%, transparent 22%);
     opacity: 0.45;
   }
+}
+
+/* ===== 12-fixes additions: agent diagram, one-platform, clinician gate, footer newsletter ===== */
+
+.aksh-interop-diagram--agents {
+  aspect-ratio: auto;
+  min-height: 18rem;
+}
+
+.aksh-interop-agents {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.aksh-interop-agents__row {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.aksh-interop-agents__row--agents {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aksh-interop-agents__row--mid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.aksh-interop-agents__row--out {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 720px) {
+  .aksh-interop-agents__row--agents {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.aksh-interop-agents .aksh-interop-node {
+  min-height: 4.25rem;
+}
+
+.aksh-interop-agents .aksh-interop-node__label {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.owkin-one-platform__grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .owkin-one-platform__grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 3.5rem;
+  }
+}
+
+.owkin-one-platform__lede {
+  margin: 0;
+  max-width: 34rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--mk-muted, var(--owkin-muted));
+}
+
+.owkin-one-platform .owkin-whats-new__title {
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.owkin-one-platform__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--mk-line, rgba(10, 42, 37, 0.12));
+}
+
+.owkin-one-platform__list li {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--mk-line, rgba(10, 42, 37, 0.12));
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--mk-ink, var(--owkin-ink));
+  font-variant-numeric: tabular-nums;
+}
+
+.owkin-clinician-gate {
+  background: #0d1f14;
+  color: #fff;
+  padding-block: 4rem;
+}
+
+.marketing-site--editorial main > section.owkin-clinician-gate {
+  padding-block: 4rem !important;
+}
+
+.owkin-clinician-gate__inner {
+  max-width: 40rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.owkin-clinician-gate__eyebrow {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 224, 164, 0.9);
+}
+
+.owkin-clinician-gate__title {
+  margin: 0 0 1rem;
+  font-family: var(--font-aksh-display), "Manrope", system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.owkin-clinician-gate__lede {
+  margin: 0 auto 1.75rem;
+  max-width: 32rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.owkin-clinician-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem 1.35rem;
+}
+
+.owkin-clinician-gate .owkin-btn-ink {
+  background: #fff;
+  color: #0a2a25;
+}
+
+.owkin-clinician-gate .owkin-text-cta {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.owkin-clinician-gate .owkin-text-cta:hover {
+  color: #fff;
+}
+
+.owkin-footer__newsletter {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.owkin-newsletter--embedded {
+  background: transparent;
+  padding-block: 2.5rem !important;
+}
+
+.owkin-newsletter--embedded .owkin-newsletter__title {
+  color: #fff;
+}
+
+.owkin-newsletter--embedded .owkin-newsletter__form label span {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.owkin-newsletter--embedded .owkin-newsletter__form input {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.owkin-newsletter--embedded .owkin-newsletter__thanks {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.owkin-mega__grid--single {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 28rem;
+}
+
+.aksh-product-mock__agent {
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+}
+
+.marketing-stats-editorial__value {
+  font-weight: 500;
+}
+
+.marketing-stats-editorial__grid {
+  gap: 3rem;
 }

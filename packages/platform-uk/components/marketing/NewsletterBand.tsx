@@ -3,8 +3,14 @@
 import { FormEvent, useState } from "react";
 
 import { container } from "@/components/marketing/marketing-ui";
+import { cn } from "@/lib/utils";
 
-export default function NewsletterBand() {
+type NewsletterBandProps = {
+  /** When true, nest into the footer without a separate full-width section break. */
+  embedded?: boolean;
+};
+
+export default function NewsletterBand({ embedded = false }: NewsletterBandProps) {
   const [submitted, setSubmitted] = useState(false);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -13,7 +19,10 @@ export default function NewsletterBand() {
   }
 
   return (
-    <section className="owkin-newsletter" aria-label="Newsletter signup">
+    <section
+      className={cn("owkin-newsletter", embedded && "owkin-newsletter--embedded")}
+      aria-label="Newsletter signup"
+    >
       <div className={`${container} owkin-newsletter__row`}>
         <h2 className="owkin-newsletter__title">Sign up to our newsletter</h2>
         {submitted ? (

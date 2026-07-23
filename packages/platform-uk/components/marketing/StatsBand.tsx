@@ -1,41 +1,45 @@
 import { container } from "@/components/marketing/marketing-ui";
 
-const stats = [
+const pillars = [
   {
-    value: "Drafts",
-    label: "Structured clinical drafts",
-    detail: "Consultations become review-ready clinical documentation",
+    label: "Capture",
+    title: "Structured from voice or text",
+    detail: "Consultation input — typed or dictated — becomes a structured clinical draft in seconds.",
   },
   {
-    value: "Horizon",
-    label: "Risk horizon",
-    detail: "Surface deterioration signals for clinician attention",
+    label: "Review",
+    title: "One queue for every output",
+    detail:
+      "Documentation, safety checks, and risk signals appear together. Accept, edit, or reject each one individually.",
   },
   {
-    value: "Review",
-    label: "Clinician approval required",
-    detail: "Every output waits for Accept, Edit, or Reject",
+    label: "Govern",
+    title: "Every decision attributed and recorded",
+    detail: "An immutable audit record is created on every clinician action. Exportable. Cannot be modified.",
   },
   {
-    value: "Roles",
-    label: "Role specific workspaces",
-    detail: "Purpose-built views for GP, nurse, pharmacist, and more",
+    label: "Integrate",
+    title: "Staged to your existing systems",
+    detail:
+      "Approved outputs are structured as FHIR R4 resources and staged to EMIS Web or SystmOne on clinician confirmation.",
   },
 ] as const;
 
 export default function StatsBand() {
   return (
     <section
-      className="marketing-stats-editorial border-y border-navy/[0.08] bg-white/70 py-14 md:py-16"
-      aria-label="Platform capabilities at a glance"
+      className="marketing-stats-editorial border-y border-navy/[0.08] bg-white/70"
+      aria-label="How it works"
+      data-section="06"
     >
       <div className={container}>
+        <p className="marketing-section-label mb-6 text-center">How it works</p>
         <div className="marketing-stats-editorial__grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="marketing-stats-editorial__item">
-              <p className="marketing-stats-editorial__value">{stat.value}</p>
-              <p className="marketing-stats-editorial__label">{stat.label}</p>
-              <p className="marketing-stats-editorial__detail">{stat.detail}</p>
+          {pillars.map((pillar) => (
+            <div key={pillar.label} className="marketing-stats-editorial__item">
+              <p className="marketing-stats-editorial__value">{pillar.label}</p>
+              <p className="marketing-stats-editorial__label">{pillar.title}</p>
+              <p className="marketing-stats-editorial__detail">{pillar.detail}</p>
             </div>
           ))}
         </div>
