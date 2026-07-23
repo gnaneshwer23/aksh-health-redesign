@@ -318,12 +318,20 @@ test.describe("Marketing smoke", () => {
     await expect(visual.getByText("Aksh Health", { exact: true })).toHaveCount(0);
     await expect(visual.getByText("CANVAS", { exact: true })).toBeVisible();
     await expect(visual.getByText("SYNTHESIS", { exact: true })).toBeVisible();
+    await expect(visual.getByText("GUARDIAN", { exact: true })).toBeVisible();
+    await expect(visual.getByText("HORIZON", { exact: true })).toBeVisible();
+    await expect(visual.getByText("PATHWAY", { exact: true })).toBeVisible();
     await expect(visual.getByText("CONDUCTOR", { exact: true })).toBeVisible();
     await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
+    await expect(visual.getByText("FHIR staging", { exact: true })).toBeVisible();
+    await expect(visual.getByText("SHIELD", { exact: true })).toBeVisible();
+    await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
+    await expect(visual.getByText("SystmOne", { exact: true })).toBeVisible();
     await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
+    await expect(hero.getByTestId("interop-pipeline-diagram")).toBeVisible();
 
     const headline = hero.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
     const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });

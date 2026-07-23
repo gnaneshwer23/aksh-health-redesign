@@ -14,13 +14,13 @@ import {
 import { cn } from "@/lib/utils";
 
 const ARIA_LABEL =
-  "Interoperability diagram: CANVAS, SYNTHESIS, GUARDIAN, HORIZON, PATHWAY, SHIELD, and CONDUCTOR coordinate clinical drafts. A clinician reviews every output before FHIR R4 staging.";
+  "Interoperability diagram: EMIS Web and SystmOne context feeds CANVAS intake. CONDUCTOR orchestrates parallel drafts from SYNTHESIS, GUARDIAN, HORIZON, and PATHWAY. A clinician accepts, edits, or rejects every draft before FHIR R4 staging and SHIELD audit. Drafts only — no live EMR write.";
 
 type InteropNodeProps = {
   label: string;
   sub?: string;
   icon: LucideIcon;
-  variant?: "default" | "hub" | "review";
+  variant?: "default" | "hub" | "review" | "compact" | "source";
   className?: string;
 };
 
@@ -37,51 +37,92 @@ function InteropNode({
         "aksh-interop-node",
         variant === "hub" && "aksh-interop-node--hub",
         variant === "review" && "aksh-interop-node--review",
+        variant === "compact" && "aksh-interop-node--compact",
+        variant === "source" && "aksh-interop-node--source",
         className
       )}
     >
       <span className="aksh-interop-node__icon" aria-hidden>
         <Icon className="aksh-interop-node__glyph" strokeWidth={1.75} />
       </span>
-      <p className="aksh-interop-node__label">{label}</p>
-      {sub ? <p className="aksh-interop-node__sub">{sub}</p> : null}
+      <div className="aksh-interop-node__text">
+        <p className="aksh-interop-node__label">{label}</p>
+        {sub ? <p className="aksh-interop-node__sub">{sub}</p> : null}
+      </div>
     </div>
   );
 }
 
-/** Product illustration — named agents → clinician gate → FHIR + SHIELD. */
+function PipeArrow({ label }: { label?: string }) {
+  return (
+    <div className="aksh-interop-pipe__arrow" aria-hidden>
+      <span className="aksh-interop-pipe__arrow-line" />
+      {label ? <span className="aksh-interop-pipe__arrow-label">{label}</span> : null}
+      <span className="aksh-interop-pipe__arrow-head" />
+    </div>
+  );
+}
+
+/** Product illustration — intake → CONDUCTOR + parallel drafts → clinician gate → FHIR + SHIELD. */
 export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
     <figure
       role="img"
-      className={cn("aksh-interop-diagram aksh-interop-diagram--agents", className)}
+      className={cn("aksh-interop-diagram aksh-interop-diagram--pipeline", className)}
       aria-label={ARIA_LABEL}
+      data-testid="interop-pipeline-diagram"
     >
       <figcaption className="sr-only">{ARIA_LABEL}</figcaption>
 
       <div className="aksh-interop-diagram__wash" aria-hidden />
       <div className="aksh-interop-diagram__hub-glow" aria-hidden />
 
-      <div className="aksh-interop-agents" aria-hidden>
-        <div className="aksh-interop-agents__row aksh-interop-agents__row--agents">
+      <div className="aksh-interop-pipe" aria-hidden>
+        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--sources">
+          <p className="aksh-interop-pipe__eyebrow">Clinical context</p>
+          <div className="aksh-interop-pipe__sources">
+            <span className="aksh-interop-pipe__source">EMIS Web</span>
+            <span className="aksh-interop-pipe__source-sep" />
+            <span className="aksh-interop-pipe__source">SystmOne</span>
+          </div>
+          <p className="aksh-interop-pipe__honesty">Designed for · not a live feed</p>
+        </div>
+
+        <PipeArrow />
+
+        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--intake">
           <InteropNode label="CANVAS" sub="Intake" icon={Mic} />
-          <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} />
-          <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} />
-          <InteropNode label="HORIZON" sub="Risk" icon={Activity} />
         </div>
-        <div className="aksh-interop-agents__row aksh-interop-agents__row--mid">
-          <InteropNode label="PATHWAY" sub="Referral" icon={GitBranch} />
+
+        <PipeArrow label="orchestrates" />
+
+        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--orchestra">
           <InteropNode label="CONDUCTOR" sub="Orchestration" icon={Waypoints} variant="hub" />
-          <InteropNode label="SHIELD" sub="Audit" icon={Shield} />
+          <p className="aksh-interop-pipe__parallel-label">Parallel drafts</p>
+          <div className="aksh-interop-pipe__drafts">
+            <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
+            <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
+            <InteropNode label="HORIZON" sub="Risk" icon={Activity} variant="compact" />
+            <InteropNode label="PATHWAY" sub="Referral" icon={GitBranch} variant="compact" />
+          </div>
         </div>
-        <div className="aksh-interop-agents__row aksh-interop-agents__row--out">
+
+        <PipeArrow label="clinician decides" />
+
+        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--gate">
           <InteropNode
             label="Clinician review"
-            sub="Accept · edit · reject"
+            sub="Accept · Edit · Reject"
             icon={ClipboardCheck}
             variant="review"
           />
+        </div>
+
+        <PipeArrow />
+
+        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--out">
           <InteropNode label="FHIR staging" sub="R4 · draft resources" icon={FileCode2} />
+          <InteropNode label="SHIELD" sub="Audit trail" icon={Shield} />
         </div>
       </div>
     </figure>
