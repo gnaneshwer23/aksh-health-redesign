@@ -327,11 +327,17 @@ test.describe("Marketing smoke", () => {
     await expect(visual.getByText("SHIELD", { exact: true })).toBeVisible();
     await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
     await expect(visual.getByText("SystmOne", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Parallel drafts", { exact: true }).first()).toBeVisible();
+    await expect(visual.getByText("Drafts only · no live EMR write", { exact: true })).toBeVisible();
     await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
     await expect(hero.getByTestId("interop-pipeline-diagram")).toBeVisible();
+    await expect(hero.getByTestId("hero-agent-pipeline")).toBeVisible();
+    // Vertical pipeline must expose unmistakable ↓ arrows between stages.
+    expect(await hero.getByTestId("pipeline-arrow-down").count()).toBeGreaterThanOrEqual(5);
+    await expect(hero.getByTestId("pipeline-arrow-right")).toBeVisible();
 
     const headline = hero.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
     const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });
@@ -347,6 +353,30 @@ test.describe("Marketing smoke", () => {
       Math.min(headlineBox!.y + headlineBox!.height, diagramBox!.y + diagramBox!.height) -
       Math.max(headlineBox!.y, diagramBox!.y);
     expect(overlapX <= 0 || overlapY <= 0).toBe(true);
+
+    // Stages must stack top→bottom (not a scattered tile collage).
+    const canvasBox = await visual.getByText("CANVAS", { exact: true }).boundingBox();
+    const conductorBox = await visual.getByText("CONDUCTOR", { exact: true }).boundingBox();
+    const reviewBox = await visual.getByText("Clinician review", { exact: true }).boundingBox();
+    expect(canvasBox).not.toBeNull();
+    expect(conductorBox).not.toBeNull();
+    expect(reviewBox).not.toBeNull();
+    expect(canvasBox!.y).toBeLessThan(conductorBox!.y);
+    expect(conductorBox!.y).toBeLessThan(reviewBox!.y);
+
+    // Parallel drafts: 2×2 with clear gaps (no smashed 4-across overlap).
+    const synth = await visual.getByText("SYNTHESIS", { exact: true }).boundingBox();
+    const guardian = await visual.getByText("GUARDIAN", { exact: true }).boundingBox();
+    const horizon = await visual.getByText("HORIZON", { exact: true }).boundingBox();
+    const pathway = await visual.getByText("PATHWAY", { exact: true }).boundingBox();
+    expect(synth).not.toBeNull();
+    expect(guardian).not.toBeNull();
+    expect(horizon).not.toBeNull();
+    expect(pathway).not.toBeNull();
+    expect(Math.abs(synth!.y - guardian!.y)).toBeLessThan(12);
+    expect(Math.abs(horizon!.y - pathway!.y)).toBeLessThan(12);
+    expect(horizon!.y).toBeGreaterThan(synth!.y + synth!.height - 4);
+    expect(guardian!.x).toBeGreaterThan(synth!.x + synth!.width + 6);
   });
 
   test("homepage agent and FHIR scenes use quiet product mocks", async ({ page }) => {

@@ -53,17 +53,60 @@ function InteropNode({
   );
 }
 
-function PipeArrow({ label }: { label?: string }) {
+/** Bold spruce/teal flow chevron — vertical ↓ or horizontal → */
+function FlowArrow({
+  direction = "down",
+  label,
+}: {
+  direction?: "down" | "right";
+  label?: string;
+}) {
+  const isDown = direction === "down";
   return (
-    <div className="aksh-interop-pipe__arrow" aria-hidden>
-      <span className="aksh-interop-pipe__arrow-line" />
-      {label ? <span className="aksh-interop-pipe__arrow-label">{label}</span> : null}
-      <span className="aksh-interop-pipe__arrow-head" />
+    <div
+      className={cn(
+        "aksh-flow-arrow",
+        isDown ? "aksh-flow-arrow--down" : "aksh-flow-arrow--right"
+      )}
+      aria-hidden
+      data-testid={isDown ? "pipeline-arrow-down" : "pipeline-arrow-right"}
+    >
+      {label ? <span className="aksh-flow-arrow__label">{label}</span> : null}
+      <svg
+        className="aksh-flow-arrow__svg"
+        viewBox={isDown ? "0 0 28 44" : "0 0 44 28"}
+        width={isDown ? 28 : 44}
+        height={isDown ? 44 : 28}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {isDown ? (
+          <>
+            <path
+              d="M14 3v26"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <path d="M5 24l9 16 9-16H5z" fill="currentColor" />
+          </>
+        ) : (
+          <>
+            <path
+              d="M3 14h26"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <path d="M24 5l16 9-16 9V5z" fill="currentColor" />
+          </>
+        )}
+      </svg>
     </div>
   );
 }
 
-/** Product illustration — intake → CONDUCTOR + parallel drafts → clinician gate → FHIR + SHIELD. */
+/** Product illustration — EMR context → CANVAS → CONDUCTOR + parallel drafts → clinician gate → FHIR + SHIELD. */
 export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
     <figure
@@ -75,56 +118,76 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
       <figcaption className="sr-only">{ARIA_LABEL}</figcaption>
 
       <div className="aksh-interop-diagram__wash" aria-hidden />
-      <div className="aksh-interop-diagram__hub-glow" aria-hidden />
 
-      <div className="aksh-interop-pipe" aria-hidden>
-        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--sources">
-          <p className="aksh-interop-pipe__eyebrow">Clinical context</p>
-          <div className="aksh-interop-pipe__sources">
-            <span className="aksh-interop-pipe__source">EMIS Web</span>
-            <span className="aksh-interop-pipe__source-sep" />
-            <span className="aksh-interop-pipe__source">SystmOne</span>
+      <ol className="aksh-pipeline" data-testid="hero-agent-pipeline">
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--sources">
+          <p className="aksh-pipeline__eyebrow">Clinical context</p>
+          <div className="aksh-pipeline__sources">
+            <span className="aksh-pipeline__source">EMIS Web</span>
+            <span className="aksh-pipeline__source-dot" aria-hidden />
+            <span className="aksh-pipeline__source">SystmOne</span>
           </div>
-          <p className="aksh-interop-pipe__honesty">Designed for · not a live feed</p>
-        </div>
+          <p className="aksh-pipeline__honesty">Designed for · not a live feed</p>
+        </li>
 
-        <PipeArrow />
+        <li className="aksh-pipeline__connector" aria-hidden>
+          <FlowArrow />
+        </li>
 
-        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--intake">
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--intake">
           <InteropNode label="CANVAS" sub="Intake" icon={Mic} />
-        </div>
+        </li>
 
-        <PipeArrow label="orchestrates" />
+        <li className="aksh-pipeline__connector" aria-hidden>
+          <FlowArrow />
+        </li>
 
-        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--orchestra">
-          <InteropNode label="CONDUCTOR" sub="Orchestration" icon={Waypoints} variant="hub" />
-          <p className="aksh-interop-pipe__parallel-label">Parallel drafts</p>
-          <div className="aksh-interop-pipe__drafts">
-            <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
-            <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
-            <InteropNode label="HORIZON" sub="Risk" icon={Activity} variant="compact" />
-            <InteropNode label="PATHWAY" sub="Referral" icon={GitBranch} variant="compact" />
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--hub">
+          <InteropNode label="CONDUCTOR" sub="Orchestration hub" icon={Waypoints} variant="hub" />
+        </li>
+
+        <li className="aksh-pipeline__connector" aria-hidden>
+          <FlowArrow label="parallel drafts" />
+        </li>
+
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--drafts">
+          <div className="aksh-pipeline__drafts-band">
+            <p className="aksh-pipeline__drafts-label">Parallel drafts</p>
+            <div className="aksh-pipeline__drafts">
+              <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
+              <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
+              <InteropNode label="HORIZON" sub="Risk" icon={Activity} variant="compact" />
+              <InteropNode label="PATHWAY" sub="Referral" icon={GitBranch} variant="compact" />
+            </div>
           </div>
-        </div>
+        </li>
 
-        <PipeArrow label="clinician decides" />
+        <li className="aksh-pipeline__connector" aria-hidden>
+          <FlowArrow label="clinician decides" />
+        </li>
 
-        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--gate">
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--gate">
           <InteropNode
             label="Clinician review"
             sub="Accept · Edit · Reject"
             icon={ClipboardCheck}
             variant="review"
           />
-        </div>
+        </li>
 
-        <PipeArrow />
+        <li className="aksh-pipeline__connector" aria-hidden>
+          <FlowArrow />
+        </li>
 
-        <div className="aksh-interop-pipe__stage aksh-interop-pipe__stage--out">
-          <InteropNode label="FHIR staging" sub="R4 · draft resources" icon={FileCode2} />
-          <InteropNode label="SHIELD" sub="Audit trail" icon={Shield} />
-        </div>
-      </div>
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--out">
+          <div className="aksh-pipeline__out-row">
+            <InteropNode label="FHIR staging" sub="R4 · draft resources" icon={FileCode2} />
+            <FlowArrow direction="right" />
+            <InteropNode label="SHIELD" sub="Audit trail" icon={Shield} />
+          </div>
+          <p className="aksh-pipeline__footer-honesty">Drafts only · no live EMR write</p>
+        </li>
+      </ol>
     </figure>
   );
 }

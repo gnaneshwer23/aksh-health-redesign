@@ -8592,8 +8592,8 @@ input:focus, textarea:focus {
     padding: 0.85rem 0.35rem;
   }
 
-  .aksh-interop-diagram--pipeline {
-    min-height: 0;
+  .aksh-pipeline {
+    max-width: 100%;
   }
 
   .aksh-interop-node {
@@ -9014,117 +9014,236 @@ input:focus, textarea:focus {
   }
 }
 
-/* ===== Hero pipeline diagram: sources → CANVAS → CONDUCTOR + drafts → gate → out ===== */
+/* ===== Hero pipeline: EMR → CANVAS → CONDUCTOR → drafts → gate → FHIR / SHIELD ===== */
 
 .aksh-interop-diagram--pipeline {
   aspect-ratio: auto;
-  min-height: 22rem;
+  min-height: 0;
 }
 
-.aksh-interop-pipe {
+.aksh-pipeline {
   position: relative;
   z-index: 1;
   display: flex;
   width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  padding: 0.35rem 0.25rem 0.15rem;
+  gap: 0.35rem;
+  margin-block: 0;
+  padding: 0.25rem 0.2rem 0.15rem;
+  list-style: none;
 }
 
-.aksh-interop-pipe__stage {
+.aksh-pipeline__stage {
   display: flex;
   width: 100%;
   flex-direction: column;
   align-items: center;
 }
 
-.aksh-interop-pipe__stage--sources {
-  gap: 0.35rem;
-  padding-block: 0.15rem 0.1rem;
+.aksh-pipeline__connector {
+  display: flex;
+  flex-shrink: 0;
+  width: 100%;
+  justify-content: center;
+  padding-block: 0.2rem;
 }
 
-.aksh-interop-pipe__eyebrow {
+/* High-contrast spruce/teal flow arrows — unmistakable ↓ / → */
+.aksh-flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: #075f50;
+}
+
+.aksh-flow-arrow--right {
+  flex-direction: row;
+  flex-shrink: 0;
+  padding-inline: 0.35rem;
+}
+
+.aksh-flow-arrow__svg {
+  display: block;
+  width: 28px;
+  height: 44px;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
+}
+
+.aksh-flow-arrow--right .aksh-flow-arrow__svg {
+  width: 44px;
+  height: 28px;
+}
+
+.aksh-flow-arrow__label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #064e3b;
+  white-space: nowrap;
+}
+
+.aksh-pipeline__stage--sources {
+  gap: 0.35rem;
+  padding-block: 0.15rem;
+}
+
+.aksh-pipeline__eyebrow {
   margin: 0;
   font-size: 0.58rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--mk-muted) 88%, var(--mk-accent));
+  color: color-mix(in srgb, var(--mk-muted) 80%, #0b7d6b);
 }
 
-.aksh-interop-pipe__sources {
+.aksh-pipeline__sources {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem 0.65rem;
+  gap: 0.45rem 0.7rem;
 }
 
-.aksh-interop-pipe__source {
-  font-size: 0.68rem;
-  font-weight: 600;
+.aksh-pipeline__source {
+  font-size: 0.78rem;
+  font-weight: 700;
   letter-spacing: -0.01em;
-  color: color-mix(in srgb, var(--mk-ink) 62%, var(--mk-muted));
+  color: color-mix(in srgb, var(--mk-ink) 78%, #075f50);
 }
 
-.aksh-interop-pipe__source-sep {
+.aksh-pipeline__source-dot {
   display: inline-block;
-  width: 0.28rem;
-  height: 0.28rem;
+  width: 0.32rem;
+  height: 0.32rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--mk-accent) 35%, transparent);
+  background: #0b7d6b;
+  opacity: 0.55;
 }
 
-.aksh-interop-pipe__honesty {
+.aksh-pipeline__honesty,
+.aksh-pipeline__footer-honesty {
   margin: 0;
   font-size: 0.55rem;
   line-height: 1.35;
   letter-spacing: 0.02em;
   color: var(--mk-muted);
+  text-align: center;
 }
 
-.aksh-interop-pipe__stage--intake .aksh-interop-node {
-  max-width: 9.5rem;
+.aksh-pipeline__footer-honesty {
+  margin-top: 0.65rem;
 }
 
-.aksh-interop-pipe__stage--orchestra {
-  gap: 0.55rem;
+.aksh-pipeline__stage--intake .aksh-interop-node {
+  max-width: 10rem;
+}
+
+.aksh-pipeline__stage--hub .aksh-interop-node--hub {
+  max-width: 13rem;
+}
+
+.aksh-pipeline__stage--drafts {
   width: 100%;
-  max-width: 26rem;
 }
 
-.aksh-interop-pipe__parallel-label {
-  margin: 0.15rem 0 0;
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+.aksh-pipeline__drafts-band {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.7rem 0.7rem 0.75rem;
+  border: 1.5px dashed color-mix(in srgb, #0b7d6b 42%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, #0b7d6b 5%, rgba(255, 255, 255, 0.4));
+}
+
+.aksh-pipeline__drafts-label {
+  margin: 0 0 0.55rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--mk-accent) 70%, var(--mk-muted));
+  text-align: center;
+  color: #075f50;
 }
 
-.aksh-interop-pipe__drafts {
+/* Always 2×2 — 4-across smashed labels in the hero column */
+.aksh-pipeline__drafts {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.4rem;
+  gap: 0.75rem; /* 12px */
+  align-items: stretch;
 }
 
-.aksh-interop-pipe__stage--gate {
+.aksh-pipeline__drafts > .aksh-interop-node {
+  box-sizing: border-box;
   width: 100%;
-}
-
-.aksh-interop-pipe__stage--out {
-  display: grid;
-  width: 100%;
-  max-width: 22rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem;
-  justify-items: stretch;
-}
-
-.aksh-interop-pipe__stage--out .aksh-interop-node {
+  min-width: 0;
   max-width: none;
+  min-height: 3.35rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem;
+  overflow: hidden;
+  text-align: left;
+}
+
+.aksh-pipeline__drafts .aksh-interop-node__text {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.aksh-pipeline__drafts .aksh-interop-node__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aksh-pipeline__drafts .aksh-interop-node__sub {
+  font-size: 0.54rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aksh-pipeline__stage--gate {
+  width: 100%;
+}
+
+.aksh-pipeline__stage--gate .aksh-interop-node--review {
+  max-width: min(100%, 18rem);
+  width: 100%;
+}
+
+.aksh-pipeline__stage--out {
+  width: 100%;
+  align-items: center;
+}
+
+.aksh-pipeline__out-row {
+  display: flex;
+  width: 100%;
+  max-width: 24rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.aksh-pipeline__out-row .aksh-interop-node {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: none;
+  flex: 1 1 0;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -9133,62 +9252,42 @@ input:focus, textarea:focus {
   text-align: left;
 }
 
-.aksh-interop-pipe__arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.12rem;
-  padding-block: 0.35rem;
-  color: color-mix(in srgb, var(--mk-accent) 55%, transparent);
-}
-
-.aksh-interop-pipe__arrow-line {
-  display: block;
-  width: 1.5px;
-  height: 0.7rem;
-  border-radius: 999px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--mk-accent) 18%, transparent),
-    color-mix(in srgb, var(--mk-accent) 72%, transparent)
-  );
-}
-
-.aksh-interop-pipe__arrow-label {
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--mk-accent-strong) 55%, var(--mk-muted));
-  white-space: nowrap;
-}
-
-.aksh-interop-pipe__arrow-head {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 6px solid color-mix(in srgb, var(--mk-accent) 78%, var(--mk-ink));
-}
-
 @media (min-width: 720px) {
-  .aksh-interop-pipe__drafts {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.45rem;
+  .aksh-pipeline {
+    max-width: 26rem;
   }
 
-  .aksh-interop-pipe__stage--orchestra {
-    max-width: 28rem;
+  .aksh-pipeline__drafts {
+    gap: 0.8rem;
   }
 
-  .aksh-interop-pipe__stage--out {
-    max-width: 24rem;
+  .aksh-pipeline__drafts .aksh-interop-node__label {
+    font-size: 0.64rem;
   }
 }
 
 @media (max-width: 719px) {
-  .aksh-interop-pipe__arrow-label {
-    font-size: 0.5rem;
+  .aksh-pipeline {
+    gap: 0.3rem;
+    max-width: 100%;
+  }
+
+  .aksh-pipeline__drafts {
+    gap: 0.65rem; /* ~10px */
+  }
+
+  .aksh-pipeline__out-row {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .aksh-pipeline__out-row .aksh-flow-arrow--right {
+    transform: rotate(90deg);
+  }
+
+  .aksh-pipeline__out-row .aksh-interop-node {
+    width: 100%;
+    flex: none;
   }
 
   .aksh-interop-node--review {
