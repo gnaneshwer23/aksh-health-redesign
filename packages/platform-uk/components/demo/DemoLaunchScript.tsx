@@ -1,6 +1,7 @@
 /**
  * D1-c: Controlled demo script — Capture → Draft → Approve → SHIELD → sim → export.
  * Honest banners: synthetic · HITL · liveEmis:false · no live NHS write-back claims.
+ * U4: GP hero path (<10 min) wired to dashboard review queue → Accept → Bundle export.
  */
 
 import Link from "next/link";
@@ -16,6 +17,18 @@ const honestyFlags = [
   "not certified"
 ];
 
+const gpHeroPath = {
+  title: "GP hero path (<10 min)",
+  talkTrack:
+    "From the Clinician Dashboard: open Review Queue → Accept a draft (HITL + SHIELD) → Export FHIR Bundle via BRIDGE. Agent Control names match marketing — CANVAS / BRIDGE / CONDUCTOR / HORIZON; VOICE and Dr.Assist stay sub-caps. liveEmis:false throughout.",
+  beats: [
+    { label: "GP dashboard", href: "/dashboard/gp", note: "Hero strip + Agent Control" },
+    { label: "Review queue", href: "/dashboard/gp/review-queue", note: "Pending drafts" },
+    { label: "Accept (HITL)", href: "/review/pilot?demo=1", note: "BRIDGE staging" },
+    { label: "Export Bundle", href: "/cases/case-005/evidence?demo=1", note: "FHIR handoff" }
+  ]
+};
+
 const demoStops = [
   {
     time: "00:00",
@@ -24,6 +37,14 @@ const demoStops = [
     action: "State the demo boundary before any click: synthetic patients, clinician Accept mandatory, write-back simulated.",
     talkTrack:
       "Aksh is a clinician-governed assistive layer. Agents draft; clinicians Accept/Edit/Reject; SHIELD audits. We do not claim live EMIS, IM1, or Medplum write-back today."
+  },
+  {
+    time: "00:30",
+    title: "GP hero path (optional shortcut)",
+    route: "/dashboard/gp",
+    action: "Open Clinician Dashboard → follow the hero strip: Review Queue → Accept → Export / sim.",
+    talkTrack:
+      "Hero demo stays under 10 minutes. Point at CANVAS / BRIDGE / CONDUCTOR / HORIZON on Agent Control. VOICE and Dr.Assist are sub-capabilities — not peer agents. DemoDataBanner / Neo4j honesty stay visible; liveEmis:false."
   },
   {
     time: "01:00",
@@ -107,17 +128,31 @@ export function DemoLaunchScript() {
         <div className="product-sky" aria-hidden="true" />
 
         <section className="product-simple-hero">
-          <p className="product-kicker">D1 demo script · 10–15 minutes</p>
+          <p className="product-kicker">D1 demo script · 10–15 minutes · GP hero &lt;10 min</p>
           <h1>Capture → Draft → Approve → SHIELD → sim → export</h1>
           <p>
             Guided walkthrough for akshhealth.com demos without IM1, EMIS Partner credentials, or Medplum
-            OAuth. Stay inside the synthetic HITL boundary.
+            OAuth. Stay inside the synthetic HITL boundary. Prefer the GP hero path when the audience is
+            clinical.
           </p>
           <div className="pill-row" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>
             {honestyFlags.map((flag) => (
               <span key={flag} className="pill" style={{ fontSize: "0.7rem" }}>
                 {flag}
               </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="gp-hero-script-panel">
+          <p className="product-kicker">{gpHeroPath.title}</p>
+          <p>{gpHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {gpHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
             ))}
           </div>
         </section>
@@ -166,6 +201,12 @@ export function DemoLaunchScript() {
             <section className="demo-script-panel">
               <p className="product-kicker">Quick links</p>
               <div className="actions" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <Link className="product-button product-button--secondary" href="/dashboard/gp">
+                  GP dashboard (hero)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/gp/review-queue">
+                  GP review queue
+                </Link>
                 <Link className="product-button product-button--secondary" href="/demo/precision-health-loop">
                   Whole-loop demo
                 </Link>

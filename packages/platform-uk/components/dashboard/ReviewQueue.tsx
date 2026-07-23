@@ -1,10 +1,12 @@
 "use client";
 
 import { ClipboardCheck } from "lucide-react";
+import Link from "next/link";
 import { useMemo } from "react";
 
 import { ReviewQueueItem } from "@/components/dashboard/ReviewQueueItem";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getPatientById } from "@/lib/mock-data";
 import { sortReviewQueueItems } from "@/lib/dashboard/sort-review-queue";
 import type { ReviewQueueItem as ReviewQueueItemType } from "@/lib/mock-data/types";
@@ -44,14 +46,33 @@ export function ReviewQueue({
   );
 
   return (
-    <section aria-label="AI Review Queue">
-      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-        <h2 className="text-base font-semibold">{heading}</h2>
-        {showAll && profile?.fullName ? (
-          <p className="text-xs text-muted">{profile.fullName}&apos;s queue</p>
-        ) : null}
-        {filtered.length > 0 && <Badge className="bg-danger text-white">{filtered.length} pending</Badge>}
+    <section aria-label="AI Review Queue" data-testid="gp-review-queue">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+          <h2 className="text-base font-semibold">{heading}</h2>
+          {showAll && profile?.fullName ? (
+            <p className="text-xs text-muted">{profile.fullName}&apos;s queue</p>
+          ) : null}
+          {filtered.length > 0 && <Badge className="bg-danger text-white">{filtered.length} pending</Badge>}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" variant="outline" asChild>
+            <Link href="/review/pilot?demo=1" data-testid="gp-queue-accept-cta">
+              Accept on pilot (HITL)
+            </Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link href="/cases/case-005/evidence?demo=1" data-testid="gp-queue-export-cta">
+              Export FHIR Bundle
+            </Link>
+          </Button>
+        </div>
       </div>
+      <p className="mb-3 text-[11px] text-muted">
+        Accept / Edit / Reject every draft. After Accept, BRIDGE stages FHIR (Neon/file) ·{" "}
+        <span className="font-medium text-foreground">liveEmis:false</span> · Bundle export is handoff, not
+        live EHR write.
+      </p>
 
       {showPatientEmpty ? (
         <div className="dashboard-card flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border-subtle p-10 text-center">
@@ -64,6 +85,9 @@ export function ReviewQueue({
           <ClipboardCheck className="h-10 w-10 text-steel" aria-hidden />
           <p className="text-sm font-medium text-foreground">Review queue is clear</p>
           <p className="text-xs text-muted">{globalEmptyMessage}</p>
+          <Button size="sm" asChild>
+            <Link href="/review/pilot?demo=1">Open pilot Accept → export path</Link>
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">

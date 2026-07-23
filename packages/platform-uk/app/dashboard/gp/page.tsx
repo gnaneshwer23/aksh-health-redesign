@@ -12,6 +12,7 @@ import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DemoDataBanner } from "@/components/dashboard/DemoDataBanner";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
+import { GpHeroDemoPath } from "@/components/dashboard/GpHeroDemoPath";
 import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { PatientCard } from "@/components/dashboard/PatientCard";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
@@ -142,6 +143,7 @@ export default function GpDashboardPage() {
           <div className="flex-1 space-y-5 overflow-y-auto bg-background p-4 sm:p-5">
           {isPublicDemo ? <DemoDataBanner surface="GP" className="mb-4" /> : null}
           <Neo4jMockModeBanner source={oracleSource} loading={oracleLoading} showLive />
+          <GpHeroDemoPath />
           {patient && (
             <header className="dashboard-card p-5">
               {clinicalLoading ? (

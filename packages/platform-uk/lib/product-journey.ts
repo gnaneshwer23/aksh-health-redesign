@@ -150,13 +150,13 @@ export type FirstRunCopy = {
 export const FIRST_RUN_BY_DASHBOARD: Record<DashboardRole, FirstRunCopy> = {
   gp: {
     title: "Your clinician workspace is ready",
-    body: `${PRODUCT_FLOW}. Start with the AI Review Queue — every output needs your approval before it reaches the record.`,
+    body: `${PRODUCT_FLOW}. One-click hero path: Review Queue → Accept (HITL) → BRIDGE export/sim. CANVAS intake, CONDUCTOR orchestration, HORIZON risk — VOICE and Dr.Assist stay sub-caps.`,
     primaryHref: "/dashboard/gp/review-queue",
     primaryLabel: "Open review queue",
-    secondaryHref: "/walkthrough",
-    secondaryLabel: "See walkthrough",
-    agents: ["SYNTHESIS", "GUARDIAN", "HORIZON", "BRIDGE", "SHIELD"],
-    youApprove: "Every clinical draft — Accept / Edit / Reject.",
+    secondaryHref: "/demo/script",
+    secondaryLabel: "10-min demo script",
+    agents: ["CANVAS", "SYNTHESIS", "GUARDIAN", "HORIZON", "CONDUCTOR", "BRIDGE", "SHIELD"],
+    youApprove: "Every clinical draft — Accept / Edit / Reject before BRIDGE staging.",
     honesty: LIVE_EMIS_FALSE,
   },
   nurse: {

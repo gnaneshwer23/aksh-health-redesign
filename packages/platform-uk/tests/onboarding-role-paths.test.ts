@@ -95,6 +95,11 @@ function run() {
   });
   assert.match(firstRun.body, /HORIZON|high-risk/i);
   assert.match(firstRun.honesty ?? "", /liveEmis:false/);
+  assert.equal(FIRST_RUN_BY_DASHBOARD.gp.primaryHref, "/dashboard/gp/review-queue");
+  assert.equal(FIRST_RUN_BY_DASHBOARD.gp.secondaryHref, "/demo/script");
+  assert.ok(FIRST_RUN_BY_DASHBOARD.gp.agents?.includes("CANVAS"));
+  assert.ok(FIRST_RUN_BY_DASHBOARD.gp.agents?.includes("CONDUCTOR"));
+  assert.match(FIRST_RUN_BY_DASHBOARD.gp.body, /Accept|BRIDGE|export/i);
 
   // No path claims live EMIS certification
   for (const role of EXPECTED_ROLES) {

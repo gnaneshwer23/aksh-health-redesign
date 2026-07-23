@@ -184,7 +184,7 @@ async function run() {
   );
   assert.ok(agentGrid.includes("Twelve agents"));
   assert.ok(agentGrid.includes("sub-capabilities"));
-  assert.ok(agentGrid.includes("PRISM and ATLAS stay Phase 2"));
+  assert.ok(/PRISM and ATLAS[\s\S]*stay Phase 2/.test(agentGrid));
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),

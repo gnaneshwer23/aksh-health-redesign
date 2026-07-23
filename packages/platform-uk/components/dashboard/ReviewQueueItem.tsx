@@ -131,8 +131,8 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
             onAccept={() => {
               acceptReviewItem(item.id, CURRENT_GP);
               toast({
-                title: "Accepted",
-                description: `${item.patientName}: written to record (demo).`,
+                title: "Accepted · staged via BRIDGE",
+                description: `${item.patientName}: SHIELD logged · liveEmis:false · sim/staging only — open Export Bundle for FHIR handoff.`,
               });
             }}
             onEdit={() => setEditing(true)}

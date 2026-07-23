@@ -12,10 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import {
+  AGENT_JOB_IN_LOOP,
+  AGENT_SUB_CAPABILITIES
+} from "@/lib/marketing/agent-job-in-loop";
 import type { Patient } from "@/lib/mock-data/types";
 import type { Neo4jGuardianResponse, Neo4jPatientResponse } from "@/lib/neo4j/types";
 import { cn } from "@/lib/utils";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
+
+const VOICE_SUB = AGENT_SUB_CAPABILITIES.find((s) => s.name === "VOICE");
+const DR_ASSIST_SUB = AGENT_SUB_CAPABILITIES.find((s) => s.name === "Dr.Assist");
 
 type AgentDraftState = {
   mode?: string;
@@ -497,7 +504,8 @@ export function AgentControlPanel({
           Agent Control · 12-agent directory
         </p>
         <p className="text-[10px] text-muted">
-          Drafts call live <code className="text-[9px]">/api/agents/*</code> · HITL required · SHIELD ·{" "}
+          Same story as marketing: Capture → Draft → Approve → Stage. Drafts via{" "}
+          <code className="text-[9px]">/api/agents/*</code> · HITL · SHIELD ·{" "}
           <span className="font-medium text-foreground">liveEmis:false</span>
         </p>
         <div
@@ -508,10 +516,11 @@ export function AgentControlPanel({
           <AgentBadge agent="CANVAS" />
           <AgentBadge agent="BRIDGE" />
           <AgentBadge agent="CONDUCTOR" />
+          <AgentBadge agent="ORACLE" />
         </div>
         <p className="text-[9px] text-muted">
-          VOICE and Dr.Assist are intake/coding <span className="font-medium">sub-capabilities</span> — not
-          peer 13th/14th agents.
+          HORIZON (ex-ORACLE). VOICE and Dr.Assist are intake/coding{" "}
+          <span className="font-medium">sub-capabilities</span> — not peer 13th/14th agents.
         </p>
       </div>
 
@@ -520,10 +529,7 @@ export function AgentControlPanel({
           <CardTitle className="text-sm flex items-center gap-2">
             <AgentBadge agent="CANVAS" /> CANVAS
           </CardTitle>
-          <p className="text-[10px] text-muted pt-1">
-            Clinical Intake — structures patient history, conditions, and medications for review (synthetic /
-            staged context).
-          </p>
+          <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.CANVAS.job}</p>
         </CardHeader>
         <CardContent className="p-3 space-y-3">
           {patient ? (
@@ -544,9 +550,8 @@ export function AgentControlPanel({
               <span className="text-[9px] text-muted">feeds CANVAS</span>
             </div>
             <p className="text-[10px] text-muted">
-              Dictation feeds CANVAS intake and stages a transcript for HITL — not a separate directory
-              agent. Without <code className="text-[9px]">DEEPGRAM_API_KEY</code> the mic uses a labelled{" "}
-              <strong>simulated ASR</strong> path.
+              {VOICE_SUB?.job ??
+                "Dictation feeds CANVAS intake. Sub-capability — not a 13th peer agent."}
             </p>
             <div className="flex flex-col items-center gap-2">
               <VoiceRecorder onTranscript={handleVoiceTranscript} />
@@ -567,9 +572,9 @@ export function AgentControlPanel({
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 space-y-2">
-          <p className="text-[10px] text-muted">
-            Supervisor — runs SYNTHESIS → GUARDIAN → HORIZON → NEXUS on the clinical spine. Drafts only · HITL
-            mandatory · liveEmis:false.
+          <p className="text-[10px] text-muted">{AGENT_JOB_IN_LOOP.CONDUCTOR.job}</p>
+          <p className="text-[9px] text-muted">
+            Runs SYNTHESIS → GUARDIAN → HORIZON → NEXUS · drafts only · HITL mandatory · liveEmis:false.
           </p>
           <Button variant="outline" size="sm" className="w-full h-7 text-[10px]" asChild>
             <Link href={conductorHref}>Open CONDUCTOR · Orchestrate</Link>
@@ -577,7 +582,7 @@ export function AgentControlPanel({
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm" data-testid="gp-horizon-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
@@ -593,6 +598,7 @@ export function AgentControlPanel({
               {running === "oracle" ? "…" : "Brief"}
             </Button>
           </CardTitle>
+          <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.HORIZON.job}</p>
         </CardHeader>
         <CardContent className="p-3 space-y-2">
           {!patient ? (
@@ -719,6 +725,7 @@ export function AgentControlPanel({
           <CardTitle className="text-sm flex items-center gap-2">
             <AgentBadge agent="SYNTHESIS" /> SYNTHESIS
           </CardTitle>
+          <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.SYNTHESIS.job}</p>
         </CardHeader>
         <CardContent className="p-3 space-y-2">
           <div className="flex rounded-sm border border-border p-0.5 text-[10px]">
@@ -805,9 +812,8 @@ export function AgentControlPanel({
               </Button>
             </div>
             <p className="text-[10px] text-muted">
-              Coding sub-capability under SYNTHESIS — SNOMED / ICD-10 drafts for HITL. Not a peer Phase-1 directory
-              agent. John Snow Labs NLP is <span className="font-medium">not wired</span> (deterministic / AI Gateway
-              drafts only).
+              {DR_ASSIST_SUB?.job ??
+                "Coding drafts under SYNTHESIS + HITL. Sub-capability — not a 14th peer agent. John Snow Labs NLP is not wired."}
             </p>
             {!patient ? (
               <p className="text-muted text-[10px]">Select a patient</p>
@@ -861,7 +867,7 @@ export function AgentControlPanel({
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm" data-testid="gp-pathway-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
@@ -877,6 +883,7 @@ export function AgentControlPanel({
               {running === "referral" ? "…" : "Package"}
             </Button>
           </CardTitle>
+          <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.PATHWAY.job}</p>
         </CardHeader>
         <CardContent className="p-3 space-y-2 text-xs">
           {!patient ? (
@@ -926,14 +933,19 @@ export function AgentControlPanel({
             <AgentBadge agent="BRIDGE" /> BRIDGE
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3 space-y-1">
-          <p className="text-[10px] text-muted">
-            Interoperability — after Accept, drafts stage as FHIR R4 for review. Medplum rehearsal when
-            configured; otherwise local staging / sim.
-          </p>
+        <CardContent className="p-3 space-y-2">
+          <p className="text-[10px] text-muted">{AGENT_JOB_IN_LOOP.BRIDGE.job}</p>
           <p className="text-[10px] font-medium text-foreground">
-            liveEmis:false · no live EMIS / SystmOne write-back in this build
+            liveEmis:false · FHIR-in-Neon / Bundle export · no live EMIS / SystmOne write-back
           </p>
+          <div className="flex flex-col gap-1.5">
+            <Button variant="outline" size="sm" className="h-7 w-full text-[10px]" asChild>
+              <Link href="/dashboard/gp/review-queue">Review queue → Accept</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="h-7 w-full text-[10px]" asChild>
+              <Link href="/cases/case-005/evidence?demo=1">Export FHIR Bundle (sim)</Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </aside>

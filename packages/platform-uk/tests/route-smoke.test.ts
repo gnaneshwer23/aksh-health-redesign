@@ -138,6 +138,14 @@ async function run() {
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "sub-capability");
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "liveEmis:false");
   await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "not wired");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "AGENT_JOB_IN_LOOP");
+  await assertFileIncludes("components/dashboard/AgentControlPanel.tsx", "gp-horizon-panel");
+  await assertFileIncludes("components/dashboard/GpHeroDemoPath.tsx", "gp-hero-demo-path");
+  await assertFileIncludes("components/dashboard/GpHeroDemoPath.tsx", "/demo/script");
+  await assertFileIncludes("app/dashboard/gp/page.tsx", "GpHeroDemoPath");
+  await assertFileIncludes("app/dashboard/gp/review-queue/page.tsx", "GpHeroDemoPath");
+  await assertFileIncludes("lib/product-journey.ts", "/demo/script");
+  await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "gp-hero-script-panel");
   await assertFileIncludes("components/dashboard/precision-health/ClinicalOrchestratePanel.tsx", "CONDUCTOR · Orchestrate");
   await assertFileIncludes("lib/agents.ts", "AGENT_DIRECTORY");
   await assertFileIncludes("lib/agents.ts", 'name: "CANVAS"');
