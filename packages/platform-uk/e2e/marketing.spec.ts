@@ -338,9 +338,9 @@ test.describe("Marketing smoke", () => {
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
     await expect(hero.getByTestId("interop-pipeline-diagram")).toBeVisible();
     await expect(hero.getByTestId("hero-agent-pipeline")).toBeVisible();
-    // Vertical pipeline must expose unmistakable ↓ arrows between stages.
-    expect(await hero.getByTestId("pipeline-arrow-down").count()).toBeGreaterThanOrEqual(5);
-    await expect(hero.getByTestId("pipeline-arrow-right")).toBeVisible();
+    // Compact board: short vertical stack + horizontal spine / staging arrows.
+    expect(await hero.getByTestId("pipeline-arrow-down").count()).toBeGreaterThanOrEqual(3);
+    expect(await hero.getByTestId("pipeline-arrow-right").count()).toBeGreaterThanOrEqual(2);
 
     const headline = hero.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
     const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });
@@ -357,15 +357,19 @@ test.describe("Marketing smoke", () => {
       Math.max(headlineBox!.y, diagramBox!.y);
     expect(overlapX <= 0 || overlapY <= 0).toBe(true);
 
-    // Stages must stack top→bottom (not a scattered tile collage).
+    // Compact board: CANVAS → CONDUCTOR on one row, then review below.
     const canvasBox = await visual.getByText("CANVAS", { exact: true }).boundingBox();
     const conductorBox = await visual.getByText("CONDUCTOR", { exact: true }).boundingBox();
     const reviewBox = await visual.getByText("Clinician review", { exact: true }).boundingBox();
     expect(canvasBox).not.toBeNull();
     expect(conductorBox).not.toBeNull();
     expect(reviewBox).not.toBeNull();
-    expect(canvasBox!.y).toBeLessThan(conductorBox!.y);
+    expect(Math.abs(canvasBox!.y - conductorBox!.y)).toBeLessThan(24);
+    expect(canvasBox!.x).toBeLessThan(conductorBox!.x);
     expect(conductorBox!.y).toBeLessThan(reviewBox!.y);
+
+    // Compact diagram should not dwarf the copy column (no skyscraper fold).
+    expect(diagramBox!.height).toBeLessThan(720);
 
     // Parallel checks: 2×2 with clear gaps (no smashed 4-across overlap).
     const synth = await visual.getByText("SYNTHESIS", { exact: true }).boundingBox();

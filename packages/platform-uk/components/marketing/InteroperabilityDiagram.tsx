@@ -74,31 +74,31 @@ function FlowArrow({
       {label ? <span className="aksh-flow-arrow__label">{label}</span> : null}
       <svg
         className="aksh-flow-arrow__svg"
-        viewBox={isDown ? "0 0 24 32" : "0 0 32 24"}
-        width={isDown ? 24 : 32}
-        height={isDown ? 32 : 24}
+        viewBox={isDown ? "0 0 24 28" : "0 0 28 24"}
+        width={isDown ? 20 : 26}
+        height={isDown ? 26 : 20}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         {isDown ? (
           <>
             <path
-              d="M12 2v18"
+              d="M12 2v16"
               stroke="currentColor"
-              strokeWidth="3.5"
+              strokeWidth="3.25"
               strokeLinecap="round"
             />
-            <path d="M4 17l8 12 8-12H4z" fill="currentColor" />
+            <path d="M4.5 15.5l7.5 10.5 7.5-10.5H4.5z" fill="currentColor" />
           </>
         ) : (
           <>
             <path
-              d="M2 12h18"
+              d="M2 12h16"
               stroke="currentColor"
-              strokeWidth="3.5"
+              strokeWidth="3.25"
               strokeLinecap="round"
             />
-            <path d="M17 4l12 8-12 8V4z" fill="currentColor" />
+            <path d="M15.5 4.5l10.5 7.5-10.5 7.5V4.5z" fill="currentColor" />
           </>
         )}
       </svg>
@@ -106,7 +106,11 @@ function FlowArrow({
   );
 }
 
-/** Product illustration — EMR context → CANVAS → CONDUCTOR + parallel checks → clinician gate → FHIR + SHIELD. */
+/**
+ * Compact product board — sources band, horizontal CANVAS → CONDUCTOR,
+ * then short vertical: parallel checks → clinician review → staging + SHIELD.
+ * Designed to sit beside hero copy in one viewport (not a skyscraper).
+ */
 export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
     <figure
@@ -130,30 +134,26 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           <p className="aksh-pipeline__honesty">Designed for · not a live feed</p>
         </li>
 
-        <li className="aksh-pipeline__connector" aria-hidden>
+        <li className="aksh-pipeline__connector aksh-pipeline__connector--tight" aria-hidden>
           <FlowArrow />
         </li>
 
-        <li className="aksh-pipeline__stage aksh-pipeline__stage--intake">
-          <InteropNode label="CANVAS" sub="Intake" icon={Mic} />
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--spine">
+          <div className="aksh-pipeline__spine">
+            <InteropNode label="CANVAS" sub="Intake" icon={Mic} />
+            <FlowArrow direction="right" />
+            <InteropNode label="CONDUCTOR" sub="Orchestration hub" icon={Waypoints} variant="hub" />
+          </div>
         </li>
 
-        <li className="aksh-pipeline__connector" aria-hidden>
-          <FlowArrow />
-        </li>
-
-        <li className="aksh-pipeline__stage aksh-pipeline__stage--hub">
-          <InteropNode label="CONDUCTOR" sub="Orchestration hub" icon={Waypoints} variant="hub" />
-        </li>
-
-        <li className="aksh-pipeline__connector" aria-hidden>
+        <li className="aksh-pipeline__connector aksh-pipeline__connector--tight" aria-hidden>
           <FlowArrow label="parallel checks" />
         </li>
 
-        <li className="aksh-pipeline__stage aksh-pipeline__stage--drafts">
-          <div className="aksh-pipeline__drafts-band">
-            <p className="aksh-pipeline__drafts-label">Parallel checks</p>
-            <div className="aksh-pipeline__drafts">
+        <li className="aksh-pipeline__stage aksh-pipeline__stage--checks">
+          <div className="aksh-pipeline__checks-band">
+            <p className="aksh-pipeline__checks-label">Parallel checks</p>
+            <div className="aksh-pipeline__checks">
               <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
               <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
               <InteropNode label="HORIZON" sub="Risk" icon={Activity} variant="compact" />
@@ -162,7 +162,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           </div>
         </li>
 
-        <li className="aksh-pipeline__connector" aria-hidden>
+        <li className="aksh-pipeline__connector aksh-pipeline__connector--tight" aria-hidden>
           <FlowArrow label="clinician decides" />
         </li>
 
@@ -175,7 +175,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           />
         </li>
 
-        <li className="aksh-pipeline__connector" aria-hidden>
+        <li className="aksh-pipeline__connector aksh-pipeline__connector--tight" aria-hidden>
           <FlowArrow />
         </li>
 

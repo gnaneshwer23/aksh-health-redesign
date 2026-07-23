@@ -7,7 +7,7 @@ import { container } from "@/components/marketing/marketing-ui";
 export default function HeroSection() {
   return (
     <section className="marketing-homepage-hero owkin-hero relative flex flex-col overflow-hidden">
-      <div className={`relative z-10 flex flex-col justify-center ${container} pb-3 pt-20 md:pb-4 md:pt-24`}>
+      <div className={`relative z-10 flex flex-col ${container} pb-2 pt-16 md:pb-3 md:pt-20`}>
         <div className="owkin-hero__grid">
           <div className="owkin-hero__copy">
             <p className="owkin-hero__brand">Care coordination for UK primary care</p>
