@@ -3,6 +3,7 @@
  * Honest banners: synthetic · HITL · liveEmis:false · no live NHS write-back claims.
  * U4: GP hero path (<10 min) wired to dashboard review queue → Accept → Bundle export.
  * U5: Nurse 3-beat + pharmacist med-safety paths on role dashboards.
+ * U6: Practice admin ops path — integrations honesty → SHIELD → users/enquiries.
  */
 
 import Link from "next/link";
@@ -58,6 +59,22 @@ const pharmacistHeroPath = {
   ]
 };
 
+const adminHeroPath = {
+  title: "Practice admin ops path",
+  talkTrack:
+    "Sign in as practice manager. Integrations honesty (BRIDGE staging · designed for EMIS/SystmOne · liveEmis:false) → SHIELD audit → users / organisation enquiries. CONDUCTOR = queue health. Precision Health / partner readiness are scaffolding — never claim live write-back.",
+  beats: [
+    { label: "Admin dashboard", href: "/dashboard/admin", note: "Ops hero strip" },
+    { label: "Integrations", href: "/dashboard/admin/integrations", note: "Beat 1 · honesty" },
+    { label: "SHIELD audit", href: "/dashboard/admin/audit", note: "Beat 2" },
+    {
+      label: "Users / enquiries",
+      href: "/dashboard/admin/organisation-enquiries",
+      note: "Beat 3"
+    }
+  ]
+};
+
 const demoStops = [
   {
     time: "00:00",
@@ -90,6 +107,14 @@ const demoStops = [
     action: "After pharmacist sign-in: Med review → GUARDIAN interactions → Accept (HITL + SHIELD).",
     talkTrack:
       "GUARDIAN drafts interactions; pharmacist Accept/Edit/Reject. Mark Reviewed and Accept audit via SHIELD / pharmacist-review spine — not EHR write-back. liveEmis:false."
+  },
+  {
+    time: "01:05",
+    title: "Practice admin ops (practice manager)",
+    route: "/dashboard/admin",
+    action: "After admin sign-in: Integrations honesty → SHIELD audit → users/enquiries via the ops hero strip.",
+    talkTrack:
+      "Say “not live EMIS” from the page itself (liveEmis:false badges). CONDUCTOR/BRIDGE are ops framing; Precision Health stays scaffolding. Partner readiness never equals write-back."
   },
   {
     time: "01:00",
@@ -174,13 +199,14 @@ export function DemoLaunchScript() {
 
         <section className="product-simple-hero">
           <p className="product-kicker">
-            D1 demo script · 10–15 minutes · GP hero &lt;10 min · nurse / pharmacist supporting
+            D1 demo script · 10–15 minutes · GP hero &lt;10 min · nurse / pharmacist / admin supporting
           </p>
           <h1>Capture → Draft → Approve → SHIELD → sim → export</h1>
           <p>
             Guided walkthrough for akshhealth.com demos without IM1, EMIS Partner credentials, or Medplum
             OAuth. Stay inside the synthetic HITL boundary. Prefer the GP hero path when the audience is
-            clinical; use nurse / pharmacist strips for supporting-role demos (sign-in required).
+            clinical; use nurse / pharmacist / practice-admin strips for supporting-role demos (sign-in
+            required).
           </p>
           <div className="pill-row" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>
             {honestyFlags.map((flag) => (
@@ -227,6 +253,19 @@ export function DemoLaunchScript() {
                 className="product-button product-button--secondary"
                 href={beat.href}
               >
+                {beat.label}
+                <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="product-section" data-testid="admin-hero-script-panel">
+          <p className="product-kicker">{adminHeroPath.title}</p>
+          <p>{adminHeroPath.talkTrack}</p>
+          <div className="actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+            {adminHeroPath.beats.map((beat) => (
+              <Link key={beat.href} className="product-button product-button--secondary" href={beat.href}>
                 {beat.label}
                 <span style={{ opacity: 0.7, marginLeft: "0.35rem", fontSize: "0.75rem" }}>{beat.note}</span>
               </Link>
@@ -289,6 +328,9 @@ export function DemoLaunchScript() {
                 </Link>
                 <Link className="product-button product-button--secondary" href="/dashboard/pharmacist">
                   Pharmacist dashboard (med-safety)
+                </Link>
+                <Link className="product-button product-button--secondary" href="/dashboard/admin">
+                  Practice admin (ops)
                 </Link>
                 <Link className="product-button product-button--secondary" href="/demo/precision-health-loop">
                   Whole-loop demo

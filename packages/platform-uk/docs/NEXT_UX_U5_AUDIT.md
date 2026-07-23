@@ -69,6 +69,8 @@ Live `npm run smoke:nurse` / `smoke:pharmacist` require a running app + `SMOKE_N
 
 ## Next
 
-**U6** — Practice admin dashboard (ops demo: integrations honesty + SHIELD + users/enquiries).
+**U6** — Practice admin dashboard — **PASS** — see [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md).
 
-Do **not** start U6 until this audit stays PASS on `main`.
+**U7** — ICS + hospital dashboards (population / command-centre demos).
+
+Do **not** start U7 until U6 stays PASS on `main`.

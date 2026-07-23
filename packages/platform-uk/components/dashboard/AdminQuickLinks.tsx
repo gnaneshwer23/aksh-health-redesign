@@ -7,11 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const LINKS = [
   { href: "/dashboard/admin/users", label: "User Management", description: "Invite, activate, and manage staff accounts", icon: Users },
-  { href: "/dashboard/admin/integrations", label: "Integrations", description: "EMIS, SystmOne, FHIR, and platform service health", icon: Activity },
+  {
+    href: "/dashboard/admin/integrations",
+    label: "Integrations",
+    description: "BRIDGE staging · designed for EMIS / SystmOne · liveEmis:false",
+    icon: Activity,
+  },
   {
     href: "/dashboard/admin/precision-health",
-    label: "System spine",
-    description: "Postgres, Neo4j, agents, EMIS/Medplum honesty, PH loop — one ops view",
+    label: "Partner readiness (scaffolding)",
+    description: "System spine + Precision Health flags — not live write-back",
     icon: Heart,
   },
   {
@@ -20,7 +25,7 @@ const LINKS = [
     description: "Purpose + modality grants (Phase 1) — SHIELD logged, no EHR write",
     icon: Shield,
   },
-  { href: "/dashboard/admin/audit", label: "Audit Log", description: "Full SHIELD audit trail for clinical AI actions", icon: ClipboardList },
+  { href: "/dashboard/admin/audit", label: "SHIELD audit", description: "Hash-chained trail of clinical AI Accept / Reject", icon: ClipboardList },
   {
     href: "/dashboard/admin/learning",
     label: "Learning events",
@@ -35,7 +40,7 @@ export function AdminQuickLinks() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base">Admin Sections</CardTitle>
+        <CardTitle className="text-base">Practice ops</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 sm:grid-cols-2">

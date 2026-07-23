@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { AdminHeroDemoPath } from "@/components/dashboard/admin/AdminHeroDemoPath";
 import { AdminQuickLinks } from "@/components/dashboard/AdminQuickLinks";
 import { AuditLogTable } from "@/components/dashboard/AuditLogTable";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
@@ -30,25 +31,47 @@ export default function AdminDashboardPage() {
     >
       <div className="space-y-6 overflow-y-auto p-4">
         <ConsentBanner />
+        <AdminHeroDemoPath />
+        <p
+          className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+          data-testid="admin-honesty-banner"
+        >
+          Not live EMIS · liveEmis:false · designed for EMIS Web / SystmOne pathways (staging / sim).
+          CONDUCTOR = queue health; BRIDGE = FHIR after clinician Accept; SHIELD = durable audit.
+          Precision Health / partner readiness are scaffolding — no live write-back claim.
+        </p>
         <SystemStatusStrip />
 
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Organisation overview</h2>
+          <h2 className="text-lg font-semibold text-foreground">Practice operations overview</h2>
           <p className="text-sm text-muted">
-            Dashboard for {orgLabel}. Metrics below mix live SHIELD/integration probes with synthetic rehearsal
-            figures — not certified DCB0129 / MHRA evidence. Precision Health surfaces are scaffolding (connectors,
-            consent registry) — not a live twin or EMIS write-back.
+            Ops narrative for {orgLabel}: integrations honesty, SHIELD visibility, and access
+            requests — not a developer console. Metrics mix live SHIELD/integration probes with
+            synthetic rehearsal figures — not certified DCB0129 / MHRA evidence.
           </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />
+          <MetricCard label="Care Pathways pending" value={String(countAwaitingApproval())} />
+          <MetricCard label="SHIELD audit" value="Live trail" />
+          <MetricCard label="EMIS write-back" value="Not enabled" />
+          <MetricCard label="DCB0129" value="Rehearsal only" />
+          <MetricCard label="Certifications" value="None claimed" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
             href="/dashboard/admin/precision-health"
-            className="rounded-xl border border-primary/20 bg-primary/[0.04] p-4 transition-colors hover:border-primary/40"
+            className="rounded-xl border border-dashed border-border-subtle bg-surface-muted/40 p-4 transition-colors hover:border-primary/30"
+            data-testid="admin-precision-health-scaffolding-link"
           >
-            <p className="text-sm font-semibold text-foreground">System spine &amp; Precision Health</p>
+            <p className="text-sm font-semibold text-foreground">
+              Partner readiness · Precision Health
+            </p>
             <p className="mt-1 text-xs text-muted">
-              Postgres, Neo4j, agents, EMIS/Medplum honesty, loop status — one ops view
+              Scaffolding only — connectors, consent flags, partner checklist. liveEmis:false · not a
+              live twin or EMIS write-back.
             </p>
           </Link>
           <Link
@@ -60,15 +83,6 @@ export default function AdminDashboardPage() {
               Purpose + modality grants after first login — SHIELD logged, no EHR write
             </p>
           </Link>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />
-          <MetricCard label="Care Pathways pending" value={String(countAwaitingApproval())} />
-          <MetricCard label="SHIELD audit" value="Live trail" />
-          <MetricCard label="EMIS write-back" value="Not enabled" />
-          <MetricCard label="DCB0129" value="Rehearsal only" />
-          <MetricCard label="Certifications" value="None claimed" />
         </div>
 
         <AdminQuickLinks />

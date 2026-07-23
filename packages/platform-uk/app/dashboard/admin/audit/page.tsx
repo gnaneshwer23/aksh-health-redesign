@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminHeroDemoPath } from "@/components/dashboard/admin/AdminHeroDemoPath";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { AuditLogTable } from "@/components/dashboard/AuditLogTable";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -56,10 +57,12 @@ export default function AdminAuditPage() {
     <DashboardShell role="admin" title="Audit Log">
       <div className="space-y-4 overflow-y-auto p-4">
         <ConsentBanner />
+        <AdminHeroDemoPath />
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs text-muted max-w-xl">
             Prefer durable Postgres SHIELD events when signed in. Export downloads JSON from{" "}
             <code>/api/audit/shield</code> and logs the export action — not a certified compliance pack.
+            liveEmis:false · governance evidence only.
           </p>
           <Button variant="outline" onClick={() => void exportShield()}>
             Export SHIELD JSON

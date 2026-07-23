@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { AdminHeroDemoPath } from "@/components/dashboard/admin/AdminHeroDemoPath";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IntegrationStatus } from "@/components/dashboard/IntegrationStatus";
@@ -12,13 +13,15 @@ export default function AdminIntegrationsPage() {
     <DashboardShell role="admin" title="Integrations">
       <div className="space-y-4 overflow-y-auto p-4">
         <ConsentBanner />
-        <p className="text-xs text-muted">
-          Connector ingest demo, twin/EMIS honesty flags, and partner checklist pointers live on{" "}
+        <AdminHeroDemoPath />
+        <p className="text-xs text-muted" data-testid="admin-integrations-honesty">
+          Designed for EMIS Web / SystmOne via BRIDGE FHIR staging · liveEmis:false · no live
+          write-back. Partner checklist + Precision Health scaffolding:{" "}
           <Link
             href="/dashboard/admin/precision-health"
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
-            Precision Health status
+            partner readiness
           </Link>
           .
         </p>

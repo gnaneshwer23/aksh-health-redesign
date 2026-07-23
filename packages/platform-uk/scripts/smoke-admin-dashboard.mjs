@@ -16,20 +16,32 @@ const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedAdminRoutes = [
-  { label: "Admin dashboard", path: "/dashboard/admin", expectedText: ["Practice Manager", "Admin Sections"] },
+  {
+    label: "Admin dashboard",
+    path: "/dashboard/admin",
+    expectedText: ["Practice Manager", "Ops demo", "liveEmis:false", "Not live EMIS", "Practice ops"],
+  },
   { label: "Admin users", path: "/dashboard/admin/users", expectedText: ["User Management", "Invite User"] },
-  { label: "Admin integrations", path: "/dashboard/admin/integrations", expectedText: ["Integrations", "Integration Status"] },
+  {
+    label: "Admin integrations",
+    path: "/dashboard/admin/integrations",
+    expectedText: ["Integrations", "Integration Status", "Ops demo", "liveEmis:false"],
+  },
   {
     label: "Admin Precision Health",
     path: "/dashboard/admin/precision-health",
     expectedText: ["Precision Health", "scaffolding", "liveEmis"],
   },
   { label: "Admin consent", path: "/dashboard/admin/consent", expectedText: ["Consent registry", "Purpose-bound"] },
-  { label: "Admin audit", path: "/dashboard/admin/audit", expectedText: ["Audit Log", "Export Full Audit Log"] },
+  {
+    label: "Admin audit",
+    path: "/dashboard/admin/audit",
+    expectedText: ["Audit Log", "Export SHIELD", "Ops demo"],
+  },
   {
     label: "Admin organisation enquiries",
     path: "/dashboard/admin/organisation-enquiries",
-    expectedText: ["Organisation Enquiries", "Reference"],
+    expectedText: ["Organisation Enquiries", "Ops demo", "liveEmis:false"],
   },
   { label: "Admin billing", path: "/dashboard/admin/billing", expectedText: ["Billing", "Phase 2"] },
 ];

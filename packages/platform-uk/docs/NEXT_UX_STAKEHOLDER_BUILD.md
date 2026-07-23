@@ -52,7 +52,7 @@
 | **Personalised onboarding** | **U3 PASS** — all 8 roles get tutorial + first-run (agents / approve / `liveEmis:false`); see [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md) |
 | **Nurse dashboard** | **U5 PASS** — 3-beat hero (obs → handover → GUARDIAN); see [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) |
 | **Pharmacist** | **U5 PASS** — med-safety HITL path (review → GUARDIAN → stage); see [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) |
-| **Admin** | Broad ops surface; partner-readiness exists; still feels like an **internal ops dump** more than a “practice manager demo” |
+| **Admin** | **U6 PASS** — practice-manager ops hero (integrations → SHIELD → enquiries); see [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) |
 | **ICS** | Population / equity / benchmark / forecast sections — synthetic intelligence; COMPASS story under-sold for demos |
 | **Hospital** | Ward / capacity / staffing + risk-state panels — synthetic command centre; easy to over-claim “live PAS” |
 | **Patient** | Companion shell — lightest stakeholder surface |
@@ -168,6 +168,17 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **Goal** | Practice manager can show **integrations honesty + SHIELD + users/enquiries** as an ops demo, not a developer console. |
 | **Work** | Curate overview: status strip, partner-readiness (`liveEmis:false`), audit sample, clear CTAs; de-emphasise unfinished Precision Health as “scaffolding”. |
 | **Exit criteria** | Admin smoke pass; demo host can say “not live EMIS” from the page itself. |
+| **In-repo status** | **PASS** — audit [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) |
+
+**U6 audit gate**
+
+- [x] `AdminHeroDemoPath`: integrations honesty → SHIELD audit → users/enquiries
+- [x] Honesty: `liveEmis:false` · staging/sim · designed for EMIS/SystmOne · “Not live EMIS” on overview
+- [x] BRIDGE / CONDUCTOR ops framing; Precision Health / partner readiness = scaffolding
+- [x] First-run primary → integrations; secondary → `/demo/script`; onboarding tutorials name ops beats
+- [x] `/demo/script` admin panel + `01:05` stop; U6 unit + route-smoke + clinical-proof green
+- [x] Smoke script asserts ops hero copy (`smoke:admin` when app + credentials available)
+- [x] No `liveEmis` flip / PRISM-ATLAS live / VOICE-Dr.Assist as peers
 
 ### U7 — ICS + hospital dashboards
 
@@ -191,10 +202,10 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 | Track | Phases | Notes |
 |---|---|---|
-| **Start now** | **U6** | Practice admin dashboard (U1–U5 PASS) |
-| **Then** | **U7 → U8** | Population / hospital / patient / research |
+| **Start now** | **U7** | ICS + hospital dashboards (U1–U6 PASS) |
+| **Then** | **U8** | Patient + researcher |
 | **Do not block on** | N1–N3, N5–N7 | Partner/Medplum/`liveEmis` stay paused |
-| **Keep locked** | D1, N4, U1–U5 | Demo hardening + roster honesty + clinical role heroes |
+| **Keep locked** | D1, N4, U1–U6 | Demo hardening + roster honesty + role heroes |
 
 ---
 
@@ -205,7 +216,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 | **GP** | Rich dashboard + Agent Control + review queue; strongest clinical surface | **U4 PASS** — hero &lt;10 min Accept→export; Agent Control matches U1 names |
 | **Nurse** | **U5 PASS** — 3-beat obs → handover → GUARDIAN; spine nurse-vitals | Keep rehearsable; no live PAS/EMR claims |
 | **Pharmacist** | **U5 PASS** — review → GUARDIAN → HITL/SHIELD; pharmacist-review spine | Keep med-safety talk-track honest |
-| **Admin** | Ops overview + spine links + honesty metrics | Practice-manager narrative: status, audit, integrations — not eng console |
+| **Admin** | **U6 PASS** — ops hero: integrations → SHIELD → enquiries; not eng console | Keep rehearsable; Precision Health stays scaffolding |
 | **ICS** | Population / equity / benchmark / forecast sections | COMPASS-led equity + forecast walkthrough on synthetic cohorts |
 | **Hospital** | Ward / capacity / staffing + risk-state panels | Command-centre demo with explicit “synthetic PAS” framing |
 | **Patient** | Companion shell under DashboardShell | Invite-by-practice companion: check-in + plan visibility |
@@ -229,7 +240,7 @@ Do these in order. Exit criteria must pass before starting the next. Fail any ph
 
 1. **U1–U2** — Marketing alone can sell the 12-agent + HITL story honestly.  
 2. **U3** — Every role gets a personalised path into their dashboard. **PASS** — [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md)  
-3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U5 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md)  
+3. **U4–U8** — Each stakeholder dashboard supports a short, rehearsable demo beat. **U4–U6 PASS** — [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) · [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) · [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md)  
 4. **Honesty** — `liveEmis:false`; Phase 2 agents labelled; sub-capabilities not peers.  
 5. **No clinical-spine rebuild** — UX sits on D1/N4 foundations.
 
@@ -248,5 +259,6 @@ This is **not** a claim of production EHR write-back or certified DCB/MHRA readi
 - [`NEXT_UX_U3_AUDIT.md`](./NEXT_UX_U3_AUDIT.md) — U3 PASS (personalised onboarding)  
 - [`NEXT_UX_U4_AUDIT.md`](./NEXT_UX_U4_AUDIT.md) — U4 PASS (GP dashboard hero demo polish)  
 - [`NEXT_UX_U5_AUDIT.md`](./NEXT_UX_U5_AUDIT.md) — U5 PASS (nurse + pharmacist dashboard demos)  
+- [`NEXT_UX_U6_AUDIT.md`](./NEXT_UX_U6_AUDIT.md) — U6 PASS (practice admin ops demo)  
 - [`HOW_TO_BUILD_AKSH_HEALTH.md`](./HOW_TO_BUILD_AKSH_HEALTH.md) — honest product picture  
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md) — fixed demo cases  

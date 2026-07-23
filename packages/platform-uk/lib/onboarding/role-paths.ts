@@ -218,7 +218,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   "practice-manager": {
     role: "practice-manager",
     dashboardRole: "admin",
-    pathPromise: "Integrations honesty → SHIELD audit → queue health — clinicians keep HITL",
+    pathPromise: "Integrations honesty → SHIELD audit → users/enquiries — clinicians keep HITL",
     agents: [
       { name: "CONDUCTOR", why: "Queue health — drafts flowing, gate intact." },
       { name: "BRIDGE", why: "FHIR staging posture — sim; liveEmis:false." },
@@ -227,26 +227,26 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     ],
     youApprove:
       "You do not Accept clinical SOAP or meds. You oversee connectors, audit, and that clinicians are clearing the queue.",
-    honestyNote: `${LIVE_EMIS} Partner EMIS write-back is Not enabled. Admin tools never bypass clinician Accept.`,
+    honestyNote: `${LIVE_EMIS} Partner EMIS write-back is Not enabled. Designed for EMIS/SystmOne — admin tools never bypass clinician Accept.`,
     tutorialScreens: [
       {
         title: "Ops oversight, not clinical sign-off",
-        body: "Your dashboard is for integrations, SHIELD audit, and practice ops. Named clinicians still Accept every clinical draft.",
+        body: "Your dashboard is a practice-manager ops demo: integrations honesty, SHIELD audit, and users/enquiries — not an eng console. Named clinicians still Accept every clinical draft.",
         agents: ["BRIDGE", "SHIELD", "CONDUCTOR"],
-        bullets: ["Integrations health", "SHIELD audit sample", "Precision Health = scaffolding flags"],
+        bullets: ["Integrations honesty", "SHIELD audit sample", "Precision Health = scaffolding"],
         honesty: LIVE_EMIS,
       },
       {
         title: "Honesty first",
-        body: "Partner readiness shows liveEmis:false. Treat rehearsal metrics as demo — not a live EMR connection.",
+        body: "Partner readiness shows liveEmis:false. Designed for EMIS Web / SystmOne pathways — staging/sim only, not a live EMR connection.",
         agents: ["BRIDGE"],
-        bullets: ["EMIS write-back Not enabled", "Consent registry for purpose grants"],
+        bullets: ["EMIS write-back Not enabled", "BRIDGE / CONDUCTOR ops framing", "Consent registry for purpose grants"],
         honesty: LIVE_EMIS,
       },
       {
         title: "You're ready",
-        body: "Practice Manager Dashboard opens with first-run guidance on Precision Health status and consent.",
-        bullets: ["Check partner-readiness / integrations", "Open consent registry", "Clinicians keep HITL"],
+        body: "Practice Manager Dashboard opens with an ops hero path: integrations → SHIELD → enquiries. First-run points at integrations honesty.",
+        bullets: ["Start integrations honesty", "Open SHIELD audit", "Users / enquiries · liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },

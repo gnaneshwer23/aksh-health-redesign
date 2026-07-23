@@ -148,6 +148,8 @@ async function run() {
   await assertFileIncludes("components/demo/DemoLaunchScript.tsx", "gp-hero-script-panel");
   await assertFileIncludes("components/dashboard/nurse/NurseHeroDemoPath.tsx", "nurse-hero-demo-path");
   await assertFileIncludes("components/dashboard/nurse/NurseHeroDemoPath.tsx", "liveEmis:false");
+  await assertFileIncludes("components/dashboard/admin/AdminHeroDemoPath.tsx", "liveEmis:false");
+  await assertFileIncludes("components/dashboard/admin/AdminHeroDemoPath.tsx", "Ops demo");
   await assertFileIncludes("app/dashboard/nurse/page.tsx", "NurseHeroDemoPath");
   await assertFileIncludes(
     "components/dashboard/pharmacist/PharmacistHeroDemoPath.tsx",
