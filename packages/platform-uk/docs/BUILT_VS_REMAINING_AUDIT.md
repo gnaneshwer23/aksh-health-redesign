@@ -1,10 +1,11 @@
 # Built vs Remaining — Aksh Health (platform-uk)
 
-**Date:** 2026-07-24 (BST)  
+**Date:** 2026-07-27 (BST)  
 **Live:** https://akshhealth.com  
 **Repo:** `gnaneshwer23/0ne-Health` · package `packages/platform-uk`  
-**Audited SHA:** `b1399ff` (`main` · matches `origin/main` at audit time)  
-**Sources:** `PRODUCTION_READINESS_AUDIT.md`, `NEXT_BUILD_STEPS.md`, `NEXT_UX_STAKEHOLDER_BUILD.md`, `DEMO_LAUNCH_WITHOUT_IM1.md`, `HOW_TO_BUILD_AKSH_HEALTH.md`, `BUILD_INSTRUCTIONS_GAP.md`, P0–P7 / N* / U1–U8 / D1 / design-refresh audits, feature scan
+**Audited SHA:** `d892bf9` (`main` · matches `origin/main` at audit time)  
+**Prior audit:** 2026-07-24 · product SHA `b1399ff` (doc commit `d892bf9`)  
+**Sources:** prior `BUILT_VS_REMAINING_AUDIT.md`, `PRODUCTION_READINESS_AUDIT.md`, live homepage spot-check, GitHub Actions / Deployments, Vercel production alias, codebase invariant scan
 
 ---
 
@@ -31,7 +32,42 @@
 | **B — Live NHS clinical / EMR** | IM1/EMIS write-back · Medplum prod · CIS2 · CSO gates | **NO-GO** (by design until partners + signed N7) |
 
 **Eng spine (P0–P7 paperwork, D1, N4, N5 scaffold, U1–U8):** largely **DONE**.  
-**Remaining work** is demo ops polish, CI/hygiene, optional secrets, and **user/partner**-owned outreach — not rebuilding CONDUCTOR/SHIELD/NextAuth.
+**Remaining work** is demo ops rehearsal, optional Integrate copy precision, optional secrets, and **user/partner**-owned outreach — not rebuilding CONDUCTOR/SHIELD/NextAuth.
+
+---
+
+## Delta since last audit (2026-07-24 → 2026-07-27)
+
+| Check | Result |
+| --- | --- |
+| Product commits after prior audited SHA `b1399ff` | **None** — only `d892bf9` (*Document July 2026 built-vs-remaining audit*) |
+| Commits after audit doc `d892bf9` | **None** — `main` idle for ~3 days |
+| Local `main` vs `origin/main` | **In sync** · clean working tree |
+| Track A / Track B verdict | **Unchanged** (A: GO WITH LIGHT POLISH · B: NO-GO) |
+| CI on `main` | Still **green** (see below) |
+| Production alias | Still tracks latest `main` deploy (`d892bf9`) |
+| `data/` hygiene | **Improved** — dumps are gitignored (0 untracked in `git status`); ~586 local files remain on disk, not a commit risk |
+| Live homepage honesty | Re-verified 2026-07-27: no `liveEmis` leak · no “100 patients” · “Designed for · not a live feed” / “Clinician-approved only — not a live record write” present |
+| Integrate wording risk | **Still open** — live copy still says “staged to EMIS Web or SystmOne on clinician confirmation” (sim/staging intended; buyers can misread) |
+
+**Bottom line:** No eng feature delta. This refresh re-confirms demo GO / live NHS NO-GO with fresher CI, Vercel, and live-copy evidence.
+
+---
+
+## Snapshot — git / CI / Vercel (2026-07-27)
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Latest `main` SHA | `d892bf9` — *Document July 2026 built-vs-remaining audit for platform-uk.* | `git rev-parse HEAD` / `origin/main` |
+| Push status | Local `main` == `origin/main` | `git status -sb` |
+| Latest product code on `main` | `b1399ff` — *Rebuild homepage hero as a compact pipeline board.* | Parent of audit doc |
+| Latest E2E on `main` | **Success** — [run 30107382800](https://github.com/gnaneshwer23/0ne-Health/actions/runs/30107382800) (`d892bf9`, ~8m27s) | `gh run list` |
+| Prior green product E2E | [run 30023046151](https://github.com/gnaneshwer23/0ne-Health/actions/runs/30023046151) on `b1399ff` | — |
+| GitHub Production deploy | SHA `d892bf9` · env Production · id `5591644135` | `gh api …/deployments` |
+| Vercel production | **Ready** · aliases include `akshhealth.com` · `dpl_6AQBhKNxY8v9dJesrg2irWG6Ppob` (created 2026-07-24 ~16:56 BST) | `vercel inspect https://akshhealth.com` |
+| Prod matches `main`? | **Pass** | Alias → same Ready deployment as latest Production GitHub deploy SHA |
+| Workflows | `.github/workflows/e2e.yml` (verify + Playwright) | — |
+| `data/` status | Ignored dumps; **0** untracked under `data/` | `git status -u data` |
 
 ---
 
@@ -41,11 +77,11 @@
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| Clinical Signal design refresh (V1) | **Built** | Spruce/mist/signal tokens; Bricolage + Hanken; hero atmosphere — `DESIGN_REFRESH_V1_AUDIT.md` |
+| Clinical Signal design refresh (V1) | **Built** | Spruce/mist/signal tokens; Bricolage + Hanken; hero atmosphere |
 | Enterprise copy polish | **Built** | Linear/Stripe-style tone; jargon stripped on public surfaces |
 | Home / how-it-works / platform / resources / security | **Built** | Agent pipeline story; honesty: drafts · not live feed · clinician gate |
 | Audience `for-*` pages (U2) | **Built** | Role agent maps + HITL framing |
-| Marketing honesty policy | **Built** | No homepage “100 patients” volume claim; no `liveEmis:false` leakage on public homepage; e2e-enforced |
+| Marketing honesty policy | **Built** | No homepage “100 patients”; no `liveEmis` on public homepage; e2e-enforced — **re-checked live 2026-07-27** |
 | `/demo/script`, Patel / walkthrough | **Built** | Guided demo path |
 
 ### Auth / onboarding
@@ -79,7 +115,7 @@
 | NEXUS in default path | **Built** | Draft-only + SHIELD |
 | Phase-1 12-agent directory | **Built** | SYNTHESIS, GUARDIAN, HORIZON, PATHWAY, COMPASS, CANVAS, BRIDGE, CONDUCTOR, SHIELD, NEXUS, … via AI Gateway + fallbacks |
 | SHIELD hash-chained audit | **Built** | Neon `aksh.shield_audit_events` |
-| `liveEmis:false` hard guards | **Built** | Types, API reject, sandbox never live-writes |
+| `liveEmis:false` hard guards | **Built** | Types, API reject (`liveEmis:true` → 400), sandbox never live-writes — **re-scanned 2026-07-27** |
 | VOICE / Dr.Assist | **Built as sub-caps** | Not peer Phase-1 agents; ASR simulated without Deepgram key |
 | P0–P6 product spine + P7 paperwork | **Built / PASS** | Outreach pack + PartnerReadinessPanel; live flip still NO-GO |
 
@@ -117,16 +153,15 @@
 | Admin PartnerReadinessPanel | **Built** | Honesty: `liveEmis:false` |
 | N5 live wire / N6 UAT / N7 flip | **Not started (blocked)** | Partner creds + signed go/no-go |
 
-### CI / deploy (known at audit)
+### CI / deploy (this audit)
 
 | Check | Result |
 | --- | --- |
-| Latest `main` SHA | `b1399ff` — homepage hero pipeline board |
-| Local vs `origin/main` | In sync at audit |
-| Latest E2E on `main` | **Success** — [run 30023046151](https://github.com/gnaneshwer23/0ne-Health/actions/runs/30023046151) |
-| Prior red `verify` (stale marketing asserts) | **Fixed** on later commits (see recent green runs) |
-| Production | Vercel · akshhealth.com tracks `main` (confirm alias SHA on next deploy) |
-| Hygiene debt | Large untracked `data/` dumps still a risk if present locally — broaden gitignore / prune |
+| Latest `main` SHA | `d892bf9` |
+| Local vs `origin/main` | In sync |
+| Latest E2E on `main` | **Success** — [run 30107382800](https://github.com/gnaneshwer23/0ne-Health/actions/runs/30107382800) |
+| Production | Vercel · `akshhealth.com` → Ready deploy for `d892bf9` |
+| Hygiene | `data/` dumps gitignored · clean `git status` |
 
 ---
 
@@ -134,17 +169,17 @@
 
 ### Must — polished demo launch
 
-1. **Demo ops rehearsal on production** — one full `/demo/script` walkthrough on akshhealth.com (Capture → HITL Accept → BRIDGE/sim → SHIELD); reset cohort before the live room.
-2. **Keep CI green** — protect `npm run verify` + E2E from copy/assert drift after marketing tweaks.
-3. **Repo hygiene** — gitignore / prune untracked `data/` dumps so status stays clean and secrets aren’t committed by accident.
-4. **Talk-track lock** — every deck/call: synthetic HITL · sim staging · **not** live NHS EMR / certified.
+1. **Demo ops rehearsal on production** — one full `/demo/script` walkthrough on akshhealth.com (Capture → HITL Accept → BRIDGE/sim → SHIELD); reset cohort before the live room. *(Still outstanding — no eng change unblocks this.)*
+2. **Keep CI green** — protect `npm run verify` + E2E from copy/assert drift after marketing tweaks. *(Currently green.)*
+3. **Talk-track lock** — every deck/call: synthetic HITL · sim staging · **not** live NHS EMR / certified.
+4. **Optional Integrate copy tighten** — live StatsBand still “staged to EMIS Web or SystmOne on clinician confirmation”; prefer “sim / designed-for pathways — not live write-back.”
 
 ### Should — pilot credibility
 
-1. Optional Integrate / marketing wording pass where “staged to EMIS” could be misread as live write-back → prefer “sim / designed-for pathways.”
-2. Optional Deepgram key in local/Vercel for live VOICE ASR (still labelled sub-capability).
-3. Broader a11y / contrast beyond homepage axe coverage.
-4. Rehearse 2–3 non-GP roles (nurse / admin / ICS) from `/demo/script` so multi-stakeholder pilots don’t apologise for empty shells.
+1. Optional Deepgram key in local/Vercel for live VOICE ASR (still labelled sub-capability).
+2. Broader a11y / contrast beyond homepage axe coverage.
+3. Rehearse 2–3 non-GP roles (nurse / admin / ICS) from `/demo/script` so multi-stakeholder pilots don’t apologise for empty shells.
+4. Occasional prune of local ignored `data/` dumps (disk only; not a git risk now).
 
 ### Blocked on user / partner
 
@@ -193,11 +228,13 @@
 | `liveEmis:false` guards | ✓ | | | Correct for demo; must stay until N7 |
 | Partner readiness UI + P7 pack | ✓ | | | Ready · outreach not sent |
 | Partner sandbox scaffold (N5) | ✓ | | | Flag off without creds |
-| CI E2E on `main` | ✓ | | | Latest run **success** (`b1399ff`) |
+| CI E2E on `main` | ✓ | | | Latest run **success** (`d892bf9`) |
+| Vercel prod = `main` | ✓ | | | `akshhealth.com` → `d892bf9` deploy |
+| `data/` gitignore hygiene | ✓ | | | Dumps ignored · was Partial in prior audit |
 | Medplum hosted OAuth / sync | | ✓ | | Dry-run / Invalid client without real secret |
 | Deepgram live VOICE | | ✓ | | Simulated without key · OK for demo |
-| Marketing Integrate wording precision | | ✓ | | Risk of “staged to EMIS” misread |
-| Untracked `data/` hygiene | | ✓ | | Local dump sprawl risk |
+| Marketing Integrate wording precision | | ✓ | | Live “staged to EMIS…” still ambiguous |
+| Production `/demo/script` rehearsal | | ✓ | | Product ready · ops not yet signed off |
 | IM1 / Partner outreach sent | | | ✓ | User-owned · deferred for demo |
 | Partner live sandbox wire | | | ✓ | Blocked on creds |
 | Partner UAT + rollback (N6) | | | ✓ | Blocked on partner |
@@ -216,9 +253,9 @@
 | # | Action | Owner |
 | --- | --- | --- |
 | **1** | Rehearse production `/demo/script` end-to-end once; capture any broken CTA or honesty slip | **Eng** (run) + **User** (attend / sign talk-track) |
-| **2** | Confirm Vercel production alias SHA = current `main`; keep E2E green after any marketing edit | **Eng** |
-| **3** | Broaden `.gitignore` / prune local `data/` dumps; never commit secrets or cohort dumps | **Eng** |
-| **4** | Optional: tighten Integrate copy to “sim / designed-for EMIS pathways — not live write-back” | **Eng** (copy) |
+| **2** | Keep E2E green after any marketing edit; confirm alias still = `main` after next deploy | **Eng** |
+| **3** | Optional: tighten Integrate / StatsBand copy to “sim / designed-for EMIS pathways — not live write-back” | **Eng** (copy) |
+| **4** | Optional: Deepgram key for live VOICE ASR demos; prune local ignored `data/` dumps for disk hygiene | **Eng** |
 | **5** | When ready for Track B: send IM1/Partner email from P7 pack; supply Medplum Client Secret; kick CSO/IG note — still **do not** flip `liveEmis` without signed N7 | **User / partner** (primary) · eng supports |
 
 **Do not** rebuild NextAuth, Neon SHIELD, CONDUCTOR, or invent certification. **Do not** market PRISM/ATLAS/JSL or live EMIS.
@@ -242,7 +279,7 @@ Spine + U1–U8 + D1 DONE    Partner creds
 
 ## Related docs
 
-- [`PRODUCTION_READINESS_AUDIT.md`](./PRODUCTION_READINESS_AUDIT.md) — Track A/B (note: CI section may lag; this audit supersedes CI status as of 2026-07-24)
+- [`PRODUCTION_READINESS_AUDIT.md`](./PRODUCTION_READINESS_AUDIT.md) — Track A/B (2026-07-23; CI section lagged then — this audit supersedes CI / prod SHA as of 2026-07-27)
 - [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md) — demo without partner
 - [`NEXT_BUILD_STEPS.md`](./NEXT_BUILD_STEPS.md) — N1–N10 + D1
 - [`NEXT_UX_STAKEHOLDER_BUILD.md`](./NEXT_UX_STAKEHOLDER_BUILD.md) — U1–U8 complete
