@@ -45,7 +45,16 @@ export type SpineCareAction = {
   recordedAt: string;
   hasEventualOutcome: boolean;
   eventualOutcomeEventIds: string[];
-  loopStage: "awaiting_outcome" | "outcome_linked" | "immediate_outcome";
+  /**
+   * `awaiting_outcome` — no disposition/outcome yet, never auto-closes (FR-LEARN-014).
+   * `outcome_linked` — a genuinely observed/reported eventual outcome is linked (real outcome).
+   * `immediate_outcome` — a real outcome was recorded at decision time itself (e.g. clinician/patient
+   *   reported `adverse_event_none`/`adverse_event_suspected`/`care_action_completed` immediately) — real outcome.
+   * `no_action_required` — Reject-driven closure (`outcomeKind:"care_action_deferred"`): there is
+   *   nothing to follow up on a rejected draft, but this is a disposition, NOT a captured real-world
+   *   outcome, and must never be presented as indistinguishable from one (B2 / Volume I FR-LEARN-012).
+   */
+  loopStage: "awaiting_outcome" | "outcome_linked" | "immediate_outcome" | "no_action_required";
 };
 
 export type OutcomesLoopStatus = {
@@ -54,10 +63,25 @@ export type OutcomesLoopStatus = {
   careActionCount: number;
   awaitingOutcomeCount: number;
   outcomeLinkedCount: number;
+  /** Reject-driven closures with nothing to follow up — a disposition, not a real outcome. */
+  noActionRequiredCount: number;
   evaluationReviewCount: number;
   openActions: SpineCareAction[];
   recentLinkedOutcomes: SpineCareAction[];
-  loopCompleteRatio: number;
+  /**
+   * Every care action with an Accept/Edit/Reject disposition recorded (loopStage !== "awaiting_outcome"),
+   * including Reject's "no_action_required" closure. This is a workload/throughput signal — it is
+   * NOT a measure of how often a real-world outcome was actually captured (see `realOutcomeCaptureRatio`).
+   */
+  dispositionCompleteRatio: number;
+  /**
+   * Only counts care actions where a human (clinician/patient/admin) reported what actually happened
+   * to the patient — `outcome_linked` or a genuinely-reported `immediate_outcome`. Excludes
+   * `no_action_required` (Reject) and `awaiting_outcome`. This will typically start low and stay low —
+   * outcome-reporting is best-effort/self-serve today (Volume I FR-LEARN-015) — and must never be
+   * presented as "complete" or "high."
+   */
+  realOutcomeCaptureRatio: number;
   stages: Array<"care_action" | "eventual_outcome" | "governed_evaluation">;
   note: string;
 } & typeof SPINE_OUTCOMES_HONESTY;
@@ -79,6 +103,8 @@ export type CaptureSpineOutcomeResult = {
   outcomeEventId: string;
   reporterRole: OutcomeReporterRole;
   message: string;
+  /** OQ-HITL-2: honest flag — the outcome above was linked regardless; this only reports the SHIELD audit mirror. */
+  shieldAuditWriteFailed: boolean;
 } & typeof SPINE_OUTCOMES_HONESTY;
 
 export type GovernedGateCheck = {
@@ -101,6 +127,8 @@ export type SubmitGovernedEvaluationResult = {
   blockedReason?: string;
   evaluation?: GovernedEvaluationRecord;
   message: string;
+  /** OQ-HITL-2: honest flag — the evaluation above was recorded regardless; this only reports the SHIELD audit mirror. */
+  shieldAuditWriteFailed: boolean;
 } & typeof SPINE_OUTCOMES_HONESTY;
 
 const REQUIRED_GATES: GovernedGateId[] = ["G-ML-1", "G-ML-2", "G-ML-3"];
@@ -135,6 +163,9 @@ function classifyCareAction(
   let loopStage: SpineCareAction["loopStage"] = "awaiting_outcome";
   if (hasEventualOutcome) {
     loopStage = "outcome_linked";
+  } else if (event.outcomeKind === "care_action_deferred") {
+    // Reject: nothing to follow up on a rejected draft — a disposition, not a real-world outcome.
+    loopStage = "no_action_required";
   } else if (event.outcomeKind !== "unknown" && event.outcomeKind !== "follow_up_scheduled") {
     loopStage = "immediate_outcome";
   }
@@ -206,8 +237,18 @@ export async function buildOutcomesLoopStatus(options: {
 
   const awaiting = actions.filter((a) => a.loopStage === "awaiting_outcome");
   const linked = actions.filter((a) => a.loopStage === "outcome_linked");
-  const closedOrImmediate = actions.filter((a) => a.loopStage !== "awaiting_outcome");
-  const ratio = actions.length === 0 ? 0 : closedOrImmediate.length / actions.length;
+  const immediate = actions.filter((a) => a.loopStage === "immediate_outcome");
+  const noActionRequired = actions.filter((a) => a.loopStage === "no_action_required");
+
+  // Workload signal: any disposition recorded at all (Accept/Edit/Reject), including Reject's
+  // no-action-required closure. This is what the pre-B2 single blended ratio actually measured.
+  const dispositioned = actions.length - awaiting.length;
+  const dispositionCompleteRatio = actions.length === 0 ? 0 : dispositioned / actions.length;
+
+  // Honesty signal: only a genuinely observed/reported real-world outcome — excludes Reject's
+  // no-action-required closure, which is a disposition, not an outcome.
+  const realOutcomeCount = linked.length + immediate.length;
+  const realOutcomeCaptureRatio = actions.length === 0 ? 0 : realOutcomeCount / actions.length;
 
   return {
     generatedAt: new Date().toISOString(),
@@ -215,13 +256,18 @@ export async function buildOutcomesLoopStatus(options: {
     careActionCount: actions.length,
     awaitingOutcomeCount: awaiting.length,
     outcomeLinkedCount: linked.length,
+    noActionRequiredCount: noActionRequired.length,
     evaluationReviewCount: evaluations.records.length,
     openActions: awaiting.slice(0, 20),
     recentLinkedOutcomes: linked.slice(0, 10),
-    loopCompleteRatio: Math.round(ratio * 1000) / 1000,
+    dispositionCompleteRatio: Math.round(dispositionCompleteRatio * 1000) / 1000,
+    realOutcomeCaptureRatio: Math.round(realOutcomeCaptureRatio * 1000) / 1000,
     stages: ["care_action", "eventual_outcome", "governed_evaluation"],
     note:
-      "Closed loop on shared learning store: HITL care actions → append-only eventual outcomes → governed evaluation. autoRetrain:false always.",
+      "Closed loop on shared learning store: HITL care actions → append-only eventual outcomes → governed evaluation. " +
+      "dispositionCompleteRatio = any Accept/Edit/Reject disposition recorded (workload signal, includes Reject's " +
+      "no-action-required closure). realOutcomeCaptureRatio = a human actually reported what happened (honesty " +
+      "signal, excludes Reject) — best-effort/self-serve today, expected to stay low. autoRetrain:false always.",
     ...SPINE_OUTCOMES_HONESTY
   };
 }
@@ -255,7 +301,7 @@ export async function captureSpineOutcome(
     { scopeKey: options.scopeKey, shieldDualWrite: false }
   );
 
-  void persistShieldAuditEvent({
+  const shieldResult = await persistShieldAuditEvent({
     action: "accept",
     actor: options.actor,
     label: `SHIELD: spine outcome captured (${input.reporterRole})`,
@@ -283,12 +329,21 @@ export async function captureSpineOutcome(
     }
   });
 
+  if (!shieldResult.persisted) {
+    console.error(
+      "[shield-audit] durable write failed for spine outcome capture",
+      event.id,
+      shieldResult.reason
+    );
+  }
+
   return {
     linked: true,
     sourceEventId: sourceEvent.id,
     outcomeEventId: event.id,
     reporterRole: input.reporterRole,
     message: `Eventual outcome linked (append-only). autoRetrain:false · modelUpdated:false · reporter=${input.reporterRole}.`,
+    shieldAuditWriteFailed: !shieldResult.persisted,
     ...SPINE_OUTCOMES_HONESTY
   };
 }
@@ -307,6 +362,7 @@ export async function submitGovernedEvaluation(
       accepted: false,
       blockedReason: gateCheck.reason,
       message: gateCheck.reason,
+      shieldAuditWriteFailed: false,
       ...SPINE_OUTCOMES_HONESTY
     };
   }
@@ -347,7 +403,7 @@ export async function submitGovernedEvaluation(
     { scopeKey: options.scopeKey, shieldDualWrite: false }
   );
 
-  void persistShieldAuditEvent({
+  const shieldResult = await persistShieldAuditEvent({
     action: "accept",
     actor: input.actor,
     label: "SHIELD: governed evaluation recorded (no auto-retrain)",
@@ -362,6 +418,14 @@ export async function submitGovernedEvaluation(
     }
   });
 
+  if (!shieldResult.persisted) {
+    console.error(
+      "[shield-audit] durable write failed for governed evaluation",
+      evaluation.id,
+      shieldResult.reason
+    );
+  }
+
   return {
     accepted: true,
     evaluation,
@@ -369,6 +433,7 @@ export async function submitGovernedEvaluation(
       input.proposedAction === "propose_model_update"
         ? "Manual release approved in recorder only — still requires ops to bump version per GOVERNED_MODEL_RELEASE_SOP. autoRetrain:false · modelUpdated:false."
         : `Governed evaluation recorded (${evaluation.status}). autoRetrain:false.`,
+    shieldAuditWriteFailed: !shieldResult.persisted,
     ...SPINE_OUTCOMES_HONESTY
   };
 }

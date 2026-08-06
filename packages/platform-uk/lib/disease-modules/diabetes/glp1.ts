@@ -13,10 +13,12 @@ import { DIABETES_SIGNAL_HONESTY } from "./types";
  * insulin.ts's `doseChangeRecommendation` — this module never initiates or
  * changes a prescription.
  *
- * v0: typed stub over a caller-supplied medication/side-effect context. No
- * suitability or response-trend modelling yet.
- * TODO(v1): derive suitabilitySignal/responseTrend from medication list +
- * weight/BMI trend if available; remains explanatory-only, feeding GUARDIAN.
+ * v1 (B3): real derivation over caller-supplied side-effect reports feeds
+ * `sideEffectFlags` (see fixtures.ts). `suitabilitySignal`/`responseTrend`
+ * stay the literal `"insufficient_data"` — a real suitability/response
+ * estimate would need a weight/BMI trend input the cohort fixtures don't
+ * carry yet; not fabricated in the meantime. Remains explanatory-only,
+ * feeding GUARDIAN.
  */
 
 export type Glp1Signal = {
@@ -50,7 +52,7 @@ export function buildGlp1Signal(
     prescribingRecommendation: null,
     isPrescribingRecommendation: false,
     limitations: [
-      "v0 stub — no suitability or response-trend modelling yet (deferred to v1).",
+      "No suitability/response-trend modelling — would require a weight/BMI trend input not yet in the cohort fixtures.",
       "This module never initiates or changes a GLP-1 prescription; clinician review required via GUARDIAN.",
       reportedSideEffects.length
         ? `${reportedSideEffects.length} reported side-effect flag(s) supplied.`

@@ -8,6 +8,17 @@ export function isMedplumSyncEnabled() {
   return process.env.ENABLE_MEDPLUM_SYNC === "true";
 }
 
+/**
+ * Diabetes disease-intelligence module (docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md,
+ * docs/PHASED_BUILD_PLAN.md B3). Default OFF — opt-in only, same convention
+ * as ENABLE_MEDPLUM_SYNC/ENABLE_FASTAPI_SYNTHESIS. When false,
+ * lib/clinical-spine/orchestrate.ts never calls buildDiabetesRiskContribution
+ * and HORIZON/GUARDIAN output is byte-identical to pre-B3 behaviour.
+ */
+export function isDiabetesModuleEnabled() {
+  return process.env.ENABLE_DIABETES_MODULE === "true";
+}
+
 export function integrationModeLabel(enabled: boolean) {
   return enabled ? "integration enabled" : "integration rehearsal";
 }
@@ -109,6 +120,15 @@ export function getIntegrationAdapterRegistry() {
       defaultMode: "hitl_draft_only",
       boundary:
         "POST /api/agents/equity. Aggregate ICS equity brief via Neo4j/mock + AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+    },
+    {
+      id: "diabetes-module",
+      label: "Diabetes disease intelligence (rules-based, v1)",
+      status: isDiabetesModuleEnabled() ? ("enabled" as const) : ("available" as const),
+      enabled: isDiabetesModuleEnabled(),
+      defaultMode: "hitl_draft_only",
+      boundary:
+        "Feeds HORIZON/GUARDIAN as additive contributing factors/safety notes when ENABLE_DIABETES_MODULE=true. Rules-based only — no AI Gateway call, no dose/prescribing output (FR-DIAB-009). Glucose Intelligence stays insufficient_data pending OQ-DIAB-1 (modality schema)."
     },
     {
       id: "voice-care-synthetic",

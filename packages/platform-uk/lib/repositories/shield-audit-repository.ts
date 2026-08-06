@@ -36,6 +36,16 @@ export type DurableShieldAuditRow = {
   contentHash: string;
 };
 
+/**
+ * Discriminated write result. Never throws into clinical UI paths, but callers
+ * MUST inspect `persisted` and propagate a failure signal instead of treating
+ * a `null`/void return as an implicit success (OQ-HITL-2 / Volume I Ch.5 §5.4:
+ * an audit write failure must be visible, not silently swallowed).
+ */
+export type ShieldAuditWriteResult =
+  | { persisted: true; row: DurableShieldAuditRow }
+  | { persisted: false; row: null; reason: string };
+
 let schemaReady: Promise<void> | null = null;
 
 export async function ensureShieldAuditSchema() {
@@ -56,11 +66,19 @@ function hashEvent(parts: Record<string, unknown>) {
   return createHash("sha256").update(JSON.stringify(parts)).digest("hex");
 }
 
-/** Best-effort durable write. Never throws into clinical UI paths. */
+/**
+ * Durable audit write. Never throws into clinical UI paths — but unlike the
+ * old best-effort contract, a failed/unavailable write is never indistinguishable
+ * from a successful one. Callers (queue-decision.ts, outcomes-loop.ts, the
+ * governed-evaluation path) must check `result.persisted` and surface a
+ * failure signal to the caller/UI rather than swallowing it silently.
+ */
 export async function persistShieldAuditEvent(
   input: DurableShieldAuditInput
-): Promise<DurableShieldAuditRow | null> {
-  if (!isPostgresConfigured()) return null;
+): Promise<ShieldAuditWriteResult> {
+  if (!isPostgresConfigured()) {
+    return { persisted: false, row: null, reason: "postgres_not_configured" };
+  }
 
   try {
     await ensureShieldAuditSchema();
@@ -116,25 +134,32 @@ export async function persistShieldAuditEvent(
     );
 
     return {
-      id,
-      recordedAt,
-      practiceId: input.practiceId ?? null,
-      caseId: input.caseId ?? null,
-      queueItemId: input.queueItemId ?? null,
-      action: input.action,
-      actor: input.actor,
-      agentLabel: input.agentLabel ?? null,
-      category: input.category ?? "reviewer_decision",
-      label: input.label,
-      detail: input.detail ?? null,
-      resourceRef: input.resourceRef ?? null,
-      payload,
-      prevEventId,
-      contentHash
+      persisted: true,
+      row: {
+        id,
+        recordedAt,
+        practiceId: input.practiceId ?? null,
+        caseId: input.caseId ?? null,
+        queueItemId: input.queueItemId ?? null,
+        action: input.action,
+        actor: input.actor,
+        agentLabel: input.agentLabel ?? null,
+        category: input.category ?? "reviewer_decision",
+        label: input.label,
+        detail: input.detail ?? null,
+        resourceRef: input.resourceRef ?? null,
+        payload,
+        prevEventId,
+        contentHash
+      }
     };
   } catch (error) {
     console.error("[shield-audit] persist failed", error);
-    return null;
+    return {
+      persisted: false,
+      row: null,
+      reason: error instanceof Error ? error.message : "unknown_shield_audit_write_error"
+    };
   }
 }
 

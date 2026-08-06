@@ -14,11 +14,13 @@ import { DIABETES_SIGNAL_HONESTY } from "./types";
  * sign-off. This is the module the spec's "no silent auto-dose" non-goal is
  * most directly about — treat any change here as safety-sensitive.
  *
- * v0: typed stub over a caller-supplied regimen summary. No sensitivity or
- * timing modelling yet.
- * TODO(v1): derive sensitivityEstimate/timingObservations from regimen +
- * GlucoseSignal (glucose.ts) — remains explanatory-only, feeding GUARDIAN,
- * never emitting a dose value.
+ * v1 (B3): real derivation over a caller-supplied regimen summary
+ * (medications list, reported hypo-event count) — explanatory-only,
+ * feeding GUARDIAN, never emitting a dose value. `sensitivityEstimate`
+ * stays the literal `"insufficient_data"` because a real sensitivity
+ * estimate would require structured glucose data, which is blocked on
+ * OQ-DIAB-1 (Glucose modality schema) — this module does not fabricate
+ * that input in the meantime.
  */
 
 export type InsulinRegimenSummary = {
@@ -48,6 +50,12 @@ export function buildInsulinSignal(
   const patientLabel = context.patientLabel?.trim() || context.patientId;
   const medications = regimen?.medications ?? [];
   const hypoEvents = regimen?.reportedHypoEventCount ?? 0;
+  const timingObservations: string[] =
+    hypoEvents > 0
+      ? [
+          `${hypoEvents} reported hypo event(s) on file — review timing against current regimen dosing schedule with clinician.`
+        ]
+      : [];
 
   return {
     moduleId: "INSULIN",
@@ -56,12 +64,12 @@ export function buildInsulinSignal(
     patientLabel,
     regimenSummary: medications.length ? medications.join("; ") : "No insulin regimen recorded",
     sensitivityEstimate: "insufficient_data",
-    timingObservations: [],
+    timingObservations,
     hypoRiskFlag: hypoEvents > 0,
     doseChangeRecommendation: null,
     isDoseRecommendation: false,
     limitations: [
-      "v0 stub — no sensitivity modelling or timing analysis yet (deferred to v1).",
+      "No sensitivity modelling — would require structured glucose data, blocked on OQ-DIAB-1 (Glucose modality schema).",
       "This module never generates an executable dose change; GUARDIAN + clinician review required for any medication decision.",
       hypoEvents > 0
         ? `${hypoEvents} reported hypo event(s) — route to clinician review via GUARDIAN.`

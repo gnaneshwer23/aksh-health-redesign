@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "label is required." }, { status: 400 });
   }
 
-  const row = await persistShieldAuditEvent({
+  const result = await persistShieldAuditEvent({
     action: body.action?.trim() || "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
     label,
@@ -70,12 +70,16 @@ export async function POST(request: Request) {
     caseId: body.caseId
   });
 
-  if (!row) {
+  if (!result.persisted) {
     return NextResponse.json(
-      { error: "Durable audit unavailable (DATABASE_URL / Postgres).", durable: false },
+      {
+        error: "Durable audit unavailable (DATABASE_URL / Postgres).",
+        durable: false,
+        reason: result.reason
+      },
       { status: 503 }
     );
   }
 
-  return NextResponse.json({ durable: true, event: row });
+  return NextResponse.json({ durable: true, event: result.row });
 }

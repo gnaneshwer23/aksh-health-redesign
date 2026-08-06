@@ -10,6 +10,7 @@ import { useCaseReviewWorkflow } from "./case-detail/useCaseReviewWorkflow";
 import { CaseStateRibbon } from "@/components/review/case-state-ribbon";
 import { FeedbackLinkedPanel } from "@/components/review/feedback-linked-panel";
 import { PatientHistory } from "@/components/review/patient-history";
+import type { ShieldAuditWarning } from "@/lib/use-review-cases";
 import type { ReviewCase } from "@/lib/types";
 
 export function CaseDetail({
@@ -19,7 +20,11 @@ export function CaseDetail({
   isSaving,
   onRetrySave,
   reviewCase,
-  onUpdateCase
+  onUpdateCase,
+  shieldAuditWarning = null,
+  isRetryingShieldAudit = false,
+  onDismissShieldAuditWarning,
+  onRetryShieldAuditWrite
 }: {
   demoMode?: boolean;
   recordingMode?: boolean;
@@ -28,6 +33,10 @@ export function CaseDetail({
   onRetrySave: () => Promise<void>;
   reviewCase: ReviewCase;
   onUpdateCase: (reviewCase: ReviewCase) => void;
+  shieldAuditWarning?: ShieldAuditWarning | null;
+  isRetryingShieldAudit?: boolean;
+  onDismissShieldAuditWarning?: () => void;
+  onRetryShieldAuditWrite?: () => Promise<void>;
 }) {
   const workflow = useCaseReviewWorkflow(reviewCase, onUpdateCase);
   const demoQuery =
@@ -109,6 +118,34 @@ export function CaseDetail({
             <div className="actions">
               <button className="button secondary" onClick={() => void onRetrySave()} type="button">
                 Retry Save
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {shieldAuditWarning ? (
+          <div
+            className="panel stack"
+            data-testid="shield-audit-degraded-banner"
+            style={{ background: "var(--danger-soft)", boxShadow: "none" }}
+          >
+            <strong>Audit write degraded</strong>
+            <p>
+              Your Accept / Edit / Reject decision was saved, but the SHIELD durable audit record for it
+              failed to write ({shieldAuditWarning.failedShieldAuditLearningEventIds.length} pending). The
+              decision is not lost — retry the audit write below, or dismiss and retry later from the
+              admin SHIELD ledger.
+            </p>
+            <div className="actions">
+              <button
+                className="button secondary"
+                disabled={isRetryingShieldAudit}
+                onClick={() => void onRetryShieldAuditWrite?.()}
+                type="button"
+              >
+                {isRetryingShieldAudit ? "Retrying audit write..." : "Retry audit write"}
+              </button>
+              <button className="button secondary" onClick={() => onDismissShieldAuditWarning?.()} type="button">
+                Dismiss
               </button>
             </div>
           </div>

@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     oracleScore: body.oracleScore
   });
 
-  const row = await persistShieldAuditEvent({
+  const shieldResult = await persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
     label: "SHIELD: VOICE CARE synthetic outbound escalation",
@@ -99,8 +99,9 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ...result,
-    shieldPersisted: Boolean(row),
-    durable: Boolean(row),
+    shieldPersisted: shieldResult.persisted,
+    durable: shieldResult.persisted,
+    shieldAuditWriteFailed: !shieldResult.persisted,
     hitlRequired: true,
     ehrWrite: false
   });

@@ -1,5 +1,6 @@
 import { deriveCaseFeedbackSummary, deriveFeedbackPriorityCounts } from "@/lib/feedback-insights";
 import type { FeedbackEntry } from "@/lib/feedback-types";
+import type { AppRole } from "@/lib/permission-matrix";
 import type { ReviewCase } from "@/lib/types";
 import {
   deriveAcceptanceBlockers,
@@ -14,7 +15,7 @@ import {
 
 export type DashboardSummary = {
   persona: {
-    role: "clinical_reviewer" | "operations_lead";
+    role: AppRole;
     title: string;
     headline: string;
     focus: string;
@@ -105,7 +106,7 @@ const workstreamLabels: Record<string, string> = {
 export function deriveDashboardSummary(
   cases: ReviewCase[],
   archive: FeedbackEntry[],
-  role: "clinical_reviewer" | "operations_lead" = "clinical_reviewer"
+  role: AppRole = "clinical_reviewer"
 ): DashboardSummary {
   const reviewAnalytics = deriveReviewAnalytics(cases);
   const dataCollectionAnalytics = deriveDataCollectionAnalytics(cases);

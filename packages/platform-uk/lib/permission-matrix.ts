@@ -1,6 +1,16 @@
 import { formatCaseTimestamp } from "./workflow";
 
-export type AppRole = "clinical_reviewer" | "operations_lead";
+/**
+ * First-class application roles used for permission scoping (OQ-PER-1/OQ-PER-2).
+ * - "clinical_reviewer" / "operations_lead": existing clinical + ops personas, unchanged.
+ * - "patient": own-record-only scope (FR-PER-006) — never a clinical Accept/Edit/Reject persona.
+ * - "researcher": aggregate/de-identified scope only; individual clinical records denied by
+ *   default (FR-PER-007, mirrors `CLINICAL_RECORD_DENIED_ROLES`).
+ * - "restricted": deny-by-default bucket for any unrecognized/unmapped session role. Never used
+ *   as a real onboarding persona — it exists so an unknown role fails closed instead of silently
+ *   being promoted to a clinical/ops AppRole.
+ */
+export type AppRole = "clinical_reviewer" | "operations_lead" | "patient" | "researcher" | "restricted";
 
 export type PermissionLevel = "allowed" | "scoped" | "denied";
 
@@ -89,19 +99,77 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
     {
       clinical_reviewer: PermissionLevel;
       operations_lead: PermissionLevel;
+      patient: PermissionLevel;
+      researcher: PermissionLevel;
     }
   > = {
-    review_case_queue: { clinical_reviewer: "allowed", operations_lead: "allowed" },
-    capture_reviewer_decision: { clinical_reviewer: "allowed", operations_lead: "scoped" },
-    export_case_evidence: { clinical_reviewer: "allowed", operations_lead: "allowed" },
-    benchmark_signoff: { clinical_reviewer: "scoped", operations_lead: "allowed" },
-    readiness_snapshot: { clinical_reviewer: "scoped", operations_lead: "allowed" },
-    feedback_capture: { clinical_reviewer: "allowed", operations_lead: "allowed" },
-    ops_dashboard: { clinical_reviewer: "scoped", operations_lead: "allowed" },
-    demo_reset: { clinical_reviewer: "denied", operations_lead: "allowed" },
-    roadmap_edit: { clinical_reviewer: "scoped", operations_lead: "allowed" },
-    governance_pack_view: { clinical_reviewer: "allowed", operations_lead: "allowed" },
-    export_system_contracts: { clinical_reviewer: "allowed", operations_lead: "allowed" }
+    review_case_queue: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    capture_reviewer_decision: {
+      clinical_reviewer: "allowed",
+      operations_lead: "scoped",
+      // FR-PER-009: no non-clinical persona may record a clinical Accept/Edit/Reject.
+      patient: "denied",
+      researcher: "denied"
+    },
+    export_case_evidence: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    benchmark_signoff: {
+      clinical_reviewer: "scoped",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    readiness_snapshot: {
+      clinical_reviewer: "scoped",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    feedback_capture: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    ops_dashboard: {
+      clinical_reviewer: "scoped",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    demo_reset: {
+      clinical_reviewer: "denied",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    roadmap_edit: {
+      clinical_reviewer: "scoped",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    governance_pack_view: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    export_system_contracts: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    }
   };
 
   return {
@@ -120,6 +188,18 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
         id: "operations_lead",
         label: "Operations lead",
         description: "Demo, readiness, ops coordination, and deterministic reset responsibilities."
+      },
+      {
+        id: "patient",
+        label: "Patient",
+        description:
+          "Own-record-only scope (FR-PER-006). No access to the clinician review queue or any clinical Accept/Edit/Reject action."
+      },
+      {
+        id: "researcher",
+        label: "Researcher / analyst",
+        description:
+          "Aggregate/de-identified scope only (FR-PER-007). Individual clinical record access is denied by default, matching CLINICAL_RECORD_DENIED_ROLES."
       }
     ],
     permissionLevels: {
@@ -132,12 +212,15 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
       actionId: action.id,
       label: action.label,
       clinical_reviewer: matrix[action.id]?.clinical_reviewer ?? "denied",
-      operations_lead: matrix[action.id]?.operations_lead ?? "denied"
+      operations_lead: matrix[action.id]?.operations_lead ?? "denied",
+      patient: matrix[action.id]?.patient ?? "denied",
+      researcher: matrix[action.id]?.researcher ?? "denied"
     })),
     enforcementNotes: [
       "Current build uses demo auth and scoped JSON stores; this matrix documents intended boundaries rather than production RBAC enforcement.",
       "Future database adapters must preserve ownership checks and audit integrity before production RBAC claims.",
-      "No role may unlock live NHS integration, real patient data handling, or autonomous clinical decisioning in the synthetic proof build."
+      "No role may unlock live NHS integration, real patient data handling, or autonomous clinical decisioning in the synthetic proof build.",
+      "patient/researcher are first-class AppRoles (B1): unrecognized session roles fail closed to \"restricted\" rather than silently becoming clinical_reviewer."
     ]
   };
 }

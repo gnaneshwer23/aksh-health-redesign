@@ -1,5 +1,5 @@
 /**
- * Diabetes Disease Intelligence — module barrel (v0 stub).
+ * Diabetes Disease Intelligence — module barrel (v1, B3).
  *
  * Diabetes is the first Disease Intelligence module on the Aksh Intelligence
  * Platform (docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md, Layer 3). It is
@@ -7,11 +7,11 @@
  * and the existing continuous-learning loop rather than introducing new
  * versions of any of them.
  *
- * v0 status: nothing exported here is called from
- * lib/clinical-spine/orchestrate.ts, lib/agents/llm-oracle.ts, or
- * lib/agents/llm-guardian.ts yet. `buildDiabetesRiskContribution` below is
- * the proposed v1 integration point — see its TODO for the exact wiring
- * step, which should land as its own reviewed change with a scenario test.
+ * v1 (B3) status: `buildDiabetesRiskContribution` is wired into
+ * lib/clinical-spine/orchestrate.ts behind the `ENABLE_DIABETES_MODULE`
+ * feature flag (default false) — see docs/PHASED_BUILD_PLAN.md B3. Nothing
+ * here performs its own AI Gateway call (FR-DIAB-014); this composite is a
+ * pure, synchronous, deterministic function.
  */
 
 export {
@@ -49,10 +49,13 @@ export {
   DIABETES_DEMO_GLUCOSE_READINGS,
   DIABETES_DEMO_HBA1C_READINGS,
   DIABETES_DEMO_INSULIN_REGIMEN,
-  DIABETES_DEMO_GLP1_SIDE_EFFECTS
+  DIABETES_DEMO_GLP1_SIDE_EFFECTS,
+  getDiabetesFixtureBundle,
+  getDiabetesFixtureCohortIds,
+  type DiabetesFixtureBundle
 } from "./fixtures";
 
-import type { DiabetesCoachingDraft, DiabetesPatientContext } from "./types";
+import type { DiabetesCoachingDraft, DiabetesModuleId, DiabetesPatientContext } from "./types";
 import { buildGlucoseSignal, type GlucoseSignal } from "./glucose";
 import { buildHbA1cSignal, type HbA1cSignal } from "./hba1c";
 import { buildInsulinSignal, type InsulinSignal } from "./insulin";
@@ -66,28 +69,52 @@ import {
   type ComplicationSignal
 } from "./complications";
 import { buildPreventionSignal, type PreventionSignal } from "./prevention";
+import { getDiabetesFixtureBundle, type DiabetesFixtureBundle } from "./fixtures";
+
+/**
+ * OQ-DIAB-2 (this build plan's B3 label; Volume I's canonical id for this
+ * exact question is OQ-DIAB-7 — Volume I's own OQ-DIAB-2 is the separate
+ * Insulin/GLP-1 gate-type question, untouched by this decision) — DECIDED:
+ * fail-open, per-area. If one area builder throws or returns malformed data,
+ * the composite does NOT fail the whole contribution; it omits that area's
+ * contribution to HORIZON/GUARDIAN, records which area failed in
+ * `areaFailures`, and continues. Rationale: this composite is an additional
+ * data-gathering step feeding an existing clinical draft path (HORIZON/
+ * GUARDIAN) that must not itself become a new reason a clinician can't get a
+ * draft — mirrors the "never hard-block a clinical action on an
+ * infra/derivation hiccup" precedent this plan's B1 SHIELD fail-visible
+ * design already established. A degraded area is always visible (via
+ * `areaFailures`), never silently dropped.
+ */
+function safeBuildArea<T>(area: DiabetesModuleId, build: () => T, fallback: T): { value: T; failed: boolean } {
+  try {
+    return { value: build(), failed: false };
+  } catch (error) {
+    console.error(`[disease-modules/diabetes] ${area} builder failed — degrading gracefully (fail-open, OQ-DIAB-2/OQ-DIAB-7)`, error);
+    return { value: fallback, failed: true };
+  }
+}
 
 /**
  * Composite integration point (spec §"Composite integration: how 9 signals
  * become one contribution to HORIZON/GUARDIAN").
  *
  * One call site aggregating all 9 areas into the shape HORIZON and GUARDIAN
- * would consume — this is NOT a 10th agent, and it is not itself an agent
- * call (no AI Gateway request happens here; individual signal builders are
- * deterministic v0 stubs).
+ * consume — this is NOT a 10th agent, and it is not itself an agent call (no
+ * AI Gateway request happens here; every signal builder is a deterministic,
+ * synchronous, rule-based function).
  *
- * v0: pure function, not called from any production route or orchestration
- * path. Exists so the aggregation shape can be reviewed before wiring.
- *
- * TODO(v1): call this from lib/clinical-spine/orchestrate.ts (or a helper it
- * invokes) for diabetes-flagged patients, behind a feature flag (e.g.
- * ENABLE_DIABETES_MODULE, default false, following the ENABLE_LLM_* /
- * ENABLE_FASTAPI_SYNTHESIS convention in lib/integration-config.ts). Merge
+ * Called from lib/clinical-spine/orchestrate.ts for diabetes-flagged
+ * patients, behind ENABLE_DIABETES_MODULE (default false). Merge
  * `horizonContributingFactors` into OracleDraft.contributingFactors
  * (lib/agents/llm-oracle.ts) and `guardianSafetyFlags` into
- * GuardianDraft.safetyNotes (lib/agents/llm-guardian.ts). SHIELD auditing and
- * HITL gating stay exactly as they are for HORIZON/GUARDIAN today — no new
- * audit path.
+ * GuardianDraft.safetyNotes (lib/agents/llm-guardian.ts) is done additively
+ * by the caller. SHIELD auditing and HITL gating stay exactly as they are
+ * for HORIZON/GUARDIAN today — no new audit path (FR-DIAB-016).
+ *
+ * `input` overrides the synthetic fixture lookup (getDiabetesFixtureBundle)
+ * for tests/callers that want to supply data directly; omit it in
+ * production wiring to use the cohort fixture keyed by `context.patientId`.
  */
 export type DiabetesRiskContribution = {
   patientId: string;
@@ -103,40 +130,105 @@ export type DiabetesRiskContribution = {
     complications: ComplicationSignal[];
     prevention: PreventionSignal;
   };
+  /** Areas that threw during derivation and were degraded gracefully (fail-open) — empty in the normal case. */
+  areaFailures: DiabetesModuleId[];
   hitlRequired: true;
   ehrWrite: false;
   autoRetrain: false;
 };
 
-export function buildDiabetesRiskContribution(context: DiabetesPatientContext): DiabetesRiskContribution {
-  const glucose = buildGlucoseSignal(context);
-  const hba1c = buildHbA1cSignal(context);
-  const insulin = buildInsulinSignal(context);
-  const glp1 = buildGlp1Signal(context);
-  const complications = DIABETES_COMPLICATION_DOMAINS.map((domain) => buildComplicationSignal(context, domain));
-  const prevention = buildPreventionSignal(context, { glucose, hba1c, complications });
+export function buildDiabetesRiskContribution(
+  context: DiabetesPatientContext,
+  input?: Partial<DiabetesFixtureBundle>
+): DiabetesRiskContribution {
+  const fixture = getDiabetesFixtureBundle(context.patientId);
+  const bundle: DiabetesFixtureBundle = { ...fixture, ...input };
+  const areaFailures: DiabetesModuleId[] = [];
 
-  const horizonContributingFactors = [
+  const glucoseResult = safeBuildArea("GLUCOSE", () => buildGlucoseSignal(context, bundle.glucoseReadings), null);
+  const hba1cResult = safeBuildArea("HBA1C", () => buildHbA1cSignal(context, bundle.hba1cReadings), null);
+  const insulinResult = safeBuildArea("INSULIN", () => buildInsulinSignal(context, bundle.insulinRegimen), null);
+  const glp1Result = safeBuildArea("GLP1", () => buildGlp1Signal(context, bundle.glp1SideEffects), null);
+  const complicationsResult = safeBuildArea(
+    "COMPLICATIONS",
+    () =>
+      DIABETES_COMPLICATION_DOMAINS.map((domain) =>
+        buildComplicationSignal(context, domain, bundle.complicationEvidence?.[domain] ?? [])
+      ),
+    [] as ComplicationSignal[]
+  );
+
+  const glucose = glucoseResult.value ?? buildGlucoseSignal(context, []);
+  const hba1c = hba1cResult.value ?? buildHbA1cSignal(context, []);
+  const insulin = insulinResult.value ?? buildInsulinSignal(context);
+  const glp1 = glp1Result.value ?? buildGlp1Signal(context);
+  const complications = complicationsResult.value;
+
+  if (glucoseResult.failed) areaFailures.push("GLUCOSE");
+  if (hba1cResult.failed) areaFailures.push("HBA1C");
+  if (insulinResult.failed) areaFailures.push("INSULIN");
+  if (glp1Result.failed) areaFailures.push("GLP1");
+  if (complicationsResult.failed) areaFailures.push("COMPLICATIONS");
+
+  const preventionResult = safeBuildArea(
+    "PREVENTION",
+    () => buildPreventionSignal(context, { glucose, hba1c, complications }),
+    buildPreventionSignal(context)
+  );
+  if (preventionResult.failed) areaFailures.push("PREVENTION");
+  const prevention = preventionResult.value;
+
+  const horizonContributingFactors: string[] = [
     ...glucose.limitations.map((limitation) => `Glucose: ${limitation}`),
-    ...hba1c.limitations.map((limitation) => `HbA1c: ${limitation}`)
+    hba1c.latestValuePercent !== null
+      ? `HbA1c: latest ${hba1c.latestValuePercent}% (trend: ${hba1c.trend})${
+          hba1c.predictedNext3MonthsPercent !== null
+            ? `, non-diagnostic 3-month trend estimate ${hba1c.predictedNext3MonthsPercent}%`
+            : ""
+        }`
+      : `HbA1c: ${hba1c.limitations[0] ?? "no data on file"}`,
+    ...complications
+      .filter((c) => c.flagLevel !== "none")
+      .map((c) => `Complications (${c.domain}): ${c.flagLevel} (${c.evidenceRefs.length} evidence ref(s))`),
+    prevention.riskTrajectoryLabel !== "insufficient_data"
+      ? `Prevention: risk trajectory ${prevention.riskTrajectoryLabel}`
+      : `Prevention: ${prevention.limitations[0] ?? "insufficient data"}`
   ];
 
-  const guardianSafetyFlags = [
+  const guardianSafetyFlags: string[] = [
     insulin.hypoRiskFlag ? "Insulin: reported hypo event(s) — clinician review recommended" : null,
-    ...glp1.sideEffectFlags
+    ...glp1.sideEffectFlags.map((flag) => `GLP-1: ${flag}`)
   ].filter((flag): flag is string => Boolean(flag));
+
+  const nutritionDraft = safeBuildArea(
+    "NUTRITION",
+    () => buildNutritionDiabetesCoachingDraft(context, { hba1c }),
+    buildNutritionDiabetesCoachingDraft(context)
+  );
+  if (nutritionDraft.failed) areaFailures.push("NUTRITION");
+
+  const exerciseDraft = safeBuildArea(
+    "EXERCISE",
+    () => buildExerciseDiabetesCoachingDraft(context, { insulin }),
+    buildExerciseDiabetesCoachingDraft(context)
+  );
+  if (exerciseDraft.failed) areaFailures.push("EXERCISE");
+
+  const behaviourDraft = safeBuildArea(
+    "BEHAVIOUR",
+    () => buildBehaviourDiabetesCoachingDraft(context, { complications }),
+    buildBehaviourDiabetesCoachingDraft(context)
+  );
+  if (behaviourDraft.failed) areaFailures.push("BEHAVIOUR");
 
   return {
     patientId: context.patientId,
     patientLabel: context.patientLabel?.trim() || context.patientId,
     horizonContributingFactors,
     guardianSafetyFlags,
-    coachingDrafts: [
-      buildNutritionDiabetesCoachingDraft(context),
-      buildExerciseDiabetesCoachingDraft(context),
-      buildBehaviourDiabetesCoachingDraft(context)
-    ],
+    coachingDrafts: [nutritionDraft.value, exerciseDraft.value, behaviourDraft.value],
     signals: { glucose, hba1c, insulin, glp1, complications, prevention },
+    areaFailures,
     hitlRequired: true,
     ehrWrite: false,
     autoRetrain: false

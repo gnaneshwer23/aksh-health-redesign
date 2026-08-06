@@ -14,6 +14,37 @@ import {
 } from "../clinical-proof/learning-loop";
 import { persistShieldAuditEvent } from "./shield-audit-repository";
 
+function buildLearningShieldAuditInput(event: LearningEvent, retry = false) {
+  return {
+    action: event.decision,
+    actor: event.decisionActor,
+    label: `LEARNING: ${event.agentLabel} ${event.decision} → ${event.outcomeKind}${retry ? " (retry)" : ""}`,
+    detail: [
+      `prediction=${event.predictionId}`,
+      event.caseId ? `case=${event.caseId}` : null,
+      event.outcomeSummary ?? null,
+      "autoRetrain=false",
+      "modelUpdated=false",
+      retry ? "retry=true" : null
+    ]
+      .filter(Boolean)
+      .join(" · "),
+    category: "continuous_learning",
+    caseId: event.caseId ?? undefined,
+    queueItemId: event.queueItemId ?? undefined,
+    practiceId: event.practiceId ?? undefined,
+    agentLabel: event.agentLabel,
+    resourceRef: event.predictionId,
+    payload: {
+      learningEventId: event.id,
+      outcomeKind: event.outcomeKind,
+      autoRetrainTriggered: false,
+      modelUpdated: false,
+      ...(retry ? { retry: true } : {})
+    }
+  };
+}
+
 const dataDir = path.join(process.cwd(), "data");
 
 /** Controlled path only — never write outside packages/platform-uk/data */
@@ -178,11 +209,22 @@ async function listPostgres(limit: number): Promise<LearningEvent[] | null> {
  * Append a learning event. Prefers Postgres; falls back to controlled file under data/.
  * Also dual-writes a SHIELD-adjacent audit row when Postgres is available.
  * Never triggers retrain or model update.
+ *
+ * SHIELD hard-fail (OQ-HITL-2): a failed dual write is reported back via
+ * `shieldAuditWriteFailed` — callers (queue-decision.ts) must propagate this to
+ * the API response/UI rather than treating the learning-event write as proof
+ * the audit mirror also succeeded. The clinical decision itself is never blocked
+ * on this — only the honesty of what's reported back is at stake.
  */
 export async function recordLearningEvent(
   input: LearningEventInput,
   options?: { scopeKey?: string; shieldDualWrite?: boolean }
-): Promise<{ event: LearningEvent; source: "postgres" | "file" }> {
+): Promise<{
+  event: LearningEvent;
+  source: "postgres" | "file";
+  shieldAuditWriteFailed: boolean;
+  shieldAuditWriteReason?: string;
+}> {
   const event = buildLearningEvent(input, () => `learn-${randomUUID()}`);
   assertNoAutoRetrain(event);
 
@@ -200,36 +242,45 @@ export async function recordLearningEvent(
     await appendFileStore(event, scopeKey);
   }
 
+  let shieldAuditWriteFailed = false;
+  let shieldAuditWriteReason: string | undefined;
+
   if (options?.shieldDualWrite !== false) {
-    await persistShieldAuditEvent({
-      action: event.decision,
-      actor: event.decisionActor,
-      label: `LEARNING: ${event.agentLabel} ${event.decision} → ${event.outcomeKind}`,
-      detail: [
-        `prediction=${event.predictionId}`,
-        event.caseId ? `case=${event.caseId}` : null,
-        event.outcomeSummary ?? null,
-        "autoRetrain=false",
-        "modelUpdated=false"
-      ]
-        .filter(Boolean)
-        .join(" · "),
-      category: "continuous_learning",
-      caseId: event.caseId ?? undefined,
-      queueItemId: event.queueItemId ?? undefined,
-      practiceId: event.practiceId ?? undefined,
-      agentLabel: event.agentLabel,
-      resourceRef: event.predictionId,
-      payload: {
-        learningEventId: event.id,
-        outcomeKind: event.outcomeKind,
-        autoRetrainTriggered: false,
-        modelUpdated: false
-      }
-    });
+    const shieldResult = await persistShieldAuditEvent(buildLearningShieldAuditInput(event));
+    if (!shieldResult.persisted) {
+      shieldAuditWriteFailed = true;
+      shieldAuditWriteReason = shieldResult.reason;
+      console.error(
+        "[shield-audit] durable write failed for learning event",
+        event.id,
+        shieldResult.reason
+      );
+    }
   }
 
-  return { event, source };
+  return { event, source, shieldAuditWriteFailed, shieldAuditWriteReason };
+}
+
+/**
+ * Re-attempt the SHIELD dual write for a learning event whose original write
+ * failed (fail-visible retry path for OQ-HITL-2). Does not mutate or re-record
+ * the underlying learning event — SHIELD is append-only, so a successful retry
+ * simply appends a fresh, honestly-labelled "(retry)" audit row.
+ */
+export async function retryShieldAuditForLearningEvent(
+  learningEventId: string,
+  options?: { scopeKey?: string }
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  const found = await findLearningEventById(learningEventId, { scopeKey: options?.scopeKey });
+  if (!found.event) {
+    return { ok: false, reason: "learning_event_not_found" };
+  }
+
+  const result = await persistShieldAuditEvent(buildLearningShieldAuditInput(found.event, true));
+  if (!result.persisted) {
+    return { ok: false, reason: result.reason };
+  }
+  return { ok: true };
 }
 
 export async function listLearningEvents(options?: {

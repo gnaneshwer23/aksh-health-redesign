@@ -481,196 +481,12 @@ This section states requirements at the product level. It deliberately does not 
 - Chapter 1 (§1.4 NO-1, NO-4, NO-9) — the non-objectives every persona's "must not do" list restates in persona-specific terms.
 - Chapter 2 (§2.2 IS-5) — the persona list first named at scope level; this chapter is its full elaboration.
 - `docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md` — Layer 1 Identity/Consent status ("Partial... proof-grade auth, not CIS2/production RBAC"), which this chapter's §3.5 honest current-state note is directly consistent with.
-- Chapter 5 (Clinical Safety & HITL, `[TODO]`) will define the HITL gate mechanics this chapter only states responsibilities for (e.g. exactly what "Accept/Edit/Reject" requires as an audit-grade action).
-- Chapter 8 (Disease Intelligence — Diabetes, `[TODO]`) will reuse the GP and Pharmacist personas' HITL responsibilities unchanged for Insulin/GLP-1 signal review (per `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`).
+- Chapter 5 (Clinical Safety & HITL, `[DRAFTED]`) defines the HITL gate mechanics this chapter only states responsibilities for (e.g. exactly what "Accept/Edit/Reject" requires as an audit-grade action).
+- Chapter 8 (Disease Intelligence — Diabetes, `[DRAFTED]`) reuses the GP and Pharmacist personas' HITL responsibilities unchanged for Insulin/GLP-1 signal review (per `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`).
 
 ---
 
-## 5. Chapter 5 — Clinical Safety & Human Oversight (HITL) `[DRAFTED]`
-
-### 5.0 Purpose of clinical safety in Aksh
-
-Aksh Health is an intelligence layer, not an autonomous clinician (Chapter 1, §1.7). Every capability this platform ships — general clinical intake, medication safety, risk scoring, care coordination, and each disease module — produces a **draft**, never a decision. This chapter defines the mechanism that makes that true in practice, not just in prose: the gate catalog a draft must pass through, who is authorized to clear each gate, what is recorded when they do, and what the platform must fail-safe on when something goes wrong (a timeout, an offline dependency, a conflicting edit, an audit-write failure).
-
-This chapter is not aspirational. Every gate, status, and honesty field described below is grounded in code that exists today (`lib/human-gates.ts`, `lib/clinical-spine/orchestrate.ts`, `lib/clinical-spine/safety-route.ts`, `lib/clinical-spine/queue-decision.ts`, `lib/clinical-spine/outcomes-loop.ts`, `lib/repositories/shield-audit-repository.ts`, `lib/agents/llm-guardian.ts`). Where the current implementation falls short of the target this chapter states, §5.8 and §5.9 say so explicitly rather than describing the gap as already closed.
-
-### 5.1 Mandatory HITL principles
-
-These restate and operationalize Chapter 1's BO-3/BO-4/BO-5 and NO-1/NO-2/NO-4/NO-5/NO-7 as binding product behavior, not aspiration.
-
-- **FR-HITL-001.** The platform shall treat every clinical-facing AI output (SYNTHESIS SOAP/coding drafts, GUARDIAN interaction/allergy flags, HORIZON risk drafts, PATHWAY referral drafts, NEXUS correlation drafts, and any Diabetes-module contribution to these) as a draft with exactly three possible dispositions at the individual-item level: **Accept**, **Edit**, or **Reject** — never an implicit fourth state of "already applied."
-- **FR-HITL-002.** The platform shall require an authenticated, role-eligible human actor (per Chapter 3's persona HITL responsibilities) to record the disposition in FR-HITL-001 before a draft can be staged (BRIDGE, sim-only) or referenced as a finalized clinical position anywhere in the product.
-- **FR-HITL-003.** The platform shall never present a case, item, or draft as "complete" or export-ready while a mandatory case-level human gate (§5.2) remains in a `required`/open status.
-- **FR-HITL-004.** The platform shall record who made a disposition, when, and — for Reject and Override — why, as a condition of accepting the disposition at all. A disposition without an actor identity or timestamp shall be rejected by the system, not silently defaulted.
-- **FR-HITL-005.** The platform shall route every clinical-facing draft through exactly one deterministic orchestrator (CONDUCTOR, `lib/clinical-spine/orchestrate.ts`). No disease module, agent, or future capability shall introduce a second orchestration path that could reach a clinician-facing surface without passing through the same gate infrastructure (restates NO-8, Chapter 1).
-- **FR-HITL-006.** The platform shall attach the same literal honesty fields to every orchestration result and persist them into the audit trail unchanged: `ehrWrite:false`, `hitlRequired:true`, `physiologicalTwin:false`, `autoRetrain:false`, `liveEmis:false`. These shall be typed fields checked by the codebase, not comments or documentation claims.
-
-> **AC-HITL-006-1.** Given any call to `runClinicalSpineOrchestrate`, when the result is returned, then `ehrWrite`, `physiologicalTwin`, `autoRetrain`, and `liveEmis` shall each be the literal value `false`, and `hitlRequired` shall be the literal value `true`, matching `ClinicalSpineOrchestrateResult`.
-
-- **FR-HITL-007.** The platform shall treat a twin/simulation output that does not honestly declare `physiologicalTwin:false` and `simulationMode:"synthetic_rules"` as a defect to be blocked before release, not shipped with a caveat — per the existing runtime check in `runClinicalSpineOrchestrate` (`throw new Error("Twin honesty check failed...")`).
-
-### 5.2 Gate catalog
-
-The platform operates HITL at **two layers**, and this Volume keeps them distinct because the code does:
-
-1. **Item-level disposition** — Accept / Edit / Reject on each individual agent draft (a SOAP note, a GUARDIAN flag, a HORIZON score, a referral draft) in the review queue. This is the base primitive (`lib/clinical-spine/queue-decision.ts`).
-2. **Case-level human gates** — three named gates (`HumanGateId`) that must be explicitly confirmed or marked not-applicable before a *case* (not just one item) can be considered finalization-ready (`lib/human-gates.ts`).
-
-#### 5.2.1 Item-level disposition gate (all clinical drafts)
-
-| | |
-| --- | --- |
-| **Purpose** | The universal HITL checkpoint every clinical-facing AI output must pass through before it can be staged or treated as final. |
-| **Who may act** | The accountable clinical persona for that draft type: GP for SOAP/coding/risk/referral drafts; Clinical Pharmacist for medication-review/interaction drafts; Nurse for observation/handover drafts (Chapter 3, §3.2). Non-clinical personas (`practice-manager`, `ics-lead`, `hospital-executive`, `researcher`) are barred (FR-PER-009, Chapter 3). |
-| **Allowed decisions** | `accept`, `edit`, `reject` (`LearningDecision` / `ReviewQueueItemStatus`). |
-| **On Accept** | Item status → `ACCEPTED`. A learning event is recorded (`recordLearningEvent`, dual-written to SHIELD). If the accepted item is a clinical draft eligible for a follow-on care-plan, a health-plan draft may be offered (`createHealthPlanDraft`) — itself HITL-gated and `ehrWrite:false`. BRIDGE may stage the accepted content (sim-only, `liveEmis:false`). |
-| **On Edit** | Item status remains `DRAFT` but `decidedBy`/content/timestamp change; a learning event with `decision:"edit"` is recorded. Editing is not a lesser action than Accept for audit purposes — it is recorded with the same rigor. |
-| **On Reject** | Item status → `REJECTED`; a learning event with `decision:"reject"` and a mandatory `rejectionReason` is recorded. A rejected draft is never staged and never silently retried without new input. |
-| **Audit requirements** | Every disposition writes a SHIELD audit event (dual-write, `shieldDualWrite:true`) and a learning event in the same operation (`recordSpineQueueDecisions`) — the two shall never be allowed to diverge (one without the other). |
-
-#### 5.2.2 Case-level gate: `red_flag_escalation`
-
-| | |
-| --- | --- |
-| **Purpose** | Confirms whether an urgent escalation, same-day review, or safety-netting action is required, when synthetic source evidence contains a red-flag pattern (e.g. fever with wheeze/breathlessness). |
-| **Who may act** | GP (primary); Nurse may raise/observe but the confirming decision is a GP/clinician-accountable action per Chapter 3. |
-| **Allowed decisions** | `confirmed` (escalation reviewed and actioned/dismissed with a note) or `not_applicable` (no red-flag evidence present — system-derived, reviewer-confirmable). |
-| **On Accept (confirmed)** | Gate status → `completed`; decision persisted (`HumanGateDecision`) with `decidedAt`/`decidedBy`/optional `note`. |
-| **On Reject** | There is no "reject" for this gate type — a red-flag signal cannot be dismissed without a recorded rationale; the only closing states are `confirmed` (with note) or `not_applicable` when no evidence exists. A case shall not silently drop a `required` red-flag gate. |
-| **Audit requirements** | Gate status transition is part of the case's persisted state and shall be included in any case-level SHIELD audit summary; the gate's `reason` and `evidence[]` fields must remain traceable to the safety flags that triggered `required` status. |
-
-#### 5.2.3 Case-level gate: `referral_pathway`
-
-| | |
-| --- | --- |
-| **Purpose** | Confirms whether a case should stay in primary-care review, be referred, or take another pathway action, when escalation/urgent-language/respiratory evidence suggests a referral may be needed. |
-| **Who may act** | GP; PATHWAY agent produces the referral *draft*, never the decision. |
-| **Allowed decisions** | `confirmed` or `not_applicable`. |
-| **On Accept (confirmed)** | Gate → `completed`; if a referral is confirmed, PATHWAY's referral draft is what may be staged (sim-only) — the draft itself was never auto-sent. |
-| **On Reject** | Same constraint as §5.2.2 — no bare "reject"; the reviewer records `not_applicable` with rationale if no referral/pathway action is needed. |
-| **Audit requirements** | Same pattern as §5.2.2. This is also the gate the Diabetes spec's Complication Intelligence area (Chapter 8, when drafted) reuses for retinopathy/CKD/cardiovascular referral triggers — no new gate type is introduced for that purpose (`docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`). |
-
-#### 5.2.4 Case-level gate: `medication_decision`
-
-| | |
-| --- | --- |
-| **Purpose** | Confirms, edits, rejects, or overrides a medication-related decision when GUARDIAN safety flags (allergy, intolerance, DDI, low-confidence extraction) or any medication draft are present. |
-| **Who may act** | Clinical Pharmacist (primary for interaction/allergy review); GP (co-accountable, particularly for prescribing-adjacent decisions). |
-| **Allowed decisions** | `confirmed` or `not_applicable`; the reviewer action text explicitly allows "confirm, edit, reject, or override... with a documented rationale" at the underlying item level, funneled into this case-level gate once resolved. |
-| **On Accept (confirmed)** | Gate → `completed`. This is also the gate the Diabetes spec's Insulin and GLP-1 Intelligence areas (Chapter 8) are provisionally mapped to reuse for dose-adjacent discussions — confirmed as the default in the spec but explicitly flagged there as needing clinical-lead confirmation on whether a dedicated gate type (e.g. `insulin_dose_confirmation`) is warranted instead (see OQ-HITL-1, §5.10). |
-| **On Reject** | Same "no bare reject" constraint — an override must carry a documented rationale (`note`) rather than a silent dismissal. |
-| **Audit requirements** | Same as §5.2.2/§5.2.3; additionally, per NO-2 (Chapter 1), a `medication_decision` confirmation shall never itself constitute an executable dose or prescription change — it records a clinical judgment on the draft, not a prescribing transaction. |
-
-**FR-HITL-008.** A case shall not be treated as finalization-ready (`FinalizationState` ≠ `blocked`) while any case-level gate in §5.2.2–§5.2.4 remains in `required` status. A `warn`-level state (recommended but not mandatory gate open) may proceed with an explicit acknowledgement; a `blocked` state shall not.
-
-> **AC-HITL-008-1.** Given a case with the `red_flag_escalation` gate at `required` status and no recorded decision, when a reviewer attempts to export or mark the case complete, then the platform shall block the action and surface the open gate as the reason.
-> **AC-HITL-008-2.** Given the same case after the reviewer records a `confirmed` decision with a note, when the export/complete action is retried, then the platform shall allow it (assuming no other blocking condition).
-
-### 5.3 What may never be autonomous
-
-Restated here in HITL-specific, testable form (Chapter 1 §1.4 states these as platform-wide Non-Objectives; this section is their clinical-safety-mechanism instantiation):
-
-- **FR-HITL-009.** The platform shall never transition a queue item to `ACCEPTED` or a case-level gate to `completed` without a recorded human actor identity (restates NO-1).
-- **FR-HITL-010.** The platform shall never generate or apply an executable medication dose change, prescription, or EHR write as a side effect of any agent output, gate confirmation, or governed evaluation (restates NO-2, NO-4). The Insulin/GLP-1 Diabetes-module areas (Chapter 8) are explicitly bound by this at the module level, not just the platform level.
-- **FR-HITL-011.** The platform shall never trigger a model, prompt, or scoring-rule version change as a byproduct of learning-event volume, outcome data, or SHIELD audit accumulation, absent the full G-ML-1/2/3 signed sequence (restates NO-5; mechanism detailed in §5.7).
-- **FR-HITL-012.** The platform shall never auto-resolve a `required` case-level gate to `completed` based on elapsed time, queue pressure, or any heuristic — a gate left open shall stay open (and shall keep the case out of a finalization-ready state per FR-HITL-008) until a human actor decides it.
-- **FR-HITL-013.** The platform shall never allow a non-accountable persona (per Chapter 3, e.g. `practice-manager`) to clear any gate in §5.2, even when acting as an "admin" convenience, and even if the acting user is otherwise a legitimate operations lead for that practice.
-
-### 5.4 SHIELD audit trail requirements
-
-SHIELD is the platform's single audit system of record (Chapter 1, NO-8). Its current mechanism, honestly stated:
-
-- **How it works today.** Each SHIELD event is hashed (`sha256` over `id`, `recordedAt`, `prevEventId`, `action`, `actor`, `label`, `detail`, `caseId`, `queueItemId`, `practiceId`, `agentLabel`, `resourceRef`, `payload`) and stores the immediately preceding event's id as `prevEventId` alongside its own `contentHash` — a hash-linked chain, one link per event, in Postgres (`aksh.shield_audit_events`).
-- **FR-HITL-014.** The platform shall record a SHIELD audit event for every case-level gate decision, every item-level disposition (Accept/Edit/Reject), every continuous-learning outcome capture, and every governed evaluation submission — with no clinical-facing decision type exempted.
-- **FR-HITL-015.** Every SHIELD audit event shall be append-only. The platform shall never expose an update or delete path for a persisted SHIELD event (consistent with `docs/CONTINUOUS_LEARNING.md`'s "No PUT/PATCH/DELETE exposed" invariant).
-- **FR-HITL-016.** Every SHIELD audit event shall carry a content hash computed over its own fields plus the previous event's id, such that altering any historical event's content would break the hash chain from that point forward and be detectable.
-- **FR-HITL-017.** SHIELD audit read access shall be scoped by persona and tenant exactly as clinical-record access is (Chapter 3, §3.6): a practice may read its own audit trail; cross-practice audit reads shall be denied by the same tenant-isolation mechanism.
-
-**Honest current-state gap (binding — must be resolved before any pilot milestone, not before this chapter can be marked DRAFTED):** `persistShieldAuditEvent` is explicitly a **best-effort** write today — if the Postgres write fails, the function catches the error, logs it to the server console, and returns `null` "never throws into clinical UI paths." This means a clinical Accept/Edit/Reject can currently succeed in the application even if its corresponding SHIELD audit write silently fails. This is the opposite of what FR-HITL-014/FR-HITL-015 require as a target state and is recorded as **OQ-HITL-2** (§5.10) rather than papered over — a production/pilot posture needs either (a) a hard failure on the clinical action if the audit write fails, or (b) a durable retry/outbox mechanism that guarantees eventual consistency with an alerting path, decided by Clinical Safety + Engineering.
-
-- **Retention.** No retention or deletion policy for SHIELD events currently exists in code or documentation reviewed for this chapter. This is **OQ-HITL-3** (§5.10), not a stated requirement, because a retention period is a clinical-governance and data-protection decision, not an engineering default.
-
-### 5.5 Safety routing & escalation
-
-- **FR-HITL-018.** The platform shall route every case, after agent orchestration, into exactly one of four safety routes (`SafetyRoute`): `low_risk_coaching`, `clinical_review_queue`, `urgent_flag`, or `request_more_data` — never an undefined or absent route.
-- **FR-HITL-019.** The platform shall assign `urgent_flag` whenever GUARDIAN's `overallStatus` is `red` or the orchestration's `queuePriority` is `Urgent`, and shall reorder the review queue so GUARDIAN is reviewed first on that route (`reviewOrder`, `resolveReviewOrder`).
-- **FR-HITL-020.** The platform shall assign `clinical_review_queue` (not `low_risk_coaching`) whenever GUARDIAN is `amber` or HORIZON's risk band is `High`/`VeryHigh`, so that any elevated — not only maximal — risk signal reaches a clinician rather than the patient-facing coaching surface.
-- **FR-HITL-021.** The platform shall assign `request_more_data` whenever ingested modality count falls below the minimum completeness threshold (`max(3, floor(expectedModalities * 0.5))`), rather than generating a coaching or clinical draft from insufficient context.
-- **FR-HITL-022.** Coaching-surface content shall be gated by `coachingAllowedForRoute` and shall never be shown to a patient when the route is `clinical_review_queue`, `urgent_flag`, or `request_more_data` — a paused/blocked coaching surface, with a route-appropriate patient message, is the required behavior, not silent coaching continuation.
-
-> **AC-HITL-019-1.** Given GUARDIAN returns `overallStatus:"red"` for a case, when the safety route is resolved, then the result shall be `urgent_flag` and the review order shall place GUARDIAN before SYNTHESIS/HORIZON/NEXUS.
-> **AC-HITL-022-1.** Given a case routed to `urgent_flag`, when the patient-companion surface renders, then it shall show the `urgent_flag` patient message ("contact your care team... coaching is paused") and shall not render any coaching draft.
-
-### 5.6 Demo vs. live safety posture
-
-- **FR-HITL-023.** The platform shall keep `liveEmis:false` and `liveWriteBack:false` as hard, code-enforced values in every environment until a separately governed decision changes them (restates NO-4). No feature shipped under this Volume shall carry an environment variable or configuration path that flips this default silently.
-- **FR-HITL-024.** The platform shall never claim, in code-derived output or documentation, a signed DPIA, signed CSO Gate 2, signed DCB0129, signed MHRA classification, or a named/assigned CSO unless that specific fact is true — restates NO-6, and is enforced today as literal `false` fields (`signedDpia`, `signedCsoGate2`, `signedDcb0129`, `signedMhra`, `namedCsoAssigned` in `SPINE_PARTNER_HONESTY`) that this chapter requires stay `false` until each is genuinely true, updated one at a time, not as a bundle.
-- **FR-HITL-025.** When a live data dependency (e.g. Neo4j) is unreachable, the platform shall fall back to a clearly labeled mock/demo data mode and shall never present mock data under a "live" banner. Conversely, when genuinely live (Neo4j-backed) data is shown, the platform shall label it as such while still disclosing "still synthetic rehearsal patients, not a live NHS feed" (per `Neo4jMockModeBanner`).
-- **FR-HITL-026.** All patient data used in HITL-gated workflows shall be synthetic or explicitly pilot-consented (restates NS-4, Chapter 2) — this chapter does not open, and cannot open on its own, a path to real patient data.
-
-### 5.7 Continuous learning safety boundary
-
-- **FR-HITL-027.** The platform shall log every HITL care action (an Accept/Edit/Reject that produces a clinically meaningful decision) as a learning event, and every eventual outcome as an **append-only** linked event (`linkLearningOutcome`) — never a mutation of the original event.
-- **FR-HITL-028.** The platform shall never trigger a model or scoring-rule change from a governed evaluation unless all three gates are signed: **G-ML-1** (Engineering lead — eval harness delta, no HITL/EHR invariant regression), **G-ML-2** (Clinical Safety Officer — hazard log delta, residual risk note), **G-ML-3** (Release authority/pilot sponsor — explicit written approval of the version string to promote). This is enforced today by `assertGovernedEvaluationAllowed`, which blocks a `propose_model_update` action unless `allGovernedGatesSigned` is true.
-- **FR-HITL-029.** `autoRetrainTriggered` and `modelUpdated` shall remain literal `false` on every governed-evaluation result and outcomes-loop status object, regardless of proposed action, until a human-operated release process (per `docs/GOVERNED_MODEL_RELEASE_SOP.md`) manually bumps a version string outside of this loop entirely. The loop itself has no code path that can flip either field to `true`.
-- **FR-HITL-030.** A `propose_model_update` submission without all three gates signed shall be rejected with an explicit `blockedReason`, not silently downgraded to a different, unsigned action.
-
-> **AC-HITL-028-1.** Given a `submitGovernedEvaluation` call with `proposedAction:"propose_model_update"` and only G-ML-1 and G-ML-2 signed, when the evaluation is submitted, then the platform shall return `accepted:false` with `blockedReason` citing the missing G-ML-3 signature, and no evaluation record with `status:"approved_for_manual_release"` shall be created.
-> **AC-HITL-029-1.** Given any governed evaluation outcome, when the result is inspected, then `autoRetrainTriggered` shall be `false` and `modelUpdated` shall be `false`, with no code path in the reviewed modules capable of setting either to `true`.
-
-### 5.8 Edge cases & failure modes
-
-- **FR-HITL-031 (Agent timeout).** If an individual agent call exceeds its timeout (default 8s per agent, 30s overall budget, `agentTimeoutMs`/`overallTimeoutMs`), the platform shall fail the orchestration with an explicit error rather than returning a partial or fabricated result for the missing agent. The case shall remain in its prior state — no partially-generated draft shall be silently presented to a reviewer as complete.
-- **FR-HITL-032 (Missing independent evidence).** If any agent's output fails the independent-evidence check (`assertSharedContext`/evidence collection — "Independent evidence missing for: ..."), the platform shall throw and refuse to return an orchestration result, rather than returning a draft with an unsubstantiated agent output.
-- **FR-HITL-033 (Neo4j / graph dependency offline).** If the knowledge-graph dependency is unreachable, the platform shall fall back to labeled mock/demo data (§5.6, FR-HITL-025) for any HORIZON/GUARDIAN/ICS view that depends on it, and shall not silently degrade to an empty or default-risk result presented as if it were a real assessment.
-- **FR-HITL-034 (Conflicting concurrent edits).** If two reviewers attempt to disposition the same queue item concurrently, the platform shall detect and surface the conflict (e.g. a second write observing a state change since the first reviewer's read) rather than silently accepting a last-write-wins overwrite that discards one reviewer's decision without a record. **Current-state note:** the reviewed queue-decision code (`diffQueueDecisions`, `recordSpineQueueDecisions`) does not implement explicit optimistic-concurrency conflict detection today; this is recorded as **OQ-HITL-4** (§5.10), not claimed as already solved.
-- **FR-HITL-035 (SHIELD audit write failure).** As stated in §5.4's honest current-state gap: today, an audit write failure does not block the clinical action it was meant to audit. This chapter requires that gap be closed (via hard failure or a durable outbox/retry with alerting) before any pilot milestone that depends on audit completeness (Chapter 1, SC-3) — tracked as **OQ-HITL-2**.
-- **FR-HITL-036 (Session/role revoked mid-decision).** If a user's role or session is revoked between loading a case and submitting a disposition, the platform shall re-validate authorization at submission time (server-side, per FR-PER-005/FR-PER-015, Chapter 3) and reject a disposition from a since-invalidated session rather than honoring a stale client-held permission.
-- **FR-HITL-037 (Gate left open across a session/case handoff).** If a case is handed off between reviewers (e.g. shift change) with a case-level gate still `required`, the platform shall preserve the open gate's status and evidence across the handoff — a new reviewer opening the case shall see the same `required` status and reason, not a reset or cleared gate.
-
-### 5.9 Acceptance criteria suites for key gates
-
-**Suite: `red_flag_escalation` gate (§5.2.2)**
-
-> **AC-HITL-RFE-1.** Given source evidence containing fever with wheeze/breathlessness and no prior gate decision, when `deriveHumanGates` runs, then the gate status shall be `required` and `mandatory:true`.
-> **AC-HITL-RFE-2.** Given the same case, when a GP records `{status:"confirmed", note:"Same-day review booked", decidedBy:"gp01"}`, then the gate status shall become `completed` and the decision shall be retrievable via `humanGateDecisions`.
-> **AC-HITL-RFE-3.** Given the gate is `required` and no decision has been recorded, when any export or finalization action is attempted, then it shall be blocked (FR-HITL-008/AC-HITL-008-1).
-> **AC-HITL-RFE-4.** Given no red-flag evidence is present, when `deriveHumanGates` runs, then the gate status shall be `clear`, and a decision of `not_applicable` may be pre-populated (`ensureHumanGateDecisionSnapshot`) without requiring active reviewer input.
-
-**Suite: `medication_decision` gate (§5.2.4)**
-
-> **AC-HITL-MED-1.** Given a GUARDIAN allergy or DDI flag is present, when `deriveHumanGates` runs, then the `medication_decision` gate status shall be `required`.
-> **AC-HITL-MED-2.** Given the pharmacist records a `confirmed` decision with a note documenting the clinical rationale, when the case is re-evaluated, then the gate shall be `completed` and the underlying medication draft shall remain unstaged until the corresponding item-level Accept also occurs (the case-level gate and the item-level disposition are both required, not substitutes for each other).
-> **AC-HITL-MED-3.** Given a medication_decision gate confirmation, when the resulting SHIELD audit event is inspected, then it shall never contain a payload implying an executable dose change (`ehrWrite:false` on the associated record).
-
-**Suite: GUARDIAN urgent routing (§5.5)**
-
-> **AC-HITL-URG-1.** Given GUARDIAN returns `overallStatus:"red"`, when `resolveSafetyRouteFromOrchestration` runs, then the route shall be `urgent_flag` regardless of HORIZON's risk band.
-> **AC-HITL-URG-2.** Given route `urgent_flag`, when the review order is computed, then GUARDIAN shall appear first in `reviewOrder`.
-
-### 5.10 Open questions for Clinical Safety Lead
-
-- **OQ-HITL-1.** Confirm whether Diabetes-module Insulin/GLP-1 dose-adjacent discussions (Chapter 8, when drafted) should route through the existing `medication_decision` gate as-is, or whether a new gate type (e.g. `insulin_dose_confirmation`) is clinically warranted — this is the same open question already flagged in `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` and is restated here because it is fundamentally a HITL-gate-catalog decision. **Owner:** Clinical Safety Lead.
-- **OQ-HITL-2.** Confirm the required remediation for the SHIELD best-effort audit-write gap (§5.4): hard-fail the clinical action on audit-write failure, or implement a durable outbox/retry with alerting, and by when this must be closed relative to any pilot commitment. **Owner:** Clinical Safety Lead + Engineering.
-- **OQ-HITL-3.** Confirm the required SHIELD audit retention period (none is currently specified) and any regulatory minimum that should apply once real/pilot-consented data is in scope. **Owner:** Clinical Safety Lead + Compliance.
-- **OQ-HITL-4.** Confirm whether explicit optimistic-concurrency conflict detection on queue-item disposition (FR-HITL-034) is required before the next pilot milestone, or whether the current single-reviewer-per-case workflow assumption makes this a lower-priority hardening item. **Owner:** Clinical Safety Lead + Product.
-- **OQ-HITL-5.** Confirm who is authorized to mark a case-level gate `not_applicable` versus requiring it to always route to a named clinician for explicit `confirmed` status, particularly for `referral_pathway` in ambiguous cases. **Owner:** Clinical Safety Lead.
-- **OQ-HITL-6.** Confirm the intended behavior when `request_more_data` persists across multiple sessions for the same patient (e.g. a companion user who never completes enough self-report) — is there a maximum "stuck" duration after which a clinician should be proactively notified, and if so, is that itself a new gate or an operational alert outside the HITL gate catalog. **Owner:** Clinical Safety Lead + Product.
-
-### 5.11 Cross-references
-
-- Chapter 1 (§1.3 BO-3/BO-4/BO-5, §1.4 NO-1/NO-2/NO-4/NO-5/NO-6/NO-7/NO-8) — the platform-level commitments this chapter operationalizes into gates, audit mechanics, and testable AC.
-- Chapter 2 (§2.4 phasing model) — Track A/B and v0/v1/v2 framing this chapter's §5.6 stays consistent with.
-- Chapter 3 (§3.2 per-persona HITL responsibilities, §3.5 auth/authz, §3.6 edge cases) — who holds each gate's authority; this chapter defines what holding that authority requires them to do.
-- `docs/CONTINUOUS_LEARNING.md`, `docs/GOVERNED_MODEL_RELEASE_SOP.md` — the continuous-learning and release-gate mechanics this chapter's §5.7 elevates into product requirements without altering.
-- `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` — the Insulin/GLP-1/Complication gate-reuse questions this chapter restates as OQ-HITL-1.
-- `docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md` — Layer 1 Orchestrator/Observability status, consistent with this chapter's CONDUCTOR/SHIELD framing.
-- Chapter 4 (Platform Architecture — Product View, `[TODO]`) will describe CONDUCTOR, SHIELD, and the agent directory as platform-layer components; it should reference this chapter's gate catalog and audit requirements rather than redefining them.
-- Chapter 8 (Disease Intelligence — Diabetes, `[TODO]`) inherits every gate in §5.2 unchanged and must resolve OQ-HITL-1 before finalizing its Insulin/GLP-1 requirements.
-
----
-
-## 6. Chapter 4 — Platform Architecture (Product View) `[DRAFTED]`
+## 5. Chapter 4 — Platform Architecture (Product View) `[DRAFTED]`
 
 ### 4.0 Purpose of this chapter
 
@@ -816,9 +632,195 @@ This chapter does not decide, and this Volume does not need to decide, the follo
 - `docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md` — the authoritative exists/partial/missing status this chapter's §4.2 table is built against.
 - `docs/ADR_TECH_STACK_MODERNIZATION.md` — the authoritative Keep/Add-later/Avoid-now stack decisions this chapter defers to throughout (§4.2, §4.9).
 - `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` — the module boundary and composite-integration design this chapter's §4.3.3/§4.8 elevate into product-architecture requirements.
-- Chapter 6 (Core Platform Capabilities, `[TODO]`) will take Identity/Consent/Interop/Knowledge Fabric (§4.2's Layer 1 rows, §4.4) to full requirements depth.
-- Chapter 7 (Universal Agent Platform, `[TODO]`) will take the 12-agent directory (§4.3.2, FR-ARC-013) to full requirements depth.
-- Chapter 8 (Disease Intelligence — Diabetes, `[TODO]`) will take §4.3.3/§4.8 to full requirements depth, resolving OQ-ARC-1 and OQ-ARC-3 as part of doing so.
+- Chapter 6 (Core Platform Capabilities, `[DRAFTED]`) takes Identity/Consent/Interop/Knowledge Fabric (§4.2's Layer 1 rows, §4.4) to full requirements depth.
+- Chapter 7 (Universal Agent Platform, `[DRAFTED]`) takes the 12-agent directory (§4.3.2, FR-ARC-013) to full requirements depth.
+- Chapter 8 (Disease Intelligence — Diabetes, `[DRAFTED]`) takes §4.3.3/§4.8 to full requirements depth, resolving OQ-ARC-1 and OQ-ARC-3 as part of doing so.
+
+---
+
+## 6. Chapter 5 — Clinical Safety & Human Oversight (HITL) `[DRAFTED]`
+
+### 5.0 Purpose of clinical safety in Aksh
+
+Aksh Health is an intelligence layer, not an autonomous clinician (Chapter 1, §1.7). Every capability this platform ships — general clinical intake, medication safety, risk scoring, care coordination, and each disease module — produces a **draft**, never a decision. This chapter defines the mechanism that makes that true in practice, not just in prose: the gate catalog a draft must pass through, who is authorized to clear each gate, what is recorded when they do, and what the platform must fail-safe on when something goes wrong (a timeout, an offline dependency, a conflicting edit, an audit-write failure).
+
+This chapter is not aspirational. Every gate, status, and honesty field described below is grounded in code that exists today (`lib/human-gates.ts`, `lib/clinical-spine/orchestrate.ts`, `lib/clinical-spine/safety-route.ts`, `lib/clinical-spine/queue-decision.ts`, `lib/clinical-spine/outcomes-loop.ts`, `lib/repositories/shield-audit-repository.ts`, `lib/agents/llm-guardian.ts`). Where the current implementation falls short of the target this chapter states, §5.8 and §5.9 say so explicitly rather than describing the gap as already closed.
+
+### 5.1 Mandatory HITL principles
+
+These restate and operationalize Chapter 1's BO-3/BO-4/BO-5 and NO-1/NO-2/NO-4/NO-5/NO-7 as binding product behavior, not aspiration.
+
+- **FR-HITL-001.** The platform shall treat every clinical-facing AI output (SYNTHESIS SOAP/coding drafts, GUARDIAN interaction/allergy flags, HORIZON risk drafts, PATHWAY referral drafts, NEXUS correlation drafts, and any Diabetes-module contribution to these) as a draft with exactly three possible dispositions at the individual-item level: **Accept**, **Edit**, or **Reject** — never an implicit fourth state of "already applied."
+- **FR-HITL-002.** The platform shall require an authenticated, role-eligible human actor (per Chapter 3's persona HITL responsibilities) to record the disposition in FR-HITL-001 before a draft can be staged (BRIDGE, sim-only) or referenced as a finalized clinical position anywhere in the product.
+- **FR-HITL-003.** The platform shall never present a case, item, or draft as "complete" or export-ready while a mandatory case-level human gate (§5.2) remains in a `required`/open status.
+- **FR-HITL-004.** The platform shall record who made a disposition, when, and — for Reject and Override — why, as a condition of accepting the disposition at all. A disposition without an actor identity or timestamp shall be rejected by the system, not silently defaulted.
+- **FR-HITL-005.** The platform shall route every clinical-facing draft through exactly one deterministic orchestrator (CONDUCTOR, `lib/clinical-spine/orchestrate.ts`). No disease module, agent, or future capability shall introduce a second orchestration path that could reach a clinician-facing surface without passing through the same gate infrastructure (restates NO-8, Chapter 1).
+- **FR-HITL-006.** The platform shall attach the same literal honesty fields to every orchestration result and persist them into the audit trail unchanged: `ehrWrite:false`, `hitlRequired:true`, `physiologicalTwin:false`, `autoRetrain:false`, `liveEmis:false`. These shall be typed fields checked by the codebase, not comments or documentation claims.
+
+> **AC-HITL-006-1.** Given any call to `runClinicalSpineOrchestrate`, when the result is returned, then `ehrWrite`, `physiologicalTwin`, `autoRetrain`, and `liveEmis` shall each be the literal value `false`, and `hitlRequired` shall be the literal value `true`, matching `ClinicalSpineOrchestrateResult`.
+
+- **FR-HITL-007.** The platform shall treat a twin/simulation output that does not honestly declare `physiologicalTwin:false` and `simulationMode:"synthetic_rules"` as a defect to be blocked before release, not shipped with a caveat — per the existing runtime check in `runClinicalSpineOrchestrate` (`throw new Error("Twin honesty check failed...")`).
+
+### 5.2 Gate catalog
+
+The platform operates HITL at **two layers**, and this Volume keeps them distinct because the code does:
+
+1. **Item-level disposition** — Accept / Edit / Reject on each individual agent draft (a SOAP note, a GUARDIAN flag, a HORIZON score, a referral draft) in the review queue. This is the base primitive (`lib/clinical-spine/queue-decision.ts`).
+2. **Case-level human gates** — three named gates (`HumanGateId`) that must be explicitly confirmed or marked not-applicable before a *case* (not just one item) can be considered finalization-ready (`lib/human-gates.ts`).
+
+#### 5.2.1 Item-level disposition gate (all clinical drafts)
+
+| | |
+| --- | --- |
+| **Purpose** | The universal HITL checkpoint every clinical-facing AI output must pass through before it can be staged or treated as final. |
+| **Who may act** | The accountable clinical persona for that draft type: GP for SOAP/coding/risk/referral drafts; Clinical Pharmacist for medication-review/interaction drafts; Nurse for observation/handover drafts (Chapter 3, §3.2). Non-clinical personas (`practice-manager`, `ics-lead`, `hospital-executive`, `researcher`) are barred (FR-PER-009, Chapter 3). |
+| **Allowed decisions** | `accept`, `edit`, `reject` (`LearningDecision` / `ReviewQueueItemStatus`). |
+| **On Accept** | Item status → `ACCEPTED`. A learning event is recorded (`recordLearningEvent`, dual-written to SHIELD). If the accepted item is a clinical draft eligible for a follow-on care-plan, a health-plan draft may be offered (`createHealthPlanDraft`) — itself HITL-gated and `ehrWrite:false`. BRIDGE may stage the accepted content (sim-only, `liveEmis:false`). |
+| **On Edit** | Item status remains `DRAFT` but `decidedBy`/content/timestamp change; a learning event with `decision:"edit"` is recorded. Editing is not a lesser action than Accept for audit purposes — it is recorded with the same rigor. |
+| **On Reject** | Item status → `REJECTED`; a learning event with `decision:"reject"` and a mandatory `rejectionReason` is recorded. A rejected draft is never staged and never silently retried without new input. |
+| **Audit requirements** | Every disposition writes a SHIELD audit event (dual-write, `shieldDualWrite:true`) and a learning event in the same operation (`recordSpineQueueDecisions`) — the two shall never be allowed to diverge (one without the other). |
+
+#### 5.2.2 Case-level gate: `red_flag_escalation`
+
+| | |
+| --- | --- |
+| **Purpose** | Confirms whether an urgent escalation, same-day review, or safety-netting action is required, when synthetic source evidence contains a red-flag pattern (e.g. fever with wheeze/breathlessness). |
+| **Who may act** | GP (primary); Nurse may raise/observe but the confirming decision is a GP/clinician-accountable action per Chapter 3. |
+| **Allowed decisions** | `confirmed` (escalation reviewed and actioned/dismissed with a note) or `not_applicable` (no red-flag evidence present — system-derived, reviewer-confirmable). |
+| **On Accept (confirmed)** | Gate status → `completed`; decision persisted (`HumanGateDecision`) with `decidedAt`/`decidedBy`/optional `note`. |
+| **On Reject** | There is no "reject" for this gate type — a red-flag signal cannot be dismissed without a recorded rationale; the only closing states are `confirmed` (with note) or `not_applicable` when no evidence exists. A case shall not silently drop a `required` red-flag gate. |
+| **Audit requirements** | Gate status transition is part of the case's persisted state and shall be included in any case-level SHIELD audit summary; the gate's `reason` and `evidence[]` fields must remain traceable to the safety flags that triggered `required` status. |
+
+#### 5.2.3 Case-level gate: `referral_pathway`
+
+| | |
+| --- | --- |
+| **Purpose** | Confirms whether a case should stay in primary-care review, be referred, or take another pathway action, when escalation/urgent-language/respiratory evidence suggests a referral may be needed. |
+| **Who may act** | GP; PATHWAY agent produces the referral *draft*, never the decision. |
+| **Allowed decisions** | `confirmed` or `not_applicable`. |
+| **On Accept (confirmed)** | Gate → `completed`; if a referral is confirmed, PATHWAY's referral draft is what may be staged (sim-only) — the draft itself was never auto-sent. |
+| **On Reject** | Same constraint as §5.2.2 — no bare "reject"; the reviewer records `not_applicable` with rationale if no referral/pathway action is needed. |
+| **Audit requirements** | Same pattern as §5.2.2. This is also the gate the Diabetes spec's Complication Intelligence area (Chapter 8, when drafted) reuses for retinopathy/CKD/cardiovascular referral triggers — no new gate type is introduced for that purpose (`docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`). |
+
+#### 5.2.4 Case-level gate: `medication_decision`
+
+| | |
+| --- | --- |
+| **Purpose** | Confirms, edits, rejects, or overrides a medication-related decision when GUARDIAN safety flags (allergy, intolerance, DDI, low-confidence extraction) or any medication draft are present. |
+| **Who may act** | Clinical Pharmacist (primary for interaction/allergy review); GP (co-accountable, particularly for prescribing-adjacent decisions). |
+| **Allowed decisions** | `confirmed` or `not_applicable`; the reviewer action text explicitly allows "confirm, edit, reject, or override... with a documented rationale" at the underlying item level, funneled into this case-level gate once resolved. |
+| **On Accept (confirmed)** | Gate → `completed`. This is also the gate the Diabetes spec's Insulin and GLP-1 Intelligence areas (Chapter 8) are provisionally mapped to reuse for dose-adjacent discussions — confirmed as the default in the spec but explicitly flagged there as needing clinical-lead confirmation on whether a dedicated gate type (e.g. `insulin_dose_confirmation`) is warranted instead (see OQ-HITL-1, §5.10). |
+| **On Reject** | Same "no bare reject" constraint — an override must carry a documented rationale (`note`) rather than a silent dismissal. |
+| **Audit requirements** | Same as §5.2.2/§5.2.3; additionally, per NO-2 (Chapter 1), a `medication_decision` confirmation shall never itself constitute an executable dose or prescription change — it records a clinical judgment on the draft, not a prescribing transaction. |
+
+**FR-HITL-008.** A case shall not be treated as finalization-ready (`FinalizationState` ≠ `blocked`) while any case-level gate in §5.2.2–§5.2.4 remains in `required` status. A `warn`-level state (recommended but not mandatory gate open) may proceed with an explicit acknowledgement; a `blocked` state shall not.
+
+> **AC-HITL-008-1.** Given a case with the `red_flag_escalation` gate at `required` status and no recorded decision, when a reviewer attempts to export or mark the case complete, then the platform shall block the action and surface the open gate as the reason.
+> **AC-HITL-008-2.** Given the same case after the reviewer records a `confirmed` decision with a note, when the export/complete action is retried, then the platform shall allow it (assuming no other blocking condition).
+
+### 5.3 What may never be autonomous
+
+Restated here in HITL-specific, testable form (Chapter 1 §1.4 states these as platform-wide Non-Objectives; this section is their clinical-safety-mechanism instantiation):
+
+- **FR-HITL-009.** The platform shall never transition a queue item to `ACCEPTED` or a case-level gate to `completed` without a recorded human actor identity (restates NO-1).
+- **FR-HITL-010.** The platform shall never generate or apply an executable medication dose change, prescription, or EHR write as a side effect of any agent output, gate confirmation, or governed evaluation (restates NO-2, NO-4). The Insulin/GLP-1 Diabetes-module areas (Chapter 8) are explicitly bound by this at the module level, not just the platform level.
+- **FR-HITL-011.** The platform shall never trigger a model, prompt, or scoring-rule version change as a byproduct of learning-event volume, outcome data, or SHIELD audit accumulation, absent the full G-ML-1/2/3 signed sequence (restates NO-5; mechanism detailed in §5.7).
+- **FR-HITL-012.** The platform shall never auto-resolve a `required` case-level gate to `completed` based on elapsed time, queue pressure, or any heuristic — a gate left open shall stay open (and shall keep the case out of a finalization-ready state per FR-HITL-008) until a human actor decides it.
+- **FR-HITL-013.** The platform shall never allow a non-accountable persona (per Chapter 3, e.g. `practice-manager`) to clear any gate in §5.2, even when acting as an "admin" convenience, and even if the acting user is otherwise a legitimate operations lead for that practice.
+
+### 5.4 SHIELD audit trail requirements
+
+SHIELD is the platform's single audit system of record (Chapter 1, NO-8). Its current mechanism, honestly stated:
+
+- **How it works today.** Each SHIELD event is hashed (`sha256` over `id`, `recordedAt`, `prevEventId`, `action`, `actor`, `label`, `detail`, `caseId`, `queueItemId`, `practiceId`, `agentLabel`, `resourceRef`, `payload`) and stores the immediately preceding event's id as `prevEventId` alongside its own `contentHash` — a hash-linked chain, one link per event, in Postgres (`aksh.shield_audit_events`).
+- **FR-HITL-014.** The platform shall record a SHIELD audit event for every case-level gate decision, every item-level disposition (Accept/Edit/Reject), every continuous-learning outcome capture, and every governed evaluation submission — with no clinical-facing decision type exempted.
+- **FR-HITL-015.** Every SHIELD audit event shall be append-only. The platform shall never expose an update or delete path for a persisted SHIELD event (consistent with `docs/CONTINUOUS_LEARNING.md`'s "No PUT/PATCH/DELETE exposed" invariant).
+- **FR-HITL-016.** Every SHIELD audit event shall carry a content hash computed over its own fields plus the previous event's id, such that altering any historical event's content would break the hash chain from that point forward and be detectable.
+- **FR-HITL-017.** SHIELD audit read access shall be scoped by persona and tenant exactly as clinical-record access is (Chapter 3, §3.6): a practice may read its own audit trail; cross-practice audit reads shall be denied by the same tenant-isolation mechanism.
+
+**Status update (B1, closed for the review-queue/learning/outcome paths — see `docs/PHASED_BUILD_PLAN.md` B1):** the best-effort gap described below is closed for the paths FR-HITL-014 actually requires audit completeness on — item-level Accept/Edit/Reject (`queue-decision.ts`), continuous-learning outcome capture, and governed-evaluation submission (`outcomes-loop.ts`). `persistShieldAuditEvent` now returns a discriminated `{ persisted: true, row }` / `{ persisted: false, row: null, reason }` result instead of a `null` that was indistinguishable from success. Callers on these paths propagate `shieldAuditWriteFailed`/`shieldAuditWriteReason` to the API response and reviewer UI (a dismissible "audit write degraded — retry" banner, plus `POST /api/clinical-spine/shield-audit-retry`). Chosen remediation was **(a) fail-visible**, not (b) a durable outbox: the clinical action itself is never blocked or hard-failed by an audit-write failure — it still completes and returns 200 — only the honesty of what's reported back changes. This is *visibly degraded when it fails*, not "guaranteed durable"; no stronger durability claim is made. **Residual gap, not closed by B1:** the research-evaluation export and federated-research-job paths (EC-RES-4, §13) still call `persistShieldAuditEvent` fire-and-forget (`void persistShieldAuditEvent(...)`) and do not yet check `persisted` — consistent with EC-RES-4/OQ-RES-7's own text, which defers a research-specific fix to a future pass rather than claiming one here.
+
+**Original honest current-state gap (binding — must be resolved before any pilot milestone, not before this chapter can be marked DRAFTED), preserved for history:** `persistShieldAuditEvent` was explicitly a **best-effort** write — if the Postgres write failed, the function caught the error, logged it to the server console, and returned `null` "never throws into clinical UI paths." This meant a clinical Accept/Edit/Reject could succeed in the application even if its corresponding SHIELD audit write silently failed. This was the opposite of what FR-HITL-014/FR-HITL-015 require as a target state and was recorded as **OQ-HITL-2** (§5.10) rather than papered over — a production/pilot posture needed either (a) a hard failure on the clinical action if the audit write fails, or (b) a durable retry/outbox mechanism that guarantees eventual consistency with an alerting path, decided by Clinical Safety + Engineering. (a) was the design chosen, per the status update above.
+
+- **Retention.** No retention or deletion policy for SHIELD events currently exists in code or documentation reviewed for this chapter. This is **OQ-HITL-3** (§5.10), not a stated requirement, because a retention period is a clinical-governance and data-protection decision, not an engineering default.
+
+### 5.5 Safety routing & escalation
+
+- **FR-HITL-018.** The platform shall route every case, after agent orchestration, into exactly one of four safety routes (`SafetyRoute`): `low_risk_coaching`, `clinical_review_queue`, `urgent_flag`, or `request_more_data` — never an undefined or absent route.
+- **FR-HITL-019.** The platform shall assign `urgent_flag` whenever GUARDIAN's `overallStatus` is `red` or the orchestration's `queuePriority` is `Urgent`, and shall reorder the review queue so GUARDIAN is reviewed first on that route (`reviewOrder`, `resolveReviewOrder`).
+- **FR-HITL-020.** The platform shall assign `clinical_review_queue` (not `low_risk_coaching`) whenever GUARDIAN is `amber` or HORIZON's risk band is `High`/`VeryHigh`, so that any elevated — not only maximal — risk signal reaches a clinician rather than the patient-facing coaching surface.
+- **FR-HITL-021.** The platform shall assign `request_more_data` whenever ingested modality count falls below the minimum completeness threshold (`max(3, floor(expectedModalities * 0.5))`), rather than generating a coaching or clinical draft from insufficient context.
+- **FR-HITL-022.** Coaching-surface content shall be gated by `coachingAllowedForRoute` and shall never be shown to a patient when the route is `clinical_review_queue`, `urgent_flag`, or `request_more_data` — a paused/blocked coaching surface, with a route-appropriate patient message, is the required behavior, not silent coaching continuation.
+
+> **AC-HITL-019-1.** Given GUARDIAN returns `overallStatus:"red"` for a case, when the safety route is resolved, then the result shall be `urgent_flag` and the review order shall place GUARDIAN before SYNTHESIS/HORIZON/NEXUS.
+> **AC-HITL-022-1.** Given a case routed to `urgent_flag`, when the patient-companion surface renders, then it shall show the `urgent_flag` patient message ("contact your care team... coaching is paused") and shall not render any coaching draft.
+
+### 5.6 Demo vs. live safety posture
+
+- **FR-HITL-023.** The platform shall keep `liveEmis:false` and `liveWriteBack:false` as hard, code-enforced values in every environment until a separately governed decision changes them (restates NO-4). No feature shipped under this Volume shall carry an environment variable or configuration path that flips this default silently.
+- **FR-HITL-024.** The platform shall never claim, in code-derived output or documentation, a signed DPIA, signed CSO Gate 2, signed DCB0129, signed MHRA classification, or a named/assigned CSO unless that specific fact is true — restates NO-6, and is enforced today as literal `false` fields (`signedDpia`, `signedCsoGate2`, `signedDcb0129`, `signedMhra`, `namedCsoAssigned` in `SPINE_PARTNER_HONESTY`) that this chapter requires stay `false` until each is genuinely true, updated one at a time, not as a bundle.
+- **FR-HITL-025.** When a live data dependency (e.g. Neo4j) is unreachable, the platform shall fall back to a clearly labeled mock/demo data mode and shall never present mock data under a "live" banner. Conversely, when genuinely live (Neo4j-backed) data is shown, the platform shall label it as such while still disclosing "still synthetic rehearsal patients, not a live NHS feed" (per `Neo4jMockModeBanner`).
+- **FR-HITL-026.** All patient data used in HITL-gated workflows shall be synthetic or explicitly pilot-consented (restates NS-4, Chapter 2) — this chapter does not open, and cannot open on its own, a path to real patient data.
+
+### 5.7 Continuous learning safety boundary
+
+- **FR-HITL-027.** The platform shall log every HITL care action (an Accept/Edit/Reject that produces a clinically meaningful decision) as a learning event, and every eventual outcome as an **append-only** linked event (`linkLearningOutcome`) — never a mutation of the original event.
+- **FR-HITL-028.** The platform shall never trigger a model or scoring-rule change from a governed evaluation unless all three gates are signed: **G-ML-1** (Engineering lead — eval harness delta, no HITL/EHR invariant regression), **G-ML-2** (Clinical Safety Officer — hazard log delta, residual risk note), **G-ML-3** (Release authority/pilot sponsor — explicit written approval of the version string to promote). This is enforced today by `assertGovernedEvaluationAllowed`, which blocks a `propose_model_update` action unless `allGovernedGatesSigned` is true.
+- **FR-HITL-029.** `autoRetrainTriggered` and `modelUpdated` shall remain literal `false` on every governed-evaluation result and outcomes-loop status object, regardless of proposed action, until a human-operated release process (per `docs/GOVERNED_MODEL_RELEASE_SOP.md`) manually bumps a version string outside of this loop entirely. The loop itself has no code path that can flip either field to `true`.
+- **FR-HITL-030.** A `propose_model_update` submission without all three gates signed shall be rejected with an explicit `blockedReason`, not silently downgraded to a different, unsigned action.
+
+> **AC-HITL-028-1.** Given a `submitGovernedEvaluation` call with `proposedAction:"propose_model_update"` and only G-ML-1 and G-ML-2 signed, when the evaluation is submitted, then the platform shall return `accepted:false` with `blockedReason` citing the missing G-ML-3 signature, and no evaluation record with `status:"approved_for_manual_release"` shall be created.
+> **AC-HITL-029-1.** Given any governed evaluation outcome, when the result is inspected, then `autoRetrainTriggered` shall be `false` and `modelUpdated` shall be `false`, with no code path in the reviewed modules capable of setting either to `true`.
+
+### 5.8 Edge cases & failure modes
+
+- **FR-HITL-031 (Agent timeout).** If an individual agent call exceeds its timeout (default 8s per agent, 30s overall budget, `agentTimeoutMs`/`overallTimeoutMs`), the platform shall fail the orchestration with an explicit error rather than returning a partial or fabricated result for the missing agent. The case shall remain in its prior state — no partially-generated draft shall be silently presented to a reviewer as complete.
+- **FR-HITL-032 (Missing independent evidence).** If any agent's output fails the independent-evidence check (`assertSharedContext`/evidence collection — "Independent evidence missing for: ..."), the platform shall throw and refuse to return an orchestration result, rather than returning a draft with an unsubstantiated agent output.
+- **FR-HITL-033 (Neo4j / graph dependency offline).** If the knowledge-graph dependency is unreachable, the platform shall fall back to labeled mock/demo data (§5.6, FR-HITL-025) for any HORIZON/GUARDIAN/ICS view that depends on it, and shall not silently degrade to an empty or default-risk result presented as if it were a real assessment.
+- **FR-HITL-034 (Conflicting concurrent edits).** If two reviewers attempt to disposition the same queue item concurrently, the platform shall detect and surface the conflict (e.g. a second write observing a state change since the first reviewer's read) rather than silently accepting a last-write-wins overwrite that discards one reviewer's decision without a record. **Current-state note:** the reviewed queue-decision code (`diffQueueDecisions`, `recordSpineQueueDecisions`) does not implement explicit optimistic-concurrency conflict detection today; this is recorded as **OQ-HITL-4** (§5.10), not claimed as already solved.
+- **FR-HITL-035 (SHIELD audit write failure).** As stated in §5.4's status update: closed (B1) for Accept/Edit/Reject, outcome capture, and governed evaluation — an audit write failure no longer blocks the clinical action, but it is also no longer indistinguishable from success; the failure is surfaced via `shieldAuditWriteFailed` to the API response and reviewer UI, with a retry path. **Not yet closed** for the research-evaluation-export and federated-research-job paths (EC-RES-4, §13) — tracked as **OQ-HITL-2** for that residual scope only.
+- **FR-HITL-036 (Session/role revoked mid-decision).** If a user's role or session is revoked between loading a case and submitting a disposition, the platform shall re-validate authorization at submission time (server-side, per FR-PER-005/FR-PER-015, Chapter 3) and reject a disposition from a since-invalidated session rather than honoring a stale client-held permission.
+- **FR-HITL-037 (Gate left open across a session/case handoff).** If a case is handed off between reviewers (e.g. shift change) with a case-level gate still `required`, the platform shall preserve the open gate's status and evidence across the handoff — a new reviewer opening the case shall see the same `required` status and reason, not a reset or cleared gate.
+
+### 5.9 Acceptance criteria suites for key gates
+
+**Suite: `red_flag_escalation` gate (§5.2.2)**
+
+> **AC-HITL-RFE-1.** Given source evidence containing fever with wheeze/breathlessness and no prior gate decision, when `deriveHumanGates` runs, then the gate status shall be `required` and `mandatory:true`.
+> **AC-HITL-RFE-2.** Given the same case, when a GP records `{status:"confirmed", note:"Same-day review booked", decidedBy:"gp01"}`, then the gate status shall become `completed` and the decision shall be retrievable via `humanGateDecisions`.
+> **AC-HITL-RFE-3.** Given the gate is `required` and no decision has been recorded, when any export or finalization action is attempted, then it shall be blocked (FR-HITL-008/AC-HITL-008-1).
+> **AC-HITL-RFE-4.** Given no red-flag evidence is present, when `deriveHumanGates` runs, then the gate status shall be `clear`, and a decision of `not_applicable` may be pre-populated (`ensureHumanGateDecisionSnapshot`) without requiring active reviewer input.
+
+**Suite: `medication_decision` gate (§5.2.4)**
+
+> **AC-HITL-MED-1.** Given a GUARDIAN allergy or DDI flag is present, when `deriveHumanGates` runs, then the `medication_decision` gate status shall be `required`.
+> **AC-HITL-MED-2.** Given the pharmacist records a `confirmed` decision with a note documenting the clinical rationale, when the case is re-evaluated, then the gate shall be `completed` and the underlying medication draft shall remain unstaged until the corresponding item-level Accept also occurs (the case-level gate and the item-level disposition are both required, not substitutes for each other).
+> **AC-HITL-MED-3.** Given a medication_decision gate confirmation, when the resulting SHIELD audit event is inspected, then it shall never contain a payload implying an executable dose change (`ehrWrite:false` on the associated record).
+
+**Suite: GUARDIAN urgent routing (§5.5)**
+
+> **AC-HITL-URG-1.** Given GUARDIAN returns `overallStatus:"red"`, when `resolveSafetyRouteFromOrchestration` runs, then the route shall be `urgent_flag` regardless of HORIZON's risk band.
+> **AC-HITL-URG-2.** Given route `urgent_flag`, when the review order is computed, then GUARDIAN shall appear first in `reviewOrder`.
+
+### 5.10 Open questions for Clinical Safety Lead
+
+- **OQ-HITL-1.** Confirm whether Diabetes-module Insulin/GLP-1 dose-adjacent discussions (Chapter 8, when drafted) should route through the existing `medication_decision` gate as-is, or whether a new gate type (e.g. `insulin_dose_confirmation`) is clinically warranted — this is the same open question already flagged in `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` and is restated here because it is fundamentally a HITL-gate-catalog decision. **Owner:** Clinical Safety Lead.
+- **OQ-HITL-2.** ~~Confirm the required remediation for the SHIELD best-effort audit-write gap (§5.4)~~ — **closed by B1** for Accept/Edit/Reject, continuous-learning outcome capture, and governed evaluation: remediation (a) fail-visible was chosen (surface `shieldAuditWriteFailed` + retry, never hard-fail the clinical action). **Remains open** for the research-evaluation-export and federated-research-job paths (EC-RES-4, §13), which still use the old fire-and-forget call and were explicitly out of B1's scope. **Owner:** Clinical Safety Lead + Engineering.
+- **OQ-HITL-3.** Confirm the required SHIELD audit retention period (none is currently specified) and any regulatory minimum that should apply once real/pilot-consented data is in scope. **Owner:** Clinical Safety Lead + Compliance.
+- **OQ-HITL-4.** Confirm whether explicit optimistic-concurrency conflict detection on queue-item disposition (FR-HITL-034) is required before the next pilot milestone, or whether the current single-reviewer-per-case workflow assumption makes this a lower-priority hardening item. **Owner:** Clinical Safety Lead + Product.
+- **OQ-HITL-5.** Confirm who is authorized to mark a case-level gate `not_applicable` versus requiring it to always route to a named clinician for explicit `confirmed` status, particularly for `referral_pathway` in ambiguous cases. **Owner:** Clinical Safety Lead.
+- **OQ-HITL-6.** Confirm the intended behavior when `request_more_data` persists across multiple sessions for the same patient (e.g. a companion user who never completes enough self-report) — is there a maximum "stuck" duration after which a clinician should be proactively notified, and if so, is that itself a new gate or an operational alert outside the HITL gate catalog. **Owner:** Clinical Safety Lead + Product.
+
+### 5.11 Cross-references
+
+- Chapter 1 (§1.3 BO-3/BO-4/BO-5, §1.4 NO-1/NO-2/NO-4/NO-5/NO-6/NO-7/NO-8) — the platform-level commitments this chapter operationalizes into gates, audit mechanics, and testable AC.
+- Chapter 2 (§2.4 phasing model) — Track A/B and v0/v1/v2 framing this chapter's §5.6 stays consistent with.
+- Chapter 3 (§3.2 per-persona HITL responsibilities, §3.5 auth/authz, §3.6 edge cases) — who holds each gate's authority; this chapter defines what holding that authority requires them to do.
+- `docs/CONTINUOUS_LEARNING.md`, `docs/GOVERNED_MODEL_RELEASE_SOP.md` — the continuous-learning and release-gate mechanics this chapter's §5.7 elevates into product requirements without altering.
+- `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` — the Insulin/GLP-1/Complication gate-reuse questions this chapter restates as OQ-HITL-1.
+- `docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md` — Layer 1 Orchestrator/Observability status, consistent with this chapter's CONDUCTOR/SHIELD framing.
+- Chapter 4 (Platform Architecture — Product View, `[DRAFTED]`) describes CONDUCTOR, SHIELD, and the agent directory as platform-layer components; it references this chapter's gate catalog and audit requirements rather than redefining them.
+- Chapter 8 (Disease Intelligence — Diabetes, `[DRAFTED]`) inherits every gate in §5.2 unchanged and must resolve OQ-HITL-1 before finalizing its Insulin/GLP-1 requirements.
 
 ---
 
@@ -967,7 +969,7 @@ Requirements:
 - Chapter 5 (§5.4 SHIELD, §5.6 regulatory honesty fields, §5.7 continuous learning) — the audit and honesty mechanics this chapter's §6.1/§6.4/§6.5 apply to identity, interop, and Knowledge Fabric specifically.
 - `docs/ADR_TECH_STACK_MODERNIZATION.md` (Knowledge/terminology section, Qdrant/pgvector rows) — the authoritative stack-trigger decisions this chapter's §6.5 restates without re-litigating.
 - `docs/BUILD_INSTRUCTIONS_GAP.md` — referenced for the John Snow Labs NLP / terminology gap this chapter's §6.5 records honestly.
-- Chapter 7 (Universal Agent Platform, `[TODO]`) will depend on this chapter's Identity/Consent requirements being fixed, since an agent's output is only as trustworthy as the identity and consent context it was generated under.
+- Chapter 7 (Universal Agent Platform, `[DRAFTED]`) depends on this chapter's Identity/Consent requirements being fixed, since an agent's output is only as trustworthy as the identity and consent context it was generated under.
 
 ---
 
@@ -1278,7 +1280,7 @@ Restating Chapter 4 §4.3.3/§4.8 at the agent-integration-point level, using th
 - Chapter 5 (§5.1–§5.2 HITL gates, §5.4 SHIELD, §5.7 continuous learning, §5.9 change review) — the safety mechanics this chapter's orchestration contract (§7.3) and non-goals (§7.6) apply per agent.
 - Chapter 6 (§6.1 identity/tenant context every agent runs under, §6.5 Knowledge Fabric agents read from, FR-CORE-028/030) — the platform-capability context this chapter's GUARDIAN/HORIZON/Dr.Assist entries depend on.
 - `lib/agents.ts` (`AGENT_DIRECTORY`, `CLINICAL_AGENT_META`) — the authoritative agent-naming and phase source this chapter's catalog is built against.
-- Chapter 8 (Disease Intelligence — Diabetes, `[TODO]`) will take §7.4's integration shape to full depth, including resolving the actual v0 → v1 wiring (Chapter 4, OQ-ARC-1).
+- Chapter 8 (Disease Intelligence — Diabetes, `[DRAFTED]`) takes §7.4's integration shape to full depth, including resolving the actual v0 → v1 wiring (Chapter 4, OQ-ARC-1).
 
 ---
 
@@ -1309,11 +1311,11 @@ This restates the spec's phased-delivery plan as binding product requirements, c
 | Phase | Scope | Current status (code-grounded) |
 | --- | --- | --- |
 | **v0 — Stub types** | Typed signal/coaching shapes for all 9 areas; all honesty fields (`hitlRequired`, `ehrWrite: false`, `autoRetrain: false`, `physiologicalTwin: false` where relevant) as literal types; a minimal self-contained demo fixture; no wiring into HORIZON/GUARDIAN; no UI changes. | **Complete.** Every file listed in §8.2 exists with this exact shape; each signal builder returns an honest "insufficient data" / stub result rather than fabricating a value (verified in `glucose.ts`, `hba1c.ts`, `insulin.ts`, `glp1.ts`, `complications.ts`, `prevention.ts`). |
-| **v1 — Rules / demo signals** | Deterministic rule-based derivation for Glucose, HbA1c, Complications, Prevention; `CoachingDraft`-pattern extensions for Nutrition, Exercise, Behaviour; Insulin and GLP-1 as explanatory-only signals (no dose output at any phase); wiring into HORIZON's contributing factors and GUARDIAN's safety flags; SHIELD audit confirmed for both feed paths. | **Not started.** Every signal builder function is a typed stub returning `insufficient_data`/`null` placeholders; `buildDiabetesRiskContribution` (`index.ts`) is not called from `lib/clinical-spine/orchestrate.ts`, `lib/agents/llm-oracle.ts`, or `lib/agents/llm-guardian.ts` (restates Chapter 4 §4.3.3, Chapter 7 §7.4's honest current-state note). |
+| **v1 — Rules / demo signals** | Deterministic rule-based derivation for Glucose, HbA1c, Complications, Prevention; `CoachingDraft`-pattern extensions for Nutrition, Exercise, Behaviour; Insulin and GLP-1 as explanatory-only signals (no dose output at any phase); wiring into HORIZON's contributing factors and GUARDIAN's safety flags; SHIELD audit confirmed for both feed paths. | **Partially complete (`docs/PHASED_BUILD_PLAN.md` B3, 6 August 2026).** HbA1c, Complications, Prevention, and the Nutrition/Exercise/Behaviour coaching drafts now use real rule-based derivation (not stubs). Insulin/GLP-1 are real explanatory-only signals (hypo/side-effect-driven, still hard `null` dose/prescribing locks). `buildDiabetesRiskContribution` is wired into `lib/clinical-spine/orchestrate.ts` behind `ENABLE_DIABETES_MODULE` (default `false`) plus a diabetes-flagged-patient gate. Glucose Intelligence remains a v0-style honest `insufficient_data` stub — deliberately **not** advanced to v1, since `OQ-DIAB-1` (glucose modality schema) is still open; see updated `OQ-DIAB-1` entry below. Scenario + unit tests exist (`tests/clinical-spine-diabetes.test.ts`). |
 | **v2 — Models under governance** | Any statistical/ML model replacing a v1 rule (e.g. a real HbA1c trend predictor, a real hypo-risk classifier) ships only behind the full G-ML-1/2/3 gate sequence (Chapter 5, §5.7); real CGM/device ingestion considered only with a named clinical owner and signed consent/DPIA path; a real Diabetes Twin scoped as its own follow-on spec (Chapter 9). | **Not started; correctly out of scope for this Volume.** |
 
-- **FR-DIAB-007.** A phase shall not be presented as complete in product copy, demos, or investor materials unless its own exit criteria (per `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`'s "Phased delivery" section) are met — v0's exit criteria (types compile, one fixture patient has diabetes-shaped data, no runtime behaviour change elsewhere) are met today; v1's are not.
-- **FR-DIAB-008.** The v0 → v1 transition shall require, at minimum: (a) each signal builder replaced with real rule-based derivation for the areas the spec scopes for v1 (Glucose, HbA1c, Complications, Prevention, Nutrition, Exercise, Behaviour); (b) `buildDiabetesRiskContribution` wired into CONDUCTOR behind a feature flag (Chapter 4, FR-ARC-040 — proposed `ENABLE_DIABETES_MODULE`); (c) at least one scenario test proving a Diabetes-sourced HORIZON contribution and one proving a Diabetes-sourced GUARDIAN flag; (d) confirmed SHIELD audit events for both paths. This restates the spec's own v1 exit criteria as a numbered, checkable requirement.
+- **FR-DIAB-007.** A phase shall not be presented as complete in product copy, demos, or investor materials unless its own exit criteria (per `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md`'s "Phased delivery" section) are met — v0's exit criteria (types compile, one fixture patient has diabetes-shaped data, no runtime behaviour change elsewhere) are met today; v1's are met for every area **except** Glucose (explicitly deferred to v1.1, not silently claimed — see `OQ-DIAB-1`).
+- **FR-DIAB-008.** The v0 → v1 transition shall require, at minimum: (a) each signal builder replaced with real rule-based derivation for the areas the spec scopes for v1 (Glucose, HbA1c, Complications, Prevention, Nutrition, Exercise, Behaviour); (b) `buildDiabetesRiskContribution` wired into CONDUCTOR behind a feature flag (Chapter 4, FR-ARC-040 — proposed `ENABLE_DIABETES_MODULE`); (c) at least one scenario test proving a Diabetes-sourced HORIZON contribution and one proving a Diabetes-sourced GUARDIAN flag; (d) confirmed SHIELD audit events for both paths. **Status: (a) met for HbA1c/Complications/Prevention/Nutrition/Exercise/Behaviour, explicitly not met for Glucose pending `OQ-DIAB-1`; (b), (c), (d) all met** — `docs/PHASED_BUILD_PLAN.md` B3, `ENABLE_DIABETES_MODULE` flag (default `false`), `tests/clinical-spine-diabetes.test.ts`.
 - **FR-DIAB-009.** Insulin (#3) and GLP-1 (#4) shall remain explanatory-only signals with no dose/prescribing output at v1 — this is not a temporary v1 limitation to be lifted at v2; it is a permanent non-goal restated in §8.5.
 - **FR-DIAB-010.** The v1 → v2 transition for any given signal shall be evaluated and gated independently per signal — the module shall not require all 9 areas to reach v2 simultaneously; e.g. HbA1c trend modelling could reach v2 governance while Insulin remains a v1 rule-based explanatory signal indefinitely (since it has no v2 "smarter model" need beyond what governance already restricts).
 
@@ -1331,7 +1333,7 @@ This section specifies the product requirements for `buildDiabetesRiskContributi
 - **FR-DIAB-014.** The coordinator shall be a pure, synchronous, deterministic function with no AI Gateway call of its own — restating Chapter 4 FR-ARC-024's "a disease module does not perform its own AI Gateway calls" as a coordinator-level requirement. Any AI Gateway narrative generation the composite feeds into remains HORIZON's or GUARDIAN's own (existing) call, not a new one.
 - **FR-DIAB-015.** Once wired (v1, per FR-DIAB-008), the coordinator shall be invoked by CONDUCTOR as an additional data-gathering step feeding HORIZON/GUARDIAN inputs, in the same position existing Knowledge Graph signals occupy today — before the deterministic safety-route step, not as a parallel pipeline. Restates the spec's "Integration with CONDUCTOR and SHIELD" section and Chapter 4's FR-ARC-030 (one flow for every capability, no shortcuts).
 - **FR-DIAB-016.** Every diabetes-module output that reaches a clinician (a HORIZON contribution, a GUARDIAN flag, a referral trigger) shall be SHIELD-audited exactly like existing agent outputs — no new audit table, no new event schema (restates the spec verbatim and Chapter 4 FR-ARC-028). Coaching-only outputs (Nutrition/Exercise/Behaviour) that never leave the patient-companion surface shall still be audited on generation, following the existing posture for `NUTRITION`/`SLEEP` coaching drafts — they are not exempt from SHIELD simply because they don't reach the clinician queue.
-- **FR-DIAB-017.** The coordinator's behavior on a per-area derivation failure (e.g. an area throws or returns malformed data) is an **open question** (§8.9, OQ-DIAB-2) and is not yet decided in code or spec — this chapter does not invent a fail-open or fail-closed answer, only flags it.
+- **FR-DIAB-017.** The coordinator's behavior on a per-area derivation failure (e.g. an area throws or returns malformed data) **is now decided (`docs/PHASED_BUILD_PLAN.md` B3, resolving `OQ-DIAB-7`): fail-open, per-area.** A throwing/malformed area is degraded gracefully (safe fallback value), the failed area is recorded in a new `areaFailures: DiabetesModuleId[]` field on the composite result (also surfaced in the SHIELD audit payload for full visibility), and every other area's derivation continues unaffected — the composite never fails outright on a single area's error. See `lib/disease-modules/diabetes/index.ts`'s `safeBuildArea` helper.
 
 > **AC-DIAB-012-1.** Given the coordinator is called for a patient context, when it returns a result, then `horizonContributingFactors` shall contain only strings sourced from Glucose/HbA1c signal limitations (per the current v0 implementation) and `guardianSafetyFlags` shall contain only strings sourced from Insulin/GLP-1 signals — no coaching-draft content shall appear in either array.
 >
@@ -1598,13 +1600,13 @@ Full UI/screen specification is deferred to Chapter 18 (UI/Screen Definitions); 
 
 Each restates a spec "Open questions" item precisely, framed against this chapter's requirement IDs, so it is tracked as a decision this Volume is waiting on rather than re-litigated or silently resolved.
 
-- **OQ-DIAB-1.** Confirm whether CGM/glucose fields extend `wearableSampleSchema` or become a new `glucose` modality in `lib/precision-health/modalities.ts` (affects FR-DIAB-051's v1 data model). **Owner:** Clinical Lead + Engineering.
+- **OQ-DIAB-1.** Confirm whether CGM/glucose fields extend `wearableSampleSchema` or become a new `glucose` modality in `lib/precision-health/modalities.ts` (affects FR-DIAB-051's v1 data model). **Owner:** Clinical Lead + Engineering. **Status (`docs/PHASED_BUILD_PLAN.md` B3, 6 August 2026): still OPEN.** B3 explicitly did not proceed past this gate for Glucose — `glucose.ts` remains an honest `insufficient_data` stub (reports reading count received, never fabricates TIR/variability/patterns) rather than guessing the schema. Every other v1-scoped area (HbA1c, Complications, Prevention, coaching) does not depend on this decision and proceeded to real derivation. Targeted for v1.1 once decided.
 - **OQ-DIAB-2.** Confirm whether Insulin/GLP-1 decisions route through the existing `medication_decision` `HumanGateId`, or whether a new gate type (e.g. `insulin_dose_confirmation`) is clinically warranted (affects NO-DIAB-7). Adding a new `HumanGateId` is a `lib/types.ts` change and shall not be done without clinical sign-off. **Owner:** Clinical Safety Lead.
 - **OQ-DIAB-3.** Confirm acceptable UI language for HbA1c's trend-based estimate (FR-DIAB-057) so it cannot be read as a diagnostic prediction. **Owner:** Clinical Lead + Product Writing.
 - **OQ-DIAB-4.** Confirm which Complication flags (retinopathy vs. CKD vs. cardiovascular vs. others) should trigger a PATHWAY referral draft automatically (still HITL-gated) vs. requiring clinician-initiated referral only (affects FR-DIAB-043's `referral_indicated` threshold work). **Owner:** Clinical Safety Lead.
 - **OQ-DIAB-5.** Confirm whether diabetes-specific coaching (`NUTRITION_DIABETES`/`EXERCISE_DIABETES`/`BEHAVIOUR_DIABETES`) should extend the existing `CoachingAgentId` union in place, or remain distinct indefinitely (affects FR-DIAB-036/39/41; restates Chapter 4's OQ-ARC-3 verbatim — this is the same open question, not a second one). **Owner:** Product + Engineering.
 - **OQ-DIAB-6.** Confirm the specific self-report signal(s) (e.g. a diabetes distress screening tool) that should trigger Behaviour Scientist's non-acute escalation path (FR-DIAB-042) — this touches mental-health safety-netting and shall not be decided by engineering alone. **Owner:** Clinical Safety Lead + Mental Health Clinical Advisor.
-- **OQ-DIAB-7 (new in this chapter, not in the original spec list).** Confirm the coordinator's required behavior on a per-area derivation failure (§8.4, FR-DIAB-017) — fail the whole composite (consistent with Chapter 7's "fail the proof" pattern for agent orchestration) or degrade gracefully by omitting the failed area and flagging the omission. This mirrors Chapter 4's OQ-ARC-5 at the Diabetes-module level and should likely be resolved the same way for consistency. **Owner:** Clinical Safety Lead + Engineering.
+- **OQ-DIAB-7 (new in this chapter, not in the original spec list).** Confirm the coordinator's required behavior on a per-area derivation failure (§8.4, FR-DIAB-017) — fail the whole composite (consistent with Chapter 7's "fail the proof" pattern for agent orchestration) or degrade gracefully by omitting the failed area and flagging the omission. This mirrors Chapter 4's OQ-ARC-5 at the Diabetes-module level and should likely be resolved the same way for consistency. **Owner:** Clinical Safety Lead + Engineering. **Status (`docs/PHASED_BUILD_PLAN.md` B3, 6 August 2026): DECIDED — fail-open, per-area,** consistent with Chapter 4's OQ-ARC-5 resolution as anticipated. A per-area derivation failure degrades that area gracefully and is recorded in `areaFailures` (visible in the composite result and the SHIELD audit payload); it never fails the whole composite. See FR-DIAB-017 (updated) and `lib/disease-modules/diabetes/index.ts`'s `safeBuildArea` helper.
 
 ### 8.12 Cross-references
 
@@ -1616,7 +1618,7 @@ Each restates a spec "Open questions" item precisely, framed against this chapte
 - `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` — the authoritative clinical/product design this entire chapter is built against; every open question in §8.11 is restated, not reinvented, from this source.
 - `docs/GOVERNED_MODEL_RELEASE_SOP.md` — the G-ML-1/2/3 gate sequence any v1→v2 model swap (§8.3) must pass.
 - `docs/ADR_AKSH_INTELLIGENCE_PLATFORM_LAYER_MAP.md` — the Layer 3 (Disease Intelligence) and Layer 5 (Disease Digital Twins) status this chapter's phasing (§8.3) and Prevention Intelligence non-goal (NO-DIAB-1) are grounded against.
-- Chapter 9 (Digital Twin — Diabetes, `[TODO]`) will take the "real Diabetes Twin" boundary this chapter deliberately does not cross (FR-DIAB-046, NO-DIAB-1) to full requirements depth, once commissioned.
+- Chapter 9 (Digital Twin — Diabetes, `[DRAFTED]`) takes the "real Diabetes Twin" boundary this chapter deliberately does not cross (FR-DIAB-046, NO-DIAB-1) to full requirements depth, once commissioned.
 
 ---
 
@@ -2460,22 +2462,28 @@ The product vision frames continuous learning as a flywheel: **Patient → Data 
 
 **Purpose.** Close the loop from a clinician's — or, for self-reported observational outcomes, a patient's — HITL decision to what actually happened, without ever mutating the decision record itself.
 
-**Responsibilities.** Classify each care action's loop stage (`awaiting_outcome` / `outcome_linked` / `immediate_outcome`); accept an eventual-outcome capture from a named reporter role; compute a loop-completion ratio for operational visibility.
+**Responsibilities.** Classify each care action's loop stage (`awaiting_outcome` / `outcome_linked` / `immediate_outcome` / `no_action_required`); accept an eventual-outcome capture from a named reporter role; compute two distinct, separately-reported completion ratios for operational visibility — one honestly labeled as workload, one as verified real-world outcome capture (B2, closed 6 August 2026 — see completion note below and `docs/PHASED_BUILD_PLAN.md`).
 
 **Inputs.** `sourceEventId`; `outcomeKind` (`care_action_completed` / `care_action_deferred` / `adverse_event_none` / `adverse_event_suspected` / `follow_up_scheduled` / `unknown`); an optional outcome metric; `reporterRole` (`clinician` | `patient` | `admin`).
 
-**Outputs.** An `OutcomesLoopStatus` (counts, open actions, recently linked outcomes, loop-complete ratio); a `CaptureSpineOutcomeResult` per capture.
+**Outputs.** An `OutcomesLoopStatus` (counts, open actions, recently linked outcomes, `dispositionCompleteRatio`, `realOutcomeCaptureRatio`); a `CaptureSpineOutcomeResult` per capture.
 
 **Triggers.** `GET`/`POST /api/clinical-spine/outcomes`; a clinician confirming a follow-up, or a patient self-reporting an observational outcome tied to an earlier accepted draft.
 
-- **FR-LEARN-012.** The platform shall classify every non-link learning event into exactly one loop stage (`awaiting_outcome`, `outcome_linked`, `immediate_outcome`) based solely on whether a linked outcome event exists and what `outcomeKind` was recorded at creation — restating `classifyCareAction`'s existing logic as a product requirement.
+- **FR-LEARN-012.** The platform shall classify every non-link learning event into exactly one loop stage (`awaiting_outcome`, `outcome_linked`, `immediate_outcome`, `no_action_required`) based solely on whether a linked outcome event exists and what `outcomeKind` was recorded at creation — restating `classifyCareAction`'s existing logic as a product requirement. A Reject (`outcomeKind:"care_action_deferred"`) shall classify as `no_action_required`, distinct from `immediate_outcome` — a rejected draft has nothing to follow up on, but that is a disposition, not a human reporting what actually happened to the patient, and the two shall never share a loop-stage value (B2 fix; before B2 both were folded into `immediate_outcome`, per `VOLUME_I_DRAFT_AUDIT.md`'s own finding).
 - **FR-LEARN-013.** The platform shall accept an eventual-outcome capture from three named reporter roles (clinician, patient, admin) and shall record which one reported it, with a distinct audit note per role — a patient-reported outcome shall never be conflated with, or presented as, a clinician-confirmed one.
 - **FR-LEARN-014.** A care action with no linked outcome and no informative `outcomeKind` shall remain visibly `awaiting_outcome` indefinitely — the platform shall never auto-close, time out, or silently default it to a completed state (restates Chapter 5's FR-HITL-012 at the outcomes layer).
-- **FR-LEARN-015.** The platform shall compute and display a `loopCompleteRatio` (closed-or-immediate actions ÷ total actions), per patient or globally, as an operational transparency signal — restating the existing `buildOutcomesLoopStatus` computation, while stating plainly that this ratio is a workload/completeness signal, not a clinical-quality or model-performance metric, and shall never be presented as the latter on any dashboard.
+- **FR-LEARN-015.** The platform shall compute and display two distinct, separately-labeled ratios, per patient or globally, as operational transparency signals, and shall never blend them into one unlabeled number on any dashboard (B2 honesty fix; restates and supersedes the pre-B2 single blended `loopCompleteRatio`):
+  - **`dispositionCompleteRatio`** — every care action with any Accept/Edit/Reject disposition recorded (`loopStage !== "awaiting_outcome"`, including `no_action_required`) ÷ total actions. A workload/throughput signal — this is what the pre-B2 blended metric actually measured for Reject cases.
+  - **`realOutcomeCaptureRatio`** — only `outcome_linked` plus genuinely-reported `immediate_outcome` (excludes `no_action_required` and `awaiting_outcome`) ÷ total actions. A measurement-honesty signal: how often a human actually reported what happened. This ratio is expected to start low and stay low — outcome reporting is genuinely best-effort/self-serve today — and shall never be presented as "complete," "high," or as a clinical-quality or model-performance metric on any dashboard.
 
 > **AC-LEARN-012-1.** Given a learning event with `outcomeKind:"unknown"` and no linked outcome, when the outcomes-loop status is built, then that action's `loopStage` shall be `awaiting_outcome`.
 
+> **AC-LEARN-012-2.** Given a learning event with `outcomeKind:"care_action_deferred"` (Reject) and no linked outcome, when the outcomes-loop status is built, then that action's `loopStage` shall be `no_action_required`, never `immediate_outcome`.
+
 > **AC-LEARN-013-1.** Given a patient submits a self-reported eventual outcome, when the resulting event's audit note is inspected, then it shall read "Patient-reported outcome on clinical spine," distinctly from a clinician- or admin-reported one.
+
+> **AC-LEARN-015-1.** Given a cohort containing at least one Reject-driven (`no_action_required`) closure and at least one genuinely-linked outcome, when `dispositionCompleteRatio` and `realOutcomeCaptureRatio` are compared, then `realOutcomeCaptureRatio` shall be strictly less than `dispositionCompleteRatio`.
 
 ### 14.4 Validation & evaluation before any model/prompt change
 
@@ -2584,7 +2592,7 @@ Chapters 1–14 specified the platform layer by layer: who the actors are (Chapt
 
 This chapter opens Part E (Experience & Workflows). It is written, per the Table of Contents' own sizing note (§1), as one of the longer chapters in the Volume, because a journey is only useful at implementation depth if every step names its actor, its system, and — where clinical — its gate, rather than gesturing at the layer chapters in general terms.
 
-**What this chapter is not.** It is not a UI wireframe spec (Chapter 18, `[TODO]`) and it is not a business-rule catalogue (Chapter 16, `[TODO]`) — a journey here names *which* rule or gate applies at a step and cross-references the chapter that defines it in full; it does not restate the rule's own Given/When/Then in duplicate. It is also not a claim that every journey is fully wired end-to-end today: per this Volume's standing honesty discipline (§0.1, SC-7), each journey states plainly, step by step, which segments are supported by an existing, linked UI/API path today and which segments describe a target sequence for future work.
+**What this chapter is not.** It is not a UI wireframe spec (Chapter 18, `[DRAFTED]`) and it is not a business-rule catalogue (Chapter 16, `[DRAFTED]`) — a journey here names *which* rule or gate applies at a step and cross-references the chapter that defines it in full; it does not restate the rule's own Given/When/Then in duplicate. It is also not a claim that every journey is fully wired end-to-end today: per this Volume's standing honesty discipline (§0.1, SC-7), each journey states plainly, step by step, which segments are supported by an existing, linked UI/API path today and which segments describe a target sequence for future work.
 
 ### 15.1 Journey notation (binding for §15.2–§15.9)
 
@@ -2925,7 +2933,7 @@ These rules are not scoped to a single journey — they are invariants this chap
 - **EC-FLOW-2 (a journey spans a surface transition mid-decision).** Given a clinician begins Journey 1 or Journey 8 on `/dashboard/gp/patients/[id]` and completes it on `/cases/[id]` (or vice versa) without finishing every step on one surface, then the case's gate and disposition state shall reflect consistently on whichever surface the clinician resumes on — restating Chapter 12's EC-CLIN-1/FR-CLIN-014 at the cross-journey level; this chapter does not claim real-time sync exists, only that state must not silently diverge on refresh.
 - **EC-FLOW-3 (Journey 4's signals remain null indefinitely).** Given Chapter 8's v1 wiring has not landed by the time a reader attempts to exercise Journey 4 end-to-end, then Steps 1–3 shall produce no clinician-visible output, and this shall not be treated as a defect in this journey's specification — it restates Chapter 8 §8.3's own "not started" finding; this chapter's Journey 4 is validated against once wiring lands (FR-FLOW-017), not before.
 - **EC-FLOW-4 (a researcher's ethics-elevation preference is later revoked or expires).** Given a researcher's `dataAccessLevel` preference (Journey 6, Step 2) was elevated and is later reset to aggregate-only, then any evaluation or export action already completed under the prior elevation remains a valid, auditable historical record (restating Chapter 14's append-only learning-event principle at the research-governance layer) — only future actions are affected by the reset. This chapter does not specify a retroactive-revocation mechanism, which would be a data-deletion policy question outside this chapter's scope.
-- **EC-FLOW-5 (a demo-reset action is triggered mid-journey).** Given a Practice Manager/Admin triggers a demo-reset (Journey 7, Step 3) while another user's session has an in-progress, unsaved journey step (e.g. a GP mid-review on Journey 1), then the platform shall not silently discard the in-progress clinical disposition without a warning — restating the general principle that a demo-reset action is a destructive operation requiring the same care Chapter 5's concurrent-edit concern (FR-HITL-034) already requires for a stale-cache scenario, generalized to this new trigger. Exact UX handling is deferred to Chapter 18 (UI/Screen Definitions, `[TODO]`).
+- **EC-FLOW-5 (a demo-reset action is triggered mid-journey).** Given a Practice Manager/Admin triggers a demo-reset (Journey 7, Step 3) while another user's session has an in-progress, unsaved journey step (e.g. a GP mid-review on Journey 1), then the platform shall not silently discard the in-progress clinical disposition without a warning — restating the general principle that a demo-reset action is a destructive operation requiring the same care Chapter 5's concurrent-edit concern (FR-HITL-034) already requires for a stale-cache scenario, generalized to this new trigger. Exact UX handling is deferred to Chapter 18 (UI/Screen Definitions, `[DRAFTED]`).
 - **EC-FLOW-6 (a twin scenario is requested for a patient with an already-open `medication_decision` gate from an unrelated draft).** Given a patient's case already has an open `medication_decision` gate from a GUARDIAN interaction flag (unrelated to any twin scenario), when a GP separately requests the "stop insulin" twin scenario (Journey 8, Step 3b) for the same patient, then the platform shall not conflate the two pending gate instances into one — restating Chapter 5's per-trigger gate-instantiation model; this chapter does not specify whether the UI should visually distinguish the two `medication_decision` triggers, which is deferred to Chapter 18.
 
 ### 15.13 Open questions
@@ -2966,7 +2974,7 @@ Chapters 1–15 each stated their own business rules inline, in their own `NO-*`
 
 This chapter is that single place. It does not invent new rules. It **consolidates and indexes** the cross-cutting business rules already stated across Chapters 1–15 into one catalogue, assigning each a first formal `BR-<nnn>` id (per §0.6's numbering scheme) where one did not already exist, and cross-referencing every entry back to the `FR-*`/`NO-*`/`OQ-*` id(s) it restates rather than re-deriving them. A rule catalogued here that is later found to conflict with its home chapter is a **documentation defect to fix**, not a signal that the home chapter is wrong (§16.3).
 
-**What this chapter is not.** It is not a new source of requirements — every `BR-<nnn>` below traces to at least one existing `FR-*`/`NO-*` (or, for the small number of informally-stated rules this pass promotes to a first formal id, to the specific prose location cited). It is not a UI/screen spec (Chapter 18, `[TODO]`) or a data-contract spec (Chapter 17, `[DRAFTED]`) — a business rule here states *what shall or shall not happen*, not *what a screen looks like* or *what a field's shape is*. It does not re-derive Given/When/Then acceptance criteria per rule (each rule's home chapter already carries its own AC blocks); it references the home AC block instead of duplicating it.
+**What this chapter is not.** It is not a new source of requirements — every `BR-<nnn>` below traces to at least one existing `FR-*`/`NO-*` (or, for the small number of informally-stated rules this pass promotes to a first formal id, to the specific prose location cited). It is not a UI/screen spec (Chapter 18, `[DRAFTED]`) or a data-contract spec (Chapter 17, `[DRAFTED]`) — a business rule here states *what shall or shall not happen*, not *what a screen looks like* or *what a field's shape is*. It does not re-derive Given/When/Then acceptance criteria per rule (each rule's home chapter already carries its own AC blocks); it references the home AC block instead of duplicating it.
 
 ### 16.1 Top-priority hard constraints (quick reference)
 
@@ -3184,7 +3192,7 @@ Chapters 1–16 have each referenced product data by name — `ConsentGrant`, `L
 
 ### 17.1 Data classification scheme (sensitivity & retention tiers)
 
-Every entity in §17.2 is tagged with one of four tiers. The tiers are a product-level classification for reasoning about "how carefully must this be handled and for how long," not a DPIA or a specific retention-period schedule — the exact number of days/years per tier is explicitly left open (OQ-DATA-4) pending Compliance/DPO input, expected in a future Non-Functional Requirements or governance chapter (Chapter 19/22, both `[TODO]`).
+Every entity in §17.2 is tagged with one of four tiers. The tiers are a product-level classification for reasoning about "how carefully must this be handled and for how long," not a DPIA or a specific retention-period schedule — the exact number of days/years per tier is explicitly left open (OQ-DATA-4) pending Compliance/DPO input, expected in a future Non-Functional Requirements or governance chapter (Chapter 19/22, both `[DRAFTED]`).
 
 | Tier | Name | Description | Handling posture |
 | --- | --- | --- | --- |
@@ -4132,7 +4140,7 @@ Per this Volume's Precedence rule (§0.4) and Chapter 16's own conflict-resoluti
 | OQ-DIAB-4 | 8 | Confirm which Complication flags should auto-draft a PATHWAY referral (still HITL-gated) vs. clinician-initiated only | Clinical Safety Lead | FR-DIAB-043 `referral_indicated` threshold | HIGH | Open |
 | OQ-DIAB-5 | 8 | Confirm whether diabetes-specific coaching-agent ids extend `CoachingAgentId` (restates OQ-ARC-3) | Product + Engineering | FR-DIAB-036/39/41 | MEDIUM | Open |
 | OQ-DIAB-6 | 8 | Confirm the specific self-report signal(s) that trigger Behaviour Scientist's non-acute escalation path | Clinical Safety Lead + Mental Health Clinical Advisor | FR-DIAB-042 mental-health safety-netting | HIGH | Open |
-| OQ-DIAB-7 | 8 | Confirm the coordinator's behavior on a per-area derivation failure — fail the whole composite vs. degrade gracefully and flag the omission (mirrors OQ-ARC-5) | Clinical Safety Lead + Engineering | §8.4 FR-DIAB-017 | HIGH | Open |
+| OQ-DIAB-7 | 8 | Confirm the coordinator's behavior on a per-area derivation failure — fail the whole composite vs. degrade gracefully and flag the omission (mirrors OQ-ARC-5) | Clinical Safety Lead + Engineering | §8.4 FR-DIAB-017 | HIGH | **Decided (B3, 6 Aug 2026): fail-open, per-area — see `areaFailures`** |
 | OQ-TWIN-1 | 9 | Should the Diabetes scenario catalogue be a new file reusing `twin-simulation.ts` types, or should that file be parameterized instead | Engineering + Product | FR-TWIN-008 | MEDIUM | Open |
 | OQ-TWIN-2 | 9 | Should any Diabetes Twin scenario be patient-initiated self-service, or clinician-only until a safety review clears it | Clinical Safety Lead + Product | FR-TWIN-020/022/023/025/037 | HIGH | Open |
 | OQ-TWIN-3 | 9 | Does the G-ML-1/2/3 gate sequence need a simulation-specific addendum before Target Twin work begins | Clinical Safety Lead + ML Governance | FR-TWIN-015 | MEDIUM | Open |

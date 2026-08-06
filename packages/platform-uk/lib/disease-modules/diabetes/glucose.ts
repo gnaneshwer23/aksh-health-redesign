@@ -9,14 +9,18 @@ import { DIABETES_SIGNAL_HONESTY } from "./types";
  * on its own — hypoglycaemia flags are the responsibility of insulin.ts /
  * glp1.ts, which may combine glucose patterns with regimen data.
  *
- * v0: typed stub. Returns an honest "insufficient data" result — never
- * fabricates CGM/BGM patterns from nothing.
- * TODO(v1): implement real TIR / variability / pattern-flag derivation once
- * glucose readings have a confirmed data source (see types.ts
- * DiabetesGlucoseReading, spec §"Data sources", open question #1).
- * TODO(v1): wire buildGlucoseSignal() output into
- * lib/agents/llm-oracle.ts OracleDraft.contributingFactors behind a feature
- * flag, with a scenario test, before any production exposure.
+ * B3 status (checked against `docs/PHASED_BUILD_PLAN.md` B3's blocking
+ * decision gate): OQ-DIAB-1 (CGM/glucose modality schema — extend
+ * `wearableSampleSchema` vs. a new `glucose` modality in
+ * lib/precision-health/modalities.ts) is still OPEN — no clinical-lead
+ * decision has been recorded. Per the plan, this phase does not proceed past
+ * that gate for Glucose: this module stays an honest "insufficient data"
+ * stub and is NOT given real TIR/variability/pattern derivation in B3. It is
+ * still wired into the composite (`index.ts`) and into HORIZON via its
+ * `limitations` array — so the "no CGM data yet" state itself is visible to
+ * the clinician, rather than the module being silently absent — but it
+ * never fabricates a pattern from nothing. Re-open this file once OQ-DIAB-1
+ * is decided (targeted v1.1, see PHASED_BUILD_PLAN.md B3 completion note).
  */
 
 export type GlucosePatternFlag =

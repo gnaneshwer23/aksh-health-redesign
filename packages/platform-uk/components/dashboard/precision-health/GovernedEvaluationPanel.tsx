@@ -24,8 +24,12 @@ type LoopSummary = {
   careActionCount?: number;
   awaitingOutcomeCount?: number;
   outcomeLinkedCount?: number;
+  noActionRequiredCount?: number;
   evaluationReviewCount?: number;
-  loopCompleteRatio?: number;
+  /** Any Accept/Edit/Reject disposition recorded — workload signal, not a real-outcome measure. */
+  dispositionCompleteRatio?: number;
+  /** A human actually reported what happened — honesty signal, excludes Reject closures. */
+  realOutcomeCaptureRatio?: number;
   autoRetrain?: boolean;
 };
 
@@ -114,13 +118,18 @@ export function GovernedEvaluationPanel() {
         accepted?: boolean;
         autoRetrain?: boolean;
         modelUpdated?: boolean;
+        shieldAuditWriteFailed?: boolean;
       };
       if (!response.ok) {
         throw new Error(data.blockedReason ?? data.error ?? `HTTP ${response.status}`);
       }
       toast({
-        title: "Evaluation recorded",
-        description: `${data.message ?? "OK"} · autoRetrain:${String(data.autoRetrain ?? false)} · modelUpdated:${String(data.modelUpdated ?? false)}`
+        title: data.shieldAuditWriteFailed ? "Evaluation recorded — audit write degraded" : "Evaluation recorded",
+        description: `${data.message ?? "OK"} · autoRetrain:${String(data.autoRetrain ?? false)} · modelUpdated:${String(data.modelUpdated ?? false)}${
+          data.shieldAuditWriteFailed
+            ? " · SHIELD audit mirror failed for this write — retry from the admin SHIELD ledger."
+            : ""
+        }`
       });
       setRationale("");
       await load();
@@ -160,8 +169,10 @@ export function GovernedEvaluationPanel() {
           ) : (
             <>
               Loop: {loop?.careActionCount ?? 0} care actions · {loop?.awaitingOutcomeCount ?? 0}{" "}
-              awaiting · {loop?.outcomeLinkedCount ?? 0} linked · {loop?.evaluationReviewCount ?? 0}{" "}
-              evals · autoRetrain:{String(payload?.autoRetrain ?? false)}
+              awaiting · {loop?.outcomeLinkedCount ?? 0} linked · {loop?.noActionRequiredCount ?? 0}{" "}
+              no-action-required (rejected) · {loop?.evaluationReviewCount ?? 0} evals · real outcome
+              captured: {Math.round((loop?.realOutcomeCaptureRatio ?? 0) * 100)}% · autoRetrain:
+              {String(payload?.autoRetrain ?? false)}
             </>
           )}
         </div>

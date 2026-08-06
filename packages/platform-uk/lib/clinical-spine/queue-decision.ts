@@ -25,6 +25,10 @@ export type SpineDecisionResult = {
   healthPlanId: string | null;
   ehrWrite: false;
   autoRetrain: false;
+  /** True when the SHIELD durable audit mirror failed for at least one decision (OQ-HITL-2). */
+  shieldAuditWriteFailed: boolean;
+  /** Learning event ids whose SHIELD dual write failed — retryable via /api/clinical-spine/shield-audit-retry. */
+  failedShieldAuditLearningEventIds: string[];
 };
 
 const SCENARIO_COHORT: Record<string, string> = {
@@ -120,6 +124,7 @@ export async function recordSpineQueueDecisions(options: {
   const deltas = diffQueueDecisions(options.existing, options.next);
   const patientId = resolveSpinePatientId(options.next);
   const learningEventIds: string[] = [];
+  const failedShieldAuditLearningEventIds: string[] = [];
   let healthPlanId: string | null = null;
 
   for (const delta of deltas) {
@@ -132,7 +137,7 @@ export async function recordSpineQueueDecisions(options: {
     const predictionSummary =
       delta.item.summary || delta.item.title || delta.item.content?.slice(0, 200);
 
-    const { event } = await recordLearningEvent(
+    const { event, shieldAuditWriteFailed } = await recordLearningEvent(
       {
         patientId,
         caseId: options.next.id,
@@ -159,6 +164,9 @@ export async function recordSpineQueueDecisions(options: {
       { scopeKey: options.scopeKey, shieldDualWrite: true }
     );
     learningEventIds.push(event.id);
+    if (shieldAuditWriteFailed) {
+      failedShieldAuditLearningEventIds.push(event.id);
+    }
   }
 
   const accepted = deltas.some((d) => d.decision === "accept");
@@ -187,7 +195,9 @@ export async function recordSpineQueueDecisions(options: {
     learningEventIds,
     healthPlanId,
     ehrWrite: false,
-    autoRetrain: false
+    autoRetrain: false,
+    shieldAuditWriteFailed: failedShieldAuditLearningEventIds.length > 0,
+    failedShieldAuditLearningEventIds
   };
 }
 

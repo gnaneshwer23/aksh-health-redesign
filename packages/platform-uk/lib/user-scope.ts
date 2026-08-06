@@ -29,12 +29,23 @@ function createScopeKey() {
   return `usr_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 }
 
+const OPERATIONS_APP_ROLES = new Set(["operations_lead", "practice-manager", "ics-lead", "hospital-executive"]);
+const CLINICAL_APP_ROLES = new Set(["clinical_reviewer", "gp", "nurse", "clinical-pharmacist"]);
+
+/**
+ * Map a raw session/onboarding role string to a first-class `AppRole` (OQ-PER-1/OQ-PER-2).
+ * `patient` and `researcher` are scoped explicitly rather than falling through to
+ * `clinical_reviewer`; any unrecognized role denies by default via `"restricted"` instead of
+ * being silently promoted to a clinical/ops AppRole.
+ */
 export function mapSessionRoleToAppRole(role: string | null | undefined): AppRole {
-  if (role === "operations_lead") return "operations_lead";
-  if (role === "practice-manager" || role === "ics-lead" || role === "hospital-executive") {
-    return "operations_lead";
-  }
-  return "clinical_reviewer";
+  const normalized = role?.trim();
+  if (!normalized) return "restricted";
+  if (OPERATIONS_APP_ROLES.has(normalized)) return "operations_lead";
+  if (CLINICAL_APP_ROLES.has(normalized)) return "clinical_reviewer";
+  if (normalized === "patient") return "patient";
+  if (normalized === "researcher") return "researcher";
+  return "restricted";
 }
 
 export function resolveUserScope(request: Request) {

@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 import { SHIELD_AUDIT_EVENTS_SQL } from "../lib/db/schema-sql";
+import { persistShieldAuditEvent } from "../lib/repositories/shield-audit-repository";
+import { recordLearningEvent } from "../lib/repositories/learning-event-repository";
 
-function run() {
+function checkAppendOnlyContract() {
   const shieldRoutePath = path.join(process.cwd(), "app/api/audit/shield/route.ts");
   const source = fs.readFileSync(shieldRoutePath, "utf8");
 
@@ -26,4 +30,68 @@ function run() {
   console.log("SHIELD append-only API/schema contract passed.");
 }
 
-void run();
+/**
+ * B1 / OQ-HITL-2 hard-fail: a SHIELD durable-write failure must never be
+ * indistinguishable from success. This test env has no `DATABASE_URL`, so
+ * every `persistShieldAuditEvent` call below deterministically hits the
+ * "postgres not configured" failure path — exactly the scenario that used to
+ * be swallowed as a silent `console.error` + `return null`.
+ */
+async function checkShieldWriteFailureSurfacesToCaller() {
+  const directResult = await persistShieldAuditEvent({
+    action: "accept",
+    actor: "shield-hard-fail-test@akshhealth.com",
+    label: "SHIELD hard-fail test event",
+    category: "reviewer_decision"
+  });
+
+  assert.equal(
+    directResult.persisted,
+    false,
+    "persistShieldAuditEvent must report persisted:false, not silently look like a write"
+  );
+  if (!directResult.persisted) {
+    assert.equal(directResult.row, null);
+    assert.ok(directResult.reason, "A failed write must carry a non-empty reason for the caller/UI");
+  }
+
+  // Fail-visible propagation for a clinical Accept/Edit/Reject dual-write
+  // (queue-decision.ts's exact call pattern via recordLearningEvent).
+  const scopeKey = `shield_hard_fail_${Date.now()}`;
+  try {
+    const recorded = await recordLearningEvent(
+      {
+        agentLabel: "SHIELD_HARD_FAIL_TEST",
+        predictionId: `pred-${randomUUID()}`,
+        decision: "accept",
+        decisionActor: "shield-hard-fail-test@akshhealth.com",
+        outcomeKind: "unknown"
+      },
+      { scopeKey }
+    );
+
+    assert.equal(
+      recorded.shieldAuditWriteFailed,
+      true,
+      "OQ-HITL-2: a failed SHIELD dual-write must set shieldAuditWriteFailed:true, not report a clean success"
+    );
+    assert.ok(
+      recorded.shieldAuditWriteReason,
+      "A failed SHIELD dual-write must carry a reason the caller/UI can surface"
+    );
+  } finally {
+    await fsPromises.unlink(path.join(process.cwd(), "data", `learning-events.${scopeKey}.json`)).catch(() => {});
+  }
+
+  console.log("SHIELD hard-fail visibility checks passed (write failure surfaces, not swallowed).");
+}
+
+async function run() {
+  checkAppendOnlyContract();
+  await checkShieldWriteFailureSurfacesToCaller();
+}
+
+run().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

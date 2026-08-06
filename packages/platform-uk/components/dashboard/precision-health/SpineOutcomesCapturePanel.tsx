@@ -14,7 +14,7 @@ type CareAction = {
   predictionSummary?: string;
   decision: string;
   outcomeKind: string;
-  loopStage: "awaiting_outcome" | "outcome_linked" | "immediate_outcome";
+  loopStage: "awaiting_outcome" | "outcome_linked" | "immediate_outcome" | "no_action_required";
   recordedAt: string;
 };
 
@@ -22,8 +22,12 @@ type LoopStatus = {
   careActionCount?: number;
   awaitingOutcomeCount?: number;
   outcomeLinkedCount?: number;
+  noActionRequiredCount?: number;
   evaluationReviewCount?: number;
-  loopCompleteRatio?: number;
+  /** Any Accept/Edit/Reject disposition recorded — workload signal, not a real-outcome measure. */
+  dispositionCompleteRatio?: number;
+  /** A human actually reported what happened — honesty signal, excludes Reject closures. */
+  realOutcomeCaptureRatio?: number;
   openActions?: CareAction[];
   autoRetrain?: boolean;
   note?: string;
@@ -120,13 +124,18 @@ export function SpineOutcomesCapturePanel({
         message?: string;
         autoRetrain?: boolean;
         outcomeEventId?: string;
+        shieldAuditWriteFailed?: boolean;
       };
       if (!response.ok) {
         throw new Error(data.error ?? `HTTP ${response.status}`);
       }
       toast({
-        title: "Outcome linked",
-        description: `${data.message ?? "Append-only."} autoRetrain:${String(data.autoRetrain ?? false)}`
+        title: data.shieldAuditWriteFailed ? "Outcome linked — audit write degraded" : "Outcome linked",
+        description: `${data.message ?? "Append-only."} autoRetrain:${String(data.autoRetrain ?? false)}${
+          data.shieldAuditWriteFailed
+            ? " · SHIELD audit mirror failed for this write — retry from the admin SHIELD ledger."
+            : ""
+        }`
       });
       setSummary("");
       await load();
@@ -156,18 +165,35 @@ export function SpineOutcomesCapturePanel({
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-2">
         <div
-          className="rounded-md border border-border px-3 py-2 text-xs text-muted"
+          className="rounded-md border border-border px-3 py-2 text-xs text-muted space-y-1"
           data-testid="spine-outcomes-loop-status"
         >
           {loading && !status ? (
             "Loading loop status…"
           ) : (
             <>
-              Care actions: {status?.careActionCount ?? 0} · awaiting outcome:{" "}
-              {status?.awaitingOutcomeCount ?? 0} · linked: {status?.outcomeLinkedCount ?? 0} ·
-              eval reviews: {status?.evaluationReviewCount ?? 0} · complete ratio:{" "}
-              {Math.round((status?.loopCompleteRatio ?? 0) * 100)}% · autoRetrain:
-              {String(status?.autoRetrain ?? false)}
+              <p>
+                Care actions: {status?.careActionCount ?? 0} · awaiting outcome:{" "}
+                {status?.awaitingOutcomeCount ?? 0} · outcome linked:{" "}
+                {status?.outcomeLinkedCount ?? 0} · no action required (rejected):{" "}
+                {status?.noActionRequiredCount ?? 0} · eval reviews:{" "}
+                {status?.evaluationReviewCount ?? 0} · autoRetrain:
+                {String(status?.autoRetrain ?? false)}
+              </p>
+              <p
+                data-testid="spine-outcomes-disposition-ratio"
+                title="Every item with an Accept/Edit/Reject disposition recorded — includes Reject's no-action-required closure. A workload signal, not a real-outcome measure."
+              >
+                Disposition complete (Accept/Edit/Reject recorded):{" "}
+                {Math.round((status?.dispositionCompleteRatio ?? 0) * 100)}%
+              </p>
+              <p
+                data-testid="spine-outcomes-real-outcome-ratio"
+                title="Only counts items where a human reported what actually happened to the patient — excludes Reject's no-action-required closure. Best-effort/self-serve today; expected to stay low."
+              >
+                Real outcome captured (verified what happened):{" "}
+                {Math.round((status?.realOutcomeCaptureRatio ?? 0) * 100)}%
+              </p>
             </>
           )}
         </div>

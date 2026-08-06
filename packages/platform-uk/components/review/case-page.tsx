@@ -14,7 +14,18 @@ export function CasePageClient({
   id: string;
   recordingMode?: boolean;
 }) {
-  const { error, getCaseById, isLoaded, isSaving, retryLastSave, updateCase } = useReviewCases();
+  const {
+    error,
+    getCaseById,
+    isLoaded,
+    isSaving,
+    retryLastSave,
+    updateCase,
+    shieldAuditWarning,
+    isRetryingShieldAudit,
+    dismissShieldAuditWarning,
+    retryShieldAuditWrite
+  } = useReviewCases();
 
   if (!isLoaded) {
     return <div className="panel">Loading case...</div>;
@@ -35,6 +46,10 @@ export function CasePageClient({
       onUpdateCase={updateCase}
       recordingMode={recordingMode}
       reviewCase={reviewCase}
+      shieldAuditWarning={shieldAuditWarning}
+      isRetryingShieldAudit={isRetryingShieldAudit}
+      onDismissShieldAuditWarning={dismissShieldAuditWarning}
+      onRetryShieldAuditWrite={retryShieldAuditWrite}
     />
   );
 }

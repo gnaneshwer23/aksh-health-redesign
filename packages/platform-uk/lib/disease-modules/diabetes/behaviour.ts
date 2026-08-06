@@ -1,4 +1,5 @@
 import type { DiabetesCoachingDraft, DiabetesPatientContext } from "./types";
+import type { ComplicationSignal } from "./complications";
 
 /**
  * Behaviour Scientist (diabetes spec area #7).
@@ -14,13 +15,28 @@ import type { DiabetesCoachingDraft, DiabetesPatientContext } from "./types";
  * distress screening tool) that should trigger the escalation path below —
  * the wording here is a conservative placeholder, not a validated screen.
  *
- * v0: static talking-points draft. No adherence-pattern derivation yet.
- * TODO(v1): incorporate medication refill / adherence signals if a data
- * source is confirmed.
+ * v1 (B3): base talking points stay static education content (no medication
+ * refill/adherence data source is confirmed yet); an optional Complications
+ * signal personalises the priority ordering toward adherence-support framing
+ * when a referral-indicated complication is on file.
  */
 
-export function buildBehaviourDiabetesCoachingDraft(context: DiabetesPatientContext): DiabetesCoachingDraft {
+export function buildBehaviourDiabetesCoachingDraft(
+  context: DiabetesPatientContext,
+  signals?: { complications?: ComplicationSignal[] }
+): DiabetesCoachingDraft {
   const patientLabel = context.patientLabel?.trim() || context.patientId;
+  const anyReferralIndicated = (signals?.complications ?? []).some((c) => c.flagLevel === "referral_indicated");
+  const suggestions = [
+    "Offer habit-tracking talking points for medication/monitoring routines",
+    "Signpost to practice-approved diabetes education / peer-support programmes",
+    "Never claim a diagnosis of diabetes distress or a mental-health condition from this stub"
+  ];
+  if (anyReferralIndicated) {
+    suggestions.unshift(
+      "A complication flag is under clinician review — reinforce adherence-support talking points alongside it (not a substitute for the clinical review itself)"
+    );
+  }
 
   return {
     moduleId: "BEHAVIOUR",
@@ -32,11 +48,7 @@ export function buildBehaviourDiabetesCoachingDraft(context: DiabetesPatientCont
     title: "Diabetes behaviour coaching draft (wellness)",
     summary:
       "General habit, adherence, and motivation talking points for wellness education — not a psychological assessment or therapy plan.",
-    suggestions: [
-      "Offer habit-tracking talking points for medication/monitoring routines",
-      "Signpost to practice-approved diabetes education / peer-support programmes",
-      "Never claim a diagnosis of diabetes distress or a mental-health condition from this stub"
-    ],
+    suggestions,
     disclaimers: [
       "NOT CLINICAL ADVICE — coaching draft only.",
       "Does not diagnose diabetes distress, depression, anxiety, or other conditions.",

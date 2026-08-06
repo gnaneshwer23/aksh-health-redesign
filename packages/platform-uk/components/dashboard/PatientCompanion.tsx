@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/toaster";
 import { PatientHeroDemoPath } from "@/components/dashboard/patient/PatientHeroDemoPath";
 import { SafetyRouteCoachingGate } from "@/components/dashboard/precision-health/SafetyRouteCoachingGate";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
+import { DiabetesCoachingPanel } from "@/components/dashboard/precision-health/DiabetesCoachingPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
@@ -34,6 +35,17 @@ import { cn } from "@/lib/utils";
 /** Synthetic demo patient used for Phase 1 companion API surfaces until a linked record exists. */
 const COMPANION_DEMO_PATIENT_ID = "P001";
 const COMPANION_DEMO_PATIENT_LABEL = "Demo patient (P001)";
+
+/**
+ * B4 (docs/PHASED_BUILD_PLAN.md) — separate synthetic diabetes-flagged demo patient for the
+ * Diabetes coaching panel only. Deliberately NOT the same id as COMPANION_DEMO_PATIENT_ID (P001,
+ * which is not diabetes-flagged — see lib/mock-data/patients.ts clinicalProfiles) so every other
+ * companion panel above keeps reading P001 exactly as it did before B4 (Preserve B1–B3 behaviour).
+ * P002 is the cohort's primary Diabetes v1 fixture (worsening HbA1c, neuropathy watch — see
+ * lib/disease-modules/diabetes/fixtures.ts).
+ */
+const DIABETES_COACHING_DEMO_PATIENT_ID = "P002";
+const DIABETES_COACHING_DEMO_PATIENT_LABEL = "Demo patient (P002)";
 
 const TAB_VALUES = ["health", "checkins", "medications", "appointments", "ask"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
@@ -227,6 +239,12 @@ export function PatientCompanion() {
                 </Button>
               </CardContent>
             </Card>
+          </div>
+          <div id="companion-diabetes-coaching" className="scroll-mt-24">
+            <DiabetesCoachingPanel
+              patientId={DIABETES_COACHING_DEMO_PATIENT_ID}
+              patientLabel={DIABETES_COACHING_DEMO_PATIENT_LABEL}
+            />
           </div>
           <div id="companion-care-plan" className="scroll-mt-24">
             <HealthPlanDraftPanel

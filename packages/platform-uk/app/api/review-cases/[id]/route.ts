@@ -12,7 +12,7 @@ import type { ReviewCase } from "@/lib/types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const auth = await requireAuthenticatedUserScope();
+  const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 
   const { scopeKey, userId } = auth.context;
@@ -27,10 +27,22 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  const auth = await requireAuthenticatedUserScope();
+  const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 
-  const { scopeKey, userId } = auth.context;
+  const { scopeKey, userId, userRole } = auth.context;
+
+  // FR-PER-009 / OQ-PER-1/2: this route records a clinical Accept/Edit/Reject disposition.
+  // Only the clinical_reviewer AppRole may do so — patient, researcher, operations_lead, and
+  // any other/unrecognized ("restricted") AppRole must never be able to record one, even for
+  // a case they otherwise "own" by scopeKey.
+  if (userRole !== "clinical_reviewer") {
+    return NextResponse.json(
+      { error: "Forbidden. Only the clinical reviewer role may record an Accept/Edit/Reject decision." },
+      { status: 403 }
+    );
+  }
+
   const tenant = resolveTenantContext(request, auth.context);
   const payload = (await request.json()) as ReviewCase;
   const cases = await readReviewCases(scopeKey, tenant.practiceId);
@@ -117,7 +129,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           learningEventIds: spine.learningEventIds,
           healthPlanId: spine.healthPlanId,
           ehrWrite: false as const,
-          autoRetrain: false as const
+          autoRetrain: false as const,
+          // OQ-HITL-2: honest flag — Accept/Edit/Reject above still completed (HTTP 200);
+          // this only reports that the SHIELD durable audit mirror failed for it.
+          shieldAuditWriteFailed: spine.shieldAuditWriteFailed,
+          failedShieldAuditLearningEventIds: spine.failedShieldAuditLearningEventIds
         }
       : null,
     bridgeStaging: bridgeStaging

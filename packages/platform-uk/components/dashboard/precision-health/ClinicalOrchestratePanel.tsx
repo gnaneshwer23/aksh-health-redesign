@@ -9,8 +9,33 @@ import { toast } from "@/components/ui/toaster";
 import { resolveClinicalAgentLabel } from "@/lib/agents";
 import type { OrchestrationAgentId, QueuePriority } from "@/lib/clinical-proof/agent-orchestration";
 import type { SafetyRoute } from "@/lib/clinical-spine/safety-route";
+import type { DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
 import type { OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
+
+/** B4: HORIZON/GUARDIAN items sourced from the Diabetes module are prefixed "[Diabetes] " by
+ * lib/clinical-spine/orchestrate.ts (applyDiabetesContributionAdditively) — strip the prefix for
+ * display and use its presence to render a distinct provenance badge, never an unlabeled generic factor. */
+const DIABETES_FACTOR_PREFIX = "[Diabetes] ";
+
+function isDiabetesSourced(item: string) {
+  return item.startsWith(DIABETES_FACTOR_PREFIX);
+}
+
+function stripDiabetesPrefix(item: string) {
+  return isDiabetesSourced(item) ? item.slice(DIABETES_FACTOR_PREFIX.length) : item;
+}
+
+function DiabetesBadge() {
+  return (
+    <span
+      className="rounded bg-accent/15 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent"
+      data-testid="diabetes-sourced-badge"
+    >
+      Diabetes module
+    </span>
+  );
+}
 
 type OrchestrateResponse = {
   artifactType?: string;
@@ -28,6 +53,7 @@ type OrchestrateResponse = {
           drugB?: string;
           recommendation?: string;
         }>;
+        safetyNotes?: string[];
         confidence: number;
       };
       ORACLE: {
@@ -61,6 +87,9 @@ type OrchestrateResponse = {
   physiologicalTwin?: boolean;
   autoRetrain?: boolean;
   liveEmis?: boolean;
+  /** B4 — Diabetes v1 UI: null unless ENABLE_DIABETES_MODULE=true and the patient is diabetes-flagged. */
+  diabetesModuleEnabled?: boolean;
+  diabetes?: DiabetesRiskContribution | null;
   error?: string;
 };
 
@@ -162,6 +191,17 @@ export function ClinicalOrchestratePanel({
             physiologicalTwin: false,
             liveEmis: false,
             safetyRoute: result?.safetyRoute ?? null,
+            // B4: this disposition also covers any [Diabetes]-prefixed HORIZON/GUARDIAN content merged
+            // additively above — no separate diabetes review paradigm, so name it here for auditability.
+            diabetesModuleContribution:
+              (agent === "ORACLE" || agent === "GUARDIAN") && result?.diabetes
+                ? {
+                    referralIndicated: result.diabetes.signals.complications
+                      .filter((c) => c.flagLevel === "referral_indicated")
+                      .map((c) => c.domain),
+                    referralGate: "referral_pathway" as const,
+                  }
+                : null,
           },
         }),
       });
@@ -237,6 +277,7 @@ export function ClinicalOrchestratePanel({
               let body: ReactNode = null;
               if (agent === "GUARDIAN") {
                 const g = orch.outputs.GUARDIAN;
+                const safetyNotes = g.safetyNotes ?? [];
                 summary = g.summary;
                 body = (
                   <>
@@ -254,10 +295,21 @@ export function ClinicalOrchestratePanel({
                         ))}
                       </ul>
                     )}
+                    {safetyNotes.length > 0 && (
+                      <ul className="space-y-1 text-[11px] text-muted" data-testid="guardian-safety-notes">
+                        {safetyNotes.map((note, idx) => (
+                          <li key={idx} className="flex flex-wrap items-center gap-1.5">
+                            <span>• {stripDiabetesPrefix(note)}</span>
+                            {isDiabetesSourced(note) && <DiabetesBadge />}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </>
                 );
               } else if (agent === "ORACLE") {
                 const o = orch.outputs.ORACLE;
+                const contributingFactors = o.contributingFactors ?? [];
                 summary = o.summary;
                 body = (
                   <>
@@ -265,6 +317,16 @@ export function ClinicalOrchestratePanel({
                       HORIZON · {o.oracleScore} ({o.oracleRisk})
                     </p>
                     <p className="text-sm">{o.summary}</p>
+                    {contributingFactors.length > 0 && (
+                      <ul className="space-y-1 text-[11px] text-muted" data-testid="oracle-contributing-factors">
+                        {contributingFactors.map((factor, idx) => (
+                          <li key={idx} className="flex flex-wrap items-center gap-1.5">
+                            <span>• {stripDiabetesPrefix(factor)}</span>
+                            {isDiabetesSourced(factor) && <DiabetesBadge />}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </>
                 );
               } else if (agent === "SYNTHESIS") {
@@ -333,6 +395,125 @@ export function ClinicalOrchestratePanel({
                 </div>
               );
             })}
+
+            {result?.diabetesModuleEnabled && result.diabetes && (
+              <div
+                className="space-y-3 rounded-sm border border-accent/30 bg-accent/5 p-3"
+                data-testid="diabetes-module-signals"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+                    Diabetes module signals
+                  </p>
+                  <DiabetesBadge />
+                </div>
+                <p className="text-[10px] text-muted">
+                  Demo/synthetic-cohort data · draft only, not a diagnosis · already folded into the HORIZON
+                  and GUARDIAN Accept/Edit/Reject above (no separate review paradigm) · hitlRequired: true ·
+                  ehrWrite: false · autoRetrain: false.
+                </p>
+
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
+                    <p className="font-semibold">Glucose</p>
+                    <p className="text-muted">
+                      {result.diabetes.signals.glucose.limitations[0] ?? "insufficient_data"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
+                    <p className="font-semibold">HbA1c</p>
+                    <p className="text-muted">
+                      {result.diabetes.signals.hba1c.latestValuePercent !== null
+                        ? `Latest ${result.diabetes.signals.hba1c.latestValuePercent}% · trend ${result.diabetes.signals.hba1c.trend}`
+                        : (result.diabetes.signals.hba1c.limitations[0] ?? "no data on file")}
+                    </p>
+                  </div>
+
+                  <div
+                    className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]"
+                    data-testid="diabetes-insulin-signal"
+                  >
+                    <p className="font-semibold">Insulin — explanatory only</p>
+                    <p className="text-muted">{result.diabetes.signals.insulin.regimenSummary}</p>
+                    {result.diabetes.signals.insulin.timingObservations.map((note, idx) => (
+                      <p key={idx} className="text-muted">
+                        • {note}
+                      </p>
+                    ))}
+                    <p className="mt-1 font-medium text-accent">
+                      No dose-change recommendation shown — clinician decision only.
+                    </p>
+                  </div>
+
+                  <div
+                    className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]"
+                    data-testid="diabetes-glp1-signal"
+                  >
+                    <p className="font-semibold">GLP-1 — explanatory only</p>
+                    {result.diabetes.signals.glp1.sideEffectFlags.length > 0 ? (
+                      result.diabetes.signals.glp1.sideEffectFlags.map((flag, idx) => (
+                        <p key={idx} className="text-muted">
+                          • {flag}
+                        </p>
+                      ))
+                    ) : (
+                      <p className="text-muted">No reported side effects on file.</p>
+                    )}
+                    <p className="mt-1 font-medium text-accent">
+                      No prescribing recommendation shown — clinician decision only.
+                    </p>
+                  </div>
+                </div>
+
+                {result.diabetes.signals.complications.some((c) => c.flagLevel !== "none") && (
+                  <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
+                    <p className="font-semibold">Complications</p>
+                    <ul className="mt-1 space-y-1">
+                      {result.diabetes.signals.complications
+                        .filter((c) => c.flagLevel !== "none")
+                        .map((c) => (
+                          <li key={c.domain} className="flex flex-wrap items-center gap-1.5">
+                            <span className="capitalize">{c.domain.replaceAll("_", " ")}:</span>
+                            <span
+                              className={
+                                c.flagLevel === "referral_indicated"
+                                  ? "rounded bg-danger/15 px-1 py-0.5 font-semibold uppercase text-danger"
+                                  : "rounded bg-warning/15 px-1 py-0.5 font-semibold uppercase text-warning"
+                              }
+                            >
+                              {c.flagLevel.replaceAll("_", " ")}
+                            </span>
+                            {c.flagLevel === "referral_indicated" && (
+                              <span className="text-muted" data-testid={`diabetes-referral-gate-${c.domain}`}>
+                                → routes via existing referral_pathway human gate (confirm in case review — no
+                                new gate type)
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
+                  <p className="font-semibold">Prevention (rules-based composite, not a physiological twin)</p>
+                  <p className="text-muted">Trajectory: {result.diabetes.signals.prevention.riskTrajectoryLabel}</p>
+                  {result.diabetes.signals.prevention.personalisedPriorities.map((priority, idx) => (
+                    <p key={idx} className="text-muted">
+                      • {priority}
+                    </p>
+                  ))}
+                </div>
+
+                {result.diabetes.areaFailures.length > 0 && (
+                  <p className="text-[10px] text-warning" data-testid="diabetes-area-failures">
+                    Degraded gracefully (fail-open, still visible, not silently dropped):{" "}
+                    {result.diabetes.areaFailures.join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
 
             {result?.twin && (
               <div

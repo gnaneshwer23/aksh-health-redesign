@@ -11,6 +11,13 @@ export async function GET(request: Request) {
 
   const { scopeKey, userId, userRole } = auth.context;
 
+  // OQ-PER-1/OQ-PER-2: this is a clinical/ops review-queue dashboard — patient,
+  // researcher, and unrecognized ("restricted") AppRoles must not reach it now
+  // that they no longer fall through to clinical_reviewer.
+  if (userRole !== "clinical_reviewer" && userRole !== "operations_lead") {
+    return NextResponse.json({ error: "Forbidden. Clinical or operations role required." }, { status: 403 });
+  }
+
   const [cases, feedbackState] = await Promise.all([
     readReviewCases(scopeKey),
     readFeedbackState(scopeKey, userId)

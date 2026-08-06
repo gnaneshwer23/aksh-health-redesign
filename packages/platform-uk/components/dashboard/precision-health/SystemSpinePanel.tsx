@@ -52,8 +52,12 @@ type OutcomesLoopStatus = {
   careActionCount?: number;
   awaitingOutcomeCount?: number;
   outcomeLinkedCount?: number;
+  noActionRequiredCount?: number;
   evaluationReviewCount?: number;
-  loopCompleteRatio?: number;
+  /** Any Accept/Edit/Reject disposition recorded — workload signal, not a real-outcome measure. */
+  dispositionCompleteRatio?: number;
+  /** A human actually reported what happened — honesty signal, excludes Reject closures. */
+  realOutcomeCaptureRatio?: number;
   autoRetrain?: boolean;
   note?: string;
 };
@@ -399,7 +403,7 @@ export function SystemSpinePanel() {
             Care actions → eventual outcomes → governed evaluation on the same learning store.
             autoRetrain:false hard — propose_model_update blocked without G-ML-1…3.{" "}
             {outcomesLoop
-              ? `${outcomesLoop.careActionCount ?? 0} actions · ${outcomesLoop.awaitingOutcomeCount ?? 0} awaiting · ${outcomesLoop.outcomeLinkedCount ?? 0} linked · ${outcomesLoop.evaluationReviewCount ?? 0} evals · ${Math.round((outcomesLoop.loopCompleteRatio ?? 0) * 100)}% closed.`
+              ? `${outcomesLoop.careActionCount ?? 0} actions · ${outcomesLoop.awaitingOutcomeCount ?? 0} awaiting · ${outcomesLoop.outcomeLinkedCount ?? 0} linked · ${outcomesLoop.noActionRequiredCount ?? 0} no-action-required (rejected) · ${outcomesLoop.evaluationReviewCount ?? 0} evals · ${Math.round((outcomesLoop.dispositionCompleteRatio ?? 0) * 100)}% disposition complete (workload signal) · ${Math.round((outcomesLoop.realOutcomeCaptureRatio ?? 0) * 100)}% real outcome captured (honesty signal — excludes Reject).`
               : "Auth required for live loop counts (or no events yet)."}
           </p>
           <ul className="mt-2 flex flex-wrap gap-2 text-xs">
