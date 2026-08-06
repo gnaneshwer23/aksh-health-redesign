@@ -32,33 +32,41 @@ function checkAppendOnlyContract() {
 
 /**
  * B1 / OQ-HITL-2 hard-fail: a SHIELD durable-write failure must never be
- * indistinguishable from success. This test env has no `DATABASE_URL`, so
- * every `persistShieldAuditEvent` call below deterministically hits the
- * "postgres not configured" failure path — exactly the scenario that used to
- * be swallowed as a silent `console.error` + `return null`.
+ * indistinguishable from success. This check deliberately forces the
+ * "postgres not configured" path (by unsetting `DATABASE_URL`/`USE_POSTGRES`
+ * for its duration) rather than assuming the ambient environment has no
+ * database configured — CI jobs that also run Playwright E2E deliberately
+ * set a real `DATABASE_URL` for the E2E suite, so this must be deterministic
+ * regardless of that. This is exactly the scenario that used to be swallowed
+ * as a silent `console.error` + `return null`.
  */
 async function checkShieldWriteFailureSurfacesToCaller() {
-  const directResult = await persistShieldAuditEvent({
-    action: "accept",
-    actor: "shield-hard-fail-test@akshhealth.com",
-    label: "SHIELD hard-fail test event",
-    category: "reviewer_decision"
-  });
+  const savedDatabaseUrl = process.env.DATABASE_URL;
+  const savedUsePostgres = process.env.USE_POSTGRES;
+  delete process.env.DATABASE_URL;
+  delete process.env.USE_POSTGRES;
 
-  assert.equal(
-    directResult.persisted,
-    false,
-    "persistShieldAuditEvent must report persisted:false, not silently look like a write"
-  );
-  if (!directResult.persisted) {
-    assert.equal(directResult.row, null);
-    assert.ok(directResult.reason, "A failed write must carry a non-empty reason for the caller/UI");
-  }
-
-  // Fail-visible propagation for a clinical Accept/Edit/Reject dual-write
-  // (queue-decision.ts's exact call pattern via recordLearningEvent).
   const scopeKey = `shield_hard_fail_${Date.now()}`;
   try {
+    const directResult = await persistShieldAuditEvent({
+      action: "accept",
+      actor: "shield-hard-fail-test@akshhealth.com",
+      label: "SHIELD hard-fail test event",
+      category: "reviewer_decision"
+    });
+
+    assert.equal(
+      directResult.persisted,
+      false,
+      "persistShieldAuditEvent must report persisted:false, not silently look like a write"
+    );
+    if (!directResult.persisted) {
+      assert.equal(directResult.row, null);
+      assert.ok(directResult.reason, "A failed write must carry a non-empty reason for the caller/UI");
+    }
+
+    // Fail-visible propagation for a clinical Accept/Edit/Reject dual-write
+    // (queue-decision.ts's exact call pattern via recordLearningEvent).
     const recorded = await recordLearningEvent(
       {
         agentLabel: "SHIELD_HARD_FAIL_TEST",
@@ -80,6 +88,10 @@ async function checkShieldWriteFailureSurfacesToCaller() {
       "A failed SHIELD dual-write must carry a reason the caller/UI can surface"
     );
   } finally {
+    if (savedDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = savedDatabaseUrl;
+    if (savedUsePostgres === undefined) delete process.env.USE_POSTGRES;
+    else process.env.USE_POSTGRES = savedUsePostgres;
     await fsPromises.unlink(path.join(process.cwd(), "data", `learning-events.${scopeKey}.json`)).catch(() => {});
   }
 
