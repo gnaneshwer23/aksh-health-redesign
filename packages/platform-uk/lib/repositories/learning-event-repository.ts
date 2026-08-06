@@ -92,26 +92,27 @@ async function appendFileStore(event: LearningEvent, scopeKey: string) {
   await writeFile(file, JSON.stringify({ events }, null, 2), "utf8");
 }
 
-async function persistPostgres(event: LearningEvent): Promise<boolean> {
+async function persistPostgres(event: LearningEvent, scopeKey: string): Promise<boolean> {
   try {
     await ensureLearningEventsSchema();
     await getPgPool().query(
       `INSERT INTO aksh.learning_events (
-        id, recorded_at, practice_id, case_id, queue_item_id, patient_id,
+        id, recorded_at, scope_key, practice_id, case_id, queue_item_id, patient_id,
         agent_label, prediction_id, prediction_summary, model_version,
         decision, decision_actor, decision_notes, outcome_kind, outcome_summary,
         outcome_metric, auto_retrain_triggered, model_updated, ehr_write,
         hitl_required, governance_note, payload
       ) VALUES (
-        $1, $2::timestamptz, $3, $4, $5, $6,
-        $7, $8, $9, $10,
-        $11, $12, $13, $14, $15,
-        $16::jsonb, FALSE, FALSE, FALSE,
-        TRUE, $17, $18::jsonb
+        $1, $2::timestamptz, $3, $4, $5, $6, $7,
+        $8, $9, $10, $11,
+        $12, $13, $14, $15, $16,
+        $17::jsonb, FALSE, FALSE, FALSE,
+        TRUE, $18, $19::jsonb
       )`,
       [
         event.id,
         event.recordedAt,
+        scopeKey,
         event.practiceId,
         event.caseId,
         event.queueItemId,
@@ -142,7 +143,7 @@ async function persistPostgres(event: LearningEvent): Promise<boolean> {
   }
 }
 
-async function listPostgres(limit: number): Promise<LearningEvent[] | null> {
+async function listPostgres(limit: number, scopeKey: string): Promise<LearningEvent[] | null> {
   try {
     await ensureLearningEventsSchema();
     const result = await getPgPool().query<{
@@ -170,9 +171,10 @@ async function listPostgres(limit: number): Promise<LearningEvent[] | null> {
               decision, decision_actor, decision_notes, outcome_kind, outcome_summary,
               outcome_metric, governance_note, payload
        FROM aksh.learning_events
+       WHERE scope_key = $2
        ORDER BY recorded_at DESC, id DESC
        LIMIT $1`,
-      [limit]
+      [limit, scopeKey]
     );
 
     return result.rows.map((row) => ({
@@ -232,7 +234,7 @@ export async function recordLearningEvent(
   let source: "postgres" | "file" = "file";
 
   if (isPostgresConfigured()) {
-    const ok = await persistPostgres(event);
+    const ok = await persistPostgres(event, scopeKey);
     if (ok) {
       source = "postgres";
     } else {
@@ -291,7 +293,7 @@ export async function listLearningEvents(options?: {
   const scopeKey = options?.scopeKey ?? "shared";
 
   if (isPostgresConfigured()) {
-    const rows = await listPostgres(limit);
+    const rows = await listPostgres(limit, scopeKey);
     if (rows) {
       return { source: "postgres", events: rows };
     }

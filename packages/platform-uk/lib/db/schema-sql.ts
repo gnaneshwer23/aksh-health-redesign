@@ -117,6 +117,7 @@ CREATE SCHEMA IF NOT EXISTS aksh;
 CREATE TABLE IF NOT EXISTS aksh.learning_events (
   id TEXT PRIMARY KEY,
   recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  scope_key TEXT NOT NULL DEFAULT 'shared',
   practice_id TEXT,
   case_id TEXT,
   queue_item_id TEXT,
@@ -139,6 +140,10 @@ CREATE TABLE IF NOT EXISTS aksh.learning_events (
   payload JSONB NOT NULL DEFAULT '{}'::jsonb
 );
 
+-- Backfill for tables created before scope_key existed (OQ-TEN-1: learning events must be
+-- scoped per caller like consent_grants/other aksh tables, not readable cross-tenant).
+ALTER TABLE aksh.learning_events ADD COLUMN IF NOT EXISTS scope_key TEXT NOT NULL DEFAULT 'shared';
+
 CREATE INDEX IF NOT EXISTS idx_learning_events_recorded_at
   ON aksh.learning_events (recorded_at DESC);
 
@@ -150,6 +155,9 @@ CREATE INDEX IF NOT EXISTS idx_learning_events_prediction_id
 
 CREATE INDEX IF NOT EXISTS idx_learning_events_agent_label
   ON aksh.learning_events (agent_label);
+
+CREATE INDEX IF NOT EXISTS idx_learning_events_scope_key
+  ON aksh.learning_events (scope_key);
 `;
 
 // Keep in sync with db/migrations/010_consent_grants.sql
