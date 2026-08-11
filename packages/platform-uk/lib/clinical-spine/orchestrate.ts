@@ -10,6 +10,7 @@ import {
 } from "@/lib/clinical-proof/agent-orchestration";
 import { buildDiabetesRiskContribution, type DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
 import { loadDiabetesPatientStateOverrides } from "@/lib/disease-modules/diabetes/ingest";
+import { recordDiabetesDecisionSnapshot } from "@/lib/disease-modules/diabetes/decision-history";
 import { isDiabetesModuleEnabled } from "@/lib/integration-config";
 import { getPatientById } from "@/lib/mock-data/patients";
 import { getOracleModelCard, type OracleModelCard } from "@/lib/precision-health/oracle-model-card";
@@ -138,6 +139,27 @@ export async function runClinicalSpineOrchestrate(
   // `escalation` resolves to "none" in both cases, matching pre-C6 output.
   const decision = resolveDecision({ orchestration, diabetes });
   const safetyRoute = decision.route;
+
+  // D4 (docs/PHASED_BUILD_PLAN_D.md): write this run's diabetes Decision
+  // outcome back onto Patient State as a durable, queryable fact — only for
+  // diabetes-flagged patients with the module enabled (i.e. `diabetes` is
+  // non-null); non-diabetes patients and flag-off runs produce zero new
+  // facts, byte-identical to pre-D4 behaviour. Fire-and-forget, fail-open:
+  // recordDiabetesDecisionSnapshot never throws, and this call is never
+  // awaited, so it can never delay or alter the clinician-facing response.
+  if (diabetes) {
+    void recordDiabetesDecisionSnapshot({
+      patientId: baseOrchestration.sharedContext.patientId,
+      snapshot: {
+        escalation: decision.escalation,
+        horizonContributingFactorCount: diabetes.horizonContributingFactors.length,
+        guardianSafetyFlagCount: diabetes.guardianSafetyFlags.length,
+        areaFailures: diabetes.areaFailures,
+        orchestratedAt: new Date().toISOString()
+      }
+    });
+  }
+
   const twin = includeTwinRanking ? runScenario(input.patientId) : null;
   const modelCard = getOracleModelCard();
 

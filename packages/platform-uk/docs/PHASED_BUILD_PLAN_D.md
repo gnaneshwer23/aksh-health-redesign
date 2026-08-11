@@ -214,7 +214,7 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 
 ---
 
-## D4 — Deepen Patient State in the diabetes/CONDUCTOR path: persist Decision outputs as Patient State facts
+## D4 — Deepen Patient State in the diabetes/CONDUCTOR path: persist Decision outputs as Patient State facts ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Extend C1/C6's Patient State usage from read-only input (glucose/HbA1c ingest feeding the composite) to also **recording the Decision domain's own diabetes-relevant output** (the `escalation` value from C6/P1-3, and a compact summary of `guardianSafetyFlags`/`horizonContributingFactors` counts) back onto Patient State as a new fact type — closing one more loop the frozen spec's Domain 1 principle asks for ("current state, previous state, and change... explicitly represented"), entirely additively, with **zero change to `route`/`priority`/existing orchestration output shape**.
 
@@ -233,24 +233,26 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 - No synchronous dependency — orchestration must not await this write in a way that could make it a new source of latency/failure for the clinician-facing response; mirrors the existing best-effort SHIELD-audit pattern (`persistShieldAuditEvent`'s own catch-and-continue).
 
 **Exit criteria (DoD)**
-- [ ] A diabetes-flagged, module-enabled orchestration run produces a readable `diabetes_decision_snapshot` Patient State fact matching that run's actual `escalation` value.
-- [ ] A simulated Patient State write failure does not throw, does not change `runClinicalSpineOrchestrate`'s return value, and is logged (fail-open, tested).
-- [ ] Non-diabetes-flagged patients and flag-off behaviour produce zero new facts and are otherwise byte-identical (mirrors every prior phase's own regression discipline).
-- [ ] `npm run typecheck`, `npm run test:clinical-proof`, and a local `npm run build` (orchestrate.ts is server-only already, but re-run build as a sanity check per hard constraint 7) all green.
+- [x] A diabetes-flagged, module-enabled orchestration run produces a readable `diabetes_decision_snapshot` Patient State fact matching that run's actual `escalation` value (P026 hypo-risk case: persisted `escalation` = `"diabetes_nurse_review"`, matching `p026Result.diabetesEscalation` exactly, plus matching `guardianSafetyFlagCount`/`horizonContributingFactorCount`/`areaFailures`).
+- [x] A simulated Patient State write failure does not throw, does not change `runClinicalSpineOrchestrate`'s return value, and is logged (fail-open, tested via a circular-reference snapshot value that fails `JSON.stringify` in the file-store write path — `recordDiabetesDecisionSnapshot` catches it, logs, and resolves `null`, never rejecting).
+- [x] Non-diabetes-flagged patients (P001) and flag-off behaviour (module disabled) produce zero new `diabetes_decision_snapshot` facts — asserted by comparing before/after fact counts, not just spot-checking absence.
+- [x] `npm run typecheck`, `npm run test:clinical-proof`, and a local `npm run build` all green.
 
 **Audit checklist**
-- [ ] Confirms additive-only to Patient State (Domain 1) — new factType, existing `recordPatientStateFact`/`listPatientStateFacts` reused unmodified, append-only invariant unaffected (verified by test).
-- [ ] Confirms Decision (Domain 3) is unaffected — `resolveDecision`'s own signature/output is unchanged; this phase's write happens strictly after Decision resolves, using its already-computed output as input, never influencing it.
-- [ ] Confirms fail-open discipline — the new write cannot become a new reason a clinician doesn't get an orchestration response (mirrors OQ-DIAB-2/OQ-DIAB-7's fail-open precedent and SHIELD's own best-effort pattern).
-- [ ] `liveEmis`/`autoRetrain`/agent-directory/HITL — grep-clean.
+- [x] Confirms additive-only to Patient State (Domain 1) — new factType, existing `recordPatientStateFact`/`listPatientStateFacts` reused unmodified (zero diff to `lib/patient-state/repository.ts`/`types.ts`), append-only invariant verified directly (two writes for the same patient both remain readable; the first's `supersededBy` points at the second).
+- [x] Confirms Decision (Domain 3) is unaffected — `git diff --stat -- lib/decision/index.ts lib/clinical-spine/safety-route.ts` empty; the new write reads `decision.escalation` strictly after `resolveDecision` returns, never as an input to it.
+- [x] Confirms fail-open discipline — `recordDiabetesDecisionSnapshot` wraps its only write in try/catch and the call site in `orchestrate.ts` is never awaited (`void`), so no failure mode of this write can reach the clinician-facing response.
+- [x] `liveEmis`/`autoRetrain`/agent-directory/HITL — grep-clean (`liveEmis: false`/`autoRetrain: false` literals unchanged in `orchestrate.ts`; `lib/agents.ts` zero diff, all 12 `AGENT_DIRECTORY` entries still `keepStatus: "keep"`).
 
 **Functionality checks**
-- [ ] `npm run typecheck` — PASS.
-- [ ] `npm run test:clinical-proof` — PASS, full chain green including new `tests/diabetes-decision-history.test.ts`.
-- [ ] `npm run build` — PASS locally (orchestrate.ts touched; confirm no client-bundle regression, same discipline as C6).
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green (137s) including new `tests/diabetes-decision-history.test.ts` (4 assertions: round-trip, append-only supersession, fail-open, orchestration-level module-off/non-diabetes/P026 write-back).
+- [x] `npm run build` — PASS locally, clean production build (orchestrate.ts is server-only; no client-bundle regression).
 
 **Commit + Deploy gate**
-- Commit: `lib/disease-modules/diabetes/decision-history.ts` + `orchestrate.ts` write call-site + test + this plan's D4 section. Push to `main`. Confirm Vercel `READY`.
+- Commit: `lib/disease-modules/diabetes/decision-history.ts` + `orchestrate.ts` write call-site + test + `package.json` chain update + this plan's D4 section. Push to `main`. Confirm Vercel `READY`.
+
+**Go/No-Go for D5: GO** — all exit criteria met, zero diff to Patient State/Decision internals, fail-open discipline verified, full clinical-proof chain + local build green.
 
 **Go/No-Go for D5:** pending this phase's own functionality checks.
 
@@ -322,8 +324,8 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in D / P2 / P3 (updated as phases land)
 
-- **D0–D3:** complete (see phase sections above for detail).
-- **D4–D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
+- **D0–D4:** complete (see phase sections above for detail).
+- **D5–D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
 - **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
 - **P3 (unchanged, still out of scope):** PRISM/ATLAS build-out, production RBAC/CIS2, live EMIS/NHS write path, federated research productionisation, additional disease modules beyond Diabetes — none of these are touched by this plan, per the migration plan's own P3 framing ("out of scope until P0–P2 are substantially delivered and there is demonstrated need").
 - **`OQ-DIAB-1` itself:** still open, still owned by the clinical lead. D2's `PED-DIAB-1` is a provisional, reversible engineering stop-gap, not a resolution — this is restated, not contradicted, by D2's own commit.
