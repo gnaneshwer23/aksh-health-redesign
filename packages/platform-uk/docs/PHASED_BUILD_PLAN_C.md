@@ -282,8 +282,9 @@
 
 **Commit + Deploy gate**
 - Commit only the scope actually completed (minimum bar, or minimum bar + whichever stretch items landed clean). Push to `main`. Confirm Vercel `READY`.
+- First push (`1a48ff1`) broke the production build: barrel-exporting `recordDiabetesCoachingAccept` from `lib/disease-modules/diabetes/index.ts` pulled the Node-only `learning-event-repository.ts` (`fs/promises`, `pg`) into a client bundle via `DiabetesPopulationSignal.tsx` → `population-diabetes.ts` → the diabetes barrel. Fixed in `696e14b`: `recordDiabetesCoachingAccept` is no longer re-exported from the barrel; the API route and test import it directly from `lib/disease-modules/diabetes/learning`. Verified with a clean local `npm run build` before re-pushing. Deploy `0ne-health-lrqrpgnny…` confirmed `READY`.
 
-**Go/No-Go:** This phase's own stretch items are explicitly optional — landing the minimum bar (P1-1) alone is a successful C5 outcome. A "minimum bar only, stretch deferred" result is acceptable and should be recorded as such, not treated as a shortfall. **Result: GO on the minimum bar; P1-2/P1-3 explicitly deferred to a future C6.**
+**Go/No-Go:** This phase's own stretch items are explicitly optional — landing the minimum bar (P1-1) alone is a successful C5 outcome. A "minimum bar only, stretch deferred" result is acceptable and should be recorded as such, not treated as a shortfall. **Result: GO on the minimum bar (after the barrel-export deploy fix); P1-2/P1-3 explicitly deferred to a future C6.**
 
 ---
 
