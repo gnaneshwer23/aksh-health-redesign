@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 
 import { buildClinicalSafetyFilesArtifact } from "../../../../lib/clinical-safety-files";
-import { requireAuthenticatedUserScope } from "../../../../lib/user-scope";
+import { requireAppRole } from "../../../../lib/user-scope";
 
+/**
+ * E2 (docs/PHASED_BUILD_PLAN_E.md, P3-2): previously required authentication
+ * but enforced no role check. Now restricted to the roles this route's
+ * governance-pack action already documents as allowed
+ * (`clinical_reviewer`/`operations_lead`, per `lib/permission-matrix.ts`'s
+ * `governance_pack_view` row). Not linked from any public page.
+ */
 export async function GET(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
-  if (auth.response) return auth.response;
+  const auth = await requireAppRole(request, ["clinical_reviewer", "operations_lead"]);
+  if (auth.response || !auth.context) return auth.response;
 
   const artifact = buildClinicalSafetyFilesArtifact();
 

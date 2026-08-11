@@ -19,7 +19,20 @@ export type PermissionAction = {
   label: string;
   routeOrSurface: string;
   notes: string;
+  /**
+   * E2 (docs/PHASED_BUILD_PLAN_E.md, P3-2): ISO date the documented
+   * clinical_reviewer/operations_lead-vs-patient/researcher boundary for
+   * this action became *route-enforced* (not just documented). `null` for
+   * every action this tranche did not touch — honest: this field records
+   * exactly which two actions' worth of routes were hardened, not a claim
+   * that the whole matrix is now enforced (`productionRbacEnforced` stays
+   * `false`).
+   */
+  enforcedAt: string | null;
 };
+
+/** E2 (docs/PHASED_BUILD_PLAN_E.md, P3-2): date the audit/permission/safety-file exports became role-enforced. */
+const E2_RBAC_HARDENING_DATE = "2026-08-11";
 
 export function getPermissionActions(): PermissionAction[] {
   return [
@@ -27,67 +40,88 @@ export function getPermissionActions(): PermissionAction[] {
       id: "review_case_queue",
       label: "Review queue and case detail",
       routeOrSurface: "/review, /cases/[id]",
-      notes: "Scoped to owned or shared synthetic cases depending on store configuration."
+      notes: "Scoped to owned or shared synthetic cases depending on store configuration.",
+      enforcedAt: null
     },
     {
       id: "capture_reviewer_decision",
       label: "Capture reviewer decision and human gates",
       routeOrSurface: "/cases/[id]",
-      notes: "Human reviewer remains accountable; no autonomous finalization."
+      notes: "Human reviewer remains accountable; no autonomous finalization.",
+      enforcedAt: null
     },
     {
       id: "export_case_evidence",
       label: "Export case evidence and dossier JSON",
       routeOrSurface: "/api/review-cases/[id]/export, /api/review-cases/[id]/dossier",
-      notes: "Synthetic proof artifacts only."
+      notes: "Synthetic proof artifacts only.",
+      enforcedAt: null
     },
     {
       id: "benchmark_signoff",
       label: "Save benchmark sign-off",
       routeOrSurface: "/review/benchmarks/report",
-      notes: "Internal evidence decision; not production safety sign-off."
+      notes: "Internal evidence decision; not production safety sign-off.",
+      enforcedAt: null
     },
     {
       id: "readiness_snapshot",
       label: "Save readiness snapshot",
       routeOrSurface: "/review/readiness",
-      notes: "Internal readiness gate history."
+      notes: "Internal readiness gate history.",
+      enforcedAt: null
     },
     {
       id: "feedback_capture",
       label: "Capture walkthrough feedback",
       routeOrSurface: "/review/feedback",
-      notes: "Advisor and stakeholder rehearsal notes."
+      notes: "Advisor and stakeholder rehearsal notes.",
+      enforcedAt: null
     },
     {
       id: "ops_dashboard",
       label: "Ops dashboard and remediation triage",
       routeOrSurface: "/review/ops",
-      notes: "Operations lead has broader coordination surfaces."
+      notes: "Operations lead has broader coordination surfaces.",
+      enforcedAt: null
     },
     {
       id: "demo_reset",
       label: "Reset synthetic seed cohort",
       routeOrSurface: "npm run data:reset",
-      notes: "Deterministic reset for clean demos; not production data deletion."
+      notes: "Deterministic reset for clean demos; not production data deletion.",
+      enforcedAt: null
     },
     {
       id: "roadmap_edit",
       label: "Edit roadmap tracker and M1 checklist",
       routeOrSurface: "/review/roadmap",
-      notes: "Build-state planning only."
+      notes: "Build-state planning only.",
+      enforcedAt: null
     },
     {
       id: "governance_pack_view",
       label: "View governance and safety rehearsal pack",
       routeOrSurface: "/review/governance-pack",
-      notes: "Rehearsal-only safety structure."
+      notes:
+        "Rehearsal-only safety structure. The page itself is session-gated only (any role); its individual export links vary — see export_system_contracts and audit_and_safety_export for which underlying routes are role-enforced.",
+      enforcedAt: null
     },
     {
       id: "export_system_contracts",
       label: "Export database and permission contracts",
       routeOrSurface: "/api/system/database-contract, /api/system/permission-matrix",
-      notes: "Boundary artifacts for architecture review."
+      notes:
+        "Boundary artifacts for architecture review. database-contract stays intentionally public (linked from the public /resources page; see tests/readonly-route-contracts.test.ts) — not role-enforced. permission-matrix is role-enforced (clinical_reviewer/operations_lead only) since E2.",
+      enforcedAt: null
+    },
+    {
+      id: "audit_and_safety_export",
+      label: "Export audit-integrity and clinical-safety-file placeholders",
+      routeOrSurface: "/api/system/audit-integrity, /api/system/clinical-safety-files",
+      notes:
+        "Governance/audit exports — restricted to clinical_reviewer/operations_lead since E2 (previously any authenticated role, including patient/researcher, could call these directly).",
+      enforcedAt: E2_RBAC_HARDENING_DATE
     }
   ];
 }
@@ -165,6 +199,12 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
       researcher: "denied"
     },
     export_system_contracts: {
+      clinical_reviewer: "allowed",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    audit_and_safety_export: {
       clinical_reviewer: "allowed",
       operations_lead: "allowed",
       patient: "denied",

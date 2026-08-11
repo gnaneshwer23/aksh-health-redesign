@@ -185,6 +185,36 @@ export async function requireAuthenticatedUserScope(request?: Request) {
   }
 }
 
+/**
+ * E2 (docs/PHASED_BUILD_PLAN_E.md, implements
+ * docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md P3-2): additive role-gate helper
+ * on top of `requireAuthenticatedUserScope`. Denies (403) any authenticated
+ * caller whose `AppRole` is not in `allowedRoles`, using the exact allow-list
+ * the caller passes in — this function does not itself decide who may access
+ * what; it only enforces a decision already made elsewhere (e.g. the
+ * `export_system_contracts`/`governance_pack_view` rows already documented
+ * in `lib/permission-matrix.ts`). Does not change `requireAuthenticatedUserScope`
+ * or `resolveOptionalAuthenticatedUserScope`'s own behaviour in any way.
+ */
+export async function requireAppRole(request: Request | undefined, allowedRoles: AppRole[]) {
+  const auth = await requireAuthenticatedUserScope(request);
+  if (auth.response || !auth.context) {
+    return auth;
+  }
+
+  if (!allowedRoles.includes(auth.context.userRole)) {
+    return {
+      context: null,
+      response: ServerNextResponse.json(
+        { error: `Forbidden. Role "${auth.context.userRole}" is not permitted for this resource.` },
+        { status: 403 }
+      )
+    };
+  }
+
+  return auth;
+}
+
 export async function resolveOptionalAuthenticatedUserScope(
   request?: Request
 ): Promise<AuthenticatedUserScope | null> {
