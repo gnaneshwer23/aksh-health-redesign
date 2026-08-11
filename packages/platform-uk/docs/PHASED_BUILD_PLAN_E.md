@@ -84,6 +84,7 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 - Commit this plan, `docs/PHASED_BUILD_PLAN_E.md`.
 - Re-verify (not assume) the C0–D6 baseline is still green: `npm run typecheck` + `npm run test:clinical-proof` re-run fresh, output recorded above.
 - Record, by direct repo inspection, the concrete current state of every P3 item this plan will touch (see "P3 readiness snapshot" below) — so later phases are diffed against a documented starting point, not a guess.
+- Write `docs/AKSH_ARCHITECTURE_AUDIT_E0.md` — a short, standalone audit extracting this same P3 readiness snapshot into its own citable file, mirroring `docs/AKSH_ARCHITECTURE_AUDIT_C0.md`'s own standalone-snapshot role for Build Tranche C.
 
 **P3 readiness snapshot (11 August 2026, pre-E1)**
 
@@ -105,6 +106,7 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 - [x] This plan is committed to `main`.
 - [x] Baseline `typecheck`/`test:clinical-proof` re-confirmed green on this commit, not assumed carried-over from D6's own record.
 - [x] P3 readiness snapshot recorded above, giving every later E-phase a documented starting point.
+- [x] `docs/AKSH_ARCHITECTURE_AUDIT_E0.md` exists and extracts the same P3 readiness snapshot into its own standalone, citable file.
 
 **Audit checklist**
 - [x] Diff review: this commit touches only `docs/PHASED_BUILD_PLAN_E.md` — zero code paths.
@@ -345,6 +347,7 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## Cross-links
 
+- [`docs/AKSH_ARCHITECTURE_AUDIT_E0.md`](./AKSH_ARCHITECTURE_AUDIT_E0.md) — standalone P3 readiness snapshot produced by E0, baseline for judging E1–E5's actual effect
 - [`docs/AKSH_FINAL_ARCHITECTURE_SPEC.md`](./AKSH_FINAL_ARCHITECTURE_SPEC.md) — frozen baseline this plan operates within
 - [`docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md`](./AKSH_ARCHITECTURE_MIGRATION_PLAN.md) — §P3 item definitions this plan's phases implement, under a narrower safety scope
 - [`docs/BUILT_VS_REMAINING_AUDIT.md`](./BUILT_VS_REMAINING_AUDIT.md) — Track A/B verdicts this plan does not change
