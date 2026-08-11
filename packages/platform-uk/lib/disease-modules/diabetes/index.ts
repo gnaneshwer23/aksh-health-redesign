@@ -28,7 +28,12 @@ export {
   type DiabetesCoachingDraft
 } from "./types";
 
-export { buildGlucoseSignal, type GlucoseSignal, type GlucosePatternFlag } from "./glucose";
+export {
+  buildGlucoseSignal,
+  type GlucoseSignal,
+  type GlucosePatternFlag,
+  type DiabetesReadingsSource
+} from "./glucose";
 export { buildHbA1cSignal, type HbA1cSignal, type HbA1cTrend } from "./hba1c";
 export { buildInsulinSignal, type InsulinSignal, type InsulinRegimenSummary } from "./insulin";
 export { buildGlp1Signal, type Glp1Signal } from "./glp1";
@@ -120,6 +125,14 @@ function safeBuildArea<T>(area: DiabetesModuleId, build: () => T, fallback: T): 
  * `input` overrides the synthetic fixture lookup (getDiabetesFixtureBundle)
  * for tests/callers that want to supply data directly; omit it in
  * production wiring to use the cohort fixture keyed by `context.patientId`.
+ *
+ * C6 (docs/PHASED_BUILD_PLAN_C.md, P1-2): `readingsSource` lets a caller that
+ * pre-loaded `input.glucoseReadings`/`input.hba1cReadings` from a real
+ * Patient State ingest (lib/disease-modules/diabetes/ingest.ts — deliberately
+ * NOT imported here, see that file's client-bundle-safety note) say so, so
+ * the resulting signal is provenance-tagged rather than silently
+ * indistinguishable from fixture data. Omitted (defaults to "fixture") for
+ * every existing caller — byte-identical when nothing has been ingested yet.
  */
 export type DiabetesRiskContribution = {
   patientId: string;
@@ -144,14 +157,23 @@ export type DiabetesRiskContribution = {
 
 export function buildDiabetesRiskContribution(
   context: DiabetesPatientContext,
-  input?: Partial<DiabetesFixtureBundle>
+  input?: Partial<DiabetesFixtureBundle>,
+  readingsSource?: { glucose?: "patient_state_ingest"; hba1c?: "patient_state_ingest" }
 ): DiabetesRiskContribution {
   const fixture = getDiabetesFixtureBundle(context.patientId);
   const bundle: DiabetesFixtureBundle = { ...fixture, ...input };
   const areaFailures: DiabetesModuleId[] = [];
 
-  const glucoseResult = safeBuildArea("GLUCOSE", () => buildGlucoseSignal(context, bundle.glucoseReadings), null);
-  const hba1cResult = safeBuildArea("HBA1C", () => buildHbA1cSignal(context, bundle.hba1cReadings), null);
+  const glucoseResult = safeBuildArea(
+    "GLUCOSE",
+    () => buildGlucoseSignal(context, bundle.glucoseReadings, readingsSource?.glucose ?? "fixture"),
+    null
+  );
+  const hba1cResult = safeBuildArea(
+    "HBA1C",
+    () => buildHbA1cSignal(context, bundle.hba1cReadings, readingsSource?.hba1c ?? "fixture"),
+    null
+  );
   const insulinResult = safeBuildArea("INSULIN", () => buildInsulinSignal(context, bundle.insulinRegimen), null);
   const glp1Result = safeBuildArea("GLP1", () => buildGlp1Signal(context, bundle.glp1SideEffects), null);
   const complicationsResult = safeBuildArea(

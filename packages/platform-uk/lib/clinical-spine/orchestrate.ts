@@ -9,13 +9,14 @@ import {
   type OrchestrationResult
 } from "@/lib/clinical-proof/agent-orchestration";
 import { buildDiabetesRiskContribution, type DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
+import { loadDiabetesPatientStateOverrides } from "@/lib/disease-modules/diabetes/ingest";
 import { isDiabetesModuleEnabled } from "@/lib/integration-config";
 import { getPatientById } from "@/lib/mock-data/patients";
 import { getOracleModelCard, type OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import { runScenario, type TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 
-import { resolveDecision } from "@/lib/decision";
+import { resolveDecision, type DecisionEscalation } from "@/lib/decision";
 
 import { SAFETY_ROUTE_LABELS, type SafetyRoute } from "./safety-route";
 
@@ -29,6 +30,8 @@ export type ClinicalSpineOrchestrateResult = {
   /** B3 — Diabetes v1: null unless ENABLE_DIABETES_MODULE=true AND the patient is diabetes-flagged (clinicalProfiles includes "t2d"). Additive only — see FR-DIAB-018/019/022. */
   diabetesModuleEnabled: boolean;
   diabetes: DiabetesRiskContribution | null;
+  /** C6 (P1-3) — Decision.escalation for the diabetes contribution; always "none" when `diabetes` is null (non-diabetes patient or module off) — byte-identical to pre-C6 output. */
+  diabetesEscalation: DecisionEscalation;
   ehrWrite: false;
   hitlRequired: true;
   physiologicalTwin: false;
@@ -98,12 +101,29 @@ export async function runClinicalSpineOrchestrate(
   // pre-B3 behaviour even with the flag on (FR-DIAB-022).
   const diabetesModuleEnabled = isDiabetesModuleEnabled();
   const diabetesFlagged = Boolean(getPatientById(input.patientId)?.clinicalProfiles?.includes("t2d"));
+  // C6 (docs/PHASED_BUILD_PLAN_C.md, P1-2): look up any real glucose/HbA1c
+  // readings ingested into Patient State for this patient before building
+  // the composite. When nothing has been ingested yet (the common case
+  // today), loadDiabetesPatientStateOverrides returns an empty `input` and
+  // buildDiabetesRiskContribution falls back to the fixture bundle exactly
+  // as it did pre-C6 — byte-identical, per P1-2's own regression requirement.
+  const diabetesOverrides =
+    diabetesModuleEnabled && diabetesFlagged
+      ? await loadDiabetesPatientStateOverrides(baseOrchestration.sharedContext.patientId)
+      : null;
   const diabetes =
     diabetesModuleEnabled && diabetesFlagged
-      ? buildDiabetesRiskContribution({
-          patientId: baseOrchestration.sharedContext.patientId,
-          patientLabel: baseOrchestration.sharedContext.patientLabel
-        })
+      ? buildDiabetesRiskContribution(
+          {
+            patientId: baseOrchestration.sharedContext.patientId,
+            patientLabel: baseOrchestration.sharedContext.patientLabel
+          },
+          diabetesOverrides?.input,
+          {
+            glucose: diabetesOverrides?.glucoseReadingsSource,
+            hba1c: diabetesOverrides?.hba1cReadingsSource
+          }
+        )
       : null;
   const orchestration = diabetes
     ? applyDiabetesContributionAdditively(baseOrchestration, diabetes)
@@ -111,8 +131,12 @@ export async function runClinicalSpineOrchestrate(
 
   // C2 (docs/PHASED_BUILD_PLAN_C.md, P0-2) — Decision domain entry point.
   // resolveDecision delegates to the same resolveSafetyRouteFromOrchestration
-  // this call site used pre-C2; the route value is byte-identical.
-  const decision = resolveDecision({ orchestration });
+  // this call site used pre-C2; the route value is byte-identical. C6/P1-3
+  // additionally passes the diabetes contribution through for the
+  // `escalation` field only — `diabetes` is null for every non-diabetes-
+  // flagged patient and for every patient when the module is off, so
+  // `escalation` resolves to "none" in both cases, matching pre-C6 output.
+  const decision = resolveDecision({ orchestration, diabetes });
   const safetyRoute = decision.route;
   const twin = includeTwinRanking ? runScenario(input.patientId) : null;
   const modelCard = getOracleModelCard();
@@ -155,7 +179,8 @@ export async function runClinicalSpineOrchestrate(
       diabetesFlagged,
       diabetesContributingFactorCount: diabetes?.horizonContributingFactors.length ?? 0,
       diabetesSafetyFlagCount: diabetes?.guardianSafetyFlags.length ?? 0,
-      diabetesAreaFailures: diabetes?.areaFailures ?? []
+      diabetesAreaFailures: diabetes?.areaFailures ?? [],
+      diabetesEscalation: decision.escalation
     }
   });
 
@@ -168,6 +193,7 @@ export async function runClinicalSpineOrchestrate(
     modelCard,
     diabetesModuleEnabled,
     diabetes,
+    diabetesEscalation: decision.escalation,
     ehrWrite: false,
     hitlRequired: true,
     physiologicalTwin: false,

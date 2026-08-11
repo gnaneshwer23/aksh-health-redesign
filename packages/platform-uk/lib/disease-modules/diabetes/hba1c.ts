@@ -1,5 +1,6 @@
 import type { DiabetesHbA1cReading, DiabetesPatientContext, DiabetesSignalHonesty } from "./types";
 import { DIABETES_SIGNAL_HONESTY } from "./types";
+import type { DiabetesReadingsSource } from "./glucose";
 
 /**
  * HbA1c Intelligence (diabetes spec area #2).
@@ -18,6 +19,14 @@ import { DIABETES_SIGNAL_HONESTY } from "./types";
  * supplied readings — a simple linear extrapolation (delta / months-between
  * * 3), not a regression model and not a v2 ML predictor. `readings` are
  * synthetic-fixture-supplied only (see fixtures.ts); no live lab feed exists.
+ *
+ * C6 (docs/PHASED_BUILD_PLAN_C.md, P1-2): `readings` may now come from a real
+ * Patient State ingest (lib/disease-modules/diabetes/ingest.ts) — unlike
+ * Glucose, HbA1c is NOT gated on OQ-DIAB-1 (it already fits the existing
+ * `labSampleSchema`), so ingested readings flow straight through this same
+ * real two-point trend derivation. The optional `readingsSource` parameter
+ * stamps provenance so ingested and fixture-derived readings are never
+ * silently blended without a visible tag.
  */
 
 export type HbA1cTrend = "insufficient_data" | "improving" | "stable" | "worsening";
@@ -32,6 +41,8 @@ export type HbA1cSignal = {
   /** Non-diagnostic trend estimate only. Never presented as a diagnosis or clinical prediction. */
   predictedNext3MonthsPercent: number | null;
   isDiagnosticPrediction: false;
+  /** C6 (P1-2): where `readings` came from — never silently blended without this tag. */
+  readingsSource: DiabetesReadingsSource;
   explanation: string[];
   limitations: string[];
 } & DiabetesSignalHonesty;
@@ -55,7 +66,8 @@ function round1(value: number): number {
 
 export function buildHbA1cSignal(
   context: DiabetesPatientContext,
-  readings: DiabetesHbA1cReading[] = []
+  readings: DiabetesHbA1cReading[] = [],
+  readingsSource: DiabetesReadingsSource = "fixture"
 ): HbA1cSignal {
   const patientLabel = context.patientLabel?.trim() || context.patientId;
   const sorted = [...readings].sort(
@@ -73,6 +85,7 @@ export function buildHbA1cSignal(
       trend: "insufficient_data",
       predictedNext3MonthsPercent: null,
       isDiagnosticPrediction: false,
+      readingsSource,
       explanation: ["No HbA1c readings supplied — does not fabricate lab values."],
       limitations: [
         "No HbA1c readings available for this patient in the current fixture/data source.",
@@ -92,6 +105,7 @@ export function buildHbA1cSignal(
       trend: "insufficient_data",
       predictedNext3MonthsPercent: null,
       isDiagnosticPrediction: false,
+      readingsSource,
       explanation: [`Latest recorded HbA1c: ${latest.valuePercent}% — only one reading on file, trend needs ≥2.`],
       limitations: [
         "Only one HbA1c reading available — trend/3-month estimate needs at least two readings.",
@@ -123,6 +137,7 @@ export function buildHbA1cSignal(
     trend,
     predictedNext3MonthsPercent,
     isDiagnosticPrediction: false,
+    readingsSource,
     explanation: [
       `Latest recorded HbA1c: ${latest.valuePercent}% (${previous.valuePercent}% → ${latest.valuePercent}% over ~${Math.round(months)} month(s)) — trend: ${trend}.`,
       predictedNext3MonthsPercent !== null
@@ -132,7 +147,9 @@ export function buildHbA1cSignal(
     limitations: [
       "Rule-based two-point linear extrapolation only — not a regression model, not a v2 ML predictor (see docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md v2 notes).",
       "Any estimate is a non-diagnostic trend, never a clinical prediction — clinician confirms wording before it reaches a patient-facing surface.",
-      "Synthetic-fixture data only — no live lab feed."
+      readingsSource === "patient_state_ingest"
+        ? "Sourced from real Patient State ingest (C6) — still not a live lab feed integration."
+        : "Synthetic-fixture data only — no live lab feed."
     ],
     ...DIABETES_SIGNAL_HONESTY
   };

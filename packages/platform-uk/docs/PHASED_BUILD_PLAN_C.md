@@ -2,7 +2,7 @@
 
 **Date:** 11 August 2026
 **Scope:** `packages/platform-uk`, `main`
-**Status:** C0–C4 (all of P0) and C5's minimum bar (P1-1) complete. C5 stretch (P1-2/P1-3) deferred to a future C6.
+**Status:** C0–C5 complete (C5's stretch, P1-2/P1-3, deferred to C6 at the time). C6 (P1-2 + P1-3) now complete.
 **This is not:** a redo of `docs/PHASED_BUILD_AND_AUDIT_PLAN.md` (P0–P7, closed) or `docs/PHASED_BUILD_PLAN.md` (B0–B7, closed). Both prior tranches are frozen and are not reopened by this document.
 
 ## Relationship to prior plans and to the frozen architecture
@@ -288,6 +288,62 @@
 
 ---
 
+## C6 — P1-2 + P1-3: diabetes glucose/HbA1c ingestion → Patient State, diabetes Decision escalation ✅ **COMPLETE (11 August 2026)**
+
+**Goal:** Land the two C5 stretch items that were explicitly deferred rather than forced: a real CONNECT path for glucose/HbA1c readings into C1's Patient State (P1-2), and an explicit diabetes-specific `escalation` value on C2's `Decision` type (P1-3) — both additive, both respecting the still-open `OQ-DIAB-1` gate. Implements `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` **P1-2** and **P1-3** exactly as scoped there.
+
+**Blocking decision gate check (re-verified before starting, not assumed):**
+- [x] `OQ-DIAB-1` (CGM/glucose modality schema, `FR-DIAB-051`) — **still OPEN**, confirmed by re-reading `docs/PHASED_BUILD_PLAN.md` B3's own decision-gate record before writing any code. Per that gate, this phase does **not** invent a new `glucose` modality in `lib/precision-health/modalities.ts` and does **not** give `glucose.ts` a real TIR/variability/pattern derivation. Ingestion (storage) is a different concern from derivation (a clinical judgement call) — P1-2 is scoped to the former only for Glucose; HbA1c is not gated on `OQ-DIAB-1` at all (it already fit `labSampleSchema` pre-C6) and does get its existing real two-point trend derivation applied to ingested readings.
+
+**In scope — delivered**
+- New `lib/disease-modules/diabetes/ingest.ts` — `recordDiabetesGlucoseReading`/`recordDiabetesHbA1cReading` (write one Patient State fact per reading via C1's `recordPatientStateFact`, factTypes `diabetes_glucose_reading`/`diabetes_hba1c_reading`), `loadIngestedDiabetesReadings` (read back the full, ordered series via `listPatientStateFacts` — superseded facts included, nothing lost), and `loadDiabetesPatientStateOverrides` (builds the `Partial<DiabetesFixtureBundle>` override + provenance flags for the composite, only setting a bundle key when real readings exist for that kind). Deliberately **not** re-exported from `lib/disease-modules/diabetes/index.ts` (transitively imports `lib/patient-state/repository.ts`'s Node-only `fs`/pg client) — same client-bundle-safety pattern C5's `696e14b` fix established for `learning.ts`.
+- `lib/disease-modules/diabetes/glucose.ts` / `hba1c.ts` — additive third parameter `readingsSource: "fixture" | "patient_state_ingest"` (default `"fixture"`) and additive `readingsSource` field on `GlucoseSignal`/`HbA1cSignal`, so ingested and fixture-derived readings are never silently indistinguishable in the output (the "provenance tag" the migration plan's own testing requirement calls for). Glucose's derivation is unchanged regardless of `readingsSource` (`tirPercent`/`variabilityScore` stay `null`, `patternFlags` stays `["insufficient_data"]`) — only the reading count/limitations text and the tag differ. HbA1c's real two-point trend derivation runs identically over ingested or fixture readings.
+- `lib/disease-modules/diabetes/index.ts` — `buildDiabetesRiskContribution` gains an additive third parameter, `readingsSource?: { glucose?: "patient_state_ingest"; hba1c?: "patient_state_ingest" }`, passed straight through to the two builders above. The composite itself stays a pure, synchronous function — no I/O added to it; the async Patient State lookup happens one layer up, in the caller.
+- `lib/clinical-spine/orchestrate.ts` — awaits `loadDiabetesPatientStateOverrides` for diabetes-flagged patients (module already async) before calling the composite, passing its `input`/`readingsSource` through. When nothing has been ingested for a patient (the common case, and every existing fixture patient), the override `input` is `{}` and the composite output is byte-for-byte identical to pre-C6 — verified by test, not just by inspection.
+- New `POST /api/patients/[id]/diabetes/glucose` and `POST /api/patients/[id]/diabetes/hba1c` — authenticated, gated identically to the existing `.../diabetes-coaching` routes (`ENABLE_DIABETES_MODULE` + diabetes-flagged patient, else an honest 404). Body-validated (ISO timestamp, plausible numeric range); records one reading as a Patient State fact via `ingest.ts`. Read-back reuses the **existing** `GET /api/patients/[id]/state` endpoint (C1) — no new read endpoint was needed, since Patient State facts are already generically browsable there regardless of `factType`.
+- `lib/decision/index.ts` — `Decision.escalation` widened from the C2 literal `"none"` to `"none" | "diabetes_nurse_review" | "routine_coaching"` (additive union, not a breaking type change for any exhaustive-`"none"`-only consumer, since none existed). `resolveDecision` gains an additive optional `diabetes?: DiabetesRiskContribution | null` input; `resolveDiabetesEscalation` derives the value deterministically (no LLM): a GUARDIAN-facing diabetes safety flag (hypo event, GLP-1 side effect) or a `referral_indicated` complication → `"diabetes_nurse_review"`; else at least one coaching draft → `"routine_coaching"`; else (or `diabetes` omitted/null) → `"none"`. Never touches `route`/`priority` — purely additive alongside them, not a new parallel decision path, per P1-3's explicit scope note.
+- `lib/clinical-spine/orchestrate.ts` — passes the (possibly-null) diabetes contribution into `resolveDecision`; `ClinicalSpineOrchestrateResult` gains an additive `diabetesEscalation: DecisionEscalation` field (mirrors `decision.escalation`).
+- New `tests/diabetes-patient-state-ingest.test.ts` — glucose/HbA1c ingest+read-back round trip (append-only, ordered by `recordedAt`), `readingsSource` provenance distinguishable, Glucose's `insufficient_data` stub holds regardless of source (OQ-DIAB-1 respected), HbA1c's real trend derivation runs over ingested data, and a byte-for-byte regression check that a patient with nothing ingested produces identical composite output whether or not the P1-2 override path runs.
+- New `tests/diabetes-decision-escalation.test.ts` — unit matrix on `resolveDecision`'s escalation rule (none / `diabetes_nurse_review` via hypo flag / `diabetes_nurse_review` via referral-indicated complication / `routine_coaching`, and that escalation never changes `route`/`priority`), plus orchestration-level checks: module-off → `"none"`; non-diabetes-flagged patient (P001) with module on → `"none"` (byte-identical); P026 (hypo events) → `"diabetes_nurse_review"`; P002 (worsening HbA1c, watch-level complication only, no hypo) → `"routine_coaching"`.
+- Both new test files wired into `test:clinical-proof`.
+
+**Out of scope (unchanged from the migration plan's own P1-2/P1-3 scoping)**
+- No change to `lib/precision-health/modalities.ts` — no new `glucose` modality, no `wearableSampleSchema` extension. `OQ-DIAB-1` remains open and undecided by this phase.
+- No change to Glucose's own derivation logic — `tirPercent`/`variabilityScore`/`patternFlags` stay exactly as honest as before; only provenance/count changed.
+- No change to `queue-decision.ts`'s priority/routing logic, and no change to `route`/`priority` from the new `escalation` field — mirrors C2's own "additive to Decision, not a new parallel decision path" framing.
+- No UI surfacing of ingested readings or the new `escalation` field (a future phase's job, same framing C1/C2 used for their own read/UI deferrals).
+- No new DB migration — reuses C1's existing `aksh.patient_state_facts` table; no schema change needed.
+- No change to `ENABLE_DIABETES_MODULE`'s default (`false`).
+
+**Exit criteria (DoD)**
+- [x] At least one full patient's glucose series can be ingested, persisted with provenance, and read back through `buildGlucoseSignal` without touching fixtures (`tests/diabetes-patient-state-ingest.test.ts`).
+- [x] A real-ingested reading and a fixture reading are distinguishable in `buildGlucoseSignal`'s/`buildHbA1cSignal`'s output provenance (`readingsSource` field, tested for both).
+- [x] Regression: a patient with nothing ingested resolves to fixture behaviour byte-for-byte (asserted via `assert.deepEqual` on the full composite output, not just spot fields).
+- [x] A diabetes-flagged synthetic patient with a hypo-risk/GUARDIAN-flag-bearing contribution produces an explicit `escalation: "diabetes_nurse_review"`; a non-diabetes patient's decision output (including `escalation`) is unchanged (`"none"`, byte-identical to pre-C6).
+- [x] `npm run typecheck` and `npm run test:clinical-proof` both green, including both new test files.
+
+**Audit checklist**
+- [x] `OQ-DIAB-1` re-checked (not assumed carried-over) before any code was written — confirmed still open in `docs/PHASED_BUILD_PLAN.md` B3's own record; no modality schema invented (`grep`-clean: `lib/precision-health/modalities.ts` has zero diff this phase).
+- [x] Confirms this is additive to Patient State (Domain 1) — reuses C1's existing `aksh.patient_state_facts` table and `recordPatientStateFact`/`listPatientStateFacts` unmodified; no new table, no mutation of the append-only invariant (verified by test: superseded glucose/HbA1c facts remain readable with their original value intact).
+- [x] Confirms this is additive to Decision (Domain 3) — `Decision.escalation`'s widened union is additive (no removed literal), `resolveDecision`'s new `diabetes` parameter is optional, and every existing call site that omits it (all of C2's own tests, and every non-diabetes/flag-off orchestration path) resolves to the exact pre-C6 `"none"` value.
+- [x] Confirms client-bundle safety (the concrete lesson from C5's `1a48ff1`/`696e14b` incident): `lib/disease-modules/diabetes/ingest.ts` is not re-exported from the diabetes barrel; `npm run build` was run locally and completed clean with no Node-module-in-client-bundle errors before pushing.
+- [x] Confirms `liveEmis`/`autoRetrain` untouched — grep clean; this phase touches no EMIS-flag code, and every new API route response hard-sets `ehrWrite: false`, `hitlRequired: true`.
+- [x] Confirms no agent-directory change — grep clean; `lib/agents.ts` has zero diff this phase, and the two new ingestion endpoints are plain data-recording routes, not agents.
+- [x] Confirms HITL is unaffected — ingestion records raw readings only (no draft, no clinical output); the only clinician-facing output paths (HORIZON/GUARDIAN contributing factors, coaching drafts, the new `escalation` field) remain exactly as HITL-gated as before this phase.
+
+**Functionality checks**
+- [x] `npm run typecheck` — PASS (clean, zero errors).
+- [x] `npm run test:clinical-proof` — PASS, full chain green (all prior C0–C5 suites unmodified and green) including new `tests/diabetes-patient-state-ingest.test.ts` and `tests/diabetes-decision-escalation.test.ts`. Same expected `postgres_not_configured` fail-visible SHIELD-audit warnings as every prior phase (no `DATABASE_URL` in this sandbox) — not a regression.
+- [x] `npm run test:workflow` — PASS (also re-runs the full `test:clinical-proof` chain; confirms the two new API route files don't break `route-smoke.test.ts`/`api-contracts.test.ts`).
+- [x] `npm run build` — PASS locally, clean production build, no client-bundle regression (the specific failure mode C5's first push hit).
+
+**Commit + Deploy gate**
+- Commit: new `lib/disease-modules/diabetes/ingest.ts`, glucose.ts/hba1c.ts/index.ts provenance additions, `lib/decision/index.ts` escalation, `lib/clinical-spine/orchestrate.ts` wiring, two new API routes, two new test files, `package.json` chain update, this plan's C6 section. Push to `main`. Confirm Vercel `READY` for the pushed commit before declaring Go.
+
+**Go/No-Go:** **GO.** Both deferred C5 stretch items (P1-2, P1-3) landed additively, `OQ-DIAB-1` was re-verified still open and respected (no modality schema invented, Glucose derivation unchanged), the byte-identical-when-untouched regression is test-proven for both Patient State ingestion and Decision escalation, and the full `test:clinical-proof`/`test:workflow` chains plus a clean local production build all stayed green throughout.
+
+---
+
 ## One-page roadmap
 
 | Phase | Migration-plan item | Rough effort | Depends on |
@@ -298,6 +354,7 @@
 | **C3** | P0-3 Agent directory classification | 0.5 | C0 (independent of C1/C2) |
 | **C4** | P0-4 Interop adapter contract | 0.5–1 | C0 (independent of C1/C2/C3) |
 | **C5** | P1 Diabetes MVP loop slice | 1–2 (minimum bar); more if stretch attempted | **C1–C4 all GO (hard gate)** |
+| **C6** | P1-2 Patient State glucose/HbA1c ingestion + P1-3 diabetes Decision escalation | 1–1.5 | C5 (deferred stretch), C1 (Patient State), C2 (Decision) |
 
 ## Demo GO vs Live NO-GO mapping
 
@@ -311,6 +368,7 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 | C3 | Metadata only — zero visible behaviour change | None |
 | C4 | Internal contract only — zero visible behaviour change | None |
 | C5 | Extends the existing Diabetes v1 (B3/B4) narrative with real Learning-domain wiring, still flag-gated/HITL/synthetic | None |
+| C6 | Extends Patient State with real (synthetic-source) glucose/HbA1c ingestion and Decision with an explicit diabetes escalation value — still flag-gated/HITL/synthetic, `OQ-DIAB-1` still respected as open | None |
 
 **No phase in this plan changes `liveEmis`, `autoRetrain`, or `canFlipLiveEmisInCode()`.**
 
