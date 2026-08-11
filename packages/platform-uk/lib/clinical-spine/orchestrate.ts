@@ -15,11 +15,9 @@ import { getOracleModelCard, type OracleModelCard } from "@/lib/precision-health
 import { runScenario, type TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 
-import {
-  resolveSafetyRouteFromOrchestration,
-  SAFETY_ROUTE_LABELS,
-  type SafetyRoute
-} from "./safety-route";
+import { resolveDecision } from "@/lib/decision";
+
+import { SAFETY_ROUTE_LABELS, type SafetyRoute } from "./safety-route";
 
 export type ClinicalSpineOrchestrateResult = {
   artifactType: "aksh-clinical-spine-orchestrate";
@@ -111,7 +109,11 @@ export async function runClinicalSpineOrchestrate(
     ? applyDiabetesContributionAdditively(baseOrchestration, diabetes)
     : baseOrchestration;
 
-  const safetyRoute = resolveSafetyRouteFromOrchestration(orchestration);
+  // C2 (docs/PHASED_BUILD_PLAN_C.md, P0-2) — Decision domain entry point.
+  // resolveDecision delegates to the same resolveSafetyRouteFromOrchestration
+  // this call site used pre-C2; the route value is byte-identical.
+  const decision = resolveDecision({ orchestration });
+  const safetyRoute = decision.route;
   const twin = includeTwinRanking ? runScenario(input.patientId) : null;
   const modelCard = getOracleModelCard();
 

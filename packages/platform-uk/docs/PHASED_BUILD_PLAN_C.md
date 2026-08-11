@@ -124,7 +124,7 @@
 
 ---
 
-## C2 — P0-2: Extract a named Decision module from CONDUCTOR
+## C2 — P0-2: Extract a named Decision module from CONDUCTOR ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Separate Domain 3 (Decision) from Domain 2 (Intelligence)/orchestration at the module boundary — a pure extraction/re-export refactor with **zero** behaviour change. Implements **P0-2** exactly as scoped.
 
@@ -141,24 +141,24 @@
 - No API response shape change — `runClinicalSpineOrchestrate`'s public return type is byte-identical.
 
 **Exit criteria (DoD)**
-- [ ] `lib/decision/index.ts` exists, is independently unit-tested, and is the only thing `orchestrate.ts` calls for `safetyRoute` resolution.
-- [ ] Golden-scenario regression test proves `safetyRoute`/`safetyRouteLabel` are unchanged before/after.
-- [ ] `resolveSafetyRouteFromOrchestration` itself is untouched (still directly usable by any other existing caller — e.g. the patient-companion gate in `resolveSafetyRouteFromSignals`).
+- [x] `lib/decision/index.ts` exists, is independently unit-tested, and is the only thing `orchestrate.ts` calls for `safetyRoute` resolution.
+- [x] Golden-scenario regression test proves `safetyRoute`/`safetyRouteLabel` are unchanged before/after (P002/Patel and P009, matched against a direct call to the original resolver on the same orchestration snapshot).
+- [x] `resolveSafetyRouteFromOrchestration` itself is untouched (still directly usable by any other existing caller — confirmed `lib/precision-health/whole-loop.ts`'s own direct call site is unmodified).
 
 **Audit checklist**
-- [ ] Confirms Decision is now independently testable/importable without going through orchestration (spec §15: "Decision Layer is architecturally separate from the Intelligence Layer").
-- [ ] Confirms zero behaviour change via the golden-scenario diff, not just "looks equivalent by inspection."
-- [ ] Confirms no safety-check bypass — `SafetyAssessment`/HITL gates downstream of `safetyRoute` are unaffected (this phase changes who calls the route resolver, not what the resolver decides).
-- [ ] Confirms `liveEmis`/`autoRetrain`/agent-directory untouched (grep clean).
+- [x] Confirms Decision is now independently testable/importable without going through orchestration (spec §15: "Decision Layer is architecturally separate from the Intelligence Layer") — `resolveDecision` is unit-tested directly against synthetic `OrchestrationResult`s, no HTTP/orchestration round-trip required.
+- [x] Confirms zero behaviour change via the golden-scenario diff, not just "looks equivalent by inspection" — `tests/decision-module.test.ts` asserts `result.safetyRoute === resolveSafetyRouteFromOrchestration(result.orchestration)` for both golden patients.
+- [x] Confirms no safety-check bypass — `SafetyAssessment`/HITL gates downstream of `safetyRoute` are unaffected (this phase changes who calls the route resolver, not what the resolver decides).
+- [x] Confirms `liveEmis`/`autoRetrain`/agent-directory untouched (grep clean; `lib/agents.ts` has zero diff in this phase).
 
 **Functionality checks**
-- [ ] `npm run typecheck`
-- [ ] `npm run test:clinical-proof` (all existing `clinical-spine-phase-*` + `clinical-proof-orchestration` suites green unmodified, plus new `decision-module.test.ts`)
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green (all existing `clinical-spine-phase-*` + `clinical-proof-orchestration` suites unmodified and green, plus new `decision-module.test.ts`: every `SafetyRoute` branch matrix + golden-scenario regression for P002/P009).
 
 **Commit + Deploy gate**
 - Commit: new `lib/decision/` + orchestrate.ts call-site swap + tests + plan update. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for C3:** **GO** if the golden-scenario outputs are byte-identical and the full clinical-proof chain is green. **NO-GO** on any `safetyRoute` diff.
+**Go/No-Go for C3:** **GO** — golden-scenario outputs are byte-identical and the full clinical-proof chain is green.
 
 ---
 
