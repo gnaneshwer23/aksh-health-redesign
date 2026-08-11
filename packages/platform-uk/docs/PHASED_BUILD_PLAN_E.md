@@ -2,7 +2,7 @@
 
 **Date:** 11 August 2026
 **Scope:** `packages/platform-uk`, `main`
-**Status:** In progress — phases marked below as they land.
+**Status:** Closed — all phases (E0–E5) complete, 11 August 2026.
 **This is not:** a redo of `docs/PHASED_BUILD_PLAN_C.md` (C0–C6, closed), `docs/PHASED_BUILD_PLAN_D.md` (D0–D6, closed), or any earlier tranche. Those are frozen and are not reopened by this document.
 
 ## Relationship to prior plans and to the frozen architecture
@@ -273,12 +273,12 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 
 ---
 
-## E5 — P3-5 (optional): Heart module typed-stub scaffold (zero wiring, zero flag)
+## E5 — P3-5 (optional): Heart module typed-stub scaffold (zero wiring, zero flag) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Prove the "module on a platform" pattern (`docs/volume-i/VOLUME_I_PRODUCT_REQUIREMENTS.md` FR-ARC-002) generalises beyond Diabetes, by adding a second disease module directory containing **only** the same kind of typed-stub file Diabetes itself started with (`lib/disease-modules/diabetes/types.ts`'s original v0 form, before `ENABLE_DIABETES_MODULE` or any orchestrate.ts wiring existed) — with zero wiring, zero feature flag (none is needed, since nothing reads one yet), and without resolving the still-open, Product-owned `OQ-ARC-4` ("does a second disease module get its own PRD chapter or a new Volume?").
 
 **In scope**
-- New `lib/disease-modules/heart/types.ts` — mirrors `diabetes/types.ts`'s shape exactly: `HEART_MODULE_IDS` (illustrative cardiovascular signal areas — e.g. `BLOOD_PRESSURE`, `LIPIDS`, `RHYTHM`, `HEART_FAILURE_SIGNS`, `MEDICATION_ADHERENCE_CVD`, `LIFESTYLE_CVD` — explicitly labelled provisional/illustrative pending a real clinical-lead/product spec, exactly as Diabetes's own 9 areas were before `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` existed), `HeartModuleId`, `HeartFeedTarget` (`"HORIZON" | "GUARDIAN" | "coaching_surface"`, reusing the same three existing platform surfaces Diabetes feeds — no new agent, no new orchestrator path), `HEART_SIGNAL_HONESTY` (`hitlRequired: true; ehrWrite: false; autoRetrain: false; physiologicalTwin: false` — byte-identical shape to `DIABETES_SIGNAL_HONESTY`), and a file-header comment stating: v0 typed-stub only, nothing wired into `orchestrate.ts`/HORIZON/GUARDIAN, `OQ-ARC-4` remains open and unresolved by this file, no env flag exists because nothing consumes this module yet.
+- New `lib/disease-modules/heart/types.ts` — mirrors `diabetes/types.ts`'s shape exactly: `HEART_MODULE_IDS` (illustrative cardiovascular signal areas — e.g. `BLOOD_PRESSURE`, `LIPIDS`, `RHYTHM`, `HEART_FAILURE_SIGNS`, `MEDICATION_ADHERENCE_CVD`, `LIFESTYLE_CVD` — explicitly labelled provisional/illustrative pending a real clinical-lead/product spec, exactly as Diabetes's own 9 areas were before `docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md` existed), `HeartModuleId`, `HeartFeedTarget` (`"HORIZON" | "GUARDIAN" | "coaching_surface"`, reusing the same three existing platform surfaces Diabetes feeds — no new agent, no new orchestrator path), `HEART_MODULE_FEED_TARGET` (a `Record<HeartModuleId, HeartFeedTarget>`, mirroring `DIABETES_MODULE_FEED_TARGET`'s own shape — illustrative only, not read by any orchestrator/agent/route today), `HEART_SIGNAL_HONESTY` (`hitlRequired: true; ehrWrite: false; autoRetrain: false; physiologicalTwin: false` — byte-identical shape to `DIABETES_SIGNAL_HONESTY`), and a file-header comment stating: v0 typed-stub only, nothing wired into `orchestrate.ts`/HORIZON/GUARDIAN, `OQ-ARC-4` remains open and unresolved by this file, no env flag exists because nothing consumes this module yet.
 - Per FR-DIAB-006's own hard-boundary rule (module boundaries between diseases stay hard even before a second module existed): `lib/disease-modules/heart/types.ts` imports nothing from `lib/disease-modules/diabetes/*`, and nothing in `diabetes/*` imports from `heart/*` — verified by grep, not just by construction.
 - New `tests/heart-module-stub.test.ts` — proves `HEART_MODULE_IDS` is a non-empty, deduplicated array; proves `HEART_SIGNAL_HONESTY` matches the literal shape (`hitlRequired: true`, `ehrWrite: false`, `autoRetrain: false`, `physiologicalTwin: false`); proves (via a source-text grep assertion, mirroring how other phases assert `git diff --stat` emptiness) that no file under `lib/disease-modules/heart/` imports from `lib/disease-modules/diabetes/`, and vice versa; proves the module is **not** imported anywhere under `lib/clinical-spine/`, `lib/agents.ts`, or any `app/api/**/route.ts` (i.e., genuinely zero wiring, not just "wiring not yet tested").
 
@@ -305,7 +305,7 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 **Commit + Deploy gate**
 - Commit: `lib/disease-modules/heart/types.ts` + test + `package.json` chain update + this plan's E5 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go:** E5 is the last phase in this tranche's initial scope; no E6 is pre-defined.
+**Go/No-Go: GO** — all exit criteria met (zero cross-imports with Diabetes, zero wiring anywhere outside the module's own directory and its own test, `OQ-ARC-4` untouched), full clinical-proof chain green. **E5 is the last phase in this tranche's initial scope; no E6 is pre-defined. Build Tranche E (E0–E5) is closed.**
 
 ---
 
@@ -339,7 +339,7 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in E / P3 (updated as phases land)
 
-- **E0–E5:** see phase sections above for live status.
+- **E0–E5:** all complete. Tranche E is closed — see phase sections above for each phase's own record.
 - **P3 items not covered by E0–E5:** P3-3 (live EMIS/NHS write path) is the explicit parking lot — governed entirely outside this plan, per the migration plan's own text and this plan's HARD NO-GOs.
 - **Still blocked on partners/clinical lead (unchanged by this tranche):** IM1/EMIS partner outreach (user/org-owned, not sent), Medplum Client Secret (user-supplied), Partner sandbox live credentials (partner-owned), signed CSO/IG/Gate 1–3 sign-off, signed N7 `liveEmis` go/no-go, `OQ-DIAB-1` (clinical lead), `OQ-ARC-4` (Product) — none of these are, or can be, resolved by engineering work alone.
 
