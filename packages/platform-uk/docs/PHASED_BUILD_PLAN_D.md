@@ -126,7 +126,7 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 
 ---
 
-## D2 — Provisional `OQ-DIAB-1` engineering decision (`PED-DIAB-1`) + Glucose Intelligence v1.1
+## D2 — Provisional `OQ-DIAB-1` engineering decision (`PED-DIAB-1`) + Glucose Intelligence v1.1 ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Take one honest step forward on Glucose Intelligence — still gated on the unresolved `OQ-DIAB-1` for anything that would touch `lib/precision-health/modalities.ts` — by deriving TIR (time-in-range) and a variability estimate **only** from real, patient-specific readings already flowing through C6's Patient-State ingest path (`lib/disease-modules/diabetes/ingest.ts`), using a clearly-labelled **default, non-personalised, standard glycaemic band** (not a clinician-set target), and requiring a minimum reading count before computing anything. Fixture-sourced readings are explicitly **not** touched — they remain the pre-existing `insufficient_data` stub, preserving every existing byte-identical-regression guarantee C6 established.
 
@@ -153,26 +153,26 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 - No change to `ENABLE_DIABETES_MODULE`'s default (`false`).
 
 **Exit criteria (DoD)**
-- [ ] `buildGlucoseSignal` derives real `tirPercent`/`variabilityScore`/pattern flags only for `patient_state_ingest`-sourced readings at/above the minimum count, with an explicit `targetBand` + provisional-language limitation on every derived output.
-- [ ] Fixture-sourced and below-minimum-count ingested readings remain byte-identical `insufficient_data` stubs.
-- [ ] `npm run typecheck` and `npm run test:clinical-proof` both green, including the new test file.
-- [ ] Volume I's `OQ-DIAB-1` entries carry the new provisional-decision status line; `OQ-DIAB-1`'s own **Status: Open** line is unchanged (not marked Decided).
+- [x] `buildGlucoseSignal` derives real `tirPercent`/`variabilityScore`/pattern flags only for `patient_state_ingest`-sourced readings at/above the minimum count (5), with an explicit `targetBand` + provisional-language limitation on every derived output.
+- [x] Fixture-sourced and below-minimum-count ingested readings remain byte-identical `insufficient_data` stubs (`targetBand` absent).
+- [x] `npm run typecheck` and `npm run test:clinical-proof` both green, including the new test file.
+- [x] Volume I's `OQ-DIAB-1` entries (§8.11, §21.4) carry the new provisional-decision status line; `OQ-DIAB-1`'s own **Status: Open** line is unchanged (not marked Decided).
 
 **Audit checklist**
-- [ ] `lib/precision-health/modalities.ts` has zero diff (`git diff --stat`) — `OQ-DIAB-1` genuinely untouched.
-- [ ] No fixture-only cohort patient's composite output changes (byte-for-byte regression test, not spot-check).
-- [ ] Every derived (non-stub) Glucose output visibly states the band is a default/provisional convention, not a clinical target — reviewed by reading the actual limitation strings in the test assertions, not just their presence.
-- [ ] `liveEmis`/`autoRetrain`/agent-directory/HITL — grep-clean, this phase touches no orchestration/EMIS/agent-directory code and adds no new clinician-facing action (Glucose signal remains read-only intelligence feeding HORIZON, same as before).
+- [x] `lib/precision-health/modalities.ts` has zero diff (`git diff --stat` confirmed empty) — `OQ-DIAB-1` genuinely untouched.
+- [x] No fixture-only cohort patient's composite output changes — `tests/diabetes-glucose-v1-1.test.ts`'s regression test iterates all 6 fixture cohort patients (`getDiabetesFixtureCohortIds()`) and asserts byte-for-byte unchanged Glucose signal, not a spot-check.
+- [x] Every derived (non-stub) Glucose output visibly states the band is a default/provisional convention, not a clinical target — asserted directly on the limitation string content in the test (`.includes("DEFAULT") && .includes("OQ-DIAB-1")`), not just presence of some string.
+- [x] `liveEmis`/`autoRetrain`/agent-directory/HITL — grep-clean; this phase touches only `lib/disease-modules/diabetes/glucose.ts` (pure, dependency-free), one new test file, `package.json`'s test chain, and two docs files. No orchestration/EMIS/agent-directory diff. Glucose signal remains read-only intelligence feeding HORIZON via `index.ts`'s existing additive merge — no new clinician-facing action, no new HITL gate needed.
 
 **Functionality checks**
-- [ ] `npm run typecheck` — PASS.
-- [ ] `npm run test:clinical-proof` — PASS, full chain green including new `tests/diabetes-glucose-v1-1.test.ts`.
-- [ ] `npm run build` — run locally if `glucose.ts`'s exported types change in a way that could affect the client-imported diabetes barrel (`GlucoseSignal` is already barrel-exported per C6 — confirm no new Node-only import is introduced into `glucose.ts` itself, since it's a pure, dependency-free module today and must stay that way to remain client-bundle-safe).
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green (126s) including new `tests/diabetes-glucose-v1-1.test.ts` (8 assertions: fixture-never-derives, below-minimum-stays-stub, hand-computed TIR/%CV at minimum count, all three named pattern flags fire on constructed sets, a clean set triggers zero flags, and the 6-patient fixture-cohort regression).
+- [x] `npm run build` — PASS locally, clean production build. `glucose.ts` remains a pure, dependency-free module (no new imports) — still safe to barrel-export to client components, same discipline as every prior C-tranche phase.
 
 **Commit + Deploy gate**
-- Commit: `glucose.ts` v1.1 derivation + new test file + Volume I OQ-DIAB-1 status line + this plan's D2 section. Push to `main`. Confirm Vercel `READY`.
+- Commit: `glucose.ts` v1.1 derivation + new test file + `package.json` chain update + Volume I `OQ-DIAB-1` status lines (§8.11, §21.4) + this plan's D2 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for D3:** pending this phase's own functionality checks.
+**Go/No-Go for D3: GO** — all exit criteria met, full clinical-proof chain green, clean production build, `OQ-DIAB-1` itself confirmed still open and `modalities.ts` untouched.
 
 ---
 
@@ -319,8 +319,7 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in D / P2 / P3 (updated as phases land)
 
-- **D0–D1:** complete (see phase sections above for detail).
-- **D2:** in progress/complete per its own Go/No-Go — see phase section for current status.
+- **D0–D2:** complete (see phase sections above for detail).
 - **D3–D6:** planned, not yet executed as of this document's initial commit; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
 - **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
 - **P3 (unchanged, still out of scope):** PRISM/ATLAS build-out, production RBAC/CIS2, live EMIS/NHS write path, federated research productionisation, additional disease modules beyond Diabetes — none of these are touched by this plan, per the migration plan's own P3 framing ("out of scope until P0–P2 are substantially delivered and there is demonstrated need").

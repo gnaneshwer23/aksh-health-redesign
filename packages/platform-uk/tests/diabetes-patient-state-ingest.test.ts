@@ -9,9 +9,11 @@
  *  2. buildDiabetesRiskContribution's `readingsSource` provenance tag is
  *     "patient_state_ingest" when Patient-State-sourced readings are passed,
  *     vs "fixture" for the default/untouched path — never silently blended.
- *  3. Glucose stays an honest `insufficient_data` stub regardless of
- *     `readingsSource` — ingestion never smuggles in a real TIR/variability
- *     derivation while OQ-DIAB-1 is still open.
+ *  3. Glucose stays an honest `insufficient_data` stub for a single ingested
+ *     reading (below D2's MIN_READINGS_FOR_DERIVATION) — OQ-DIAB-1 is still
+ *     open and this test does not exercise D2's `PED-DIAB-1` provisional
+ *     derivation path (≥5 patient_state_ingest readings); see
+ *     tests/diabetes-glucose-v1-1.test.ts for that coverage.
  *  4. HbA1c DOES use real ingested readings for its existing two-point
  *     trend derivation (not gated on OQ-DIAB-1).
  *  5. Regression: a patient with nothing ingested falls back to the fixture
