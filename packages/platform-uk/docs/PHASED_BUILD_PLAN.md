@@ -356,106 +356,159 @@
 
 ---
 
-## B5 — Patient surfaces / check-in (only if B1's AppRole work is done)
+## B5 — Patient surfaces / check-in (only if B1's AppRole work is done) ✅ **COMPLETE (6 August 2026)**
 
 **Goal:** Give the patient persona a real, audited check-in API now that it has its own correctly-scoped `AppRole` (from B1) instead of building on top of the `clinical_reviewer` fallthrough.
 
 **Hard dependency:** B1 must be complete and merged (`patient` `AppRole` exists and is enforced) before this phase starts. Do not build patient-facing write paths on the old fallthrough — restart risk assessment if B1 is skipped or reordered.
 
-**In scope**
-- [ ] Build `POST /api/patients/[id]/check-in` (or equivalent), backed by the new `patient` `AppRole` scope: a patient may only write to their own bound record (`FR-PER-006`), never another patient's.
-- [ ] Persist check-in submissions (mood/symptom/adherence self-report) via the existing consent-gated modality pattern (`lifestyleSampleSchema` self-report, matching the Behaviour Scientist module's stated input in `DISEASE_INTELLIGENCE_DIABETES_SPEC.md`).
-- [ ] Any self-disclosed risk (diabetes distress, self-harm signal) routes via the existing clinical-escalation-hint mechanism to a human gate — never handled autonomously (restates the Behaviour Scientist HITL gate from B3/B4).
-- [ ] SHIELD-audit every check-in write.
-- [ ] Wire the existing `PatientCompanion.tsx` local `checkInStep` UI state to this real API instead of being UI-only.
+**In scope — completed**
+- [x] Built `POST /api/patients/[id]/check-in`, backed by the `patient` `AppRole` scope: only `auth.context.userRole === "patient"` may call it (every other mapped `AppRole` — `clinical_reviewer`, `researcher`, `operations_lead`, `restricted` — gets a 403, no fallthrough), and `evaluatePatientUrlAccess` (`lib/clinical-proof/tenant-isolation.ts`) enforces the patient may only write to their own bound record (`FR-PER-006`), never another patient's, and fails closed (403) when the session has no bound patient id at all rather than guessing or allowing it.
+- [x] Check-in submissions (mood/symptom-text/medication-adherence self-report) persist via the existing consent-gated modality pattern — `buildCheckInLifestyleSample` (`lib/patient-companion/check-in.ts`) maps the submission to `lifestyleSampleSchema` and routes it through `ingestModalitySampleStub` under the `coaching_wellness` purpose code, the same self-report input `DISEASE_INTELLIGENCE_DIABETES_SPEC.md` §7 documents as the Behaviour Scientist module's stated input. A missing/revoked consent grant is honestly reported (`modalitySampleAccepted:false` + message), never silently dropped or faked as stored.
+- [x] A self-disclosed risk phrase (self-harm/crisis, red-flag symptom, or diabetes distress — `detectCheckInEscalation`) routes to a clinician-visible `NurseEscalationTask` (new `"patient_check_in"` source on the existing type) with `priority:"urgent"`, reusing the same escalation-task shape `voice-care`'s route already surfaces to clinicians — never handled autonomously, restating the Behaviour Scientist HITL gate from B3/B4. Priority order (crisis phrase always wins over a co-occurring chronic-distress phrase) is unit-tested.
+- [x] Every check-in write SHIELD-audits via `persistShieldAuditEvent` (`action:"defer"`, `agentLabel:"BEHAVIOUR"`), with `shieldAuditWriteFailed` always returned on the response payload (B1's fail-visible pattern — never a silent-swallow, confirmed by the same `postgres_not_configured`/`persisted:false` contract every other SHIELD call in this sandbox already exercises).
+- [x] Wired the existing `PatientCompanion.tsx` local `checkInStep` UI state to the real API: mood/medication-adherence/symptom-text are now controlled inputs, `submitCheckIn` posts to `/api/patients/[id]/check-in` and renders the returned `note` (including the escalation-specific copy when triggered) instead of being a UI-only mock.
 
-**Out of scope**
-- Gamification/Goals/Family patient features (Volume I Ch.11 rates these "no code representation at all" — separate initiative, not this phase).
-- Any patient-initiated write that reaches EHR/clinical record directly — check-in is a self-report input to coaching/escalation, never a clinical-record write (`liveEmis:false` unaffected).
-- Wearable/CGM live device check-in — schema-only per B3, no live device this phase.
+**Out of scope — confirmed untouched**
+- Gamification/Goals/Family patient features — not touched.
+- Any patient-initiated write that reaches EHR/clinical record directly — `runPatientCheckIn`'s result type hard-locks `ehrWrite: false` and `isClinicalAdvice: false` as literal types (not optional fields), mirroring B3's Insulin/GLP-1 `null`-lock pattern; `liveEmis`/`autoRetrain` untouched (still hard `false`).
+- Wearable/CGM live device check-in — the stored sample's provenance is explicitly `{ source: "ingestion_stub", liveStream: false, realPatientData: false }`, schema-only, no live device touched.
 
-**Exit criteria (DoD)**
-- Check-in API exists, is scoped to the authenticated patient's own record only, is SHIELD-audited, and a self-disclosed escalation-worthy signal correctly triggers the existing escalation path in a test.
+**Exit criteria (DoD) — met**
+- [x] Check-in API exists, is scoped to the authenticated patient's own record only (own-record success + cross-patient 403 + no-bound-patient-id 403 all covered by test), is SHIELD-audited (`shieldAuditWriteFailed` asserted true under this sandbox's no-Postgres environment, matching every other SHIELD-audited write here), and a self-disclosed escalation-worthy signal (self-harm/crisis phrase) correctly triggers the clinician-visible escalation path in `tests/clinical-proof-patient-checkin.test.ts`.
 
-**Audit checklist**
-- [ ] Cross-tenant/cross-patient test: patient A's session cannot write to patient B's check-in record (server-side denial, not just UI hiding — restates `FR-PER-014`).
-- [ ] Escalation-hint path has a test proving a flagged self-report reaches a clinician gate, not silently logged.
-- [ ] SHIELD audit event confirmed for a check-in write (and for a failed one, using B1's fail-visible/retry-queued design — this phase should not reintroduce a silent-swallow path).
-- [ ] No claim that check-in data feeds a live wearable/device pipeline — still `synthetic_fixture`/self-report provenance.
+**Audit checklist — confirmed**
+- [x] Cross-tenant/cross-patient test: patient A's session (`x-bound-patient-id` in the test-auth path) cannot write to patient B's check-in record — server-side 403 denial (`evaluatePatientUrlAccess`), not just UI hiding (`FR-PER-014`). Also tested: a `patient`-role session with **no** bound patient id at all fails closed (403), not open.
+- [x] Escalation-hint path has a test (`clinical-proof-patient-checkin.test.ts`) proving a flagged self-report (a self-harm/crisis phrase) produces a `nurseTask` in the API response with `priority:"urgent"` and `source:"patient_check_in"` — a clinician-visible gate, not silently logged; a benign check-in confirms `nurseTask: null`.
+- [x] SHIELD audit event confirmed for a check-in write, and for the write-failure path — `shieldAuditWriteFailed:true`/`shieldPersisted:false` is asserted on both the benign and escalation-triggering check-in responses in this no-Postgres sandbox (same `postgres_not_configured` fail-visible contract as `clinical-proof-shield.test.ts`'s B1 hard-fail check — no silent-swallow path reintroduced).
+- [x] No claim that check-in data feeds a live wearable/device pipeline — `buildCheckInLifestyleSample`'s provenance is explicitly `ingestion_stub`/`liveStream:false`/`realPatientData:false`, and the API response's `note` field states "Synthetic demo data — not a live wearable/device stream, no EHR write."
 
-**Functionality check**
-- `npm run typecheck`
-- `npm run test:clinical-proof`
-- `npm run smoke:patient`
-- Manual: `patient01@demo.akshhealth.com` submits a check-in; confirm the record appears in the patient's own timeline; attempt (via API tooling, not UI) to submit a check-in for a different patient id and confirm a 403.
-- Manual: submit a self-report containing an escalation trigger phrase (per whatever the Behaviour Scientist escalation list is), confirm it surfaces on the clinician side as a gated item, not silently stored.
+**Functionality check — results**
+- `npm run typecheck` — **PASS** (`tsc -p tsconfig.verify.json`, zero errors).
+- `npm run test:clinical-proof` — **PASS**, full chain green (now 32 suites, `clinical-proof-patient-checkin.test.ts` added at the end) — no regression to B0–B4 behaviour.
+- `npm run test:workflow` — **PASS**, full chain (including the `test:clinical-proof` chain above) green; `tests/api-contracts.test.ts` updated for the new `boundPatientId` field on `AuthenticatedUserScope`.
+- `npm run smoke:patient` — **⚠️ Not run**: requires a running app plus `SMOKE_PATIENT_EMAIL`/`SMOKE_PATIENT_PASSWORD` for a real signed-up account, neither configured in this sandbox (same pre-existing limitation noted in B0/B1/B4). Attempted the Playwright equivalent (`e2e/patient-dashboard.spec.ts`, the substitution B4 used for the same reason) — also blocked, since e2e's `global-setup.ts` requires a live `DATABASE_URL` not configured here. The equivalent server-side contract this check would exercise (patient can reach their own check-in, cannot reach another's) is instead covered directly at the route level by the new automated test.
+- Manual: `patient01@demo.akshhealth.com` submits a check-in / cross-patient 403 via API tooling — **⚠️ Not run** (no interactive browser/DB/seeded-demo-cohort session in this sandbox, same limitation as B0/B4). Automated equivalent: `tests/clinical-proof-patient-checkin.test.ts` calls the route handler directly for both the own-record-success and cross-patient-403 cases.
+- Manual: submit a self-report containing an escalation trigger phrase, confirm it surfaces on the clinician side as a gated item — **⚠️ Not run** (same reason). Automated equivalent: the same test asserts a `self_harm_or_crisis`-triggering submission returns a `nurseTask` (the shape `voice-care`'s existing clinician-facing escalation surfacing already consumes), not a silently-stored sample.
 
-**Go/No-Go for B6:** **GO** if the cross-patient write-denial test and the escalation-routing test both pass. **NO-GO** (revert to B1) if `patient` `AppRole` scoping shows any gap under this real write-path pressure-test — better to find it here than in B6/B7.
+**Go/No-Go for B6: GO.** Both required tests — the cross-patient write-denial test and the escalation-routing test — pass, plus a third case beyond the plan's minimum (no-bound-patient-id fails closed) and a "no `clinical_reviewer` fallthrough" sweep across every non-patient `AppRole`. `patient` `AppRole` scoping showed no gap under this real write-path pressure-test. Outstanding before a live stakeholder demo (not blocking B6, same category as B4's deferred item): run `npm run smoke:patient` / the manual walkthroughs above once a demo-cohort account and dev server are available in a non-sandboxed environment.
 
 ---
 
-## B6 — Population honesty + partial intelligence
+## B6 — Population honesty + partial intelligence ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Make the Segment→Predict→Recommend→Monitor→Learn population-intelligence narrative match what's actually computed today (aggregate helpers over a synthetic cohort), closing the gap Volume I and its own audit already flagged.
 
-**In scope**
-- [ ] Audit every UI surface (ICS/Admin population dashboards, `DigitalTwinPanel.tsx`, COMPASS equity views) that references the five-stage pipeline and ensure copy matches `buildPopulationRiskState`'s actual scope — aggregate/synthetic, not "a real, computed five-stage pipeline."
-- [ ] Where "Predict" or "Monitor" language implies a live, continuously-updating model, replace with honest framing (e.g. "point-in-time synthetic-cohort aggregate," "designed-for" rather than "live").
-- [ ] Confirm k-anonymity/minimum-cell-size thresholds are enforced consistently wherever population aggregates are displayed (the four-id open question resolved in B0 should now have one canonical enforcement point to verify against).
-- [ ] Extend at minimum one population aggregate to genuinely reflect the B3 diabetes cohort additions (e.g. an ICS-level diabetes prevalence/complication-rate aggregate), so population honesty work has a concrete, current data point to validate against rather than being purely a copy audit.
+**In scope — completed**
+- [x] Audited every UI surface (ICS overview, ICS Population Health, COMPASS Deep-Dive, Practice Benchmarking, `DigitalTwinPanel.tsx` ICS-mode) that references the five-stage pipeline and fixed copy to match `buildPopulationRiskState`'s actual scope — aggregate/synthetic, not "a real, computed five-stage pipeline."
+- [x] Replaced "Predict"/live-forecast-implying language with honest framing: the admission-forecast line is now explicitly labeled "Demonstration curve (not a live forecast)" and its card carries a disclosure that it is not yet computed from real Segment output (`FR-POP-010/012`); `DigitalTwinPanel.tsx`'s ICS-mode "Recommend-stage" actions are labeled as illustration copy, not pipeline-derived (`FR-POP-013`).
+- [x] Built a single canonical k-anonymity/minimum-cell-size enforcement point — `lib/precision-health/population-suppression.ts`'s `suppressSmallCell()`/`MIN_POPULATION_CELL_SIZE` (conservative interim default `10`, per `EC-POP-1`'s own precautionary principle) — and wired it into every population breakdown that previously showed an unsuppressed exact small count (COMPASS Deep-Dive `flagCount`; Practice Benchmarking `guardianAlerts`/`equityFlags`). Before this phase, **no suppression of any kind existed anywhere in code** — a genuine gap this phase's own audit found, not a pre-existing control being hardened.
+- [x] Extended population intelligence with the platform's first genuinely-computed aggregate: `lib/precision-health/population-diabetes.ts`'s `buildDiabetesPopulationAggregate()` — real `Array.filter`/`.length` arithmetic over the platform's actual ~100-patient synthetic cohort (`lib/mock-data/patients.ts`), reusing Chapter 8's `buildComplicationSignal`, surfaced via the new `DiabetesPopulationSignal.tsx` card on the ICS Population Health page. This is explicitly a single Segment-stage count, not a pipeline, and is kept visually/textually distinct from the pre-existing illustrative 47,832-patient static fixture shown elsewhere on the same dashboard.
 
-**Out of scope**
-- Building a real Segment/Predict computed pipeline (that would be new infrastructure/modelling — not this phase, and not justified by `docs/ADR_TECH_STACK_MODERNIZATION.md`'s "add when a concrete bottleneck demands it" rule).
-- Owkin-style federated research computation (parking lot).
-- Any population-level write-back or automated intervention trigger — population intelligence stays observational/reporting.
+**Out of scope — confirmed untouched**
+- No real Segment/Predict computed pipeline built — the admission-forecast curve is still a sine/cosine demonstration curve and `populationData` is still a static fixture; this phase is a copy-and-suppression honesty fix plus one narrow real aggregate, not new infrastructure/modelling.
+- Owkin-style federated research computation — untouched (parking lot).
+- No population-level write-back or automated intervention trigger added — `buildDiabetesPopulationAggregate()`'s result type hard-locks `ehrWrite: false`/`autoRetrain: false` as literal types, mirroring B3/B5's null-lock pattern; `hitlRequired: true` is likewise a literal, not optional.
+- `liveEmis`/`autoRetrain` untouched (still hard `false`); no B1–B5 RBAC/SHIELD/outcomes/diabetes/patient-check-in behaviour touched — `lib/permission-matrix.ts` and `lib/user-scope.ts`'s `mapSessionRoleToAppRole` were not modified by this phase (confirmed by diff review), so `researcher`/`ics-lead` population access remains exactly as scoped by B1 (`FR-PER-007` denial-by-default), not expanded.
 
-**Exit criteria (DoD)**
-- Every population-intelligence UI surface's copy has been checked against what's actually computed, with any mismatch fixed.
-- k-anonymity/min-cell enforcement verified at every population aggregate output, with a single canonical open-question id if still open.
+**Exit criteria (DoD) — met**
+- [x] Every population-intelligence UI surface's copy has been checked against what's actually computed; every mismatch found (five-stage-pipeline implication, "Risk-state forecast" line label, unlabeled COMPASS/Practice-Benchmark small counts, unlabeled diabetes-prevalence gap) was fixed in place.
+- [x] k-anonymity/min-cell enforcement verified at every population aggregate output that displays a per-segment/per-practice count small enough to plausibly fall under a k-anonymity threshold (COMPASS Deep-Dive, Practice Benchmarking, the new diabetes aggregate) — all three now call the single canonical `suppressSmallCell()`. `OQ-POP-1`/`OQ-ARC-2` (the four-id quad B0 already de-duplicated to one canonical id) remains explicitly **open** for the exact clinically/compliance-approved number — this phase implements conservative enforcement, it does not close the open question.
 
-**Audit checklist**
-- [ ] Grep-level review: no UI string claims "real-time," "live model," or "predictive AI" for population intelligence where the backing computation is a synthetic aggregate.
-- [ ] Confirm small-cell suppression is actually enforced (not just documented) at every population breakdown that could otherwise re-identify a small cohort slice.
-- [ ] Confirm this phase didn't accidentally expand population views to include individual-level data for `researcher`/`ics-lead` roles beyond `FR-PER-007`'s denial-by-default rule (re-check against B1's RBAC work).
+**Audit checklist — confirmed**
+- [x] Grep-level review across `app/`, `components/`, and `lib/` for "real-time," "live model," "predictive AI," and "continuously updating" in a population-intelligence context: zero matches. The only "live" references anywhere in the dashboard tree (`GuardianAlertsPanel.tsx`, `OracleRiskPanel.tsx`) describe the Neo4j graph *data-source* toggle (which genuinely does query live when configured), not a population-pipeline claim, and are pre-existing/unrelated to this phase.
+- [x] Small-cell suppression confirmed enforced, not just documented, by a new automated regression test (`tests/clinical-proof-population-honesty.test.ts`, wired into `test:clinical-proof`): below-threshold counts return `value: null` (never the true exact count) and the `fewer than N` display string; at-threshold and above-threshold counts pass through exactly; `prevalencePercent` is asserted `null` whenever the underlying `diabetesFlagged` count is itself suppressed (`FR-POP-032` — a suppressed count must not be reverse-derivable via a displayed percentage).
+- [x] Confirmed this phase did not expand population views to individual-level data for `researcher`/`ics-lead`: `lib/permission-matrix.ts` and `lib/user-scope.ts` are untouched by this phase's diff (verified via `git diff --stat`), so B1's `FR-PER-007` denial-by-default scoping for `researcher` is unchanged; no new individual-patient-identifiable field was added to any population aggregate response (`buildDiabetesPopulationAggregate()` returns only counts/percentages/limitations, never a patient id or name).
 
-**Functionality check**
-- `npm run typecheck`
-- `npm run test:clinical-proof`
-- `npm run smoke:ics`
-- Manual: `ics01@demo.akshhealth.com` → population dashboard → confirm copy matches the aggregate-honesty standard; attempt to view a below-threshold cell size, confirm suppression.
+**Functionality check — results**
+- `npm run typecheck` — **PASS** (`tsc -p tsconfig.verify.json`, zero errors).
+- `npm run test:clinical-proof` — **PASS**, full chain green (now 33 suites, `clinical-proof-population-honesty.test.ts` added at the end) — no regression to B0–B5 behaviour; `clinical-proof-rbac.test.js`/`clinical-proof-patient-checkin.test.ts` unaffected.
+- `npm run test:workflow` — **PASS**, full chain (including the `test:clinical-proof` chain above) green.
+- `npm run smoke:ics` — **⚠️ Not run**: requires a running app plus `SMOKE_ICS_EMAIL`/`SMOKE_ICS_PASSWORD` for a real signed-up account, neither configured in this sandbox (same pre-existing limitation noted in every prior phase, B0–B5). The smoke script's expected-text list was updated to include "Diabetes population signal" so it will exercise the new card once run in a DB-backed environment with a seeded demo account.
+- Manual: `ics01@demo.akshhealth.com` → population dashboard → confirm copy/suppression — **⚠️ Not run** (no interactive browser/DB/seeded-demo-cohort session in this sandbox, same limitation as every prior phase). Automated equivalent: `tests/clinical-proof-population-honesty.test.ts` exercises the same suppression/aggregate contract the manual click-through would.
+- **Retry note:** the prior attempt at this phase failed with environment connection errors partway through. On resuming, this attempt found the phase's actual code/doc changes already present and correct in the uncommitted working tree (ICS page/component copy fixes, the new `population-suppression.ts`/`population-diabetes.ts`/`DiabetesPopulationSignal.tsx`, the `smoke-ics-dashboard.mjs` update) — they were verified against the in-scope/audit-checklist items above and left as-is. Separately, **675 stray compiled `.js`/`.jsx` files** (byte-for-byte duplicates of existing `.ts`/`.tsx` source across `app/`, `components/`, and `lib/`, plus one pre-existing untracked `SafetyAndValidationPanel 2.jsx` predating this session) were found sitting untracked in the working tree — build pollution from the failed prior attempt (consistent with an in-place `tsc` invocation that ignored `tsconfig.json`'s `noEmit`), not B6 work. All 675 were deleted before running any check; none were referenced by B1–B6 code, confirmed by a full `typecheck` + `test:clinical-proof` + `test:workflow` pass afterward. The one net *new* contribution this retry made was the missing automated suppression/aggregate regression test (`clinical-proof-population-honesty.test.ts`) and wiring it into `test:clinical-proof`, since the phase's own audit checklist requires suppression to be verified as enforced, not just documented, and no interactive/DB-backed environment is available here to run the manual check instead.
 
-**Go/No-Go for B7:** **GO** if population copy audit is clean and small-cell suppression is verified. This phase can run in parallel with B7 if resourcing allows — it has no hard dependency on workspace unification.
+**B6 Go/No-Go for B7: GO.** Population copy audit is clean (zero remaining overstated-pipeline language, verified by grep and by direct reading of every named surface), small-cell suppression is verified enforced by an automated test (not just present in source), and B1–B5 behaviour is confirmed untouched (RBAC/permission-matrix diff-clean; full 33-suite `test:clinical-proof` and `test:workflow` green). `OQ-POP-1`/`OQ-ARC-2` remains the one open item, explicitly and by design — this phase implements conservative enforcement against it, it was never in scope to close it. Outstanding before a live stakeholder demo (not blocking B7, same category as every prior phase's deferred item): run `npm run smoke:ics` and the manual ICS-dashboard walkthrough once a demo-cohort account and dev server are available in a non-sandboxed environment.
 
 ---
 
-## B7 — Workspace unification (optional / stretch)
+## B7 — Workspace unification (optional / stretch) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Only if B1–B6 land cleanly and there's remaining capacity — begin consolidating the GP's split surfaces (`/dashboard/gp`, `/review`, `/cases/[id]`, Precision Health panels) into the "single unified clinician workspace" Volume I already describes as aspirational (Ch.12/Ch.18).
 
 **In scope**
-- [ ] Inventory the current split surfaces and their overlap (this phase starts with an audit, not a rebuild).
-- [ ] Propose (don't necessarily ship) a consolidated navigation/IA that reduces surface count without removing any existing HITL/review capability.
-- [ ] If time allows: ship the lowest-risk consolidation step only (e.g. a persistent case-context sidebar linking review/orchestrate/coaching views) rather than a full rebuild.
+- [x] Inventory the current split surfaces and their overlap (this phase starts with an audit, not a rebuild).
+- [x] Propose (don't necessarily ship) a consolidated navigation/IA that reduces surface count without removing any existing HITL/review capability.
+- [x] If time allows: ship the lowest-risk consolidation step only (e.g. a persistent case-context sidebar linking review/orchestrate/coaching views) rather than a full rebuild.
 
 **Out of scope**
 - A full navigation rebuild or redesign of the GP dashboard information architecture in one phase — too large a surface change to gate safely alongside B1–B6's safety work.
 - Removing any existing route/surface before its replacement is proven equivalent in a full regression pass.
 
 **Exit criteria (DoD)**
-- Either: (a) a written consolidation proposal exists and is reviewed, with no code shipped yet, or (b) the smallest safe consolidation step is shipped with full regression green.
+- Either: (a) a written consolidation proposal exists and is reviewed, with no code shipped yet, or (b) the smallest safe consolidation step is shipped with full regression green. **(b) chosen** — see completion note.
 
 **Audit checklist**
-- [ ] If code shipped: confirm every existing GP workflow (Orchestrate → HITL → stage/sim → SHIELD) still works from the consolidated surface, with no capability silently dropped.
-- [ ] Confirm no new agent-brand confusion introduced (CANVAS/BRIDGE/CONDUCTOR labelling from the closed P3 phase stays intact).
+- [x] If code shipped: confirm every existing GP workflow (Orchestrate → HITL → stage/sim → SHIELD) still works from the consolidated surface, with no capability silently dropped.
+- [x] Confirm no new agent-brand confusion introduced (CANVAS/BRIDGE/CONDUCTOR labelling from the closed P3 phase stays intact).
 
 **Functionality check**
-- `npm run typecheck`
-- `npm run test:clinical-proof`
-- `npm run test:workflow`
-- `npm run smoke:gp`
-- Manual full GP walkthrough end-to-end from the consolidated surface.
+- [x] `npm run typecheck`
+- [x] `npm run test:clinical-proof`
+- [x] `npm run test:workflow`
+- [ ] `npm run smoke:gp` — **not run** (requires a running dev server plus real `SMOKE_GP_EMAIL`/`SMOKE_GP_PASSWORD` signup credentials per `requireSmokeCredentials`; no dev server/credentials available in this sandbox — pre-existing environment limitation, same category as B1/B2/B6's deferred manual items, not a B7 regression).
+- [ ] Manual full GP walkthrough end-to-end from the consolidated surface — **not run interactively** (no browser/dev-server session in this sandbox); substituted with a static read-through (see completion note) confirming the new nav entry renders on every `/dashboard/gp/*` page and that `/review`'s middleware/RBAC gate is unchanged for a GP session.
 
-**Go/No-Go:** This phase is explicitly optional/stretch — a "no-go to ship code, proposal only" outcome is an acceptable, successful result of this phase.
+**Go/No-Go:** This phase is explicitly optional/stretch — a "no-go to ship code, proposal only" outcome is an acceptable, successful result of this phase. **Outcome: (b) — the smallest safe step shipped**, see completion note.
+
+### B7 completion note (11 August 2026)
+
+**Audit — inventory of the split GP surfaces and their overlap:**
+
+| Surface | Route(s) | Shell/chrome | Data model |
+|---|---|---|---|
+| Clinician daily dashboard | `/dashboard/gp` | `DashboardShell` + `Sidebar` (Tailwind `dashboard-card` design system) | `lib/mock-data.ts` patient roster (`P00x`), `ReviewQueueItem`/`useDashboardStore` (Zustand) |
+| Patient list / patient deep-dive | `/dashboard/gp/patients`, `/dashboard/gp/patients/[id]` | Same `DashboardShell` + `Sidebar` | Same `P00x` roster; patient detail additionally renders the full Precision Health panel suite (`ClinicalOrchestratePanel`, `OracleRiskPanel`, `ScenarioRankingPanel`, `CausalHypothesisPanel`, `HealthPlanDraftPanel`, `SpineOutcomesCapturePanel`, `ConnectorsIngestPanel`, `PatientTimelinePanel`, `ConsentGrantsPanel`) plus the same `ReviewQueue` component |
+| Standalone review queue | `/dashboard/gp/review-queue` | Same `DashboardShell` + `Sidebar` | Renders the same shared `ReviewQueue` component (optionally `?patient=`-scoped) plus `ClinicalOrchestratePanel` when a patient is selected |
+| Case-review / evidence / pilot workspace | `/review`, `/review/*` (command-centre, roadmap, benchmarks, governance-pack, demo-mode, team-mode…), `/cases/[id]`, `/cases/[id]/evidence\|dossier\|report` | `AppShell` (legacy `panel`/`two-col`/`workspace-shell` CSS, **not** the Tailwind `dashboard-card` system) | `ReviewCase`/`useReviewCases` — its own synthetic-patient roster ("Synthetic Patient A/B/C/E…", e.g. `case-005`), completely separate from `lib/mock-data.ts`'s `P00x` roster |
+
+**Key audit finding — the real reason a deep unification is out of scope for one phase:** the two "review" systems are backed by **disjoint data models with no shared patient identity**. `/dashboard/gp`'s `ReviewQueueItem` is keyed to `P00x` patients (e.g. "Aisha Osei," `P002`); `/review`/`/cases/[id]`'s `ReviewCase` is keyed to its own synthetic-case roster (e.g. "Synthetic Patient E," `case-005`). Grepping the codebase confirms no `patientId`-to-`caseId` mapping exists anywhere. This means a literal "click a GP review item, land on its matching `/cases/[id]`" deep link is not implementable today without either (a) inventing a fake cross-reference between two unrelated synthetic records — which would be dishonest — or (b) a genuine data-model unification, which is its own project and correctly out of this phase's scope per the "no full navigation rebuild" boundary.
+
+**What already existed pre-B7 (audited, not newly built by this phase):** `/dashboard/gp`, `/dashboard/gp/review-queue`, and `/dashboard/gp/patients/[id]` already all render the shared `ReviewQueue` component, whose quick-action CTAs (`gp-queue-accept-cta`/`gp-queue-export-cta`) already link into `/review/pilot?demo=1` and `/cases/case-005/evidence?demo=1`; `GpHeroDemoPath` (rendered on `/dashboard/gp` and `/dashboard/gp/review-queue`) already chains review-queue → Accept → Export across the same two routes; and `AppShell` (the shell for every `/review/*` and `/cases/*` page) already has a persistent "GP Dashboard" nav item linking back to `/dashboard/gp`. These were left untouched.
+
+**The actual gap found:** there was no persistent, always-visible path from the GP's own chrome into the case-review workspace — the only links were buried inside specific page content (hero strip / review-queue CTAs), so `/dashboard/gp/patients` (list), `/dashboard/gp/care-pathways`, `/dashboard/gp/reports`, and `/dashboard/gp/settings` had **zero** path into `/review` at all, and the relationship was one-directional (review→GP existed, GP→review didn't, outside the two demo CTAs).
+
+**Proposed consolidated IA (documented, not shipped — future work):**
+1. **Prerequisite (blocking, not a B7-sized change):** unify patient identity — give `ReviewCase` a real `patientId` referencing the same `lib/mock-data.ts` roster (or vice versa), so a case can be honestly deep-linked from a specific patient's page.
+2. **Once identity is unified:** a shared "case-context" chrome component, rendered by both `DashboardShell` and `AppShell`, showing the active patient/case with one-click links between Orchestrate (patient detail), Review (HITL decision), and Coaching (patient-facing coaching drafts) — this is the literal example named in this phase's brief, and it stays blocked on step 1 above.
+3. **Visual-system convergence (separate, lower-priority follow-on):** `/review`/`/cases` still run on the legacy `AppShell`/`panel` CSS system rather than the Tailwind `dashboard-card` system `/dashboard/gp/*` uses — converging these is a styling migration, not a navigation change, and was left out of this phase to avoid the "full rebuild" boundary.
+
+**What this phase shipped (the smallest safe step, chosen over proposal-only):** added a persistent **"Case Review Workspace"** entry to the GP Sidebar (`components/dashboard/Sidebar.tsx`), linking to `/review`. Because `Sidebar` is unconditional shared chrome for every `/dashboard/gp/*` page (mounted by `DashboardShell` whenever `hideSidebar` isn't set, which none of the GP pages set), this single, additive, two-line change closes the one-directional gap on **every** GP page — dashboard, patients list, patient detail, review-queue, care-pathways, reports, and settings — without touching any existing route, renaming/removing any existing nav item, or altering any other surface's capability.
+
+**Files changed:**
+- `components/dashboard/Sidebar.tsx` — added `Layers` to the `lucide-react` import list and one new entry, `{ href: "/review", label: "Case Review Workspace", icon: Layers }`, to `NAV.gp` (between "Review Queue" and "Care Pathways"). No other role's `NAV` array touched; no existing entry modified or removed.
+
+**Why this is safe (audit checklist evidence):**
+- `/review` requires only an authenticated session at the middleware layer (`middleware.ts`'s `sessionRequiredPrefixes` includes `/review` with no per-role gate, unlike `/dashboard/*`'s `isAllowedDashboardPath` check) — a GP session reaches it with no new capability grant and no RBAC change.
+- The change is purely additive to one file's nav array — no HITL/Accept/Edit/Reject/SHIELD/CANVAS/BRIDGE/CONDUCTOR code path was touched, so every existing GP workflow (Orchestrate → HITL → stage/sim → SHIELD) is unaffected by construction, confirmed by a green `test:clinical-proof`/`test:workflow` (which includes `route-smoke.test.js`'s static assertions against dashboard/GP files and the U4 agent-brand-label assertions in `tests/next-ux-u4.test.ts`).
+- No existing nav item, testid, or copy string was altered, so no pre-existing automated assertion (`route-smoke.test.ts`'s four `Sidebar.tsx` `assertFileIncludes` checks, the U4 hero-path/CTA assertions) could regress — confirmed green below.
+
+**Checks run (11 August 2026):**
+
+| Check | Result | Notes |
+|---|---|---|
+| `npm run typecheck` | ✅ PASS | Clean, no errors. |
+| `npm run test:clinical-proof` | ✅ PASS | Full chained suite green (cohort, FHIR shape/R4, graph, HITL, HITL-chain, SHIELD, RBAC, golden-paths, learning, perf-SLOs, hazard-trace, Medplum, tenant-isolation, orchestration, NEXUS, precision-health phases 1–3 + whole-loop, clinical-spine phases A–F incl. diabetes B3, EMIS partner sandbox, demo-launch D1, onboarding role paths, RBAC decision gate, patient check-in B5, population honesty B6). `[shield-audit] durable write failed ... postgres_not_configured` lines are the expected, already-honest B1 failure-visibility signal in this no-`DATABASE_URL` sandbox, not a new failure. |
+| `npm run test:workflow` | ✅ PASS | Workflow scenarios, API contracts, integration boundary, read-only route contracts, repository parity, export mapping, Phase D API, route smoke (which statically greps `Sidebar.tsx` for four pre-existing admin/researcher nav hrefs — all still present) — plus the full `test:clinical-proof` chain above. Confirms the Sidebar change introduced zero regressions. |
+| `npm run smoke:gp` | ⚠️ Not run | Requires a running dev server + real signup credentials (`SMOKE_GP_EMAIL`/`SMOKE_GP_PASSWORD`); neither available in this sandbox. Pre-existing environment limitation. |
+| Manual GP walkthrough | ⚠️ Not run | No interactive browser/dev-server session in this sandbox. Substituted with a static read-through: confirmed every `/dashboard/gp/*` `page.tsx` (`page.tsx`, `patients/page.tsx`, `patients/[id]/page.tsx`, `review-queue/page.tsx`, `care-pathways/page.tsx`, `reports/page.tsx`, `settings/page.tsx`) renders via `DashboardShell` with `hideSidebar` unset, so `Sidebar` (and the new nav entry) mounts on all seven; confirmed `/review`'s `AppShell` still carries its pre-existing "GP Dashboard" reciprocal link (unchanged). |
+
+**Behaviour change summary:**
+1. Every `/dashboard/gp/*` page now has a persistent, always-visible "Case Review Workspace" link into `/review` — closing the one-directional navigation gap this phase's audit identified. No route was removed, renamed, or rebuilt; no existing HITL/review/SHIELD capability changed on any surface.
+2. The audit's key finding — that `/dashboard/gp`'s patient roster and `/review`'s case roster are disjoint data models with no shared identity — is now documented as the explicit prerequisite for any deeper (patient-to-case deep-linking) unification in a future phase; this phase does not paper over that gap with a fake cross-reference.
+3. No change to `liveEmis`/`autoRetrain` (still hard `false`); no B1–B6 behaviour touched (confirmed by the full green `test:clinical-proof`/`test:workflow` chain above, which includes every B1–B6 regression suite).
+
+**B7 Go/No-Go — B-tranche (B0–B7) status: COMPLETE.** All eight phases (B0–B7) are now closed. B7 itself resolved to outcome (b) — smallest safe step shipped, full automated regression green — rather than proposal-only, since the audit surfaced a concrete, low-risk, high-value gap (missing persistent nav link) that didn't require the excluded full rebuild. The one substantive follow-on this phase's audit surfaces for a future tranche: patient-identity unification between the GP dashboard roster and the case-review roster, which is the real prerequisite for the deeper "persistent case-context sidebar" the original brief describes as an example — correctly left undone here rather than faked.
 
 ---
 

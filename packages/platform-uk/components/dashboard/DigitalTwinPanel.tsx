@@ -101,6 +101,10 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
           <p className="text-xs text-muted">
             {riskState.scopeLabel} · risk-state model — not a physiological twin · read-only
           </p>
+          <p className="text-[10px] text-muted">
+            Recommend-stage illustration only — these actions are example copy, not derived from a
+            computed Segment/Predict pipeline (Volume I FR-POP-013).
+          </p>
         </CardHeader>
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center gap-4">

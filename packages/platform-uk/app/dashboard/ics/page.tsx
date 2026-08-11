@@ -56,6 +56,10 @@ export default function IcsOverviewPage() {
       >
         Synthetic ICS cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
         COMPASS leads equity; HORIZON / PATHWAY frame forecast scaffolding — not a live ICS feed or twin.
+        The {data.totalPatients.toLocaleString()}-patient ICS figure is an illustrative static fixture,
+        disconnected from the platform&apos;s actual ~100-patient synthetic cohort — Segment and Predict
+        are not yet real computed pipeline stages (Population Health page has the platform&apos;s one
+        genuinely-computed population aggregate).
       </p>
 
       <div>

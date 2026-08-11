@@ -31,7 +31,13 @@ const protectedIcsRoutes = [
   {
     label: "ICS population",
     path: "/dashboard/ics/population",
-    expectedText: ["Population Health", "Patient Risk Profile Across ICS", "Population demo", "liveEmis:false"],
+    expectedText: [
+      "Population Health",
+      "Patient Risk Profile Across ICS",
+      "Population demo",
+      "liveEmis:false",
+      "Diabetes population signal",
+    ],
   },
   {
     label: "ICS equity",

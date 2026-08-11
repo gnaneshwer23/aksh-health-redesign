@@ -14,6 +14,11 @@ export function AdmissionForecast() {
     <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-sm">ICS Admission Forecast (risk-state model)</CardTitle>
+        <p className="text-xs text-muted">
+          Predict stage — this is a demonstration curve, not a live/validated NHS forecast. It is not yet
+          computed from real Segment output; a Predict pipeline replacing this curve is future work
+          (Volume I FR-POP-010/012).
+        </p>
       </CardHeader>
       <CardContent className="h-72">
         {loading && !liveData ? (
@@ -28,7 +33,7 @@ export function AdmissionForecast() {
               <Legend />
               <Area type="monotone" dataKey="upper" stroke="none" fill="#003D7A" fillOpacity={0.1} />
               <Area type="monotone" dataKey="lower" stroke="none" fill="#FFFFFF" fillOpacity={1} />
-              <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Risk-state forecast" />
+              <Line type="monotone" dataKey="predicted" stroke="#003D7A" strokeWidth={2} name="Demonstration curve (not a live forecast)" />
               <Line type="monotone" dataKey="historical" stroke="#718096" strokeDasharray="4 4" name="Historical" />
             </AreaChart>
           </ResponsiveContainer>

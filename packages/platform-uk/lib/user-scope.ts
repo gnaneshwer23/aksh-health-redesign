@@ -96,6 +96,16 @@ export type AuthenticatedUserScope = {
   userId: string;
   userEmail: string | null;
   userRole: AppRole;
+  /**
+   * Bound patient id for a `patient`-role session (FR-CORE-005, `evaluatePatientUrlAccess`).
+   * `null` for every other role, and — honestly — `null` for a real `patient` session today too,
+   * since no session/JWT callback currently populates it (Volume I OQ-PER-4/OQ-CORE-1, restated
+   * B5 docs/PHASED_BUILD_PLAN.md): a patient-scoped write fails closed (403) rather than silently
+   * allowing it or guessing a bound record. The test-auth header path below (`x-bound-patient-id`)
+   * exists only under the same `AKSH_TEST_AUTH_HEADER` gate as `x-user-id`/`x-user-role`, so it can
+   * never be used to spoof a bound patient id against a real NextAuth session.
+   */
+  boundPatientId: string | null;
 };
 
 export function resolveAuthenticatedUserScopeFromSession(session: {
@@ -103,6 +113,7 @@ export function resolveAuthenticatedUserScopeFromSession(session: {
     id?: string | null;
     email?: string | null;
     role?: string | null;
+    boundPatientId?: string | null;
   } | null;
 } | null | undefined): AuthenticatedUserScope | null {
   const userId = sanitizeScopeKey(session?.user?.id);
@@ -116,6 +127,7 @@ export function resolveAuthenticatedUserScopeFromSession(session: {
     userId,
     userEmail: session?.user?.email?.trim() || null,
     userRole: mapSessionRoleToAppRole(session?.user?.role),
+    boundPatientId: session?.user?.boundPatientId?.trim() || null,
   };
 }
 
@@ -135,6 +147,9 @@ function resolveTestAuthenticatedUserScope(request: Request | undefined): Authen
     userId,
     userEmail: request.headers.get("x-user-email")?.trim() || null,
     userRole: mapSessionRoleToAppRole(roleHeader),
+    // Test-only: gated by the same AKSH_TEST_AUTH_HEADER check as x-user-id/x-user-role above,
+    // so this can never be used to spoof a bound patient id against a real NextAuth session.
+    boundPatientId: request.headers.get("x-bound-patient-id")?.trim() || null,
   };
 }
 

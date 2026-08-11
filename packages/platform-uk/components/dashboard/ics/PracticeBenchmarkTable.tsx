@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "@/components/ui/toaster";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
+import { POPULATION_SUPPRESSION_DISCLOSURE, suppressSmallCell } from "@/lib/precision-health/population-suppression";
 
 import { useIcsData } from "./IcsDataContext";
 import { ChartSkeleton } from "./shared";
@@ -72,20 +73,27 @@ export function PracticeBenchmarkTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedPractices.map((p) => (
-                <TableRow key={p.name}>
-                  <TableCell className="sticky left-0 bg-card">{p.name}</TableCell>
-                  <TableCell>{p.listSize.toLocaleString()}</TableCell>
-                  <TableCell className={cellColor(p.aiAdoption, 85)}>{p.aiAdoption}%</TableCell>
-                  <TableCell className={cellColor(p.queueClearance, 80)}>{p.queueClearance}%</TableCell>
-                  <TableCell>{p.guardianAlerts}</TableCell>
-                  <TableCell className={p.equityFlags > 5 ? "text-danger" : ""}>{p.equityFlags}</TableCell>
-                  <TableCell className={cn("font-semibold", cellColor(p.overallScore, 80))}>{p.overallScore}</TableCell>
-                </TableRow>
-              ))}
+              {sortedPractices.map((p) => {
+                const guardianAlerts = suppressSmallCell(p.guardianAlerts);
+                const equityFlags = suppressSmallCell(p.equityFlags);
+                return (
+                  <TableRow key={p.name}>
+                    <TableCell className="sticky left-0 bg-card">{p.name}</TableCell>
+                    <TableCell>{p.listSize.toLocaleString()}</TableCell>
+                    <TableCell className={cellColor(p.aiAdoption, 85)}>{p.aiAdoption}%</TableCell>
+                    <TableCell className={cellColor(p.queueClearance, 80)}>{p.queueClearance}%</TableCell>
+                    <TableCell>{guardianAlerts.display}</TableCell>
+                    <TableCell className={!equityFlags.suppressed && p.equityFlags > 5 ? "text-danger" : ""}>
+                      {equityFlags.display}
+                    </TableCell>
+                    <TableCell className={cn("font-semibold", cellColor(p.overallScore, 80))}>{p.overallScore}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}
+        <p className="mt-2 text-[10px] text-muted">{POPULATION_SUPPRESSION_DISCLOSURE}</p>
       </CardContent>
     </Card>
   );

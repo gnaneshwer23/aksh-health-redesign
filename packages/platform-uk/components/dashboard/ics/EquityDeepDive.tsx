@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toaster";
 import type { EquityDraft } from "@/lib/agents/llm-equity";
+import { POPULATION_SUPPRESSION_DISCLOSURE, suppressSmallCell } from "@/lib/precision-health/population-suppression";
 
 import { useIcsData } from "./IcsDataContext";
 import { ChartSkeleton } from "./shared";
@@ -60,6 +61,9 @@ export function EquityDeepDive() {
     <Card className="shadow-sm">
       <CardHeader>
         <CardTitle className="text-sm">COMPASS Deep-Dive</CardTitle>
+        <p className="text-xs text-muted">
+          Recommend stage (COMPASS) — the platform&apos;s most-built Population Intelligence stage today.
+        </p>
       </CardHeader>
       <CardContent>
         {loading && !liveData ? (
@@ -77,17 +81,21 @@ export function EquityDeepDive() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.equityDeepDive.map((row) => (
-                  <TableRow key={row.category}>
-                    <TableCell>{row.category}</TableCell>
-                    <TableCell>{row.flagCount}</TableCell>
-                    <TableCell>{row.practice}</TableCell>
-                    <TableCell>{row.recommendedAction}</TableCell>
-                    <TableCell>{row.status}</TableCell>
-                  </TableRow>
-                ))}
+                {data.equityDeepDive.map((row) => {
+                  const flags = suppressSmallCell(row.flagCount);
+                  return (
+                    <TableRow key={row.category}>
+                      <TableCell>{row.category}</TableCell>
+                      <TableCell>{flags.display}</TableCell>
+                      <TableCell>{row.practice}</TableCell>
+                      <TableCell>{row.recommendedAction}</TableCell>
+                      <TableCell>{row.status}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
+            <p className="mt-2 text-[10px] text-muted">{POPULATION_SUPPRESSION_DISCLOSURE}</p>
             <Button
               className="mt-4"
               variant="outline"

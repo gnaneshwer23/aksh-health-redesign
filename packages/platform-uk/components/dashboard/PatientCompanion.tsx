@@ -30,6 +30,7 @@ import {
   getPatientGreeting,
 } from "@/lib/patient-companion/profile";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import type { CheckInMood, MedicationAdherence } from "@/lib/patient-companion/check-in";
 import { cn } from "@/lib/utils";
 
 /** Synthetic demo patient used for Phase 1 companion API surfaces until a linked record exists. */
@@ -87,6 +88,10 @@ export function PatientCompanion() {
 
   const [activeTab, setActiveTab] = useState<TabValue>("health");
   const [checkInStep, setCheckInStep] = useState(0);
+  const [checkInMood, setCheckInMood] = useState<CheckInMood | null>(null);
+  const [checkInSymptomText, setCheckInSymptomText] = useState("");
+  const [checkInSubmitting, setCheckInSubmitting] = useState(false);
+  const [checkInResultNote, setCheckInResultNote] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<{ role: "ai" | "user"; text: string }[]>(() => [
     { role: "ai", text: `How are you feeling today, ${firstName}?` },
@@ -118,6 +123,58 @@ export function PatientCompanion() {
       title: "Coming soon",
       description: `${feature} | messages your care team securely from this app.`,
     });
+  };
+
+  const submitCheckIn = async (mood: CheckInMood, medicationAdherence: MedicationAdherence) => {
+    setCheckInSubmitting(true);
+    try {
+      const response = await fetch(`/api/patients/${COMPANION_DEMO_PATIENT_ID}/check-in`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mood,
+          symptomText: checkInSymptomText.trim(),
+          medicationAdherence,
+        }),
+      });
+      const data = (await response.json()) as {
+        note?: string;
+        error?: string;
+        escalation?: { triggered?: boolean };
+      };
+
+      if (!response.ok) {
+        toast({
+          title: "Check-in not saved",
+          description:
+            data.error ??
+            "Your practice hasn't linked this demo account to a patient record yet.",
+        });
+        setCheckInResultNote(
+          data.error ?? "Check-in could not be shared with your care team this time."
+        );
+      } else {
+        toast({
+          title: data.escalation?.triggered ? "Shared — clinician review requested" : "Check-in shared",
+          description: data.note ?? "Shared with your care team.",
+        });
+        setCheckInResultNote(data.note ?? "Thank you. Your responses have been shared with your care team.");
+      }
+    } catch {
+      toast({ title: "Check-in failed", description: "Network error." });
+      setCheckInResultNote("Check-in could not be shared with your care team this time (network error).");
+    } finally {
+      setCheckInSubmitting(false);
+      setCheckInStep(4);
+    }
+  };
+
+  const resetCheckIn = () => {
+    setCheckInStep(0);
+    setCheckInMood(null);
+    setCheckInSymptomText("");
+    setCheckInResultNote(null);
   };
 
   const handleChat = (text: string) => {
@@ -328,7 +385,7 @@ export function PatientCompanion() {
             </CardContent>
           </Card>
           {checkInStep === 0 ? (
-            <Button className="w-full" onClick={() => setCheckInStep(1)}>
+            <Button className="w-full" onClick={() => setCheckInStep(1)} data-testid="check-in-start">
               Start a Check-in
             </Button>
           ) : checkInStep < 4 ? (
@@ -337,9 +394,23 @@ export function PatientCompanion() {
                 <>
                   <p className="text-sm font-medium">How are you feeling overall today?</p>
                   <div className="flex gap-2">
-                    {["😊", "😐", "😞"].map((e) => (
-                      <Button key={e} variant="outline" onClick={() => setCheckInStep(2)}>
-                        {e}
+                    {(
+                      [
+                        { emoji: "😊", mood: "good" as CheckInMood },
+                        { emoji: "😐", mood: "okay" as CheckInMood },
+                        { emoji: "😞", mood: "struggling" as CheckInMood },
+                      ]
+                    ).map(({ emoji, mood }) => (
+                      <Button
+                        key={mood}
+                        variant="outline"
+                        data-testid={`check-in-mood-${mood}`}
+                        onClick={() => {
+                          setCheckInMood(mood);
+                          setCheckInStep(2);
+                        }}
+                      >
+                        {emoji}
                       </Button>
                     ))}
                   </div>
@@ -348,7 +419,13 @@ export function PatientCompanion() {
               {checkInStep === 2 && (
                 <>
                   <p className="text-sm font-medium">Any new symptoms?</p>
-                  <Input placeholder="Free text" onKeyDown={(e) => e.key === "Enter" && setCheckInStep(3)} />
+                  <Input
+                    placeholder="Free text"
+                    value={checkInSymptomText}
+                    onChange={(e) => setCheckInSymptomText(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && setCheckInStep(3)}
+                    data-testid="check-in-symptom-text"
+                  />
                   <Button onClick={() => setCheckInStep(3)}>Next</Button>
                 </>
               )}
@@ -356,9 +433,21 @@ export function PatientCompanion() {
                 <>
                   <p className="text-sm font-medium">Did you take your medications today?</p>
                   <div className="flex gap-2">
-                    {["Yes", "No", "Partly"].map((o) => (
-                      <Button key={o} variant="outline" onClick={() => setCheckInStep(4)}>
-                        {o}
+                    {(
+                      [
+                        { label: "Yes", value: "yes" as MedicationAdherence },
+                        { label: "No", value: "no" as MedicationAdherence },
+                        { label: "Partly", value: "partly" as MedicationAdherence },
+                      ]
+                    ).map(({ label, value }) => (
+                      <Button
+                        key={value}
+                        variant="outline"
+                        disabled={checkInSubmitting || !checkInMood}
+                        data-testid={`check-in-adherence-${value}`}
+                        onClick={() => checkInMood && void submitCheckIn(checkInMood, value)}
+                      >
+                        {checkInSubmitting ? "Sharing…" : label}
                       </Button>
                     ))}
                   </div>
@@ -366,9 +455,14 @@ export function PatientCompanion() {
               )}
             </Card>
           ) : (
-            <p className="text-center text-sm text-accent">
-              Thank you. Your responses have been shared with your care team.
-            </p>
+            <div className="space-y-2 text-center">
+              <p className="text-sm text-accent" data-testid="check-in-result-note">
+                {checkInResultNote ?? "Thank you. Your responses have been shared with your care team."}
+              </p>
+              <Button variant="outline" size="sm" onClick={resetCheckIn}>
+                Start another check-in
+              </Button>
+            </div>
           )}
         </TabsContent>
 

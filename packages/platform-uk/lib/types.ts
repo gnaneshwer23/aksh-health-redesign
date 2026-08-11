@@ -34,7 +34,7 @@ export type NurseEscalationTask = {
   priority: "urgent" | "high" | "normal";
   summary: string;
   createdAt: string;
-  source: "voice_care";
+  source: "voice_care" | "patient_check_in";
 };
 
 export type ReviewQueueItemStatus = "DRAFT" | "ACCEPTED" | "REJECTED";
