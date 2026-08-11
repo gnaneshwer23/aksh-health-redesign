@@ -43,6 +43,7 @@ export {
   type ComplicationSignal
 } from "./complications";
 export { buildPreventionSignal, type PreventionSignal, type PreventionRiskTrajectory } from "./prevention";
+export { recordDiabetesCoachingAccept, type RecordDiabetesCoachingAcceptInput } from "./learning";
 
 export {
   DIABETES_DEMO_PATIENT,

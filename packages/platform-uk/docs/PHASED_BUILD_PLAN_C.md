@@ -2,7 +2,7 @@
 
 **Date:** 11 August 2026
 **Scope:** `packages/platform-uk`, `main`
-**Status:** Proposed — executing phase by phase
+**Status:** C0–C4 (all of P0) and C5's minimum bar (P1-1) complete. C5 stretch (P1-2/P1-3) deferred to a future C6.
 **This is not:** a redo of `docs/PHASED_BUILD_AND_AUDIT_PLAN.md` (P0–P7, closed) or `docs/PHASED_BUILD_PLAN.md` (B0–B7, closed). Both prior tranches are frozen and are not reopened by this document.
 
 ## Relationship to prior plans and to the frozen architecture
@@ -241,13 +241,21 @@
 
 ---
 
-## C5 — P1: Diabetes MVP loop slice (CONNECT→…→LEARN proof path) — only after C1–C4 GO
+## C5 — P1: Diabetes MVP loop slice (CONNECT→…→LEARN proof path) — only after C1–C4 GO ✅ **MINIMUM BAR COMPLETE (11 August 2026); stretch (P1-2/P1-3) deferred**
 
 **Goal:** Prove one real, narrow CONNECT→…→LEARN slice for Diabetes using the new Patient State (C1) and Decision (C2) modules plus the *existing* diabetes tools and HITL contract — not a new diabetes feature, a proof that the architecture migration actually connects end to end. Corresponds to migration plan **P1-1** (learning-event wiring) as the minimum bar; P1-2/P1-3/P1-4 are stretch within this phase and may be split into a C6 if C5's own scope proves too large mid-phase.
 
 **In scope (minimum bar — P1-1 only)**
 - When a diabetes coaching draft (`buildDiabetesRiskContribution`'s `coachingDrafts`) is Accepted via the existing HITL Accept flow, call `recordLearningEvent` with a diabetes-labelled `agentLabel` (e.g. `"DIABETES_NUTRITION"`/`"DIABETES_EXERCISE"`/`"DIABETES_BEHAVIOUR"`), reusing `lib/clinical-spine/outcomes-loop.ts` exactly as-is.
 - A test proving a diabetes coaching Accept produces a `learning_events` row with a diabetes `agentLabel`, and that `buildOutcomesLoopStatus` correctly buckets it (no double-counting, no new `loopStage`).
+
+**Delivered (minimum bar, P1-1):**
+- `lib/disease-modules/diabetes/learning.ts` — new `recordDiabetesCoachingAccept(input, { scopeKey })`, a thin wrapper calling the existing `recordLearningEvent` (`lib/repositories/learning-event-repository.ts`) unmodified, with `agentLabel` set to the draft's own diabetes-specific coaching agent id (`NUTRITION_DIABETES` / `EXERCISE_DIABETES` / `BEHAVIOUR_DIABETES` — the module's actual `DiabetesCoachingAgentId` values, not the illustrative `DIABETES_*` names sketched above) and `outcomeKind: "follow_up_scheduled"` (same mapping `queue-decision.ts` already uses for every other agent's Accept, so the resulting care action starts in the same `awaiting_outcome` `loopStage` — no new stage introduced). Exported from the diabetes barrel (`lib/disease-modules/diabetes/index.ts`).
+- New real HITL Accept call-site: `POST /api/patients/[id]/diabetes-coaching/accept` (`app/api/patients/[id]/diabetes-coaching/accept/route.ts`) — authenticated, gated identically to the existing `GET .../diabetes-coaching` (module flag + diabetes-flagged patient, honest 404 otherwise), looks up the requested module's draft and calls `recordDiabetesCoachingAccept`.
+- `tests/diabetes-learning-loop.test.ts` — proves (1) Accept produces a `learning_events` row with a diabetes-labelled `agentLabel`, correct `patientId`/`decision`/`outcomeKind`, and all-`false` autonomy flags (`ehrWrite`/`autoRetrainTriggered`/`modelUpdated`), and is durably listable in-scope; (2) `buildOutcomesLoopStatus` counts each Accept as exactly one new care action in `awaiting_outcome` with no new `loopStage` value, additively across two separate Accepts (no double-counting). Wired into `test:clinical-proof`.
+
+**Deferred to a future C6 (not part of this phase's Go/No-Go):**
+- P1-2 (real longitudinal glucose/HbA1c ingestion into Patient State) and P1-3 (diabetes-specific `escalation` value on the `Decision` type) were not attempted — the minimum bar alone is judged a successful, self-contained C5 outcome per this phase's own Go/No-Go framing below.
 
 **Stretch (only attempted if C5's minimum bar lands clean and time/stability allow — otherwise deferred to a future C6, not forced)**
 - P1-2 (real longitudinal glucose/HbA1c ingestion into C1's Patient State) — behind the same `OQ-DIAB-1` gate the B-tranche already respected; glucose stays `insufficient_data` if that clinical decision is still unmade.
@@ -259,22 +267,23 @@
 - No change to `ENABLE_DIABETES_MODULE`'s default (`false`).
 
 **Exit criteria (DoD)**
-- [ ] Accepting a diabetes coaching draft (flag on, diabetes-flagged patient) produces a `learning_events` row with a diabetes-specific `agentLabel`, verified by test.
-- [ ] Non-diabetes-flagged patients and flag-off behaviour remain byte-identical (mirrors the B3 `FR-DIAB-022` guarantee).
+- [x] Accepting a diabetes coaching draft (flag on, diabetes-flagged patient) produces a `learning_events` row with a diabetes-specific `agentLabel`, verified by test.
+- [x] Non-diabetes-flagged patients and flag-off behaviour remain byte-identical (mirrors the B3 `FR-DIAB-022` guarantee) — `recordDiabetesCoachingAccept` is a new, separately-invoked function; the existing Accept/queue-decision/orchestrate paths are untouched (`git diff --stat` shows zero changes to `queue-decision.ts`, `orchestrate.ts`, or any B3 diabetes builder).
 
 **Audit checklist**
-- [ ] Confirms this is additive to the existing Learning domain (Domain 5) — no new table, no new loop-stage value, no change to append-only invariants.
-- [ ] Confirms HITL is still the only path to this learning event (no autonomous write).
-- [ ] Confirms `autoRetrain`/`liveEmis` untouched.
+- [x] Confirms this is additive to the existing Learning domain (Domain 5) — no new table, no new loop-stage value, no change to append-only invariants. `recordDiabetesCoachingAccept` calls the pre-existing `recordLearningEvent` unmodified; `tests/diabetes-learning-loop.test.ts` asserts `loopStage: "awaiting_outcome"` (an existing value) on the resulting care action.
+- [x] Confirms HITL is still the only path to this learning event (no autonomous write) — the only call-site is the new `POST /api/patients/[id]/diabetes-coaching/accept`, an authenticated clinician-initiated Accept action; nothing calls `recordDiabetesCoachingAccept` automatically.
+- [x] Confirms `autoRetrain`/`liveEmis` untouched — grep clean; this phase touches no orchestration/EMIS-flag code, and the recorded event's own `autoRetrainTriggered`/`ehrWrite` fields are hard-`false` (enforced by `assertNoAutoRetrain` in `lib/clinical-proof/learning-loop.ts`, unmodified).
 
 **Functionality checks**
-- [ ] `npm run typecheck`
-- [ ] `npm run test:clinical-proof`
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green including new `tests/diabetes-learning-loop.test.ts`.
+- [x] `npm run test:workflow` — PASS (also re-runs the full `test:clinical-proof` chain; confirms the new API route file doesn't break `route-smoke.test.ts`/`api-contracts.test.ts`).
 
 **Commit + Deploy gate**
 - Commit only the scope actually completed (minimum bar, or minimum bar + whichever stretch items landed clean). Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go:** This phase's own stretch items are explicitly optional — landing the minimum bar (P1-1) alone is a successful C5 outcome. A "minimum bar only, stretch deferred" result is acceptable and should be recorded as such, not treated as a shortfall.
+**Go/No-Go:** This phase's own stretch items are explicitly optional — landing the minimum bar (P1-1) alone is a successful C5 outcome. A "minimum bar only, stretch deferred" result is acceptable and should be recorded as such, not treated as a shortfall. **Result: GO on the minimum bar; P1-2/P1-3 explicitly deferred to a future C6.**
 
 ---
 
