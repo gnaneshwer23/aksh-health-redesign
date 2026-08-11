@@ -510,6 +510,13 @@ async function run() {
   await assertFileIncludes("components/review/ops-report.tsx", "deriveOpsAnalytics");
   await assertFileIncludes("lib/ops-analytics.ts", "deriveOpsAnalytics");
 
+  // D5 (docs/PHASED_BUILD_PLAN_D.md, P2-3): Patient State timeline panel.
+  await assertFileIncludes("app/api/patients/[id]/state/route.ts", "facts: factHistory.facts");
+  await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "patient-state-panel");
+  await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "/state");
+  await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "patient-state-fact-superseded");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "PatientStatePanel");
+
   console.log("Route and UI smoke checks passed.");
 }
 

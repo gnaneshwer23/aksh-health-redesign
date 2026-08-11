@@ -35,6 +35,11 @@ export async function GET(request: Request, context: RouteContext) {
     snapshot,
     factHistorySource: factHistory.source,
     factHistoryCount: factHistory.facts.length,
+    // D5 (docs/PHASED_BUILD_PLAN_D.md, P2-3): the full ordered fact history —
+    // current AND superseded facts alike, exactly what listPatientStateFacts
+    // already returned above — additive to this response; every pre-existing
+    // field is unchanged. Powers the read-only Patient State timeline panel.
+    facts: factHistory.facts,
     ehrWrite: false,
     note:
       "Patient State foundation (C1) — versioned, append-only fact store. Additive infrastructure; existing ReviewCase/timeline/diabetes-fixture read paths are not yet re-pointed at this store."

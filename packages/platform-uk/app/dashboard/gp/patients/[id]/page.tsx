@@ -13,6 +13,7 @@ import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-healt
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
 import { HealthPlanDraftPanel } from "@/components/dashboard/precision-health/HealthPlanDraftPanel";
+import { PatientStatePanel } from "@/components/dashboard/precision-health/PatientStatePanel";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
 import { SpineOutcomesCapturePanel } from "@/components/dashboard/precision-health/SpineOutcomesCapturePanel";
@@ -137,6 +138,11 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
           onIngestSuccess={() => setTimelineRefreshKey((k) => k + 1)}
         />
         <PatientTimelinePanel
+          patientId={patient.id}
+          patientLabel={patient.name}
+          refreshKey={timelineRefreshKey}
+        />
+        <PatientStatePanel
           patientId={patient.id}
           patientLabel={patient.name}
           refreshKey={timelineRefreshKey}

@@ -258,20 +258,42 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 
 ---
 
-## D5 — P2-3: Patient State timeline UI (read-only, additive)
+## D5 — P2-3: Patient State timeline UI (read-only, additive) ✅ **COMPLETE (11 August 2026)**
 
-**Goal:** Implement `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` P2-3 — a read-only view surfacing a patient's Patient State fact history (source/confidence/effective date per fact), reading C1's existing `GET /api/patients/[id]/state` endpoint. Deferred to a later session slot if D0–D4 consume the available session time (see "What's left" below) — sequenced here, not force-fit into this session.
+**Goal:** Implement `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` P2-3 — a read-only view surfacing a patient's Patient State fact history (source/confidence/effective date per fact), reading C1's existing `GET /api/patients/[id]/state` endpoint.
 
-**In scope (planned)**
-- A read-only panel/route (additive to an existing patient/clinician dashboard surface — exact placement TBD against current dashboard routes at execution time) rendering `getDiabetesFixtureBundle`-independent Patient State fact history: fact type, value (rendered generically, not per-type-special-cased beyond what's needed for readability), source, confidence, effective/recorded timestamps, and a clear "superseded" marker for non-current facts.
-- Must not overstate certainty — confidence/source shown as recorded, no invented default confidence for facts that don't carry one.
-- Component/e2e smoke test confirming the panel renders for a patient with facts (including the new D4 `diabetes_decision_snapshot`/C6 glucose/HbA1c facts) and renders an honest empty state for a patient with none.
+**Actual approach (one small, documented adjustment to "reuses ... verbatim"):** the existing endpoint already computed the full fact list internally (`listPatientStateFacts`) but only returned a `factHistoryCount` number, not the facts themselves — there was nothing for a timeline UI to render. D5 adds one new, additive `facts` field to the route's JSON response (the exact array `listPatientStateFacts` already produced), and leaves every pre-existing field (`artifactType`, `snapshot`, `factHistorySource`, `factHistoryCount`, `ehrWrite`, `note`) byte-identical. This is "reuse the existing endpoint" in every sense that matters (no new route, no new query, no new store) — it is a response-shape extension, not a new endpoint, and cannot break any existing consumer (extra JSON fields are additive by construction).
+
+**In scope (as executed)**
+- `app/api/patients/[id]/state/route.ts` — additive `facts: factHistory.facts` field (full ordered fact history, current + superseded).
+- `components/dashboard/precision-health/PatientStatePanel.tsx` — new read-only panel, cloned from `PatientTimelinePanel`'s own fetch/loading/empty-state pattern for visual and behavioural consistency: shows fact type, a generically-rendered value (JSON-stringified, truncated for readability — never per-factType-special-cased beyond that), source system/reference, confidence exactly as recorded (never a default when the underlying fact doesn't carry one), effective/recorded timestamps, and an explicit "Current"/"Superseded" chip per fact.
+- Wired into `app/dashboard/gp/patients/[id]/page.tsx`, immediately beside the existing `PatientTimelinePanel` (the closest existing analogous read-only history panel), sharing that page's own `timelineRefreshKey` state so both panels refresh together.
+- New `tests/patient-state-timeline-api.test.ts` — calls the route handler directly (mirrors `tests/readonly-route-contracts.test.ts`'s own `AKSH_TEST_AUTH_HEADER` pattern): proves every pre-existing field is unchanged, the new `facts` field's length matches `factHistoryCount`, a supersession chain's current AND superseded facts both survive into the response with the superseded marker visible, and an unknown patient id resolves to an honest empty `facts: []`.
+- `tests/route-smoke.test.ts` — wiring assertions (route/component/page all reference each other) added, matching this codebase's own established convention for every prior precision-health panel.
 
 **Out of scope**
-- No write path from this UI (read-only, per P2-3's own scope).
-- No new API endpoint — reuses C1's existing `GET /api/patients/[id]/state` verbatim.
+- No write path from this UI (read-only, per P2-3's own scope) — `PatientStatePanel` performs a single `GET`, no mutation.
+- No new API endpoint, no new query, no new store — one additive field on the existing endpoint.
 
-**Status at time of writing:** not yet started — sequenced after D4. See "What's left in D/P2/P3" at the end of this document for current status.
+**Exit criteria (DoD)**
+- [x] The panel renders a patient's fact history (fact type, value, source, confidence, effective/recorded timestamps, current/superseded marker) with no invented default confidence.
+- [x] `npm run typecheck`, `npm run test:clinical-proof`, `npm run test:workflow` (which chains `test:clinical-proof` plus `tests/route-smoke.test.js`), and a local `npm run build` all green.
+
+**Audit checklist**
+- [x] `git diff` on `app/api/patients/[id]/state/route.ts` is a pure addition (one new field, one new comment) — every pre-existing field/line unchanged, verified directly by `tests/patient-state-timeline-api.test.ts`'s own field-by-field assertions, not just visual inspection.
+- [x] No write path introduced — `PatientStatePanel.tsx` contains no `fetch(..., { method: "POST"/"PUT"/... })` call of any kind.
+- [x] `liveEmis`/`autoRetrain`/agent-directory/HITL — untouched; this phase is UI + one read-only API field, no orchestration/agent code touched.
+
+**Functionality checks**
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green including new `tests/patient-state-timeline-api.test.ts` (3 assertions).
+- [x] `npm run test:workflow` — PASS (includes `test:clinical-proof` plus the updated `tests/route-smoke.test.ts` wiring assertions).
+- [x] `npm run build` — PASS locally, clean production build.
+
+**Commit + Deploy gate**
+- Commit: `app/api/patients/[id]/state/route.ts` + `components/dashboard/precision-health/PatientStatePanel.tsx` + `app/dashboard/gp/patients/[id]/page.tsx` + test + `route-smoke.test.ts` + `package.json` chain update + this plan's D5 section. Push to `main`. Confirm Vercel `READY`.
+
+**Go/No-Go for D6: GO** — all exit criteria met, zero regression to the existing endpoint's pre-D5 response shape, full clinical-proof + workflow chains + local build green.
 
 ---
 
@@ -324,8 +346,8 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in D / P2 / P3 (updated as phases land)
 
-- **D0–D4:** complete (see phase sections above for detail).
-- **D5–D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
+- **D0–D5:** complete (see phase sections above for detail).
+- **D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
 - **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
 - **P3 (unchanged, still out of scope):** PRISM/ATLAS build-out, production RBAC/CIS2, live EMIS/NHS write path, federated research productionisation, additional disease modules beyond Diabetes — none of these are touched by this plan, per the migration plan's own P3 framing ("out of scope until P0–P2 are substantially delivered and there is demonstrated need").
 - **`OQ-DIAB-1` itself:** still open, still owned by the clinical lead. D2's `PED-DIAB-1` is a provisional, reversible engineering stop-gap, not a resolution — this is restated, not contradicted, by D2's own commit.
