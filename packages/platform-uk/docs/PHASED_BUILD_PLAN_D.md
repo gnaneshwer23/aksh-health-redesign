@@ -176,38 +176,41 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 
 ---
 
-## D3 — P2-2: Unify Intervention-domain result shape (type-only, additive)
+## D3 — P2-2: Unify Intervention-domain result shape (type-only, additive) ✅ **COMPLETE (11 August 2026)**
 
-**Goal:** Implement `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` P2-2 exactly as scoped — a shared `InterventionDraft` base type that existing draft types (`health-plan.ts`, `coaching.ts`, diabetes coaching drafts, referral packages) satisfy additively, with **zero runtime behaviour change**.
+**Goal:** Implement `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` P2-2 — a shared Intervention-domain summary shape that lets "what's pending for this patient" be answered in one place across health plan / coaching / diabetes coaching / referral drafts, with **zero runtime behaviour change** to any existing draft-producing code.
 
-**In scope**
-- New `lib/intervention/types.ts` exporting `InterventionDraft = { id: string; domain: "health_plan" | "coaching" | "diabetes_coaching" | "referral"; patientId: string; status: "draft" | "accepted" | "rejected"; hitlRequired: true; ehrWrite: false }` (base shape only — each concrete draft type keeps its own richer fields, extending this base via a type-level `satisfies`/structural check, not a runtime wrapper).
-- Additive `satisfies InterventionDraft`-style structural assertions (or equivalent type-only helper) added at each existing draft type's declaration site (`lib/precision-health/health-plan.ts`, `lib/precision-health/coaching.ts`, `lib/disease-modules/diabetes/types.ts`'s `DiabetesCoachingDraft`, PATHWAY's `ReferralPackage`/`ServiceRequestResource` in `lib/types.ts`) — proving each already satisfies the shared shape without modifying any of their existing fields or runtime construction logic.
-- A single new read-only aggregator function, `lib/intervention/list-pending.ts`'s `describePendingInterventionDrafts(...)` (pure, synchronous, take-in-drafts-you-already-have — not a new data source), demonstrating "what interventions are pending for this patient" is answerable from one shared shape once each domain's drafts are mapped onto it — this is the concrete value P2-2 calls for, kept intentionally small (a mapper, not a new store).
-- New `tests/intervention-draft-shape.test.ts` — asserts each existing draft-producing function's output structurally satisfies `InterventionDraft`, and that `describePendingInterventionDrafts` correctly aggregates a mixed set of drafts across domains without altering any individual draft's fields.
+**Actual approach (adjusted from the original `satisfies`-annotation sketch above — recorded here, not silently substituted):** on inspection, `HealthPlanDraft`, `CoachingDraft`, `DiabetesCoachingDraft`, and the referral package's `ReviewQueueItem`/`ServiceRequestResource` do **not** share a common field set today (e.g. only `HealthPlanDraft` has its own `id`/`status`; referral's `hitlRequired`/`ehrWrite` are platform-wide invariants, not literal fields on the type). Forcing a literal `satisfies InterventionDraft` structural check onto all four would have required either widening those types (a real, non-additive change to files outside this phase's scope) or asserting fields that don't exist. Instead, D3 defines `InterventionDraftSummary` (`lib/intervention/types.ts`) as a **new, read-only projection type**, and `lib/intervention/adapters.ts` provides one pure mapping function per domain (`healthPlanDraftToInterventionSummary`, `coachingDraftToInterventionSummary`, `diabetesCoachingDraftToInterventionSummary`, `referralQueueItemToInterventionSummary`) from each real, unmodified type onto that summary. This satisfies P2-2's own stated goal — "what interventions are pending for this patient" answerable from one shared shape — with a genuinely additive change (new files only) rather than a structural-typing exercise that would have touched four existing files.
+
+**In scope (as executed)**
+- `lib/intervention/types.ts` — `InterventionDomain`, `InterventionDraftStatus`, `InterventionDraftSummary` (`id`, `domain`, `patientId`, `patientLabel`, `title`, `status`, `hitlRequired: true`, `ehrWrite: false`).
+- `lib/intervention/adapters.ts` — the four pure per-domain adapter functions above, each read-only and non-mutating; `referralQueueItemToInterventionSummary` maps `ReviewQueueItemStatus` (`DRAFT`/`ACCEPTED`/`REJECTED`) onto `InterventionDraftStatus` (`draft`/`accepted`/`rejected`) via an explicit lookup table.
+- `lib/intervention/list-pending.ts` — `describePendingInterventionDrafts(patientId, drafts)`, a pure, synchronous aggregator over already-produced summaries (not a new data source), returning `{ patientId, pendingCount, byDomain, items }` filtered to that patient's `status: "draft"` items.
+- `tests/intervention-draft-shape.test.ts` — proves each adapter maps its real domain function's actual output correctly (calling `buildPersonalisedHealthPlanDraft`/`buildNutritionCoachingDraft`/`buildNutritionDiabetesCoachingDraft` for real, not mocks) without mutating the source draft; proves the referral adapter maps `ACCEPTED`→`accepted` correctly; proves `describePendingInterventionDrafts` aggregates 3 pending domains for one patient, excludes an already-`accepted` referral and another patient's draft from both the count and `byDomain`.
+- Wired into `test:clinical-proof`.
 
 **Out of scope**
-- No change to any existing draft type's actual fields, construction logic, or API/response shape — this is additive typing plus one new pure aggregator, not a refactor of `health-plan.ts`/`coaching.ts`/diabetes coaching/referral construction.
+- No change to any existing draft type's actual fields, construction logic, or API/response shape — confirmed zero-diff (see audit checklist below), not just "additive typing" as originally sketched, but zero touch at all.
 - No new persisted store of "pending interventions" — `describePendingInterventionDrafts` takes already-produced drafts as input; it does not query anything new.
 - No UI change.
 
 **Exit criteria (DoD)**
-- [ ] All existing Intervention draft-producing types satisfy `InterventionDraft` without any of their own fields changing (verified by a type-level check, not just visual inspection).
-- [ ] `describePendingInterventionDrafts` correctly aggregates drafts from at least three of the four domains (health plan, generic coaching, diabetes coaching) in a test.
-- [ ] `npm run typecheck` and `npm run test:clinical-proof`/`test:workflow` (whichever suite covers the touched files) both green.
+- [x] Every existing Intervention draft-producing function's real output maps correctly onto `InterventionDraftSummary` via its adapter, with zero modification to the source type or function (verified in the test, and by the zero-diff audit below — stronger than the originally-planned `satisfies` check, since the source files are provably untouched rather than merely type-compatible).
+- [x] `describePendingInterventionDrafts` correctly aggregates drafts from three of the four domains (health plan, generic coaching, diabetes coaching) in a test, correctly excluding an accepted referral and another patient's draft.
+- [x] `npm run typecheck` and `npm run test:clinical-proof` both green.
 
 **Audit checklist**
-- [ ] `git diff --stat` on every existing draft-producing file shows either zero change or an additive-only `satisfies`/type-annotation change — no field removed, renamed, or made optional-to-required (or vice versa).
-- [ ] No HITL/`ehrWrite` literal weakened — every existing `hitlRequired: true`/`ehrWrite: false` literal is unchanged; `InterventionDraft`'s own base shape only restates these as required literal fields, it does not introduce a way to set them otherwise.
+- [x] `git diff --stat -- lib/precision-health/health-plan.ts lib/precision-health/coaching.ts lib/disease-modules/diabetes/types.ts lib/types.ts` — confirmed **empty**: none of the four existing draft-producing files were touched at all (stronger than the "additive-only annotation" bar originally set).
+- [x] No HITL/`ehrWrite` literal weakened — `InterventionDraftSummary`'s `hitlRequired`/`ehrWrite` are hardcoded literal types (`true`/`false`), and every adapter either passes through the source's own existing `true`/`false` literal (health plan, coaching, diabetes coaching) or restates the platform-wide referral invariant explicitly (referral) — no adapter can produce any other value at the type level.
 
 **Functionality checks**
-- [ ] `npm run typecheck` — PASS.
-- [ ] `npm run test:clinical-proof` — PASS (full chain, confirming zero regression to any consumer of the touched types).
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green (117s) including new `tests/intervention-draft-shape.test.ts` (5 assertions).
 
 **Commit + Deploy gate**
-- Commit: `lib/intervention/*` + type-level satisfies annotations + test + this plan's D3 section. Push to `main`. Confirm Vercel `READY`.
+- Commit: `lib/intervention/*` (types/adapters/list-pending) + test + `package.json` chain update + this plan's D3 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for D4:** pending this phase's own functionality checks.
+**Go/No-Go for D4: GO** — all exit criteria met, zero diff to any existing draft-producing file, full clinical-proof chain green.
 
 ---
 
@@ -319,8 +322,8 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in D / P2 / P3 (updated as phases land)
 
-- **D0–D2:** complete (see phase sections above for detail).
-- **D3–D6:** planned, not yet executed as of this document's initial commit; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
+- **D0–D3:** complete (see phase sections above for detail).
+- **D4–D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
 - **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
 - **P3 (unchanged, still out of scope):** PRISM/ATLAS build-out, production RBAC/CIS2, live EMIS/NHS write path, federated research productionisation, additional disease modules beyond Diabetes — none of these are touched by this plan, per the migration plan's own P3 framing ("out of scope until P0–P2 are substantially delivered and there is demonstrated need").
 - **`OQ-DIAB-1` itself:** still open, still owned by the clinical lead. D2's `PED-DIAB-1` is a provisional, reversible engineering stop-gap, not a resolution — this is restated, not contradicted, by D2's own commit.
