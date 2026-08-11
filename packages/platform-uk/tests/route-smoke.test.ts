@@ -517,6 +517,21 @@ async function run() {
   await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "patient-state-fact-superseded");
   await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "PatientStatePanel");
 
+  // D6 (docs/PHASED_BUILD_PLAN_D.md, P2-4): Data & Interoperability audit panel.
+  await assertFileIncludes(
+    "components/dashboard/precision-health/DataInteropAuditPanel.tsx",
+    "/api/system/integration-contract"
+  );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/DataInteropAuditPanel.tsx",
+    "data-interop-audit-panel"
+  );
+  await assertFileIncludes(
+    "components/dashboard/precision-health/DataInteropAuditPanel.tsx",
+    "data-interop-live-banner"
+  );
+  await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "DataInteropAuditPanel");
+
   console.log("Route and UI smoke checks passed.");
 }
 

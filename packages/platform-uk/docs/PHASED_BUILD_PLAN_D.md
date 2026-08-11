@@ -2,7 +2,7 @@
 
 **Date:** 11 August 2026
 **Scope:** `packages/platform-uk`, `main`
-**Status:** D0 in progress at time of writing.
+**Status:** D0–D6 complete. All P2 items (P2-1..P2-4) landed; see "What's left in D/P2/P3" below.
 **This is not:** a redo of `docs/PHASED_BUILD_PLAN_C.md` (C0–C6, closed) or any earlier tranche. C0–C6 are frozen and are not reopened by this document.
 
 ## Relationship to prior plans and to the frozen architecture
@@ -310,7 +310,12 @@ Restates `docs/PHASED_BUILD_PLAN_C.md`'s own constraints verbatim — they do no
 - No change to any adapter's actual mode/behaviour.
 - No new registry — reads C4's existing one verbatim.
 
-**Status at time of writing:** not yet started — sequenced after D5. See "What's left in D/P2/P3" at the end of this document for current status.
+**Status: complete.**
+- No new endpoint — reused the existing `GET /api/system/integration-contract` route (C4), which already returns `formalizedAdapters` from `buildIntegrationBoundaryContract()`. Zero change to that route or to `buildIntegrationAdapterRegistry()`/`hasAnyLiveIntegrationAdapter()`.
+- New `components/dashboard/precision-health/DataInteropAuditPanel.tsx`: fetches the contract, renders a table of every formalized adapter (`systemId`/`resourceType`/`mode`/`consentScopeRequired`/`provenanceTag`), and a single prominent banner computed as `adapters.some(a => a.mode === "live")` — the same predicate `hasAnyLiveIntegrationAdapter()` implements, read from the same array the endpoint already returns (no second boolean field needed on the contract).
+- Wired into `app/dashboard/admin/precision-health/page.tsx` only. That page is rendered inside `DashboardShell role="admin"`, and `middleware.ts` role-gates every `/dashboard/admin/*` path — so the panel is admin-only without any change to the underlying API route's own (more permissive) auth, matching this phase's "no new business logic" constraint.
+- Smoke coverage added to `tests/route-smoke.test.ts`: asserts the panel fetches `/api/system/integration-contract`, exposes the `data-interop-audit-panel`/`data-interop-live-banner` test ids, and is wired into the admin page. The existing `tests/integration-adapter-contract.test.ts` (D-independent, from C4) already proves all 13 adapters are `"staged"` and `hasAnyLiveIntegrationAdapter() === false` — this phase only adds a UI over that already-proven fact, so no new logic test was needed.
+- `npm run typecheck`, `npm run test:workflow` (includes `test:clinical-proof` + the extended `route-smoke.test.ts`), and `npm run build` all green.
 
 ---
 
@@ -338,7 +343,7 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 | D3 | Internal typing only — zero visible behaviour change | None |
 | D4 | Extends Patient State with a durable diabetes-decision history fact, fail-open, no clinician-facing change | None |
 | D5 (planned) | Adds a read-only clinician-facing view — still Track A, no new write path | None |
-| D6 (planned) | Adds an admin-only read-only view — still Track A | None |
+| D6 | Adds an admin-only read-only view — still Track A | None |
 
 **No phase in this plan changes `liveEmis`, `autoRetrain`, `canFlipLiveEmisInCode()`, or resolves `OQ-DIAB-1`.**
 
@@ -346,9 +351,8 @@ Every phase in this plan operates entirely inside **Track A** (demo/pilot, synth
 
 ## What's left in D / P2 / P3 (updated as phases land)
 
-- **D0–D5:** complete (see phase sections above for detail).
-- **D6:** planned, not yet executed as of this update; status tracked per-phase above and updated in place as each lands (not rewritten retroactively, per C-tranche convention).
-- **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
+- **D0–D6:** complete (see phase sections above for detail). All six phases are additive, HITL-preserving, `liveEmis:false`/`autoRetrain:false`-preserving, and green on `typecheck` + `test:workflow` (incl. `test:clinical-proof`) + `build` at time of each phase's commit.
+- **P2 items not covered by D0–D6:** none — P2-1 through P2-4 are all sequenced above and complete (P2-1→D1, P2-2→D3, P2-3→D5, P2-4→D6). The `OQ-DIAB-1`/Glucose v1.1 work (D2) and the Patient State deepening (D4) are additive extensions the user specifically asked for, layered on top of, not instead of, the four numbered P2 items.
 - **P3 (unchanged, still out of scope):** PRISM/ATLAS build-out, production RBAC/CIS2, live EMIS/NHS write path, federated research productionisation, additional disease modules beyond Diabetes — none of these are touched by this plan, per the migration plan's own P3 framing ("out of scope until P0–P2 are substantially delivered and there is demonstrated need").
 - **`OQ-DIAB-1` itself:** still open, still owned by the clinical lead. D2's `PED-DIAB-1` is a provisional, reversible engineering stop-gap, not a resolution — this is restated, not contradicted, by D2's own commit.
 
