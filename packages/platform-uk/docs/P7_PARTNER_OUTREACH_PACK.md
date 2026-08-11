@@ -204,3 +204,13 @@ When partners issue sandbox credentials, set in Vercel / secure env only:
 - `external_ref_noted` in the gate tracker is **not** a signature.  
 - Mirth mock / marketing status ≠ live HL7 intake.  
 - NextAuth credentials ≠ CIS2.
+
+---
+
+## Addendum — 11 Aug 2026 (Build Tranche E, docs-only)
+
+**Status unchanged: P7-01 (IM1 feasibility email) is still READY_TO_SEND, still not sent.** Nothing in `docs/PHASED_BUILD_PLAN_E.md` (E0–E5) sends outreach, obtains a credential, or signs a DPIA/DPA/CSO gate — this addendum restates, not contradicts, `docs/BUILT_VS_REMAINING_AUDIT.md`'s own finding that outreach remains user/org-owned and outstanding.
+
+Engineering-side changes since this pack was last written that are relevant to a future partner conversation, but do not themselves move any P7 item forward:
+- **Route-level RBAC hardening** (E2) now restricts `/api/system/audit-integrity`, `/api/system/permission-matrix`, and `/api/system/clinical-safety-files` to `clinical_reviewer`/`operations_lead` roles — relevant if these evidence artefacts are ever shared in a partner data-room context, since access is now provably narrower than "any authenticated demo user." `productionRbacEnforced` in `lib/permission-matrix.ts` remains `false` — this is not, and is not claimed to be, CIS2 or any production RBAC certification (P7-07 stays exactly as blocked as before).
+- **PRISM/ATLAS honesty is now machine-readable** via `GET /api/system/phase2-capability-status` (E1) — useful if a partner asks what Phase 2 includes today; answer stays "not built, live:false."

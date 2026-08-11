@@ -89,3 +89,12 @@ Presence of Partner env ≠ `liveEmis` flip. Smoke: `npm run smoke:emis-partner`
 ## Exit gate (honest)
 
 Phase 2 **exit** still requires partners + DPIA + named clinical owner. This document + in-repo APIs prove **readiness scaffolding**, not live Partner EMR or live Fitbit.
+
+---
+
+## Addendum — 11 Aug 2026 (Build Tranche E, docs-only, no partner-facing change)
+
+- **A second real (non-fixture) data path now exists.** `POST /api/patients/[id]/diabetes/glucose` (C6/D2, `docs/PHASED_BUILD_PLAN_D.md` D2) lets a clinician or patient-companion flow record a real glucose reading into Patient State — this is **patient-reported**, not a partner- or device-sourced stream, and it does not change anything in section B above (no wearable/device DPIA item is satisfied by this). It is noted here only because any future partner data-sharing-scope conversation should know a second real (if narrow) data path exists alongside the wearable/lifestyle-diary connectors already documented in section B.
+- **`liveEmis: false` reconfirmed unchanged.** No code in this addendum's tranche (`docs/PHASED_BUILD_PLAN_E.md` E0–E5) touches `liveEmis`, `EMIS_PARTNER_*` env resolution, or the sandbox write path in `lib/emis-staging.ts`/`lib/emis-partner-sandbox.ts`.
+- **PRISM/ATLAS honesty is now machine-readable.** `GET /api/system/phase2-capability-status` (E1) returns `live: false`/`built: false`/`wired: false` for both — useful if a partner conversation ever asks "what does Phase 2 actually include today."
+- **Outreach status:** unchanged — see `docs/P7_PARTNER_OUTREACH_PACK.md`'s own addendum below.
