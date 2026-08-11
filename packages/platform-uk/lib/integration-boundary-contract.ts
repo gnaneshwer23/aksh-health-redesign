@@ -1,3 +1,4 @@
+import { buildIntegrationAdapterRegistry } from "./data-interop/adapter-contract";
 import { buildIntegrationEnvironmentContract } from "./integration-env";
 import { getIntegrationAdapterRegistry, isFastApiSynthesisEnabled, isMedplumSyncEnabled } from "./integration-config";
 import { buildOwnSystemBoundaryContract, getOwnSystemInterfaceContracts } from "./system-contracts";
@@ -37,6 +38,12 @@ export function buildIntegrationBoundaryContract(options?: { generatedAt?: strin
       "Medplum sync only runs on newly accepted frozen cases when ENABLE_MEDPLUM_SYNC=true.",
       "Medplum rehearsal never equals EMIS write-back; getMedplumRehearsalStatus().liveEmis is always false."
     ],
-    disabledByDefault: adapters.filter((adapter) => !adapter.enabled).map((adapter) => adapter.id)
+    disabledByDefault: adapters.filter((adapter) => !adapter.enabled).map((adapter) => adapter.id),
+    /**
+     * C4 (docs/PHASED_BUILD_PLAN_C.md, P0-4) — formal Domain 6 adapter
+     * contract, one IntegrationAdapter per existing adapter above. Additive
+     * only: every other field on this contract is unchanged by this phase.
+     */
+    formalizedAdapters: buildIntegrationAdapterRegistry()
   };
 }
