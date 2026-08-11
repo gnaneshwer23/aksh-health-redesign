@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { buildDiabetesRiskContribution, recordDiabetesCoachingAccept } from "@/lib/disease-modules/diabetes";
+import { buildDiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
+import { recordDiabetesCoachingAccept } from "@/lib/disease-modules/diabetes/learning";
 import { isDiabetesModuleEnabled } from "@/lib/integration-config";
 import { getPatientById } from "@/lib/mock-data";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";

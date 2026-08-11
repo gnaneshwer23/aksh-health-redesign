@@ -43,7 +43,11 @@ export {
   type ComplicationSignal
 } from "./complications";
 export { buildPreventionSignal, type PreventionSignal, type PreventionRiskTrajectory } from "./prevention";
-export { recordDiabetesCoachingAccept, type RecordDiabetesCoachingAcceptInput } from "./learning";
+// NOTE: intentionally NOT re-exporting ./learning here. recordDiabetesCoachingAccept
+// transitively imports lib/repositories/learning-event-repository.ts (Node fs/pg) — this
+// barrel is imported by client components (e.g. DiabetesPopulationSignal.tsx) via
+// lib/precision-health/population-diabetes.ts, so pulling in a Node-only module here breaks
+// the client bundle. Server-only call-sites must import from "./learning" directly.
 
 export {
   DIABETES_DEMO_PATIENT,

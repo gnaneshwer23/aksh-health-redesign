@@ -9,7 +9,8 @@
 
 import assert from "node:assert/strict";
 
-import { buildDiabetesRiskContribution, recordDiabetesCoachingAccept } from "../lib/disease-modules/diabetes";
+import { buildDiabetesRiskContribution } from "../lib/disease-modules/diabetes";
+import { recordDiabetesCoachingAccept } from "../lib/disease-modules/diabetes/learning";
 import { buildOutcomesLoopStatus } from "../lib/clinical-spine/outcomes-loop";
 import { listLearningEvents } from "../lib/repositories/learning-event-repository";
 
