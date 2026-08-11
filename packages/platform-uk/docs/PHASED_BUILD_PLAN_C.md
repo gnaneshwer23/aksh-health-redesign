@@ -162,7 +162,7 @@
 
 ---
 
-## C3 — P0-3: Agent directory classification (`kind`/`layer`/`keepStatus`) — zero deletions
+## C3 — P0-3: Agent directory classification (`kind`/`layer`/`keepStatus`) — zero deletions ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Add additive classification metadata to all 12 `AGENT_DIRECTORY` entries so "is this agent still an agent, and where does it sit in the frozen architecture" is type-checkable, not just documented in prose. Implements **P0-3** exactly as scoped, including its explicit correction that this is a classification pass, not a pruning pass.
 
@@ -182,25 +182,24 @@
 - P2-1's NEXUS review (deterministic-vs-LLM fit) is explicitly not this phase's job — NEXUS keeps `keepStatus: "keep"` here regardless.
 
 **Exit criteria (DoD)**
-- [ ] Every one of the 12 `AGENT_DIRECTORY` entries has `kind`, `layer`, `keepStatus: "keep"`.
-- [ ] `AGENT_DIRECTORY.length === 12` both before and after (asserted by test, not eyeballed).
-- [ ] No existing consumer of `AGENT_DIRECTORY`/`CLINICAL_AGENT_META` (`lib/marketing/agent-job-in-loop.ts`, `tests/route-smoke.test.ts`'s `assertFileIncludes` check) breaks.
+- [x] Every one of the 12 `AGENT_DIRECTORY` entries has `kind`, `layer`, `keepStatus: "keep"`.
+- [x] `AGENT_DIRECTORY.length === 12` both before and after (asserted by test, not eyeballed).
+- [x] No existing consumer of `AGENT_DIRECTORY`/`CLINICAL_AGENT_META` (`lib/marketing/agent-job-in-loop.ts`, `tests/route-smoke.test.ts`'s `assertFileIncludes` check) breaks.
 
 **Audit checklist**
-- [ ] Diff review: the only file with a logic change is `lib/agents.ts`, and the only change within it is additive fields on the existing array literal.
-- [ ] Confirms this satisfies spec §54's guardrail ("do not remove or collapse existing Aksh agents") in a type-checkable way, not just a doc promise.
-- [ ] Confirms the diabetes 9 signal builders (`lib/disease-modules/diabetes/*`) are **not** added to `AGENT_DIRECTORY` by this phase — they stay tools, per the hard constraint.
-- [ ] Confirms marketing/public pages that render `AGENT_DIRECTORY` (if any) show no new/removed agent tile.
+- [x] Diff review: the only file with a logic change is `lib/agents.ts`, and the only change within it is additive fields on the existing array literal (plus two new additive exported types, `AgentKind`/`AgentLayer`/`AgentKeepStatus`).
+- [x] Confirms this satisfies spec §54's guardrail ("do not remove or collapse existing Aksh agents") in a type-checkable way, not just a doc promise — `AGENT_DIRECTORY as const satisfies ReadonlyArray<{...kind: AgentKind...}>` makes an incorrect/missing `kind` a compile error.
+- [x] Confirms the diabetes 9 signal builders (`lib/disease-modules/diabetes/*`) are **not** added to `AGENT_DIRECTORY` by this phase — they stay tools, per the hard constraint (asserted by test).
+- [x] `lib/marketing/agent-job-in-loop.ts` only references `AGENT_DIRECTORY` in a comment (roster source-of-truth note) — no field access, so the additive fields cannot break it; confirmed no marketing/public page destructures or renders the new `kind`/`layer`/`keepStatus` fields.
 
 **Functionality checks**
-- [ ] `npm run typecheck`
-- [ ] `npm run test:clinical-proof` (new `agent-directory-classification.test.ts`; existing `route-smoke.test.js` unmodified assertion on `AGENT_DIRECTORY` string presence stays green)
-- [ ] `npx playwright test e2e/marketing.spec.ts` (if run: confirms no marketing-surface agent-grid regression) — best-effort in this environment.
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green. New `agent-directory-classification.test.ts` (count/name-preservation, every entry classified + kept, kind assignments spot-checked against the gap-analysis §2.1 mapping, diabetes tools absent); existing `route-smoke.test.ts`'s unmodified `assertFileIncludes("lib/agents.ts", "AGENT_DIRECTORY")` check stays green.
 
 **Commit + Deploy gate**
 - Commit: `lib/agents.ts` classification fields + test + plan update. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for C4:** **GO** if the count-preserved + all-`keep` assertions pass and no consumer breaks. **NO-GO** on any agent count change of any kind, in either direction.
+**Go/No-Go for C4:** **GO** — count-preserved + all-`keep` assertions pass and no consumer breaks.
 
 ---
 

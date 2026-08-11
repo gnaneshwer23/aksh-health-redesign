@@ -71,27 +71,69 @@ export const CLINICAL_AGENT_META: Record<
 };
 
 /**
+ * C3 (docs/PHASED_BUILD_PLAN_C.md, P0-3) — agent-directory classification.
+ * Additive-only: classifies whether an AGENT_DIRECTORY entry is agentic
+ * coordination or a deterministic tool/service, which frozen-architecture
+ * layer(s) it operates in, and whether it is kept. This is a classification
+ * pass, not a pruning pass — see docs/AKSH_ARCHITECTURE_GAP_ANALYSIS.md §2.1's
+ * explicit correction: "zero deletions... only the additive kind
+ * classification field."
+ */
+export type AgentKind =
+  | "orchestration"
+  | "intelligence_llm"
+  | "intervention"
+  | "data_interop"
+  | "safety_governance";
+
+export type AgentLayer =
+  | "patient_state"
+  | "intelligence"
+  | "decision"
+  | "intervention"
+  | "learning"
+  | "data_interop"
+  | "safety_governance";
+
+export type AgentKeepStatus = "keep";
+
+/**
  * Canonical 12-agent directory (Agent Naming Reference, July 2026).
  * ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY are label renames only —
  * internal ids, env vars, and API routes keep the legacy names as aliases.
  * PRISM and ATLAS are Phase 2 roadmap agents and are not built.
  * VOICE and Dr.Assist are intake/coding sub-capabilities — intentionally not
  * listed here as peer Phase-1 agents (see CLINICAL_AGENT_META).
+ *
+ * `kind`/`layer`/`keepStatus` populated per
+ * docs/AKSH_ARCHITECTURE_GAP_ANALYSIS.md §2.1's agent-mapping table (C3).
+ * All 12 entries are `keepStatus: "keep"` — no entry is removed, merged, or
+ * reclassified as a tool by this directory.
  */
 export const AGENT_DIRECTORY = [
-  { name: "CANVAS", role: "Clinical Intake Agent", category: "Intake", phase: 1, live: true, previously: "unnamed (intake generation / shared patient context)" },
-  { name: "SYNTHESIS", role: "Clinical Documentation Agent", category: "Documentation", phase: 1, live: true, previously: "SYNTHESIS" },
-  { name: "BRIDGE", role: "Interoperability Agent", category: "Integration", phase: 1, live: true, previously: "unnamed (Medplum staging / FHIR mapping)" },
-  { name: "NEXUS", role: "Clinical Intelligence Agent", category: "Intelligence", phase: 1, live: true, previously: "new capability" },
-  { name: "GUARDIAN", role: "Medication Intelligence Agent", category: "Safety", phase: 1, live: true, previously: "GUARDIAN" },
-  { name: "PRISM", role: "Imaging Intelligence Agent", category: "Imaging", phase: 2, live: false, previously: "new agent (roadmap)" },
-  { name: "HORIZON", role: "Predictive Risk Agent", category: "Risk", phase: 1, live: true, previously: "ORACLE" },
-  { name: "PATHWAY", role: "Care Coordination Agent", category: "Coordination", phase: 1, live: true, previously: "REFERRAL" },
-  { name: "COMPASS", role: "Population Health Agent", category: "Population", phase: 1, live: true, previously: "EQUITY" },
-  { name: "ATLAS", role: "Clinical Research Agent", category: "Research", phase: 2, live: false, previously: "new agent (roadmap)" },
-  { name: "SHIELD", role: "Regulatory & Audit Agent", category: "Governance", phase: 1, live: true, previously: "SHIELD" },
-  { name: "CONDUCTOR", role: "Supervisor Agent", category: "Orchestration", phase: 1, live: true, previously: "unnamed (clinical-spine orchestrate)" }
-] as const;
+  { name: "CANVAS", role: "Clinical Intake Agent", category: "Intake", phase: 1, live: true, previously: "unnamed (intake generation / shared patient context)", kind: "intelligence_llm", layer: ["intelligence", "patient_state"], keepStatus: "keep" },
+  { name: "SYNTHESIS", role: "Clinical Documentation Agent", category: "Documentation", phase: 1, live: true, previously: "SYNTHESIS", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "BRIDGE", role: "Interoperability Agent", category: "Integration", phase: 1, live: true, previously: "unnamed (Medplum staging / FHIR mapping)", kind: "data_interop", layer: ["data_interop"], keepStatus: "keep" },
+  { name: "NEXUS", role: "Clinical Intelligence Agent", category: "Intelligence", phase: 1, live: true, previously: "new capability", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "GUARDIAN", role: "Medication Intelligence Agent", category: "Safety", phase: 1, live: true, previously: "GUARDIAN", kind: "safety_governance", layer: ["safety_governance", "intelligence"], keepStatus: "keep" },
+  { name: "PRISM", role: "Imaging Intelligence Agent", category: "Imaging", phase: 2, live: false, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "HORIZON", role: "Predictive Risk Agent", category: "Risk", phase: 1, live: true, previously: "ORACLE", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "PATHWAY", role: "Care Coordination Agent", category: "Coordination", phase: 1, live: true, previously: "REFERRAL", kind: "intervention", layer: ["intervention"], keepStatus: "keep" },
+  { name: "COMPASS", role: "Population Health Agent", category: "Population", phase: 1, live: true, previously: "EQUITY", kind: "intelligence_llm", layer: ["decision", "intervention"], keepStatus: "keep" },
+  { name: "ATLAS", role: "Clinical Research Agent", category: "Research", phase: 2, live: false, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "SHIELD", role: "Regulatory & Audit Agent", category: "Governance", phase: 1, live: true, previously: "SHIELD", kind: "safety_governance", layer: ["safety_governance"], keepStatus: "keep" },
+  { name: "CONDUCTOR", role: "Supervisor Agent", category: "Orchestration", phase: 1, live: true, previously: "unnamed (clinical-spine orchestrate)", kind: "orchestration", layer: ["intelligence", "decision"], keepStatus: "keep" }
+] as const satisfies ReadonlyArray<{
+  name: string;
+  role: string;
+  category: string;
+  phase: number;
+  live: boolean;
+  previously: string;
+  kind: AgentKind;
+  layer: readonly AgentLayer[];
+  keepStatus: AgentKeepStatus;
+}>;
 
 /** Legacy id → renamed label lookups for copy that carries raw agent strings. */
 const AGENT_LABEL_ALIASES: Record<string, string> = {
