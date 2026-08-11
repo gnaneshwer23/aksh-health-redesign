@@ -8,7 +8,13 @@ import { toOrgSlug } from "../../../../lib/profile/personalization";
 import { persistShieldAuditEvent } from "../../../../lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "../../../../lib/user-scope";
 
-const RESEARCH_EVALUATION_ROLES = new Set([
+/**
+ * E3 (docs/PHASED_BUILD_PLAN_E.md, P3-4) exports this set so
+ * `app/api/research/federated/jobs/route.ts` can reuse it verbatim — a
+ * single source of truth for "who may touch research-workspace surfaces,"
+ * rather than a second, independently-maintained allow-list.
+ */
+export const RESEARCH_EVALUATION_ROLES = new Set([
   "researcher",
   "practice-manager",
   "ics-lead",
@@ -41,7 +47,13 @@ function resolveTestProfile(request: Request) {
   };
 }
 
-async function canAccessResearchEvaluation(request?: Request): Promise<boolean> {
+/**
+ * E3 (docs/PHASED_BUILD_PLAN_E.md, P3-4): exported so
+ * `app/api/research/federated/jobs/route.ts` can reuse the exact same
+ * test-header + real-session role check, rather than re-deriving role
+ * resolution against a different (AppRole-mapped) model.
+ */
+export async function canAccessResearchEvaluation(request?: Request): Promise<boolean> {
   const testRole = resolveRequestRole(request);
   if (testRole) {
     return RESEARCH_EVALUATION_ROLES.has(testRole);

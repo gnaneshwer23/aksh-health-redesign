@@ -8,8 +8,28 @@ import {
 } from "@/lib/precision-health/federated-research";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { canAccessResearchEvaluation } from "@/app/api/research/evaluation/route";
 
 export const maxDuration = 30;
+
+/**
+ * E3 (docs/PHASED_BUILD_PLAN_E.md, P3-4): previously required authentication
+ * but enforced no role check — unlike its sibling `/api/research/evaluation`,
+ * which already restricts to `RESEARCH_EVALUATION_ROLES` via
+ * `canAccessResearchEvaluation`. Any authenticated role (including
+ * `patient`) could previously create/list federated research jobs. Now
+ * reuses that exact same check (same allow-list, same session/test-header
+ * resolution — not a re-derivation against the AppRole-mapped model
+ * `requireAuthenticatedUserScope` uses, which is a different role
+ * vocabulary), closing the inconsistency without touching the ethics gate
+ * below, which is independent of and unaffected by this role check.
+ */
+function forbiddenResearchWorkspaceResponse() {
+  return NextResponse.json(
+    { error: "Forbidden. Researcher or admin role required.", patientLevelExport: false, ehrWrite: false },
+    { status: 403 }
+  );
+}
 
 /**
  * GET /api/research/federated/jobs
@@ -18,6 +38,9 @@ export const maxDuration = 30;
 export async function GET(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
+  if (!(await canAccessResearchEvaluation(request))) {
+    return forbiddenResearchWorkspaceResponse();
+  }
 
   return NextResponse.json({
     ...getFederatedResearchStatus(),
@@ -32,6 +55,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
+  if (!(await canAccessResearchEvaluation(request))) {
+    return forbiddenResearchWorkspaceResponse();
+  }
 
   let body: unknown;
   try {
