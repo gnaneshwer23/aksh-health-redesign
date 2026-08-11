@@ -474,6 +474,13 @@ export type ReviewCase = {
   userId: string; // Owner of this case (from authenticated session)
   practiceId?: string;
   scenarioId?: string;
+  /**
+   * C1 (docs/PHASED_BUILD_PLAN_C.md, P0-1) — optional, additive pointer into
+   * the new Patient State foundation (lib/patient-state/*). Purely additive:
+   * no existing ReviewCase fixture/test is required to set this field, and
+   * `patientLabel` remains the display field used everywhere today.
+   */
+  patientId?: string;
   patientLabel: string;
   digitalTwinPercent?: number;
   status: WorkflowStatus;

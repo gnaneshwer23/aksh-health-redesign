@@ -24,6 +24,7 @@ playwright/.cache/
 data/readiness-history.*.json
 data/learning-events.*.json
 data/governed-evaluations.*.json
+data/patient-state-facts.*.json
 
 # Local runtime / verify dumps (keep tracked seed + fixture JSON; ignore run artifacts)
 data/consent-grants.*.json

@@ -80,7 +80,7 @@
 
 ---
 
-## C1 — P0-1: Patient State foundation (versioned Patient State aggregate)
+## C1 — P0-1: Patient State foundation (versioned Patient State aggregate) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Introduce the frozen architecture's Domain 1 (Patient State) as a first-class, additive, versioned/append-only aggregate — without touching `ReviewCase`'s existing behaviour. Implements `docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md` **P0-1** exactly as scoped there.
 
@@ -100,27 +100,27 @@
 - No backfill/migration of historical `ReviewCase` data into the new store — this phase proves the mechanism exists and is correct, not that every historical record has been migrated.
 
 **Exit criteria (DoD)**
-- [ ] `lib/patient-state/*` exists with passing unit tests for the append-only + supersession invariants.
-- [ ] `GET /api/patients/[id]/state` returns a versioned snapshot for a seeded patient id and `404`/empty-snapshot (not a crash) for an unknown one.
-- [ ] `ReviewCase.patientId` is optional and additive; zero existing `ReviewCase` fixtures/tests were modified to accommodate it.
-- [ ] `npm run typecheck` and `npm run test:clinical-proof` both green, including the new test file.
+- [x] `lib/patient-state/*` exists with passing unit tests for the append-only + supersession invariants.
+- [x] `GET /api/patients/[id]/state` returns a versioned snapshot for a seeded patient id and an empty snapshot (not a crash) for an unknown one (`getPatientStateSnapshot` returns `{current:{}, factCount:0}` rather than throwing; route delegates straight to it).
+- [x] `ReviewCase.patientId` is optional and additive; zero existing `ReviewCase` fixtures/tests were modified to accommodate it.
+- [x] `npm run typecheck` and `npm run test:clinical-proof` both green, including the new test file.
 
 **Audit checklist (architecture alignment + hard constraints)**
-- [ ] Confirms Domain 1 (Patient State) per `AKSH_FINAL_ARCHITECTURE_SPEC.md` §7 principle: current state, previous state, and change are explicitly represented (via `supersededBy` + `effectiveAt`/`recordedAt`), not just a flat latest-value cache.
-- [ ] Confirms no destructive overwrite of clinically-relevant state — every write is an `INSERT`, never an `UPDATE`/`DELETE` of an existing fact row (spec §48, §54).
-- [ ] Confirms `liveEmis`/`autoRetrain` untouched (grep clean — this phase touches no orchestration/decision code).
-- [ ] Confirms no agent-directory change (grep clean — this phase touches no `lib/agents.ts`).
-- [ ] Confirms `ReviewCase`'s existing 480+ lines of type surface are diff-clean except for the one additive optional field.
+- [x] Confirms Domain 1 (Patient State) per `AKSH_FINAL_ARCHITECTURE_SPEC.md` §7 principle: current state, previous state, and change are explicitly represented (via `supersededBy` + `effectiveAt`/`recordedAt`), not just a flat latest-value cache.
+- [x] Confirms no destructive overwrite of clinically-relevant state — every write is an `INSERT`, never an `UPDATE`/`DELETE` of an existing fact row (spec §48, §54). Verified by test: superseded fact's own `value`/`id` are asserted unchanged after a later write.
+- [x] Confirms `liveEmis`/`autoRetrain` untouched (grep clean — this phase touches no orchestration/decision code).
+- [x] Confirms no agent-directory change (grep clean — this phase touches no `lib/agents.ts`).
+- [x] Confirms `ReviewCase`'s existing type surface is diff-clean except for the one additive optional field (`git diff` on `lib/types.ts` shows only the new `patientId?: string` + its doc comment).
 
 **Functionality checks**
-- [ ] `npm run typecheck`
-- [ ] `npm run test:clinical-proof` (new `patient-state-foundation.test.ts` in the chain)
-- [ ] Manual/scripted: seed 2–3 facts of different `factType`s for one demo patient id, call `getPatientStateSnapshot`, confirm exactly one current value per type and that the superseded fact is still retrievable via `listPatientStateFacts`.
+- [x] `npm run typecheck` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green including new `patient-state-foundation.test.ts` (projection current-state-per-factType, cross-patient isolation, repository append-only/supersession, identity-bridge regression against the golden PATEL-DEMO→P002 mapping, unknown-patient empty-snapshot). Same expected `postgres_not_configured` fail-visible warnings as prior phases (no `DATABASE_URL` in this sandbox) — not a regression.
+- [x] Scripted: `testRepositoryAppendOnlyAndSupersession` seeds 2 facts of the same `factType` for one patient id via `recordPatientStateFact`, calls `getPatientStateSnapshot`, confirms exactly one current value and that the superseded fact is still retrievable via `listPatientStateFacts`.
 
 **Commit + Deploy gate**
 - Commit: new patient-state module + migration + route + tests + this plan's C1 checkbox update. Push to `main`. Confirm Vercel deployment reaches `READY` (MCP `get_deployment`/`list_deployments` or dashboard).
 
-**Go/No-Go for C2:** **GO** if all exit criteria are met and the full clinical-proof chain stays green (no regression to B0–B7 behaviour). **NO-GO** if `ReviewCase`'s existing behaviour changed in any way.
+**Go/No-Go for C2:** **GO** — all exit criteria met, full clinical-proof chain stays green (no regression to B0–B7 behaviour), `ReviewCase`'s existing behaviour unchanged.
 
 ---
 
