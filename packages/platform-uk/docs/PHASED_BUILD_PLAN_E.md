@@ -26,7 +26,7 @@
 | Migration-plan item | E-phase | What this plan actually does (narrower than a full build) |
 |---|---|---|
 | P3-1 PRISM (Imaging) / ATLAS (Research) | E1 | Honest, additive **capability-status** module + read-only endpoint stating both are **not built**, `live:false`, Phase 2 roadmap — no imaging pipeline, no research-agent logic, no LLM wiring. |
-| P3-2 Production RBAC / CIS2 | E2 | Additive **route-level RBAC enforcement** closing gaps between what `lib/permission-matrix.ts` already *documents* as the intended boundary and what the API layer *actually enforces* today. Does **not** flip `productionRbacEnforced` to `true`, does **not** claim CIS2, does **not** replace the dedicated pen-test-gated RBAC/CIS2 project the migration plan itself says this must not be bundled into. |
+| P3-2 Production RBAC / CIS2 | E2 | Additive **route-level RBAC enforcement** closing gaps between what `lib/permission-matrix.ts` already *documents* as the intended boundary and what the API layer *actually enforces* today — landed for three routes (`audit-integrity`/`permission-matrix`/`clinical-safety-files`); two sibling routes (`integration-contract`/`database-contract`) were found during E2's own build to be *deliberately* public (linked from the public `/resources` page, locked in by an existing test) and were correctly left untouched rather than hardened. Does **not** flip `productionRbacEnforced` to `true`, does **not** claim CIS2, does **not** replace the dedicated pen-test-gated RBAC/CIS2 project the migration plan itself says this must not be bundled into. |
 | P3-3 Live EMIS / NHS write path (Track B) | — (parking lot) | **Explicitly not touched by any E-phase.** See "Parking lot" below. |
 | P3-4 Federated research pipeline productionisation | E3 | Additive **role-gate hardening** on the one federated-research route that was inconsistent with its own sibling (`/api/research/evaluation`) — no production federation infrastructure, no new statistics, no Owkin-style pipeline. |
 | P3-5 Additional disease modules beyond Diabetes | E5 (optional) | A **typed-stub-only** second disease module (`lib/disease-modules/heart/types.ts`), zero wiring, zero flag, mirroring Diabetes's own original v0-stub phase before it was ever wired into CONDUCTOR. |
@@ -90,7 +90,7 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 | P3 item | Current state found in repo | E-phase |
 |---|---|---|
 | P3-1 PRISM/ATLAS | `AGENT_DIRECTORY` entries `live:false`, `phase:2`. Referenced honestly in marketing copy (`lib/chat/knowledge.ts`), researcher dashboard honesty banner (`app/dashboard/researcher/page.tsx`), onboarding copy. **No dedicated capability-status module or endpoint exists** (unlike EMIS/federated-research, which each have one) — this is the concrete gap E1 closes. | E1 |
-| P3-2 RBAC/CIS2 | `lib/permission-matrix.ts` documents an intended boundary (`clinical_reviewer`/`operations_lead` allowed, `patient`/`researcher` denied, for governance/export actions) but **two `/api/system/*` routes accept fully unauthenticated requests** (`integration-contract`, `database-contract` via `resolveOptionalAuthenticatedUserScope`), and **three more require authentication but enforce no role check at all** (`audit-integrity`, `permission-matrix`, `clinical-safety-files`) — any authenticated role, including `patient`/`researcher`, can call them directly. This is the concrete gap E2 closes, using the matrix's own already-documented intended values. | E2 |
+| P3-2 RBAC/CIS2 | `lib/permission-matrix.ts` documents an intended boundary (`clinical_reviewer`/`operations_lead` allowed, `patient`/`researcher` denied, for governance/export actions). Two `/api/system/*` routes accept fully unauthenticated requests (`integration-contract`, `database-contract` via `resolveOptionalAuthenticatedUserScope`) — **later confirmed deliberate** (public `/resources` page + an existing test locking in anonymous access), so E2 leaves them untouched. Three more require authentication but enforce no role check at all (`audit-integrity`, `permission-matrix`, `clinical-safety-files`) — any authenticated role, including `patient`/`researcher`, can call them directly. **These three** are the concrete gap E2 actually closes, using the matrix's own already-documented intended values. | E2 |
 | P3-3 Live EMIS | `liveEmis:false` hard everywhere; Partner sandbox scaffold only (`lib/emis-staging.ts`, `lib/emis-partner-sandbox.ts`). Confirmed unchanged — parking lot, no E-phase touches this. | — |
 | P3-4 Federated research | `lib/precision-health/federated-research.ts` is an honest ethics-gated stub (`blocked_ethics` default, `patientLevelExport:false`, `syntheticAggregatesOnly:true`). Its route, `/api/research/federated/jobs`, requires authentication but — unlike its sibling `/api/research/evaluation` (which restricts to `RESEARCH_EVALUATION_ROLES`) — **enforces no role check**, so any authenticated role (including `patient`) can create/list federated jobs. This inconsistency is the concrete gap E3 closes. | E3 |
 | P3-5 Second disease module | `lib/disease-modules/` contains only `diabetes/`. `docs/volume-i/VOLUME_I_PRODUCT_REQUIREMENTS.md` FR-ARC-002 anticipates a second module (e.g. cardiovascular/renal) repeating the same module shape; `OQ-ARC-4` (does a second module get its own chapter/Volume?) is explicitly **open, Product-owned**. E5 (optional) adds a typed-stub-only Heart module, mirroring Diabetes's own original v0-stub phase, without resolving `OQ-ARC-4`. | E5 |
@@ -121,7 +121,7 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 
 ---
 
-## E1 — P3-1: PRISM/ATLAS honest capability-status module (no build-out)
+## E1 — P3-1: PRISM/ATLAS honest capability-status module (no build-out) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Give PRISM (Imaging Intelligence) and ATLAS (Clinical Research) the same kind of single, authoritative, machine-readable "here is exactly what this is and is not" honesty surface that EMIS (`lib/emis-staging.ts`) and federated research (`lib/precision-health/federated-research.ts`) already have — without building any imaging pipeline, any research-agent logic, or any LLM wiring for either. This directly closes the gap E0 recorded: PRISM/ATLAS honesty today lives only as scattered copy strings, not as one queryable status object other surfaces (docs generators, admin panels, partner packs) can read from.
 
@@ -153,58 +153,63 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 **Commit + Deploy gate**
 - Commit: `lib/agents/phase2-capability-status.ts` + route + test + `lib/chat/knowledge.ts` cross-reference + `package.json` chain update + this plan's E1 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for E2: GO** (pending this phase's own functionality checks below).
+**Go/No-Go for E2: GO** — `npm run typecheck` PASS, `npm run test:clinical-proof` PASS (full chain, includes new test file).
 
 ---
 
-## E2 — P3-2: Production RBAC hardening toward a CIS2-ready posture (no CIS2 claim, no flag flip)
+## E2 — P3-2: Production RBAC hardening toward a CIS2-ready posture (no CIS2 claim, no flag flip) ✅ **COMPLETE (11 August 2026)**
 
-**Goal:** Close the concrete gap E0 recorded — five `/api/system/*` routes whose actual access control does not match what `lib/permission-matrix.ts` already documents as the intended boundary — using the matrix's own already-existing intended values (`export_system_contracts`/`governance_pack_view`: `clinical_reviewer` allowed, `operations_lead` allowed, `patient` denied, `researcher` denied). This is additive route-level enforcement, not a redesign of the permission model, and it explicitly does **not** flip `productionRbacEnforced` or claim CIS2 — both stay exactly as documented today (a dedicated, pen-test-gated project per the migration plan's own P3-2 text).
+**Goal:** Close the concrete gap E0 recorded — `/api/system/*` routes whose actual access control does not match what `lib/permission-matrix.ts` already documents as the intended boundary — using the matrix's own already-existing intended values (`clinical_reviewer` allowed, `operations_lead` allowed, `patient` denied, `researcher` denied). This is additive route-level enforcement, not a redesign of the permission model, and it explicitly does **not** flip `productionRbacEnforced` or claim CIS2 — both stay exactly as documented today (a dedicated, pen-test-gated project per the migration plan's own P3-2 text).
 
-**In scope**
+**Actual approach (corrected from the original five-route sketch above — recorded here, not silently substituted):** while building this phase, `app/resources/page.tsx` (a fully **public** marketing page) was found to link directly to `/api/system/database-contract` and `/api/system/integration-contract` as architecture-transparency artifacts, and `tests/readonly-route-contracts.test.ts` already **locks in** anonymous access to `database-contract` with an explicit assertion ("Database contract should be public read-only without session"). Hardening those two routes as originally sketched would have broken a working, deliberately-public transparency page and weakened an existing test's own intent — exactly what hard constraint 9 ("no existing test may be weakened to go green") exists to prevent. **E2 therefore hardens only the three system routes that were not linked from any public page and had no such deliberate-public-access test lock-in: `audit-integrity`, `permission-matrix`, `clinical-safety-files`.** `integration-contract`/`database-contract` are left exactly as they were — still `resolveOptionalAuthenticatedUserScope`, still public — which is the correct, honest outcome, not a shortfall.
+
+**In scope (as executed)**
 - `lib/user-scope.ts`: new additive `requireAppRole(request, allowedRoles: AppRole[])` helper — wraps `requireAuthenticatedUserScope`, then denies (`403`) if `context.userRole` is not in `allowedRoles`. Existing exports (`requireAuthenticatedUserScope`, `resolveOptionalAuthenticatedUserScope`, `mapSessionRoleToAppRole`, etc.) are **not modified** — this is a new function, zero diff to any existing one's behaviour or signature.
-- `app/api/system/integration-contract/route.ts` and `app/api/system/database-contract/route.ts`: switch from `resolveOptionalAuthenticatedUserScope` (currently allows fully unauthenticated "public" access) to `requireAppRole(request, ["clinical_reviewer", "operations_lead"])` — matching D6's own stated (but never-enforced) intent for the integration-contract's admin panel ("gated to an appropriate admin/operations role... never patient- or clinical-reviewer-visible without justification" — read here as: not *publicly* visible, and per the matrix's own `export_system_contracts` row, `clinical_reviewer` and `operations_lead` are the two allowed roles).
-- `app/api/system/audit-integrity/route.ts`, `app/api/system/permission-matrix/route.ts`, `app/api/system/clinical-safety-files/route.ts`: switch from `requireAuthenticatedUserScope` (any authenticated role) to `requireAppRole(request, ["clinical_reviewer", "operations_lead"])` — closing the "any authenticated role including patient/researcher" gap, using the exact allow-list the matrix already documents for `governance_pack_view`/`export_system_contracts`.
-- `lib/permission-matrix.ts`: additive `enforcedAt` field (an ISO date string, or `null`) on the `export_system_contracts` and `governance_pack_view` actions only, recording that these two documented boundaries are now route-enforced as of this phase — every other action's `enforcedAt` stays `null` (honest: this phase enforces exactly two documented actions' worth of routes, not the whole matrix).
-- New `tests/system-routes-rbac.test.ts` — mirrors `tests/clinical-proof-rbac-decision-gate.test.ts`'s own pattern: for each of the five routes, asserts `patient`/`researcher`/`restricted`/unauthenticated all receive `401`/`403`, and `gp` (→`clinical_reviewer`) and `practice-manager` (→`operations_lead`) both succeed.
+- `app/api/system/audit-integrity/route.ts`, `app/api/system/permission-matrix/route.ts`, `app/api/system/clinical-safety-files/route.ts`: switch from `requireAuthenticatedUserScope` (any authenticated role) to `requireAppRole(request, ["clinical_reviewer", "operations_lead"])` — closing the "any authenticated role including patient/researcher" gap.
+- `app/api/system/integration-contract/route.ts`: **unchanged in behaviour** — a comment was added recording why it stays public (cross-referenced above), zero functional diff.
+- `lib/permission-matrix.ts`: additive `enforcedAt` field (an ISO date string, or `null`) on every action; a new `audit_and_safety_export` action (covering `audit-integrity`/`clinical-safety-files`) gets a dated `enforcedAt`; `export_system_contracts`'s notes are updated to honestly state that its `database-contract` half stays public while its `permission-matrix` half is now role-enforced (its own `enforcedAt` stays `null` since it is a mixed, not fully-enforced, action) — every other action's `enforcedAt` stays `null`.
+- New `tests/system-routes-rbac.test.ts` — mirrors `tests/clinical-proof-rbac-decision-gate.test.ts`'s own pattern: for each of the three hardened routes, asserts `patient`/`researcher`/`restricted`/unauthenticated all receive `401`/`403`, and `gp` (→`clinical_reviewer`) and `practice-manager` (→`operations_lead`) both succeed; also asserts `productionRbacEnforced` stays `false`.
 
 **Out of scope**
 - No change to `productionRbacEnforced`'s literal `false` value (grep-checked).
 - No CIS2/MHRA/DCB claim added anywhere.
-- No change to any other `/api/*` route's auth behaviour — this phase touches exactly the five named `/api/system/*` routes.
-- No change to `lib/permission-matrix.ts`'s existing `matrix`/`actions`/`roles` values — only the new, additive `enforcedAt` field.
+- No change to `integration-contract`/`database-contract`'s deliberate public-access behaviour.
+- No change to any other `/api/*` route's auth behaviour — this phase touches exactly the three named `/api/system/*` routes plus the (unchanged-behaviour) `integration-contract` comment.
+- No change to `lib/permission-matrix.ts`'s existing `matrix` values or any action's `id`/`label`/`routeOrSurface` — only the new, additive `enforcedAt` field, one new action, and clarified notes text.
 
 **Exit criteria (DoD)**
-- [x] `integration-contract` and `database-contract` no longer accept unauthenticated requests (previously fully public).
 - [x] `audit-integrity`, `permission-matrix`, `clinical-safety-files` deny `patient`/`researcher`/`restricted` roles (previously any authenticated role succeeded).
-- [x] `clinical_reviewer`- and `operations_lead`-mapped roles (`gp`, `nurse`, `clinical-pharmacist`, `practice-manager`, `ics-lead`, `hospital-executive`) still succeed on all five routes — zero regression for the roles the matrix always intended to allow.
+- [x] `clinical_reviewer`- and `operations_lead`-mapped roles (`gp`, `practice-manager`, etc.) still succeed on all three hardened routes — zero regression for the roles the matrix always intended to allow.
+- [x] `integration-contract`/`database-contract` remain publicly readable — `tests/readonly-route-contracts.test.ts` passes unmodified, proving zero regression to the deliberate public-access behaviour.
 - [x] `productionRbacEnforced` remains `false`; no CIS2 claim added.
-- [x] `npm run typecheck` and `npm run test:clinical-proof` both green, including the new test file.
+- [x] `npm run typecheck`, `npm run test:clinical-proof` (full chain), and `npm run build` all green.
 
 **Audit checklist**
 - [x] `grep -n "productionRbacEnforced" lib/permission-matrix.ts` — confirmed `false` literal unchanged.
 - [x] `grep -rn "CIS2\|MHRA\|DCB0129\|DCB0160\|DTAC" <files touched this phase>` — confirmed no certification claim introduced.
-- [x] `liveEmis`/`autoRetrain`/agent-directory — grep-clean; this phase touches only `lib/user-scope.ts` (additive function), five `app/api/system/*` route files (auth-check swap only, zero business-logic diff), `lib/permission-matrix.ts` (one additive field), one new test file.
-- [x] Every route's actual response body/shape for an *allowed* caller is unchanged — only the auth/role gate is added; verified in the test by asserting the 200 response body still matches the pre-existing contract shape for an allowed role.
+- [x] `liveEmis`/`autoRetrain`/agent-directory — grep-clean; this phase touches only `lib/user-scope.ts` (additive function), three `app/api/system/*` route files (auth-check swap only, zero business-logic diff) plus a comment-only touch to a fourth, `lib/permission-matrix.ts` (additive fields/action + clarified notes), one new test file.
+- [x] `tests/readonly-route-contracts.test.ts` (pre-existing, unmodified) still passes — confirms zero regression to `database-contract`'s locked-in public-access contract.
+- [x] Every hardened route's actual response body/shape for an *allowed* caller is unchanged — only the auth/role gate is added; verified directly in the test.
 
 **Functionality checks**
 - [x] `npm run typecheck` — PASS.
-- [x] `npm run test:clinical-proof` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green, including the new test file and the pre-existing `readonly-route-contracts.test.ts` (unmodified, still asserting public access to `database-contract`).
+- [x] `npm run build` — PASS locally, clean production build (this phase touches `lib/permission-matrix.ts`, which is reachable from a client-imported page).
 
 **Commit + Deploy gate**
-- Commit: `lib/user-scope.ts` (`requireAppRole`) + five route files + `lib/permission-matrix.ts` (`enforcedAt`) + test + `package.json` chain update + this plan's E2 section. Push to `main`. Confirm Vercel `READY`.
+- Commit: `lib/user-scope.ts` (`requireAppRole`) + three hardened route files + `integration-contract` comment + `lib/permission-matrix.ts` (`enforcedAt`/new action/clarified notes) + test + `package.json` chain update + this plan's E2 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for E3: GO** (pending this phase's own functionality checks below).
+**Go/No-Go for E3: GO** — all exit criteria met, zero regression to the deliberately-public routes, full clinical-proof chain + local build green.
 
 ---
 
-## E3 — P3-4: Federated-research role-gate hardening (no production federation infra)
+## E3 — P3-4: Federated-research role-gate hardening (no production federation infra) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** Close the concrete gap E0 recorded — `/api/research/federated/jobs` (GET+POST) requires authentication but enforces no role check, unlike its sibling `/api/research/evaluation` (which already restricts to a `RESEARCH_EVALUATION_ROLES` allow-list). This phase reuses that existing allow-list, it does not invent a new one, and it does not touch `lib/precision-health/federated-research.ts`'s own ethics-gate logic (`FEDERATED_RESEARCH_ETHICS_APPROVED`, `blocked_ethics`) — that stays exactly as honest and exactly as gated as it already is.
 
 **In scope**
-- `app/api/research/evaluation/route.ts`: export the existing `RESEARCH_EVALUATION_ROLES` set (currently module-private) so it can be reused verbatim by the federated-jobs route rather than re-declared — a single source of truth for "who may touch research-workspace surfaces," additive (adding `export` to an existing `const` changes no behaviour).
-- `app/api/research/federated/jobs/route.ts`: both `GET` and `POST` gain the same role check the evaluation route already has (`researcher`, `practice-manager`, `ics-lead`, `hospital-executive`, `operations_lead` — reused, not redefined), returning `403` for any other role (including `patient`, `gp`, `nurse`, `clinical-pharmacist`, and unrecognized roles).
+- `app/api/research/evaluation/route.ts`: export both the existing `RESEARCH_EVALUATION_ROLES` set and its `canAccessResearchEvaluation(request?)` checker function (both previously module-private) so the federated-jobs route reuses the exact same session/test-header role resolution rather than re-deriving a check against `requireAuthenticatedUserScope`'s different (AppRole-mapped) role vocabulary — additive exports, zero behaviour change to the evaluation route itself.
+- `app/api/research/federated/jobs/route.ts`: both `GET` and `POST` gain the same `canAccessResearchEvaluation` check the evaluation route already uses (`researcher`, `practice-manager`, `ics-lead`, `hospital-executive`, `operations_lead` — reused, not redefined), returning `403` for any other role (including `patient`, `gp`, `nurse`, `clinical-pharmacist`, and unrecognized roles).
 - New `tests/federated-research-rbac.test.ts` — proves `patient` and an unrecognized role get `403` on both `GET` and `POST /api/research/federated/jobs`; proves `researcher` and `practice-manager` still succeed; proves the ethics gate (`blocked_ethics` when `FEDERATED_RESEARCH_ETHICS_APPROVED` is unset) is unaffected by the new role check — a `researcher` role still gets a `blocked_ethics` job, not a `403`, when the ethics env gate is closed (i.e., the two gates are independent and both must pass, neither silently overrides the other).
 
 **Out of scope**
@@ -225,16 +230,16 @@ Restates `docs/PHASED_BUILD_PLAN_D.md`'s own constraints verbatim (they do not l
 
 **Functionality checks**
 - [x] `npm run typecheck` — PASS.
-- [x] `npm run test:clinical-proof` — PASS.
+- [x] `npm run test:clinical-proof` — PASS, full chain green, including the new test file.
 
 **Commit + Deploy gate**
-- Commit: `app/api/research/evaluation/route.ts` (export) + `app/api/research/federated/jobs/route.ts` (role gate) + test + `package.json` chain update + this plan's E3 section. Push to `main`. Confirm Vercel `READY`.
+- Commit: `app/api/research/evaluation/route.ts` (exports) + `app/api/research/federated/jobs/route.ts` (role gate) + test + `package.json` chain update + this plan's E3 section. Push to `main`. Confirm Vercel `READY`.
 
-**Go/No-Go for E4: GO** (pending this phase's own functionality checks below).
+**Go/No-Go for E4: GO** — all exit criteria met, ethics gate and role gate independently verified, full clinical-proof chain green.
 
 ---
 
-## E4 — Partner readiness pack refresh for EMIS/IM1 (docs + flags only, no code)
+## E4 — Partner readiness pack refresh for EMIS/IM1 (docs + flags only, no code) ✅ **COMPLETE (11 August 2026)**
 
 **Goal:** A dated, docs-only addendum to the existing, already-comprehensive partner-readiness materials (`docs/PHASE2_PARTNER_CHECKLIST.md`, `docs/P7_PARTNER_OUTREACH_PACK.md`), reflecting what has changed since D-tranche/E1–E3 landed (a real diabetes glucose-ingest path now exists; PRISM/ATLAS now have a queryable honesty status; RBAC around system/governance exports is now route-enforced) — without sending any outreach, inventing any credential, or flipping `liveEmis`/`liveWriteBack`.
 
