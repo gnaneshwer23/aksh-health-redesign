@@ -39,7 +39,7 @@ Canonical Phase-1 brands include CANVAS, SYNTHESIS, GUARDIAN, HORIZON (formerly 
 - NEXUS — Clinical correlation drafts in default CONDUCTOR path — draft-only + HITL.
 - CONDUCTOR — In-app clinical-spine orchestrator (deterministic — not LangGraph).
 - SHIELD — Immutable AuditEvent on every reviewer action.
-- PRISM / ATLAS — Phase 2 roadmap only (live:false · not built). Do not claim live imaging or clinical research agents.
+- PRISM / ATLAS — Phase 2 roadmap only (live:false · not built). Do not claim live imaging or clinical research agents. Machine-readable status: GET /api/system/phase2-capability-status.
 
 ## Roles / audiences
 Role dashboards cover: GP/clinician, nurse, pharmacist, practice admin, ICS/regional, hospital executive, patient (invite-only), and researcher.
