@@ -3,7 +3,7 @@ const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 const pages = [
   { path: "/", text: "Clinical work" },
   { path: "/platform", text: "One platform, eight roles" },
-  { path: "/security", text: "Data protection and clinical safety for NHS deployments" },
+  { path: "/security", text: "Human review, audit trails, and honest compliance language for NHS deployments" },
   { path: "/contact", text: "Talk to Aksh Health" },
   { path: "/signup", text: "Create your account" },
   { path: "/get-started", text: "Request access for your NHS organisation" },

@@ -66,7 +66,7 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
         <span>
           {tutorialScreen + 1} of {screens.length}
         </span>
-        <Button type="button" variant="ghost" size="sm" onClick={onComplete}>
+        <Button type="button" variant="ghost" size="sm" onClick={onComplete} aria-label="Skip tutorial">
           Skip
         </Button>
       </div>
