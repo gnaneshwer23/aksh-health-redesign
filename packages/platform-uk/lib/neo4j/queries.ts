@@ -40,8 +40,11 @@ function overallGuardianStatus(interactions: Neo4jGuardianInteraction[]): Guardi
 }
 
 export async function fetchPatientFromGraph(id: string): Promise<Neo4jPatientResponse | null> {
+  // OPTIONAL MATCH keeps honesty: a Patient node in-graph is neo4j even with 0 conditions.
+  // Required HAS_CONDITION previously returned null → mock header while Aura was live.
   const result = await runQuery(
-    `MATCH (p:Patient {id: $id})-[:HAS_CONDITION]->(c:Condition)
+    `MATCH (p:Patient {id: $id})
+     OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition)
      OPTIONAL MATCH (p)-[:TAKES_MEDICATION]->(m:Medication)
      RETURN p,
             collect(DISTINCT c.name) AS conditions,
@@ -52,7 +55,8 @@ export async function fetchPatientFromGraph(id: string): Promise<Neo4jPatientRes
   const record = result.records[0];
   if (!record) return null;
 
-  const patientNode = recordValue(record, "p") as { properties: Record<string, unknown> };
+  const patientNode = recordValue(record, "p") as { properties: Record<string, unknown> } | null;
+  if (!patientNode?.properties) return null;
   const patient = patientNode.properties;
   const conditions = (recordValue(record, "conditions") as string[]).filter(Boolean);
   const medications = (recordValue(record, "medications") as string[]).filter(Boolean);
@@ -93,6 +97,13 @@ export async function fetchPatientFromGraph(id: string): Promise<Neo4jPatientRes
 }
 
 export async function fetchGuardianFromGraph(patientId: string): Promise<Neo4jGuardianResponse | null> {
+  // Require the Patient node. Empty interaction lists are fine; inventing neo4j for a
+  // missing patient is not (smoke previously saw guardian=neo4j + patient=mock on empty Aura).
+  const present = await runQuery(`MATCH (p:Patient {id: $id}) RETURN p.id AS id LIMIT 1`, {
+    id: patientId,
+  });
+  if (!present.records[0]) return null;
+
   const result = await runQuery(
     `MATCH (p:Patient {id: $id})-[:TAKES_MEDICATION]->(m1:Medication)
      MATCH (m1)-[i:INTERACTS_WITH]->(m2:Medication)

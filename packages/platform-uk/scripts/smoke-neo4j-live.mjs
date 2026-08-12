@@ -24,7 +24,9 @@ const baseUrl = (process.env.SMOKE_BASE_URL ?? process.env.EVIDENCE_HEALTH_URL ?
   /\/$/,
   ""
 );
-const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 15_000);
+const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 45_000);
+/** Canonical seeded fixture used by seed-neo4j + clinical-proof (Patel). */
+const SMOKE_PATIENT_ID = process.env.SMOKE_NEO4J_PATIENT_ID?.trim() || "P002";
 const overrideEmail = process.env.SMOKE_GP_EMAIL ?? process.env.SMOKE_ADMIN_EMAIL ?? "";
 const overridePassword = process.env.SMOKE_GP_PASSWORD ?? process.env.SMOKE_ADMIN_PASSWORD ?? "";
 const throwawayPassword = process.env.E2E_TEST_PASSWORD?.trim() || "E2eTestPass1!";
@@ -157,15 +159,17 @@ async function run() {
   const { email, password } = await resolveSmokeCredentials();
   await signIn(email, password);
 
-  const patientRes = await fetchWithTimeout("/api/neo4j/patient?id=P002");
+  const patientRes = await fetchWithTimeout(`/api/neo4j/patient?id=${encodeURIComponent(SMOKE_PATIENT_ID)}`);
   if (!patientRes.ok) throw new Error(`/api/neo4j/patient → ${patientRes.status}`);
   const patientSource = patientRes.headers.get("X-Data-Source");
-  console.log(`[ok] P002 X-Data-Source=${patientSource}`);
+  console.log(`[ok] ${SMOKE_PATIENT_ID} X-Data-Source=${patientSource}`);
 
-  const guardianRes = await fetchWithTimeout("/api/neo4j/guardian?patientId=P002");
+  const guardianRes = await fetchWithTimeout(
+    `/api/neo4j/guardian?patientId=${encodeURIComponent(SMOKE_PATIENT_ID)}`
+  );
   if (!guardianRes.ok) throw new Error(`/api/neo4j/guardian → ${guardianRes.status}`);
   const guardianSource = guardianRes.headers.get("X-Data-Source");
-  console.log(`[ok] Guardian P002 X-Data-Source=${guardianSource}`);
+  console.log(`[ok] Guardian ${SMOKE_PATIENT_ID} X-Data-Source=${guardianSource}`);
 
   const authIcs = await fetchWithTimeout("/api/neo4j/ics-population");
   if (!authIcs.ok) throw new Error(`auth ics-population → ${authIcs.status}`);
@@ -173,9 +177,16 @@ async function run() {
   console.log(`[ok] Authenticated ICS X-Data-Source=${authIcsSource}`);
 
   if (neo.mode === "live" && neo.connected) {
+    // Patient + guardian must agree — guardian must not claim neo4j when patient is missing.
+    if (patientSource !== guardianSource) {
+      throw new Error(
+        `Patient/guardian X-Data-Source mismatch (patient=${patientSource ?? "null"}, guardian=${guardianSource ?? "null"}). Guardian must not report neo4j when ${SMOKE_PATIENT_ID} is absent from the graph.`
+      );
+    }
     if (patientSource !== "neo4j") {
       throw new Error(
-        `Expected patient X-Data-Source: neo4j when health is live, got ${patientSource ?? "null"}`
+        `Expected patient X-Data-Source: neo4j when health is live, got ${patientSource ?? "null"}. ` +
+          `Graph is reachable but ${SMOKE_PATIENT_ID} is missing — re-run npm run data:seed:neo4j against the Aura instance wired to this host.`
       );
     }
     if (guardianSource !== "neo4j") {
@@ -185,13 +196,18 @@ async function run() {
     }
     if (authIcsSource !== "neo4j") {
       throw new Error(
-        `Expected authenticated ICS X-Data-Source: neo4j when health is live, got ${authIcsSource ?? "null"}`
+        `Expected authenticated ICS X-Data-Source: neo4j when health is live, got ${authIcsSource ?? "null"}. ` +
+          `Re-run npm run data:seed:neo4j if ICS/Organization aggregates are missing.`
       );
     }
     console.log("[ok] Signed-in consumer receives live Neo4j patient/guardian/ICS payloads");
   } else {
     if (patientSource === "mock" && guardianSource === "mock") {
       console.log("[ok] Signed-in consumer correctly reports mock fallback");
+    } else if (patientSource !== guardianSource) {
+      throw new Error(
+        `Mock-mode patient/guardian X-Data-Source mismatch (patient=${patientSource ?? "null"}, guardian=${guardianSource ?? "null"})`
+      );
     }
     if (authIcsSource === "mock") {
       console.log("[ok] Authenticated ICS correctly reports mock fallback");
