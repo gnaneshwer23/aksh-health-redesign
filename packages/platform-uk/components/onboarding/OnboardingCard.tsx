@@ -24,8 +24,8 @@ export function OnboardingCard({
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <div className="mb-6">
-        <Link href="/" className="text-base font-semibold tracking-tight text-foreground">
+        <div className="mb-6">
+        <Link href="/" className="font-display text-base font-semibold tracking-tight text-primary">
           Aksh Health
         </Link>
       </div>
@@ -40,7 +40,7 @@ export function OnboardingCard({
           <span className="font-medium text-foreground">liveEmis:false</span>
           {" — "}no live EMIS or SystmOne connection.
         </p>
-        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        <h1 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {title}
         </h1>
         {description ? (

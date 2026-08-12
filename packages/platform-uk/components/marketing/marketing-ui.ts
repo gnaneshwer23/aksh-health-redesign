@@ -41,5 +41,5 @@ export const bandPrimaryCta = cn(btnInverse, btnLg);
 export const bandSecondaryCta = cn(btnGhost, btnLg);
 
 /** Card corner + icon-square hierarchy, kept here so it's referenced once. */
-export const cardRadius = "rounded-2xl";
-export const iconSquareRadius = "rounded-xl";
+export const cardRadius = "rounded-3xl";
+export const iconSquareRadius = "rounded-2xl";

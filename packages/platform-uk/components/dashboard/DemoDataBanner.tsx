@@ -17,7 +17,7 @@ export function DemoDataBanner({
       role="status"
       data-testid="demo-data-banner"
       className={cn(
-        "rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950",
+        "rounded-2xl border border-amber-200/80 bg-pastel-amber px-4 py-2.5 text-xs text-pastel-amber-ink",
         className
       )}
     >

@@ -56,7 +56,7 @@ export function DashboardShell({
         {!hideSidebar && <Sidebar role={role} />}
         <main className="flex flex-1 flex-col overflow-hidden">
           {showFirstRun && !loading ? (
-            <div className="shrink-0 space-y-2 border-b border-border-subtle bg-card/80 px-4 py-3">
+            <div className="shrink-0 space-y-2 border-b border-border-subtle/70 bg-card/70 px-4 py-3 backdrop-blur-sm">
               <FirstRunGuidance role={role} />
               <ProductHelpLinks />
             </div>

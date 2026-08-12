@@ -12,6 +12,9 @@ test-results/
 blob-report/
 playwright/.cache/
 
+# Local UI reference assets (Dribbble shot downloads)
+.ui-ref/
+
 # Lighthouse reports
 .lighthouse/
 

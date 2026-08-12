@@ -174,19 +174,19 @@ export function Sidebar({ role }: { role: DashboardRole }) {
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle/70 bg-card/95 shadow-sidebar transition-all duration-200 backdrop-blur-sm",
+          "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle/60 bg-card/90 shadow-sidebar transition-all duration-200 backdrop-blur-md",
           collapsed ? "w-16" : "w-sidebar"
         )}
         aria-label="Dashboard navigation"
       >
-        <div className="border-b border-border-subtle/70 px-4 py-6">
+        <div className="border-b border-border-subtle/60 px-4 py-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-white shadow-sm">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-sm font-bold text-white shadow-soft">
               {collapsed ? "A" : "A"}
             </span>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-primary">Aksh Health</p>
+                <p className="truncate font-display text-sm font-bold text-primary">Aksh Health</p>
                 <p className="truncate text-[11px] text-muted">
                   {loading ? (
                     <span className="inline-block h-3 w-28 animate-pulse rounded bg-muted/30" />
@@ -198,8 +198,8 @@ export function Sidebar({ role }: { role: DashboardRole }) {
             )}
           </div>
           {!collapsed && (
-            <div className="mt-5 flex items-center gap-2 rounded-2xl bg-[#F3F7FA] px-3 py-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-signal/20 text-xs font-bold text-primary">
+            <div className="mt-5 flex items-center gap-2 rounded-3xl bg-surface px-3 py-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pastel-mint text-xs font-bold text-pastel-mint-ink">
                 {loading ? "…" : (userName.split(" ").pop()?.[0] ?? "U")}
               </span>
               <div className="min-w-0 flex-1">
@@ -241,7 +241,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
                 <span
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
-                    active ? "bg-signal text-primary shadow-sm" : "bg-transparent text-steel"
+                    active ? "bg-accent text-white shadow-soft" : "bg-transparent text-steel"
                   )}
                 >
                   <Icon className="h-[18px] w-[18px]" />

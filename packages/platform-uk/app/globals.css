@@ -4778,16 +4778,17 @@ input:focus, textarea:focus {
 
 /* Marketing site — light theme (scoped; does not affect onboarding/dashboard) */
 .marketing-site {
-  background: #f3f5f8;
-  color: #2d3748;
+  background: #f7f8fa;
+  color: #14201e;
   font-family: var(--font-marketing-body);
   -webkit-font-smoothing: antialiased;
 }
 
 .marketing-site--editorial {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(0, 168, 107, 0.07), transparent 55%),
-    #f3f5f8;
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(0, 168, 142, 0.09), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 20%, rgba(232, 243, 254, 0.55), transparent 50%),
+    #f7f8fa;
 }
 
 .marketing-site a {
@@ -4900,13 +4901,13 @@ input:focus, textarea:focus {
   box-shadow: 0 0 0 2px rgba(0, 61, 122, 0.15);
 }
 
-/* Dental-landing inspired marketing utilities (Aksh navy/emerald) */
+/* Dental-landing inspired marketing utilities (Aksh × Nightingale teal) */
 .marketing-section-label {
   font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: none;
-  color: #00915d;
+  color: #00a88e;
 }
 
 .marketing-hero-blob {
@@ -4952,10 +4953,10 @@ input:focus, textarea:focus {
   text-decoration-color: #00a86b;
 }
 
-/* Homepage hero — Owkin craft: luminous paper, brand-first type, atmospheric orb */
+/* Homepage hero — Nightingale soft medical: luminous mist, brand-first type, seafoam orb */
 .marketing-homepage-hero {
   isolation: isolate;
-  background: #eef2f6;
+  background: #f7f8fa;
 }
 
 .marketing-homepage-hero__atmosphere {
@@ -4963,8 +4964,9 @@ input:focus, textarea:focus {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255, 255, 255, 0.72), transparent 68%),
-    linear-gradient(180deg, #f7f9fb 0%, #e8eef5 48%, #e4eaf1 100%);
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255, 255, 255, 0.78), transparent 68%),
+    radial-gradient(ellipse 40% 35% at 80% 20%, rgba(0, 168, 142, 0.08), transparent 60%),
+    linear-gradient(180deg, #fbfcfd 0%, #f1f4f7 48%, #eef1f4 100%);
 }
 
 .marketing-homepage-hero__grain {
@@ -4991,11 +4993,11 @@ input:focus, textarea:focus {
   border-radius: 50%;
   background:
     radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), transparent 42%),
-    radial-gradient(circle at 55% 55%, rgba(0, 168, 107, 0.55), transparent 58%),
-    radial-gradient(circle at 45% 60%, rgba(0, 61, 122, 0.5), #001a3d 78%);
+    radial-gradient(circle at 55% 55%, rgba(0, 168, 142, 0.58), transparent 58%),
+    radial-gradient(circle at 45% 60%, rgba(20, 32, 30, 0.45), #14201e 78%);
   box-shadow:
-    0 0 80px rgba(0, 168, 107, 0.25),
-    0 40px 100px rgba(0, 26, 61, 0.18);
+    0 0 80px rgba(0, 168, 142, 0.28),
+    0 40px 100px rgba(20, 32, 30, 0.16);
   animation: marketing-orb-breathe 10s ease-in-out infinite alternate;
 }
 
@@ -5264,19 +5266,21 @@ input:focus, textarea:focus {
   }
 }
 
-/* One card system for all marketing surfaces: quiet border, minimal shadow, gentle lift on hover */
+/* One card system for all marketing surfaces: Nightingale soft elevation */
 .marketing-capability-card {
+  border-radius: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.03);
+  box-shadow: 0 1px 2px 0 rgb(20 32 30 / 0.03), 0 14px 40px -24px rgb(20 32 30 / 0.12);
 }
 
 .marketing-capability-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgb(15 23 42 / 0.1);
-  border-color: #d7e2f0;
+  box-shadow: 0 12px 32px -10px rgb(0 168 142 / 0.16);
+  border-color: rgba(0, 168, 142, 0.22);
 }
 
 .marketing-stat-card {
+  border-radius: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -5301,12 +5305,12 @@ input:focus, textarea:focus {
   }
 }
 
-/* ── Marketing design tokens (reference-aligned light system) ── */
+/* ── Marketing design tokens (Nightingale soft-medical light system) ── */
 :root {
-  --marketing-surface: #f4f8fc;
-  --marketing-surface-alt: #eef4fa;
-  --marketing-accent-soft: rgba(0, 168, 107, 0.08);
-  --marketing-navy-soft: rgba(0, 61, 122, 0.06);
+  --marketing-surface: #f7f8fa;
+  --marketing-surface-alt: #eef1f4;
+  --marketing-accent-soft: rgba(0, 168, 142, 0.1);
+  --marketing-navy-soft: rgba(20, 32, 30, 0.05);
 }
 
 .marketing-soft-surface {
@@ -5332,20 +5336,20 @@ input:focus, textarea:focus {
 }
 
 .marketing-pill-btn--primary {
-  background: #00a86b;
+  background: #00a88e;
   color: #ffffff;
-  box-shadow: 0 12px 28px -6px rgba(0, 168, 107, 0.35);
+  box-shadow: 0 12px 28px -6px rgba(0, 168, 142, 0.35);
 }
 
 .marketing-pill-btn--primary:hover {
-  background: #00915d;
-  box-shadow: 0 16px 32px -6px rgba(0, 168, 107, 0.4);
+  background: #0a7a68;
+  box-shadow: 0 16px 32px -6px rgba(0, 168, 142, 0.4);
 }
 
 .marketing-pill-btn--secondary {
   background: #ffffff;
-  color: #003d7a;
-  border: 1px solid rgba(0, 61, 122, 0.14);
+  color: #14201e;
+  border: 1px solid rgba(20, 32, 30, 0.12);
 }
 
 .marketing-pill-btn--secondary:hover {
@@ -5464,14 +5468,14 @@ input:focus, textarea:focus {
 :root {
   /* Aksh "Clinical Signal" — spruce ink, clinical mist paper, electric signal accent.
      Deliberately not cream/terracotta and not NHS-blue: distinctive clinical trust. */
-  --owkin-cream: #eef3f1;
-  --owkin-cream-deep: #e2eae7;
-  --owkin-ink: #0a2a25;
-  --owkin-muted: rgba(10, 42, 37, 0.66);
-  --owkin-accent: #0b7d6b;
-  --owkin-royal: #0a5f53;
-  --owkin-pill: #dce8e3;
-  --owkin-signal: #14e0a4;
+  --owkin-cream: #f7f8fa;
+  --owkin-cream-deep: #eef1f4;
+  --owkin-ink: #14201e;
+  --owkin-muted: rgba(20, 32, 30, 0.62);
+  --owkin-accent: #00a88e;
+  --owkin-royal: #0a7a68;
+  --owkin-pill: #e6f7f3;
+  --owkin-signal: #5ed4b8;
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -5493,18 +5497,20 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 0.7rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 999px;
-  background: var(--owkin-ink);
+  background: var(--owkin-accent);
   color: #fff !important;
   font-size: 0.95rem;
-  font-weight: 500;
-  transition: transform 180ms var(--ease-out-strong), background-color 180ms ease;
+  font-weight: 600;
+  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.32);
+  transition: transform 180ms var(--ease-out-strong), background-color 180ms ease, box-shadow 180ms ease;
 }
 
 .owkin-btn-ink:hover {
   transform: translateY(-1px);
-  background: #000;
+  background: var(--owkin-royal);
+  box-shadow: 0 16px 32px -8px rgba(0, 168, 142, 0.38);
 }
 
 .owkin-text-cta {
@@ -5582,7 +5588,9 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1.5px solid var(--owkin-ink);
+  border: none;
+  background: var(--owkin-accent);
+  color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -5637,18 +5645,21 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  padding: 0.45rem 1.15rem;
+  padding: 0.45rem 1.25rem;
   border-radius: 999px;
-  border: 1.5px solid var(--owkin-ink);
-  background: #fff;
-  color: var(--owkin-ink);
+  border: none;
+  background: var(--owkin-accent);
+  color: #fff !important;
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: background-color 160ms ease;
+  font-weight: 600;
+  box-shadow: 0 8px 20px -8px rgba(0, 168, 142, 0.4);
+  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
 .owkin-nav__pill:hover {
-  background: var(--owkin-cream-deep);
+  background: var(--owkin-royal);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -8px rgba(0, 168, 142, 0.45);
 }
 
 .owkin-nav__ghost-link {
@@ -7509,24 +7520,24 @@ input:focus, textarea:focus {
   height: 1.85rem;
 }
 
-/* ===== Aksh marketing craft system — single source of truth ===== */
+/* ===== Aksh marketing craft system — Nightingale soft-medical tokens ===== */
 .marketing-site {
-  --mk-surface: #eef3f1;
+  --mk-surface: #f7f8fa;
   --mk-raised: #ffffff;
-  --mk-ink: #0a2a25;
-  --mk-ink-deep: #06201c;
-  --mk-muted: #4c635d;
-  --mk-accent: #0b7d6b;
-  --mk-accent-strong: #0a5f53;
-  --mk-signal: #14e0a4;
-  --mk-line: rgba(10, 42, 37, 0.12);
+  --mk-ink: #14201e;
+  --mk-ink-deep: #0c1513;
+  --mk-muted: #5b6b66;
+  --mk-accent: #00a88e;
+  --mk-accent-strong: #0a7a68;
+  --mk-signal: #5ed4b8;
+  --mk-line: rgba(20, 32, 30, 0.1);
   --mk-section: 4rem; /* 64px desktop */
   --mk-section-tight: 3.25rem;
-  --mk-radius-sm: 0.75rem;
-  --mk-radius-md: 1rem;
-  --mk-radius-lg: 1.5rem;
-  --mk-shadow-frame: 0 1px 2px rgba(16, 33, 29, 0.04), 0 24px 64px -36px rgba(16, 33, 29, 0.32);
-  --mk-shadow-float: 0 18px 50px -30px rgba(16, 33, 29, 0.3);
+  --mk-radius-sm: 999px;
+  --mk-radius-md: 1.25rem;
+  --mk-radius-lg: 1.75rem;
+  --mk-shadow-frame: 0 1px 2px rgba(20, 32, 30, 0.03), 0 28px 64px -36px rgba(20, 32, 30, 0.2);
+  --mk-shadow-float: 0 18px 50px -30px rgba(0, 168, 142, 0.22);
   --mk-ease: cubic-bezier(0.23, 1, 0.32, 1);
   background: var(--mk-surface) !important;
   color: var(--mk-ink);
@@ -7636,26 +7647,26 @@ input:focus, textarea:focus {
 .btn-marketing-ink,
 .owkin-cta-band__btn {
   min-height: 48px;
-  padding: 0.75rem 1.35rem;
-  border: 1px solid var(--mk-ink);
-  border-radius: var(--mk-radius-sm);
-  background: var(--mk-ink);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--mk-accent);
   color: #fff !important;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  box-shadow: 0 1px 1px rgba(16, 33, 29, 0.12);
+  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.35);
   transition:
     transform 160ms var(--mk-ease),
     background-color 160ms ease,
-    border-color 160ms ease;
+    box-shadow 160ms ease;
 }
 
 .owkin-btn-ink:hover,
 .btn-marketing-primary:hover,
 .btn-marketing-ink:hover {
   transform: translateY(-1px);
-  border-color: var(--mk-accent);
-  background: var(--mk-accent);
+  background: var(--mk-accent-strong);
+  box-shadow: 0 16px 32px -8px rgba(0, 168, 142, 0.4);
 }
 
 .owkin-btn-ink:active,
@@ -8558,7 +8569,7 @@ input:focus, textarea:focus {
 .marketing-site :is(input, select, textarea) {
   min-height: 48px;
   border-color: var(--mk-line) !important;
-  border-radius: var(--mk-radius-sm) !important;
+  border-radius: 1rem !important;
   background: rgba(255, 255, 255, 0.82) !important;
   color: var(--mk-ink) !important;
 }

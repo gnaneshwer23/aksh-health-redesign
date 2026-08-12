@@ -1,5 +1,6 @@
+import { useId } from "react";
 import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,13 @@ const TONE_CLASSES = {
   accent: "dashboard-metric-card dashboard-metric-card--accent",
   warn: "dashboard-metric-card dashboard-metric-card--warn",
   danger: "dashboard-metric-card dashboard-metric-card--danger",
+} as const;
+
+const TONE_STROKE = {
+  default: "#00A88E",
+  accent: "#00A88E",
+  warn: "#E5A43B",
+  danger: "#E85D5D",
 } as const;
 
 export function MetricCard({
@@ -29,25 +37,27 @@ export function MetricCard({
   className?: string;
 }) {
   const chartData = sparkline?.map((v, i) => ({ i, v })) ?? [];
+  const stroke = TONE_STROKE[tone];
+  const fillId = `metric-fill-${useId().replace(/:/g, "")}`;
 
   return (
     <Card className={cn(TONE_CLASSES[tone], "border-0 shadow-none", className)}>
       <CardContent className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">{label}</p>
+          <p className="dashboard-metric-label">{label}</p>
           {Icon && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-signal/15 text-primary">
-              <Icon className="h-4 w-4" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-pastel-mint text-pastel-mint-ink">
+              <Icon className="h-4 w-4" strokeWidth={1.75} />
             </span>
           )}
         </div>
-        <div className="mt-3 flex items-end justify-between gap-2">
-          <p className="text-4xl font-bold tracking-tight text-primary tabular-nums leading-none">{value}</p>
+        <div className="mt-4 flex items-end justify-between gap-2">
+          <p className="dashboard-metric-value">{value}</p>
           {trend && trend !== "neutral" && (
             <span
               className={cn(
-                "mb-0.5 flex items-center rounded-full px-2 py-0.5 text-xs font-semibold",
-                trend === "up" ? "bg-signal/15 text-primary" : "bg-danger/10 text-danger"
+                "mb-0.5 flex items-center rounded-full px-2.5 py-1 text-xs font-semibold",
+                trend === "up" ? "bg-pastel-mint text-pastel-mint-ink" : "bg-pastel-coral text-pastel-coral-ink"
               )}
             >
               {trend === "up" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
@@ -55,11 +65,24 @@ export function MetricCard({
           )}
         </div>
         {chartData.length > 0 && (
-          <div className="mt-4 h-10">
+          <div className="mt-4 h-11">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <Line type="monotone" dataKey="v" stroke="#0B9E7F" strokeWidth={2} dot={false} />
-              </LineChart>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={stroke} stopOpacity={0.28} />
+                    <stop offset="100%" stopColor={stroke} stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="v"
+                  stroke={stroke}
+                  strokeWidth={2.25}
+                  fill={`url(#${fillId})`}
+                  dot={false}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         )}

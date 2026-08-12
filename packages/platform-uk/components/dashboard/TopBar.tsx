@@ -71,15 +71,15 @@ export function TopBar({
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border-subtle/70 bg-card/90 px-5 shadow-sm backdrop-blur-md">
-        <Button variant="ghost" size="sm" className="rounded-2xl lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
+      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border-subtle/60 bg-card/85 px-5 shadow-sm backdrop-blur-md">
+        <Button variant="ghost" size="sm" className="rounded-full lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
           <Menu className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="sm" className="hidden rounded-2xl xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
+        <Button variant="ghost" size="sm" className="hidden rounded-full xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-primary">Aksh</span>
+          <span className="font-display text-base font-bold text-primary">Aksh</span>
           {headerTitle && (
             <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
               {isPatientView ? headerTitle : `· ${headerTitle}`}
@@ -96,7 +96,7 @@ export function TopBar({
           <div className="relative mx-auto hidden max-w-md flex-1 md:block">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <Input
-              className="h-10 rounded-full border-border-subtle/80 bg-[#F3F7FA] pl-10 shadow-none focus-visible:ring-signal/40"
+              className="h-10 rounded-full border-border-subtle/80 bg-surface pl-10 shadow-none focus-visible:ring-accent/35"
               placeholder="Search patients, records..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
