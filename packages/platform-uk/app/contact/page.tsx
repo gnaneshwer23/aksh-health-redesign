@@ -16,19 +16,19 @@ export const metadata: Metadata = {
 const contacts = [
   {
     title: "Organisation access",
-    body: "Practice managers, ICS leads, and trust procurement — request a guided walkthrough.",
+    body: "For practice managers, ICS leads, and trust procurement.",
     href: "/get-started",
     cta: "Request access",
   },
   {
-    title: "See the product",
+    title: "Product walkthrough",
     body: "Synthetic Patel practice: consult, review queue, pharmacy, and audit.",
     href: "/demo/patel",
-    cta: "Open the demo",
+    cta: "Open walkthrough",
   },
   {
     title: "Security & clinical safety",
-    body: "HITL gates, GDPR Art. 9 framing, and honest limits — not a signed safety case.",
+    body: "HITL gates, GDPR Art. 9 framing, and honest limits.",
     href: "/security",
     cta: "View security",
   },
@@ -55,19 +55,21 @@ export default function ContactPage() {
       <MarketingPageHero
         eyebrow="Contact"
         title="Talk to Aksh Health"
-        lede="Organisation access, a product demo, or a clinical safety conversation — pick the shortest path."
+        lede="Organisation access, a product walkthrough, or a clinical safety conversation."
         primary={{ label: "Request organisation access", href: "/get-started" }}
         secondary={{ label: "Create an account", href: "/signup" }}
       />
 
       <section className="owkin-contact">
         <div className={container}>
-          <div className="owkin-contact__grid">
+          <div className="aksh-contact-list">
             {contacts.map((item) => (
-              <Link key={item.title} href={item.href} className="owkin-contact__card">
-                <h2>{item.title}</h2>
-                <p>{item.body}</p>
-                <span className="owkin-text-cta mt-auto">
+              <Link key={item.title} href={item.href} className="aksh-contact-list__item">
+                <div>
+                  <h2>{item.title}</h2>
+                  <p>{item.body}</p>
+                </div>
+                <span className="owkin-text-cta">
                   {item.cta}
                   <span aria-hidden>→</span>
                 </span>
@@ -75,7 +77,7 @@ export default function ContactPage() {
             ))}
           </div>
 
-          <div className="mt-10 max-w-2xl rounded-2xl border border-navy/[0.08] bg-white/70 p-6">
+          <div className="mt-12 max-w-2xl border-t border-navy/[0.08] pt-8">
             <h2 className="mb-2 font-[family-name:var(--font-marketing-display)] text-lg font-semibold text-navy-dark">
               Direct email
             </h2>
@@ -93,7 +95,7 @@ export default function ContactPage() {
             </h2>
             <dl className="space-y-6">
               {faqs.map((item) => (
-                <div key={item.q}>
+                <div key={item.q} className="border-b border-navy/[0.06] pb-6 last:border-b-0 last:pb-0">
                   <dt className="font-medium text-navy-dark">{item.q}</dt>
                   <dd className="mt-2 text-sm leading-relaxed text-slate/75">{item.a}</dd>
                 </div>
@@ -104,9 +106,9 @@ export default function ContactPage() {
       </section>
 
       <MarketingCtaBand
-        title="Prefer a live walkthrough?"
-        lede="Request organisation access and we will route the conversation to the right team."
-        primary={{ label: "Get started", href: "/get-started" }}
+        title="Need a guided conversation?"
+        lede="Request organisation access and we will route it to the right team."
+        primary={{ label: "Request access", href: "/get-started" }}
         secondary={{ label: "Platform overview", href: "/platform" }}
       />
     </MarketingShell>

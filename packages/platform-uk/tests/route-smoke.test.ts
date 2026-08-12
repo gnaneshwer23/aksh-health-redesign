@@ -190,8 +190,8 @@ async function run() {
   await assertFileExcludes("lib/agents.ts", "14 live agents");
   await assertFileExcludes("components/marketing/platform-page-content.tsx", "Seven agents");
   await assertFileExcludes("components/marketing/platform-page-content.tsx", "Twelve Phase-1 directory agents");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "Five layers from intake to export");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "named clinical agents");
+  await assertFileIncludes("components/marketing/platform-page-content.tsx", "Four steps from intake to exchange");
+  await assertFileIncludes("components/marketing/platform-page-content.tsx", "supporting intelligence under clinician review");
   await assertFileIncludes(
     "components/marketing/InteroperabilityDiagram.tsx",
     "Clinician-approved only · not a live record write"
@@ -200,8 +200,8 @@ async function run() {
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Record staging");
   await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Drafts only");
   await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel drafts");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CANVAS");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "CONDUCTOR");
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Capture");
+  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Orchestrate");
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");
   await assertFileIncludes(
     "components/marketing/AgentGrid.tsx",
@@ -412,8 +412,8 @@ async function run() {
   await assertFileIncludes("lib/onboarding/roles.ts", "hasTutorial: true");
   await assertFileIncludes("components/onboarding/OnboardingCard.tsx", "onboarding-honesty-banner");
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", "Skip tutorial");
-  await assertFileIncludes("components/marketing/HeroSection.tsx", "Get started");
-  await assertFileIncludes("components/marketing/HeroSection.tsx", "See the demo");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Request access");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "View platform");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "InteroperabilityDiagram");
   await assertFileExcludes("components/marketing/HeroSection.tsx", "100 patients");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");

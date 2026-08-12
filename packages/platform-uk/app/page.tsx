@@ -32,19 +32,19 @@ export default function HomePage() {
       <PlatformFlowSection />
 
       <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band data-section="10">
-        <div className={`${container} max-w-2xl`}>
+        <div className={`${container} max-w-xl`}>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
             Clinical work that stays under control.
           </h2>
-          <p className="owkin-cta-band__lede mb-8 text-lg leading-relaxed md:text-xl">
+          <p className="owkin-cta-band__lede mb-8 text-base leading-relaxed md:text-lg">
             One review queue. Named clinician approval. Designed for EMIS Web and SystmOne.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">
-              Get started
+              Request access
             </Link>
-            <Link href="/demo/patel" className="owkin-cta-band__link">
-              See the demo
+            <Link href="/contact" className="owkin-cta-band__link">
+              Contact
               <span aria-hidden>→</span>
             </Link>
           </div>

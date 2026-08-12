@@ -13,7 +13,7 @@ test.describe("Marketing smoke", () => {
     expect(brandColor).toBe("rgb(10, 42, 37)");
 
     await expect(page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i })).toBeVisible();
-    await expect(page.getByText("Care coordination for UK primary care", { exact: true })).toBeVisible();
+    await expect(page.locator("section.owkin-hero .owkin-hero__brand")).toHaveText("Aksh Health");
     const desktopNav = page.locator("nav.owkin-nav .owkin-nav__center");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Security" })).toBeVisible();
@@ -75,7 +75,7 @@ test.describe("Marketing smoke", () => {
 
     const gate = page.locator("section.owkin-clinician-gate");
     await expect(gate.getByRole("heading", { name: /Every output is a draft/i })).toBeVisible();
-    await expect(gate.getByRole("link", { name: "Get started" })).toHaveAttribute("href", "/get-started");
+    await expect(gate.getByRole("link", { name: /Security & clinical safety/i })).toHaveAttribute("href", "/security");
     await expect(gate.getByRole("link", { name: /Open Patel walkthrough/i })).toHaveAttribute("href", "/demo/patel");
     await expect(page.getByText(/tested with 100 patients/i)).toHaveCount(0);
     await expect(page.getByText(/100 patients and 100 users/i)).toHaveCount(0);
@@ -125,9 +125,9 @@ test.describe("Marketing smoke", () => {
       .evaluate((el) => window.getComputedStyle(el).color);
     expect(titleColor).toBe("rgb(255, 255, 255)");
 
-    const primary = band.getByRole("link", { name: "Get started" });
+    const primary = band.getByRole("link", { name: "Request access" });
     await expect(primary).toBeVisible();
-    await expect(band.getByRole("link", { name: /See the demo/i })).toBeVisible();
+    await expect(band.getByRole("link", { name: /^Contact$/i })).toBeVisible();
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(255, 255, 255)");
@@ -141,23 +141,23 @@ test.describe("Marketing smoke", () => {
     const visual = hero.locator(".owkin-hero__visual");
     await expect(visual).toBeVisible();
     await expect(visual.getByText("Aksh Health", { exact: true })).toHaveCount(0);
-    await expect(visual.getByText("CANVAS", { exact: true })).toBeVisible();
-    await expect(visual.getByText("SYNTHESIS", { exact: true })).toBeVisible();
-    await expect(visual.getByText("GUARDIAN", { exact: true })).toBeVisible();
-    await expect(visual.getByText("HORIZON", { exact: true })).toBeVisible();
-    await expect(visual.getByText("PATHWAY", { exact: true })).toBeVisible();
-    await expect(visual.getByText("CONDUCTOR", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Capture", { exact: true }).first()).toBeVisible();
+    await expect(visual.getByText("Orchestrate", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Documentation", { exact: true }).first()).toBeVisible();
+    await expect(visual.getByText("Drug safety", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Risk", { exact: true }).first()).toBeVisible();
+    await expect(visual.getByText("Referral", { exact: true }).first()).toBeVisible();
     await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
     await expect(visual.getByText("Record staging", { exact: true })).toBeVisible();
-    await expect(visual.getByText("SHIELD", { exact: true })).toBeVisible();
+    await expect(visual.getByText("Audit", { exact: true }).first()).toBeVisible();
     await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
     await expect(visual.getByText("SystmOne", { exact: true })).toBeVisible();
     await expect(visual.getByText("Parallel checks", { exact: true }).first()).toBeVisible();
     await expect(visual.getByText("Clinician-approved only · not a live record write", { exact: true })).toBeVisible();
+    await expect(visual.getByText("CANVAS", { exact: true })).toHaveCount(0);
+    await expect(visual.getByText("SYNTHESIS", { exact: true })).toHaveCount(0);
     await expect(visual.getByText("Parallel drafts", { exact: true })).toHaveCount(0);
     await expect(visual.getByText(/Drafts only/i)).toHaveCount(0);
-    await expect(visual.getByText("draft resources", { exact: true })).toHaveCount(0);
-    await expect(visual.getByText("You", { exact: true })).toHaveCount(0);
     await expect(hero.getByText("HITL")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
     await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
@@ -181,33 +181,33 @@ test.describe("Marketing smoke", () => {
       Math.max(headlineBox!.y, diagramBox!.y);
     expect(overlapX <= 0 || overlapY <= 0).toBe(true);
 
-    const canvasBox = await visual.getByText("CANVAS", { exact: true }).boundingBox();
-    const conductorBox = await visual.getByText("CONDUCTOR", { exact: true }).boundingBox();
+    const captureBox = await visual.getByText("Capture", { exact: true }).first().boundingBox();
+    const orchestrateBox = await visual.getByText("Orchestrate", { exact: true }).boundingBox();
     const reviewBox = await visual.getByText("Clinician review", { exact: true }).boundingBox();
-    expect(canvasBox).not.toBeNull();
-    expect(conductorBox).not.toBeNull();
+    expect(captureBox).not.toBeNull();
+    expect(orchestrateBox).not.toBeNull();
     expect(reviewBox).not.toBeNull();
-    expect(Math.abs(canvasBox!.y - conductorBox!.y)).toBeLessThan(24);
-    expect(canvasBox!.x).toBeLessThan(conductorBox!.x);
-    expect(conductorBox!.y).toBeLessThan(reviewBox!.y);
+    expect(Math.abs(captureBox!.y - orchestrateBox!.y)).toBeLessThan(24);
+    expect(captureBox!.x).toBeLessThan(orchestrateBox!.x);
+    expect(orchestrateBox!.y).toBeLessThan(reviewBox!.y);
     expect(diagramBox!.height).toBeLessThan(720);
 
-    const synth = await visual.getByText("SYNTHESIS", { exact: true }).boundingBox();
-    const guardian = await visual.getByText("GUARDIAN", { exact: true }).boundingBox();
-    const horizon = await visual.getByText("HORIZON", { exact: true }).boundingBox();
-    const pathway = await visual.getByText("PATHWAY", { exact: true }).boundingBox();
-    expect(synth).not.toBeNull();
-    expect(guardian).not.toBeNull();
-    expect(horizon).not.toBeNull();
-    expect(pathway).not.toBeNull();
-    expect(synth!.width).toBeGreaterThan(70);
-    expect(guardian!.width).toBeGreaterThan(70);
-    expect(horizon!.width).toBeGreaterThan(60);
-    expect(pathway!.width).toBeGreaterThan(60);
-    expect(Math.abs(synth!.y - guardian!.y)).toBeLessThan(12);
-    expect(Math.abs(horizon!.y - pathway!.y)).toBeLessThan(12);
-    expect(horizon!.y).toBeGreaterThan(synth!.y + synth!.height - 4);
-    expect(guardian!.x).toBeGreaterThan(synth!.x + synth!.width + 6);
+    const docs = await visual.getByText("Documentation", { exact: true }).first().boundingBox();
+    const safety = await visual.getByText("Drug safety", { exact: true }).boundingBox();
+    const risk = await visual.getByText("Risk", { exact: true }).first().boundingBox();
+    const referral = await visual.getByText("Referral", { exact: true }).first().boundingBox();
+    expect(docs).not.toBeNull();
+    expect(safety).not.toBeNull();
+    expect(risk).not.toBeNull();
+    expect(referral).not.toBeNull();
+    expect(docs!.width).toBeGreaterThan(70);
+    expect(safety!.width).toBeGreaterThan(70);
+    expect(risk!.width).toBeGreaterThan(40);
+    expect(referral!.width).toBeGreaterThan(60);
+    expect(Math.abs(docs!.y - safety!.y)).toBeLessThan(12);
+    expect(Math.abs(risk!.y - referral!.y)).toBeLessThan(12);
+    expect(risk!.y).toBeGreaterThan(docs!.y + docs!.height - 4);
+    expect(safety!.x).toBeGreaterThan(docs!.x + docs!.width + 6);
   });
 
   test("homepage product band shows the review queue mock", async ({ page }) => {
@@ -299,7 +299,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Trust is a gate, not a slogan/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /GDPR Art\. 9 special category data/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Honest limits/i })).toBeVisible();
-    await expect(page.getByText(/Not claimed in this build/i)).toBeVisible();
+    await expect(page.getByText(/MHRA certification, registration, or device marking/i)).toBeVisible();
   });
 
   test("/demo redirects to flagship clinical walkthrough", async ({ page }) => {

@@ -178,20 +178,22 @@ async function run() {
     path.join(process.cwd(), "components/marketing/InteroperabilityDiagram.tsx"),
     "utf8"
   );
-  assert.ok(heroPipeline.includes("CANVAS"));
-  assert.ok(heroPipeline.includes("CONDUCTOR"));
+  assert.ok(heroPipeline.includes("Capture"));
+  assert.ok(heroPipeline.includes("Orchestrate"));
   assert.ok(heroPipeline.includes("clinician decides"));
   assert.ok(heroPipeline.includes("Clinician-approved only · not a live record write"));
   assert.ok(heroPipeline.includes("Parallel checks"));
   assert.ok(heroPipeline.includes("Record staging"));
   assert.ok(!heroPipeline.includes("Drafts only"));
   assert.ok(!heroPipeline.includes("Parallel drafts"));
-  assert.ok(heroPipeline.includes("SYNTHESIS"));
-  assert.ok(heroPipeline.includes("SHIELD"));
+  assert.ok(heroPipeline.includes("Documentation"));
+  assert.ok(heroPipeline.includes("Audit"));
+  assert.ok(!heroPipeline.includes("CANVAS"));
+  assert.ok(!heroPipeline.includes("SYNTHESIS"));
 
   const platform = fs.readFileSync(path.join(process.cwd(), "components/marketing/platform-page-content.tsx"), "utf8");
-  assert.ok(platform.includes("Five layers from intake to export"));
-  assert.ok(platform.includes("named clinical agents"));
+  assert.ok(platform.includes("Four steps from intake to exchange"));
+  assert.ok(platform.includes("supporting intelligence under clinician review"));
   assert.ok(platform.includes("Named reviewer approval on every output"));
   assert.ok(!platform.includes("Twelve Phase-1 directory agents"));
   assert.ok(!platform.includes("Seven agents"));

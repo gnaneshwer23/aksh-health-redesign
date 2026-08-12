@@ -26,18 +26,21 @@ const pillars = [
 export default function StatsBand() {
   return (
     <section
-      className="marketing-stats-editorial border-y border-navy/[0.08] bg-white/70"
+      className="marketing-stats-editorial border-y border-navy/[0.08] bg-white"
       aria-label="How it works"
       data-section="06"
     >
       <div className={container}>
-        <p className="marketing-section-label mb-6 text-center">How it works</p>
-        <div className="marketing-stats-editorial__grid">
-          {pillars.map((pillar) => (
-            <div key={pillar.label} className="marketing-stats-editorial__item">
-              <p className="marketing-stats-editorial__value">{pillar.label}</p>
-              <p className="marketing-stats-editorial__label">{pillar.title}</p>
-              <p className="marketing-stats-editorial__detail">{pillar.detail}</p>
+        <p className="marketing-section-label mb-8 text-left">How it works</p>
+        <div className="aksh-steps">
+          {pillars.map((pillar, index) => (
+            <div key={pillar.label} className="aksh-steps__item">
+              <p className="aksh-steps__index" aria-hidden>
+                {String(index + 1).padStart(2, "0")}
+              </p>
+              <p className="aksh-steps__label">{pillar.label}</p>
+              <p className="aksh-steps__title">{pillar.title}</p>
+              <p className="aksh-steps__detail">{pillar.detail}</p>
             </div>
           ))}
         </div>

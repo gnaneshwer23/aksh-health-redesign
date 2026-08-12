@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const ARIA_LABEL =
-  "Interoperability diagram: EMIS Web and SystmOne context feeds CANVAS intake. CONDUCTOR orchestrates parallel checks from SYNTHESIS, GUARDIAN, HORIZON, and PATHWAY. A clinician accepts, edits, or rejects every output before record staging (FHIR R4) and SHIELD audit. Clinician-approved only — not a live record write.";
+  "Interoperability diagram: EMIS Web and SystmOne context feeds clinical capture. An orchestration step runs parallel documentation, drug safety, risk, and referral checks. A clinician accepts, edits, or rejects every output before record staging (FHIR R4) and audit. Clinician-approved only — not a live record write.";
 
 type InteropNodeProps = {
   label: string;
@@ -53,7 +53,6 @@ function InteropNode({
   );
 }
 
-/** Bold spruce/teal flow chevron — vertical ↓ or horizontal → */
 function FlowArrow({
   direction = "down",
   label,
@@ -107,9 +106,8 @@ function FlowArrow({
 }
 
 /**
- * Compact product board — sources band, horizontal CANVAS → CONDUCTOR,
- * then short vertical: parallel checks → clinician review → staging + SHIELD.
- * Designed to sit beside hero copy in one viewport (not a skyscraper).
+ * Compact product board — sources, capture → orchestration,
+ * parallel checks → clinician review → staging + audit.
  */
 export function InteroperabilityDiagram({ className }: { className?: string }) {
   return (
@@ -140,9 +138,9 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
 
         <li className="aksh-pipeline__stage aksh-pipeline__stage--spine">
           <div className="aksh-pipeline__spine">
-            <InteropNode label="CANVAS" sub="Intake" icon={Mic} />
+            <InteropNode label="Capture" sub="Intake" icon={Mic} />
             <FlowArrow direction="right" />
-            <InteropNode label="CONDUCTOR" sub="Orchestration hub" icon={Waypoints} variant="hub" />
+            <InteropNode label="Orchestrate" sub="Review coordination" icon={Waypoints} variant="hub" />
           </div>
         </li>
 
@@ -154,10 +152,10 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           <div className="aksh-pipeline__checks-band">
             <p className="aksh-pipeline__checks-label">Parallel checks</p>
             <div className="aksh-pipeline__checks">
-              <InteropNode label="SYNTHESIS" sub="Documentation" icon={FileText} variant="compact" />
-              <InteropNode label="GUARDIAN" sub="Drug safety" icon={Pill} variant="compact" />
-              <InteropNode label="HORIZON" sub="Risk" icon={Activity} variant="compact" />
-              <InteropNode label="PATHWAY" sub="Referral" icon={GitBranch} variant="compact" />
+              <InteropNode label="Documentation" sub="Clinical note" icon={FileText} variant="compact" />
+              <InteropNode label="Drug safety" sub="Interactions" icon={Pill} variant="compact" />
+              <InteropNode label="Risk" sub="Signals" icon={Activity} variant="compact" />
+              <InteropNode label="Referral" sub="Pathway" icon={GitBranch} variant="compact" />
             </div>
           </div>
         </li>
@@ -183,7 +181,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
           <div className="aksh-pipeline__out-row">
             <InteropNode label="Record staging" sub="FHIR R4" icon={FileCode2} />
             <FlowArrow direction="right" />
-            <InteropNode label="SHIELD" sub="Audit trail" icon={Shield} />
+            <InteropNode label="Audit" sub="Immutable trail" icon={Shield} />
           </div>
           <p className="aksh-pipeline__footer-honesty">
             Clinician-approved only · not a live record write

@@ -8697,46 +8697,29 @@ input:focus, textarea:focus {
   min-height: 0 !important;
   overflow: hidden;
   background:
-    radial-gradient(90% 70% at 92% 8%, rgba(20, 224, 164, 0.22), transparent 48%),
-    radial-gradient(70% 55% at 8% 12%, rgba(6, 32, 28, 0.14), transparent 46%),
-    radial-gradient(110% 80% at 62% 48%, rgba(11, 125, 107, 0.1), transparent 58%),
-    radial-gradient(140% 100% at 50% 118%, rgba(6, 32, 28, 0.16), transparent 58%),
-    linear-gradient(165deg, #e8f1ed 0%, #f2f7f4 38%, var(--mk-surface) 68%, #dde8e3 100%) !important;
+    radial-gradient(80% 60% at 90% 6%, rgba(11, 125, 107, 0.08), transparent 52%),
+    linear-gradient(165deg, #eef3f0 0%, #f5f8f6 42%, var(--mk-surface) 72%, #e8eeeb 100%) !important;
 }
 
-/* Instrument grid + soft mist wash — motion 1: slow drift. */
+/* Quiet grid wash — no drifting aurora. */
 .marketing-homepage-hero.owkin-hero::before {
   content: "";
   position: absolute;
-  inset: -4%;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
+  opacity: 0.45;
   background-image:
-    radial-gradient(ellipse 55% 40% at 30% 20%, rgba(255, 255, 255, 0.55), transparent 70%),
-    linear-gradient(to right, rgba(10, 42, 37, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(10, 42, 37, 0.055) 1px, transparent 1px);
-  background-size: auto, 3rem 3rem, 3rem 3rem;
-  -webkit-mask-image: radial-gradient(120% 100% at 55% 0%, #000 28%, transparent 78%);
-  mask-image: radial-gradient(120% 100% at 55% 0%, #000 28%, transparent 78%);
-  animation: aksh-hero-mist 28s var(--mk-ease) infinite alternate;
+    linear-gradient(to right, rgba(10, 42, 37, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 42, 37, 0.035) 1px, transparent 1px);
+  background-size: 2.75rem 2.75rem;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 88%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 88%);
+  animation: none;
 }
 
-/* Drifting signal aurora — motion 2. */
 .marketing-homepage-hero.owkin-hero::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  right: -14%;
-  bottom: -22%;
-  width: 50rem;
-  height: 50rem;
-  pointer-events: none;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 40% 40%, rgba(20, 224, 164, 0.28), transparent 55%),
-    radial-gradient(circle at 70% 60%, rgba(11, 125, 107, 0.18), transparent 62%);
-  filter: blur(36px);
-  animation: aksh-hero-aurora 18s ease-in-out infinite alternate;
+  display: none;
 }
 
 @keyframes aksh-hero-mist {
@@ -8765,34 +8748,35 @@ input:focus, textarea:focus {
   display: none;
 }
 
+.marketing-homepage-hero .owkin-hero__heading {
+  margin: 0;
+}
+
+/* Brand-first — product name leads the fold. */
 .marketing-homepage-hero .owkin-hero__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin-bottom: 0.55rem !important;
-  font-size: 0.7rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  color: var(--mk-accent-strong) !important;
+  display: block;
+  margin-bottom: 0.85rem !important;
+  font-family: var(--font-marketing-display), ui-serif, Georgia, serif;
+  font-size: clamp(2.15rem, 4.6vw, 3.35rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  text-transform: none !important;
+  color: var(--mk-ink-deep) !important;
   animation: marketing-hero-rise 920ms var(--mk-ease) both;
 }
 
 .marketing-homepage-hero .owkin-hero__brand::before {
-  content: "";
-  width: 1.5rem;
-  height: 2px;
-  flex-shrink: 0;
-  border-radius: 1px;
-  background: linear-gradient(90deg, var(--mk-signal), var(--mk-accent));
+  display: none;
 }
 
 .marketing-homepage-hero .owkin-hero__title {
-  margin-bottom: 0.7rem !important;
-  font-size: clamp(1.85rem, 3.8vw, 2.85rem) !important;
+  display: block;
+  margin-bottom: 0.85rem !important;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem) !important;
   font-weight: 500 !important;
-  letter-spacing: -0.038em !important;
-  line-height: 1.08 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.25 !important;
   color: var(--mk-ink-deep) !important;
   animation: marketing-hero-rise 1020ms var(--mk-ease) both;
 }
@@ -8834,18 +8818,16 @@ input:focus, textarea:focus {
   animation: marketing-hero-rise 1320ms var(--mk-ease) both;
 }
 
-/* Signal halo behind the diagram — motion 3: gentle pulse. */
+/* Soft wash behind the diagram — no pulse glow. */
 .marketing-homepage-hero .owkin-hero__visual::before {
   content: "";
   position: absolute;
-  inset: -4% -2% -6%;
+  inset: -2% 0 -4%;
   z-index: -1;
   border-radius: 0;
-  background:
-    radial-gradient(52% 48% at 50% 38%, rgba(20, 224, 164, 0.28), transparent 68%),
-    radial-gradient(70% 58% at 48% 58%, rgba(11, 125, 107, 0.16), transparent 74%);
-  filter: blur(18px);
-  animation: aksh-hero-signal-pulse 9s ease-in-out infinite alternate;
+  background: radial-gradient(58% 52% at 50% 40%, rgba(11, 125, 107, 0.08), transparent 72%);
+  filter: none;
+  animation: none;
 }
 
 .marketing-homepage-hero .owkin-hero__visual::after {
@@ -8870,39 +8852,30 @@ input:focus, textarea:focus {
 }
 
 .marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node {
-  border-radius: 0.7rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(242, 247, 244, 0.62));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.55) inset,
-    0 10px 26px -20px rgba(16, 33, 29, 0.35);
+  border-radius: 0.45rem;
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border: 1px solid rgba(10, 42, 37, 0.1);
 }
 
 .marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node--hub {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(11, 125, 107, 0.16));
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 14px 34px -18px rgba(7, 95, 80, 0.42),
-    0 0 0 1px color-mix(in srgb, var(--mk-signal) 22%, transparent);
+  background: #fff;
+  box-shadow: none;
+  border-color: rgba(11, 125, 107, 0.28);
 }
 
 .marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node--review {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(11, 125, 107, 0.14));
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.72) inset,
-    0 14px 36px -16px rgba(7, 95, 80, 0.4),
-    0 0 0 1px color-mix(in srgb, var(--mk-accent) 20%, transparent);
+  background: #fff;
+  box-shadow: none;
+  border-color: rgba(11, 125, 107, 0.28);
 }
 
 .marketing-homepage-hero .aksh-interop-diagram--plane .aksh-interop-node--compact {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(242, 247, 244, 0.55));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 @media (min-width: 960px) {
@@ -8994,17 +8967,19 @@ input:focus, textarea:focus {
   .marketing-homepage-hero.owkin-hero {
     min-height: auto !important;
     background:
-      radial-gradient(120% 55% at 100% 0%, rgba(20, 224, 164, 0.2), transparent 52%),
-      radial-gradient(90% 40% at 0% 8%, rgba(6, 32, 28, 0.1), transparent 48%),
-      linear-gradient(180deg, #e8f1ed 0%, var(--mk-surface) 58%, #dde8e3 100%) !important;
+      linear-gradient(180deg, #eef3f0 0%, var(--mk-surface) 58%, #e8eeeb 100%) !important;
   }
 
   .marketing-homepage-hero .owkin-hero__wordmark {
     display: none;
   }
 
+  .marketing-homepage-hero .owkin-hero__brand {
+    font-size: clamp(1.9rem, 8vw, 2.4rem) !important;
+  }
+
   .marketing-homepage-hero .owkin-hero__title {
-    font-size: clamp(1.75rem, 7.5vw, 2.2rem) !important;
+    font-size: clamp(1.2rem, 4.5vw, 1.45rem) !important;
   }
 
   .marketing-homepage-hero .owkin-hero__visual {
@@ -9520,4 +9495,341 @@ input:focus, textarea:focus {
 
 .marketing-stats-editorial__grid {
   gap: 3rem;
+}
+
+/* ===== Professional list layouts (roles, platform, security, contact) ===== */
+
+.aksh-steps {
+  display: grid;
+  gap: 1.75rem 2.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 900px) {
+  .aksh-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.aksh-steps__index {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(10, 42, 37, 0.4);
+}
+
+.aksh-steps__label {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mk-accent-strong, #0b7d6b);
+}
+
+.aksh-steps__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-steps__detail {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.65);
+}
+
+.aksh-role-list,
+.aksh-layer-list,
+.aksh-capability-list,
+.aksh-security-list,
+.aksh-limits-list,
+.aksh-contact-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aksh-role-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-role-row {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-role-row__index {
+  padding-top: 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(10, 42, 37, 0.4);
+}
+
+.aksh-role-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.aksh-role-row__meta h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-role-row__body p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.68);
+}
+
+.aksh-layer-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-layer-list__item {
+  display: grid;
+  grid-template-columns: 2.25rem 2.25rem minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-layer-list__step {
+  padding-top: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(10, 42, 37, 0.4);
+}
+
+.aksh-layer-list__icon {
+  display: flex;
+  height: 2.1rem;
+  width: 2.1rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(10, 42, 37, 0.1);
+  border-radius: 0.45rem;
+  color: var(--mk-accent-strong, #0b7d6b);
+  background: #fff;
+}
+
+.aksh-layer-list__item h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-layer-list__item p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.68);
+}
+
+.aksh-capability-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+@media (min-width: 768px) {
+  .aksh-capability-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+.aksh-capability-list__item {
+  display: grid;
+  grid-template-columns: 2.1rem minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-capability-list__icon {
+  display: flex;
+  height: 2.1rem;
+  width: 2.1rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(10, 42, 37, 0.1);
+  border-radius: 0.45rem;
+  color: var(--mk-accent-strong, #0b7d6b);
+  background: #fff;
+}
+
+.aksh-capability-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+  margin-bottom: 0.3rem;
+}
+
+.aksh-capability-list__meta h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-capability-list__meta span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(10, 42, 37, 0.45);
+}
+
+.aksh-capability-list__copy p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.68);
+}
+
+.aksh-security-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-security-list__item {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-security-list__index {
+  padding-top: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(10, 42, 37, 0.4);
+}
+
+.aksh-security-list__item h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-security-list__item > div > p {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(10, 42, 37, 0.7);
+}
+
+.aksh-security-list__item ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: rgba(10, 42, 37, 0.65);
+}
+
+.aksh-security-list__item li {
+  margin: 0.35rem 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.aksh-limits-list {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 42rem;
+}
+
+.aksh-limits-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.72);
+}
+
+.aksh-contact-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(10, 42, 37, 0.08);
+}
+
+.aksh-contact-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid rgba(10, 42, 37, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 160ms ease;
+}
+
+.aksh-contact-list__item:hover {
+  background: rgba(10, 42, 37, 0.02);
+}
+
+.aksh-contact-list__item h2 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mk-ink-deep, #0a2a25);
+}
+
+.aksh-contact-list__item p {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(10, 42, 37, 0.68);
+}
+
+.owkin-roles__band {
+  margin-top: 2rem;
+}
+
+.owkin-roles__band + .owkin-roles__band {
+  margin-top: 2.5rem;
+}
+
+.owkin-roles .owkin-roles__dashboard {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(10, 42, 37, 0.5);
+}
+
+.marketing-site nav.owkin-nav .owkin-nav__mark::after {
+  box-shadow: none;
 }

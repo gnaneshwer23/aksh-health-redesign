@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
 const trustBadges = [
+  "Audit trail on every decision",
+  "Draft until a clinician decides",
+  "UK data residency",
   "Built for NHS primary care",
-  "FHIR-ready architecture",
-  "Clinician-reviewed outputs",
-  "Designed for NHS organisations",
 ] as const;
 
 type TrustStripProps = {
@@ -19,8 +19,8 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
       className={cn(
         "px-4 py-5 md:py-6",
         isHero
-          ? "border-t border-black/[0.06] bg-white/35 backdrop-blur-md"
-          : "border-y border-navy/10 bg-white shadow-sm"
+          ? "border-t border-black/[0.06] bg-white/50"
+          : "border-y border-navy/10 bg-white"
       )}
       aria-label="Product trust signals"
     >
@@ -30,15 +30,15 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
             {index > 0 ? (
               <span
                 className={cn(
-                  "mx-2.5 hidden h-1 w-1 rounded-full sm:mx-3.5 sm:inline-block",
-                  isHero ? "bg-black/25" : "bg-emerald/50"
+                  "mx-2.5 hidden h-px w-4 sm:mx-4 sm:inline-block",
+                  isHero ? "bg-black/20" : "bg-navy/20"
                 )}
                 aria-hidden
               />
             ) : null}
             <span
               className={cn(
-                "text-xs font-semibold tracking-[0.04em] sm:text-sm",
+                "text-xs font-medium tracking-[0.02em] sm:text-sm",
                 isHero ? "text-black/65" : "text-navy"
               )}
             >
