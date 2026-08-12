@@ -420,6 +420,14 @@ export const E2E_FINDINGS: E2EFinding[] = [
     blocksInternalTesting: false,
   },
   {
+    id: "F-P1-003",
+    severity: "P1",
+    title: "Dual patient identity remains correlated, not unified",
+    detail:
+      "P1-ID-001: AKSH-E2E-MASTER-001 maps clinical-proof P002 ↔ generator cohort B (E2P0xx) under one correlationId without renaming fixtures.",
+    blocksInternalTesting: false,
+  },
+  {
     id: "F-P2-001",
     severity: "P2",
     title: "Prompt-injection coverage is soft / reminder-scoped",
@@ -518,6 +526,10 @@ export function buildFinalE2EReport(input: {
       seed: "E2E_TEST_MODE=true npm run seed:e2e -- --apply",
       cleanup: "npm run cleanup:e2e -- --batch=e2e-20260812 --apply",
       report: "npm run report:e2e",
+      reportMaster: "npm run report:master",
+      testMaster: "npm run test:master",
+      testGolden: "npm run test:golden",
+      testSmoke: "npm run test:smoke",
       stage6: "npm run test:e2e:platform-stage6",
       stage7: "npm run test:e2e:platform-stage7",
       stage8: "npm run test:e2e:platform-stage8",

@@ -1,0 +1,299 @@
+{
+  "artifactType": "aksh-e2e-master-journey-trace",
+  "testId": "AKSH-E2E-MASTER-001",
+  "title": "Master Aksh Journey — progressive T2D deterioration end-to-end",
+  "generatedAt": "2026-08-12T13:33:03.472Z",
+  "correlationId": "aksh-master-20260812-8edcb838",
+  "seed": 20260812,
+  "identity": {
+    "clinicalProofPatientId": "P002",
+    "clinicalProofPatientLabel": "Mr James Patel",
+    "generatorPatientId": "E2P021",
+    "generatorCohortId": "B",
+    "batchId": "e2e-20260812",
+    "note": "P1-ID-001: clinical-proof fixtures use P00x; E2E generator uses E2P0xx. Master Journey correlates cohort B generator patient to P002 under one correlationId without renaming agents or patients."
+  },
+  "honesty": {
+    "liveEmis": false,
+    "liveNhsLab": false,
+    "livePrescribing": false,
+    "hitlRequired": true,
+    "autoRetrain": false,
+    "ehrWrite": false,
+    "isSynthetic": true,
+    "source": "AKSH_E2E_TEST",
+    "clinicallyValidated": false,
+    "productionReadyForAutonomousCare": false
+  },
+  "steps": [
+    {
+      "step": 1,
+      "id": "MJ-01-IDENTITY",
+      "name": "Dual patient identity map (P002 ↔ cohort B)",
+      "layer": "CONNECT",
+      "status": "PASS",
+      "detail": "P002 ↔ E2P021 · batch e2e-20260812",
+      "classification": "CONTRACT",
+      "durationMs": 0
+    },
+    {
+      "step": 2,
+      "id": "MJ-02-SEED",
+      "name": "Deterministic synthetic seed applied",
+      "layer": "CONNECT",
+      "status": "PASS",
+      "detail": "seed=20260812 patients=100 source=AKSH_E2E_TEST",
+      "classification": "LIVE",
+      "durationMs": 0
+    },
+    {
+      "step": 3,
+      "id": "MJ-03-STATE",
+      "name": "Patient State shows progressive HbA1c deterioration",
+      "layer": "UNDERSTAND",
+      "status": "PASS",
+      "detail": "HbA1c 6.8→8.4 · facts ok · E2P021",
+      "classification": "LIVE",
+      "durationMs": 1
+    },
+    {
+      "step": 4,
+      "id": "MJ-04-PROJECT",
+      "name": "Current Patient State projection readable",
+      "layer": "UNDERSTAND",
+      "status": "PASS",
+      "detail": "projected hba1c fact present for E2P021",
+      "classification": "LIVE",
+      "durationMs": 0
+    },
+    {
+      "step": 5,
+      "id": "MJ-05-DETECT",
+      "name": "Change detection — clinically meaningful worsening",
+      "layer": "DETECT",
+      "status": "PASS",
+      "detail": "golden AKSH-E2E-0002 REQUEST_APPROVAL · cohort B",
+      "classification": "PARTIAL",
+      "durationMs": 0
+    },
+    {
+      "step": 6,
+      "id": "MJ-06-ORCHESTRATE",
+      "name": "CONDUCTOR orchestration with correlation actor",
+      "layer": "REASON",
+      "status": "PASS",
+      "detail": "patient=P002 priority=Urgent route=urgent_flag",
+      "classification": "LIVE",
+      "durationMs": 214
+    },
+    {
+      "step": 7,
+      "id": "MJ-07-AGENTS",
+      "name": "Required agents emitted (SYNTHESIS/GUARDIAN/ORACLE/NEXUS)",
+      "layer": "REASON",
+      "status": "PASS",
+      "detail": "slots=SYNTHESIS,GUARDIAN,ORACLE,NEXUS",
+      "classification": "LIVE",
+      "durationMs": 214
+    },
+    {
+      "step": 8,
+      "id": "MJ-08-DECISION",
+      "name": "Decision resolves to clinician review (not autonomous ACT)",
+      "layer": "DECIDE",
+      "status": "PASS",
+      "detail": "safetyRoute=urgent_flag · REQUEST_APPROVAL family",
+      "classification": "LIVE",
+      "durationMs": 214
+    },
+    {
+      "step": 9,
+      "id": "MJ-09-CORRELATION-ORCH",
+      "name": "Orchestration tied to Master correlationId",
+      "layer": "PROVENANCE",
+      "status": "PASS",
+      "detail": "correlationId=aksh-master-20260812-8edcb838 · orchPatient=P002",
+      "classification": "CONTRACT",
+      "durationMs": 214
+    },
+    {
+      "step": 10,
+      "id": "MJ-10-HITL-ACCEPT",
+      "name": "HITL Accept on draft recommendation",
+      "layer": "DECIDE",
+      "status": "PASS",
+      "detail": "learningEvents=1",
+      "classification": "LIVE",
+      "durationMs": 377
+    },
+    {
+      "step": 11,
+      "id": "MJ-11-HEALTH-PLAN",
+      "name": "Intervention health plan created from Accept",
+      "layer": "ACT",
+      "status": "PASS",
+      "detail": "healthPlanId=plan-P002-1786541583041",
+      "classification": "PARTIAL",
+      "durationMs": 377
+    },
+    {
+      "step": 12,
+      "id": "MJ-12-LEARNING-ACCEPT",
+      "name": "Learning event recorded for Accept",
+      "layer": "LEARN",
+      "status": "PASS",
+      "detail": "eventId=learn-68f3055d-fb67-49e8-bd28-87c3ab977b9d",
+      "classification": "LIVE",
+      "durationMs": 408
+    },
+    {
+      "step": 13,
+      "id": "MJ-13-OUTCOME",
+      "name": "Follow-up outcome captured and linked",
+      "layer": "MONITOR",
+      "status": "PASS",
+      "detail": "outcomeEventId=learn-99dfa88a-6719-4af8-bb10-1e2886c228fe",
+      "classification": "LIVE",
+      "durationMs": 550
+    },
+    {
+      "step": 14,
+      "id": "MJ-14-LOOP",
+      "name": "Outcomes loop closes (awaiting→linked)",
+      "layer": "LEARN",
+      "status": "PASS",
+      "detail": "awaiting→outcome_linked · linkedCount=1",
+      "classification": "LIVE",
+      "durationMs": 622
+    },
+    {
+      "step": 15,
+      "id": "MJ-15-DIABETES-ACCEPT",
+      "name": "Diabetes coaching Accept (synthetic)",
+      "layer": "INTERVENTION",
+      "status": "PASS",
+      "detail": "diabetes learning id=learn-666fed26-1fc4-4dc5-993d-42809d2364aa",
+      "classification": "LIVE",
+      "durationMs": 805
+    },
+    {
+      "step": 16,
+      "id": "MJ-16-SHIELD-SCOPE",
+      "name": "Durable writes scoped by correlationId",
+      "layer": "PROVENANCE",
+      "status": "PASS",
+      "detail": "scopeKey=aksh-master-20260812-8edcb838 · shieldDualWrite used by spine",
+      "classification": "LIVE",
+      "durationMs": 805
+    },
+    {
+      "step": 17,
+      "id": "MJ-17-LAB-DELAY",
+      "name": "Lab delay simulation (no fabricated value)",
+      "layer": "ACT",
+      "status": "PASS",
+      "detail": "delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-8edcb838",
+      "classification": "SIMULATED",
+      "durationMs": 0
+    },
+    {
+      "step": 18,
+      "id": "MJ-18-LAB-COMPLETE",
+      "name": "Lab result completion updates synthetic Patient State fact",
+      "layer": "MONITOR",
+      "status": "PASS",
+      "detail": "factType=egfr value=58",
+      "classification": "SIMULATED",
+      "durationMs": 0
+    },
+    {
+      "step": 19,
+      "id": "MJ-19-PHARMACY",
+      "name": "Pharmacy adherence failure → care-team escalate (sim)",
+      "layer": "ACT",
+      "status": "PASS",
+      "detail": "task→gp · livePrescribing:false",
+      "classification": "SIMULATED",
+      "durationMs": 1
+    },
+    {
+      "step": 20,
+      "id": "MJ-20-NURSE-FOLLOWUP",
+      "name": "Nurse / care-team follow-up surface available (sim directory)",
+      "layer": "MONITOR",
+      "status": "PASS",
+      "detail": "careTeam members=4 liveDirectory=false",
+      "classification": "SIMULATED",
+      "durationMs": 0
+    },
+    {
+      "step": 21,
+      "id": "MJ-21-IMPROVEMENT",
+      "name": "Companion improving cohort detectable (outcome learning path)",
+      "layer": "LEARN",
+      "status": "PASS",
+      "detail": "cohort H E2P096 improved=true",
+      "classification": "LIVE",
+      "durationMs": 0
+    },
+    {
+      "step": 22,
+      "id": "MJ-22-NO-AUTO-ACT",
+      "name": "No autonomous ACT — PATHWAY/intervention remain draft until HITL",
+      "layer": "RECOMMEND",
+      "status": "PASS",
+      "detail": "hitlRequired:true preserved; liveEmis:false",
+      "classification": "LIVE",
+      "durationMs": 0
+    },
+    {
+      "step": 23,
+      "id": "MJ-23-HONESTY",
+      "name": "Publication honesty invariants hold",
+      "layer": "GOVERNANCE",
+      "status": "PASS",
+      "detail": "liveEmis:false · sims only · not clinically validated · not autonomous-care ready",
+      "classification": "CONTRACT",
+      "durationMs": 0
+    },
+    {
+      "step": 24,
+      "id": "MJ-24-CORRELATION",
+      "name": "Single Master correlationId minted and reused",
+      "layer": "PROVENANCE",
+      "status": "PASS",
+      "detail": "aksh-master-20260812-8edcb838",
+      "classification": "CONTRACT",
+      "durationMs": 0
+    },
+    {
+      "step": 25,
+      "id": "MJ-25-TRACE",
+      "name": "Part-52 style 25-step trace assembled",
+      "layer": "OBSERVABILITY",
+      "status": "PASS",
+      "detail": "stepsBeforeTrace=24 · relatedGoldens=AKSH-E2E-0002,AKSH-E2E-0010,AKSH-E2E-0013,AKSH-E2E-0014,AKSH-E2E-0015,AKSH-E2E-0019",
+      "classification": "CONTRACT",
+      "durationMs": 0
+    }
+  ],
+  "overall": "PASS",
+  "passed": 25,
+  "failed": 0,
+  "skipped": 0,
+  "firstFailure": null,
+  "readiness": {
+    "engineering": "INTERNAL TEST READY",
+    "workflow": "SIMULATED END-TO-END",
+    "clinicalEvidence": "UNVALIDATED"
+  },
+  "relatedGoldens": [
+    "AKSH-E2E-0002",
+    "AKSH-E2E-0010",
+    "AKSH-E2E-0013",
+    "AKSH-E2E-0014",
+    "AKSH-E2E-0015",
+    "AKSH-E2E-0019"
+  ],
+  "note": "Publication-ready software validation only. Lab/pharmacy SIMULATED. Neo4j may be mock. Not MHRA/CQC certified. Not production-ready for autonomous care."
+}
