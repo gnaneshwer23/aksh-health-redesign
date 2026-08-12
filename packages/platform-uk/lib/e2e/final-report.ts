@@ -422,9 +422,9 @@ export const E2E_FINDINGS: E2EFinding[] = [
   {
     id: "F-P1-003",
     severity: "P1",
-    title: "Dual patient identity remains correlated, not unified",
+    title: "Flagship patient identity unified on P002 (resolved)",
     detail:
-      "P1-ID-001: AKSH-E2E-MASTER-001 maps clinical-proof P002 ↔ generator cohort B (E2P0xx) under one correlationId without renaming fixtures.",
+      "P1-ID-001 resolved: Master Journey, Neo4j seed, review queue, and generator cohort B share canonical P002. Legacy alias E2P021 → P002 retained for one-release compatibility.",
     blocksInternalTesting: false,
   },
   {

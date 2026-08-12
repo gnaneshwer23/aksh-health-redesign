@@ -37,7 +37,10 @@ export const PERF_DEMO_PATIENTS = {
   llmFailure: { id: "P002", label: "Mr James Patel", goldenId: "AKSH-E2E-0019" },
 } as const;
 
-/** Demo patient stand-in for cohort B deterioration (UI + agents use mock cohort P001–P100). */
+/**
+ * Canonical flagship patient for cohort B deterioration.
+ * Same id as Neo4j seed, review queue, and Master Journey (P1-ID-001).
+ */
 export const COHORT_B_DEMO_PATIENT_ID = "P002";
 export const COHORT_B_DEMO_PATIENT_LABEL = "Mr James Patel";
 

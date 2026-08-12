@@ -3,6 +3,11 @@
  * Produces cohorts A–H, longitudinal observations, labs, pharmacies, care teams.
  */
 
+import {
+  FLAGSHIP_CANONICAL_PATIENT_ID,
+  FLAGSHIP_GENERATOR_COHORT,
+  FLAGSHIP_LEGACY_GENERATOR_ID,
+} from "./patient-identity";
 import { createSeededRng } from "./rng";
 import {
   E2E_COHORTS,
@@ -292,6 +297,7 @@ function generatePatients(
   const patients: E2EPatientProfile[] = [];
 
   let patientIndex = 0;
+  let flagshipCohortBAssigned = false;
   for (const cohort of E2E_COHORTS) {
     for (let c = 0; c < cohort.targetCount && patientIndex < count; c += 1) {
       patientIndex += 1;
@@ -316,8 +322,18 @@ function generatePatients(
           ? ["Type 2 diabetes mellitus", "Essential hypertension", "CKD Stage 3", "Obesity", "Ischaemic heart disease"]
           : ["Type 2 diabetes mellitus"];
 
+      // P1-ID-001: first cohort B patient shares clinical-proof / Neo4j / review-queue id P002.
+      const legacyGeneratorId = padId("E2P", i);
+      const isFlagship =
+        cohortId === FLAGSHIP_GENERATOR_COHORT && !flagshipCohortBAssigned;
+      if (isFlagship) flagshipCohortBAssigned = true;
+      const patientId = isFlagship ? FLAGSHIP_CANONICAL_PATIENT_ID : legacyGeneratorId;
+
       patients.push({
-        id: padId("E2P", i),
+        id: patientId,
+        ...(isFlagship
+          ? { legacyIds: [FLAGSHIP_LEGACY_GENERATOR_ID, legacyGeneratorId].filter((v, idx, arr) => arr.indexOf(v) === idx) }
+          : {}),
         name: `${rng.pick(["Mr", "Mrs", "Ms", "Mx"])} ${rng.pick(FIRST_NAMES)} ${rng.pick(SURNAMES)}`,
         nhsNumber: syntheticNhs(i),
         dob: `${year}-${String(rng.int(1, 12)).padStart(2, "0")}-${String(rng.int(1, 28)).padStart(2, "0")}`,

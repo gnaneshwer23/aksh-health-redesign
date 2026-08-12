@@ -13,7 +13,7 @@ import { applyApiCookiesToPage, createOnboardedTestUser } from "./helpers/auth";
 /**
  * Golden journey AKSH-E2E-0002 — Progressive Type 2 diabetes deterioration.
  * UI/agents: demo patient P002 (James Patel, T2D + high risk).
- * Data plane: E2E generator cohort B patient + optional HbA1c ingest.
+ * Data plane: E2E generator cohort B patient (canonical id P002; legacy alias E2P021) + optional HbA1c ingest.
  */
 test.describe("Platform golden journey — AKSH-E2E-0002", () => {
   test("deterioration: state → intelligence → safety → clinician review path", async ({

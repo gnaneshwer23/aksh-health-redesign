@@ -28,7 +28,7 @@ Layers: Data · Interoperability · Safety · Privacy · Consent · Security · 
 **Yes — as a synthetic / Track A Master Journey for internal software validation.**  
 `AKSH-E2E-MASTER-001` now automates a single deteriorating-patient chain with one `correlationId` across Patient State → CONDUCTOR intelligence → Decision → HITL Accept → health-plan intervention → follow-up outcome → learning, plus **SIMULATED** lab/pharmacy stakeholder steps on the same correlation id. Golden slices AKSH-E2E-0001…0021 remain green as stage unit gates.
 
-**Latest Master Journey run (2026-08-12):** **PASS 25/25** · identity `P002 ↔ E2P021` · seed `20260812` · artifact `docs/reports/E2E_MASTER_JOURNEY_20260812.md`.
+**Latest Master Journey run (2026-08-12):** **PASS 25/25** · canonical identity `P002` (legacy alias `E2P021`) · seed `20260812` · artifact `docs/reports/E2E_MASTER_JOURNEY_20260812.md`.
 
 **Honest readiness (Part 57) — unchanged axes, engineering path closed:**
 
@@ -154,12 +154,12 @@ Eight role dashboards + regional + review workspace + admin E2E cockpit (blocked
 | Persistent `correlationId` across API/DB/agents/audit scope | **PASS** (`scopeKey` + actor annotation) |
 | 25-step PASS/FAIL Part-52 trace report | **PASS** → `docs/reports/E2E_MASTER_JOURNEY_*.md` |
 | Combine generator state + orchestration + HITL + sims | **PASS** in `lib/e2e/master-journey.ts` |
-| Dual identity P1-ID-001 | **Aligned** via explicit map `P002 ↔ E2P021` (not renamed) |
+| Dual identity P1-ID-001 | **RESOLVED** — canonical `P002` shared by Master / Neo4j / review queue / generator cohort B; legacy alias `E2P021 → P002` |
 
 **Runner:** `npm run test:master` · Playwright surface: `e2e/platform-master-journey.spec.ts`  
 **Latest overall:** **PASS (25/25)** — see full step table in `docs/reports/E2E_MASTER_JOURNEY_20260812.md`.
 
-Identity note (honest): clinical-proof fixtures remain `P00x`; E2E generator remains `E2P0xx`. Master Journey **correlates** them under one `correlationId` without merging databases or renaming agents.
+Identity note: **P1-ID-001 resolved.** Flagship patient id is canonical **`P002`** across clinical-proof fixtures, Neo4j seed, review queue / spine resolution, Master Journey, and E2E generator cohort B. Legacy generator id `E2P021` is retained only as a thin alias for one-release compatibility (`lib/e2e/patient-identity.ts`).
 
 ---
 
@@ -230,7 +230,8 @@ _None_ for Track A synthetic software safety.
 - **P1-GRAPH-001** — Production Neo4j configured but disconnected (`mode:mock`).
 - **P1-EXT-001** — No live EMIS / EPS / NHS lab (by design).
 - **P1-SCALE-001** — 500–5000 patient scale suite not executed.
-- **P1-ID-001** — Dual identity **correlated** in Master Journey; deep unification still incomplete (fixtures unchanged).
+
+~~**P1-ID-001**~~ — **RESOLVED (2026-08-12):** canonical flagship id `P002` unified across Master Journey, Neo4j seed, review queue, and generator cohort B; legacy `E2P021 → P002` alias retained.
 
 ### P2 — Medium
 

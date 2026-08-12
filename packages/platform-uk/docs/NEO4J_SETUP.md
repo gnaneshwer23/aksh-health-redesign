@@ -134,7 +134,7 @@ npm run data:seed:neo4j
 The script is idempotent (`MERGE`) and loads, all sourced from `lib/mock-data/` so the graph always mirrors the dashboard fixtures:
 
 - 100 synthetic patients (P001–P100) with conditions, medications, and observations (BP, heart rate, temperature, SpO₂, respiratory rate) — clinical-proof fixtures P001–P026 plus demo cohort P027–P100 (varied IMD / ICS) — never real patient data. See [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md).
-- Patel **P002** with DVT + T2D, aspirin + apixaban, and `INTERACTS_WITH` (GUARDIAN)
+- Patel **P002** with DVT + T2D, aspirin + apixaban, and `INTERACTS_WITH` (GUARDIAN). **Canonical flagship id** shared with Master Journey, review queue, and E2E generator cohort B (P1-ID-001; legacy alias `E2P021 → P002`).
 - Medication interaction edges from `lib/mock-data/medications.ts` (BNF section references and dosing)
 - ICS aggregates and 5 practice benchmarks from `lib/mock-data/population.ts`
 

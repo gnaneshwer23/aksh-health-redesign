@@ -5,6 +5,10 @@
  */
 
 import { CLINICAL_AGENT_META } from "@/lib/agents";
+import {
+  FLAGSHIP_CANONICAL_PATIENT_ID,
+  resolveCanonicalPatientId,
+} from "@/lib/e2e/patient-identity";
 import type { LearningDecision } from "@/lib/clinical-proof/learning-loop";
 import { createHealthPlanDraft } from "@/lib/repositories/health-plan-repository";
 import { recordLearningEvent } from "@/lib/repositories/learning-event-repository";
@@ -32,16 +36,16 @@ export type SpineDecisionResult = {
 };
 
 const SCENARIO_COHORT: Record<string, string> = {
-  "PATEL-DEMO": "P002",
+  "PATEL-DEMO": FLAGSHIP_CANONICAL_PATIENT_ID,
   "V-UK1": "synthetic-v-uk1"
 };
 
 const CASE_COHORT: Record<string, string> = {
-  "case-patel-demo": "P002",
+  "case-patel-demo": FLAGSHIP_CANONICAL_PATIENT_ID,
   "case-v-uk1": "synthetic-v-uk1"
 };
 
-/** Map a review case onto a cohort / synthetic patient id for timeline + learning. */
+/** Map a review case onto the canonical cohort / synthetic patient id for timeline + learning. */
 export function resolveSpinePatientId(reviewCase: ReviewCase): string {
   if (reviewCase.scenarioId && SCENARIO_COHORT[reviewCase.scenarioId]) {
     return SCENARIO_COHORT[reviewCase.scenarioId];
@@ -49,10 +53,10 @@ export function resolveSpinePatientId(reviewCase: ReviewCase): string {
   if (CASE_COHORT[reviewCase.id]) {
     return CASE_COHORT[reviewCase.id];
   }
-  const fromLabel = reviewCase.patientLabel?.match(/\b(P\d{3})\b/i);
-  if (fromLabel) return fromLabel[1].toUpperCase();
-  const fromId = reviewCase.id.match(/\b(P\d{3})\b/i);
-  if (fromId) return fromId[1].toUpperCase();
+  const fromLabel = reviewCase.patientLabel?.match(/\b(P\d{3}|E2P\d{3})\b/i);
+  if (fromLabel) return resolveCanonicalPatientId(fromLabel[1].toUpperCase());
+  const fromId = reviewCase.id.match(/\b(P\d{3}|E2P\d{3})\b/i);
+  if (fromId) return resolveCanonicalPatientId(fromId[1].toUpperCase());
   return `case-${reviewCase.id}`;
 }
 

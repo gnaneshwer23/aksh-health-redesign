@@ -2,16 +2,21 @@
   "artifactType": "aksh-e2e-master-journey-trace",
   "testId": "AKSH-E2E-MASTER-001",
   "title": "Master Aksh Journey — progressive T2D deterioration end-to-end",
-  "generatedAt": "2026-08-12T13:33:03.472Z",
-  "correlationId": "aksh-master-20260812-8edcb838",
+  "generatedAt": "2026-08-12T15:59:11.885Z",
+  "correlationId": "aksh-master-20260812-47d29cec",
   "seed": 20260812,
   "identity": {
+    "canonicalPatientId": "P002",
+    "canonicalPatientLabel": "Mr James Patel",
     "clinicalProofPatientId": "P002",
     "clinicalProofPatientLabel": "Mr James Patel",
-    "generatorPatientId": "E2P021",
+    "generatorPatientId": "P002",
     "generatorCohortId": "B",
+    "legacyGeneratorAliases": [
+      "E2P021"
+    ],
     "batchId": "e2e-20260812",
-    "note": "P1-ID-001: clinical-proof fixtures use P00x; E2E generator uses E2P0xx. Master Journey correlates cohort B generator patient to P002 under one correlationId without renaming agents or patients."
+    "note": "P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j seed, review queue, and E2E generator cohort B. Legacy alias E2P021 → P002 retained for one-release compatibility."
   },
   "honesty": {
     "liveEmis": false,
@@ -29,12 +34,12 @@
     {
       "step": 1,
       "id": "MJ-01-IDENTITY",
-      "name": "Dual patient identity map (P002 ↔ cohort B)",
+      "name": "Canonical patient identity (P002)",
       "layer": "CONNECT",
       "status": "PASS",
-      "detail": "P002 ↔ E2P021 · batch e2e-20260812",
+      "detail": "canonical=P002 · aliases=E2P021 · batch e2e-20260812",
       "classification": "CONTRACT",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "step": 2,
@@ -52,7 +57,7 @@
       "name": "Patient State shows progressive HbA1c deterioration",
       "layer": "UNDERSTAND",
       "status": "PASS",
-      "detail": "HbA1c 6.8→8.4 · facts ok · E2P021",
+      "detail": "HbA1c 6.8→8.4 · facts ok · P002",
       "classification": "LIVE",
       "durationMs": 1
     },
@@ -62,7 +67,7 @@
       "name": "Current Patient State projection readable",
       "layer": "UNDERSTAND",
       "status": "PASS",
-      "detail": "projected hba1c fact present for E2P021",
+      "detail": "projected hba1c fact present for P002",
       "classification": "LIVE",
       "durationMs": 0
     },
@@ -84,7 +89,7 @@
       "status": "PASS",
       "detail": "patient=P002 priority=Urgent route=urgent_flag",
       "classification": "LIVE",
-      "durationMs": 214
+      "durationMs": 1462
     },
     {
       "step": 7,
@@ -94,7 +99,7 @@
       "status": "PASS",
       "detail": "slots=SYNTHESIS,GUARDIAN,ORACLE,NEXUS",
       "classification": "LIVE",
-      "durationMs": 214
+      "durationMs": 1462
     },
     {
       "step": 8,
@@ -104,7 +109,7 @@
       "status": "PASS",
       "detail": "safetyRoute=urgent_flag · REQUEST_APPROVAL family",
       "classification": "LIVE",
-      "durationMs": 214
+      "durationMs": 1462
     },
     {
       "step": 9,
@@ -112,9 +117,9 @@
       "name": "Orchestration tied to Master correlationId",
       "layer": "PROVENANCE",
       "status": "PASS",
-      "detail": "correlationId=aksh-master-20260812-8edcb838 · orchPatient=P002",
+      "detail": "correlationId=aksh-master-20260812-47d29cec · orchPatient=P002",
       "classification": "CONTRACT",
-      "durationMs": 214
+      "durationMs": 1462
     },
     {
       "step": 10,
@@ -124,7 +129,7 @@
       "status": "PASS",
       "detail": "learningEvents=1",
       "classification": "LIVE",
-      "durationMs": 377
+      "durationMs": 283
     },
     {
       "step": 11,
@@ -132,9 +137,9 @@
       "name": "Intervention health plan created from Accept",
       "layer": "ACT",
       "status": "PASS",
-      "detail": "healthPlanId=plan-P002-1786541583041",
+      "detail": "healthPlanId=plan-P002-1786550351408",
       "classification": "PARTIAL",
-      "durationMs": 377
+      "durationMs": 283
     },
     {
       "step": 12,
@@ -142,9 +147,9 @@
       "name": "Learning event recorded for Accept",
       "layer": "LEARN",
       "status": "PASS",
-      "detail": "eventId=learn-68f3055d-fb67-49e8-bd28-87c3ab977b9d",
+      "detail": "eventId=learn-b4635ce7-a617-4512-ae97-6b2b622acbf5",
       "classification": "LIVE",
-      "durationMs": 408
+      "durationMs": 317
     },
     {
       "step": 13,
@@ -152,9 +157,9 @@
       "name": "Follow-up outcome captured and linked",
       "layer": "MONITOR",
       "status": "PASS",
-      "detail": "outcomeEventId=learn-99dfa88a-6719-4af8-bb10-1e2886c228fe",
+      "detail": "outcomeEventId=learn-f19f30dc-6030-401b-af09-d616f316031e",
       "classification": "LIVE",
-      "durationMs": 550
+      "durationMs": 654
     },
     {
       "step": 14,
@@ -164,7 +169,7 @@
       "status": "PASS",
       "detail": "awaiting→outcome_linked · linkedCount=1",
       "classification": "LIVE",
-      "durationMs": 622
+      "durationMs": 694
     },
     {
       "step": 15,
@@ -172,9 +177,9 @@
       "name": "Diabetes coaching Accept (synthetic)",
       "layer": "INTERVENTION",
       "status": "PASS",
-      "detail": "diabetes learning id=learn-666fed26-1fc4-4dc5-993d-42809d2364aa",
+      "detail": "diabetes learning id=learn-6fc1af7c-ea85-4051-ac78-2c9e59613672",
       "classification": "LIVE",
-      "durationMs": 805
+      "durationMs": 757
     },
     {
       "step": 16,
@@ -182,9 +187,9 @@
       "name": "Durable writes scoped by correlationId",
       "layer": "PROVENANCE",
       "status": "PASS",
-      "detail": "scopeKey=aksh-master-20260812-8edcb838 · shieldDualWrite used by spine",
+      "detail": "scopeKey=aksh-master-20260812-47d29cec · shieldDualWrite used by spine",
       "classification": "LIVE",
-      "durationMs": 805
+      "durationMs": 757
     },
     {
       "step": 17,
@@ -192,9 +197,9 @@
       "name": "Lab delay simulation (no fabricated value)",
       "layer": "ACT",
       "status": "PASS",
-      "detail": "delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-8edcb838",
+      "detail": "delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-47d29cec",
       "classification": "SIMULATED",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "step": 18,
@@ -214,7 +219,7 @@
       "status": "PASS",
       "detail": "task→gp · livePrescribing:false",
       "classification": "SIMULATED",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "step": 20,
@@ -262,7 +267,7 @@
       "name": "Single Master correlationId minted and reused",
       "layer": "PROVENANCE",
       "status": "PASS",
-      "detail": "aksh-master-20260812-8edcb838",
+      "detail": "aksh-master-20260812-47d29cec",
       "classification": "CONTRACT",
       "durationMs": 0
     },

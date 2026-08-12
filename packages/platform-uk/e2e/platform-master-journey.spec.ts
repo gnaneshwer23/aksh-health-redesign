@@ -17,7 +17,7 @@ import {
  * This spec asserts API orchestration + identity map + honesty under one correlation annotation.
  */
 test.describe("Platform Master Journey — AKSH-E2E-MASTER-001", () => {
-  test("API orchestration for correlated deteriorating patient (P002 ↔ cohort B)", async ({
+  test("API orchestration for canonical deteriorating patient (P002)", async ({
     request,
     baseURL,
   }) => {
@@ -28,9 +28,11 @@ test.describe("Platform Master Journey — AKSH-E2E-MASTER-001", () => {
     const manifest = await loadE2EBatchManifest();
     const correlationId = `aksh-master-pw-${Date.now().toString(36)}`;
 
-    expect(identity.clinicalProofPatientId).toBe(COHORT_B_DEMO_PATIENT_ID);
+    expect(identity.canonicalPatientId).toBe(COHORT_B_DEMO_PATIENT_ID);
+    expect(identity.generatorPatientId).toBe(COHORT_B_DEMO_PATIENT_ID);
     expect(identity.generatorPatientId).toBe(generator.id);
     expect(generator.cohortId).toBe("B");
+    expect(generator.legacyIds).toContain("E2P021");
     expect(manifest.liveEmis).toBe(false);
 
     await createOnboardedTestUser(request, baseURL!, {
@@ -60,7 +62,7 @@ test.describe("Platform Master Journey — AKSH-E2E-MASTER-001", () => {
 
     test.info().annotations.push({
       type: "master-journey",
-      description: `${MASTER_JOURNEY_TEST_ID} · corr=${correlationId} · ${identity.clinicalProofPatientId}↔${identity.generatorPatientId}`,
+      description: `${MASTER_JOURNEY_TEST_ID} · corr=${correlationId} · canonical=${identity.canonicalPatientId}`,
     });
   });
 });

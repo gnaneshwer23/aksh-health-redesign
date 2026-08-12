@@ -62,6 +62,15 @@ describe("E2E platform generator", () => {
     }
   });
 
+  it("unifies flagship cohort B patient to canonical P002 (P1-ID-001)", () => {
+    const dataset = generateE2EDataset({ seed: E2E_DEFAULT_SEED });
+    const flagship = dataset.patients.find((p) => p.cohortId === "B");
+    assert.ok(flagship);
+    assert.equal(flagship!.id, "P002");
+    assert.ok(flagship!.legacyIds?.includes("E2P021"));
+    assert.equal(dataset.patients.filter((p) => p.id === "P002").length, 1);
+  });
+
   it("tags all users with e2e email domain and synthetic metadata", () => {
     const dataset = generateE2EDataset({ seed });
     assert.ok(dataset.users.every((u) => u.email.endsWith(`@${E2E_EMAIL_DOMAIN}`)));

@@ -5,8 +5,8 @@
  * Patient State → Intelligence → Decision → HITL → Intervention → Follow-up → Outcome → Learning.
  *
  * Honesty: liveEmis:false · lab/pharmacy SIMULATED · Neo4j may be mock · not clinically validated.
- * Dual identity (P1-ID-001): generator cohort B (E2P0xx) is correlated to clinical-proof P002 —
- * not renamed; Master asserts the explicit map under one correlationId.
+ * P1-ID-001: flagship patient is canonical P002 (clinical-proof, Neo4j, review queue, generator cohort B).
+ * Legacy generator id E2P021 aliases to P002 for one-release backward compatibility.
  */
 
 import { randomUUID } from "node:crypto";
@@ -36,12 +36,19 @@ import {
   findAdherenceFailures,
 } from "./pharmacy-sim";
 import { assertE2EPatientState, projectE2EFactsForPatient } from "./patient-state-assertions";
+import {
+  FLAGSHIP_CANONICAL_PATIENT_ID,
+  FLAGSHIP_CANONICAL_PATIENT_LABEL,
+  FLAGSHIP_LEGACY_GENERATOR_ID,
+  listLegacyAliasesForCanonical,
+  resolveCanonicalPatientId,
+} from "./patient-identity";
 import { completeLabResult, findDelayedLabs, markLabDelayed } from "./lab-sim";
 import { detectHba1cImprovement } from "./learning-state-assertions";
 import { E2E_DEFAULT_SEED, E2E_SOURCE } from "./types";
 
 export const MASTER_JOURNEY_TEST_ID = "AKSH-E2E-MASTER-001" as const;
-export const MASTER_DEMO_PATIENT_ID = "P002" as const;
+export const MASTER_DEMO_PATIENT_ID = FLAGSHIP_CANONICAL_PATIENT_ID;
 export const MASTER_GENERATOR_COHORT = "B" as const;
 
 export type MasterStepStatus = "PASS" | "FAIL" | "SKIP";
@@ -59,12 +66,17 @@ export type MasterJourneyStep = {
 };
 
 export type MasterIdentityMap = {
-  /** Clinical-proof / UI / orchestration patient (mock cohort). */
+  /** Single canonical id shared by Master, Neo4j, review queue, and generator cohort B. */
+  canonicalPatientId: typeof MASTER_DEMO_PATIENT_ID;
+  canonicalPatientLabel: string;
+  /** @deprecated Alias of canonicalPatientId — retained for report compat. */
   clinicalProofPatientId: typeof MASTER_DEMO_PATIENT_ID;
   clinicalProofPatientLabel: string;
-  /** Deterministic E2E generator patient for cohort B (seed 20260812). */
+  /** Generator cohort B patient id (equals canonical after P1-ID-001 unification). */
   generatorPatientId: string;
   generatorCohortId: typeof MASTER_GENERATOR_COHORT;
+  /** Pre-unification E2P0xx ids that still resolve to canonical. */
+  legacyGeneratorAliases: string[];
   batchId: string;
   note: string;
 };
@@ -200,8 +212,8 @@ function minimalPatelCase(queueItemId: string): ReviewCase {
 }
 
 /**
- * Explicit dual-identity map for Master Journey (P1-ID-001).
- * Does not rename or merge identities — documents the intentional correlation.
+ * Canonical identity map for Master Journey (P1-ID-001 resolved).
+ * Generator cohort B flagship, clinical-proof, Neo4j, and review queue share P002.
  */
 export function buildMasterIdentityMap(seed = E2E_DEFAULT_SEED): MasterIdentityMap {
   const dataset = generateE2EDataset({ seed });
@@ -210,14 +222,29 @@ export function buildMasterIdentityMap(seed = E2E_DEFAULT_SEED): MasterIdentityM
     throw new Error(`Generator seed ${seed} missing cohort ${MASTER_GENERATOR_COHORT}`);
   }
   const demo = getPatientById(MASTER_DEMO_PATIENT_ID);
+  const canonicalId = resolveCanonicalPatientId(generatorPatient.id);
+  if (canonicalId !== MASTER_DEMO_PATIENT_ID) {
+    throw new Error(
+      `P1-ID-001: cohort B generator patient must resolve to ${MASTER_DEMO_PATIENT_ID} (got ${generatorPatient.id})`
+    );
+  }
+  const legacyAliases = [
+    ...listLegacyAliasesForCanonical(MASTER_DEMO_PATIENT_ID),
+    ...(generatorPatient.legacyIds ?? []),
+  ].filter((v, idx, arr) => arr.indexOf(v) === idx);
+
+  const label = demo?.name ?? FLAGSHIP_CANONICAL_PATIENT_LABEL;
   return {
+    canonicalPatientId: MASTER_DEMO_PATIENT_ID,
+    canonicalPatientLabel: label,
     clinicalProofPatientId: MASTER_DEMO_PATIENT_ID,
-    clinicalProofPatientLabel: demo?.name ?? "Mr James Patel",
+    clinicalProofPatientLabel: label,
     generatorPatientId: generatorPatient.id,
     generatorCohortId: MASTER_GENERATOR_COHORT,
+    legacyGeneratorAliases: legacyAliases,
     batchId: dataset.manifest.batchId,
     note:
-      "P1-ID-001: clinical-proof fixtures use P00x; E2E generator uses E2P0xx. Master Journey correlates cohort B generator patient to P002 under one correlationId without renaming agents or patients.",
+      "P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j seed, review queue, and E2E generator cohort B. Legacy alias E2P021 → P002 retained for one-release compatibility.",
   };
 }
 
@@ -248,7 +275,7 @@ export async function runMasterJourney(
   const cohortE = dataset.patients.find((p) => p.cohortId === "E");
   const cohortF = dataset.patients.find((p) => p.cohortId === "F");
 
-  // --- Step 01: Identity map ---
+  // --- Step 01: Canonical identity ---
   {
     const t0 = Date.now();
     const demo = getPatientById(MASTER_DEMO_PATIENT_ID);
@@ -256,18 +283,21 @@ export async function runMasterJourney(
       Boolean(demo) &&
       demo!.clinicalProfiles?.includes("t2d") === true &&
       generatorPatient.cohortId === "B" &&
-      identity.generatorPatientId === generatorPatient.id;
+      identity.generatorPatientId === MASTER_DEMO_PATIENT_ID &&
+      identity.canonicalPatientId === MASTER_DEMO_PATIENT_ID &&
+      identity.generatorPatientId === identity.clinicalProofPatientId &&
+      identity.legacyGeneratorAliases.includes(FLAGSHIP_LEGACY_GENERATOR_ID);
     steps.push(
       stepResult(
         1,
         "MJ-01-IDENTITY",
-        "Dual patient identity map (P002 ↔ cohort B)",
+        "Canonical patient identity (P002)",
         "CONNECT",
         "CONTRACT",
         ok ? "PASS" : "FAIL",
         ok
-          ? `${identity.clinicalProofPatientId} ↔ ${identity.generatorPatientId} · batch ${identity.batchId}`
-          : "Identity map incomplete",
+          ? `canonical=${identity.canonicalPatientId} · aliases=${identity.legacyGeneratorAliases.join(",")} · batch ${identity.batchId}`
+          : "Canonical identity incomplete",
         t0
       )
     );
@@ -1002,12 +1032,13 @@ export function renderMasterJourneyMarkdown(result: MasterJourneyResult): string
     ``,
     result.note,
     ``,
-    `## Identity map (P1-ID-001)`,
+    `## Identity (P1-ID-001 resolved)`,
     ``,
-    `| Side | Id | Notes |`,
+    `| Field | Value | Notes |`,
     `| --- | --- | --- |`,
-    `| Clinical-proof / UI | \`${result.identity.clinicalProofPatientId}\` | ${result.identity.clinicalProofPatientLabel} |`,
-    `| E2E generator | \`${result.identity.generatorPatientId}\` | cohort ${result.identity.generatorCohortId} · batch \`${result.identity.batchId}\` |`,
+    `| Canonical patient | \`${result.identity.canonicalPatientId}\` | ${result.identity.canonicalPatientLabel} |`,
+    `| Generator cohort B | \`${result.identity.generatorPatientId}\` | cohort ${result.identity.generatorCohortId} · batch \`${result.identity.batchId}\` |`,
+    `| Legacy aliases | ${result.identity.legacyGeneratorAliases.map((a) => `\`${a}\``).join(", ") || "—"} | one-release compat |`,
     ``,
     result.identity.note,
     ``,

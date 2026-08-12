@@ -191,6 +191,11 @@ export type E2EObservationPoint = {
 
 export type E2EPatientProfile = {
   id: string;
+  /**
+   * Pre-unification generator ids that resolve to `id` (P1-ID-001).
+   * Flagship cohort B emits canonical P002 with legacy alias E2P021.
+   */
+  legacyIds?: string[];
   name: string;
   nhsNumber: string;
   dob: string;
