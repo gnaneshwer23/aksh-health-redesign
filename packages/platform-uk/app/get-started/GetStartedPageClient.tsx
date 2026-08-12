@@ -30,6 +30,9 @@ type FormState = {
   commitments: string[];
 };
 
+const fieldClass =
+  "w-full rounded-2xl border border-[var(--mk-line)] bg-white px-4 py-2.5 text-[var(--mk-ink)] shadow-sm focus:border-[var(--mk-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--mk-accent)]/25";
+
 export default function GetStartedPageClient() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -101,18 +104,18 @@ export default function GetStartedPageClient() {
     return (
       <MarketingShell editorial>
         <div className="flex flex-1 items-center justify-center py-16">
-          <div className="max-w-md px-6 text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald/10">
-              <span className="text-4xl text-emerald">✓</span>
+          <div className="max-w-md rounded-[2rem] border border-[var(--mk-line)] bg-white px-8 py-10 text-center shadow-[var(--mk-shadow-frame)]">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-pastel-mint">
+              <span className="text-4xl text-[var(--mk-accent)]">✓</span>
             </div>
-            <h1 className="mb-3 text-2xl font-bold text-navy">Enquiry received</h1>
-            <p className="mb-6 text-steel">
+            <h1 className="mb-3 font-display text-2xl font-bold text-[var(--mk-ink)]">Enquiry received</h1>
+            <p className="mb-6 text-[var(--mk-muted)]">
               Our team will respond within two business days to discuss onboarding your organisation.
             </p>
             {referenceLabel ? (
-              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-slate">
+              <p className="rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] px-4 py-3 text-sm text-[var(--mk-muted)]">
                 Reference:{" "}
-                <span className="font-mono font-semibold text-navy">{referenceLabel}</span>
+                <span className="font-mono font-semibold text-[var(--mk-ink)]">{referenceLabel}</span>
               </p>
             ) : null}
           </div>
@@ -130,31 +133,37 @@ export default function GetStartedPageClient() {
         secondary={{ label: "Create your account instead", href: "/signup" }}
       />
 
-      <div className="border-t border-border-subtle bg-white">
-        <TrustStrip />
-      </div>
+      <TrustStrip />
 
-      <div className="bg-surface-muted py-12 md:py-16">
+      <div className="py-12 md:py-16">
         <div className="mx-auto w-full max-w-2xl px-6 lg:px-8">
           <div className="mb-8 flex items-center gap-2">
             {STEPS.map((label, index) => (
               <div key={label} className="flex flex-1 items-center gap-2">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors ${
                     index < step
-                      ? "bg-emerald text-white"
+                      ? "bg-[var(--mk-accent)] text-white shadow-soft"
                       : index === step
-                        ? "bg-navy text-white"
-                        : "bg-border text-steel"
+                        ? "bg-[var(--mk-accent)] text-white shadow-soft"
+                        : "bg-[#eef1f4] text-[var(--mk-muted)]"
                   }`}
                 >
                   {index < step ? "✓" : index + 1}
                 </div>
-                <span className={`hidden text-xs font-medium sm:block ${index === step ? "text-navy" : "text-steel"}`}>
+                <span
+                  className={`hidden text-xs font-medium sm:block ${
+                    index === step ? "text-[var(--mk-ink)]" : "text-[var(--mk-muted)]"
+                  }`}
+                >
                   {label}
                 </span>
                 {index < STEPS.length - 1 && (
-                  <div className={`h-0.5 flex-1 ${index < step ? "bg-emerald" : "bg-border"}`} />
+                  <div
+                    className={`h-1 flex-1 rounded-full ${
+                      index < step ? "bg-[var(--mk-accent)]" : "bg-[#eef1f4]"
+                    }`}
+                  />
                 )}
               </div>
             ))}
@@ -163,12 +172,14 @@ export default function GetStartedPageClient() {
           <div className={frame}>
             {step === 0 && (
               <div className="space-y-5">
-                <h2 className="mb-2 text-xl font-bold text-navy">Organisation details</h2>
-                <p className="mb-4 text-sm text-steel">We will respond within two business days after you submit.</p>
+                <h2 className="mb-2 font-display text-xl font-bold text-[var(--mk-ink)]">Organisation details</h2>
+                <p className="mb-4 text-sm text-[var(--mk-muted)]">
+                  We will respond within two business days after you submit.
+                </p>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate">Organisation type *</label>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">Organisation type *</label>
                   <select
-                    className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                    className={fieldClass}
                     value={form.orgType}
                     onChange={(event) => update("orgType", event.target.value)}
                   >
@@ -187,9 +198,9 @@ export default function GetStartedPageClient() {
                   ] as const
                 ).map(([label, key]) => (
                   <div key={key}>
-                    <label className="mb-1.5 block text-sm font-medium text-slate">{label}</label>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">{label}</label>
                     <input
-                      className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                      className={fieldClass}
                       type={key === "contactEmail" ? "email" : "text"}
                       value={form[key]}
                       onChange={(event) => update(key, event.target.value)}
@@ -197,9 +208,9 @@ export default function GetStartedPageClient() {
                   </div>
                 ))}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate">ICS region *</label>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">ICS region *</label>
                   <select
-                    className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                    className={fieldClass}
                     value={form.region}
                     onChange={(event) => update("region", event.target.value)}
                   >
@@ -214,27 +225,32 @@ export default function GetStartedPageClient() {
 
             {step === 1 && (
               <div className="space-y-5">
-                <h2 className="mb-6 text-xl font-bold text-navy">Technical setup</h2>
+                <h2 className="mb-6 font-display text-xl font-bold text-[var(--mk-ink)]">Technical setup</h2>
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate">Current EHR system(s) *</label>
+                  <label className="mb-2 block text-sm font-medium text-[var(--mk-ink)]">Current EHR system(s) *</label>
                   <div className="space-y-2">
                     {EHR_SYSTEMS.map((ehr) => (
-                      <label key={ehr} className="flex cursor-pointer items-center gap-3">
+                      <label
+                        key={ehr}
+                        className="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] px-4 py-3 transition-colors hover:border-[var(--mk-accent)]"
+                      >
                         <input
                           type="checkbox"
                           checked={form.ehrSystem.includes(ehr)}
                           onChange={() => toggleArr("ehrSystem", ehr)}
-                          className="h-4 w-4 accent-navy"
+                          className="h-4 w-4 accent-[var(--mk-accent)]"
                         />
-                        <span className="text-sm text-slate">{ehr}</span>
+                        <span className="text-sm text-[var(--mk-ink)]">{ehr}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate">Approximate patient list size *</label>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">
+                    Approximate patient list size *
+                  </label>
                   <select
-                    className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                    className={fieldClass}
                     value={form.listSize}
                     onChange={(event) => update("listSize", event.target.value)}
                   >
@@ -245,9 +261,11 @@ export default function GetStartedPageClient() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate">IT lead contact (optional)</label>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">
+                    IT lead contact (optional)
+                  </label>
                   <input
-                    className="w-full rounded-lg border border-border px-4 py-2.5 text-slate focus:border-navy focus:outline-none"
+                    className={fieldClass}
                     placeholder="Name and email"
                     value={form.itContact}
                     onChange={(event) => update("itContact", event.target.value)}
@@ -258,21 +276,23 @@ export default function GetStartedPageClient() {
 
             {step === 2 && (
               <div className="space-y-5">
-                <h2 className="mb-6 text-xl font-bold text-navy">Commitments</h2>
-                <p className="text-sm text-steel">Please confirm your organisation can commit to the following:</p>
+                <h2 className="mb-6 font-display text-xl font-bold text-[var(--mk-ink)]">Commitments</h2>
+                <p className="text-sm text-[var(--mk-muted)]">
+                  Please confirm your organisation can commit to the following:
+                </p>
                 <div className="space-y-3">
                   {ORGANISATION_COMMITMENTS.map((commitment) => (
                     <label
                       key={commitment}
-                      className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-surface p-3 transition-colors hover:border-navy"
+                      className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] p-4 transition-colors hover:border-[var(--mk-accent)]"
                     >
                       <input
                         type="checkbox"
                         checked={form.commitments.includes(commitment)}
                         onChange={() => toggleArr("commitments", commitment)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-navy"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--mk-accent)]"
                       />
-                      <span className="text-sm text-slate">{commitment}</span>
+                      <span className="text-sm text-[var(--mk-ink)]">{commitment}</span>
                     </label>
                   ))}
                 </div>
@@ -283,32 +303,26 @@ export default function GetStartedPageClient() {
               <p
                 id="get-started-form-error"
                 role="alert"
-                className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
               >
                 {submitError}
               </p>
             ) : null}
 
             <div
-              className="mt-8 flex justify-between border-t border-border pt-6"
+              className="mt-8 flex justify-between border-t border-[var(--mk-line)] pt-6"
               aria-describedby={submitError ? "get-started-form-error" : undefined}
             >
               <button
                 type="button"
                 onClick={() => setStep((current) => current - 1)}
                 disabled={submitting}
-                className={`${btnSecondary} px-5 ${
-                  step === 0 ? "invisible" : ""
-                }`}
+                className={`${btnSecondary} px-5 ${step === 0 ? "invisible" : ""}`}
               >
                 Back
               </button>
               {step < STEPS.length - 1 ? (
-                <button
-                  type="button"
-                  onClick={() => setStep((current) => current + 1)}
-                  className={`${btnPrimary} px-8`}
-                >
+                <button type="button" onClick={() => setStep((current) => current + 1)} className={`${btnPrimary} px-8`}>
                   Continue
                 </button>
               ) : (
@@ -324,9 +338,9 @@ export default function GetStartedPageClient() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-steel">
+          <p className="mt-6 text-center text-sm text-[var(--mk-muted)]">
             Already have an account?{" "}
-            <Link href="/signin" className="font-semibold text-navy hover:underline">
+            <Link href="/signin" className="font-semibold text-[var(--mk-accent-strong)] hover:underline">
               Sign in
             </Link>
           </p>

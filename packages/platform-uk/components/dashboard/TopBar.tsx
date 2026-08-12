@@ -71,14 +71,17 @@ export function TopBar({
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border-subtle/60 bg-card/85 px-5 shadow-sm backdrop-blur-md">
+      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border-subtle/60 bg-card/90 px-5 shadow-sm backdrop-blur-md">
         <Button variant="ghost" size="sm" className="rounded-full lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
           <Menu className="h-5 w-5" />
         </Button>
         <Button variant="ghost" size="sm" className="hidden rounded-full xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
           <Menu className="h-5 w-5" />
         </Button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-accent text-xs font-bold text-white shadow-soft">
+            A
+          </span>
           <span className="font-display text-base font-bold text-primary">Aksh</span>
           {headerTitle && (
             <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
@@ -130,7 +133,7 @@ export function TopBar({
         <div className="ml-auto flex items-center gap-3">
           <button
             type="button"
-            className="relative rounded-full p-2.5 transition-colors hover:bg-[#F3F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="relative rounded-full p-2.5 transition-colors hover:bg-pastel-mint/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label={`${notificationCount} notifications`}
             onClick={() => setNotificationsOpen(true)}
           >
@@ -142,7 +145,7 @@ export function TopBar({
             )}
           </button>
           <div className="hidden items-center gap-2.5 sm:flex">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white shadow-sm">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white shadow-soft">
               {loading ? "…" : initials}
             </span>
             <span className="text-sm font-medium">
@@ -151,7 +154,7 @@ export function TopBar({
           </div>
           <button
             type="button"
-            className="rounded-2xl px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-[#F3F7FA] hover:text-primary"
+            className="rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-pastel-mint/60 hover:text-accent"
             onClick={() => signOut({ callbackUrl: "/" })}
           >
             Sign Out
@@ -170,7 +173,7 @@ export function TopBar({
           <h2 className="text-lg font-semibold">Notifications</h2>
           <ul className="mt-4 space-y-3">
             {MOCK_NOTIFICATIONS.map((notification) => (
-              <li key={notification.id} className="rounded-xl border border-border-subtle bg-surface-muted p-3">
+              <li key={notification.id} className="rounded-3xl border border-border-subtle bg-surface p-4 shadow-sm">
                 <p className="text-sm font-semibold text-foreground">{notification.title}</p>
                 <p className="mt-1 text-xs text-muted">{notification.body}</p>
                 <p className="mt-2 text-[10px] text-muted">{notification.time}</p>

@@ -7,8 +7,9 @@
     @apply min-h-screen bg-background font-sans text-foreground antialiased;
     background-color: #f7f8fa;
     background-image:
-      radial-gradient(ellipse 70% 45% at 15% 0%, rgb(0 168 142 / 0.08), transparent 55%),
-      radial-gradient(ellipse 55% 40% at 95% 100%, rgb(241 237 251 / 0.55), transparent 50%),
+      radial-gradient(ellipse 70% 45% at 15% 0%, rgb(0 168 142 / 0.1), transparent 55%),
+      radial-gradient(ellipse 55% 40% at 95% 100%, rgb(232 243 254 / 0.75), transparent 50%),
+      radial-gradient(ellipse 40% 30% at 50% 60%, rgb(241 237 251 / 0.4), transparent 55%),
       linear-gradient(180deg, #fbfcfd 0%, #f7f8fa 100%);
   }
 }
@@ -16,5 +17,20 @@
 @layer components {
   .onboarding-card-surface {
     @apply rounded-frame border border-border-subtle bg-card/95 p-6 shadow-card backdrop-blur-sm sm:p-8;
+    box-shadow:
+      0 1px 2px rgb(20 32 30 / 0.03),
+      0 22px 48px -24px rgb(20 32 30 / 0.16);
+  }
+
+  .onboarding-step-pill {
+    @apply inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-1 text-xs font-medium text-muted;
+  }
+
+  .onboarding-step-pill--active {
+    @apply border-accent/30 bg-pastel-mint text-pastel-mint-ink;
+  }
+
+  .onboarding-step-pill--done {
+    @apply border-accent/20 bg-white text-accent;
   }
 }

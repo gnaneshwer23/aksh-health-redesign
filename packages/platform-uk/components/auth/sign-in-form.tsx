@@ -74,8 +74,8 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
   return (
     <>
       {authConfig.proofMode ? (
-        <div className="mb-4 rounded-xl border border-navy/10 bg-navy-light px-4 py-3 text-sm text-slate" role="note">
-          <strong className="text-primary">{PROOF_MODE_BANNER.title}</strong>
+        <div className="mb-4 rounded-2xl border border-accent/15 bg-pastel-mint px-4 py-3 text-sm text-foreground" role="note">
+          <strong className="text-accent">{PROOF_MODE_BANNER.title}</strong>
           <p className="mt-1 text-muted">{PROOF_MODE_BANNER.body}</p>
         </div>
       ) : null}

@@ -77,27 +77,30 @@ export default function ContactPage() {
             ))}
           </div>
 
-          <div className="mt-12 max-w-2xl border-t border-navy/[0.08] pt-8">
-            <h2 className="mb-2 font-[family-name:var(--font-marketing-display)] text-lg font-semibold text-navy-dark">
+          <div className="mt-12 max-w-2xl rounded-[1.75rem] border border-[var(--mk-line)] bg-white p-6 shadow-[var(--mk-shadow-frame)] sm:p-7">
+            <h2 className="mb-2 font-[family-name:var(--font-marketing-display)] text-lg font-semibold text-[var(--mk-ink)]">
               Direct email
             </h2>
-            <p className="text-sm leading-relaxed text-slate/75">
+            <p className="text-sm leading-relaxed text-[var(--mk-muted)]">
               General and partnership enquiries:{" "}
-              <a className="font-medium text-navy-dark underline-offset-4 hover:underline" href="mailto:hello@akshhealth.com">
+              <a className="font-medium text-[var(--mk-accent-strong)] underline-offset-4 hover:underline" href="mailto:hello@akshhealth.com">
                 hello@akshhealth.com
               </a>
             </p>
           </div>
 
           <div className="mt-14 max-w-2xl">
-            <h2 className="mb-6 font-[family-name:var(--font-marketing-display)] text-2xl font-semibold text-navy-dark">
+            <h2 className="mb-6 font-[family-name:var(--font-marketing-display)] text-2xl font-semibold text-[var(--mk-ink)]">
               Common questions
             </h2>
-            <dl className="space-y-6">
+            <dl className="space-y-3">
               {faqs.map((item) => (
-                <div key={item.q} className="border-b border-navy/[0.06] pb-6 last:border-b-0 last:pb-0">
-                  <dt className="font-medium text-navy-dark">{item.q}</dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-slate/75">{item.a}</dd>
+                <div
+                  key={item.q}
+                  className="rounded-[1.5rem] border border-[var(--mk-line)] bg-white px-5 py-4 shadow-[var(--mk-shadow-frame)]"
+                >
+                  <dt className="font-medium text-[var(--mk-ink)]">{item.q}</dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-[var(--mk-muted)]">{item.a}</dd>
                 </div>
               ))}
             </dl>

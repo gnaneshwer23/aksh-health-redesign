@@ -110,13 +110,13 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
 };
 
 const ROLE_COLORS: Record<DashboardRole, string> = {
-  gp: "bg-primary",
+  gp: "bg-accent",
   nurse: "bg-secondary",
-  pharmacist: "bg-[#6B46C1]",
-  admin: "bg-slate",
+  pharmacist: "bg-[#7C6BDB]",
+  admin: "bg-primary",
   ics: "bg-warning",
-  hospital: "bg-primary",
-  researcher: "bg-[#E67E22]",
+  hospital: "bg-accent",
+  researcher: "bg-[#E5A43B]",
   patient: "bg-accent",
 };
 

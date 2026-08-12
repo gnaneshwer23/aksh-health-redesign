@@ -77,10 +77,10 @@ export default function SecurityPage() {
         <div className={container}>
           <div className="mb-10 max-w-2xl">
             <p className="owkin-roles__eyebrow mb-3">How we govern clinical outputs</p>
-            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-navy-dark md:text-4xl">
+            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-[var(--mk-ink)] md:text-4xl">
               Safety controls that stay visible
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate/75">
+            <p className="mt-4 text-base leading-relaxed text-[var(--mk-muted)]">
               {COMPLIANCE_DISCLAIMER} This page describes design posture — not regulatory approval.
             </p>
           </div>
@@ -110,14 +110,14 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      <section id="dtac" className="scroll-mt-24 border-y border-navy/[0.06] bg-white py-14 md:py-16">
+      <section id="dtac" className="scroll-mt-24 border-y border-[var(--mk-line)] py-14 md:py-16">
         <div className={container}>
           <div className="mb-8 max-w-2xl">
             <p className="owkin-roles__eyebrow mb-3">What we do not claim</p>
-            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-navy-dark md:text-4xl">
+            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-[var(--mk-ink)] md:text-4xl">
               Honest limits
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate/75">
+            <p className="mt-4 text-base leading-relaxed text-[var(--mk-muted)]">
               If a badge or sentence would overstate status, we leave it out.
             </p>
           </div>
@@ -126,10 +126,10 @@ export default function SecurityPage() {
               <li key={item}>{item}</li>
             ))}
           </ul>
-          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate/70" id="precision-health">
+          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[var(--mk-muted)]" id="precision-health">
             Precision-health work in this product is phased scaffolding — not a live digital twin claim, and not a
             validated physiological digital twin.{" "}
-            <Link href="/platform" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+            <Link href="/platform" className="font-medium text-[var(--mk-accent-strong)] underline-offset-4 hover:underline">
               Platform overview
             </Link>
           </p>

@@ -99,10 +99,10 @@ export default function AgentGrid() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-10 max-w-2xl">
           <p className="owkin-roles__eyebrow mb-3">Clinical capabilities</p>
-          <h2 className="mb-4 font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-navy-dark md:text-4xl">
+          <h2 className="mb-4 font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-[var(--mk-ink)] md:text-4xl">
             Supporting intelligence. One review queue.
           </h2>
-          <p className="text-base leading-relaxed text-slate/75">
+          <p className="text-base leading-relaxed text-[var(--mk-muted)]">
             Capture → draft → approve. Supporting intelligence stays in the queue until a named clinician decides.
           </p>
         </div>
@@ -127,13 +127,13 @@ export default function AgentGrid() {
           })}
         </ul>
 
-        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-slate/75">
+        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-[var(--mk-muted)]">
           Clinician review always.{" "}
-          <Link href="/platform#hitl" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+          <Link href="/platform#hitl" className="font-medium text-[var(--mk-accent-strong)] underline-offset-4 hover:underline">
             Accept, Edit, or Reject
           </Link>
           {" · "}
-          <Link href="/demo/patel" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+          <Link href="/demo/patel" className="font-medium text-[var(--mk-accent-strong)] underline-offset-4 hover:underline">
             Open walkthrough
           </Link>
           .

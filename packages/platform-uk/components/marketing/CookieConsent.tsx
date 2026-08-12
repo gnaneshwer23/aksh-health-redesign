@@ -103,7 +103,7 @@ export function CookieConsent() {
               <div className="mt-5 space-y-2.5">
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-emerald text-white hover:bg-emerald/90")}
+                  className={cn(actionButtonBase, "bg-accent text-white hover:bg-accent/90")}
                   onClick={savePreferences}
                 >
                   Save preferences
@@ -112,7 +112,7 @@ export function CookieConsent() {
                   type="button"
                   className={cn(
                     actionButtonBase,
-                    "border border-navy/20 bg-white text-navy hover:border-navy/40 hover:bg-navy/[0.03]"
+                    "border border-border-subtle bg-white text-foreground hover:border-accent/30 hover:bg-pastel-mint/50"
                   )}
                   onClick={() => setShowPreferences(false)}
                 >
@@ -145,7 +145,7 @@ export function CookieConsent() {
               <div className="space-y-2.5 p-5" role="group" aria-label="Cookie consent actions">
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-emerald text-white hover:bg-emerald/90")}
+                  className={cn(actionButtonBase, "bg-accent text-white hover:bg-accent/90")}
                   onClick={() => accept("all")}
                 >
                   Accept all
@@ -154,7 +154,7 @@ export function CookieConsent() {
                   type="button"
                   className={cn(
                     actionButtonBase,
-                    "border border-navy/20 bg-white text-navy hover:border-navy/40 hover:bg-navy/[0.03]"
+                    "border border-border-subtle bg-white text-foreground hover:border-accent/30 hover:bg-pastel-mint/50"
                   )}
                   onClick={() => setShowPreferences(true)}
                   aria-expanded={showPreferences}
@@ -164,7 +164,7 @@ export function CookieConsent() {
                 </button>
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-navy text-white hover:bg-navy/90")}
+                  className={cn(actionButtonBase, "bg-primary text-white hover:bg-primary/90")}
                   onClick={() => accept("essential")}
                 >
                   Reject all

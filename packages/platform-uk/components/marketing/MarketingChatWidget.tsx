@@ -305,7 +305,7 @@ export function MarketingChatWidget() {
 
       <button
         type="button"
-        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-[var(--mk-ink)] px-4 py-3 text-sm font-semibold text-white shadow-[var(--mk-shadow-float)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
+        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-8px_rgba(0,168,142,0.4)] transition-transform hover:-translate-y-0.5 hover:bg-[var(--mk-accent-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
         aria-expanded={open}
         aria-label={open ? "Close Ask Aksh Health chat" : "Open Ask Aksh Health chat"}
         onClick={() => setOpen((value) => !value)}

@@ -47,9 +47,27 @@ const sectionNav = [
 ] as const;
 
 const hitlActions = [
-  { icon: CheckCircle2, label: "Accept", tone: "border-emerald/30 bg-emerald/10 text-emerald", iconTone: "text-emerald" },
-  { icon: Pencil, label: "Edit", tone: "border-navy/15 bg-white text-navy", iconTone: "text-navy" },
-  { icon: XCircle, label: "Reject", tone: "border-danger/20 bg-danger/5 text-danger", iconTone: "text-danger" },
+  {
+    icon: CheckCircle2,
+    label: "Accept",
+    tone: "border-[var(--mk-line)] bg-white text-[var(--mk-ink)]",
+    iconTone: "text-[var(--mk-accent)]",
+    iconBg: "bg-pastel-mint",
+  },
+  {
+    icon: Pencil,
+    label: "Edit",
+    tone: "border-[var(--mk-line)] bg-white text-[var(--mk-ink)]",
+    iconTone: "text-[var(--mk-accent-strong)]",
+    iconBg: "bg-[#eef1f4]",
+  },
+  {
+    icon: XCircle,
+    label: "Reject",
+    tone: "border-[var(--mk-line)] bg-white text-[var(--mk-ink)]",
+    iconTone: "text-danger",
+    iconBg: "bg-pastel-coral",
+  },
 ] as const;
 
 export function PlatformPageContent() {
@@ -67,7 +85,7 @@ export function PlatformPageContent() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className="text-sm font-medium text-navy-dark underline-offset-4 hover:underline"
+              className="rounded-full border border-[var(--mk-line)] bg-white/80 px-3.5 py-1.5 text-sm font-medium text-[var(--mk-ink)] shadow-sm transition-colors hover:border-[var(--mk-accent)] hover:text-[var(--mk-accent)]"
             >
               {item.label}
             </a>
@@ -110,15 +128,15 @@ export function PlatformPageContent() {
         </div>
       </section>
 
-      <div id="agents" className="scroll-mt-24 border-t border-navy/[0.06]">
+      <div id="agents" className="scroll-mt-24 border-t border-[var(--mk-line)]">
         <AgentGrid />
       </div>
 
-      <div className="border-t border-navy/[0.06]">
+      <div className="border-t border-[var(--mk-line)]">
         <RolesGridSection variant="platform" />
       </div>
 
-      <section id="hitl" className="scroll-mt-24 border-t border-navy/[0.06] py-16 md:py-20">
+      <section id="hitl" className="scroll-mt-24 border-t border-[var(--mk-line)] py-16 md:py-20">
         <div className={container}>
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
@@ -142,9 +160,14 @@ export function PlatformPageContent() {
                 return (
                   <div
                     key={action.label}
-                    className={`flex flex-col items-center rounded-xl border px-4 py-5 text-center ${action.tone}`}
+                    className={`flex flex-col items-center rounded-[1.75rem] border px-4 py-6 text-center shadow-[var(--mk-shadow-frame)] ${action.tone}`}
                   >
-                    <Icon className={`mb-2 h-5 w-5 ${action.iconTone}`} aria-hidden />
+                    <span
+                      className={`mb-3 flex h-11 w-11 items-center justify-center rounded-full ${action.iconBg}`}
+                      aria-hidden
+                    >
+                      <Icon className={`h-5 w-5 ${action.iconTone}`} />
+                    </span>
                     <p className="text-sm font-semibold">{action.label}</p>
                   </div>
                 );
