@@ -108,19 +108,22 @@ async function run() {
     assert.equal(fedPost.status, 403);
 
     // AKSH-E2E-RBAC-006 — E2E admin production gate
-    const prevNode = process.env.NODE_ENV;
+    const env = process.env as NodeJS.ProcessEnv & { NODE_ENV?: string };
+    const prevNode = env.NODE_ENV;
     const prevVercel = process.env.VERCEL_ENV;
     const prevE2E = process.env.E2E_TEST_MODE;
-    process.env.NODE_ENV = "production";
+    env.NODE_ENV = "production";
     process.env.VERCEL_ENV = "production";
     delete process.env.E2E_TEST_MODE;
     delete process.env.E2E_ADMIN_ENABLED;
     assert.equal(isE2EAdminSurfaceAllowed(), false);
 
-    const blockedAdmin = await getE2EAdminStatus();
+    const blockedAdmin = await getE2EAdminStatus(
+      new Request("http://localhost/api/admin/e2e/status")
+    );
     assert.equal(blockedAdmin.status, 403);
 
-    process.env.NODE_ENV = prevNode;
+    env.NODE_ENV = prevNode;
     process.env.VERCEL_ENV = prevVercel;
     if (prevE2E) process.env.E2E_TEST_MODE = prevE2E;
     process.env.E2E_TEST_MODE = "true";
