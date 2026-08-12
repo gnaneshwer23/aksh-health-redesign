@@ -17,8 +17,8 @@ test.describe("Marketing smoke", () => {
     const desktopNav = page.locator("nav.owkin-nav .owkin-nav__center");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Security" })).toBeVisible();
-    await expect(desktopNav.getByRole("link", { name: "Demo" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Contact" })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Demo" })).toHaveCount(0);
     await expect(page.locator("nav.owkin-nav .owkin-nav__bar").getByRole("link", { name: "Sign in" })).toBeVisible();
     await expect(page.getByRole("navigation").getByRole("button", { name: "Platform" })).toHaveCount(0);
     await expect(desktopNav.getByRole("link", { name: "Workflow" })).toHaveCount(0);
@@ -46,8 +46,8 @@ test.describe("Marketing smoke", () => {
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Security" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Demo" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Contact" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Demo" })).toHaveCount(0);
     await expect(mobileMenu.getByRole("link", { name: "Sign in" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "Get started" })).toBeVisible();
   });

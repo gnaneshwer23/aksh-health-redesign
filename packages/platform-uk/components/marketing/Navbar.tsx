@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 const centerLinks = [
   { label: "Platform", href: "/platform" },
   { label: "Security", href: "/security" },
-  { label: "Demo", href: "/demo/patel" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
