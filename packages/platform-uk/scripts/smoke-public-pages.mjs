@@ -1,12 +1,27 @@
+/**
+ * Public marketing/auth page smoke checks.
+ *
+ * Usage:
+ *   npm run smoke:public
+ *   SMOKE_BASE_URL=https://akshhealth.com npm run smoke:public
+ *
+ * Expected markers match region-adaptable (not NHS-primary) publication copy.
+ */
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 
 const pages = [
   { path: "/", text: "Clinical work" },
   { path: "/platform", text: "One platform, eight roles" },
-  { path: "/security", text: "Human review, audit trails, and honest compliance language for NHS deployments" },
+  {
+    path: "/security",
+    text: "Human review, audit trails, and honest compliance language for clinical deployments",
+  },
   { path: "/contact", text: "Talk to Aksh Health" },
   { path: "/signup", text: "Create your account" },
-  { path: "/get-started", text: "Request access for your NHS organisation" },
+  { path: "/signin", text: "Sign in" },
+  { path: "/get-started", text: "Request access for your organisation" },
+  { path: "/demo", text: "Mr James Patel walkthrough" },
   { path: "/demo/patel", text: "Mr James Patel walkthrough" },
 ];
 

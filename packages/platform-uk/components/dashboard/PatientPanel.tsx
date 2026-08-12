@@ -48,7 +48,7 @@ export function PatientPanel({
           <Input
             id="patient-search"
             className="mt-2 rounded-xl border-border-subtle bg-surface-muted shadow-none"
-            placeholder="Name or NHS number"
+            placeholder="Name or patient ID"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />

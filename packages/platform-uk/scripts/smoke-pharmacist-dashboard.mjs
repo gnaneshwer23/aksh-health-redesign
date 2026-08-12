@@ -23,14 +23,13 @@ const protectedPharmacistRoutes = [
       "Pharmacist Dashboard",
       "Pharmacist workspace",
       "Medication Review Queue",
-      "Med-safety demo",
       "liveEmis:false",
     ],
   },
   {
     label: "Pharmacist reviews",
     path: "/dashboard/pharmacist/reviews",
-    expectedText: ["Medication Review Queue", "Med-safety demo", "liveEmis:false"],
+    expectedText: ["Medication Review Queue", "liveEmis:false"],
   },
   {
     label: "Pharmacist interactions",

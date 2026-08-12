@@ -122,7 +122,7 @@ async function assertPublicIcsDemo() {
   for (const text of [
     "Population intelligence",
     "liveEmis:false",
-    "synthetic cohorts",
+    "Synthetic ICS cohorts",
     "no patient-level spill",
     "Ask Aksh",
   ]) {

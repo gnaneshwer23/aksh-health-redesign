@@ -37,7 +37,7 @@ const BEATS = [
 const STORAGE_KEY = "aksh-pharmacist-hero-demo-dismissed";
 
 export function PharmacistHeroDemoPath({ className }: { className?: string }) {
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     try {

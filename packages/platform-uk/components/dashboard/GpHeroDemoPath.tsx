@@ -44,7 +44,7 @@ export function GpHeroDemoPath({
   /** When true, ignore dismiss storage (e.g. review-queue explicit restore). */
   forceShow?: boolean;
 }) {
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     if (forceShow) {

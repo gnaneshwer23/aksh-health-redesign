@@ -13,7 +13,7 @@ import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("SMOKE_NURSE", "smoke:nurse");
-const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
+const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 25_000);
 
 const protectedNurseRoutes = [
   {

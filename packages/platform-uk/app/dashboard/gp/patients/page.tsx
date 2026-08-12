@@ -23,7 +23,7 @@ export default function GpPatientsPage() {
     <DashboardShell role="gp" title="My Patients" organisation={profile?.organisation}>
       <div className="overflow-y-auto p-4 space-y-4">
         <ConsentBanner />
-        <Input placeholder="Search by name or NHS number" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search patients" />
+        <Input placeholder="Search by name or patient ID" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search patients" />
         {list.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border-subtle p-8 text-center text-sm text-muted">
             {query

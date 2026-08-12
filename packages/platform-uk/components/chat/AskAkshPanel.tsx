@@ -122,16 +122,35 @@ function AskAkshChatSession({
     const params = new URLSearchParams({ patientId, audience });
     fetch(`/api/chat/patient?${params.toString()}`, { credentials: "include" })
       .then(async (res) => {
-        const data = (await res.json()) as {
+        const data = (await res.json().catch(() => ({}))) as {
           available?: boolean;
           message?: string;
           access?: { allowed?: boolean; reason?: string };
+          error?: string;
         };
         if (cancelled) return;
+        if (!res.ok) {
+          setAvailability({
+            available: false,
+            message:
+              data.message ??
+              data.access?.reason ??
+              (res.status === 401 || res.status === 403
+                ? "Sign in to use Ask Aksh on this patient. Public demo keeps chat gated."
+                : PATIENT_CHAT_UNAVAILABLE_MESSAGE),
+            accessAllowed: data.access?.allowed ?? false,
+            accessReason:
+              data.access?.reason ??
+              (res.status === 401 || res.status === 403
+                ? "Sign in required for named-patient Ask Aksh"
+                : data.error ?? null),
+          });
+          return;
+        }
         setAvailability({
           available: Boolean(data.available),
           message: data.message ?? PATIENT_CHAT_UNAVAILABLE_MESSAGE,
-          accessAllowed: data.access?.allowed ?? res.ok,
+          accessAllowed: data.access?.allowed ?? true,
           accessReason: data.access?.reason ?? null,
         });
       })
@@ -201,8 +220,16 @@ function AskAkshChatSession({
             {availability.accessReason ??
               "Your role cannot open named patient chat (ICS / researcher / admin default off)."}
           </div>
+        ) : availability.available === null ? (
+          <div
+            className="rounded-xl border border-border-subtle bg-muted/20 px-3 py-3 text-sm text-muted"
+            data-testid="ask-aksh-availability-loading"
+            role="status"
+          >
+            Checking Ask Aksh availability…
+          </div>
         ) : availability.available === false ? (
-          <div className="rounded-xl border border-border-subtle bg-muted/20 px-3 py-3 text-sm text-muted">
+          <div className="rounded-xl border border-border-subtle bg-muted/20 px-3 py-3 text-sm text-muted" data-testid="ask-aksh-unavailable">
             {availability.message}
           </div>
         ) : (

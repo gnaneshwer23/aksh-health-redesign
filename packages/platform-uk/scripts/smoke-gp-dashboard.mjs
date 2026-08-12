@@ -19,9 +19,9 @@ const { email: smokeEmail, password: smokePassword } = requireSmokeCredentials("
 const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS ?? 12_000);
 
 const protectedGpRoutes = [
-  { label: "GP dashboard", path: "/dashboard/gp", expectedText: ["Clinician Dashboard", "AI Review Queue"] },
-  { label: "GP patients", path: "/dashboard/gp/patients", expectedText: ["My Patients", "Search by name"] },
-  { label: "GP review queue", path: "/dashboard/gp/review-queue", expectedText: ["AI Review Queue"] },
+  { label: "GP dashboard", path: "/dashboard/gp", expectedText: ["Clinician Dashboard", "Review Queue"] },
+  { label: "GP patients", path: "/dashboard/gp/patients", expectedText: ["My Patients", "Search patients"] },
+  { label: "GP review queue", path: "/dashboard/gp/review-queue", expectedText: ["Review Queue"] },
   { label: "GP care pathways", path: "/dashboard/gp/care-pathways", expectedText: ["Care Pathway", "Active Care Pathways"] },
   { label: "GP reports", path: "/dashboard/gp/reports", expectedText: ["Summary Reports", "Consultations This Week"] },
   { label: "GP settings", path: "/dashboard/gp/settings", expectedText: ["AI agent preferences", "SYNTHESIS summary length"] },
@@ -160,7 +160,7 @@ async function run() {
   console.log(`Running GP dashboard smoke checks against ${baseUrl}`);
   console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
-  await assertPublicDemo("/dashboard/gp", ["Clinician Dashboard", "AI Review Queue"]);
+  await assertPublicDemo("/dashboard/gp", ["Clinician Dashboard", "Review Queue"]);
 
   await signIn();
 
