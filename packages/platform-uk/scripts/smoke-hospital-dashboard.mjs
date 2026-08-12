@@ -42,7 +42,7 @@ const protectedHospitalRoutes = [
   {
     label: "Hospital staffing",
     path: "/dashboard/hospital/staffing",
-    expectedText: ["Staffing & Alerts", "Trigger agency request", "Command-centre demo"],
+    expectedText: ["Staffing", "Trigger agency request", "Command-centre demo", "synthetic staffing"],
   },
 ];
 

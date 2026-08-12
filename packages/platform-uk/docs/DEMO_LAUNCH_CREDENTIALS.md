@@ -44,12 +44,30 @@ npm run seed:demo-cohort -- --apply
 
 ## Smoke / CI scripts
 
-Walkthrough and dashboard smokes require env-provided credentials (no defaults in smoke helpers):
+Walkthrough and dashboard smokes require env-provided credentials (no defaults in smoke helpers).
+Demo cohort accounts (after `npm run seed:demo-cohort -- --apply`) map cleanly:
 
 ```bash
-export SMOKE_EMAIL="gp01@demo.akshhealth.com"
-export SMOKE_PASSWORD="AkshDemoCohort!2026"
-npm run smoke:walkthrough
+export SMOKE_BASE_URL=http://127.0.0.1:3000
+export SMOKE_GP_EMAIL="gp01@demo.akshhealth.com"
+export SMOKE_GP_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_NURSE_EMAIL="nurse01@demo.akshhealth.com"
+export SMOKE_NURSE_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_PHARMACIST_EMAIL="pharmacist01@demo.akshhealth.com"
+export SMOKE_PHARMACIST_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_ADMIN_EMAIL="admin01@demo.akshhealth.com"
+export SMOKE_ADMIN_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_PATIENT_EMAIL="patient01@demo.akshhealth.com"
+export SMOKE_PATIENT_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_ICS_EMAIL="ics01@demo.akshhealth.com"
+export SMOKE_ICS_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_HOSPITAL_EMAIL="hospital01@demo.akshhealth.com"
+export SMOKE_HOSPITAL_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_RESEARCHER_EMAIL="researcher01@demo.akshhealth.com"
+export SMOKE_RESEARCHER_PASSWORD="AkshDemoCohort!2026"
+
+npm run smoke:all
+# or: npm run smoke:walkthrough with SMOKE_EMAIL / SMOKE_PASSWORD
 ```
 
 Helpers: `scripts/lib/smoke-credentials.mjs` → `requireSmokeCredentials()`.

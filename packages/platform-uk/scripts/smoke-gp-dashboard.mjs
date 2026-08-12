@@ -5,6 +5,9 @@ import { requireSmokeCredentials } from "./lib/smoke-credentials.mjs";
  *
  * Requires a running app (`npm run dev` or `npm run build && npm run start`).
  *
+ * Public demo allowlist: `/dashboard/gp*` is open without auth (synthetic data),
+ * same pattern as ICS/hospital. Credentials still required for the authenticated pass.
+ *
  * Auth: set credentials for a real account created via /signup:
  *   SMOKE_GP_EMAIL=you@example.com
  *   SMOKE_GP_PASSWORD=your-password
@@ -82,19 +85,18 @@ async function fetchWithTimeout(path, options = {}) {
   }
 }
 
-async function assertRedirectsToSignIn(path) {
+async function assertPublicDemo(path, expectedSnippets = []) {
   const response = await fetchWithTimeout(path);
-  const location = response.headers.get("location") ?? "";
-
-  if (response.status < 300 || response.status >= 400) {
-    throw new Error(`${path} expected redirect when unauthenticated, got ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`Public GP demo ${path} returned ${response.status}`);
   }
-
-  if (!location.includes("/signin")) {
-    throw new Error(`${path} redirected to ${location || "unknown"}, expected /signin`);
+  const html = await response.text();
+  for (const text of expectedSnippets) {
+    if (!html.includes(text)) {
+      throw new Error(`Public GP demo ${path} missing expected text: ${text}`);
+    }
   }
-
-  console.log(`[ok] Unauthenticated redirect: ${path} → signin`);
+  console.log(`[ok] Public GP demo reachable without auth: ${path}`);
 }
 
 async function assertPage({ label, path, expectedText }) {
@@ -158,7 +160,7 @@ async function run() {
   console.log(`Running GP dashboard smoke checks against ${baseUrl}`);
   console.log("Note: authenticated route checks require a valid session cookie from configured credentials.");
 
-  await assertRedirectsToSignIn("/dashboard/gp");
+  await assertPublicDemo("/dashboard/gp", ["Clinician Dashboard", "AI Review Queue"]);
 
   await signIn();
 

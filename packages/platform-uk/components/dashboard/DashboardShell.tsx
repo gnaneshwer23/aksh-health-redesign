@@ -15,20 +15,6 @@ import { cn } from "@/lib/utils";
 
 import "@/app/dashboard/dashboard.css";
 
-function DashboardShellSkeleton() {
-  return (
-    <div className="flex flex-1 flex-col gap-4 p-4" aria-hidden>
-      <div className="h-8 w-56 animate-pulse rounded-lg bg-muted/30" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="h-28 animate-pulse rounded-xl bg-muted/20" />
-        ))}
-      </div>
-      <div className="h-48 animate-pulse rounded-xl bg-muted/15" />
-    </div>
-  );
-}
-
 export function DashboardShell({
   role,
   title,
@@ -54,6 +40,9 @@ export function DashboardShell({
       ? title ?? `${profile.fullName}'s Health`
       : title;
 
+  // Always render route children (including during profile fetch / SSR). Gating the
+  // main pane behind `loading` left fetch-based smoke and first paint on a skeleton
+  // with no page copy. First-run chrome can wait for profile; page content should not.
   return (
     <div className={cn("dashboard-root dashboard-surface flex h-screen flex-col overflow-hidden")}>
       <EmailVerificationBanner />
@@ -66,19 +55,13 @@ export function DashboardShell({
       <div className="flex flex-1 overflow-hidden">
         {!hideSidebar && <Sidebar role={role} />}
         <main className="flex flex-1 flex-col overflow-hidden">
-          {loading ? (
-            <DashboardShellSkeleton />
-          ) : (
-            <>
-              {showFirstRun ? (
-                <div className="shrink-0 space-y-2 border-b border-border-subtle bg-card/80 px-4 py-3">
-                  <FirstRunGuidance role={role} />
-                  <ProductHelpLinks />
-                </div>
-              ) : null}
-              {children}
-            </>
-          )}
+          {showFirstRun && !loading ? (
+            <div className="shrink-0 space-y-2 border-b border-border-subtle bg-card/80 px-4 py-3">
+              <FirstRunGuidance role={role} />
+              <ProductHelpLinks />
+            </div>
+          ) : null}
+          {children}
         </main>
       </div>
       <Toaster />

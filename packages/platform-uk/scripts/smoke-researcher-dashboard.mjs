@@ -153,8 +153,9 @@ async function assertEvaluationExport() {
   }
 
   const disposition = response.headers.get("content-disposition") ?? "";
-  if (!disposition.includes("aksh-uk-eu-research-evaluation-boundary.json")) {
-    throw new Error(`/api/research/evaluation missing expected attachment filename`);
+  // Filename is org-slug prefixed (e.g. aksh-research-evaluation-boundary.json).
+  if (!/filename="[^"]*research-evaluation-boundary\.json"/.test(disposition)) {
+    throw new Error(`/api/research/evaluation missing expected attachment filename (got: ${disposition || "none"})`);
   }
 
   const payload = await response.json();
