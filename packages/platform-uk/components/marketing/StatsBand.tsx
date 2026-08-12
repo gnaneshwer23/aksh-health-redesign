@@ -19,7 +19,7 @@ const pillars = [
   {
     label: "Integrate",
     title: "FHIR staging",
-    detail: "Approved outputs stage to EMIS Web or SystmOne.",
+    detail: "Approved outputs stage as FHIR for your EHR.",
   },
 ] as const;
 

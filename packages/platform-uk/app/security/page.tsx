@@ -9,9 +9,9 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
 
 export const metadata: Metadata = {
-  title: "Clinical safety & security | Aksh Health",
+  title: "Clinical safety & security ",
   description:
-    "Human-in-the-loop review, immutable audit trails, GDPR Art. 9 handling, and MHRA/DCB0129-aware positioning — without certification claims.",
+    "Human-in-the-loop review, immutable audit trails, GDPR Art. 9 handling, and honest clinical-safety positioning — without certification claims.",
 };
 
 const sections = [
@@ -33,18 +33,18 @@ const sections = [
   },
   {
     id: "dcb0129",
-    title: "DCB0129 / clinical safety case (in progress)",
-    body: "Workflow design aligns with NHS DCB0129 expectations. A signed-off safety case is not complete for this build.",
+    title: "Clinical safety case (in progress)",
+    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. Optional UK NHS-ready pathways (e.g. DCB0129-style rehearsal) remain secondary scaffolding — not approvals.",
     bullets: [
       "Hazard log is internal — not a public certificate",
-      "Production EHR write-back stays gated until sign-off",
+      "Production EHR write-back stays gated until organisation sign-off",
     ],
   },
   {
     title: "GDPR Art. 9 special category data",
     body: "Health data is treated as special category information: purpose limitation, minimisation, and tenant isolation for organisation deployments.",
     bullets: [
-      "UK/EU residency framing for NHS workloads",
+      "UK/EU residency framing for healthcare workloads",
       "Encryption in transit and at rest; role-based access",
     ],
   },
@@ -52,10 +52,10 @@ const sections = [
 
 const notClaimed = [
   "MHRA certification, registration, or device marking",
-  "Completed DCB0129 clinical safety case sign-off",
-  "Approved DTAC assessment outcome",
+  "Completed clinical safety case sign-off (including DCB0129)",
+  "Approved DTAC or equivalent procurement assessment outcome",
   "CQC readiness or inspection evidence",
-  "Live production write-back to EMIS Web or SystmOne in this public build",
+  "Live production write-back to any EHR in this public build",
   "Autonomous diagnosis, prescribing, or treatment decisions",
   "A validated physiological digital twin — precision-health is scaffolding, not a live digital twin claim",
 ] as const;
@@ -66,7 +66,7 @@ export default function SecurityPage() {
       <MarketingPageHero
         eyebrow="Clinical safety & security"
         title="Trust is a gate, not a slogan."
-        lede="Human review, audit trails, and honest compliance language for NHS deployments — without inventing certifications."
+        lede="Human review, audit trails, and honest compliance language for clinical deployments — without inventing certifications."
         primary={{ label: "Request organisation access", href: "/get-started" }}
         secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
       />

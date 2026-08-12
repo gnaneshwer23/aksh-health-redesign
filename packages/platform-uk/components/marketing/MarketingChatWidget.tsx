@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
   "What is human-in-the-loop?",
-  "Does this replace EMIS or SystmOne?",
+  "Does this replace my EHR?",
   "How are clinical outputs reviewed?",
   "How do I see a demo?",
 ] as const;
@@ -141,7 +141,7 @@ export function MarketingChatPanel({
             {messages.length === 0 ? (
               <div className="space-y-3">
                 <p className="text-sm leading-relaxed text-[var(--owkin-muted)]">
-                  Ask about care coordination, HITL review, EMIS/SystmOne, FHIR, safety posture, demos, or how to get
+                  Ask about care coordination, HITL review, EHR staging, FHIR, safety posture, demos, or how to get
                   started.
                 </p>
                 <ul className="flex flex-wrap gap-2">
@@ -305,7 +305,7 @@ export function MarketingChatWidget() {
 
       <button
         type="button"
-        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-8px_rgba(0,168,142,0.4)] transition-transform hover:-translate-y-0.5 hover:bg-[var(--mk-accent-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
+        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(20_32_30/0.06),0_10px_22px_-14px_rgb(20_32_30/0.28)] transition-[background-color,transform] duration-150 hover:bg-[var(--mk-accent-strong)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
         aria-expanded={open}
         aria-label={open ? "Close Ask Aksh Health chat" : "Open Ask Aksh Health chat"}
         onClick={() => setOpen((value) => !value)}

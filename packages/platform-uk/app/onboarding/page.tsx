@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { SIGNUP_ROLE_MAP } from "@/lib/onboarding/roles";
 
 export const metadata: Metadata = {
-  title: "Onboarding | Aksh Health",
+  title: "Onboarding ",
   description: "Start your personalised Aksh Health onboarding.",
 };
 

@@ -40,7 +40,7 @@ export function SignInFormSkeleton() {
             type="email"
             name="email"
             autoComplete="email"
-            placeholder="you@nhs.net"
+            placeholder="you.example"
             className={inputClassName}
           />
         </div>

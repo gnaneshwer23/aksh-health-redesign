@@ -42,16 +42,16 @@ export function MetricCard({
 
   return (
     <Card className={cn(TONE_CLASSES[tone], "border-0 shadow-none", className)}>
-      <CardContent className="p-5 sm:p-6">
+      <CardContent className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <p className="dashboard-metric-label">{label}</p>
           {Icon && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-pastel-mint text-pastel-mint-ink">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-pastel-mint text-pastel-mint-ink">
               <Icon className="h-4 w-4" strokeWidth={1.75} />
             </span>
           )}
         </div>
-        <div className="mt-4 flex items-end justify-between gap-2">
+        <div className="mt-3 flex items-end justify-between gap-2">
           <p className="dashboard-metric-value">{value}</p>
           {trend && trend !== "neutral" && (
             <span

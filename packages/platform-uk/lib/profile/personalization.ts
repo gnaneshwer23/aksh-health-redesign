@@ -195,7 +195,7 @@ export function matchesOrgEmail(email: string, org: string | null | undefined): 
   return tokens.some((token) => emailLower.includes(token));
 }
 
-export function buildReviewQueueLabel(fullName: string | null | undefined, fallback = "AI Review Queue"): string {
+export function buildReviewQueueLabel(fullName: string | null | undefined, fallback = "Review Queue"): string {
   const name = fullName?.trim();
   if (!name) return fallback;
   return `${name}'s queue`;

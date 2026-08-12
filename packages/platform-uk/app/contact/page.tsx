@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const contacts = [
   {
     title: "Organisation access",
-    body: "For practice managers, ICS leads, and trust procurement.",
+    body: "For practice managers, regional leads, and hospital procurement.",
     href: "/get-started",
     cta: "Request access",
   },
@@ -36,12 +36,12 @@ const contacts = [
 
 const faqs = [
   {
-    q: "Does Aksh Health replace EMIS Web or SystmOne?",
+    q: "Does Aksh Health replace my EHR?",
     a: "No. It sits above existing EHR workflows. Production write-back stays gated behind organisation governance and clinical safety sign-off.",
   },
   {
     q: "Is Aksh Health MHRA-certified?",
-    a: "No. We position the product as clinical decision support with human review. We do not claim MHRA certification, DCB0129 sign-off, or CQC readiness.",
+    a: "No. We position the product as clinical decision support with human review. We do not claim MHRA certification, completed clinical safety case sign-off, or CQC readiness.",
   },
   {
     q: "What is human-in-the-loop?",

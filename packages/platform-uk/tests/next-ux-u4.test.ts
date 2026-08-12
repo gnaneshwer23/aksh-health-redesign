@@ -53,13 +53,24 @@ function run() {
 
   const gpPage = read("app/dashboard/gp/page.tsx");
   assert.ok(gpPage.includes("GpHeroDemoPath"));
-  assert.ok(gpPage.includes("DemoDataBanner"));
-  assert.ok(gpPage.includes("Neo4jMockModeBanner"));
   assert.ok(gpPage.includes("AgentControlPanel"));
+  assert.ok(gpPage.includes("gp-agents-drawer-trigger"));
+  assert.ok(gpPage.includes("honesty={{"));
+  assert.ok(gpPage.includes("neo4jSource"));
+
+  const shell = read("components/dashboard/DashboardShell.tsx");
+  assert.ok(shell.includes("HonestyStatusBar"));
+  assert.ok(shell.includes("showBrandMark"));
+
+  const honesty = read("components/dashboard/HonestyStatusBar.tsx");
+  assert.ok(honesty.includes("honesty-status-bar"));
+  assert.ok(honesty.includes("liveEmis:false"));
+  assert.ok(honesty.includes("demo-data-banner"));
+  assert.ok(honesty.includes("neo4j-mock-mode-banner"));
 
   const reviewPage = read("app/dashboard/gp/review-queue/page.tsx");
   assert.ok(reviewPage.includes("GpHeroDemoPath"));
-  assert.ok(reviewPage.includes("DemoDataBanner"));
+  assert.ok(reviewPage.includes("honesty={{"));
   assert.ok(reviewPage.includes("ClinicalOrchestratePanel"));
 
   // First-run → review queue → demo script

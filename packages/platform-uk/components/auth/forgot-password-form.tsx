@@ -87,7 +87,7 @@ export function ForgotPasswordForm() {
                     data-testid="forgot-password-email"
                     type="email"
                     autoComplete="email"
-                    placeholder="you@nhs.net"
+                    placeholder="you.example"
                     className="rounded-xl"
                   />
                 </FormControl>

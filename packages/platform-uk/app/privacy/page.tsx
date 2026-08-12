@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/marketing/legal-page-layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Aksh Health",
+  title: "Privacy Policy ",
   description:
     "How Aksh Health Ltd processes personal and health data under UK GDPR, including special category data under Article 9.",
 };

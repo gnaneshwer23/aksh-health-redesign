@@ -5,6 +5,7 @@ import { Bell, Menu, Search } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 
+import { DemoMenu } from "@/components/dashboard/DemoMenu";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Input } from "@/components/ui/input";
@@ -41,16 +42,20 @@ export function TopBar({
   title,
   hideSearch,
   organisation,
+  showBrandMark = true,
 }: {
   role: DashboardRole;
   title?: string;
   hideSearch?: boolean;
   organisation?: string | null;
+  /** When false (sidebar visible), omit duplicate Aksh mark — brand lives in Sidebar. */
+  showBrandMark?: boolean;
 }) {
   const { profile, loading, greeting } = useUserProfile();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ReturnType<typeof searchPatients>>([]);
-  const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } = useDashboardStore();
+  const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } =
+    useDashboardStore();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const isPatientView = role === "patient";
   const showSearch = !hideSearch && !isPatientView;
@@ -71,35 +76,85 @@ export function TopBar({
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border-subtle/60 bg-card/90 px-5 shadow-sm backdrop-blur-md">
-        <Button variant="ghost" size="sm" className="rounded-full lg:hidden" onClick={() => setMobileSidebarOpen(true)} aria-label="Open menu">
+      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border-subtle/60 bg-card/90 px-4 shadow-sm backdrop-blur-md sm:px-5">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-full lg:hidden"
+          onClick={() => setMobileSidebarOpen(true)}
+          aria-label="Open menu"
+        >
           <Menu className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="sm" className="hidden rounded-full xl:flex" onClick={toggleSidebar} aria-label="Toggle sidebar">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hidden rounded-full xl:flex"
+          onClick={toggleSidebar}
+          aria-label="Toggle sidebar"
+        >
           <Menu className="h-5 w-5" />
         </Button>
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-accent text-xs font-bold text-white shadow-soft">
-            A
-          </span>
-          <span className="font-display text-base font-bold text-primary">Aksh</span>
-          {headerTitle && (
-            <span className={cn("text-sm text-muted", isPatientView ? "inline font-medium" : "hidden sm:inline")}>
-              {isPatientView ? headerTitle : `· ${headerTitle}`}
-              {!isPatientView && resolvedOrganisation ? `, ${resolvedOrganisation}` : ""}
+
+        {/* Brand mark only when sidebar is hidden (patient / hideSidebar) or mobile sheet. */}
+        <div className="flex min-w-0 items-center gap-2">
+          {showBrandMark || isPatientView ? (
+            <>
+              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft lg:hidden">
+                A
+              </span>
+              {showBrandMark ? (
+                <span className="hidden items-center gap-2 sm:flex">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft">
+                    A
+                  </span>
+                  <span className="font-display text-sm font-bold text-primary">Aksh</span>
+                </span>
+              ) : null}
+            </>
+          ) : (
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft lg:hidden">
+              A
             </span>
           )}
+          {headerTitle ? (
+            <span
+              className={cn(
+                "truncate text-sm text-muted",
+                isPatientView ? "inline font-medium text-foreground" : "hidden sm:inline"
+              )}
+              title={
+                !isPatientView && resolvedOrganisation
+                  ? `${headerTitle}, ${resolvedOrganisation}`
+                  : headerTitle
+              }
+            >
+              {isPatientView ? headerTitle : headerTitle}
+              {!isPatientView && resolvedOrganisation ? (
+                <span className="text-muted/80"> · {resolvedOrganisation}</span>
+              ) : null}
+            </span>
+          ) : null}
         </div>
-        {!isPatientView && (
-          <p className="hidden text-xs text-muted lg:block">
-            {loading ? <span className="inline-block h-3 w-40 animate-pulse rounded bg-muted/30" /> : greeting}
+
+        {!isPatientView ? (
+          <p
+            className="hidden max-w-[12rem] truncate text-[11px] text-muted xl:block"
+            title={loading ? undefined : greeting}
+          >
+            {loading ? (
+              <span className="inline-block h-3 w-28 animate-pulse rounded bg-muted/30" />
+            ) : (
+              greeting
+            )}
           </p>
-        )}
+        ) : null}
+
         {showSearch ? (
           <div className="relative mx-auto hidden max-w-md flex-1 md:block">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <Input
-              className="h-10 rounded-full border-border-subtle/80 bg-surface pl-10 shadow-none focus-visible:ring-accent/35"
+              className="h-9 rounded-full border-border-subtle/80 bg-surface pl-10 shadow-none focus-visible:ring-accent/35"
               placeholder="Search patients, records..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
@@ -130,10 +185,12 @@ export function TopBar({
             </p>
           )
         )}
-        <div className="ml-auto flex items-center gap-3">
+
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          {!isPatientView ? <DemoMenu role={role} /> : null}
           <button
             type="button"
-            className="relative rounded-full p-2.5 transition-colors hover:bg-pastel-mint/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="relative rounded-full p-2 transition-colors hover:bg-pastel-mint/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label={`${notificationCount} notifications`}
             onClick={() => setNotificationsOpen(true)}
           >
@@ -144,17 +201,21 @@ export function TopBar({
               </span>
             )}
           </button>
-          <div className="hidden items-center gap-2.5 sm:flex">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white shadow-soft">
+          <div className="hidden items-center gap-2 sm:flex">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white shadow-soft">
               {loading ? "…" : initials}
             </span>
-            <span className="text-sm font-medium">
-              {loading ? <span className="inline-block h-4 w-24 animate-pulse rounded bg-muted/30" /> : displayName}
+            <span className="max-w-[8rem] truncate text-sm font-medium">
+              {loading ? (
+                <span className="inline-block h-4 w-20 animate-pulse rounded bg-muted/30" />
+              ) : (
+                displayName
+              )}
             </span>
           </div>
           <button
             type="button"
-            className="rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-pastel-mint/60 hover:text-accent"
+            className="rounded-full px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:bg-pastel-mint/60 hover:text-accent"
             onClick={() => signOut({ callbackUrl: "/" })}
           >
             Sign Out
@@ -173,7 +234,10 @@ export function TopBar({
           <h2 className="text-lg font-semibold">Notifications</h2>
           <ul className="mt-4 space-y-3">
             {MOCK_NOTIFICATIONS.map((notification) => (
-              <li key={notification.id} className="rounded-3xl border border-border-subtle bg-surface p-4 shadow-sm">
+              <li
+                key={notification.id}
+                className="rounded-3xl border border-border-subtle bg-surface p-4 shadow-sm"
+              >
                 <p className="text-sm font-semibold text-foreground">{notification.title}</p>
                 <p className="mt-1 text-xs text-muted">{notification.body}</p>
                 <p className="mt-2 text-[10px] text-muted">{notification.time}</p>

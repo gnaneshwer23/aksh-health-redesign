@@ -40,7 +40,7 @@ const platformStages: Array<{
     icon: Mic,
     label: "Capture",
     title: "Capture once",
-    body: "Capture consultation context once. Designed for EMIS Web and SystmOne pathways — structured for clinician review.",
+    body: "Capture consultation context once. Structured for clinician review beside your existing EHR.",
   },
   {
     num: "02",
@@ -113,7 +113,7 @@ const roleFlows = {
         icon: FileCheck2,
         label: "Evidence",
         title: "Audit for assurance",
-        description: "Audit trails support ICS governance and internal review.",
+        description: "Audit trails support regional governance and internal review.",
       },
     ] satisfies RoleStep[],
   },

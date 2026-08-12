@@ -26,7 +26,7 @@ export function DemoDataBanner({
       </p>
       <p className="mt-1 text-amber-900/90">
         This view is open without sign-in for product walkthroughs. Figures are rehearsal / synthetic
-        signals, not a live NHS feed. No EHR write-back · liveEmis:false.{" "}
+        signals, not a live EHR or clinical feed. No EHR write-back · liveEmis:false.{" "}
         <Link href="/demo/script" className="underline underline-offset-2 hover:text-amber-950">
           Demo script
         </Link>

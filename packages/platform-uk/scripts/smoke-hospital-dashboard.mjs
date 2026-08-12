@@ -26,26 +26,26 @@ const protectedHospitalRoutes = [
       "Command Centre Overview",
       "Leeds General Infirmary",
       "Sections",
-      "Command-centre demo",
       "liveEmis:false",
       "Not live PAS",
       "synthetic PAS",
+      "Wards",
     ],
   },
   {
     label: "Hospital wards",
     path: "/dashboard/hospital/wards",
-    expectedText: ["Ward Status", "medically fit but awaiting discharge", "Command-centre demo", "synthetic PAS"],
+    expectedText: ["Ward Status", "medically fit but awaiting discharge", "synthetic"],
   },
   {
     label: "Hospital capacity",
     path: "/dashboard/hospital/capacity",
-    expectedText: ["Capacity Forecast", "AI Recommendations", "Command-centre demo"],
+    expectedText: ["Capacity Forecast", "AI Recommendations"],
   },
   {
     label: "Hospital staffing",
     path: "/dashboard/hospital/staffing",
-    expectedText: ["Staffing", "Trigger agency request", "Command-centre demo", "synthetic staffing"],
+    expectedText: ["Staffing", "Trigger agency request", "synthetic staffing"],
   },
 ];
 
@@ -191,14 +191,13 @@ async function run() {
   await assertPublicDemo("/dashboard/hospital", [
     "Command Centre Overview",
     "synthetic",
-    "Command-centre demo",
     "liveEmis:false",
     "Not live PAS",
     "synthetic PAS",
   ]);
-  await assertPublicDemo("/dashboard/hospital/wards", ["Ward Status", "Command-centre demo", "synthetic PAS"]);
-  await assertPublicDemo("/dashboard/hospital/capacity", ["Capacity Forecast", "Command-centre demo"]);
-  await assertPublicDemo("/dashboard/hospital/staffing", ["Staffing", "Command-centre demo"]);
+  await assertPublicDemo("/dashboard/hospital/wards", ["Ward Status", "medically fit but awaiting discharge", "synthetic"]);
+  await assertPublicDemo("/dashboard/hospital/capacity", ["Capacity Forecast", "AI Recommendations"]);
+  await assertPublicDemo("/dashboard/hospital/staffing", ["Staffing", "synthetic staffing"]);
 
   // Credentials optional — public demo is the primary contract for this surface.
   if (smokeEmail && smokePassword) {

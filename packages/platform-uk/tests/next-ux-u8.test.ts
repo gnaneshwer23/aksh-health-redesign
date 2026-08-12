@@ -40,6 +40,10 @@ function run() {
   assert.ok(researcherHero.includes("COMPASS"));
   assert.ok(researcherHero.includes("SHIELD"));
   assert.ok(!researcherHero.includes("ATLAS live") && !researcherHero.includes("live ATLAS"));
+  assert.ok(
+    researcherHero.includes("aksh-researcher-hero-demo-dismissed") ||
+      researcherHero.includes("useDismissibleDemo")
+  );
 
   const companion = read("components/dashboard/PatientCompanion.tsx");
   assert.ok(companion.includes("PatientHeroDemoPath"));
@@ -54,6 +58,7 @@ function run() {
   assert.ok(researcherPage.includes("researcher-honesty-banner"));
   assert.ok(researcherPage.includes("ATLAS Phase 2"));
   assert.ok(researcherPage.includes("liveEmis:false"));
+  assert.ok(researcherPage.includes("AggregateAskStub"));
   assert.ok(researcherPage.includes("researcher-ethics-empty") || researcherPage.includes("ethics not signed"));
 
   const researcherLayout = read("app/dashboard/researcher/layout.tsx");
@@ -105,7 +110,7 @@ function run() {
 
   assert.ok(fs.existsSync(path.join(root, "scripts/smoke-researcher-dashboard.mjs")));
   const researcherSmoke = read("scripts/smoke-researcher-dashboard.mjs");
-  assert.ok(researcherSmoke.includes("Research demo"));
+  assert.ok(researcherSmoke.includes("Research Cohort Overview"));
   assert.ok(researcherSmoke.includes("liveEmis:false"));
   assert.ok(researcherSmoke.includes("ATLAS Phase 2"));
 

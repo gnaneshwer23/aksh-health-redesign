@@ -116,10 +116,22 @@ async function run() {
   assert.equal(contribution.autoRetrain, false);
   assert.deepEqual(contribution.areaFailures, [], "normal fixture path should not degrade any area");
 
-  // HbA1c: 7.4% -> 8.1% over ~6 months = worsening
+  // HbA1c must remain clinically "worsening" for P002.
+  // Fixture path: 7.4% → 8.1%. Patient-State ingest path (when Neon has golden
+  // re-ingests for P002): series may end at 8.4% but trend must still be
+  // worsening after same-timestamp dedupe (P1 DETECT integrity).
   assert.equal(contribution.signals.hba1c.trend, "worsening");
-  assert.equal(contribution.signals.hba1c.latestValuePercent, 8.1);
   assert.equal(contribution.signals.hba1c.isDiagnosticPrediction, false);
+  if (contribution.signals.hba1c.readingsSource === "fixture") {
+    assert.equal(contribution.signals.hba1c.latestValuePercent, 8.1);
+  } else {
+    assert.equal(contribution.signals.hba1c.readingsSource, "patient_state_ingest");
+    assert.ok(
+      typeof contribution.signals.hba1c.latestValuePercent === "number" &&
+        contribution.signals.hba1c.latestValuePercent >= 8.0,
+      `ingest-backed P002 latest HbA1c should remain elevated, got ${contribution.signals.hba1c.latestValuePercent}`
+    );
+  }
 
   // Complications: neuropathy has exactly one evidence ref => "watch"
   const neuropathy = contribution.signals.complications.find((c) => c.domain === "neuropathy");

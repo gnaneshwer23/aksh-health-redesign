@@ -35,7 +35,7 @@ export function Neo4jMockModeBanner({
         )}
       >
         Clinical graph data is <strong>live from Neo4j</strong>. HORIZON, GUARDIAN, and ICS panels
-        reflect the seeded Aura graph for this session — still synthetic rehearsal patients, not a live NHS feed.{" "}
+        reflect the seeded Aura graph for this session — still synthetic rehearsal patients, not a live clinical feed.{" "}
         <Link href="/security" className="underline underline-offset-2 hover:text-emerald-950">
           Security
         </Link>

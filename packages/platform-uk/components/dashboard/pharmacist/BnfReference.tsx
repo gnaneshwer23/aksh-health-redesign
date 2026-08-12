@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { bnfEntries } from "@/lib/mock-data";
 
-const PHARMACIST_ACCENT = "text-[#6B46C1]";
+const PHARMACIST_ACCENT = "text-accent";
 const DEFAULT_RECENT = ["Apixaban", "Metformin", "Furosemide", "Amlodipine", "Sertraline"];
 
 export function BnfReference() {
@@ -17,7 +17,7 @@ export function BnfReference() {
     <section>
       <h2 className={`text-lg font-semibold mb-3 ${PHARMACIST_ACCENT}`}>BNF Reference</h2>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="shadow-sm border-[#6B46C1]/10 p-4">
+        <Card className="shadow-sm border-accent/10 p-4">
           <h3 className={`font-semibold text-sm mb-3 ${PHARMACIST_ACCENT}`}>BNF Search</h3>
           <Input placeholder="Search BNF..." value={bnfSearch} onChange={(e) => setBnfSearch(e.target.value)} />
           <div className="mt-3 space-y-2">
@@ -36,11 +36,11 @@ export function BnfReference() {
               ))}
           </div>
         </Card>
-        <Card className="shadow-sm border-[#6B46C1]/10 p-4">
+        <Card className="shadow-sm border-accent/10 p-4">
           <h3 className={`font-semibold text-sm mb-3 ${PHARMACIST_ACCENT}`}>Recently Viewed</h3>
           <ul className="text-sm space-y-1">
             {recentBnf.map((r) => (
-              <li key={r} className="text-[#6B46C1]/90">
+              <li key={r} className="text-accent/90">
                 {r}
               </li>
             ))}

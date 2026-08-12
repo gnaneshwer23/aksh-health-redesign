@@ -6,7 +6,7 @@ import { SignInForm } from "@/components/auth/sign-in-form";
 import { SignInFormSkeleton } from "@/components/auth/sign-in-form-skeleton";
 
 export const metadata: Metadata = {
-  title: "Sign in | Aksh Health",
+  title: "Sign in ",
   description: "Sign in to your Aksh Health account.",
 };
 

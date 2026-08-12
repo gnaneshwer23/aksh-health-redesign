@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PreferencesStepClient } from "./preferences-step-client";
 
 export const metadata: Metadata = {
-  title: "Preferences | Onboarding | Aksh Health",
+  title: "Preferences | Onboarding ",
   description: "Configure workspace preferences for your role.",
 };
 

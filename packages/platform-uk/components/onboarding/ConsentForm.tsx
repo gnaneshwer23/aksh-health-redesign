@@ -30,30 +30,30 @@ const CONSENT_COPY: Record<
   gp: [
     { key: "aiDocumentation", label: "I consent to AI-assisted clinical documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before FHIR write", required: true },
-    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
+    { key: "dcb0129", label: "I understand clinical safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   nurse: [
     { key: "aiDocumentation", label: "I consent to AI-assisted care documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before patient record updates", required: true },
-    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
+    { key: "dcb0129", label: "I understand clinical safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   "clinical-pharmacist": [
     { key: "aiDocumentation", label: "I consent to AI-assisted medication review documentation", required: true },
     { key: "hitlApproval", label: "I understand AI outputs require my approval before FHIR write", required: true },
-    { key: "dcb0129", label: "I understand DCB0129-style safety rehearsal applies — not a signed clinical safety case", required: true },
+    { key: "dcb0129", label: "I understand clinical safety rehearsal applies — not a signed clinical safety case", required: true },
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   "practice-manager": [
     { key: "dpa", label: "I accept the Data Processing Agreement as practice data controller", required: true },
-    { key: "dspt", label: "I understand NHS DSPT obligations apply for this practice — this checkbox is not a completed DSPT submission", required: true },
-    { key: "ehrIntegration", label: "I consent to EMIS / SystmOne staging pathways on behalf of the practice (liveEmis:false — no live write-back)", required: true },
+    { key: "dspt", label: "I understand healthcare data security obligations apply for this organisation — this checkbox is not a completed toolkit submission", required: true },
+    { key: "ehrIntegration", label: "I consent to EHR staging pathways on behalf of the organisation (liveEmis:false — no live write-back)", required: true },
   ],
   "ics-lead": [
-    { key: "dataSharing", label: "I accept data sharing terms across practices in my ICS boundary", required: true },
+    { key: "dataSharing", label: "I accept data sharing terms across clinics in my regional boundary", required: true },
     { key: "pseudonymised", label: "I understand population data is pseudonymised", required: true },
-    { key: "pilotEvaluation", label: "I agree to NHS clinical evaluation requirements", required: true },
+    { key: "pilotEvaluation", label: "I agree to clinical evaluation requirements for this pilot", required: true },
   ],
   "hospital-executive": [
     { key: "enterpriseDpa", label: "I accept the Enterprise Data Processing Agreement", required: true },
@@ -105,7 +105,7 @@ export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
         {CONSENT_COPY[role].map((item) => {
           const label =
             item.key === "dataSharing" && organisation.practicesInScope
-              ? `I accept data sharing terms across ${organisation.practicesInScope} practices in my ICS boundary`
+              ? `I accept data sharing terms across ${organisation.practicesInScope} clinics in my regional boundary`
               : item.label;
 
           return (
@@ -135,7 +135,7 @@ export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
         })}
         {role === "ics-lead" && !organisation.practicesInScope ? (
           <p className="text-sm text-muted">
-            Data sharing covers {String(practiceCount)} practices in your ICS boundary.
+            Data sharing covers {String(practiceCount)} clinics in your regional boundary.
           </p>
         ) : null}
         {(role === "gp" ||

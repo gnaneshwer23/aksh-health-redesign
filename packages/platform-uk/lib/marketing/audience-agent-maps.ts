@@ -127,7 +127,7 @@ export const AUDIENCE_AGENT_MAPS = {
       { name: "Clinical Capture", why: "Intake pipeline health for org operations." },
     ],
     honestyNote:
-      "Admin tools do not bypass clinician review. Designed for NHS organisation controls.",
+      "Admin tools do not bypass clinician review. Designed for organisation-level access controls.",
   },
   research: {
     sectionLabel: "Capabilities for research",

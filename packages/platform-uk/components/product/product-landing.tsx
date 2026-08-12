@@ -3,12 +3,12 @@ import Link from "next/link";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 const trustBadges = [
-  "NHS GP Connect Architecture",
-  "FHIR R4 Evidence Shape",
-  "GDPR Article 9 Boundary",
-  "MHRA SaMD-Aware Design",
-  "21 CFR Part 11 Audit Trail",
-  "Synthetic-Safe Environment",
+  "FHIR R4 staging architecture",
+  "Human-in-the-loop review gates",
+  "GDPR Article 9 boundary design",
+  "Clinical safety pathway framing",
+  "Immutable audit trail",
+  "Synthetic-safe environment",
 ];
 
 const proofStats = [
@@ -138,17 +138,17 @@ export function ProductLanding() {
       {/* ── HERO ── */}
       <section className="product-hero product-hero--split">
         <div className="product-hero__copy">
-          <p className="product-kicker">UK / EU Clinical AI Workflow Platform</p>
-          <h1>Clinical workflow. AI-structured. Clinician-owned.</h1>
+          <p className="product-kicker">Care coordination platform</p>
+          <h1>Clinical workflow. Structured drafts. Clinician-owned.</h1>
           <p>
-            Aksh Health is a review-first clinical operating system for UK GPs. Messy consultation
-            notes become structured, FHIR-shaped drafts. Clinician accountability stays visible at
-            every decision. Evidence flows forward to governance without gaps.
+            Aksh Health is a review-first care coordination platform for diabetes and primary care teams.
+            Messy consultation notes become structured, FHIR-shaped drafts. Clinician accountability stays
+            visible at every decision. Evidence flows forward to governance without gaps.
           </p>
           <div className="pill-row product-pill-row">
-            <span className="pill">Built for NHS</span>
+            <span className="pill">Diabetes &amp; primary care</span>
             <span className="pill">FHIR R4 staging</span>
-            <span className="pill">GDPR Art. 9</span>
+            <span className="pill">GDPR Art. 9 pathway</span>
             <span className="pill">HITL review</span>
           </div>
           <div className="product-actions">
@@ -192,7 +192,7 @@ export function ProductLanding() {
             </div>
             <div className="lp-hero-mini-card">
               <strong>Audit trail</strong>
-              <span>21 CFR Part 11</span>
+              <span>Immutable log</span>
             </div>
           </div>
         </div>
@@ -298,7 +298,7 @@ export function ProductLanding() {
           <p className="product-kicker">Ready to explore?</p>
           <h2>The synthetic proof environment is live.</h2>
           <p>
-            No real patient data. No live NHS writeback. A complete clinical workflow platform
+            No real patient data. No live EHR write-back. A complete clinical workflow platform
             running in a safe validation environment: ready to inspect, demonstrate, and evaluate.
           </p>
         </div>

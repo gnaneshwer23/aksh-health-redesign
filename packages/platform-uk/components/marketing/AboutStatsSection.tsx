@@ -4,7 +4,7 @@ import Link from "next/link";
 import { container, linkUnderline, section } from "@/components/marketing/marketing-ui";
 
 const points = [
-  "Designed for EMIS Web and SystmOne integration paths",
+  "Designed to sit beside your existing EHR (FHIR staging)",
   "Eight specialist agents covering clinical, safety, and operational work",
   "Nothing writes to the record without clinician approval",
 ] as const;
@@ -49,8 +49,8 @@ export default function AboutStatsSection() {
             <p className="marketing-section-label mb-3">Staging</p>
             <h3 className="marketing-display-title mb-3 text-2xl text-navy-dark">FHIR R4 staging</h3>
             <p className="mb-4 text-sm leading-relaxed text-slate/75 sm:text-base">
-              Approved outputs stage as FHIR resources with an immutable audit trail, ready for EMIS Web and
-              SystmOne.
+              Approved outputs stage as FHIR resources with an immutable audit trail, ready for exchange with
+              existing clinical systems.
             </p>
             <Link href="/platform" className={linkUnderline}>
               Follow the full journey

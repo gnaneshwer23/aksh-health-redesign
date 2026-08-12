@@ -131,7 +131,7 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
                     aria-label="Email address"
                     type="email"
                     autoComplete="email"
-                    placeholder="you@nhs.net"
+                    placeholder="you.example"
                     className="rounded-xl"
                   />
                 </FormControl>

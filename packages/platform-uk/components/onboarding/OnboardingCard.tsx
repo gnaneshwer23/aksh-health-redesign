@@ -38,7 +38,7 @@ export function OnboardingCard({
         >
           Demo / staging setup — synthetic data. Drafts wait for a clinician decision.{" "}
           <span className="font-medium text-foreground">liveEmis:false</span>
-          {" — "}no live EMIS or SystmOne connection.
+          {" — "}no live EHR write-back in this build.
         </p>
         <h1 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {title}

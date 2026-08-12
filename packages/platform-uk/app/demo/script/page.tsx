@@ -1,7 +1,7 @@
 import { DemoLaunchScript } from "@/components/demo/DemoLaunchScript";
 
 export const metadata = {
-  title: "Demo script · Capture → export | Aksh Health",
+  title: "Demo script · Capture → export ",
   description:
     "10–15 minute guided demo: Capture → Draft → Approve → SHIELD → sim write-back → FHIR/PDF export. Synthetic · liveEmis:false."
 };

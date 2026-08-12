@@ -6,7 +6,7 @@ import { SignUpForm } from "@/components/auth/sign-up-form";
 import { SignUpFormSkeleton } from "@/components/auth/sign-up-form-skeleton";
 
 export const metadata: Metadata = {
-  title: "Create account | Aksh Health",
+  title: "Create account ",
   description: "Self-serve registration for GPs, nurses, patients, and individual users.",
 };
 

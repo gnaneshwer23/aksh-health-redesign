@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Activity, BarChart3, ChevronRight, Heart, Users } from "lucide-react";
 
+import { AggregateAskStub } from "@/components/dashboard/AggregateAskStub";
 import { IcsHeroDemoPath } from "@/components/dashboard/ics/IcsHeroDemoPath";
 import { IcsKpiRow } from "@/components/dashboard/ics/IcsKpiRow";
 import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
@@ -15,7 +16,7 @@ const SECTIONS = [
   {
     href: "/dashboard/ics/population",
     title: "Population Health",
-    description: "Risk distribution and deprivation-linked condition prevalence across the ICS.",
+    description: "Risk distribution and deprivation-linked condition prevalence across the network.",
     icon: Users,
     accent: "border-l-warning",
   },
@@ -36,7 +37,7 @@ const SECTIONS = [
   {
     href: "/dashboard/ics/forecast",
     title: "Admission Forecast & Risk state",
-    description: "14-day ICS admission forecast with aggregate population risk-state (not a physiological twin).",
+    description: "14-day admission forecast with aggregate population risk-state (not a physiological twin).",
     icon: Heart,
     accent: "border-l-[#006B4F]",
   },
@@ -48,12 +49,9 @@ export default function IcsOverviewPage() {
   const icsName = getPersonalizedLabel(profile, data.icsName);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <IcsHeroDemoPath />
-      <p
-        className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
-        data-testid="ics-honesty-banner"
-      >
+      <p className="sr-only" data-testid="ics-honesty-banner">
         Synthetic ICS cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
         COMPASS leads equity; HORIZON / PATHWAY frame forecast scaffolding — not a live ICS feed or twin.
         The {data.totalPatients.toLocaleString()}-patient ICS figure is an illustrative static fixture,
@@ -63,9 +61,10 @@ export default function IcsOverviewPage() {
       </p>
 
       <div>
-        <h2 className="text-lg font-semibold text-foreground">ICS Population Intelligence</h2>
+        <h2 className="text-lg font-semibold text-foreground">Population intelligence</h2>
         <p className="text-sm text-muted">
-          {icsName}: {data.practices} practices · {data.equityFlags} equity flags · {data.totalPatients.toLocaleString()} patients
+          {icsName}: {data.practices} practices · {data.equityFlags} equity flags ·{" "}
+          {data.totalPatients.toLocaleString()} patients
           {!loading && source
             ? ` · ${source === "neo4j" ? "live Neo4j" : source === "demo" ? "public synthetic demo" : "local fallback"}`
             : null}
@@ -74,12 +73,14 @@ export default function IcsOverviewPage() {
 
       <IcsKpiRow />
 
+      <AggregateAskStub role="ics" />
+
       <SpineSharedEventsPanel
         title="Shared clinical spine (cohort aggregates)"
         patientIds={["P001", "P002"]}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {SECTIONS.map((section) => {
           const Icon = section.icon;
           return (

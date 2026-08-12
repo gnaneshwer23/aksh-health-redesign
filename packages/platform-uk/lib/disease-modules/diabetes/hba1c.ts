@@ -64,15 +64,29 @@ function round1(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
+/**
+ * Collapse duplicate timestamps (common when E2E/golden re-ingests the same
+ * lab series). Last write wins per `recordedAt`. Without this, two identical
+ * latest points produce a false "stable" trend (0 delta / 0 months) even when
+ * the true prior reading shows clear deterioration — a DETECT integrity bug.
+ */
+function dedupeHbA1cByRecordedAt(readings: DiabetesHbA1cReading[]): DiabetesHbA1cReading[] {
+  const byTime = new Map<string, DiabetesHbA1cReading>();
+  for (const reading of readings) {
+    byTime.set(reading.recordedAt, reading);
+  }
+  return [...byTime.values()].sort(
+    (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+  );
+}
+
 export function buildHbA1cSignal(
   context: DiabetesPatientContext,
   readings: DiabetesHbA1cReading[] = [],
   readingsSource: DiabetesReadingsSource = "fixture"
 ): HbA1cSignal {
   const patientLabel = context.patientLabel?.trim() || context.patientId;
-  const sorted = [...readings].sort(
-    (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
-  );
+  const sorted = dedupeHbA1cByRecordedAt(readings);
   const latest = sorted.length ? sorted[sorted.length - 1] : null;
 
   if (!latest) {

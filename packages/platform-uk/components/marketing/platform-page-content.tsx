@@ -76,19 +76,25 @@ export function PlatformPageContent() {
       <MarketingPageHero
         eyebrow="Platform"
         title="One platform, eight roles, clinician-owned care"
-        lede="Capture → draft → approve. Designed for EMIS Web and SystmOne. Every output needs clinician approval before exchange."
+        lede="Capture → draft → approve. Sits beside your existing EHR. Every output needs clinician approval before exchange."
         primary={{ label: "Request access", href: "/get-started" }}
         secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
       >
-        <nav className="mt-8 flex flex-wrap gap-x-5 gap-y-2" aria-label="Platform page sections">
-          {sectionNav.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className="rounded-full border border-[var(--mk-line)] bg-white/80 px-3.5 py-1.5 text-sm font-medium text-[var(--mk-ink)] shadow-sm transition-colors hover:border-[var(--mk-accent)] hover:text-[var(--mk-accent)]"
-            >
-              {item.label}
-            </a>
+        <nav className="mt-8 flex flex-wrap items-center gap-x-1 gap-y-2" aria-label="Platform page sections">
+          {sectionNav.map((item, index) => (
+            <span key={item.id} className="inline-flex items-center">
+              {index > 0 ? (
+                <span className="mx-2 text-[var(--mk-muted)]/40" aria-hidden>
+                  /
+                </span>
+              ) : null}
+              <a
+                href={`#${item.id}`}
+                className="text-sm font-medium text-[var(--mk-ink)]/80 underline-offset-4 transition-colors hover:text-[var(--mk-accent)] hover:underline"
+              >
+                {item.label}
+              </a>
+            </span>
           ))}
         </nav>
       </MarketingPageHero>
@@ -179,7 +185,7 @@ export function PlatformPageContent() {
 
       <MarketingCtaBand
         title="Ready to explore the platform?"
-        lede="Designed for EMIS Web and SystmOne. Clinical safety gates from day one."
+        lede="Sits beside your existing EHR. Clinical safety gates from day one."
         primary={{ label: "Request access", href: "/get-started" }}
         secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
       />

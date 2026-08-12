@@ -20,12 +20,12 @@ const protectedIcsRoutes = [
     label: "ICS overview",
     path: "/dashboard/ics",
     expectedText: [
-      "ICS Population Intelligence",
+      "Population intelligence",
       "Total Patients",
-      "Population demo",
       "liveEmis:false",
       "no patient-level spill",
       "COMPASS",
+      "Ask Aksh",
     ],
   },
   {
@@ -34,7 +34,6 @@ const protectedIcsRoutes = [
     expectedText: [
       "Population Health",
       "Patient Risk Profile Across ICS",
-      "Population demo",
       "liveEmis:false",
       "Diabetes population signal",
     ],
@@ -42,7 +41,7 @@ const protectedIcsRoutes = [
   {
     label: "ICS equity",
     path: "/dashboard/ics/equity",
-    expectedText: ["Equity Metrics", "COMPASS Deep-Dive", "Population demo", "liveEmis:false"],
+    expectedText: ["Equity Metrics", "COMPASS Deep-Dive", "liveEmis:false"],
   },
   {
     label: "ICS benchmarking",
@@ -52,7 +51,7 @@ const protectedIcsRoutes = [
   {
     label: "ICS forecast",
     path: "/dashboard/ics/forecast",
-    expectedText: ["Admission Forecast", "Population risk state", "not a physiological twin", "Population demo"],
+    expectedText: ["Admission Forecast", "Population risk state", "not a physiological twin"],
   },
 ];
 
@@ -121,11 +120,11 @@ async function assertPublicIcsDemo() {
   }
   const html = await response.text();
   for (const text of [
-    "ICS Population Intelligence",
-    "Population demo",
+    "Population intelligence",
     "liveEmis:false",
     "synthetic cohorts",
     "no patient-level spill",
+    "Ask Aksh",
   ]) {
     if (!html.includes(text)) {
       throw new Error(`Public ICS demo missing expected text: ${text}`);

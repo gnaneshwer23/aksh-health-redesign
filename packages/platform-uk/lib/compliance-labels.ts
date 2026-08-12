@@ -1,11 +1,11 @@
-/** UK-facing compliance copy. Pathways only — never certification or non-UK regime leakage. */
+/** Healthcare compliance copy. Pathways only — never certification claims. */
 
 export const COMPLIANCE_BADGES = [
   { id: "gdpr", label: "UK GDPR / GDPR-aligned design", detail: "UK and European data protection pathway with consent and purpose limitation mapping." },
-  { id: "dspt", label: "NHS DSPT pathway", detail: "Data Security and Protection Toolkit control mapping for NHS organisational assurance planning — not a completed DSPT submission." },
-  { id: "uk-residency", label: "UK/EU data residency framing", detail: "Residency, minimisation, and subject-rights workflow scaffolding for NHS workloads." },
+  { id: "dspt", label: "Healthcare data security pathway", detail: "Control mapping for organisational assurance planning (including optional UK DSPT-style controls) — not a completed toolkit submission or certification." },
+  { id: "uk-residency", label: "UK/EU data residency framing", detail: "Residency, minimisation, and subject-rights workflow scaffolding for healthcare workloads." },
   { id: "fhir", label: "FHIR R4 staging", detail: "Clinical resources staged as draft until human review completes — not live EHR sync." },
-  { id: "clinical-safety", label: "Clinical safety governance", detail: "Hazard-aware workflow with human-in-the-loop gates. Not a signed DCB0129 / MHRA case." },
+  { id: "clinical-safety", label: "Clinical safety governance", detail: "Hazard-aware workflow with human-in-the-loop gates. Not a signed clinical safety case or regulatory approval." },
   { id: "iso27001", label: "ISO 27001 pathway", detail: "Information security control mapping for enterprise readiness planning — not certification." }
 ] as const;
 
@@ -34,7 +34,7 @@ export const DASHBOARD_LABELS = {
 } as const;
 
 export const SEO_DEFAULTS = {
-  title: "Aksh Health | Clinical AI with human review",
+  title: "Aksh Health | Diabetes care coordination with human review",
   description:
-    "Clinical AI workflow platform with FHIR R4 staging, human-in-the-loop review, and multi-framework compliance design pathways for primary care."
+    "Diabetes-first care coordination platform with FHIR R4 staging, human-in-the-loop review, and multi-framework compliance design pathways for clinical teams."
 };

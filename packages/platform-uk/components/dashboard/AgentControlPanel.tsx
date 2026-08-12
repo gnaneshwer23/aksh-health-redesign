@@ -501,11 +501,10 @@ export function AgentControlPanel({
     >
       <div className="space-y-1.5 px-0.5">
         <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground">
-          Agent Control · 12-agent directory
+          Agent Control
         </p>
         <p className="text-[10px] text-muted">
-          Same story as marketing: Capture → Draft → Approve → Stage. Drafts via{" "}
-          <code className="text-[9px]">/api/agents/*</code> · HITL · SHIELD ·{" "}
+          Capture → draft → approve · HITL ·{" "}
           <span className="font-medium text-foreground">liveEmis:false</span>
         </p>
         <div
@@ -519,15 +518,15 @@ export function AgentControlPanel({
           <AgentBadge agent="ORACLE" />
         </div>
         <p className="text-[9px] text-muted">
-          HORIZON (ex-ORACLE). VOICE and Dr.Assist are intake/coding{" "}
-          <span className="font-medium">sub-capabilities</span> — not peer 13th/14th agents.
+          VOICE / Dr.Assist are <span className="font-medium">sub-capabilities</span> — not wired as
+          peer agents.
         </p>
       </div>
 
       <Card className="shadow-sm" data-testid="gp-canvas-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center gap-2">
-            <AgentBadge agent="CANVAS" /> CANVAS
+            <AgentBadge agent="CANVAS" />
           </CardTitle>
           <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.CANVAS.job}</p>
         </CardHeader>
@@ -568,7 +567,7 @@ export function AgentControlPanel({
       <Card className="shadow-sm" data-testid="gp-conductor-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center gap-2">
-            <AgentBadge agent="CONDUCTOR" /> CONDUCTOR
+            <AgentBadge agent="CONDUCTOR" />
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 space-y-2">
@@ -586,7 +585,7 @@ export function AgentControlPanel({
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <AgentBadge agent="ORACLE" /> HORIZON
+              <AgentBadge agent="ORACLE" />
             </span>
             <Button
               variant="outline"
@@ -655,7 +654,7 @@ export function AgentControlPanel({
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <AgentBadge agent="GUARDIAN" /> GUARDIAN
+              <AgentBadge agent="GUARDIAN" />
             </span>
             <Button
               variant="outline"
@@ -723,7 +722,7 @@ export function AgentControlPanel({
       <Card className="shadow-sm">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center gap-2">
-            <AgentBadge agent="SYNTHESIS" /> SYNTHESIS
+            <AgentBadge agent="SYNTHESIS" />
           </CardTitle>
           <p className="text-[10px] text-muted pt-1">{AGENT_JOB_IN_LOOP.SYNTHESIS.job}</p>
         </CardHeader>
@@ -871,7 +870,7 @@ export function AgentControlPanel({
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <AgentBadge agent="REFERRAL" /> PATHWAY
+              <AgentBadge agent="REFERRAL" />
             </span>
             <Button
               variant="outline"
@@ -930,7 +929,7 @@ export function AgentControlPanel({
       <Card className="shadow-sm" data-testid="gp-bridge-panel">
         <CardHeader className="p-3 pb-0">
           <CardTitle className="text-sm flex items-center gap-2">
-            <AgentBadge agent="BRIDGE" /> BRIDGE
+            <AgentBadge agent="BRIDGE" />
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 space-y-2">

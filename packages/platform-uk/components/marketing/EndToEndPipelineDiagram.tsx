@@ -269,7 +269,7 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
             <p className={styles.cardDesc}>
               Regulatory &amp; Audit Agent
               <br />
-              Immutable audit events on every action. Runs automatically — not HITL-gated. Supports DCB0129-style
+              Immutable audit events on every action. Runs automatically — not HITL-gated. Supports clinical-safety
               safety-file rehearsal (not a certification claim).
             </p>
             <span className={styles.cardFhir}>AuditEvent · Provenance · Consent</span>
@@ -331,8 +331,8 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           <div className={cn(styles.bottomCard, styles.shieldBottom)}>
             <div className={cn(styles.bottomCardName, styles.shieldName)}>SHIELD — Regulatory &amp; Audit</div>
             <p className={styles.bottomCardRole}>
-              Immutable audit on every agent and clinician action. Exportable for governance review. DCB0129-style
-              evidence pack — not MHRA/DCB certification.
+              Immutable audit on every agent and clinician action. Exportable for governance review. Clinical-safety
+              evidence pack — not regulatory certification.
             </p>
             <div className={styles.bottomCardFhir}>AuditEvent · Provenance · Consent</div>
             <span className={cn(styles.inlineBadge, styles.shieldBadge)}>Available — All dashboards</span>
@@ -387,8 +387,8 @@ export function EndToEndPipelineDiagram({ className }: { className?: string }) {
           HITL required
         </div>
         <p className={styles.disclaimer}>
-          Aksh Health Ltd · Registered in England &amp; Wales · Designed for NHS organisations
-          on all outputs · No live EMIS/SystmOne write-back in this build
+          Aksh Health Ltd · Registered in England &amp; Wales · Built for clinical organisations
+          on all outputs · No live EHR write-back in this build
         </p>
       </div>
     </div>

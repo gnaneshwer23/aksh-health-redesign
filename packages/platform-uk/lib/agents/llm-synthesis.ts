@@ -4,7 +4,7 @@ import { buildInputSummary, extractPatientLabel } from "@/lib/intake-generation"
 
 export const SYNTHESIS_MODEL = "openai/gpt-5.4-mini";
 
-const SYNTHESIS_SYSTEM = `You are Aksh Health SYNTHESIS — a clinical documentation assistant for NHS primary care rehearsal.
+const SYNTHESIS_SYSTEM = `You are Aksh Health SYNTHESIS — a clinical documentation assistant for primary care and diabetes care coordination rehearsal.
 Produce a structured SOAP-style draft from the clinician transcript.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the note is filed.

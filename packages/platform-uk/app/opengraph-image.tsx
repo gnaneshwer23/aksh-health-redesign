@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Aksh Health — Clinical AI with human review";
+export const alt = "Aksh Health — Diabetes care coordination with human review";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,7 +15,7 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: 80,
-          background: "linear-gradient(135deg, #003D7A 0%, #006B4F 100%)",
+          background: "linear-gradient(145deg, #0C1513 0%, #0B4A42 48%, #00A88E 120%)",
           color: "#ffffff",
         }}
       >
@@ -31,8 +31,8 @@ export default function OpenGraphImage() {
             style={{
               width: 64,
               height: 64,
-              borderRadius: 999,
-              border: "2px solid rgba(255,255,255,0.45)",
+              borderRadius: 16,
+              background: "#00A88E",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -46,19 +46,19 @@ export default function OpenGraphImage() {
             Aksh Health
           </div>
         </div>
-        <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, maxWidth: 900 }}>
-          Clinical AI with human review
+        <div style={{ fontSize: 58, fontWeight: 700, lineHeight: 1.1, maxWidth: 940 }}>
+          Diabetes care coordination with human review
         </div>
         <div
           style={{
             marginTop: 28,
-            fontSize: 28,
+            fontSize: 26,
             opacity: 0.9,
             maxWidth: 820,
             lineHeight: 1.35,
           }}
         >
-          FHIR R4 staging, clinician approval gates, and multi-framework compliance design pathways.
+          Capture, draft, approve. Named clinician decisions before anything reaches the record.
         </div>
       </div>
     ),

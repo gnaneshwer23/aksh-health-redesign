@@ -132,10 +132,10 @@ export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
               name="nhsNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>NHS number</FormLabel>
+                  <FormLabel>Patient ID</FormLabel>
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input maxLength={10} placeholder="10 digits" {...field} value={String(field.value ?? "")} />
+                      <Input maxLength={10} placeholder="10-digit ID" {...field} value={String(field.value ?? "")} />
                     </FormControl>
                     <button
                       type="button"
@@ -295,7 +295,7 @@ export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
                 name={"nhsEmail" as keyof FormValues}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NHS email</FormLabel>
+                    <FormLabel>Work email</FormLabel>
                     <FormControl>
                       <Input type="email" {...field} value={String(field.value ?? "")} />
                     </FormControl>
@@ -369,7 +369,7 @@ export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
                   name={"icsName" as keyof FormValues}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ICS name</FormLabel>
+                      <FormLabel>Regional network name</FormLabel>
                       <FormControl>
                         <Input {...field} value={String(field.value ?? "")} />
                       </FormControl>
@@ -382,7 +382,7 @@ export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
                   name={"nhsDigitalRef" as keyof FormValues}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>NHS Digital reference (optional)</FormLabel>
+                      <FormLabel>Organisation reference (optional)</FormLabel>
                       <FormControl>
                         <Input {...field} value={String(field.value ?? "")} />
                       </FormControl>

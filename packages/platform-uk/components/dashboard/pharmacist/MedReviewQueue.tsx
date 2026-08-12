@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { ReviewQueueItem } from "@/components/dashboard/ReviewQueueItem";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,7 @@ import { patients } from "@/lib/mock-data";
 import { buildEmptyStateMessage, filterByOrg, getPharmacyLabel } from "@/lib/profile/personalization";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
-const PHARMACIST_ACCENT = "text-[#6B46C1]";
+const PHARMACIST_ACCENT = "text-accent";
 
 type DurableReview = {
   id: string;
@@ -37,7 +36,12 @@ function PatientGuardianHint({ patientId }: { patientId: string }) {
 }
 
 export function MedReviewQueue() {
-  const { medicationReviewsCompleted, markMedicationReviewed, reviewQueueItems } = useDashboardStore();
+  const {
+    medicationReviewsCompleted,
+    markMedicationReviewed,
+    reviewQueueItems,
+    setSelectedPatient,
+  } = useDashboardStore();
   const { profile } = useUserProfile();
   const pharmacyLabel = getPharmacyLabel(profile);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -48,9 +52,6 @@ export function MedReviewQueue() {
     const polypharmacyPatients = patients.filter((p) => p.activeMedications.length >= 2);
     return filterByOrg(polypharmacyPatients, profile?.organisation);
   }, [profile?.organisation]);
-
-  const samplePatientId = medQueue[0]?.id ?? "P002";
-  const { source: neo4jSource, loading: neo4jLoading } = useNeo4jGuardian(samplePatientId);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,10 +81,9 @@ export function MedReviewQueue() {
   return (
     <section>
       <h2 className={`text-lg font-semibold mb-1 ${PHARMACIST_ACCENT}`}>
-        Medication Review Queue <Badge className="bg-[#6B46C1] text-white">{medQueue.length}</Badge>
+        Medication Review Queue <Badge className="bg-accent text-white">{medQueue.length}</Badge>
       </h2>
       <p className="mb-3 text-sm text-muted">Reviews scoped to {pharmacyLabel}</p>
-      <Neo4jMockModeBanner source={neo4jSource} loading={neo4jLoading} showLive />
 
       <div className="mb-4 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
         {durableSource === "loading"
@@ -112,11 +112,18 @@ export function MedReviewQueue() {
       ) : (
         <div className="space-y-2">
           {medQueue.map((p) => (
-            <Card key={p.id} className="shadow-sm border-[#6B46C1]/10">
-              <CardHeader className="p-4 cursor-pointer" onClick={() => setExpanded(expanded === p.id ? null : p.id)}>
-                <div className="flex justify-between items-center">
+            <Card key={p.id} className="shadow-sm border-accent/10">
+              <CardHeader
+                className="cursor-pointer p-4"
+                onClick={() => {
+                  const next = expanded === p.id ? null : p.id;
+                  setExpanded(next);
+                  if (next) setSelectedPatient(next);
+                }}
+              >
+                <div className="flex items-center justify-between">
                   <CardTitle className="text-sm">{p.name}</CardTitle>
-                  <Badge variant="outline" className="border-[#6B46C1]/30 text-[#6B46C1]">
+                  <Badge variant="outline" className="border-accent/30 text-accent">
                     {p.activeMedications.length} meds
                   </Badge>
                 </div>
@@ -137,7 +144,7 @@ export function MedReviewQueue() {
                     ))}
                   <Button
                     size="sm"
-                    className="bg-[#6B46C1] hover:bg-[#6B46C1]/90"
+                    className="bg-accent hover:bg-accent/90"
                     disabled={medicationReviewsCompleted.includes(p.id)}
                     data-testid="pharmacist-mark-reviewed"
                     onClick={async () => {

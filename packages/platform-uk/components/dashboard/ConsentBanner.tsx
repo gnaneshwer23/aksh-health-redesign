@@ -1,42 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Discrete consent gate only — shown when an authenticated user still needs
+ * onboarding consent. HITL honesty lives in HonestyStatusBar, not here.
+ */
 export function ConsentBanner({ className }: { className?: string }) {
-  const [dismissed, setDismissed] = useState(false);
+  const { status, data } = useSession();
 
-  useEffect(() => {
-    if (sessionStorage.getItem("aksh-consent-dismissed") === "1") {
-      setDismissed(true);
-    }
-  }, []);
-
-  if (dismissed) return null;
+  if (status !== "authenticated") return null;
+  if (data?.user?.onboardingComplete) return null;
 
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-2 rounded-sm bg-accent/15 border border-accent/30 px-3 py-2 text-xs text-secondary",
+        "flex flex-wrap items-center justify-between gap-2 rounded-xl border border-accent/30 bg-accent/10 px-3 py-2 text-xs text-secondary",
         className
       )}
-      role="status"
-      aria-label="Human-in-the-loop reminder"
+      role="alert"
+      aria-label="Consent required"
+      data-testid="consent-gate-banner"
     >
-      <p>AI assistance active. Capture → draft → approve — all outputs require your decision before the record.</p>
-      <button
-        type="button"
-        aria-label="Dismiss consent banner"
-        className="shrink-0 rounded-sm p-0.5 hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        onClick={() => {
-          sessionStorage.setItem("aksh-consent-dismissed", "1");
-          setDismissed(true);
-        }}
+      <p>
+        Consent is still required before clinical drafting. Complete the consent step to continue
+        diabetes / care-coordination workflows.
+      </p>
+      <Link
+        href="/onboarding/consent"
+        className="shrink-0 rounded-full bg-accent px-3 py-1 text-[11px] font-semibold text-white hover:bg-accent/90"
       >
-        <X className="h-3.5 w-3.5" />
-      </button>
+        Complete consent
+      </Link>
     </div>
   );
 }

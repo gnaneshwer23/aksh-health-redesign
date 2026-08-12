@@ -15,7 +15,7 @@ export default function AdminOrganisationEnquiriesPage() {
       <div className="space-y-6 p-4">
         <AdminHeroDemoPath />
         <p className="text-sm text-muted">
-          Access requests from NHS organisations interested in deploying Aksh Health. Staff invites
+          Access requests from healthcare organisations interested in deploying Aksh Health. Staff invites
           live under{" "}
           <Link
             href="/dashboard/admin/users"

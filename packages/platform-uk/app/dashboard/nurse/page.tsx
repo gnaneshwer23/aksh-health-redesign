@@ -16,12 +16,9 @@ export default function NurseOverviewPage() {
   const openAlerts = patient.flags.includes("GUARDIAN") || patient.flags.includes("URGENT");
 
   return (
-      <div className="space-y-5">
+    <div className="space-y-4">
       <NurseHeroDemoPath />
-      <p
-        className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
-        data-testid="nurse-honesty-banner"
-      >
+      <p className="sr-only" data-testid="nurse-honesty-banner">
         Synthetic patient panel · HITL required · liveEmis:false. Observations and handovers can
         append to the durable SHIELD audit when signed in; they do not write to EMIS/SystmOne from
         this proof build. Spine:{" "}
@@ -30,7 +27,7 @@ export default function NurseOverviewPage() {
       <NursePatientHeader />
 
       <Card className="dashboard-card border-0 shadow-none">
-        <CardHeader>
+        <CardHeader className="pb-2">
           <CardTitle className="text-base text-secondary">Patient overview</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

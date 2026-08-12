@@ -112,13 +112,13 @@ export const audiencePages = {
     ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
     ctaTertiary: { label: "Open GP dashboard", href: "/dashboard/gp" },
     complianceNote:
-      "Clinician approval on every clinical output. NHS DCB0129 safety case in progress. See documentation for architecture and compliance pathways.",
+      "Clinician approval on every clinical output. Clinical safety case work is in progress — not a signed approval. See documentation for architecture and compliance pathways.",
   },
   hospitals: {
     eyebrow: "For hospitals",
-    headline: "One command view for trust pressure.",
+    headline: "One command view for system pressure.",
     subline:
-      "Operational foresight, pathway flow, and equity views — with full audit. Designed for trust oversight.",
+      "Operational foresight, pathway flow, and equity views — with full audit. Designed for hospital and health-system oversight.",
     roles: ["Hospital Executive", "Medical Director", "COO"],
     problem: {
       title: "Operational data lives in silos",
@@ -217,7 +217,7 @@ export const audiencePages = {
     eyebrow: "For patients",
     headline: "Your health, understood and supported.",
     subline:
-      "Invited by your GP practice. Clinicians approve clinical drafts — you follow the agreed plan.",
+      "Invited by your clinic or care team. Clinicians approve clinical drafts — you follow the agreed plan.",
     roles: ["Patient"],
     problem: {
       title: "Care fades after the appointment",
@@ -233,14 +233,14 @@ export const audiencePages = {
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Invite, follow, stay supported",
-      sectionDescription: "Three steps from practice invite to ongoing support — clinicians keep review.",
+      sectionDescription: "Three steps from clinic invite to ongoing support — clinicians keep review.",
       disclaimer:
-        "Patient access is practice-invited. Clinical decisions remain with your care team.",
+        "Patient access is clinic-invited. Clinical decisions remain with your care team.",
       steps: [
         {
           label: "01",
-          title: "Practice invite",
-          description: "Your GP practice creates your secure access.",
+          title: "Clinic invite",
+          description: "Your clinic or care team creates your secure access.",
           icon: Users,
         },
         {
@@ -261,7 +261,7 @@ export const audiencePages = {
     ctaSecondary: { label: "View workflow", href: "/platform" },
     ctaTertiary: { label: "Patient companion", href: "/dashboard/patient" },
     complianceNote:
-      "Patient access is practice-invited. Clinical decisions remain with your care team. Drafts support clinicians — not patient self-write to the record.",
+      "Patient access is clinic-invited. Clinical decisions remain with your care team. Drafts support clinicians — not patient self-write to the record.",
   },
   practices: {
     eyebrow: "For practices",
@@ -303,7 +303,7 @@ export const audiencePages = {
         {
           label: "03",
           title: "Evidence governance",
-          description: "Exportable audit trails for ICS and internal assurance.",
+          description: "Exportable audit trails for regional and internal assurance.",
           icon: FileText,
         },
       ],
@@ -315,14 +315,14 @@ export const audiencePages = {
       "Practice oversight stays separate from clinical sign-off. See documentation for architecture and compliance pathways.",
   },
   ics: {
-    eyebrow: "For ICS leads",
+    eyebrow: "For regional / population health leads",
     headline: "See population health across your system.",
     subline:
-      "Equity, foresight, and pathway patterns — aggregates by default. Designed for ICS planning.",
-    roles: ["ICS Lead", "Clinical Informatics"],
+      "Equity, foresight, and pathway patterns — aggregates by default. Designed for regional planning (including ICS-style networks).",
+    roles: ["Regional Lead", "Clinical Informatics"],
     problem: {
       title: "System intelligence arrives too late",
-      body: "ICS teams need disparity and capacity signals across sites, but data often arrives as lagged extracts.",
+      body: "Regional teams need disparity and capacity signals across sites, but data often arrives as lagged extracts.",
       icon: TrendingUp,
     },
     outcome: {
@@ -334,13 +334,13 @@ export const audiencePages = {
     workflow: {
       sectionLabel: "Your care journey",
       sectionTitle: "Connect, compare, plan",
-      sectionDescription: "Three steps from site connection to ICS planning.",
+      sectionDescription: "Three steps from site connection to regional planning.",
       disclaimer: "Population views are aggregate by default. Public demos use illustrative data.",
       steps: [
         {
           label: "01",
           title: "Connect sites",
-          description: "Bring practices into a shared regional view.",
+          description: "Bring clinics into a shared regional view.",
           icon: Link2,
         },
         {
@@ -352,16 +352,16 @@ export const audiencePages = {
         {
           label: "03",
           title: "Plan capacity",
-          description: "Use foresight views to prioritise support before winter pressure peaks. Site clinicians keep HITL.",
+          description: "Use foresight views to prioritise support before seasonal pressure peaks. Site clinicians keep HITL.",
           icon: TrendingUp,
         },
       ],
     },
-    ctaPrimary: { label: "Try ICS demo", href: "/dashboard/ics" },
+    ctaPrimary: { label: "Try regional demo", href: "/dashboard/ics" },
     ctaSecondary: { label: "Book demonstration", href: "/demo/script" },
     ctaTertiary: { label: "Talk to us", href: "/get-started" },
     complianceNote:
-      "Population views are aggregate by default. Public demo uses synthetic data only. See documentation for ICS governance pathways.",
+      "Population views are aggregate by default. Public demo uses synthetic data only. See documentation for regional governance pathways.",
   },
   administrators: {
     eyebrow: "For administrators",

@@ -44,9 +44,9 @@ const governanceRoles: RoleSignal[] = [
   },
   {
     id: "regional",
-    label: "ICS / Regional Lead",
+    label: "Regional / population lead",
     dashboard: "Regional dashboard",
-    description: "Population signals without patient-level data leaving the practice.",
+    description: "Population signals without patient-level data leaving the clinic.",
   },
 ];
 

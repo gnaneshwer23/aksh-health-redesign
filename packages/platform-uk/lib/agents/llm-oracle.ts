@@ -8,7 +8,7 @@ import type { OracleRisk } from "@/lib/mock-data/types";
 
 export const ORACLE_MODEL = "openai/gpt-5.4-mini";
 
-const ORACLE_SYSTEM = `You are Aksh Health HORIZON (predictive risk, formerly ORACLE) — a CVD / long-term condition risk stratification assistant for NHS primary care rehearsal.
+const ORACLE_SYSTEM = `You are Aksh Health HORIZON (predictive risk, formerly ORACLE) — a CVD / long-term condition risk stratification assistant for primary care and diabetes care coordination rehearsal.
 Given a patient's known risk score, conditions, medications, and contributing factors, produce a concise risk narrative for clinician review.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the score is filed.

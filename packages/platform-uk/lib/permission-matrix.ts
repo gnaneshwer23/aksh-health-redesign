@@ -122,6 +122,14 @@ export function getPermissionActions(): PermissionAction[] {
       notes:
         "Governance/audit exports — restricted to clinical_reviewer/operations_lead since E2 (previously any authenticated role, including patient/researcher, could call these directly).",
       enforcedAt: E2_RBAC_HARDENING_DATE
+    },
+    {
+      id: "ask_aksh_patient_chat",
+      label: "Ask Aksh named-patient chat",
+      routeOrSurface: "/api/chat/patient, AskAkshDrawer / companion Ask tab",
+      notes:
+        "Diabetes care-coordination chat with bounded chart context. clinical_reviewer allowed; patient scoped to bound id; operations_lead (ICS/admin/hospital) and researcher denied named PHI. liveEmis:false · HITL drafts still need Accept.",
+      enforcedAt: "2026-08-12"
     }
   ];
 }
@@ -208,6 +216,14 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
       clinical_reviewer: "allowed",
       operations_lead: "allowed",
       patient: "denied",
+      researcher: "denied"
+    },
+    ask_aksh_patient_chat: {
+      clinical_reviewer: "allowed",
+      // Admin / ICS / hospital executive default off — no named PHI chat.
+      operations_lead: "denied",
+      // FR-PER-006: patient self-only via bound patient id on /api/chat/patient.
+      patient: "scoped",
       researcher: "denied"
     }
   };

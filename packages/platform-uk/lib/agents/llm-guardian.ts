@@ -7,7 +7,7 @@ import type { GuardianSeverity, Neo4jGuardianInteraction } from "@/lib/neo4j/typ
 
 export const GUARDIAN_MODEL = "openai/gpt-5.4-mini";
 
-const GUARDIAN_SYSTEM = `You are Aksh Health GUARDIAN — a medicines safety assistant for NHS primary care rehearsal.
+const GUARDIAN_SYSTEM = `You are Aksh Health GUARDIAN — a medicines safety assistant for primary care and diabetes care coordination rehearsal.
 Given known drug–drug interactions for a patient, produce a concise clinical safety brief.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the alert is filed.

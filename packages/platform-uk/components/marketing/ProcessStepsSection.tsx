@@ -18,7 +18,7 @@ const steps: Array<{
     icon: ClipboardList,
     label: "Capture",
     title: "Capture the consult",
-    body: "Notes or voice during the appointment. Clinical context from EMIS Web or SystmOne.",
+    body: "Notes or voice during the appointment. Clinical context from your existing EHR.",
   },
   {
     num: "02",

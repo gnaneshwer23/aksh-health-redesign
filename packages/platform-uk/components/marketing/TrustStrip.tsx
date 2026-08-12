@@ -4,13 +4,14 @@ const trustBadges = [
   "Audit trail on every decision",
   "Draft until a clinician decides",
   "UK data residency",
-  "Built for NHS primary care",
+  "Built for diabetes & primary care",
 ] as const;
 
 type TrustStripProps = {
   variant?: "default" | "hero";
 };
 
+/** Quiet editorial trust line — separators, not pill chips. */
 export default function TrustStrip({ variant = "default" }: TrustStripProps) {
   const isHero = variant === "hero";
 
@@ -22,19 +23,18 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
       )}
       aria-label="Product trust signals"
     >
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-        {trustBadges.map((badge) => (
-          <span
-            key={badge}
-            className={cn(
-              "inline-flex items-center rounded-full border border-[var(--mk-line)] bg-white/90 px-3.5 py-1.5 text-xs font-medium tracking-[0.01em] text-[var(--mk-ink)] shadow-sm sm:text-sm",
-              isHero && "bg-white/70 text-[var(--mk-muted)]"
-            )}
-          >
-            {badge}
-          </span>
+      <ul className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-0 gap-y-2 text-center text-xs font-medium tracking-[0.01em] text-[var(--mk-muted)] sm:text-sm">
+        {trustBadges.map((badge, index) => (
+          <li key={badge} className="inline-flex items-center">
+            {index > 0 ? (
+              <span className="mx-2.5 hidden text-[var(--mk-line-strong,rgba(20,32,30,0.22))] sm:inline" aria-hidden>
+                ·
+              </span>
+            ) : null}
+            <span className={cn(isHero ? "text-[var(--mk-muted)]" : "text-[var(--mk-ink)]/75")}>{badge}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

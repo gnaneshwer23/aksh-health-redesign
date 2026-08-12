@@ -18,7 +18,7 @@ const RolesGridSection = dynamic(() => import("@/components/marketing/RolesGridS
 });
 
 export const metadata: Metadata = {
-  title: "Aksh Health | Healthcare OS",
+  title: "Aksh Health | Diabetes care coordination with human review",
   description: SEO_DEFAULTS.description,
 };
 
@@ -37,7 +37,7 @@ export default function HomePage() {
             Clinical work that stays under control.
           </h2>
           <p className="owkin-cta-band__lede mb-8 text-base leading-relaxed md:text-lg">
-            One review queue. Named clinician approval. Designed for EMIS Web and SystmOne.
+            One review queue. Named clinician approval. Sits beside your existing EHR.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">

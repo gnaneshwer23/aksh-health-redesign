@@ -100,7 +100,7 @@ const config: Config = {
         "card-hover": "0 2px 6px rgb(20 32 30 / 0.04), 0 22px 48px -22px rgb(20 32 30 / 0.2)",
         sidebar: "2px 0 24px -8px rgb(20 32 30 / 0.06)",
         frame: "0 1px 2px rgb(20 32 30 / 0.03), 0 28px 64px -36px rgb(20 32 30 / 0.22)",
-        soft: "0 8px 32px -12px rgb(0 168 142 / 0.18)",
+        soft: "0 1px 2px rgb(20 32 30 / 0.04), 0 10px 24px -14px rgb(20 32 30 / 0.12)",
       },
       spacing: {
         sidebar: "248px",

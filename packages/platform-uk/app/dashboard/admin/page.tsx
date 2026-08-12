@@ -21,6 +21,7 @@ export default function AdminDashboardPage() {
   const guardianCount = getUrgentGuardianAlertCount();
   const { profile } = useUserProfile();
   const orgLabel = profile?.organisation ?? "your organisation";
+  const pathwaysPending = countAwaitingApproval();
 
   return (
     <DashboardShell
@@ -28,14 +29,13 @@ export default function AdminDashboardPage() {
       title="Practice Manager"
       organisation={profile?.organisation}
       showFirstRun
+      honesty={{ surface: "Practice ops" }}
     >
-      <div className="space-y-6 overflow-y-auto p-5 sm:p-6">
+      <div className="space-y-5 overflow-y-auto p-5 sm:p-6">
         <ConsentBanner />
         <AdminHeroDemoPath />
-        <p
-          className="rounded-2xl border border-border/60 bg-card/80 px-4 py-2.5 text-xs text-muted-foreground shadow-sm"
-          data-testid="admin-honesty-banner"
-        >
+        {/* Honesty lives in HonestyStatusBar; keep accessible copy for smoke / a11y. */}
+        <p className="sr-only" data-testid="admin-honesty-banner">
           Not live EMIS · liveEmis:false · designed for EMIS Web / SystmOne pathways (staging / sim).
           CONDUCTOR = queue health; BRIDGE = FHIR after clinician Accept; SHIELD = durable audit.
           Precision Health / partner readiness are scaffolding — no live write-back claim.
@@ -45,22 +45,25 @@ export default function AdminDashboardPage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Practice operations overview</h2>
           <p className="text-sm text-muted">
-            Ops narrative for {orgLabel}: integrations honesty, SHIELD visibility, and access
-            requests — not a developer console. Metrics mix live SHIELD/integration probes with
-            synthetic rehearsal figures — not certified DCB0129 / MHRA evidence.
+            Ops for {orgLabel}: queue health, integration posture, and access enquiries — not a
+            certification scoreboard.
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <MetricCard label="Demo users" value="100" />
-          <MetricCard label="Demo patients" value="100" />
-          <MetricCard label="Open GUARDIAN Alerts" value={String(guardianCount)} trend="down" />
-          <MetricCard label="Care Pathways pending" value={String(countAwaitingApproval())} />
-          <MetricCard label="SHIELD audit" value="Live trail" />
-          <MetricCard label="EMIS write-back" value="Not enabled" />
-          <MetricCard label="DCB0129" value="Rehearsal only" />
-          <MetricCard label="Certifications" value="None claimed" />
-          <MetricCard label="Auto-writes" value="0" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid="admin-ops-metrics">
+          <MetricCard
+            label="Care pathways pending"
+            value={String(pathwaysPending)}
+            tone={pathwaysPending > 0 ? "warn" : "default"}
+          />
+          <MetricCard
+            label="Open GUARDIAN alerts"
+            value={String(guardianCount)}
+            trend="down"
+            tone={guardianCount > 0 ? "danger" : "default"}
+          />
+          <MetricCard label="EHR write-back" value="Not enabled" />
+          <MetricCard label="Organisation enquiries" value="Inbox" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -74,7 +77,7 @@ export default function AdminDashboardPage() {
             </p>
             <p className="mt-1 text-xs text-muted">
               Scaffolding only — connectors, consent flags, partner checklist. liveEmis:false · not a
-              live twin or EMIS write-back.
+              live twin or EHR write-back.
             </p>
           </Link>
           <Link

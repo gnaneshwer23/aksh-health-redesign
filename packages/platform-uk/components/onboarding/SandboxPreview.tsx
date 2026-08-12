@@ -42,7 +42,7 @@ export function SandboxPreview() {
           {organisation.practiceName ? (
             <p className="text-muted">Organisation: {String(organisation.practiceName)}</p>
           ) : null}
-          {odsCode ? <p className="text-muted">ODS: {odsCode}</p> : null}
+          {odsCode ? <p className="text-muted">Organisation ID: {odsCode}</p> : null}
         </div>
 
         {preview ? (

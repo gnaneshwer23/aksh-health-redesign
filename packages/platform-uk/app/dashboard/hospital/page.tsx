@@ -1,17 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BarChart3, Building2, Heart, Users } from "lucide-react";
 
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
+import { HospitalCommandMap } from "@/components/dashboard/HospitalCommandMap";
 import { calcBedOccupancyPct } from "@/components/dashboard/hospital/hospital-utils";
 import { HospitalHeroDemoPath } from "@/components/dashboard/hospital/HospitalHeroDemoPath";
+import { WardPatientContext } from "@/components/dashboard/hospital/WardPatientContext";
+import { MetricCard } from "@/components/dashboard/MetricCard";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
 import { ScenarioRankingPanel } from "@/components/dashboard/precision-health/ScenarioRankingPanel";
-import { SpineSharedEventsPanel } from "@/components/dashboard/precision-health/SpineSharedEventsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPatientById, hospitalData } from "@/lib/mock-data";
+import type { Ward } from "@/lib/mock-data/types";
 
 const sections = [
   {
@@ -46,25 +50,21 @@ export default function HospitalOverviewPage({
   const showRiskState = panel === "digital-twin";
   const bedPct = calcBedOccupancyPct(hospitalData);
   const demoPatient = getPatientById(DEMO_PATIENT_ID);
+  const [selectedWard, setSelectedWard] = useState<Ward | null>(null);
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="space-y-5 p-4">
       {!showRiskState ? <HospitalHeroDemoPath /> : null}
-      {!showRiskState ? (
-        <p
-          className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
-          data-testid="hospital-honesty-banner"
-        >
-          Not live PAS · synthetic PAS rehearsal · liveEmis:false. PATHWAY / HORIZON draft operational
-          foresight; CONDUCTOR keeps HITL on capacity recommendations — no hospital system write-back.
-        </p>
-      ) : null}
+      <p className="sr-only" data-testid="hospital-honesty-banner">
+        Not live PAS · synthetic PAS rehearsal · liveEmis:false. PATHWAY / HORIZON draft operational
+        foresight; CONDUCTOR keeps HITL on capacity recommendations — no hospital system write-back.
+      </p>
 
       <div>
         <h2 className="text-lg font-semibold text-primary">
           {showRiskState ? "Risk state + scenario ranking" : "Command Centre Overview"}
         </h2>
-        <p className="text-sm text-muted mt-1">
+        <p className="mt-1 text-sm text-muted">
           {showRiskState
             ? "Population / patient risk state and synthetic scenario ranking — not a physiological digital twin"
             : `${hospitalName}: synthetic operational intelligence across ${hospitalData.wards.length} wards (rehearsal — not a live PAS feed)`}
@@ -72,81 +72,70 @@ export default function HospitalOverviewPage({
       </div>
 
       {!showRiskState ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted">ED Wait</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-danger">{hospitalData.edWaitingTime}h</p>
-              <p className="text-xs text-muted">{hospitalData.edPatientsWaiting} patients waiting</p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted">Bed Occupancy</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-warning">{bedPct}%</p>
-              <p className="text-xs text-muted">Across all wards at {hospitalName}</p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted">Theatres</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-accent">
-                {hospitalData.theatresRunning}/{hospitalData.theatresTotal}
-              </p>
-              <p className="text-xs text-muted">Running now</p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted">Agency Alerts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-danger">{hospitalData.agencyTriggers.length}</p>
-              <p className="text-xs text-muted">Pending staffing triggers</p>
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid="hospital-ops-metrics">
+          <MetricCard
+            label="ED wait"
+            value={`${hospitalData.edWaitingTime}h`}
+            tone="danger"
+          />
+          <MetricCard label="Bed occupancy" value={`${bedPct}%`} tone="warn" />
+          <MetricCard
+            label="Theatres"
+            value={`${hospitalData.theatresRunning}/${hospitalData.theatresTotal}`}
+          />
+          <MetricCard
+            label="Agency alerts"
+            value={String(hospitalData.agencyTriggers.length)}
+            tone={hospitalData.agencyTriggers.length > 0 ? "danger" : "default"}
+          />
         </div>
       ) : null}
 
       {!showRiskState ? (
-        <SpineSharedEventsPanel
-          title="Shared clinical spine (demo cohort)"
-          patientIds={[DEMO_PATIENT_ID, "P002"]}
-          demoPatientHref={`/dashboard/gp/patients/${DEMO_PATIENT_ID}`}
-        />
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold">Wards</h3>
+            <p className="text-xs text-muted">
+              Select a ward for synthetic patient context. Named Ask Aksh stays denied for ops roles.
+            </p>
+          </div>
+          <HospitalCommandMap
+            wards={hospitalData.wards}
+            selectedWardName={selectedWard?.name ?? null}
+            onSelectWard={setSelectedWard}
+          />
+          {selectedWard ? (
+            <WardPatientContext ward={selectedWard} onClear={() => setSelectedWard(null)} />
+          ) : null}
+        </section>
       ) : null}
 
       {showRiskState && demoPatient ? (
         <DigitalTwinPanel patient={demoPatient} readOnly />
       ) : null}
 
-      <ScenarioRankingPanel
-        patientId={DEMO_PATIENT_ID}
-        patientLabel="Synthetic HF demo patient (hospital rehearsal)"
-      />
-
       {showRiskState ? (
-        <CausalHypothesisPanel
-          patientId={DEMO_PATIENT_ID}
-          patientLabel="Synthetic HF demo patient (hospital rehearsal)"
-        />
+        <>
+          <ScenarioRankingPanel
+            patientId={DEMO_PATIENT_ID}
+            patientLabel="Synthetic HF demo patient (hospital rehearsal)"
+          />
+          <CausalHypothesisPanel
+            patientId={DEMO_PATIENT_ID}
+            patientLabel="Synthetic HF demo patient (hospital rehearsal)"
+          />
+        </>
       ) : null}
 
       {!showRiskState ? (
         <section>
-          <h3 className="text-sm font-semibold mb-3">Sections</h3>
+          <h3 className="mb-3 text-sm font-semibold">Sections</h3>
           <div className="grid gap-4 sm:grid-cols-3">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
                 <Link key={section.href} href={section.href} className="group">
-                  <Card className="shadow-sm h-full transition-colors group-hover:border-primary/40">
+                  <Card className="h-full shadow-sm transition-colors group-hover:border-primary/40">
                     <CardHeader className="pb-2">
                       <div className="flex items-center gap-2">
                         <Icon className="h-4 w-4 text-primary" />
@@ -161,7 +150,7 @@ export default function HospitalOverviewPage({
               );
             })}
             <Link href="/dashboard/hospital?panel=digital-twin" className="group">
-              <Card className="shadow-sm h-full border-l-4 border-l-[#006B4F] transition-colors group-hover:border-primary/40">
+              <Card className="h-full border-l-4 border-l-[#006B4F] shadow-sm transition-colors group-hover:border-primary/40">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
                     <Heart className="h-4 w-4 text-[#006B4F]" />

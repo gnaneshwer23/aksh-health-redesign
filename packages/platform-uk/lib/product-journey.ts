@@ -11,7 +11,8 @@ import {
 import type { UserRole } from "@/lib/onboarding/roles";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 
-export const PRODUCT_TAGLINE = "Care coordination for NHS primary care";
+export const PRODUCT_TAGLINE =
+  "Diabetes-first care coordination for primary care and clinical teams";
 
 export const PRODUCT_FLOW = "Capture → draft → approve";
 
@@ -75,7 +76,7 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
   "practice-manager": {
     workspaceLabel: "Practice Manager",
     bullets: [
-      "Integrations status (designed for EMIS/SystmOne · liveEmis:false)",
+      "Integrations status (designed for common EHR pathways · liveEmis:false)",
       "Audit sample plus users and organisation enquiries",
       "Partner readiness shown as scaffolding only",
     ],
@@ -83,13 +84,13 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
     docsHref: "/demo/script",
     agents: ["CONDUCTOR", "BRIDGE", "SHIELD"],
     youApprove: "Ops oversight only — clinicians keep clinical Accept.",
-    honesty: `${LIVE_EMIS_FALSE} — EMIS write-back Not enabled · designed for EMIS/SystmOne.`,
+    honesty: `${LIVE_EMIS_FALSE} — EHR write-back Not enabled · designed for common EHR pathways.`,
   },
   "ics-lead": {
-    workspaceLabel: "ICS Population Intelligence",
+    workspaceLabel: "Population Intelligence",
     bullets: [
       "Population → equity → forecast (guided demo)",
-      "Practice benchmarking across your ICS",
+      "Clinic benchmarking across your network",
       "Admission forecast and aggregate risk state (not a physiological twin)",
     ],
     firstFocus: "Start the population demo: population → equity → forecast.",
@@ -119,7 +120,7 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
     firstFocus: "Start with My Health, then care plan and consent.",
     agents: ["CANVAS", "SYNTHESIS", "PATHWAY", "SHIELD"],
     youApprove: "Check-ins only — clinicians Approve record changes.",
-    honesty: `${LIVE_EMIS_FALSE} — invite-by-practice · no patient-app EHR write.`,
+    honesty: `${LIVE_EMIS_FALSE} — invite-by-clinic · no patient-app EHR write.`,
   },
   researcher: {
     workspaceLabel: "Researcher / Analyst",
@@ -183,7 +184,7 @@ export const FIRST_RUN_BY_DASHBOARD: Record<DashboardRole, FirstRunCopy> = {
   },
   admin: {
     title: "Practice operations workspace ready",
-    body: "Start with integrations honesty (designed for EMIS/SystmOne), then audit and enquiries. Clinicians keep clinical Accept — Precision Health remains scaffolding.",
+    body: "Start with integrations honesty (designed for common EHR pathways), then audit and enquiries. Clinicians keep clinical Accept — Precision Health remains scaffolding.",
     primaryHref: "/dashboard/admin/integrations",
     primaryLabel: "Integrations honesty",
     secondaryHref: "/demo/script",
@@ -193,12 +194,12 @@ export const FIRST_RUN_BY_DASHBOARD: Record<DashboardRole, FirstRunCopy> = {
     honesty: LIVE_EMIS_FALSE,
   },
   ics: {
-    title: "ICS intelligence workspace ready",
-    body: "Population → equity → forecast on synthetic cohorts. Aggregate planning only — no patient-level spill, not a live ICS feed.",
+    title: "Population intelligence workspace ready",
+    body: "Population → equity → forecast on synthetic cohorts. Aggregate planning only — no patient-level spill, not a live regional feed.",
     primaryHref: "/dashboard/ics/population",
     primaryLabel: "Start population demo",
     secondaryHref: "/demo/script",
-    secondaryLabel: "Demo script (ICS)",
+    secondaryLabel: "Demo script (regional)",
     agents: ["COMPASS", "HORIZON", "PATHWAY", "SHIELD"],
     youApprove: "Aggregate planning views only.",
     honesty: LIVE_EMIS_FALSE,
@@ -216,7 +217,7 @@ export const FIRST_RUN_BY_DASHBOARD: Record<DashboardRole, FirstRunCopy> = {
   },
   patient: {
     title: "Welcome to My Health",
-    body: "My Health → care plan → consent. Practice-invited view in plain English — clinicians keep HITL on record changes. No patient-app EHR write.",
+    body: "My Health → care plan → consent. Clinic-invited view in plain English — clinicians keep HITL on record changes. No patient-app EHR write.",
     primaryHref: "/dashboard/patient#companion-my-health",
     primaryLabel: "Open My Health",
     secondaryHref: "/demo/script",

@@ -109,14 +109,15 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
   patient: "Patient",
 };
 
+/** Nightingale seafoam / spruce role chips — no purple pharmacist chrome. */
 const ROLE_COLORS: Record<DashboardRole, string> = {
   gp: "bg-accent",
   nurse: "bg-secondary",
-  pharmacist: "bg-[#7C6BDB]",
+  pharmacist: "bg-accent",
   admin: "bg-primary",
-  ics: "bg-warning",
+  ics: "bg-secondary",
   hospital: "bg-accent",
-  researcher: "bg-[#E5A43B]",
+  researcher: "bg-steel",
   patient: "bg-accent",
 };
 

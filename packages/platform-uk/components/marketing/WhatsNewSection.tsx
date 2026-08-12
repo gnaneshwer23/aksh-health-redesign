@@ -6,9 +6,9 @@ const roles = [
   "02  Nurse / care coordinator",
   "03  Clinical pharmacist",
   "04  Practice administrator",
-  "05  ICS / regional lead",
+  "05  Regional / population lead",
   "06  Hospital executive",
-  "07  Patient (practice-invited)",
+  "07  Patient (clinic-invited)",
   "08  Researcher / analyst",
 ] as const;
 
@@ -25,7 +25,7 @@ export default function WhatsNewSection() {
           </h2>
           <p className="owkin-one-platform__lede">
             The same coordination layer — different work. GPs review clinical drafts. Nurses manage handovers and
-            observations. Pharmacists check interactions. Administrators monitor governance. ICS leads see population
+            observations. Pharmacists check interactions. Administrators monitor governance. Regional leads see population
             signals. Each role sees what it needs. Nothing it does not.
           </p>
         </ScrollReveal>

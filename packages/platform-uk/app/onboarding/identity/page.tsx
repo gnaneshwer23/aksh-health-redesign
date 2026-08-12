@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { IdentityStepClient } from "./identity-step-client";
 
 export const metadata: Metadata = {
-  title: "Identity | Onboarding | Aksh Health",
+  title: "Identity | Onboarding ",
   description: "Verify your identity and professional credentials.",
 };
 

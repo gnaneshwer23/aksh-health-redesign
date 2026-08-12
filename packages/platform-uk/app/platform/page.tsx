@@ -4,7 +4,7 @@ import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { PlatformPageContent } from "@/components/marketing/platform-page-content";
 
 export const metadata: Metadata = {
-  title: "Platform | Aksh Health",
+  title: "Platform ",
   description:
     "One platform, eight roles, clinician-owned care. Designed for EMIS Web and SystmOne via FHIR standards with human-in-the-loop review.",
 };

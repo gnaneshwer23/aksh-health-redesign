@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ConsentStepClient } from "./consent-step-client";
 
 export const metadata: Metadata = {
-  title: "Consent | Onboarding | Aksh Health",
+  title: "Consent | Onboarding ",
   description: "Review data governance and AI consent terms.",
 };
 

@@ -13,6 +13,8 @@ declare module "next-auth" {
       name?: string | null;
       organisation?: string | null;
       image?: string | null;
+      /** Bound patient id for patient-role self-scope (FR-CORE-005). */
+      boundPatientId?: string | null;
     };
     role?: UserRole;
     onboardingComplete?: boolean;
@@ -29,6 +31,7 @@ declare module "next-auth" {
     isEmailVerified: boolean;
     name?: string | null;
     organisation?: string | null;
+    boundPatientId?: string | null;
   }
 }
 

@@ -7,7 +7,7 @@ import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
 
 export const NEXUS_MODEL = "openai/gpt-5.4-mini";
 
-const NEXUS_SYSTEM = `You are Aksh Health NEXUS — a clinical intelligence assistant for NHS primary care rehearsal.
+const NEXUS_SYSTEM = `You are Aksh Health NEXUS — a clinical intelligence assistant for primary care and diabetes care coordination rehearsal.
 Correlate a patient's conditions, medications, and risk signals and surface 2-3 clinically significant connections a GP should consider.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim any correlation is filed.

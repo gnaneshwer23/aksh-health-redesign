@@ -38,7 +38,7 @@ const LINKS = [
     description: "Dev/test — report download, golden filter, lab/pharmacy sims · disabled in production",
     icon: Beaker,
   },
-  { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", description: "Access requests from NHS organisations", icon: FileText },
+  { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", description: "Access requests from healthcare organisations", icon: FileText },
   { href: "/dashboard/admin/billing", label: "Billing", description: "Subscription and contract contact details", icon: Building2 },
 ] as const;
 

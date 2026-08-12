@@ -60,7 +60,7 @@ test.describe("Marketing smoke", () => {
     await expect(trustStrip.getByText("Audit trail on every decision").first()).toBeVisible();
     await expect(trustStrip.getByText("Draft until a clinician decides").first()).toBeVisible();
     await expect(trustStrip.getByText("UK data residency").first()).toBeVisible();
-    await expect(trustStrip.getByText("Built for NHS primary care").first()).toBeVisible();
+    await expect(trustStrip.getByText("Built for diabetes & primary care").first()).toBeVisible();
   });
 
   test("custom 404 page renders branded message", async ({ page }) => {
@@ -270,7 +270,7 @@ test.describe("Marketing smoke", () => {
       "href",
       "mailto:hello@akshhealth.com"
     );
-    await expect(page.getByText(/Does Aksh Health replace EMIS Web or SystmOne/i)).toBeVisible();
+    await expect(page.getByText(/Does Aksh Health replace my EHR/i)).toBeVisible();
     await expect(page.getByText(/Is Aksh Health MHRA-certified/i)).toBeVisible();
   });
 
@@ -278,7 +278,7 @@ test.describe("Marketing smoke", () => {
     await page.goto("/get-started");
 
     await expect(
-      page.getByRole("heading", { name: /Request access for your NHS organisation/i })
+      page.getByRole("heading", { name: /Request access for your organisation/i })
     ).toBeVisible();
     await expect(page.getByRole("link", { name: /Create your account instead/i })).toHaveAttribute("href", "/signup");
     await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();

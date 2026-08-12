@@ -7,7 +7,7 @@ import type { Neo4jIcsPopulationResponse } from "@/lib/neo4j/types";
 
 export const EQUITY_MODEL = "openai/gpt-5.4-mini";
 
-const EQUITY_SYSTEM = `You are Aksh Health COMPASS (population health, formerly EQUITY) — a population health disparity assistant for NHS ICS rehearsal.
+const EQUITY_SYSTEM = `You are Aksh Health COMPASS (population health, formerly EQUITY) — a population health disparity assistant for regional care-network rehearsal.
 Given aggregate equity flags (no patient-level identifiers), produce a concise action brief for ICS leads.
 Rules:
 - Aggregate / practice-level only. Do not invent named patients.

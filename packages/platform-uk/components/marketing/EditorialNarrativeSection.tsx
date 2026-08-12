@@ -16,7 +16,7 @@ const beats = [
     cta: "View workflow",
   },
   {
-    title: "Built for EMIS, SystmOne, and FHIR",
+    title: "Built for FHIR and existing EHRs",
     body: "Structured clinical information is prepared using FHIR standards and integrated with existing clinical systems through governed workflows.",
     href: "/security",
     cta: "View security",

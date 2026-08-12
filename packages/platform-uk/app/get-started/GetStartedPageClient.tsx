@@ -128,8 +128,8 @@ export default function GetStartedPageClient() {
     <MarketingShell editorial>
       <MarketingPageHero
         eyebrow="Organisation access"
-        title="Request access for your NHS organisation"
-        lede="For practice managers, ICS leads, hospital procurement, and IT teams. Tell us about your organisation and we will arrange a conversation with your clinical and technical leads."
+        title="Request access for your organisation"
+        lede="For practice managers, regional leads, hospital procurement, and IT teams. Tell us about your organisation and we will arrange a conversation with your clinical and technical leads."
         secondary={{ label: "Create your account instead", href: "/signup" }}
       />
 
@@ -143,9 +143,9 @@ export default function GetStartedPageClient() {
                 <div
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors ${
                     index < step
-                      ? "bg-[var(--mk-accent)] text-white shadow-soft"
+                      ? "bg-[var(--mk-accent)] text-white"
                       : index === step
-                        ? "bg-[var(--mk-accent)] text-white shadow-soft"
+                        ? "bg-[var(--mk-accent)] text-white"
                         : "bg-[#eef1f4] text-[var(--mk-muted)]"
                   }`}
                 >
@@ -192,7 +192,7 @@ export default function GetStartedPageClient() {
                 {(
                   [
                     ["Organisation name *", "orgName"],
-                    ["ODS code *", "odsCode"],
+                    ["Organisation ID (optional)", "odsCode"],
                     ["Contact name *", "contactName"],
                     ["Contact email *", "contactEmail"],
                   ] as const
@@ -202,13 +202,14 @@ export default function GetStartedPageClient() {
                     <input
                       className={fieldClass}
                       type={key === "contactEmail" ? "email" : "text"}
+                      placeholder={key === "odsCode" ? "e.g. clinic code or ODS if UK" : undefined}
                       value={form[key]}
                       onChange={(event) => update(key, event.target.value)}
                     />
                   </div>
                 ))}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">ICS region *</label>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">Region *</label>
                   <select
                     className={fieldClass}
                     value={form.region}

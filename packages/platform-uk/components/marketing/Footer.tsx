@@ -36,7 +36,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div className="mb-10 flex items-baseline gap-3">
           <span className="text-lg font-semibold tracking-tight text-white">Aksh Health</span>
-          <span className="text-sm text-white/45">UK primary care</span>
+          <span className="text-sm text-white/45">Diabetes &amp; care coordination</span>
         </div>
 
         <div className="grid gap-10 sm:grid-cols-3 lg:gap-16">

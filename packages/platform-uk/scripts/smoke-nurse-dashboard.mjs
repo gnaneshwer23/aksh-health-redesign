@@ -19,22 +19,22 @@ const protectedNurseRoutes = [
   {
     label: "Nurse dashboard",
     path: "/dashboard/nurse",
-    expectedText: ["Nurse Dashboard", "Patient overview", "3-beat demo", "liveEmis:false"],
+    expectedText: ["Nurse Dashboard", "Patient overview", "Voice Care", "liveEmis:false"],
   },
   {
     label: "Nurse observations",
     path: "/dashboard/nurse/observations",
-    expectedText: ["Vital Signs Entry", "VOICE Dictation", "3-beat demo"],
+    expectedText: ["Vital Signs Entry", "VOICE Dictation", "liveEmis:false"],
   },
   {
     label: "Nurse handover",
     path: "/dashboard/nurse/handover",
-    expectedText: ["Shift Handover", "Generate Handover Summary", "3-beat demo"],
+    expectedText: ["Shift Handover", "Generate Handover Summary"],
   },
   {
     label: "Nurse alerts",
     path: "/dashboard/nurse/alerts",
-    expectedText: ["GUARDIAN Alerts", "3-beat demo"],
+    expectedText: ["GUARDIAN Alerts"],
   },
 ];
 

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const ORG_TYPES = [
-  "NHS ICS",
-  "GP Network / PCN",
-  "NHS Hospital Trust",
-  "Private Healthcare Provider",
+  "Integrated care / regional network",
+  "Primary care / clinic network",
+  "Hospital / health system",
+  "Private healthcare provider",
 ] as const;
 
 export const ICS_REGIONS = [
@@ -38,7 +38,7 @@ export const ORGANISATION_COMMITMENTS = [
 export const accessRequestSchema = z.object({
   orgType: z.enum(ORG_TYPES),
   orgName: z.string().trim().min(2).max(200),
-  odsCode: z.string().trim().min(1).max(32),
+  odsCode: z.string().trim().max(32).optional().or(z.literal("")),
   region: z.enum(ICS_REGIONS),
   contactName: z.string().trim().min(2).max(120),
   contactEmail: z.string().trim().email().max(254),

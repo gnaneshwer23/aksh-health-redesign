@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const ARIA_LABEL =
-  "Interoperability diagram: EMIS Web and SystmOne context feeds clinical capture. An orchestration step runs parallel documentation, drug safety, risk, and referral checks. A clinician accepts, edits, or rejects every output before record staging (FHIR R4) and audit. Clinician-approved only — not a live record write.";
+  "Interoperability diagram: existing EHR context feeds clinical capture. An orchestration step runs parallel documentation, drug safety, risk, and referral checks. A clinician accepts, edits, or rejects every output before record staging (FHIR R4) and audit. Clinician-approved only — not a live record write.";
 
 type InteropNodeProps = {
   label: string;
@@ -129,7 +129,7 @@ export function InteroperabilityDiagram({ className }: { className?: string }) {
             <span className="aksh-pipeline__source-dot" aria-hidden />
             <span className="aksh-pipeline__source">SystmOne</span>
           </div>
-          <p className="aksh-pipeline__honesty">Designed for · not a live feed</p>
+          <p className="aksh-pipeline__honesty">EHR examples · not a live feed</p>
         </li>
 
         <li className="aksh-pipeline__connector aksh-pipeline__connector--tight" aria-hidden>

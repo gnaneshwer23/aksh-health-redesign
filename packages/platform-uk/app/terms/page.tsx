@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/marketing/legal-page-layout";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Aksh Health",
+  title: "Terms of Service ",
   description:
     "Terms governing use of the Aksh Health clinical AI platform, including acceptable use, account responsibilities, and clinical data governance.",
 };

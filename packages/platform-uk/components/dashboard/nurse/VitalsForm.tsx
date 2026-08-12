@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,7 +64,7 @@ function parseVitalsFromTranscript(transcript: string): Partial<VitalsValues> {
 export function VitalsForm({ onSaved }: { onSaved?: () => void }) {
   const { selectedPatientId, addAuditEvent } = useDashboardStore();
   const patient = patients.find((p) => p.id === (selectedPatientId ?? "P001")) ?? patients[0];
-  const { data: neo4jPatient, loading: neo4jLoading, source } = useNeo4jPatient(patient.id);
+  const { data: neo4jPatient } = useNeo4jPatient(patient.id);
   const [entryMode, setEntryMode] = useState<"manual" | "voice">("manual");
   const [vitals, setVitals] = useState<VitalsValues>(EMPTY_VITALS);
   const [lastTranscript, setLastTranscript] = useState<string | null>(null);
@@ -179,7 +178,6 @@ export function VitalsForm({ onSaved }: { onSaved?: () => void }) {
         <CardTitle className="text-base text-secondary">Vital Signs Entry</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
         <div className="flex gap-2">
           <Button
             size="sm"

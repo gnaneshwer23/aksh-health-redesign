@@ -29,6 +29,7 @@ function run() {
   assert.ok(adminHero.includes("SHIELD"));
   assert.ok(/EMIS|SystmOne/.test(adminHero));
   assert.ok(adminHero.includes("scaffolding") || adminHero.includes("Precision Health"));
+  assert.ok(adminHero.includes("aksh-admin-hero-demo-dismissed") || adminHero.includes("useDismissibleDemo"));
 
   const adminPage = read("app/dashboard/admin/page.tsx");
   assert.ok(adminPage.includes("AdminHeroDemoPath"));
@@ -36,6 +37,8 @@ function run() {
   assert.ok(adminPage.includes("Not live EMIS"));
   assert.ok(adminPage.includes("liveEmis:false"));
   assert.ok(adminPage.includes("admin-precision-health-scaffolding-link"));
+  assert.ok(adminPage.includes("admin-ops-metrics"));
+  assert.ok(!adminPage.includes("Certifications"));
   assert.ok(!adminPage.includes("connected to the GP record"));
 
   assert.ok(read("app/dashboard/admin/integrations/page.tsx").includes("AdminHeroDemoPath"));
@@ -73,7 +76,7 @@ function run() {
   // Smoke script asserts hero copy
   assert.ok(fs.existsSync(path.join(root, "scripts/smoke-admin-dashboard.mjs")));
   const adminSmoke = read("scripts/smoke-admin-dashboard.mjs");
-  assert.ok(adminSmoke.includes("Ops demo"));
+  assert.ok(adminSmoke.includes("Practice operations overview"));
   assert.ok(adminSmoke.includes("liveEmis:false"));
   assert.ok(adminSmoke.includes("Not live EMIS"));
 

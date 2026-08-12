@@ -108,10 +108,10 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
             name={odsFieldName as keyof FormValues}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>ODS code</FormLabel>
+                <FormLabel>Organisation ID</FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} placeholder="E81001" />
+                    <Input {...field} value={String(field.value ?? "")} placeholder="Clinic / org code" />
                   </FormControl>
                   <button
                     type="button"
@@ -184,7 +184,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
               name={"icsRegion" as keyof FormValues}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ICS region</FormLabel>
+                  <FormLabel>Region / care network</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
                     <FormControl>
                       <SelectTrigger>
@@ -299,7 +299,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
               name={"icsRegion" as keyof FormValues}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ICS region</FormLabel>
+                  <FormLabel>Region / care network</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
                     <FormControl>
                       <SelectTrigger>
@@ -504,7 +504,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
               name={"affiliatedTrust" as keyof FormValues}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Affiliated NHS trust (optional)</FormLabel>
+                  <FormLabel>Affiliated hospital or health system (optional)</FormLabel>
                   <FormControl>
                     <Input {...field} value={String(field.value ?? "")} />
                   </FormControl>

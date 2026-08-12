@@ -12,7 +12,7 @@ const RISK_TEXT: Record<OracleRisk, string> = {
   Low: "text-accent",
   Medium: "text-warning",
   High: "text-danger",
-  VeryHigh: "text-[#7B2D8B]",
+  VeryHigh: "text-[#8B3A3A]",
 };
 
 export function RiskScoreBadge({

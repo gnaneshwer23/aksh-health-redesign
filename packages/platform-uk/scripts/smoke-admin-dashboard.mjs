@@ -19,13 +19,13 @@ const protectedAdminRoutes = [
   {
     label: "Admin dashboard",
     path: "/dashboard/admin",
-    expectedText: ["Practice Manager", "Ops demo", "liveEmis:false", "Not live EMIS", "Practice ops"],
+    expectedText: ["Practice Manager", "Practice operations overview", "liveEmis:false", "Not live EMIS", "Practice ops"],
   },
   { label: "Admin users", path: "/dashboard/admin/users", expectedText: ["User Management", "Invite User"] },
   {
     label: "Admin integrations",
     path: "/dashboard/admin/integrations",
-    expectedText: ["Integrations", "Integration Status", "Ops demo", "liveEmis:false"],
+    expectedText: ["Integrations", "Integration Status", "liveEmis:false"],
   },
   {
     label: "Admin Precision Health",
@@ -36,12 +36,12 @@ const protectedAdminRoutes = [
   {
     label: "Admin audit",
     path: "/dashboard/admin/audit",
-    expectedText: ["Audit Log", "Export SHIELD", "Ops demo"],
+    expectedText: ["Audit Log", "Export SHIELD"],
   },
   {
     label: "Admin organisation enquiries",
     path: "/dashboard/admin/organisation-enquiries",
-    expectedText: ["Organisation Enquiries", "Ops demo", "liveEmis:false"],
+    expectedText: ["Organisation Enquiries", "liveEmis:false"],
   },
   { label: "Admin billing", path: "/dashboard/admin/billing", expectedText: ["Billing", "Phase 2"] },
 ];

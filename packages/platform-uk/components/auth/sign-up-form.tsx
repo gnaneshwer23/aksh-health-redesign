@@ -132,7 +132,7 @@ function SignUpFormFields({ initialRoleParam }: { initialRoleParam: string | nul
                     aria-label="Email address"
                     type="email"
                     autoComplete="email"
-                    placeholder="you@nhs.net"
+                    placeholder="you.example"
                     className="rounded-xl"
                   />
                 </FormControl>

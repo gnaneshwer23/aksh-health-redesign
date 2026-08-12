@@ -5332,18 +5332,18 @@ input:focus, textarea:focus {
 }
 
 .marketing-pill-btn:hover {
-  transform: translateY(-2px);
+  transform: none;
 }
 
 .marketing-pill-btn--primary {
   background: #00a88e;
   color: #ffffff;
-  box-shadow: 0 12px 28px -6px rgba(0, 168, 142, 0.35);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 10px 22px -14px rgba(20, 32, 30, 0.28);
 }
 
 .marketing-pill-btn--primary:hover {
   background: #0a7a68;
-  box-shadow: 0 16px 32px -6px rgba(0, 168, 142, 0.4);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 14px 28px -14px rgba(20, 32, 30, 0.32);
 }
 
 .marketing-pill-btn--secondary {
@@ -5421,23 +5421,23 @@ input:focus, textarea:focus {
   }
 
   .btn-marketing-primary {
-    @apply bg-emerald text-white shadow-card hover:-translate-y-0.5 hover:bg-emerald/90 hover:shadow-card-hover focus-visible:ring-emerald;
+    @apply bg-emerald text-white shadow-card hover:bg-emerald/90 hover:shadow-card-hover focus-visible:ring-emerald;
   }
 
   .btn-marketing-ink {
-    @apply bg-accent text-white shadow-soft hover:-translate-y-0.5 hover:bg-secondary hover:shadow-card-hover focus-visible:ring-accent;
+    @apply bg-accent text-white shadow-soft hover:bg-secondary hover:shadow-card-hover focus-visible:ring-accent;
   }
 
   .btn-marketing-secondary {
-    @apply border border-navy/20 bg-white text-navy shadow-sm hover:-translate-y-0.5 hover:border-navy/40 hover:bg-navy/[0.03] focus-visible:ring-emerald;
+    @apply border border-navy/20 bg-white text-navy shadow-sm hover:border-navy/40 hover:bg-navy/[0.03] focus-visible:ring-emerald;
   }
 
   .btn-marketing-inverse {
-    @apply bg-white text-emerald shadow-lg hover:-translate-y-0.5 hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-emerald;
+    @apply bg-white text-emerald shadow-sm hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-emerald;
   }
 
   .btn-marketing-ghost {
-    @apply border border-white/40 bg-transparent text-white hover:-translate-y-0.5 hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-emerald;
+    @apply border border-white/40 bg-transparent text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-emerald;
   }
 
   .btn-marketing-lg {
@@ -5503,14 +5503,17 @@ input:focus, textarea:focus {
   color: #fff !important;
   font-size: 0.95rem;
   font-weight: 600;
-  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.32);
-  transition: transform 180ms var(--ease-out-strong), background-color 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 10px 22px -14px rgba(20, 32, 30, 0.28);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 120ms var(--ease-out-strong);
 }
 
 .owkin-btn-ink:hover {
-  transform: translateY(-1px);
   background: var(--owkin-royal);
-  box-shadow: 0 16px 32px -8px rgba(0, 168, 142, 0.38);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 14px 28px -14px rgba(20, 32, 30, 0.32);
+}
+
+.owkin-btn-ink:active {
+  transform: scale(0.98);
 }
 
 .owkin-text-cta {
@@ -5652,14 +5655,17 @@ input:focus, textarea:focus {
   color: #fff !important;
   font-size: 0.875rem;
   font-weight: 600;
-  box-shadow: 0 8px 20px -8px rgba(0, 168, 142, 0.4);
-  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 8px 18px -12px rgba(20, 32, 30, 0.24);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 120ms var(--ease-out-strong);
 }
 
 .owkin-nav__pill:hover {
   background: var(--owkin-royal);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px -8px rgba(0, 168, 142, 0.45);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 12px 22px -12px rgba(20, 32, 30, 0.28);
+}
+
+.owkin-nav__pill:active {
+  transform: scale(0.98);
 }
 
 .owkin-nav__ghost-link {
@@ -6702,13 +6708,17 @@ input:focus, textarea:focus {
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.35);
-  transition: transform 180ms var(--ease-out-strong), background-color 180ms ease;
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 10px 22px -14px rgba(20, 32, 30, 0.28);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 120ms var(--ease-out-strong);
 }
 
 .owkin-cta-band__btn:hover {
-  transform: translateY(-1px);
   background: var(--mk-accent-strong, #0a7a68);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 14px 28px -14px rgba(20, 32, 30, 0.32);
+}
+
+.owkin-cta-band__btn:active {
+  transform: scale(0.98);
 }
 
 .owkin-cta-band__link {
@@ -7541,7 +7551,7 @@ input:focus, textarea:focus {
   --mk-radius-md: 1.25rem;
   --mk-radius-lg: 1.75rem;
   --mk-shadow-frame: 0 1px 2px rgba(20, 32, 30, 0.03), 0 28px 64px -36px rgba(20, 32, 30, 0.2);
-  --mk-shadow-float: 0 18px 50px -30px rgba(0, 168, 142, 0.22);
+  --mk-shadow-float: 0 1px 2px rgba(20, 32, 30, 0.04), 0 18px 40px -28px rgba(20, 32, 30, 0.22);
   --mk-ease: cubic-bezier(0.23, 1, 0.32, 1);
   background: var(--mk-surface) !important;
   color: var(--mk-ink);
@@ -7658,9 +7668,9 @@ input:focus, textarea:focus {
   color: #fff !important;
   font-weight: 600;
   letter-spacing: -0.01em;
-  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.35);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 10px 22px -14px rgba(20, 32, 30, 0.28);
   transition:
-    transform 160ms var(--mk-ease),
+    transform 120ms var(--mk-ease),
     background-color 160ms ease,
     box-shadow 160ms ease;
 }
@@ -7668,9 +7678,8 @@ input:focus, textarea:focus {
 .owkin-btn-ink:hover,
 .btn-marketing-primary:hover,
 .btn-marketing-ink:hover {
-  transform: translateY(-1px);
   background: var(--mk-accent-strong);
-  box-shadow: 0 16px 32px -8px rgba(0, 168, 142, 0.4);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 14px 28px -14px rgba(20, 32, 30, 0.32);
 }
 
 .owkin-btn-ink:active,
@@ -8508,7 +8517,7 @@ input:focus, textarea:focus {
 .owkin-cta-band,
 .marketing-site--editorial .owkin-cta-band.marketing-section-tight {
   background:
-    radial-gradient(circle at 50% 0%, rgba(0, 168, 142, 0.14), transparent 55%),
+    radial-gradient(circle at 50% 0%, rgba(0, 168, 142, 0.08), transparent 55%),
     linear-gradient(180deg, #eef7f4 0%, #f7f8fa 100%) !important;
   color: var(--mk-ink);
 }
@@ -8574,12 +8583,12 @@ input:focus, textarea:focus {
   border: none;
   background: var(--mk-accent);
   color: #fff !important;
-  box-shadow: 0 12px 28px -8px rgba(0, 168, 142, 0.35);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.06), 0 10px 22px -14px rgba(20, 32, 30, 0.28);
 }
 
 .owkin-cta-band .owkin-cta-band__btn:hover {
-  transform: translateY(-1px);
   background: var(--mk-accent-strong);
+  box-shadow: 0 1px 2px rgba(20, 32, 30, 0.08), 0 14px 28px -14px rgba(20, 32, 30, 0.32);
 }
 
 .owkin-cta-band .owkin-cta-band__link {

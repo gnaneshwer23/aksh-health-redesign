@@ -1,6 +1,5 @@
 "use client";
 
-import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { GuardianAlert } from "@/components/dashboard/GuardianAlert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNeo4jGuardian } from "@/lib/hooks/use-neo4j-clinical";
@@ -56,8 +55,6 @@ export function GuardianAlertsPanel({ scope = "selected" }: { scope?: "selected"
         </p>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
-
         {!neo4jLoading && graphInteractions.length > 0 ? (
           <div className="space-y-2">
             <p className="text-xs text-muted">

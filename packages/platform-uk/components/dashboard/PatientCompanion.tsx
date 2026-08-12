@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
+import { AskAkshPanel } from "@/components/chat/AskAkshPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +27,6 @@ import { SpineOutcomesCapturePanel } from "@/components/dashboard/precision-heal
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import {
   getPatientCompanionProfile,
-  getPatientFirstName,
   getPatientGreeting,
 } from "@/lib/patient-companion/profile";
 import { useOnboardingStore } from "@/lib/onboarding/store";
@@ -51,6 +51,16 @@ const DIABETES_COACHING_DEMO_PATIENT_LABEL = "Demo patient (P002)";
 const TAB_VALUES = ["health", "checkins", "medications", "appointments", "ask"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
 
+/** Static check-in thread demo (separate from Ask Aksh live chat). */
+const CHECKIN_THREAD_DEMO = [
+  { role: "ai" as const, text: "How are you feeling today?" },
+  { role: "user" as const, text: "A bit more breathless than yesterday" },
+  {
+    role: "ai" as const,
+    text: "I've noted that and shared it with your care team. A nurse will review this and may be in touch. Is there anything else?",
+  },
+];
+
 const MOBILE_NAV: { value: TabValue; label: string; icon: typeof HeartPulse }[] = [
   { value: "health", label: "Health", icon: HeartPulse },
   { value: "checkins", label: "Check-ins", icon: Stethoscope },
@@ -58,15 +68,6 @@ const MOBILE_NAV: { value: TabValue; label: string; icon: typeof HeartPulse }[] 
   { value: "appointments", label: "Appts", icon: CalendarDays },
   { value: "ask", label: "Ask", icon: MessageCircle },
 ];
-
-const MOCK_RESPONSES: Record<string, string> = {
-  "What is a DVT?":
-    "A DVT (deep vein thrombosis) is a blood clot in a deep vein, usually in the leg. Symptoms can include leg pain, swelling, and warmth. If you think you may have a DVT, contact your GP urgently or call 111.",
-  "Are my medications safe together?":
-    "Your care team reviews all your medications for safety. Some combinations need extra monitoring. Always tell your GP and pharmacist about everything you take, including over-the-counter medicines.",
-  "When should I call 999?":
-    "Call 999 immediately for chest pain, severe breathlessness, signs of stroke (face drooping, arm weakness, speech difficulty), or if you feel your life is at risk.",
-};
 
 export function PatientCompanion() {
   const { data: session } = useSession();
@@ -83,8 +84,13 @@ export function PatientCompanion() {
       ),
     [session, profileIdentity, userProfile?.fullName, userProfile?.preferences]
   );
-  const firstName = getPatientFirstName(session, profileIdentity, userProfile?.fullName);
   const greeting = getPatientGreeting(session, profileIdentity, userProfile?.fullName);
+
+  /** Self-only Ask Aksh scope — fail closed until practice binds a patient id on the session. */
+  const boundAskPatientId =
+    typeof session?.user?.boundPatientId === "string" && session.user.boundPatientId.trim()
+      ? session.user.boundPatientId.trim()
+      : null;
 
   const [activeTab, setActiveTab] = useState<TabValue>("health");
   const [checkInStep, setCheckInStep] = useState(0);
@@ -92,15 +98,6 @@ export function PatientCompanion() {
   const [checkInSymptomText, setCheckInSymptomText] = useState("");
   const [checkInSubmitting, setCheckInSubmitting] = useState(false);
   const [checkInResultNote, setCheckInResultNote] = useState<string | null>(null);
-  const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<{ role: "ai" | "user"; text: string }[]>(() => [
-    { role: "ai", text: `How are you feeling today, ${firstName}?` },
-    { role: "user", text: "A bit more breathless than yesterday" },
-    {
-      role: "ai",
-      text: `I've noted that and shared it with your care team. A nurse will review this and may be in touch. Is there anything else?`,
-    },
-  ]);
   const [medsTaken, setMedsTaken] = useState<Record<string, boolean>>({});
   const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
 
@@ -175,20 +172,6 @@ export function PatientCompanion() {
     setCheckInMood(null);
     setCheckInSymptomText("");
     setCheckInResultNote(null);
-  };
-
-  const handleChat = (text: string) => {
-    setChatMessages((m) => [
-      ...m,
-      { role: "user", text },
-      {
-        role: "ai",
-        text:
-          MOCK_RESPONSES[text] ??
-          "Thank you for your question. Please speak to your GP about your personal health concerns.",
-      },
-    ]);
-    setChatInput("");
   };
 
   return (
@@ -368,7 +351,7 @@ export function PatientCompanion() {
         <TabsContent value="checkins" className="mt-4 space-y-4">
           <Card className="shadow-sm">
             <CardContent className="space-y-3 p-4">
-              {chatMessages.map((m, i) => (
+              {CHECKIN_THREAD_DEMO.map((m, i) => (
                 <div
                   key={i}
                   className={cn(
@@ -507,42 +490,25 @@ export function PatientCompanion() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="ask" className="mt-4 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {Object.keys(MOCK_RESPONSES).map((q) => (
-              <Button key={q} variant="outline" size="sm" onClick={() => handleChat(q)}>
-                {q}
-              </Button>
-            ))}
-          </div>
-          <Card className="min-h-[200px] space-y-2 p-4 shadow-sm">
-            {chatMessages
-              .filter((_, i) => i >= chatMessages.length - 4)
-              .map((m, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "rounded-lg px-3 py-2 text-sm",
-                    m.role === "ai" ? "bg-accent/10" : "ml-8 bg-primary/10"
-                  )}
-                >
-                  {m.text}
-                </div>
-              ))}
-          </Card>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Type a health question..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && chatInput && handleChat(chatInput)}
-            />
-            <Button onClick={() => chatInput && handleChat(chatInput)}>Send</Button>
-          </div>
-          <p className="text-[10px] text-muted">
-            This AI assistant provides health information, not medical advice. Always speak to your GP about your
-            personal health.
-          </p>
+        <TabsContent value="ask" className="mt-4 space-y-3">
+          {!boundAskPatientId ? (
+            <p
+              role="status"
+              data-testid="ask-aksh-patient-unbound"
+              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+            >
+              Ask Aksh is self-only. Your practice hasn&apos;t linked a bound patient record on this
+              session yet — once linked, chat uses <code className="text-[10px]">POST /api/chat/patient</code>{" "}
+              with escalation to your care team when needed. liveEmis:false.
+            </p>
+          ) : null}
+          <AskAkshPanel
+            embedded
+            audience="patient"
+            patientId={boundAskPatientId}
+            patientLabel={boundAskPatientId ? `Your record (${boundAskPatientId})` : null}
+            className="min-h-[28rem]"
+          />
         </TabsContent>
       </Tabs>
 

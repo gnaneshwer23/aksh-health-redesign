@@ -4,10 +4,10 @@ const TRUST_PHRASES = [
   "Named review before the record",
   "Draft until a clinician decides",
   "UK data residency",
-  "Built for NHS primary care",
+  "Built for diabetes & primary care",
   "FHIR-ready architecture",
   "Clinician-reviewed outputs",
-  "Designed for EMIS Web & SystmOne",
+  "Sits beside your existing EHR",
 ] as const;
 
 function MarqueeTrack({ ariaHidden }: { ariaHidden?: boolean }) {

@@ -109,6 +109,15 @@ function sortByRecordedAt<T extends { recordedAt: string }>(readings: T[]): T[] 
   return [...readings].sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime());
 }
 
+/** Last write wins per recordedAt — avoids duplicate golden re-ingests collapsing clinical trends. */
+function dedupeByRecordedAt<T extends { recordedAt: string }>(readings: T[]): T[] {
+  const byTime = new Map<string, T>();
+  for (const reading of readings) {
+    byTime.set(reading.recordedAt, reading);
+  }
+  return sortByRecordedAt([...byTime.values()]);
+}
+
 export type IngestedDiabetesReadings = {
   glucoseReadings: DiabetesGlucoseReading[];
   hba1cReadings: DiabetesHbA1cReading[];
@@ -127,10 +136,10 @@ export async function loadIngestedDiabetesReadings(
 ): Promise<IngestedDiabetesReadings> {
   try {
     const { facts } = await listPatientStateFacts(patientId, options);
-    const glucoseReadings = sortByRecordedAt(
+    const glucoseReadings = dedupeByRecordedAt(
       facts.filter((f) => f.factType === DIABETES_GLUCOSE_FACT_TYPE).map((f) => f.value).filter(isGlucoseReadingShape)
     );
-    const hba1cReadings = sortByRecordedAt(
+    const hba1cReadings = dedupeByRecordedAt(
       facts.filter((f) => f.factType === DIABETES_HBA1C_FACT_TYPE).map((f) => f.value).filter(isHbA1cReadingShape)
     );
     return { glucoseReadings, hba1cReadings };

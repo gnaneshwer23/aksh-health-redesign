@@ -1,7 +1,7 @@
 import { ProductDemoScript } from "@/components/product/product-demo-script";
 
 export const metadata = {
-  title: "Product demo walkthrough | Aksh Health",
+  title: "Product demo walkthrough ",
   description: "Controlled product demo stops for advisors and partners (synthetic proof boundary)."
 };
 

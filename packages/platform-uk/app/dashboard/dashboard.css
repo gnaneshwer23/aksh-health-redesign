@@ -14,9 +14,8 @@
     @apply bg-background;
     background-color: #f7f8fa;
     background-image:
-      radial-gradient(circle at 88% 0%, rgb(0 168 142 / 0.07), transparent 42%),
-      radial-gradient(circle at 8% 100%, rgb(232 243 254 / 0.7), transparent 40%),
-      radial-gradient(circle at 50% 50%, rgb(241 237 251 / 0.35), transparent 55%),
+      radial-gradient(circle at 88% 0%, rgb(0 168 142 / 0.05), transparent 42%),
+      radial-gradient(circle at 8% 100%, rgb(232 243 254 / 0.45), transparent 40%),
       linear-gradient(180deg, #fbfcfd 0%, #f7f8fa 55%, #f2f4f7 100%);
   }
 
@@ -112,6 +111,6 @@
   }
 
   .risk-tone-very-high {
-    @apply border-[#7B2D8B] text-[#7B2D8B] bg-[#7B2D8B]/10;
+    @apply border-[#8B3A3A] text-[#8B3A3A] bg-[#8B3A3A]/10;
   }
 }

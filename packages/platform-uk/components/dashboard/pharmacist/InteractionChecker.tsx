@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import { Neo4jMockModeBanner } from "@/components/dashboard/Neo4jMockModeBanner";
 import { GuardianAlert } from "@/components/dashboard/GuardianAlert";
 import { HitlActions, SOAPEditor } from "@/components/dashboard/SOAPEditor";
 import { Button } from "@/components/ui/button";
@@ -38,7 +37,7 @@ function neo4jToMockShape(ix: Neo4jGuardianInteraction): Interaction {
   };
 }
 
-const PHARMACIST_ACCENT = "text-[#6B46C1]";
+const PHARMACIST_ACCENT = "text-accent";
 
 export function InteractionChecker() {
   const { selectedPatientId, setSelectedPatient, stageGuardianInteraction } = useDashboardStore();
@@ -172,7 +171,7 @@ export function InteractionChecker() {
       <div
         id="pharmacist-hitl-stage"
         data-testid="pharmacist-hitl-stage"
-        className="mb-3 scroll-mt-24 rounded-lg border border-[#6B46C1]/25 bg-[#6B46C1]/[0.05] px-3 py-2 text-xs text-muted-foreground"
+        className="mb-3 scroll-mt-24 rounded-lg border border-accent/25 bg-accent/[0.05] px-3 py-2 text-xs text-muted-foreground"
       >
         <p className="font-medium text-foreground">HITL stage · GUARDIAN + SHIELD</p>
         <p className="mt-1">
@@ -180,8 +179,7 @@ export function InteractionChecker() {
           review queue and best-effort SHIELD audit when signed in — liveEmis:false · no EHR write.
         </p>
       </div>
-      <Neo4jMockModeBanner source={source} loading={neo4jLoading} showLive />
-      <Card className="shadow-sm border-[#6B46C1]/10 p-4 space-y-3">
+      <Card className="shadow-sm border-accent/10 p-4 space-y-3">
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-muted">Patient:</span>
           <Select value={checkPatient.id} onValueChange={setSelectedPatient}>
@@ -209,7 +207,7 @@ export function InteractionChecker() {
         </div>
 
         {!neo4jLoading && liveInteractions.length > 0 && !selectedDrug ? (
-          <div className="space-y-2 rounded-md border border-dashed border-[#6B46C1]/30 p-3">
+          <div className="space-y-2 rounded-md border border-dashed border-accent/30 p-3">
             <p className="text-xs text-muted">
               Current-regimen interactions from {source === "neo4j" ? "Neo4j" : "local fallback"} — run a drug check to
               generate a GUARDIAN HITL draft.
@@ -239,7 +237,7 @@ export function InteractionChecker() {
                 key={d}
                 size="sm"
                 variant="outline"
-                className="border-[#6B46C1]/30"
+                className="border-accent/30"
                 disabled={checking}
                 onClick={() => void runCheck(d)}
               >
@@ -296,7 +294,7 @@ export function InteractionChecker() {
             );
           })}
         {selectedDrug && !checking && interactions.length === 0 && (
-          <p className="text-sm text-[#6B46C1]">No significant interactions found</p>
+          <p className="text-sm text-accent">No significant interactions found</p>
         )}
       </Card>
     </section>

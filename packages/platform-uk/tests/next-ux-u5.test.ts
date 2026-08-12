@@ -27,12 +27,18 @@ function run() {
   assert.ok(nurseHero.includes("liveEmis:false"));
   assert.ok(nurseHero.includes("GUARDIAN"));
   assert.ok(nurseHero.includes("synthetic"));
+  assert.ok(nurseHero.includes("aksh-nurse-hero-demo-dismissed") || nurseHero.includes("useDismissibleDemo"));
 
   const nursePage = read("app/dashboard/nurse/page.tsx");
   assert.ok(nursePage.includes("NurseHeroDemoPath"));
   assert.ok(nursePage.includes("nurse-honesty-banner"));
   assert.ok(nursePage.includes("liveEmis:false"));
   assert.ok(nursePage.includes("nurse-vitals"));
+
+  const voiceCare = read("components/dashboard/nurse/VoiceCareEscalationCard.tsx");
+  assert.ok(voiceCare.includes("voice-care-strip"));
+  assert.ok(voiceCare.includes("/api/agents/voice-care"));
+  assert.ok(voiceCare.includes("synthetic outbound"));
 
   assert.ok(read("app/dashboard/nurse/observations/page.tsx").includes("NurseHeroDemoPath"));
   assert.ok(read("app/dashboard/nurse/handover/page.tsx").includes("NurseHeroDemoPath"));
@@ -108,7 +114,7 @@ function run() {
   assert.ok(fs.existsSync(path.join(root, "scripts/smoke-pharmacist-dashboard.mjs")));
   const nurseSmoke = read("scripts/smoke-nurse-dashboard.mjs");
   const pharmSmoke = read("scripts/smoke-pharmacist-dashboard.mjs");
-  assert.ok(nurseSmoke.includes("3-beat demo"));
+  assert.ok(nurseSmoke.includes("Voice Care"));
   assert.ok(pharmSmoke.includes("Med-safety demo"));
 
   // No live EMIS flip

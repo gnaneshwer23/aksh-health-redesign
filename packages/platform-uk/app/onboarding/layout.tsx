@@ -8,7 +8,7 @@ import { ToasterProvider } from "@/components/ui/use-toast";
 import "./onboarding.css";
 
 export const metadata: Metadata = {
-  title: "Onboarding | Aksh Health",
+  title: "Onboarding ",
   description: "Set up your Aksh Health workspace for your clinical or care role.",
 };
 

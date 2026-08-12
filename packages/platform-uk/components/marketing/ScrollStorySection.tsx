@@ -17,7 +17,7 @@ export default function ScrollStorySection() {
               <span className="block">across too many systems.</span>
             </h2>
             <p>
-              A consultation happens in EMIS. A referral goes by email. A medication check requires a separate tool. A
+              A consultation happens in the EHR. A referral goes by email. A medication check requires a separate tool. A
               handover is typed from memory. The information exists — it is just never in one place at the right moment.
             </p>
             <Link href="/platform" className="owkin-text-cta">

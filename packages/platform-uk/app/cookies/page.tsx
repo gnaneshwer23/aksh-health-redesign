@@ -4,7 +4,7 @@ import Link from "next/link";
 import { LegalPageLayout } from "@/components/marketing/legal-page-layout";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Aksh Health",
+  title: "Cookie Policy ",
   description:
     "How Aksh Health uses cookies and similar technologies on our website and clinical platform, and how you can manage your preferences.",
 };

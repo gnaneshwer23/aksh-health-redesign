@@ -28,6 +28,7 @@ function run() {
   assert.ok(icsHero.includes("COMPASS"));
   assert.ok(icsHero.includes("aggregate") || icsHero.includes("patient-level"));
   assert.ok(icsHero.includes("synthetic"));
+  assert.ok(icsHero.includes("aksh-ics-hero-demo-dismissed") || icsHero.includes("useDismissibleDemo"));
 
   const hospitalHero = read("components/dashboard/hospital/HospitalHeroDemoPath.tsx");
   assert.ok(hospitalHero.includes("hospital-hero-demo-path"));
@@ -38,6 +39,7 @@ function run() {
   assert.ok(hospitalHero.includes("liveEmis:false"));
   assert.ok(hospitalHero.includes("synthetic PAS"));
   assert.ok(hospitalHero.includes("PATHWAY") || hospitalHero.includes("HORIZON"));
+  assert.ok(hospitalHero.includes("aksh-hospital-hero-demo-dismissed") || hospitalHero.includes("useDismissibleDemo"));
 
   const icsPage = read("app/dashboard/ics/page.tsx");
   assert.ok(icsPage.includes("IcsHeroDemoPath"));
@@ -45,6 +47,7 @@ function run() {
   assert.ok(icsPage.includes("no patient-level spill"));
   assert.ok(icsPage.includes("liveEmis:false"));
   assert.ok(icsPage.includes("COMPASS"));
+  assert.ok(icsPage.includes("AggregateAskStub"));
   assert.ok(!icsPage.includes("demoPatientHref"));
 
   assert.ok(read("app/dashboard/ics/population/page.tsx").includes("IcsHeroDemoPath"));
@@ -57,6 +60,8 @@ function run() {
   assert.ok(hospitalPage.includes("Not live PAS"));
   assert.ok(hospitalPage.includes("liveEmis:false"));
   assert.ok(hospitalPage.includes("PATHWAY") || hospitalPage.includes("HORIZON"));
+  assert.ok(hospitalPage.includes("WardPatientContext"));
+  assert.ok(hospitalPage.includes("ops-ask-aksh-denied") || read("components/dashboard/hospital/WardPatientContext.tsx").includes("ops-ask-aksh-denied"));
 
   assert.ok(read("app/dashboard/hospital/wards/page.tsx").includes("HospitalHeroDemoPath"));
   assert.ok(read("app/dashboard/hospital/capacity/page.tsx").includes("HospitalHeroDemoPath"));
@@ -65,6 +70,9 @@ function run() {
   const mockBanner = read("components/dashboard/hospital/HospitalMockModeBanner.tsx");
   assert.ok(mockBanner.includes("Not live PAS"));
   assert.ok(mockBanner.includes("liveEmis:false"));
+  // Folded into HonestyStatusBar for hospital layout — component retained for contracts.
+  assert.ok(read("components/dashboard/HonestyStatusBar.tsx").includes("Not live PAS"));
+  assert.ok(!read("app/dashboard/hospital/layout.tsx").includes("HospitalMockModeBanner"));
 
   // First-run aligned with hero beats
   const icsFirst = FIRST_RUN_BY_DASHBOARD.ics;
@@ -103,13 +111,13 @@ function run() {
   // Smoke scripts assert hero copy
   assert.ok(fs.existsSync(path.join(root, "scripts/smoke-ics-dashboard.mjs")));
   const icsSmoke = read("scripts/smoke-ics-dashboard.mjs");
-  assert.ok(icsSmoke.includes("Population demo"));
+  assert.ok(icsSmoke.includes("Population intelligence"));
   assert.ok(icsSmoke.includes("liveEmis:false"));
   assert.ok(icsSmoke.includes("no patient-level spill"));
 
   assert.ok(fs.existsSync(path.join(root, "scripts/smoke-hospital-dashboard.mjs")));
   const hospitalSmoke = read("scripts/smoke-hospital-dashboard.mjs");
-  assert.ok(hospitalSmoke.includes("Command-centre demo"));
+  assert.ok(hospitalSmoke.includes("Command Centre Overview"));
   assert.ok(hospitalSmoke.includes("liveEmis:false"));
   assert.ok(hospitalSmoke.includes("Not live PAS"));
 

@@ -38,15 +38,15 @@ export function ReviewQueue({
   const patientName = patientId ? getPatientById(patientId)?.name : null;
   const showPatientEmpty = Boolean(patientId && patientName && filtered.length === 0);
   const showGlobalEmpty = Boolean(showAll && !patientId && filtered.length === 0);
-  const heading = queueLabel ?? (showAll ? buildReviewQueueLabel(profile?.fullName) : "AI Review Queue");
+  const heading = queueLabel ?? (showAll ? buildReviewQueueLabel(profile?.fullName) : "Review Queue");
   const globalEmptyMessage = buildEmptyStateMessage(
     profile,
-    "AI review items",
-    "No AI outputs are awaiting your approval."
+    "review items",
+    "No drafts are awaiting your approval."
   );
 
   return (
-    <section aria-label="AI Review Queue" data-testid="gp-review-queue">
+    <section aria-label="Review Queue" data-testid="gp-review-queue">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
           <h2 className="text-base font-semibold">{heading}</h2>
@@ -77,7 +77,7 @@ export function ReviewQueue({
       {showPatientEmpty ? (
         <div className="dashboard-card flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border-subtle p-10 text-center">
           <ClipboardCheck className="h-10 w-10 text-steel" aria-hidden />
-          <p className="text-sm font-medium text-foreground">No AI items pending for {patientName}</p>
+          <p className="text-sm font-medium text-foreground">No drafts pending for {patientName}</p>
           <p className="text-xs text-muted">Accepted and rejected items are cleared from this queue.</p>
         </div>
       ) : showGlobalEmpty ? (
