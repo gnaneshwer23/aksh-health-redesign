@@ -10,6 +10,9 @@
  *   SMOKE_BASE_URL=http://127.0.0.1:3000
  */
 
+// Side-effect: load .env.local SMOKE_* (optional hospital auth pass)
+import "./lib/smoke-credentials.mjs";
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 const smokeEmail = process.env.SMOKE_HOSPITAL_EMAIL?.trim() ?? "";
 const smokePassword = process.env.SMOKE_HOSPITAL_PASSWORD ?? "";

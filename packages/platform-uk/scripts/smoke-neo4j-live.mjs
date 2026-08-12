@@ -17,6 +17,9 @@
  *   SMOKE_GP_EMAIL=... SMOKE_GP_PASSWORD=... npm run smoke:neo4j
  */
 
+// Side-effect: load .env.local SMOKE_* before reading overrides
+import "./lib/smoke-credentials.mjs";
+
 const baseUrl = (process.env.SMOKE_BASE_URL ?? process.env.EVIDENCE_HEALTH_URL ?? "https://akshhealth.com").replace(
   /\/$/,
   ""
