@@ -50,8 +50,8 @@ export function TutorialStepClient() {
   return (
     <OnboardingCard
       stepId="tutorial"
-      title="Role-shaped tutorial"
-      description="Agents that matter for you, what you approve, and where to start on your dashboard. Skip if you already know the path."
+      title="A short walkthrough"
+      description="What you will review, what you approve, and where to start. Skip if you already know the path."
     >
       <TutorialPlayer role={role} onComplete={handleComplete} />
       <OnboardingNav onBack={handleBack} showBack />

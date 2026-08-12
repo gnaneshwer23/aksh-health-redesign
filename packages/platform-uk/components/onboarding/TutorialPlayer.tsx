@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getRoleOnboardingPath, type RoleTutorialScreen } from "@/lib/onboarding/role-paths";
 import { resolveDashboardPath, type UserRole } from "@/lib/onboarding/roles";
@@ -25,16 +24,7 @@ function personaliseTitle(title: string, role: UserRole, identity: Record<string
 
 function ScreenVisual({ screen }: { screen: RoleTutorialScreen }) {
   return (
-    <div className="space-y-3 rounded-md border border-border p-4 text-sm">
-      {screen.agents && screen.agents.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5" aria-label="Agents on this step">
-          {screen.agents.map((name) => (
-            <Badge key={name} variant="outline">
-              {name}
-            </Badge>
-          ))}
-        </div>
-      ) : null}
+    <div className="space-y-3 border border-border-subtle px-4 py-3 text-sm">
       {screen.bullets && screen.bullets.length > 0 ? (
         <ul className="list-disc space-y-1.5 pl-4 text-muted">
           {screen.bullets.map((line) => (
@@ -43,9 +33,7 @@ function ScreenVisual({ screen }: { screen: RoleTutorialScreen }) {
         </ul>
       ) : null}
       {screen.honesty ? (
-        <p className="rounded-md border border-warning/30 bg-warning/5 px-3 py-2 text-xs text-foreground">
-          {screen.honesty}
-        </p>
+        <p className="text-xs leading-relaxed text-muted">{screen.honesty}</p>
       ) : null}
     </div>
   );
@@ -64,7 +52,7 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
   if (!screen || screens.length === 0) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-muted">No tutorial screens for this role.</p>
+        <p className="text-sm text-muted">No walkthrough screens for this role.</p>
         <Button type="button" onClick={onComplete}>
           Continue to complete
         </Button>
@@ -73,28 +61,28 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
   }
 
   return (
-    <div className="animate-in fade-in duration-200">
+    <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm text-muted">
         <span>
-          Tutorial {tutorialScreen + 1} of {screens.length}
+          {tutorialScreen + 1} of {screens.length}
         </span>
         <Button type="button" variant="ghost" size="sm" onClick={onComplete}>
-          Skip tutorial
+          Skip
         </Button>
       </div>
 
       {path ? (
-        <p className="mb-3 rounded-md border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-foreground">
+        <p className="mb-4 text-xs leading-relaxed text-foreground">
           <span className="font-medium">You approve: </span>
           {path.youApprove}
         </p>
       ) : null}
 
-      <h2 className="text-xl font-semibold text-foreground">
+      <h2 className="text-lg font-semibold text-foreground sm:text-xl">
         {personaliseTitle(screen.title, role, identity)}
       </h2>
-      <p className="mt-3 text-muted">{screen.body}</p>
-      <div className="mt-6">
+      <p className="mt-3 text-sm leading-relaxed text-muted">{screen.body}</p>
+      <div className="mt-5">
         <ScreenVisual screen={screen} />
       </div>
 
@@ -109,7 +97,7 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
         </Button>
         {isLast ? (
           <Button type="button" onClick={onComplete}>
-            {screen.ctaLabel ?? "Finish tutorial"}
+            {screen.ctaLabel ?? "Finish walkthrough"}
           </Button>
         ) : (
           <Button type="button" onClick={() => setTutorialScreen(tutorialScreen + 1)}>
@@ -119,8 +107,8 @@ export function TutorialPlayer({ role, onComplete }: TutorialPlayerProps) {
       </div>
 
       <p className="mt-4 text-xs text-muted">
-        After you finish onboarding you&apos;ll land on {resolveDashboardPath(role)}. Skip is available for
-        returning demo users — CTAs always complete onboarding first.
+        After onboarding you will open {resolveDashboardPath(role)}. Skip is available if you already
+        know the path.
       </p>
     </div>
   );

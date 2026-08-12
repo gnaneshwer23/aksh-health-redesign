@@ -46,8 +46,8 @@ export function IdentityStepClient() {
   return (
     <OnboardingCard
       stepId="identity"
-      title="Identity & credentials"
-      description={`${def?.label} | verify who you are before accessing Aksh Health.`}
+      title="Confirm your identity"
+      description={`As a ${def?.label}, confirm who you are before accessing Aksh Health.`}
     >
       <IdentityForm role={role} onSubmit={handleSubmit} />
       <OnboardingNav

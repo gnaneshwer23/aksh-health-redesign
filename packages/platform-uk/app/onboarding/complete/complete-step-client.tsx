@@ -107,8 +107,8 @@ export function CompleteStepClient() {
   return (
     <OnboardingCard
       stepId="complete"
-      title="You're all set"
-      description={`Welcome, ${displayName}. Your ${def?.label} workspace is ready — role-shaped path complete. Capture → draft → approve with clinician control · liveEmis:false.`}
+      title="You're ready"
+      description={`Welcome, ${displayName}. Your ${def?.label} workspace is set up. Capture, draft, then approve — a clinician decides what reaches the record.`}
     >
       <SandboxPreview />
       <div className="mt-6 space-y-4">
@@ -116,7 +116,7 @@ export function CompleteStepClient() {
           {submitting ? "Opening your dashboard…" : "Go to your dashboard"}
         </Button>
         <p className="text-xs text-muted">
-          Completing onboarding marks your profile ready and opens your role home with first-run guidance.
+          This marks your profile ready and opens your role home with a short first-run tip.
         </p>
       </div>
     </OnboardingCard>

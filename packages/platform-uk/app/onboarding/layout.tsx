@@ -9,7 +9,7 @@ import "./onboarding.css";
 
 export const metadata: Metadata = {
   title: "Onboarding | Aksh Health",
-  description: "Personalised onboarding for NHS clinicians, administrators, and patients.",
+  description: "Set up your Aksh Health workspace for your clinical or care role.",
 };
 
 export const dynamic = "force-dynamic";

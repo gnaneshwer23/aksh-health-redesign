@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { X } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { resolveFirstRunCopy } from "@/lib/product-journey";
@@ -61,7 +60,7 @@ export function FirstRunGuidance({
       aria-label="First-run guidance"
       data-testid="first-run-guidance"
       className={cn(
-        "rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm text-foreground shadow-sm",
+        "border border-border-subtle bg-surface px-4 py-3 text-sm text-foreground",
         className
       )}
     >
@@ -75,16 +74,6 @@ export function FirstRunGuidance({
               <span className="font-medium">You approve: </span>
               {copy.youApprove}
             </p>
-          ) : null}
-
-          {copy.agents && copy.agents.length > 0 ? (
-            <div className="flex flex-wrap gap-1" aria-label="Agents for your role">
-              {copy.agents.slice(0, 8).map((name) => (
-                <Badge key={name} variant="outline" className="text-[10px]">
-                  {name}
-                </Badge>
-              ))}
-            </div>
           ) : null}
 
           {copy.honesty ? (
@@ -111,7 +100,7 @@ export function FirstRunGuidance({
         <button
           type="button"
           aria-label="Dismiss first-run guidance"
-          className="shrink-0 rounded-md p-1 text-muted hover:bg-primary/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="shrink-0 rounded-md p-1 text-muted hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           onClick={dismiss}
         >
           <X className="h-4 w-4" />

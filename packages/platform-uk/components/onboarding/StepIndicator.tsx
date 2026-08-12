@@ -1,7 +1,5 @@
 "use client";
 
-import { Check } from "lucide-react";
-
 import { Progress } from "@/components/ui/progress";
 import {
   getRoleDefinition,
@@ -27,41 +25,35 @@ export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
   );
 
   return (
-    <div className="mb-8 space-y-4">
-      <div className="flex items-center justify-between text-sm text-muted">
-        <span>
+    <div className="mb-8 space-y-3">
+      <div className="flex items-baseline justify-between gap-3 text-sm">
+        <span className="text-muted">
           Step {Math.max(currentIndex, 1)} of {steps.length || 1}
         </span>
         <span className="font-medium text-foreground">
           {ONBOARDING_STEP_LABELS[currentStepId]}
         </span>
       </div>
-      <Progress value={progressValue} />
-      <div className="flex flex-wrap gap-2">
+      <Progress value={progressValue} className="h-1.5" />
+      <ol className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" aria-label="Onboarding steps">
         {steps.map((stepId, index) => {
-          const stepNumber = index + 1;
           const absoluteIndex = def?.steps.indexOf(stepId) ?? index;
           const isComplete = absoluteIndex < currentIndex;
           const isActive = stepId === currentStepId;
           return (
-            <div
+            <li
               key={stepId}
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-full border text-xs font-semibold transition-all duration-200 shadow-sm",
-                isComplete &&
-                  "border-medicom-emerald bg-medicom-emerald text-white",
-                isActive &&
-                  !isComplete &&
-                  "border-medicom-navy bg-medicom-navy text-white ring-4 ring-medicom-navy/15",
-                !isComplete && !isActive && "border-border-subtle bg-card text-muted"
+                "list-none",
+                isActive && "font-medium text-foreground",
+                isComplete && !isActive && "text-foreground/70"
               )}
-              title={ONBOARDING_STEP_LABELS[stepId]}
             >
-              {isComplete ? <Check className="h-4 w-4" aria-hidden /> : stepNumber}
-            </div>
+              {ONBOARDING_STEP_LABELS[stepId]}
+            </li>
           );
         })}
-      </div>
+      </ol>
     </div>
   );
 }

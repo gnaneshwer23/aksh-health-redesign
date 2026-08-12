@@ -50,8 +50,8 @@ export function PreferencesStepClient() {
   return (
     <OnboardingCard
       stepId="preferences"
-      title="AI agent preferences"
-      description="Choose how Aksh Health agents work for your workflow."
+      title="Workspace preferences"
+      description="Choose defaults for drafts, alerts, and digests in your role."
     >
       <PreferencesPanel role={role} onSubmit={handleSubmit} />
       <OnboardingNav

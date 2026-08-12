@@ -50,8 +50,8 @@ export function OrganisationStepClient() {
   return (
     <OnboardingCard
       stepId="organisation"
-      title="Organisation setup"
-      description="Connect your practice, ICS, trust, or research institution."
+      title="Your organisation"
+      description="Link your practice, ICS, trust, or research institution."
     >
       <OrgForm role={role} onSubmit={handleSubmit} />
       <OnboardingNav

@@ -54,7 +54,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
     label: "GP",
-    description: "Review queue + HITL — SYNTHESIS, GUARDIAN, HORIZON drafts you Approve",
+    description: "Review clinical drafts — Accept, Edit, or Reject before anything is staged",
     icon: "stethoscope",
     color: "#003D7A",
     steps: [...CLINICAL_ORG_STEPS],
@@ -64,7 +64,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "nurse",
     label: "Nurse / Care Coordinator",
-    description: "Observations → handover → GUARDIAN alerts — guided tutorial included",
+    description: "Observations, handover drafts, and safety alerts — you confirm each step",
     icon: "heart-pulse",
     color: "#006B4F",
     steps: [...CLINICAL_ORG_STEPS],
@@ -74,7 +74,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "clinical-pharmacist",
     label: "Clinical Pharmacist",
-    description: "Med review + GUARDIAN interactions — HITL before any staging",
+    description: "Medication review and interaction checks — HITL before any staging",
     icon: "pill",
     color: "#6B46C1",
     steps: [...CLINICAL_ORG_STEPS],
@@ -84,7 +84,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "practice-manager",
     label: "Practice Manager / Admin",
-    description: "BRIDGE / SHIELD ops — clinicians keep clinical Accept (liveEmis:false)",
+    description: "Integrations, audit, and enquiries — clinicians keep clinical Accept",
     icon: "building",
     color: "#64748B",
     steps: [...CLINICAL_ORG_STEPS],
@@ -94,7 +94,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "ics-lead",
     label: "ICS Lead / Clinical Informatics",
-    description: "COMPASS equity + HORIZON aggregates — synthetic cohorts",
+    description: "Population, equity, and forecast views on synthetic cohorts",
     icon: "network",
     color: "#0D9488",
     steps: [...CLINICAL_ORG_STEPS],
@@ -105,7 +105,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "hospital-executive",
     label: "Hospital Executive",
-    description: "Command Centre — synthetic PAS honesty, capacity HITL",
+    description: "Wards, capacity, and staffing — synthetic PAS, recommendations need review",
     icon: "chart-bar",
     color: "#001A3D",
     steps: [...CLINICAL_ORG_STEPS],
@@ -125,7 +125,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "researcher",
     label: "Researcher / Analyst",
-    description: "Governed cohorts — ATLAS Phase 2; SHIELD-audited exports",
+    description: "Governed cohorts and audited exports — research agent remains Phase 2",
     icon: "microscope",
     color: "#E67E22",
     steps: [...CLINICAL_ORG_STEPS],

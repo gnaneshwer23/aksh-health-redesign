@@ -46,11 +46,11 @@ export function ConsentStepClient() {
   return (
     <OnboardingCard
       stepId="consent"
-      title="Consent & governance"
+      title="Consent and acknowledgements"
       description={
         role === "patient"
           ? "Please read and agree to these terms in plain English."
-          : "Required acknowledgements for safe AI-assisted care."
+          : "Required acknowledgements before you use the workspace."
       }
     >
       <ConsentForm role={role} onSubmit={handleSubmit} />

@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { getRoleOnboardingPath } from "@/lib/onboarding/role-paths";
 import { getRoleDefinition, resolveDashboardPath } from "@/lib/onboarding/roles";
 import { ROLE_DASHBOARD_PREVIEW } from "@/lib/product-journey";
 import { useOnboardingStore } from "@/lib/onboarding/store";
-import { cn } from "@/lib/utils";
 
 export function SandboxPreview() {
   const role = useOnboardingStore((s) => s.role);
@@ -30,16 +28,13 @@ export function SandboxPreview() {
   );
 
   return (
-    <div className="rounded-lg border border-dashed border-border bg-background p-4">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground">What you&apos;ll see next</p>
-        <Badge variant="outline">Preview</Badge>
-      </div>
-      <div className="space-y-3 rounded-md border border-border bg-card p-4 text-sm">
+    <div className="border border-border-subtle bg-surface px-4 py-4">
+      <p className="mb-3 text-sm font-semibold text-foreground">What you&apos;ll see next</p>
+      <div className="space-y-3 text-sm">
         <div>
           <p className="font-medium">{name}</p>
           <p className="text-muted">
-            {preview?.workspaceLabel ?? def?.label ?? "Workspace"} · {role ?? "role not selected"}
+            {preview?.workspaceLabel ?? def?.label ?? "Workspace"}
           </p>
           {path?.pathPromise ? (
             <p className="mt-1 text-xs text-foreground">{path.pathPromise}</p>
@@ -50,23 +45,9 @@ export function SandboxPreview() {
           {odsCode ? <p className="text-muted">ODS: {odsCode}</p> : null}
         </div>
 
-        {path?.agents?.length ? (
-          <div className="flex flex-wrap gap-1" aria-label="Agents for your role">
-            {path.agents.slice(0, 8).map((agent) => (
-              <Badge key={agent.name} variant="outline" className="text-[10px]">
-                {agent.name}
-                {agent.badge === "phase2" ? " · Phase 2" : ""}
-                {agent.badge === "subcap" ? " · Sub-cap" : ""}
-              </Badge>
-            ))}
-          </div>
-        ) : null}
-
         {preview ? (
           <div>
-            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              On your dashboard
-            </p>
+            <p className="mb-1.5 text-xs font-medium text-muted">On your dashboard</p>
             <ul className="list-disc space-y-1 pl-4 text-muted">
               {preview.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
@@ -78,7 +59,7 @@ export function SandboxPreview() {
                 {preview.youApprove}
               </p>
             ) : null}
-            <p className="mt-3 rounded-md border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-foreground">
+            <p className="mt-2 text-xs text-foreground">
               <span className="font-medium">First focus: </span>
               {preview.firstFocus}
             </p>
@@ -95,7 +76,7 @@ export function SandboxPreview() {
           </div>
         ) : null}
 
-        <p className={cn("text-xs text-muted")}>
+        <p className="text-xs text-muted">
           Continues to{" "}
           <span className="font-medium text-foreground">{resolveDashboardPath(role)}</span>
           {preview?.docsHref ? (

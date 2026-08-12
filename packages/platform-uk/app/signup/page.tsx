@@ -14,7 +14,7 @@ export default function SignupPage() {
   return (
     <AuthCardLayout
       title="Create your account"
-      subtitle="Self-serve registration for GPs, nurses, patients, and individual users"
+      subtitle="For individual clinicians, care team members, and patients"
       className="max-w-2xl"
       footer={
         <div className="space-y-3 text-center text-sm text-muted">
