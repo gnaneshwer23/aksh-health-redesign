@@ -86,6 +86,16 @@ export default function AdminDashboardPage() {
               Purpose + modality grants after first login — SHIELD logged, no EHR write
             </p>
           </Link>
+          <Link
+            href="/dashboard/admin/e2e"
+            className="rounded-xl border border-dashed border-border-subtle bg-surface-muted/40 p-4 transition-colors hover:border-primary/30"
+            data-testid="admin-e2e-dashboard-link"
+          >
+            <p className="text-sm font-semibold text-foreground">E2E platform validation</p>
+            <p className="mt-1 text-xs text-muted">
+              Dev/test only — synthetic cohort A–H, seed/cleanup/report CLI. Disabled in production.
+            </p>
+          </Link>
         </div>
 
         <AdminQuickLinks />

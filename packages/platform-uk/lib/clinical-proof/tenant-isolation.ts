@@ -10,6 +10,8 @@
  * when DATABASE_URL is set (`app.practice_id` + review_cases policy).
  */
 
+import type { AppRole } from "../permission-matrix";
+
 export type ClinicalAccessRole =
   | "gp"
   | "nurse"
@@ -189,4 +191,42 @@ export function assertAdminDeniedClinicalApi(role: ClinicalAccessRole) {
     throw new Error(`Expected role "${role}" to be denied clinical APIs`);
   }
   return true;
+}
+
+/**
+ * Stage 5 — AppRole-aware clinical read gate for patient APIs (state, timeline).
+ * Maps NextAuth AppRole to the same fail-closed posture as evaluateClinicalApiAccess.
+ */
+export function evaluateAppRoleClinicalReadAccess(input: {
+  appRole: AppRole;
+  boundPatientId?: string | null;
+  requestedPatientId: string;
+}): { allowed: boolean; reason: string; status: 200 | 403 } {
+  const requested = input.requestedPatientId.trim();
+  if (!requested) {
+    return { allowed: false, reason: "Missing patient id", status: 403 };
+  }
+
+  if (input.appRole === "operations_lead" || input.appRole === "researcher" || input.appRole === "restricted") {
+    return {
+      allowed: false,
+      reason: `AppRole "${input.appRole}" is denied patient clinical read APIs`,
+      status: 403,
+    };
+  }
+
+  if (input.appRole === "patient") {
+    const patientCheck = evaluatePatientUrlAccess({
+      role: "patient",
+      boundPatientId: input.boundPatientId,
+      requestedPatientId: requested,
+    });
+    return {
+      allowed: patientCheck.allowed,
+      reason: patientCheck.reason,
+      status: patientCheck.status === 400 ? 403 : patientCheck.status,
+    };
+  }
+
+  return { allowed: true, reason: "Clinical reviewer read permitted", status: 200 };
 }

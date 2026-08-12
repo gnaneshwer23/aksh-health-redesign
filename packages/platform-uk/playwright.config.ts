@@ -40,6 +40,8 @@ export default defineConfig({
       NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? baseURL,
       SKIP_EMAIL_SEND: "true",
       DISABLE_RATE_LIMIT: process.env.DISABLE_RATE_LIMIT ?? "true",
+      E2E_TEST_MODE: process.env.E2E_TEST_MODE ?? "true",
+      ENABLE_DIABETES_MODULE: process.env.ENABLE_DIABETES_MODULE ?? "true",
       CI: process.env.CI ?? "",
     },
   },

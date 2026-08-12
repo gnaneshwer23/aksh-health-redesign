@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { evaluateAppRoleClinicalReadAccess } from "@/lib/clinical-proof/tenant-isolation";
 import { getPatientById } from "@/lib/mock-data";
 import { getPatientStateSnapshot, listPatientStateFacts } from "@/lib/patient-state/repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
@@ -20,6 +21,15 @@ export async function GET(request: Request, context: RouteContext) {
   const patientId = context.params.id?.trim();
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
+  }
+
+  const access = evaluateAppRoleClinicalReadAccess({
+    appRole: auth.context.userRole,
+    boundPatientId: auth.context.boundPatientId,
+    requestedPatientId: patientId,
+  });
+  if (!access.allowed) {
+    return NextResponse.json({ error: access.reason, denied: true }, { status: access.status });
   }
 
   const patient = getPatientById(patientId);

@@ -41,5 +41,9 @@ data/benchmark-signoffs.readiness_contract_*.json
 data/feedback-state.benchmark_concurrency_*.json
 data/feedback-state.readiness_contract_*.json
 
+# E2E platform validation generated artifacts (npm run seed:e2e)
+data/e2e/*/
+data/e2e/latest-batch.json
+
 # Evidence pack generated snapshots (regenerate via npm run evidence:pack)
 docs/evidence-pack/generated/
