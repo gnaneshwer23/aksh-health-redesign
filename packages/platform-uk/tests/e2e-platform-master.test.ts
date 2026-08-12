@@ -37,7 +37,7 @@ async function run() {
   assert.equal(result.honesty.productionReadyForAutonomousCare, false);
   assert.equal(result.readiness.workflow, "SIMULATED END-TO-END");
   assert.equal(result.readiness.clinicalEvidence, "UNVALIDATED");
-  assert.equal(result.steps.length, 25);
+  assert.equal(result.steps.length, 35);
   assert.ok(result.correlationId.startsWith("aksh-master-"));
   assert.equal(result.identity.canonicalPatientId, result.identity.generatorPatientId);
 

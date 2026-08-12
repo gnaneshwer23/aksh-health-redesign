@@ -44,9 +44,9 @@ const ETHNICITIES = [
   "White British", "Black African", "Asian British", "Mixed heritage",
   "White Other", "Black Caribbean", "Indian", "Pakistani", "Bangladeshi",
 ];
-const ICS_REGIONS = [
-  "South East London", "West Yorkshire", "Greater Manchester", "Birmingham & Solihull",
-  "North East London", "Surrey Heartlands", "Cheshire & Merseyside", "West Midlands",
+const REGION_LABELS = [
+  "Region Alpha", "Region Beta", "Region Gamma", "Region Delta",
+  "Region East", "Region West", "Region North", "Region South",
 ];
 
 function padId(prefix: string, n: number, width = 3): string {
@@ -146,7 +146,7 @@ function generateOrganisations(
     { kind: "primary_care", prefix: "org-pc", names: ["Riverside Medical Centre", "Oakwood Health Practice", "Valley View Surgery"] },
     { kind: "diabetes_clinic", prefix: "org-dc", names: ["Metabolic Care Clinic", "Diabetes Excellence Centre"] },
     { kind: "specialist_centre", prefix: "org-sc", names: ["Regional Endocrine Centre", "Cardio-Renal Institute"] },
-    { kind: "hospital", prefix: "org-hosp", names: ["St Helens University Hospital", "Northbridge NHS Trust"] },
+    { kind: "hospital", prefix: "org-hosp", names: ["St Helens University Hospital", "Northbridge Regional Hospital"] },
     { kind: "community", prefix: "org-com", names: ["Community Diabetes Service", "Home Care Outreach"] },
     { kind: "laboratory", prefix: "lab", names: ["SynLab Diagnostics", "PathCore UK", "BioTrace Labs", "NorthStar Pathology"] },
     { kind: "pharmacy", prefix: "pharm", names: ["WellCare Pharmacy", "GreenCross Chemist", "City Health Pharmacy"] },
@@ -165,12 +165,16 @@ function generateOrganisations(
           : Math.max(1, Math.floor(orgCount / 5));
     for (let i = 0; i < limit && orgs.length < orgCount + labCount + pharmacyCount; i += 1) {
       seq += 1;
+      const orgCode = `ORG${String(10000 + seq).slice(-5)}`;
+      const region = rng.pick(REGION_LABELS);
       orgs.push({
         id: `${bucket.prefix}-${padId("", seq, 2).slice(1)}`,
         name: `${bucket.names[i % bucket.names.length]!} (E2E synthetic)`,
         kind: bucket.kind,
-        odsCode: `E2E${String(10000 + seq).slice(-5)}`,
-        icsRegion: rng.pick(ICS_REGIONS),
+        odsCode: orgCode,
+        organisationCode: orgCode,
+        icsRegion: region,
+        regionId: region,
         metadata: baseMetadata(batchId, generatedAt),
       });
     }
@@ -259,7 +263,7 @@ function generateUsers(
         fullName: `${bucket.title} ${first} ${surname}`,
         organisationId: org?.id ?? null,
         providerId: `PROV-E2E-${String(10000 + seq)}`,
-        practiceOds: org?.odsCode ?? null,
+        practiceOds: org?.organisationCode ?? org?.odsCode ?? null,
         credentialsHint: bucket.role === "gp"
           ? `GMC ${String(2000000 + seq).padStart(7, "0")} (synthetic)`
           : bucket.role === "clinical-pharmacist"
@@ -336,6 +340,7 @@ function generatePatients(
           : {}),
         name: `${rng.pick(["Mr", "Mrs", "Ms", "Mx"])} ${rng.pick(FIRST_NAMES)} ${rng.pick(SURNAMES)}`,
         nhsNumber: syntheticNhs(i),
+        nationalPatientId: syntheticNhs(i),
         dob: `${year}-${String(rng.int(1, 12)).padStart(2, "0")}-${String(rng.int(1, 28)).padStart(2, "0")}`,
         age,
         sex,

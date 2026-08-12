@@ -45,6 +45,7 @@ import {
 } from "./patient-identity";
 import { completeLabResult, findDelayedLabs, markLabDelayed } from "./lab-sim";
 import { detectHba1cImprovement } from "./learning-state-assertions";
+import { runStakeholderClinic } from "./stakeholder-clinic";
 import { E2E_DEFAULT_SEED, E2E_SOURCE } from "./types";
 
 export const MASTER_JOURNEY_TEST_ID = "AKSH-E2E-MASTER-001" as const;
@@ -261,10 +262,12 @@ export async function runMasterJourney(
   const steps: MasterJourneyStep[] = [];
   const relatedGoldens = [
     "AKSH-E2E-0002",
+    "AKSH-E2E-0004",
     "AKSH-E2E-0010",
     "AKSH-E2E-0013",
     "AKSH-E2E-0014",
     "AKSH-E2E-0015",
+    "AKSH-E2E-0017",
     "AKSH-E2E-0019",
   ];
 
@@ -853,22 +856,30 @@ export async function runMasterJourney(
     }
   }
 
-  // --- Step 20: Nurse / care follow-up contract ---
+  // --- Steps 20–32: Multi-stakeholder simulated clinic (coherent scenario) ---
+  const clinic = runStakeholderClinic({
+    dataset,
+    patient: generatorPatient,
+    correlationId,
+    cgmPatient: dataset.patients.find((p) => p.cohortId === "D") ?? null,
+    pharmacyPatient: cohortE ?? null,
+    labPatient: cohortF ?? null,
+  });
+
   {
     const t0 = Date.now();
-    const careTeam = resolveCareTeam(generatorPatient, dataset.users);
-    const hasNurse = careTeam.members.some(
-      (m) => m.role === "nurse" || m.subRole === "care_coordinator" || m.subRole === "dietitian"
-    );
+    const ok = clinic.nurseFollowUp.status === "done" && clinic.careTeam.liveDirectory === false;
     steps.push(
       stepResult(
         20,
         "MJ-20-NURSE-FOLLOWUP",
-        "Nurse / care-team follow-up surface available (sim directory)",
+        "Nurse completes diabetes follow-up after encounter draft (sim)",
         "MONITOR",
         "SIMULATED",
-        hasNurse || careTeam.members.length >= 1 ? "PASS" : "FAIL",
-        `careTeam members=${careTeam.members.length} liveDirectory=${careTeam.liveDirectory}`,
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `followUp=${clinic.nurseFollowUp.id} · members=${clinic.careTeam.members.length}`
+          : clinic.failures.join("; ") || "nurse follow-up incomplete",
         t0
       )
     );
@@ -892,27 +903,239 @@ export async function runMasterJourney(
     );
   }
 
-  // --- Step 22: PATHWAY / referral draft presence via orchestration slots (already ran) ---
   {
     const t0 = Date.now();
-    // PATHWAY is Accept-time referral package; Master asserts CONDUCTOR does not auto-ACT
-    const decideStep = steps.find((s) => s.id === "MJ-08-DECISION");
-    const ok = decideStep?.status === "PASS" || decideStep?.status === "SKIP";
+    const ok =
+      clinic.referral.status === "accepted_for_send" &&
+      clinic.referral.eReferralWrite === false &&
+      clinic.referral.hitlRequired === true;
     steps.push(
       stepResult(
         22,
-        "MJ-22-NO-AUTO-ACT",
-        "No autonomous ACT — PATHWAY/intervention remain draft until HITL",
+        "MJ-22-REFERRAL-DRAFT",
+        "PATHWAY referral draft Accept-for-send — no live e-Referral",
         "RECOMMEND",
-        "LIVE",
+        "SIMULATED",
         ok ? "PASS" : "FAIL",
-        "hitlRequired:true preserved; liveEmis:false",
+        ok
+          ? `specialty=${clinic.referral.specialty} · staging=${clinic.referral.stagingId}`
+          : "referral draft incomplete",
         t0
       )
     );
   }
 
-  // --- Step 23: Global honesty invariants ---
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.appointment.status === "no_show" && clinic.noShowTask.status === "closed";
+    steps.push(
+      stepResult(
+        23,
+        "MJ-23-APPOINTMENT-NOSHOW",
+        "Appointment book→remind→no-show→coordinator close (sim)",
+        "ACT",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `appt=${clinic.appointment.id} · task=${clinic.noShowTask.id}`
+          : "appointment/no-show path failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok = clinic.consentRevokeBlocked === true && clinic.consents.length >= 5;
+    steps.push(
+      stepResult(
+        24,
+        "MJ-24-CONSENT-REVOKE",
+        "Consent grant + mid-journey revoke blocks purpose",
+        "CONNECT",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `grants=${clinic.consents.length} · revokeBlocks=true`
+          : "consent revoke did not block",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.voice.liveMicCapture === false &&
+      clinic.synthesis.hitlRequired === true &&
+      clinic.synthesis.agent === "SYNTHESIS";
+    steps.push(
+      stepResult(
+        25,
+        "MJ-25-VOICE-SYNTHESIS",
+        "SIMULATED VOICE capture → SYNTHESIS draft (HITL)",
+        "UNDERSTAND",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `voice=${clinic.voice.id} · synth=${clinic.synthesis.id} · liveMic=false`
+          : "VOICE/SYNTHESIS sim failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      Boolean(clinic.cgmAlert) &&
+      clinic.cgmAlert!.decisionBias === "ESCALATE" &&
+      clinic.cgmAlert!.liveCgmFeed === false;
+    steps.push(
+      stepResult(
+        26,
+        "MJ-26-CGM-SAFETY",
+        "SIMULATED CGM hypo series → safety escalate (no auto-treat)",
+        "DETECT",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `alert=${clinic.cgmAlert!.id} · hypos=${clinic.cgmAlert!.hypoEventCount7d}`
+          : "CGM safety path failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok = clinic.coordinatorTasks.every((t) => t.status === "done");
+    steps.push(
+      stepResult(
+        27,
+        "MJ-27-COORDINATOR",
+        "Care coordinator closes clinic chase tasks",
+        "ACT",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `tasks=${clinic.coordinatorTasks.length} all done`
+          : "coordinator tasks incomplete",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.notifications.length >= 3 &&
+      clinic.notifications.every((n) => n.status === "actioned" && n.livePush === false);
+    steps.push(
+      stepResult(
+        28,
+        "MJ-28-NOTIFICATIONS",
+        "Clinic notifications emitted and actioned (sim push)",
+        "MONITOR",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `notifications=${clinic.notifications.length} · livePush=false`
+          : "notifications incomplete",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.digitalTwin.physiologicalTwin === false &&
+      clinic.digitalTwin.simulationMode === "synthetic_rules" &&
+      clinic.digitalTwin.optionCount >= 1;
+    steps.push(
+      stepResult(
+        29,
+        "MJ-29-DIGITAL-TWIN",
+        "Digital twin labelled synthetic_rules (not physiological)",
+        "PREDICT",
+        "LIVE",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `mode=synthetic_rules · options=${clinic.digitalTwin.optionCount}`
+          : "digital twin labelling failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.population.totalPatients >= 100 &&
+      clinic.population.isSynthetic === true &&
+      clinic.population.liveEmis === false;
+    steps.push(
+      stepResult(
+        30,
+        "MJ-30-POPULATION",
+        "Population aggregate readable with honesty + suppression",
+        "LEARN",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `n=${clinic.population.totalPatients} · deteriorating=${clinic.population.deterioratingDisplay}`
+          : "population aggregate failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const ok =
+      clinic.regionAgnostic === true &&
+      clinic.ehrAdapterId === "simulated_ehr_v1" &&
+      clinic.liveEmis === false &&
+      clinic.ehrWrite === false;
+    steps.push(
+      stepResult(
+        31,
+        "MJ-31-EHR-ADAPTER",
+        "Region-agnostic simulated EHR adapter stages only",
+        "CONNECT",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? `adapter=${clinic.ehrAdapterId} · org=${clinic.organisationId} · clinic=${clinic.clinicId}`
+          : "EHR adapter contract failed",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const allRoles = clinic.activityMatrix.every((r) => r.canComplete);
+    const ok = clinic.overall === "PASS" && allRoles;
+    steps.push(
+      stepResult(
+        32,
+        "MJ-32-STAKEHOLDER-MATRIX",
+        "All simulated stakeholder diabetes jobs complete",
+        "OBSERVABILITY",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        ok
+          ? clinic.activityMatrix.map((r) => `${r.role}:Y`).join(" · ")
+          : clinic.failures.join("; ") || "stakeholder matrix incomplete",
+        t0
+      )
+    );
+  }
+
+  // --- Step 33: Global honesty invariants ---
   {
     const t0 = Date.now();
     const ok =
@@ -923,8 +1146,8 @@ export async function runMasterJourney(
       HONESTY.productionReadyForAutonomousCare === false;
     steps.push(
       stepResult(
-        23,
-        "MJ-23-HONESTY",
+        33,
+        "MJ-33-HONESTY",
         "Publication honesty invariants hold",
         "GOVERNANCE",
         "CONTRACT",
@@ -935,14 +1158,14 @@ export async function runMasterJourney(
     );
   }
 
-  // --- Step 24: CorrelationId present on all durable scope usage ---
+  // --- Step 34: CorrelationId present on all durable scope usage ---
   {
     const t0 = Date.now();
     const ok = correlationId.startsWith("aksh-master-") && correlationId.length > 20;
     steps.push(
       stepResult(
-        24,
-        "MJ-24-CORRELATION",
+        34,
+        "MJ-34-CORRELATION",
         "Single Master correlationId minted and reused",
         "PROVENANCE",
         "CONTRACT",
@@ -953,20 +1176,19 @@ export async function runMasterJourney(
     );
   }
 
-  // --- Step 25: Trace completeness ---
+  // --- Step 35: Trace completeness ---
   {
     const t0 = Date.now();
-    const ok = steps.length === 24;
-    // push after check — we'll have 25 total
+    const ok = steps.length === 34;
     steps.push(
       stepResult(
-        25,
-        "MJ-25-TRACE",
-        "Part-52 style 25-step trace assembled",
+        35,
+        "MJ-35-TRACE",
+        "Publication stakeholder clinic 35-step trace assembled",
         "OBSERVABILITY",
         "CONTRACT",
         ok ? "PASS" : "FAIL",
-        `stepsBeforeTrace=${steps.length} · relatedGoldens=${relatedGoldens.join(",")}`,
+        `stepsBeforeTrace=${steps.length} · relatedGoldens=${relatedGoldens.join(",")} · clinic=${clinic.overall}`,
         t0
       )
     );
@@ -981,7 +1203,7 @@ export async function runMasterJourney(
   const result: MasterJourneyResult = {
     artifactType: "aksh-e2e-master-journey-trace",
     testId: MASTER_JOURNEY_TEST_ID,
-    title: "Master Aksh Journey — progressive T2D deterioration end-to-end",
+    title: "Master Aksh Journey — progressive T2D + simulated multi-stakeholder clinic",
     generatedAt: new Date().toISOString(),
     correlationId,
     seed,
@@ -1001,7 +1223,7 @@ export async function runMasterJourney(
     },
     relatedGoldens,
     note:
-      "Publication-ready software validation only. Lab/pharmacy SIMULATED. Neo4j may be mock. Not MHRA/CQC certified. Not production-ready for autonomous care.",
+      "Publication-ready simulated diabetes clinic. Lab/pharmacy/VOICE/CGM/appointments/referral SIMULATED and operationally complete. Region-agnostic org/clinic IDs. Neo4j may be mock. Not clinically validated. Not production-ready for autonomous care.",
   };
 
   if (options.writeArtifacts !== false) {
@@ -1060,7 +1282,7 @@ export function renderMasterJourneyMarkdown(result: MasterJourneyResult): string
     `| Workflow | **${result.readiness.workflow}** |`,
     `| Clinical Evidence | **${result.readiness.clinicalEvidence}** |`,
     ``,
-    `## Part-52 step trace`,
+    `## Stakeholder clinic step trace`,
     ``,
     `| # | Id | Layer | Class | Status | Detail |`,
     `| --- | --- | --- | --- | --- | --- |`,

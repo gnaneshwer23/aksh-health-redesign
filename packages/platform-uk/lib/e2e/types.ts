@@ -121,8 +121,14 @@ export type E2EOrganisation = {
   id: string;
   name: string;
   kind: E2EOrganisationKind;
+  /** @deprecated Prefer organisationCode — retained for one-release compat. */
   odsCode: string;
+  /** Region-agnostic organisation code (same value as odsCode today). */
+  organisationCode: string;
+  /** @deprecated Prefer regionId — example geography label only. */
   icsRegion: string;
+  /** Region-agnostic region identifier (same value as icsRegion today). */
+  regionId: string;
   metadata: E2ESyntheticMetadata;
 };
 
@@ -197,7 +203,13 @@ export type E2EPatientProfile = {
    */
   legacyIds?: string[];
   name: string;
+  /**
+   * Synthetic national-format patient id for the demo region.
+   * Region connectors may map a different identifier scheme later — not NHS-locked.
+   */
   nhsNumber: string;
+  /** Alias of nhsNumber — region-agnostic naming for publication surfaces. */
+  nationalPatientId: string;
   dob: string;
   age: number;
   sex: "Female" | "Male" | "Non-binary";

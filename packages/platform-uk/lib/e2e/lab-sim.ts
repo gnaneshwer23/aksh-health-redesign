@@ -10,7 +10,7 @@ export const LAB_SIM_HONESTY = {
   liveNhsLab: false as const,
   liveEmis: false as const,
   ehrWrite: false as const,
-  note: "Simulated lab workflow only — no NHS Pathology / ICE / live result feed.",
+  note: "Simulated lab workflow only — no live regional pathology / result feed.",
 } as const;
 
 export type LabSimTransition = {

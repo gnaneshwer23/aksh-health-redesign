@@ -10,7 +10,7 @@ export const CARE_TEAM_SIM_HONESTY = {
   liveDirectory: false as const,
   liveEmis: false as const,
   ehrWrite: false as const,
-  note: "Synthetic care-team routing only — no live NHS directory / Spine PDS.",
+  note: "Synthetic care-team routing only — no live regional directory sync.",
 } as const;
 
 export type CareTeamMember = {

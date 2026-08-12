@@ -13,7 +13,7 @@ import {
 
 /**
  * Playwright surface for AKSH-E2E-MASTER-001.
- * Full 25-step durable chain runs in `npm run test:master` (unit).
+ * Full 35-step durable chain runs in `npm run test:master` (unit).
  * This spec asserts API orchestration + identity map + honesty under one correlation annotation.
  */
 test.describe("Platform Master Journey — AKSH-E2E-MASTER-001", () => {

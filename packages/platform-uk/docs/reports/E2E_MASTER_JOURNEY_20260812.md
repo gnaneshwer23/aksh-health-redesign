@@ -1,15 +1,15 @@
 # AKSH-E2E-MASTER-001 — Master Journey Trace
 
-**Generated:** 2026-08-12T18:47:01.416Z  
-**Overall:** PASS (25 pass · 0 fail · 0 skip)  
-**correlationId:** `aksh-master-20260812-3189b586`  
+**Generated:** 2026-08-12T19:32:44.397Z  
+**Overall:** PASS (35 pass · 0 fail · 0 skip)  
+**correlationId:** `aksh-master-20260812-d731af5e`  
 **Seed:** 20260812  
 
 ## Executive summary
 
 Master Journey closed the synthetic CONNECT→…→LEARN loop under one correlationId for internal software validation.
 
-Publication-ready software validation only. Lab/pharmacy SIMULATED. Neo4j may be mock. Not MHRA/CQC certified. Not production-ready for autonomous care.
+Publication-ready simulated diabetes clinic. Lab/pharmacy/VOICE/CGM/appointments/referral SIMULATED and operationally complete. Region-agnostic org/clinic IDs. Neo4j may be mock. Not clinically validated. Not production-ready for autonomous care.
 
 ## Identity (P1-ID-001 resolved)
 
@@ -39,7 +39,7 @@ P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j se
 | Workflow | **SIMULATED END-TO-END** |
 | Clinical Evidence | **UNVALIDATED** |
 
-## Part-52 step trace
+## Stakeholder clinic step trace
 
 | # | Id | Layer | Class | Status | Detail |
 | --- | --- | --- | --- | --- | --- |
@@ -51,31 +51,43 @@ P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j se
 | 6 | MJ-06-ORCHESTRATE | REASON | LIVE | **PASS** | patient=P002 priority=Urgent route=urgent_flag |
 | 7 | MJ-07-AGENTS | REASON | LIVE | **PASS** | slots=SYNTHESIS,GUARDIAN,ORACLE,NEXUS |
 | 8 | MJ-08-DECISION | DECIDE | LIVE | **PASS** | safetyRoute=urgent_flag · REQUEST_APPROVAL family |
-| 9 | MJ-09-CORRELATION-ORCH | PROVENANCE | CONTRACT | **PASS** | correlationId=aksh-master-20260812-3189b586 · orchPatient=P002 |
+| 9 | MJ-09-CORRELATION-ORCH | PROVENANCE | CONTRACT | **PASS** | correlationId=aksh-master-20260812-d731af5e · orchPatient=P002 |
 | 10 | MJ-10-HITL-ACCEPT | DECIDE | LIVE | **PASS** | learningEvents=1 |
-| 11 | MJ-11-HEALTH-PLAN | ACT | PARTIAL | **PASS** | healthPlanId=plan-P002-1786560421191 |
-| 12 | MJ-12-LEARNING-ACCEPT | LEARN | LIVE | **PASS** | eventId=learn-7bb98398-535e-435a-be18-e3bc4e0dc32e |
-| 13 | MJ-13-OUTCOME | MONITOR | LIVE | **PASS** | outcomeEventId=learn-d0357584-884a-4ba3-8403-49e34ebcd7b9 |
+| 11 | MJ-11-HEALTH-PLAN | ACT | PARTIAL | **PASS** | healthPlanId=plan-P002-1786563164050 |
+| 12 | MJ-12-LEARNING-ACCEPT | LEARN | LIVE | **PASS** | eventId=learn-eccb2602-8357-4a1b-8449-8f8890e81a3b |
+| 13 | MJ-13-OUTCOME | MONITOR | LIVE | **PASS** | outcomeEventId=learn-46af9bf9-2c5d-46e0-bfe5-2a89cd4c7167 |
 | 14 | MJ-14-LOOP | LEARN | LIVE | **PASS** | awaiting→outcome_linked · linkedCount=1 |
-| 15 | MJ-15-DIABETES-ACCEPT | INTERVENTION | LIVE | **PASS** | diabetes learning id=learn-502e3751-f87c-4f61-966c-f91bf86377f1 |
-| 16 | MJ-16-SHIELD-SCOPE | PROVENANCE | LIVE | **PASS** | scopeKey=aksh-master-20260812-3189b586 · shieldDualWrite used by spine |
-| 17 | MJ-17-LAB-DELAY | ACT | SIMULATED | **PASS** | delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-3189b586 |
+| 15 | MJ-15-DIABETES-ACCEPT | INTERVENTION | LIVE | **PASS** | diabetes learning id=learn-bad8e5f6-0875-45ac-b105-9a628fbb46a7 |
+| 16 | MJ-16-SHIELD-SCOPE | PROVENANCE | LIVE | **PASS** | scopeKey=aksh-master-20260812-d731af5e · shieldDualWrite used by spine |
+| 17 | MJ-17-LAB-DELAY | ACT | SIMULATED | **PASS** | delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-d731af5e |
 | 18 | MJ-18-LAB-COMPLETE | MONITOR | SIMULATED | **PASS** | factType=egfr value=58 |
 | 19 | MJ-19-PHARMACY | ACT | SIMULATED | **PASS** | task→gp · livePrescribing:false |
-| 20 | MJ-20-NURSE-FOLLOWUP | MONITOR | SIMULATED | **PASS** | careTeam members=4 liveDirectory=false |
+| 20 | MJ-20-NURSE-FOLLOWUP | MONITOR | SIMULATED | **PASS** | followUp=e2e-nurse-fu-d731af5e · members=4 |
 | 21 | MJ-21-IMPROVEMENT | LEARN | LIVE | **PASS** | cohort H E2P096 improved=true |
-| 22 | MJ-22-NO-AUTO-ACT | RECOMMEND | LIVE | **PASS** | hitlRequired:true preserved; liveEmis:false |
-| 23 | MJ-23-HONESTY | GOVERNANCE | CONTRACT | **PASS** | liveEmis:false · sims only · not clinically validated · not autonomous-care ready |
-| 24 | MJ-24-CORRELATION | PROVENANCE | CONTRACT | **PASS** | aksh-master-20260812-3189b586 |
-| 25 | MJ-25-TRACE | OBSERVABILITY | CONTRACT | **PASS** | stepsBeforeTrace=24 · relatedGoldens=AKSH-E2E-0002,AKSH-E2E-0010,AKSH-E2E-0013,AKSH-E2E-0014,AKSH-E2E-0015,AKSH-E2E-0019 |
+| 22 | MJ-22-REFERRAL-DRAFT | RECOMMEND | SIMULATED | **PASS** | specialty=endocrinology · staging=ehr-stage-referral_draft-d731af5e |
+| 23 | MJ-23-APPOINTMENT-NOSHOW | ACT | SIMULATED | **PASS** | appt=e2e-appt-d731af5e-diabetes_review · task=e2e-noshow-task-e2e-appt-d731af5e-diabetes_review |
+| 24 | MJ-24-CONSENT-REVOKE | CONNECT | SIMULATED | **PASS** | grants=6 · revokeBlocks=true |
+| 25 | MJ-25-VOICE-SYNTHESIS | UNDERSTAND | SIMULATED | **PASS** | voice=e2e-voice-d731af5e · synth=e2e-synth-e2e-voice-d731af5e · liveMic=false |
+| 26 | MJ-26-CGM-SAFETY | DETECT | SIMULATED | **PASS** | alert=e2e-cgm-alert-E2P056 · hypos=9 |
+| 27 | MJ-27-COORDINATOR | ACT | SIMULATED | **PASS** | tasks=1 all done |
+| 28 | MJ-28-NOTIFICATIONS | MONITOR | SIMULATED | **PASS** | notifications=4 · livePush=false |
+| 29 | MJ-29-DIGITAL-TWIN | PREDICT | LIVE | **PASS** | mode=synthetic_rules · options=3 |
+| 30 | MJ-30-POPULATION | LEARN | SIMULATED | **PASS** | n=100 · deteriorating=20 |
+| 31 | MJ-31-EHR-ADAPTER | CONNECT | SIMULATED | **PASS** | adapter=simulated_ehr_v1 · org=org-dc-3 · clinic=clinic-org-dc-3 |
+| 32 | MJ-32-STAKEHOLDER-MATRIX | OBSERVABILITY | SIMULATED | **PASS** | patient:Y · gp:Y · nurse:Y · specialist:Y · lab:Y · pharmacy:Y · care_coordinator:Y · admin:Y · safety:Y · population_ops:Y |
+| 33 | MJ-33-HONESTY | GOVERNANCE | CONTRACT | **PASS** | liveEmis:false · sims only · not clinically validated · not autonomous-care ready |
+| 34 | MJ-34-CORRELATION | PROVENANCE | CONTRACT | **PASS** | aksh-master-20260812-d731af5e |
+| 35 | MJ-35-TRACE | OBSERVABILITY | CONTRACT | **PASS** | stepsBeforeTrace=34 · relatedGoldens=AKSH-E2E-0002,AKSH-E2E-0004,AKSH-E2E-0010,AKSH-E2E-0013,AKSH-E2E-0014,AKSH-E2E-0015,AKSH-E2E-0017,AKSH-E2E-0019 · clinic=PA |
 
 ## Related golden slices
 
 - AKSH-E2E-0002
+- AKSH-E2E-0004
 - AKSH-E2E-0010
 - AKSH-E2E-0013
 - AKSH-E2E-0014
 - AKSH-E2E-0015
+- AKSH-E2E-0017
 - AKSH-E2E-0019
 
 ## How to re-run
