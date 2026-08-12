@@ -5,15 +5,7 @@ const SITE_URL = "https://akshhealth.com";
 const PUBLIC_PATHS = [
   "/",
   "/platform",
-  "/how-it-works",
-  "/product",
-  "/pricing",
-  "/resources",
-  "/faq",
-  "/chat",
-  "/walkthrough",
   "/security",
-  "/integrations",
   "/privacy",
   "/terms",
   "/cookies",
@@ -21,15 +13,7 @@ const PUBLIC_PATHS = [
   "/get-started",
   "/signup",
   "/signin",
-  "/for-clinicians",
-  "/for-practices",
-  "/for-administrators",
-  "/for-hospitals",
-  "/for-ics",
-  "/for-research",
-  "/for-patients",
   "/demo/patel",
-  "/demo/precision-health-loop",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -39,6 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: path === "/" ? SITE_URL : `${SITE_URL}${path}`,
     lastModified,
     changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : path.startsWith("/for-") ? 0.7 : 0.8,
+    priority: path === "/" ? 1 : 0.8,
   }));
 }

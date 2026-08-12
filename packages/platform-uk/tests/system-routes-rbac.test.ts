@@ -7,7 +7,7 @@
  * patient/researcher, could previously call them directly.
  *
  * `integration-contract`/`database-contract` are deliberately NOT covered
- * here — they stay intentionally public (linked from the public /resources
+ * here — they stay intentionally public (linked from the public /security
  * page; locked in by tests/readonly-route-contracts.test.ts's own "should
  * be public read-only without session" assertion) and this phase does not
  * change that.

@@ -6,13 +6,11 @@ import { container } from "@/components/marketing/marketing-ui";
 type RoleSignal = {
   id: string;
   label: string;
-  href: string;
   dashboard: string;
   description: string;
 };
 
 type RolesGridSectionProps = {
-  /** `platform` omits the self-referential platform link in the footer. */
   variant?: "home" | "platform";
 };
 
@@ -20,26 +18,20 @@ const careRoles: RoleSignal[] = [
   {
     id: "gp",
     label: "GP",
-    href: "/for-clinicians",
     dashboard: "Clinician dashboard",
-    description:
-      "From the moment you open an appointment, the clinical context is ready. Documentation, drug safety, and risk signals are waiting in your review queue. You approve what goes in the record.",
+    description: "Consult context, documentation, and safety drafts in one review queue.",
   },
   {
     id: "nurse",
     label: "Nurse / Care Coordinator",
-    href: "/for-clinicians",
     dashboard: "Nurse dashboard",
-    description:
-      "Vitals, observations, and handover notes in one place. Safety alerts appear before the ward round. Handover drafts from your entries — you review and approve before the night team receives them.",
+    description: "Vitals, handover notes, and alerts — reviewed before they move on.",
   },
   {
     id: "pharmacist",
     label: "Clinical Pharmacist",
-    href: "/for-clinicians",
     dashboard: "Pharmacist dashboard",
-    description:
-      "Medication reviews and interaction checks without switching tools. Type a proposed drug and get a BNF-referenced result. Every clinical rationale is recorded with your name attached.",
+    description: "Medication reviews and interaction checks, with a recorded rationale.",
   },
 ];
 
@@ -47,18 +39,14 @@ const governanceRoles: RoleSignal[] = [
   {
     id: "admin",
     label: "Practice Administrator",
-    href: "/for-practices",
     dashboard: "Admin · Audit",
-    description:
-      "Integration health, user management, and an immutable audit log in one view. Every clinical decision made on the platform is attributable, timestamped, and exportable.",
+    description: "Users, integration health, and an immutable audit log.",
   },
   {
     id: "regional",
     label: "ICS / Regional Lead",
-    href: "/for-ics",
     dashboard: "Regional dashboard",
-    description:
-      "Population signals aggregated from every connected practice. Condition prevalence, risk distribution, and service benchmarking — without patient-level data crossing organisational boundaries.",
+    description: "Population signals without patient-level data leaving the practice.",
   },
 ];
 
@@ -66,26 +54,20 @@ const reachRoles: RoleSignal[] = [
   {
     id: "hospital",
     label: "Hospital Executive",
-    href: "/for-hospitals",
     dashboard: "Command centre",
-    description:
-      "Operational performance, service demand, and 14-day capacity signals in one command view. Every recommendation is logged and attributable.",
+    description: "Demand and capacity signals for operational review.",
   },
   {
     id: "patient",
     label: "Patient (invited by your practice)",
-    href: "/for-patients",
     dashboard: "My Health",
-    description:
-      "Your conditions, medications, and care plan in plain language. Check-ins, appointment records, and a way to tell your care team when something changes.",
+    description: "Conditions, medications, and care plan in plain language.",
   },
   {
     id: "research",
     label: "Researcher / Analyst",
-    href: "/for-research",
     dashboard: "Informatics view",
-    description:
-      "Governed access to aggregate clinical data for service improvement and research. Individual patient data requires separate ethics approval. Provenance is recorded on every dataset.",
+    description: "Governed aggregate access. Individual records need separate approval.",
   },
 ];
 
@@ -100,8 +82,7 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
             <span className="block">Designed for every role.</span>
           </h2>
           <p className="owkin-roles__lede">
-            Purpose-built workspaces for care teams, governance leads, and partners — same coordinated journey,
-            different work.
+            The same coordination layer — different work for each role.
           </p>
         </ScrollReveal>
 
@@ -113,7 +94,7 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
           <ol className="owkin-roles__featured">
             {careRoles.map((role, index) => (
               <ScrollReveal key={role.id} delayMs={100 + index * 70} as="li">
-                <Link href={role.href} className="owkin-roles__row owkin-roles__row--featured">
+                <article className="owkin-roles__row owkin-roles__row--featured">
                   <span className="owkin-roles__index" aria-hidden>
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -124,11 +105,7 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
                     </div>
                     <p>{role.description}</p>
                   </div>
-                  <span className="owkin-roles__cta">
-                    View workspace
-                    <span aria-hidden>→</span>
-                  </span>
-                </Link>
+                </article>
               </ScrollReveal>
             ))}
           </ol>
@@ -142,17 +119,13 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
           <div className="owkin-roles__governance">
             {governanceRoles.map((role, index) => (
               <ScrollReveal key={role.id} delayMs={120 + index * 70}>
-                <Link href={role.href} className="owkin-roles__panel">
+                <article className="owkin-roles__panel">
                   <div className="owkin-roles__meta">
                     <h3>{role.label}</h3>
                     <span className="owkin-roles__dashboard">{role.dashboard}</span>
                   </div>
                   <p>{role.description}</p>
-                  <span className="owkin-roles__cta">
-                    Open dashboard
-                    <span aria-hidden>→</span>
-                  </span>
-                </Link>
+                </article>
               </ScrollReveal>
             ))}
           </div>
@@ -166,16 +139,13 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
           <div className="owkin-roles__reach">
             {reachRoles.map((role, index) => (
               <ScrollReveal key={role.id} delayMs={100 + index * 60}>
-                <Link href={role.href} className="owkin-roles__reach-link">
+                <article className="owkin-roles__reach-link">
                   <span className="owkin-roles__reach-copy">
                     <span className="owkin-roles__reach-label">{role.label}</span>
                     <span className="owkin-roles__dashboard">{role.dashboard}</span>
                     <span className="owkin-roles__reach-desc">{role.description}</span>
                   </span>
-                  <span className="owkin-roles__cta" aria-hidden>
-                    →
-                  </span>
-                </Link>
+                </article>
               </ScrollReveal>
             ))}
           </div>
@@ -188,8 +158,8 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
               <span aria-hidden>→</span>
             </Link>
           ) : (
-            <Link href="/for-clinicians" className="owkin-text-cta">
-              View clinician workspace
+            <Link href="/get-started" className="owkin-text-cta">
+              Request organisation access
               <span aria-hidden>→</span>
             </Link>
           )}

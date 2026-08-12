@@ -12,7 +12,7 @@ const beats = [
   {
     title: "Coordinated drafts with a clinician gate",
     body: "Every consultation becomes a structured draft with supporting clinical checks, ready for clinician review before entering the record.",
-    href: "/how-it-works",
+    href: "/platform",
     cta: "View workflow",
   },
   {

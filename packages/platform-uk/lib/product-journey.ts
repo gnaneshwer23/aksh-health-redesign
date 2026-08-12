@@ -43,7 +43,7 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
       "Patient view: risk state, timeline, and health-plan drafts (HITL)",
     ],
     firstFocus: "Clear your review queue — nothing writes without your approval.",
-    docsHref: "/walkthrough",
+    docsHref: "/demo/patel",
     agents: ["SYNTHESIS", "GUARDIAN", "HORIZON", "CONDUCTOR", "BRIDGE", "SHIELD"],
     youApprove: "Every clinical draft before BRIDGE staging.",
     honesty: `${LIVE_EMIS_FALSE} — sim/staging only.`,

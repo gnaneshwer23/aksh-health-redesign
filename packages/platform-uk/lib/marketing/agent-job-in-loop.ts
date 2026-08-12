@@ -109,7 +109,7 @@ export const TWO_MINUTE_MARKETING_SCRIPT = [
   {
     beat: "2 · Workflow",
     say: "Supporting intelligence in one pipeline. Review coordination; Accept, Edit, or Reject; FHIR exchange; immutable audit.",
-    href: "/how-it-works#pipeline",
+    href: "/platform#layers",
   },
   {
     beat: "3 · Platform",

@@ -21,28 +21,28 @@ import TrustStrip from "@/components/marketing/TrustStrip";
 const platformLayers = [
   {
     title: "Capture",
-    body: "Structures consult context from notes or voice. Designed for EMIS Web and SystmOne pathways.",
+    body: "Structures consult context from notes or voice.",
     icon: Inbox,
   },
   {
     title: "Draft",
-    body: "Documentation, safety, risk, referrals, and clinical correlation run as supporting drafts. All outputs stay draft until review.",
+    body: "Documentation, safety, and risk stay draft until review.",
     icon: ClipboardCheck,
   },
   {
     title: "Approve",
-    body: "Clinician Accept, Edit, or Reject. An immutable audit event is recorded. Zero auto-writes — clinician review is the gate.",
+    body: "Named reviewer approval on every output. Accept, Edit, or Reject.",
     icon: ShieldCheck,
   },
   {
     title: "Stage",
-    body: "Maps accepted drafts using FHIR standards for exchange with existing clinical systems. No rip-and-replace of your EHR.",
+    body: "Accepted drafts map to FHIR for exchange with existing systems.",
     icon: Link2,
   },
 ] as const;
 
 const sectionNav = [
-  { id: "layers", label: "Capture → approve" },
+  { id: "layers", label: "How it works" },
   { id: "agents", label: "Capabilities" },
   { id: "roles", label: "Roles" },
   { id: "hitl", label: "Review" },
@@ -60,9 +60,9 @@ export function PlatformPageContent() {
       <MarketingPageHero
         eyebrow="Platform"
         title="One platform, eight roles, clinician-owned care"
-        lede="Capture → draft → approve. Designed for EMIS Web and SystmOne workflows — every output needs clinician approval before exchange. Supporting intelligence under clinician control."
-        primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Book demonstration", href: "/demo/script" }}
+        lede="Capture → draft → approve. Designed for EMIS Web and SystmOne. Every output needs clinician approval before exchange."
+        primary={{ label: "Get started", href: "/get-started" }}
+        secondary={{ label: "See the demo", href: "/demo/patel" }}
       >
         <nav className="mt-10 flex flex-wrap gap-2" aria-label="Platform page sections">
           {sectionNav.map((item) => (
@@ -81,7 +81,7 @@ export function PlatformPageContent() {
             align="left"
             label="Platform layers"
             title="Capture → draft → approve → exchange"
-            description="Four layers from patient context to governed clinical exchange."
+            description="Five layers from intake to export, with named clinical agents supporting each step."
           />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {platformLayers.map((layer, index) => (
@@ -95,17 +95,6 @@ export function PlatformPageContent() {
               />
             ))}
           </div>
-          <p className="mt-8 text-sm text-slate/70">
-            Prefer the end-to-end diagram?{" "}
-            <Link href="/how-it-works#pipeline" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-              View workflow
-            </Link>
-            {" · "}
-            <Link href="/how-it-works#two-minute-script" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-              Book demonstration
-            </Link>
-            .
-          </p>
         </div>
       </section>
 
@@ -127,21 +116,12 @@ export function PlatformPageContent() {
                   Clinician approval. Always.
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-slate/75">
-                  Every clinical draft is staged for review. The clinician clicks Accept, Edit, or Reject. Nothing writes
-                  to the record without explicit human approval. Aksh Health supports clinical judgement; it does
-                  not make autonomous diagnoses or treatment decisions.
+                  Every clinical draft is staged for review. Nothing writes to the record without explicit human
+                  approval.
                 </p>
                 <p className="mt-4 text-sm text-slate/70">
                   <Link href="/security" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                    Security &amp; compliance detail
-                  </Link>
-                  {" · "}
-                  <Link href="/demo/script" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                    Book demonstration
-                  </Link>
-                  {" · "}
-                  <Link href="/faq" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                    FAQ
+                    Security &amp; clinical safety
                   </Link>
                 </p>
               </div>
@@ -167,9 +147,9 @@ export function PlatformPageContent() {
 
       <MarketingCtaBand
         title="Ready to explore the platform?"
-        lede="Designed for EMIS Web and SystmOne via FHIR standards. Clinical safety gates from day one."
-        primary={{ label: "Create account", href: "/signup" }}
-        secondary={{ label: "Book demonstration", href: "/demo/script" }}
+        lede="Designed for EMIS Web and SystmOne. Clinical safety gates from day one."
+        primary={{ label: "Get started", href: "/get-started" }}
+        secondary={{ label: "See the demo", href: "/demo/patel" }}
       />
     </>
   );

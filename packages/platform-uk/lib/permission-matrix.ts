@@ -112,7 +112,7 @@ export function getPermissionActions(): PermissionAction[] {
       label: "Export database and permission contracts",
       routeOrSurface: "/api/system/database-contract, /api/system/permission-matrix",
       notes:
-        "Boundary artifacts for architecture review. database-contract stays intentionally public (linked from the public /resources page; see tests/readonly-route-contracts.test.ts) — not role-enforced. permission-matrix is role-enforced (clinical_reviewer/operations_lead only) since E2.",
+        "Boundary artifacts for architecture review. database-contract stays intentionally public (linked from the public /security page; see tests/readonly-route-contracts.test.ts) — not role-enforced. permission-matrix is role-enforced (clinical_reviewer/operations_lead only) since E2.",
       enforcedAt: null
     },
     {

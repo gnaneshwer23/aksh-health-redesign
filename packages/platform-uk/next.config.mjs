@@ -42,7 +42,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/docs",
-        destination: "/resources",
+        destination: "/security",
         permanent: true
       },
       {
@@ -52,8 +52,8 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/solutions",
-        destination: "/for-clinicians",
-        permanent: false
+        destination: "/platform",
+        permanent: true
       },
       {
         source: "/about",
@@ -64,6 +64,76 @@ const createNextConfig = (phase) => ({
         source: "/careers",
         destination: "/contact",
         permanent: false
+      },
+      {
+        source: "/how-it-works",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-clinicians",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-practices",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-administrators",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-hospitals",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-ics",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-research",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/for-patients",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/resources",
+        destination: "/security",
+        permanent: true
+      },
+      {
+        source: "/faq",
+        destination: "/contact",
+        permanent: true
+      },
+      {
+        source: "/pricing",
+        destination: "/get-started",
+        permanent: true
+      },
+      {
+        source: "/integrations",
+        destination: "/platform",
+        permanent: true
+      },
+      {
+        source: "/walkthrough",
+        destination: "/demo/patel",
+        permanent: true
+      },
+      {
+        source: "/chat",
+        destination: "/contact",
+        permanent: true
       }
     ];
   }

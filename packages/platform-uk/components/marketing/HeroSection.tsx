@@ -16,15 +16,14 @@ export default function HeroSection() {
               <span className="block">properly coordinated.</span>
             </h1>
             <p className="owkin-hero__lede">
-              Consultations, medications, referrals, and risk signals — structured, reviewed, and approved by the
-              clinician before anything reaches the record.
+              Capture, draft, approve. A named clinician reviews every output before it can reach the record.
             </p>
             <div className="owkin-hero__actions">
               <Link href="/get-started" className="owkin-btn-ink">
                 Get started
               </Link>
-              <Link href="/walkthrough" className="owkin-text-cta">
-                Book a walkthrough
+              <Link href="/demo/patel" className="owkin-text-cta">
+                See the demo
                 <span aria-hidden>→</span>
               </Link>
             </div>

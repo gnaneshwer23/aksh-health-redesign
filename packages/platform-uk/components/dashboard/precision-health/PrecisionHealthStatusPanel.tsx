@@ -194,7 +194,7 @@ export function PrecisionHealthStatusPanel() {
             label="Delivery roadmap"
           />
           <Link
-            href="/resources#precision-health"
+            href="/security#precision-health"
             className="font-medium text-primary underline-offset-2 hover:underline"
           >
             Marketing resources (roadmap language) →

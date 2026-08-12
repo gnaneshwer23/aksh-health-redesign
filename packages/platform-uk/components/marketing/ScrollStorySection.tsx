@@ -20,7 +20,7 @@ export default function ScrollStorySection() {
               A consultation happens in EMIS. A referral goes by email. A medication check requires a separate tool. A
               handover is typed from memory. The information exists — it is just never in one place at the right moment.
             </p>
-            <Link href="/how-it-works" className="owkin-text-cta">
+            <Link href="/platform" className="owkin-text-cta">
               View how it works
               <span aria-hidden>→</span>
             </Link>
@@ -55,7 +55,7 @@ export default function ScrollStorySection() {
               Voice capture or typed input. Structured documentation, drug safety checks, and risk signals — prepared
               in parallel, surfaced in one queue. Accept, edit, or reject before anything is written.
             </p>
-            <Link href="/how-it-works" className="owkin-text-cta">
+            <Link href="/platform" className="owkin-text-cta">
               View workflow
               <span aria-hidden>→</span>
             </Link>

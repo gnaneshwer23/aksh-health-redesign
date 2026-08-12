@@ -103,8 +103,7 @@ export default function AgentGrid() {
             Supporting intelligence. One review queue.
           </h2>
           <p className="text-base leading-relaxed text-slate/75 md:text-lg">
-            Clinical intelligence supports every workflow while clinicians remain responsible for every approved
-            outcome. Capture → draft → approve — nothing reaches the record without a named clinical decision.
+            Capture → draft → approve. Supporting intelligence stays in the queue until a named clinician decides.
           </p>
         </div>
 
@@ -133,16 +132,12 @@ export default function AgentGrid() {
 
         <p className="mt-10 max-w-2xl text-sm leading-relaxed text-slate/75">
           Clinician review always.{" "}
-          <Link href="/how-it-works#pipeline" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-            View the end-to-end workflow
-          </Link>
-          {" · "}
           <Link href="/platform#hitl" className="font-medium text-navy-dark underline-offset-4 hover:underline">
             Accept, Edit, or Reject
           </Link>
           {" · "}
-          <Link href="/demo/script" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-            Book demonstration
+          <Link href="/demo/patel" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+            See the demo
           </Link>
           .
         </p>

@@ -91,16 +91,13 @@ export default function ProductFeatureBand() {
         <ScrollReveal className="owkin-product-band__copy" delayMs={140}>
           <p className="owkin-product-band__logo">Aksh platform</p>
           <h2 id="product-band-heading">Capture → draft → approve, in one queue.</h2>
-          <p>
-            Consultation capture, documentation, drug safety, and risk signals — coordinated in one review queue. Every
-            output is a draft until the clinician decides.
-          </p>
+          <p>Documentation, safety checks, and risk signals wait together. Nothing writes until a clinician decides.</p>
           <div className="owkin-product-band__actions">
             <Link href="/get-started" className="owkin-btn-ink">
               Get started
             </Link>
-            <Link href="/walkthrough" className="owkin-text-cta">
-              Book a walkthrough
+            <Link href="/demo/patel" className="owkin-text-cta">
+              See the demo
               <span aria-hidden>→</span>
             </Link>
           </div>

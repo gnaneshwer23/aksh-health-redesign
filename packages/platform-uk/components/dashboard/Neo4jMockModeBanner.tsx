@@ -36,8 +36,8 @@ export function Neo4jMockModeBanner({
       >
         Clinical graph data is <strong>live from Neo4j</strong>. HORIZON, GUARDIAN, and ICS panels
         reflect the seeded Aura graph for this session — still synthetic rehearsal patients, not a live NHS feed.{" "}
-        <Link href="/resources" className="underline underline-offset-2 hover:text-emerald-950">
-          Resources
+        <Link href="/security" className="underline underline-offset-2 hover:text-emerald-950">
+          Security
         </Link>
       </p>
     );
@@ -56,8 +56,8 @@ export function Neo4jMockModeBanner({
       GUARDIAN, and ICS panels use cached fallback data until the graph is linked. If Aura shows{" "}
       <strong>Paused</strong>, resume the instance in the Neo4j Aura console, wait until it is Running,
       then refresh — see{" "}
-      <Link href="/resources" className="underline underline-offset-2 hover:text-amber-950">
-        Resources
+      <Link href="/security" className="underline underline-offset-2 hover:text-amber-950">
+        Security
       </Link>{" "}
       or docs/NEO4J_SETUP.md.
     </p>

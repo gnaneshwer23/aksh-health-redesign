@@ -16,27 +16,36 @@ export const metadata: Metadata = {
 const contacts = [
   {
     title: "Organisation access",
-    body: "Practice managers, ICS leads, and trust procurement — request a guided walkthrough and tenancy scoping.",
+    body: "Practice managers, ICS leads, and trust procurement — request a guided walkthrough.",
     href: "/get-started",
-    cta: "Request organisation access",
-  },
-  {
-    title: "Create an account",
-    body: "Explore role dashboards in proof mode. Enterprise clinical identity is not connected in this build.",
-    href: "/signup",
-    cta: "Create account",
+    cta: "Request access",
   },
   {
     title: "See the product",
-    body: "Synthetic Patel practice journey: ETL, GP consult, HITL queue, pharmacist, SHIELD, and regional COMPASS.",
+    body: "Synthetic Patel practice: consult, review queue, pharmacy, and audit.",
     href: "/demo/patel",
-    cta: "Walk the Patel demo",
+    cta: "Open the demo",
   },
   {
     title: "Security & clinical safety",
-    body: "GDPR Art. 9 framing, HITL gates, MHRA-aware positioning, and DCB0129-style safety rehearsal (not a signed clinical safety case).",
+    body: "HITL gates, GDPR Art. 9 framing, and honest limits — not a signed safety case.",
     href: "/security",
     cta: "View security",
+  },
+] as const;
+
+const faqs = [
+  {
+    q: "Does Aksh Health replace EMIS Web or SystmOne?",
+    a: "No. It sits above existing EHR workflows. Production write-back stays gated behind organisation governance and clinical safety sign-off.",
+  },
+  {
+    q: "Is Aksh Health MHRA-certified?",
+    a: "No. We position the product as clinical decision support with human review. We do not claim MHRA certification, DCB0129 sign-off, or CQC readiness.",
+  },
+  {
+    q: "What is human-in-the-loop?",
+    a: "Every output is a draft. A named clinician must Accept, Edit, or Reject before anything can reach the record.",
   },
 ] as const;
 
@@ -46,9 +55,9 @@ export default function ContactPage() {
       <MarketingPageHero
         eyebrow="Contact"
         title="Talk to Aksh Health"
-        lede="Choose the path that matches your question. For NHS organisation deployments, start with a formal access request so we can route clinical safety and integration conversations correctly."
+        lede="Organisation access, a product demo, or a clinical safety conversation — pick the shortest path."
         primary={{ label: "Request organisation access", href: "/get-started" }}
-        secondary={{ label: "Read the FAQ", href: "/faq" }}
+        secondary={{ label: "Create an account", href: "/signup" }}
       />
 
       <section className="owkin-contact">
@@ -75,17 +84,29 @@ export default function ContactPage() {
               <a className="font-medium text-navy-dark underline-offset-4 hover:underline" href="mailto:hello@akshhealth.com">
                 hello@akshhealth.com
               </a>
-              . Clinical safety documentation requests: use organisation access so we can verify the requesting trust or
-              practice.
             </p>
+          </div>
+
+          <div className="mt-14 max-w-2xl">
+            <h2 className="mb-6 font-[family-name:var(--font-marketing-display)] text-2xl font-semibold text-navy-dark">
+              Common questions
+            </h2>
+            <dl className="space-y-6">
+              {faqs.map((item) => (
+                <div key={item.q}>
+                  <dt className="font-medium text-navy-dark">{item.q}</dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-slate/75">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>
 
       <MarketingCtaBand
         title="Prefer a live walkthrough?"
-        lede="Eight role dashboards. Designed for EMIS Web and SystmOne via FHIR R4 staging. Human approval on every output."
-        primary={{ label: "Get in touch", href: "/get-started" }}
+        lede="Request organisation access and we will route the conversation to the right team."
+        primary={{ label: "Get started", href: "/get-started" }}
         secondary={{ label: "Platform overview", href: "/platform" }}
       />
     </MarketingShell>

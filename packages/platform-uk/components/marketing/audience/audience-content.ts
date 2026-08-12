@@ -258,7 +258,7 @@ export const audiencePages = {
       ],
     },
     ctaPrimary: { label: "Create account", href: "/signup?role=patient" },
-    ctaSecondary: { label: "View workflow", href: "/how-it-works" },
+    ctaSecondary: { label: "View workflow", href: "/platform" },
     ctaTertiary: { label: "Patient companion", href: "/dashboard/patient" },
     complianceNote:
       "Patient access is practice-invited. Clinical decisions remain with your care team. Drafts support clinicians — not patient self-write to the record.",

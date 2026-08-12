@@ -3,25 +3,23 @@ import { container } from "@/components/marketing/marketing-ui";
 const pillars = [
   {
     label: "Capture",
-    title: "Structured from voice or text",
-    detail: "Consultation input — typed or dictated — becomes a structured clinical draft in seconds.",
+    title: "Voice or notes",
+    detail: "The consult becomes a structured draft.",
   },
   {
     label: "Review",
-    title: "One queue for every output",
-    detail:
-      "Documentation, safety checks, and risk signals appear together. Accept, edit, or reject each one individually.",
+    title: "One queue",
+    detail: "Documentation, safety, and risk — together.",
   },
   {
     label: "Govern",
-    title: "Every decision attributed and recorded",
-    detail: "An immutable audit record is created on every clinician action. Exportable. Cannot be modified.",
+    title: "Named decision",
+    detail: "Accept, edit, or reject. Every action is attributed.",
   },
   {
     label: "Integrate",
-    title: "Staged to your existing systems",
-    detail:
-      "Approved outputs are structured as FHIR R4 resources and staged to EMIS Web or SystmOne on clinician confirmation.",
+    title: "FHIR staging",
+    detail: "Approved outputs stage to EMIS Web or SystmOne.",
   },
 ] as const;
 

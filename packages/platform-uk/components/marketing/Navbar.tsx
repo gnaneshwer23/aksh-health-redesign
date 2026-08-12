@@ -2,64 +2,16 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-type MegaLink = { label: string; href: string; description?: string };
-type MegaColumn = { pill: string; links: MegaLink[]; cta?: { label: string; href: string } };
-
-const megaMenus: Record<string, MegaColumn[]> = {
-  Platform: [
-    {
-      pill: "Platform",
-      links: [
-        { label: "Overview", href: "/platform", description: "Care coordination, review, and FHIR exchange" },
-        { label: "Integrations", href: "/integrations", description: "NHS systems and FHIR standards" },
-        { label: "Security & safety", href: "/security", description: "Safety case and audit posture" },
-      ],
-      cta: { label: "Book a walkthrough", href: "/walkthrough" },
-    },
-    {
-      pill: "Capabilities",
-      links: [
-        { label: "Clinician review", href: "/platform#hitl" },
-        { label: "FHIR exchange", href: "/how-it-works#pipeline" },
-        { label: "Capture → draft → approve", href: "/how-it-works#journey" },
-        { label: "Clinical checks", href: "/platform#agents" },
-      ],
-    },
-    {
-      pill: "Get started",
-      links: [
-        { label: "Request organisation access", href: "/get-started" },
-        { label: "Create account", href: "/signup" },
-        { label: "Pricing", href: "/pricing" },
-      ],
-    },
-  ],
-  "For you": [
-    {
-      pill: "For you",
-      links: [
-        { label: "Clinicians", href: "/for-clinicians", description: "GPs, nurses, and pharmacists" },
-        { label: "Practices", href: "/for-practices", description: "Operations and governance" },
-        { label: "ICS", href: "/for-ics", description: "Population health intelligence" },
-        { label: "Hospitals", href: "/for-hospitals", description: "Command centre and capacity" },
-        { label: "Patients", href: "/for-patients", description: "Support between appointments" },
-        { label: "Research", href: "/for-research", description: "Governed outcome evaluation" },
-      ],
-    },
-  ],
-};
-
 const centerLinks = [
-  { label: "Platform", href: "/platform", mega: true },
-  { label: "Workflow", href: "/how-it-works", mega: false },
-  { label: "Security", href: "/security", mega: false },
-  { label: "For you", href: "/for-clinicians", mega: true },
-  { label: "Resources", href: "/resources", mega: false },
+  { label: "Platform", href: "/platform" },
+  { label: "Security", href: "/security" },
+  { label: "Demo", href: "/demo/patel" },
+  { label: "Contact", href: "/contact" },
 ] as const;
 
 type NavbarProps = {
@@ -73,9 +25,6 @@ const focusRing =
 export default function Navbar({ overDarkHero = false, overLightHero = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMega, setOpenMega] = useState<string | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const menuId = useId();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -95,31 +44,20 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
 
   const transparentOverDark = overDarkHero && !scrolled;
   const transparentOverLight = overLightHero && !scrolled;
-  const useSolidNav = scrolled || (!overDarkHero && !overLightHero) || Boolean(openMega);
-
-  function openMenu(label: string) {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setOpenMega(label);
-  }
-
-  function scheduleClose() {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenMega(null), 220);
-  }
+  const useSolidNav = scrolled || (!overDarkHero && !overLightHero);
 
   return (
     <nav
       data-over-dark-hero={transparentOverDark ? "true" : "false"}
-      data-over-light-hero={transparentOverLight && !openMega ? "true" : "false"}
+      data-over-light-hero={transparentOverLight ? "true" : "false"}
       data-solid-navbar={useSolidNav ? "true" : "false"}
       className={cn(
         "owkin-nav fixed top-0 z-50 w-full transition-colors duration-200",
         useSolidNav ? "owkin-nav--solid" : "owkin-nav--transparent"
       )}
-      onMouseLeave={scheduleClose}
     >
       <div className="owkin-nav__bar mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className={cn("owkin-nav__brand", focusRing)} onMouseEnter={() => setOpenMega(null)}>
+        <Link href="/" className={cn("owkin-nav__brand", focusRing)}>
           <span className="owkin-nav__mark" aria-hidden>
             A
           </span>
@@ -127,36 +65,11 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         </Link>
 
         <div className="owkin-nav__center hidden lg:flex" aria-label="Primary">
-          {centerLinks.map((item) => {
-            const isOpen = openMega === item.label;
-            if (!item.mega) {
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={cn("owkin-nav__link", focusRing)}
-                  onMouseEnter={() => setOpenMega(null)}
-                >
-                  {item.label}
-                </Link>
-              );
-            }
-            return (
-              <button
-                key={item.label}
-                type="button"
-                className={cn("owkin-nav__link", isOpen && "is-active", focusRing)}
-                aria-expanded={isOpen}
-                aria-haspopup="true"
-                aria-controls={`${menuId}-${item.label}`}
-                onMouseEnter={() => openMenu(item.label)}
-                onFocus={() => openMenu(item.label)}
-                onClick={() => setOpenMega(isOpen ? null : item.label)}
-              >
-                {item.label}
-              </button>
-            );
-          })}
+          {centerLinks.map((item) => (
+            <Link key={item.label} href={item.href} className={cn("owkin-nav__link", focusRing)}>
+              {item.label}
+            </Link>
+          ))}
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -180,42 +93,6 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         </button>
       </div>
 
-      {openMega && megaMenus[openMega] ? (
-        <div
-          id={`${menuId}-${openMega}`}
-          className="owkin-mega"
-          onMouseEnter={() => openMenu(openMega)}
-          onMouseLeave={scheduleClose}
-        >
-          <div className="owkin-mega__panel mx-auto max-w-7xl px-6 py-8">
-            <div className={cn("owkin-mega__grid", openMega === "For you" && "owkin-mega__grid--single")}>
-              {megaMenus[openMega].map((column) => (
-                <div key={column.pill} className="owkin-mega__col">
-                  <span className="owkin-mega__pill">{column.pill}</span>
-                  <ul className="owkin-mega__list">
-                    {column.links.map((link) => (
-                      <li key={link.label}>
-                        <Link href={link.href} className="owkin-mega__item" onClick={() => setOpenMega(null)}>
-                          <span className="owkin-mega__item-label">{link.label}</span>
-                          {link.description ? (
-                            <span className="owkin-mega__item-desc">{link.description}</span>
-                          ) : null}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  {column.cta ? (
-                    <Link href={column.cta.href} className="owkin-btn-ink owkin-mega__cta" onClick={() => setOpenMega(null)}>
-                      {column.cta.label}
-                    </Link>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
           id="mobile-nav-menu"
@@ -230,30 +107,14 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
             {centerLinks.map((item) => (
               <SheetClose key={item.label} asChild>
-                <Link href={item.href} className={cn("rounded-xl px-4 py-3 text-base font-medium text-[var(--owkin-ink)]", focusRing)}>
+                <Link
+                  href={item.href}
+                  className={cn("rounded-xl px-4 py-3 text-base font-medium text-[var(--owkin-ink)]", focusRing)}
+                >
                   {item.label}
                 </Link>
               </SheetClose>
             ))}
-            {megaMenus["For you"].flatMap((col) =>
-              col.links.map((link) => (
-                <SheetClose key={link.href + link.label} asChild>
-                  <Link href={link.href} className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                    {link.label}
-                  </Link>
-                </SheetClose>
-              ))
-            )}
-            <SheetClose asChild>
-              <Link href="/faq" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                FAQ
-              </Link>
-            </SheetClose>
-            <SheetClose asChild>
-              <Link href="/contact" className={cn("rounded-xl px-4 py-2.5 text-sm text-black/70", focusRing)}>
-                Contact
-              </Link>
-            </SheetClose>
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">

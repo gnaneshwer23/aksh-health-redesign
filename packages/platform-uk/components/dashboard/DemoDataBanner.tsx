@@ -31,7 +31,7 @@ export function DemoDataBanner({
           Demo script
         </Link>
         {" · "}
-        <Link href="/walkthrough" className="underline underline-offset-2 hover:text-amber-950">
+        <Link href="/demo/patel" className="underline underline-offset-2 hover:text-amber-950">
           See walkthrough
         </Link>
         {" · "}

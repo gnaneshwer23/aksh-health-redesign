@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     return Response.json(
       {
         error:
-          "We could not reach the assistant just now. Please try again, or use Contact (/contact) or FAQ (/faq).",
+          "We could not reach the assistant just now. Please try again, or use Contact (/contact) or Security (/security).",
       },
       { status: 502 }
     );

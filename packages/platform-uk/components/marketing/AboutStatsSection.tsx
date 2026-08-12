@@ -52,7 +52,7 @@ export default function AboutStatsSection() {
               Approved outputs stage as FHIR resources with an immutable audit trail, ready for EMIS Web and
               SystmOne.
             </p>
-            <Link href="/how-it-works" className={linkUnderline}>
+            <Link href="/platform" className={linkUnderline}>
               Follow the full journey
             </Link>
           </article>

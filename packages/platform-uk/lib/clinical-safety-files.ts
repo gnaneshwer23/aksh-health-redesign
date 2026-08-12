@@ -138,7 +138,7 @@ export function getClinicalSafetyFilePlaceholders(): ClinicalSafetyFilePlacehold
       standard: "DCB0129-style rehearsal",
       status: "placeholder",
       purpose: "Document that HITL-approved FHIR bundles stage internally until Partner write-back is authorised.",
-      inAppRoute: "/integrations",
+      inAppRoute: "/platform",
       exportRoute: "/api/integrations/emis-staging",
       owner: "Product + integration lead",
       nextStep: "Begin EMIS Partner / FHIR path only after CSO and DPIA approval."

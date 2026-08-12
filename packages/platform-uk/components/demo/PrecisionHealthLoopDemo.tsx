@@ -195,7 +195,7 @@ export function PrecisionHealthLoopDemo() {
               Pilot HITL cases
             </Link>
             <Link
-              href="/resources#precision-health"
+              href="/security#precision-health"
               className="text-sm text-teal-800 underline-offset-2 hover:underline"
             >
               Roadmap & honesty notes

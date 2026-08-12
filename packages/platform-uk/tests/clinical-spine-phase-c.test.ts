@@ -189,13 +189,13 @@ async function run() {
   assert.ok(heroPipeline.includes("SYNTHESIS"));
   assert.ok(heroPipeline.includes("SHIELD"));
 
-  const resources = fs.readFileSync(path.join(process.cwd(), "app/resources/page.tsx"), "utf8");
-  assert.ok(resources.includes("Five layers from intake to export"));
-  assert.ok(resources.includes("named clinical agents"));
-  assert.ok(resources.includes("Named reviewer approval on every output"));
-  assert.ok(!resources.includes("Twelve Phase-1 directory agents"));
-  assert.ok(!resources.includes("Seven agents"));
-  assert.ok(!resources.includes("100 patients"));
+  const platform = fs.readFileSync(path.join(process.cwd(), "components/marketing/platform-page-content.tsx"), "utf8");
+  assert.ok(platform.includes("Five layers from intake to export"));
+  assert.ok(platform.includes("named clinical agents"));
+  assert.ok(platform.includes("Named reviewer approval on every output"));
+  assert.ok(!platform.includes("Twelve Phase-1 directory agents"));
+  assert.ok(!platform.includes("Seven agents"));
+  assert.ok(!platform.includes("100 patients"));
 
   const agentGrid = fs.readFileSync(
     path.join(process.cwd(), "components/marketing/AgentGrid.tsx"),

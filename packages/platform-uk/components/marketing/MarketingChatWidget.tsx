@@ -125,17 +125,14 @@ export function MarketingChatPanel({
           <div className="rounded-xl border border-black/8 bg-white px-3 py-3 text-sm leading-relaxed text-steel">
             <p>{unavailableMessage}</p>
             <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm">
-              <Link href="/faq" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                FAQ
-              </Link>
               <Link href="/contact" className="font-medium text-navy-dark underline-offset-4 hover:underline">
                 Contact
               </Link>
               <Link href="/get-started" className="font-medium text-navy-dark underline-offset-4 hover:underline">
                 Get started
               </Link>
-              <Link href="/walkthrough" className="font-medium text-navy-dark underline-offset-4 hover:underline">
-                Walkthrough
+              <Link href="/demo/patel" className="font-medium text-navy-dark underline-offset-4 hover:underline">
+                Demo
               </Link>
             </p>
           </div>
