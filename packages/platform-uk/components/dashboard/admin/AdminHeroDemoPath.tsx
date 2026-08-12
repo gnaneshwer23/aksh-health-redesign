@@ -26,9 +26,9 @@ const BEATS = [
   },
   {
     n: "3",
-    label: "Users & enquiries",
-    href: "/dashboard/admin/organisation-enquiries",
-    hint: "Access requests · staff ops",
+    label: "E2E validation",
+    href: "/dashboard/admin/e2e",
+    hint: "Synthetic cohort · report · sims",
   },
 ] as const;
 
@@ -59,9 +59,9 @@ export function AdminHeroDemoPath({ className }: { className?: string }) {
             </Badge>
           </div>
           <p className="text-xs text-muted">
-            Integrations honesty → SHIELD audit → users / enquiries. CONDUCTOR shows queue health;
-            BRIDGE stages FHIR after clinician Accept — not live EMIS / SystmOne write-back. Precision
-            Health / partner readiness stay scaffolding links.
+            Integrations honesty → SHIELD audit → E2E validation (dev/test). CONDUCTOR shows queue
+            health; BRIDGE stages FHIR after clinician Accept — not live EMIS / SystmOne write-back.
+            Precision Health / partner readiness stay scaffolding links.
           </p>
           <ol className="flex flex-wrap items-stretch gap-2" aria-label="Demo beats">
             {BEATS.map((beat, i) => (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, BookOpen, Building2, ClipboardList, FileText, Heart, Shield, Users } from "lucide-react";
+import { Activity, Beaker, BookOpen, Building2, ClipboardList, FileText, Heart, Shield, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -31,6 +31,12 @@ const LINKS = [
     label: "Learning events",
     description: "Prediction → decision → outcome recorder (no auto-retrain)",
     icon: BookOpen
+  },
+  {
+    href: "/dashboard/admin/e2e",
+    label: "E2E platform validation",
+    description: "Dev/test — report download, golden filter, lab/pharmacy sims · disabled in production",
+    icon: Beaker,
   },
   { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", description: "Access requests from NHS organisations", icon: FileText },
   { href: "/dashboard/admin/billing", label: "Billing", description: "Subscription and contract contact details", icon: Building2 },

@@ -93,7 +93,8 @@ export default function AdminDashboardPage() {
           >
             <p className="text-sm font-semibold text-foreground">E2E platform validation</p>
             <p className="mt-1 text-xs text-muted">
-              Dev/test only — synthetic cohort A–H, seed/cleanup/report CLI. Disabled in production.
+              Dev/test — refresh, report download, golden filter, lab/pharmacy sims. Seed/cleanup stay
+              CLI. Disabled in production.
             </p>
           </Link>
         </div>
