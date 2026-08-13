@@ -97,9 +97,8 @@
 | Item | Value |
 | --- | --- |
 | Pre-pass HEAD | `65fe2924c564fab8b53b48520edc7ed78147fd3d` |
-| Go-live fix commit | `7f5ca29e7b7ff9375aaf8f362eab41a0d1de8901` (+ follow-up for case evidence hardening) |
-| Prior Vercel Ready (pre-fix) | `0ne-health-95f655e90` · Production · Ready |
-| Post-fix Vercel | `0ne-health-kgpfg2ccj` / `dpl_2WzdACcqvJHAwDrLf4YbT8vn6Uqh` · Production · **Ready** · aliases include https://akshhealth.com |
+| Go-live fix commits | `7f5ca29` (auth/login/forgot-password) · `3fcc76905fce98728e4a26a5f53345d944fb3703` (case evidence hardening) |
+| Post-fix Vercel | `0ne-health-av5cnqs1w` / `dpl_CD1xAy6D3eTKHds3PAJGaUGA6Xxq` · Production · **Ready** · https://akshhealth.com |
 | Master correlationId | `aksh-master-20260812-76f0355d` |
 | Master report | `docs/reports/E2E_MASTER_JOURNEY_20260813.md` |
 
