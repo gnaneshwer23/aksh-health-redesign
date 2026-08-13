@@ -26,7 +26,7 @@
 
 ### Why not unconstrained GO
 - Resend still uses `onboarding@resend.dev` → password-reset / verification email delivery limited to the Resend account owner until a custom domain is verified
-- Secondary `/cases/case-005/evidence?demo=1` returned **500** pre-fix (shared-scope fallback shipped); re-verify after deploy
+- ~~Secondary `/cases/case-005/evidence?demo=1` 500~~ — **fixed and retested 200** after `3fcc769`
 - Clinical evidence remains **UNVALIDATED**; EMR/EPS/lab/CGM vendor feeds are **NOT live**
 
 ---
@@ -86,8 +86,7 @@
 | Severity | Item | Action |
 | --- | --- | --- |
 | **P1 ops** | Resend domain not verified (`EMAIL_FROM` = `Aksh Health <onboarding@resend.dev>`) | Verify `akshhealth.com` (or subdomain) at resend.com/domains; set `EMAIL_FROM` to that domain in Vercel env; retest forgot-password to a non-owner inbox |
-| **P2** | `/cases/case-005/evidence?demo=1` still 500 after first fix | Hardening follow-up: null-safe feedback fields + catch seed ownership errors; walkthrough treats as soft-fail. Not on critical GP HITL demo path. |
-| **P2** | Master Journey process previously hung after PASS | `process.exit(0)` added |
+| ~~P2 case-005 evidence~~ | **RESOLVED** | Prod: HTTP 200 + “Case Evidence”; walkthrough smoke full PASS |
 | None P0 | Identity / safety / fake-live-EMR claims | No P0 found |
 
 ---
@@ -97,8 +96,9 @@
 | Item | Value |
 | --- | --- |
 | Pre-pass HEAD | `65fe2924c564fab8b53b48520edc7ed78147fd3d` |
-| Go-live fix commits | `7f5ca29` (auth/login/forgot-password) · `3fcc76905fce98728e4a26a5f53345d944fb3703` (case evidence hardening) |
+| Go-live fix commits | `7f5ca29` · `3fcc769` · doc `68822e9` |
 | Post-fix Vercel | `0ne-health-av5cnqs1w` / `dpl_CD1xAy6D3eTKHds3PAJGaUGA6Xxq` · Production · **Ready** · https://akshhealth.com |
+| Walkthrough smoke (final) | **PASS** all protected + public pages including case-005 evidence |
 | Master correlationId | `aksh-master-20260812-76f0355d` |
 | Master report | `docs/reports/E2E_MASTER_JOURNEY_20260813.md` |
 
