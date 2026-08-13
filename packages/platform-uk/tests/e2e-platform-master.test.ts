@@ -62,6 +62,7 @@ async function run() {
       ` identity=${identity.canonicalPatientId}` +
       ` aliases=${identity.legacyGeneratorAliases.join(",")}`
   );
+  process.exit(0);
 }
 
 void run().catch((error) => {

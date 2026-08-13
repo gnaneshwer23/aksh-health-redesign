@@ -69,7 +69,7 @@ export async function middleware(request: NextRequest) {
   const role = (token?.role as UserRole | undefined) ?? null;
   const onboardingComplete = Boolean(token?.onboardingComplete);
 
-  if (pathname === "/auth/signin") {
+  if (pathname === "/auth/signin" || pathname === "/login") {
     const signInUrl = new URL("/signin", request.url);
     signInUrl.search = request.nextUrl.search;
     return NextResponse.redirect(signInUrl);

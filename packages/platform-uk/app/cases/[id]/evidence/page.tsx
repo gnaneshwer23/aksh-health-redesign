@@ -51,9 +51,15 @@ export default async function CaseEvidencePage({
   searchParams?: { demo?: string; recording?: string };
 }) {
   const scopeKey = await readUserScopeFromServerContext();
-  const reviewCase = await readReviewCaseById(params.id, scopeKey);
   const demoMode = searchParams?.demo === "1";
   const recordingMode = searchParams?.recording === "1";
+
+  // Demo walkthroughs use shared seeded cases (e.g. case-005). Prefer the caller
+  // scope first, then fall back to shared when demo=1 so cohort logins still work.
+  let reviewCase = await readReviewCaseById(params.id, scopeKey);
+  if (!reviewCase && demoMode && scopeKey !== "shared") {
+    reviewCase = await readReviewCaseById(params.id, "shared");
+  }
 
   if (!reviewCase) {
     notFound();

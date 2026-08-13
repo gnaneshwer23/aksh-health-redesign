@@ -8,22 +8,22 @@ const publicPages = [
   {
     label: "Landing",
     path: "/",
-    expectedText: ["Clinical AI that keeps review, safety, and evidence in one place."]
+    expectedText: ["Clinical work", "properly coordinated"]
   },
   {
-    label: "Onboarding",
-    path: "/onboarding",
-    expectedText: ["Choose your role. Start with the right work."]
+    label: "Get started",
+    path: "/get-started",
+    expectedText: ["Request access for your organisation"]
   },
   {
-    label: "Dashboards",
-    path: "/dashboards",
-    expectedText: ["One product, three professional operating views."]
+    label: "Platform roles",
+    path: "/platform",
+    expectedText: ["One platform, eight roles"]
   },
   {
     label: "Product tour",
-    path: "/demo",
-    expectedText: ["See Aksh Health in action"]
+    path: "/demo/patel",
+    expectedText: ["Mr James Patel walkthrough"]
   }
 ];
 
