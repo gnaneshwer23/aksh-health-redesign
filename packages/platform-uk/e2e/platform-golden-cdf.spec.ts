@@ -40,7 +40,7 @@ test.describe("Platform golden journeys — cohorts C, D, F", () => {
     expect(safetyBody.safetyRoute).not.toBe("observe");
 
     await page.goto("/dashboard/gp/review-queue");
-    await expect(page.getByRole("region", { name: "AI Review Queue" })).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
 
     test.info().annotations.push({
       type: "golden-scenario",

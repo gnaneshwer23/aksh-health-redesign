@@ -5,7 +5,7 @@ test.describe("Role routing", () => {
     await page.goto("/dashboard/gp");
     await expect(page).toHaveURL(/\/dashboard\/gp/);
     await expect(page.getByTestId("demo-data-banner")).toBeVisible();
-    await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
+    await expect(page.getByText(/Clinician Dashboard|Review Queue/i).first()).toBeVisible();
   });
 
   test("unauthenticated users can access public ICS demo dashboard", async ({ page }) => {

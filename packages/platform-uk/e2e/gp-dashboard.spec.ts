@@ -7,7 +7,7 @@ test.describe("GP dashboard", () => {
     await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "gp-dashboard" });
     await applyApiCookiesToPage(page, request);
     await page.goto("/dashboard/gp");
-    await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
+    await expect(page.getByText(/Clinician Dashboard|Review Queue/i).first()).toBeVisible();
   });
 
   test("dashboard loads without demo data banner", async ({ page }) => {
@@ -23,6 +23,6 @@ test.describe("GP dashboard", () => {
 
     await page.getByRole("link", { name: "Review Queue" }).click();
     await page.waitForURL(/\/dashboard\/gp\/review-queue/);
-    await expect(page.getByRole("region", { name: "AI Review Queue" })).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
   });
 });

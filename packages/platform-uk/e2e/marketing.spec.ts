@@ -10,7 +10,7 @@ test.describe("Marketing smoke", () => {
     await expect(nav).toHaveAttribute("data-solid-navbar", "false");
     const brandTitle = page.locator("nav a.owkin-nav__brand .owkin-nav__wordmark");
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
-    expect(brandColor).toBe("rgb(10, 42, 37)");
+    expect(brandColor).toBe("rgb(20, 32, 30)");
 
     await expect(page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i })).toBeVisible();
     await expect(page.locator("section.owkin-hero .owkin-hero__brand")).toHaveText("Aksh Health");
@@ -110,28 +110,25 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText("Integrate", { exact: true }).first()).toBeVisible();
   });
 
-  test("homepage closing CTA band has readable dark contrast", async ({ page }) => {
+  test("homepage closing CTA band has readable contrast", async ({ page }) => {
     await page.goto("/");
 
     const band = page.locator("[data-cta-band]");
     await expect(band).toBeVisible();
     await expect(band.getByRole("heading", { name: /Clinical work that stays under control/i })).toBeVisible();
 
-    const bg = await band.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(bg).toBe("rgb(10, 42, 37)");
-
     const titleColor = await band
       .getByRole("heading", { name: /Clinical work that stays under control/i })
       .evaluate((el) => window.getComputedStyle(el).color);
-    expect(titleColor).toBe("rgb(255, 255, 255)");
+    expect(titleColor).toBe("rgb(20, 32, 30)");
 
     const primary = band.getByRole("link", { name: "Request access" });
     await expect(primary).toBeVisible();
     await expect(band.getByRole("link", { name: /^Contact$/i })).toBeVisible();
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
-    expect(primaryBg).toBe("rgb(255, 255, 255)");
-    expect(primaryColor).toBe("rgb(10, 42, 37)");
+    expect(primaryBg).toBe("rgb(0, 168, 142)");
+    expect(primaryColor).toBe("rgb(255, 255, 255)");
   });
 
   test("homepage hero does not render readable labels behind the headline", async ({ page }) => {

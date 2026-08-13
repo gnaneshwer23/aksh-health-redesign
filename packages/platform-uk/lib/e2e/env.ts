@@ -10,12 +10,14 @@ export function isSyntheticDataEnabled(): boolean {
   return process.env.SYNTHETIC_DATA === "true" || isE2ETestMode();
 }
 
-/** Block E2E admin surfaces in production unless explicitly overridden. */
+/** Block E2E admin surfaces in real production unless explicitly overridden. */
 export function isE2EAdminSurfaceAllowed(): boolean {
   if (process.env.E2E_ADMIN_ENABLED === "true") return true;
+  // Playwright CI builds with NODE_ENV=production but still sets E2E_TEST_MODE.
+  if (isE2ETestMode()) return true;
   if (process.env.NODE_ENV === "production") return false;
   if (process.env.VERCEL_ENV === "production") return false;
-  return isE2ETestMode() || process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
+  return process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
 }
 
 export function resolveE2EPassword(): string {

@@ -31,7 +31,7 @@ test.describe("Clinical proof — Patel golden path", () => {
 
     // 3) Review queue — ≥4 Patel-related items expected in seed
     await page.goto("/dashboard/gp/review-queue");
-    await expect(page.getByRole("region", { name: "AI Review Queue" })).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
     await expect(page.getByText(/Mr James Patel/i).first()).toBeVisible();
     await expect(page.getByText(/GUARDIAN|Aspirin|Apixaban/i).first()).toBeVisible();
     await expect(page.getByText(/ORACLE|Risk score/i).first()).toBeVisible();

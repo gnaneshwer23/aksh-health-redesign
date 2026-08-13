@@ -41,6 +41,6 @@ test.describe("Auth flow", () => {
     await page.goto("/dashboard/gp", { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/dashboard\/gp/, { timeout: 15_000 });
 
-    await expect(page.getByText(/Clinician Dashboard|AI Review Queue/i).first()).toBeVisible();
+    await expect(page.getByText(/Clinician Dashboard|Review Queue/i).first()).toBeVisible();
   });
 });
