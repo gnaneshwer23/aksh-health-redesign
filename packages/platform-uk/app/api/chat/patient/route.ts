@@ -123,7 +123,11 @@ export async function POST(request: Request) {
     audience?: PatientChatAudience;
   };
   try {
-    body = await request.json();
+    body = (await request.json()) as {
+      messages?: UIMessage[];
+      patientId?: string;
+      audience?: PatientChatAudience;
+    };
   } catch {
     return Response.json({ error: "Invalid request body." }, { status: 400 });
   }
