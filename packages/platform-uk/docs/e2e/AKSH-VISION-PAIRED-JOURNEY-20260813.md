@@ -61,6 +61,9 @@ npx tsx --env-file=.env.local tests/e2e-platform-master.test.ts
 npx tsx tests/e2e-platform-stakeholder-clinic.test.ts
 ```
 
+**Commit:** `dc8d12d`  
+**Production deploy:** `0ne-health-btwur8m3t` · Ready · https://akshhealth.com
+
 Operator check on production after deploy:
 1. Sign in `gp01@demo.akshhealth.com` → select **Mr James Patel (P002)** → Accept draft · confirm `liveEmis:false`
 2. Sign in `patient01@demo.akshhealth.com` → My Health shows chart **P002** · Ask Aksh enabled · grant consent · see care plan / appointments
