@@ -295,9 +295,20 @@ async function run() {
     ),
     "Own-system boundary should include the JSON-backed review case store"
   );
+  // NHS/EHR adapters stay off; product modules may be explicitly flag-gated (e.g. ENABLE_DIABETES_MODULE in CI).
+  const flagGatedProductAdapterIds = new Set([
+    "diabetes-module",
+    "llm-synthesis",
+    "llm-guardian",
+    "llm-oracle",
+    "llm-dr-assist",
+    "llm-equity",
+  ]);
   assert.ok(
-    ownSystemBoundary.externalAdapters.every((adapter) => adapter.enabled === false),
-    "Own-system boundary should keep external adapters disabled by default"
+    ownSystemBoundary.externalAdapters.every(
+      (adapter) => adapter.enabled === false || flagGatedProductAdapterIds.has(adapter.id)
+    ),
+    "Own-system boundary should keep NHS/EHR external adapters disabled by default"
   );
 
   const databaseBoundary = getDatabaseBoundaryPlan();

@@ -147,7 +147,10 @@ async function run() {
     path.join(process.cwd(), "app/dashboard/hospital/page.tsx"),
     "utf8"
   );
-  assert.ok(hospitalPage.includes("SpineSharedEventsPanel"));
+  // Hospital surface uses ward drill-in + command map (P2 polish); shared spine events stay on ICS.
+  assert.ok(hospitalPage.includes("WardPatientContext"));
+  assert.ok(hospitalPage.includes("HospitalCommandMap"));
+  assert.ok(!hospitalPage.includes("SpineSharedEventsPanel"));
 
   const spine = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/precision-health/SystemSpinePanel.tsx"),
