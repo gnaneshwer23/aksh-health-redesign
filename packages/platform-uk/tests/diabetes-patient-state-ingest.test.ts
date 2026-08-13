@@ -123,20 +123,25 @@ function testHbA1cDefaultSourceIsFixture() {
 async function testRegressionFallsBackToFixtureByteForByte() {
   // A patient with nothing ever ingested must resolve to the exact same
   // composite output whether or not the P1-2 override path runs at all.
-  const patientId = "P002";
+  // Use a unique id — Postgres Patient State ignores scopeKey, so canonical
+  // P002 can already have seeded ingest rows in the shared E2E DATABASE_URL.
+  const patientId = `diab-never-ingested-${Date.now()}`;
   const options = { scopeKey: `diab_ingest_test_never_used_${Date.now()}` };
 
   const overrides = await loadDiabetesPatientStateOverrides(patientId, options);
-  assert.deepEqual(overrides.input, {}, "no ingestion happened for this scopeKey — override input must be empty");
+  assert.deepEqual(overrides.input, {}, "no ingestion happened for this patient — override input must be empty");
   assert.equal(overrides.glucoseReadingsSource, undefined);
   assert.equal(overrides.hba1cReadingsSource, undefined);
 
   const withOverridePath = buildDiabetesRiskContribution(
-    { patientId, patientLabel: "James Patel" },
+    { patientId, patientLabel: "Never Ingested Test Patient" },
     overrides.input,
     { glucose: overrides.glucoseReadingsSource, hba1c: overrides.hba1cReadingsSource }
   );
-  const withoutOverridePath = buildDiabetesRiskContribution({ patientId, patientLabel: "James Patel" });
+  const withoutOverridePath = buildDiabetesRiskContribution({
+    patientId,
+    patientLabel: "Never Ingested Test Patient"
+  });
 
   assert.deepEqual(withOverridePath, withoutOverridePath, "byte-for-byte identical composite output when nothing was ingested");
   assert.equal(withOverridePath.signals.glucose.readingsSource, "fixture");
