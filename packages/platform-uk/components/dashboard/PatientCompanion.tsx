@@ -29,24 +29,21 @@ import {
   getPatientCompanionProfile,
   getPatientGreeting,
 } from "@/lib/patient-companion/profile";
+import {
+  CANONICAL_SHARED_DEMO_PATIENT_ID,
+  CANONICAL_SHARED_DEMO_PATIENT_LABEL,
+} from "@/lib/auth/demo-patient-binding";
+import { getPatientById } from "@/lib/mock-data/patients";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 import type { CheckInMood, MedicationAdherence } from "@/lib/patient-companion/check-in";
 import { cn } from "@/lib/utils";
 
-/** Synthetic demo patient used for Phase 1 companion API surfaces until a linked record exists. */
-const COMPANION_DEMO_PATIENT_ID = "P001";
-const COMPANION_DEMO_PATIENT_LABEL = "Demo patient (P001)";
-
 /**
- * B4 (docs/PHASED_BUILD_PLAN.md) — separate synthetic diabetes-flagged demo patient for the
- * Diabetes coaching panel only. Deliberately NOT the same id as COMPANION_DEMO_PATIENT_ID (P001,
- * which is not diabetes-flagged — see lib/mock-data/patients.ts clinicalProfiles) so every other
- * companion panel above keeps reading P001 exactly as it did before B4 (Preserve B1–B3 behaviour).
- * P002 is the cohort's primary Diabetes v1 fixture (worsening HbA1c, neuropathy watch — see
- * lib/disease-modules/diabetes/fixtures.ts).
+ * Canonical shared diabetes companion chart = P002 Mr James Patel (same id GP uses).
+ * Prefer session.boundPatientId (invite-by-practice / demo binding); fall back to P002.
  */
-const DIABETES_COACHING_DEMO_PATIENT_ID = "P002";
-const DIABETES_COACHING_DEMO_PATIENT_LABEL = "Demo patient (P002)";
+const FALLBACK_COMPANION_PATIENT_ID = CANONICAL_SHARED_DEMO_PATIENT_ID;
+const FALLBACK_COMPANION_PATIENT_LABEL = `${CANONICAL_SHARED_DEMO_PATIENT_LABEL} (${CANONICAL_SHARED_DEMO_PATIENT_ID})`;
 
 const TAB_VALUES = ["health", "checkins", "medications", "appointments", "ask"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
@@ -86,11 +83,20 @@ export function PatientCompanion() {
   );
   const greeting = getPatientGreeting(session, profileIdentity, userProfile?.fullName);
 
-  /** Self-only Ask Aksh scope — fail closed until practice binds a patient id on the session. */
+  /** Self-only Ask Aksh + check-in scope — fail closed until practice binds a patient id. */
   const boundAskPatientId =
     typeof session?.user?.boundPatientId === "string" && session.user.boundPatientId.trim()
       ? session.user.boundPatientId.trim()
       : null;
+
+  /** Shared chart id for care plan / consent / coaching / outcomes (always P002 for demo). */
+  const companionPatientId = boundAskPatientId ?? FALLBACK_COMPANION_PATIENT_ID;
+  const chartPatient = getPatientById(companionPatientId);
+  const companionPatientLabel = boundAskPatientId
+    ? chartPatient?.name
+      ? `${chartPatient.name} (${boundAskPatientId})`
+      : `Your record (${boundAskPatientId})`
+    : FALLBACK_COMPANION_PATIENT_LABEL;
 
   const [activeTab, setActiveTab] = useState<TabValue>("health");
   const [checkInStep, setCheckInStep] = useState(0);
@@ -123,9 +129,22 @@ export function PatientCompanion() {
   };
 
   const submitCheckIn = async (mood: CheckInMood, medicationAdherence: MedicationAdherence) => {
+    if (!boundAskPatientId) {
+      toast({
+        title: "Check-in not saved",
+        description:
+          "Your practice hasn't linked this account to a patient record yet (invite-by-practice).",
+      });
+      setCheckInResultNote(
+        "Check-in could not be shared — no bound patient id on this session."
+      );
+      setCheckInStep(4);
+      return;
+    }
+
     setCheckInSubmitting(true);
     try {
-      const response = await fetch(`/api/patients/${COMPANION_DEMO_PATIENT_ID}/check-in`, {
+      const response = await fetch(`/api/patients/${boundAskPatientId}/check-in`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -182,8 +201,9 @@ export function PatientCompanion() {
         data-testid="patient-honesty-banner"
         className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
       >
-        Practice-invited companion · synthetic demo content · clinicians keep HITL on record changes ·
-        liveEmis:false — no patient-app EHR write.
+        Practice-invited companion · shared chart{" "}
+        <code className="text-[10px]">{companionPatientId}</code> · clinicians keep HITL on record
+        changes · liveEmis:false — no patient-app EHR write.
       </p>
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} className="w-full">
         <TabsList className="flex h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto rounded-xl bg-muted/40 p-1 scrollbar-none lg:grid lg:grid-cols-5 lg:overflow-visible">
@@ -218,9 +238,10 @@ export function PatientCompanion() {
                 data-testid="patient-companion-demo-banner"
                 className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
               >
-                Showing <strong>demo companion content</strong> — conditions, medicines, and appointments
-                below are rehearsal placeholders until your practice links a real patient record (invite-by-practice).
-                Messaging and live care-team sync are not connected · liveEmis:false.
+                Showing <strong>demo companion content</strong> for{" "}
+                <strong>{companionPatientLabel}</strong> — the same synthetic chart your GP reviews
+                (invite-by-practice binding). Messaging and live care-team sync are not connected ·
+                liveEmis:false.
               </p>
             ) : null}
             {companionProfile.conditions.map((condition) => (
@@ -282,68 +303,44 @@ export function PatientCompanion() {
           </div>
           <div id="companion-diabetes-coaching" className="scroll-mt-24">
             <DiabetesCoachingPanel
-              patientId={DIABETES_COACHING_DEMO_PATIENT_ID}
-              patientLabel={DIABETES_COACHING_DEMO_PATIENT_LABEL}
+              patientId={companionPatientId}
+              patientLabel={companionPatientLabel}
             />
           </div>
           <div id="companion-care-plan" className="scroll-mt-24">
             <HealthPlanDraftPanel
-              patientId={COMPANION_DEMO_PATIENT_ID}
-              patientLabel={
-                companionProfile.isDemoEmptyState
-                  ? COMPANION_DEMO_PATIENT_LABEL
-                  : companionProfile.displayName
-              }
+              patientId={companionPatientId}
+              patientLabel={companionPatientLabel}
               mode="patient"
             />
           </div>
           <div id="companion-consent" className="scroll-mt-24">
             <ConsentGrantsPanel
-              patientId={COMPANION_DEMO_PATIENT_ID}
-              patientLabel={
-                companionProfile.isDemoEmptyState
-                  ? COMPANION_DEMO_PATIENT_LABEL
-                  : companionProfile.displayName
-              }
+              patientId={companionPatientId}
+              patientLabel={companionPatientLabel}
               mode="patient"
             />
           </div>
           <SpineOutcomesCapturePanel
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
+            patientId={companionPatientId}
+            patientLabel={companionPatientLabel}
             mode="patient"
             onCaptured={() => setTimelineRefreshKey((k) => k + 1)}
           />
           <ConnectorsIngestPanel
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
+            patientId={companionPatientId}
+            patientLabel={companionPatientLabel}
             mode="patient"
             onIngestSuccess={() => setTimelineRefreshKey((k) => k + 1)}
           />
           <PatientTimelinePanel
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
+            patientId={companionPatientId}
+            patientLabel={companionPatientLabel}
             refreshKey={timelineRefreshKey}
           />
           <SafetyRouteCoachingGate
-            patientId={COMPANION_DEMO_PATIENT_ID}
-            patientLabel={
-              companionProfile.isDemoEmptyState
-                ? COMPANION_DEMO_PATIENT_LABEL
-                : companionProfile.displayName
-            }
+            patientId={companionPatientId}
+            patientLabel={companionPatientLabel}
             mode="patient"
           />
         </TabsContent>
@@ -482,11 +479,26 @@ export function PatientCompanion() {
         <TabsContent value="appointments" className="mt-4 space-y-4">
           <Card className="p-4 shadow-sm">
             <p className="text-sm font-medium">Upcoming</p>
-            <p className="mt-2 text-sm">{companionProfile.upcomingAppointment}</p>
+            <p className="mt-2 text-sm">
+              {chartPatient?.nextAppointmentDate
+                ? `${chartPatient.nextAppointmentDate}${
+                    chartPatient.appointmentTime ? `, ${chartPatient.appointmentTime}` : ""
+                  } | GP review (${chartPatient.organisation ?? "practice"})`
+                : companionProfile.upcomingAppointment}
+            </p>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Simulated appointment from shared chart {companionPatientId} · liveEmis:false
+            </p>
           </Card>
           <Card className="p-4 shadow-sm">
             <p className="text-sm font-medium">Past appointments</p>
-            <p className="mt-2 text-xs text-muted">{companionProfile.pastAppointmentSummary}</p>
+            <p className="mt-2 text-xs text-muted">
+              {chartPatient?.lastEncounterDate
+                ? `Last encounter ${chartPatient.lastEncounterDate}${
+                    chartPatient.supervisingGp ? ` with ${chartPatient.supervisingGp}` : ""
+                  }.`
+                : companionProfile.pastAppointmentSummary}
+            </p>
           </Card>
         </TabsContent>
 
@@ -506,7 +518,7 @@ export function PatientCompanion() {
             embedded
             audience="patient"
             patientId={boundAskPatientId}
-            patientLabel={boundAskPatientId ? `Your record (${boundAskPatientId})` : null}
+            patientLabel={boundAskPatientId ? companionPatientLabel : null}
             className="min-h-[28rem]"
           />
         </TabsContent>

@@ -65,11 +65,17 @@ async function resolveCredentialsUser(email: string, password: string) {
 async function enrichTokenFromProfile(
   userId: string,
   role: UserRole,
-  fallbackName?: string | null
-): Promise<{ name: string | null; organisation: string | null }> {
+  fallbackName?: string | null,
+  email?: string | null
+): Promise<{
+  name: string | null;
+  organisation: string | null;
+  boundPatientId: string | null;
+}> {
   try {
     const { findProfileByUserId } = await import("./auth/user-repository");
     const { getOnboardingProgress } = await import("./onboarding/onboarding-progress-repository");
+    const { resolveBoundPatientIdForSession } = await import("./auth/demo-patient-binding");
     const profile = await findProfileByUserId(userId);
     const onboarding = await getOnboardingProgress(userId);
     const identity = (onboarding?.identity ?? {}) as IdentityData;
@@ -79,11 +85,18 @@ async function enrichTokenFromProfile(
     return {
       name: profile?.fullName ?? fallbackName ?? null,
       organisation: resolveOrganisationName(resolvedRole, profile, identity, organisationDetails),
+      boundPatientId: resolveBoundPatientIdForSession({
+        role: resolvedRole,
+        email: email ?? null,
+        preferences: profile?.preferences ?? null,
+      }),
     };
   } catch {
+    const { resolveDemoBoundPatientId } = await import("./auth/demo-patient-binding");
     return {
       name: fallbackName ?? null,
       organisation: null,
+      boundPatientId: resolveDemoBoundPatientId(email, role),
     };
   }
 }
@@ -133,9 +146,15 @@ export const authOptions: NextAuthOptions = {
         token.onboardingComplete = user.onboardingComplete ?? false;
         token.isEmailVerified = user.isEmailVerified ?? false;
 
-        const enriched = await enrichTokenFromProfile(user.id, user.role, user.name);
+        const enriched = await enrichTokenFromProfile(
+          user.id,
+          user.role,
+          user.name,
+          user.email
+        );
         token.name = enriched.name ?? user.name;
         token.organisation = enriched.organisation;
+        token.boundPatientId = enriched.boundPatientId;
       }
 
       if (trigger === "update" && session) {
@@ -154,9 +173,16 @@ export const authOptions: NextAuthOptions = {
         if (typeof session.isEmailVerified === "boolean") {
           token.isEmailVerified = session.isEmailVerified;
         }
+        if ("boundPatientId" in session) {
+          token.boundPatientId =
+            typeof session.boundPatientId === "string" && session.boundPatientId.trim()
+              ? session.boundPatientId.trim()
+              : null;
+        }
 
         if (session.onboardingComplete === true && token.id) {
           const { findProfileByUserId } = await import("./auth/user-repository");
+          const { resolveBoundPatientIdForSession } = await import("./auth/demo-patient-binding");
           const profile = await findProfileByUserId(token.id as string);
           if (profile) {
             token.onboardingComplete = profile.onboardingComplete;
@@ -164,8 +190,26 @@ export const authOptions: NextAuthOptions = {
             if (profile.fullName) {
               token.name = profile.fullName;
             }
+            token.boundPatientId = resolveBoundPatientIdForSession({
+              role: profile.role,
+              email: (token.email as string | undefined) ?? null,
+              preferences: profile.preferences ?? null,
+            });
           }
         }
+      }
+
+      // Re-resolve demo binding when missing (legacy JWTs minted before boundPatientId existed).
+      if (
+        token.role === "patient" &&
+        (token.boundPatientId == null || token.boundPatientId === "") &&
+        token.email
+      ) {
+        const { resolveDemoBoundPatientId } = await import("./auth/demo-patient-binding");
+        token.boundPatientId = resolveDemoBoundPatientId(
+          token.email as string,
+          token.role as UserRole
+        );
       }
 
       return token;
@@ -180,6 +224,10 @@ export const authOptions: NextAuthOptions = {
         session.user.isEmailVerified = Boolean(token.isEmailVerified);
         session.user.name = (token.name as string | null | undefined) ?? session.user.name;
         session.user.organisation = (token.organisation as string | null | undefined) ?? null;
+        session.user.boundPatientId =
+          typeof token.boundPatientId === "string" && token.boundPatientId.trim()
+            ? token.boundPatientId.trim()
+            : null;
       }
       return session;
     },

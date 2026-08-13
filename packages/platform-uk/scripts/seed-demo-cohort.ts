@@ -16,6 +16,7 @@ import { spawn } from "node:child_process";
 import { hash } from "bcryptjs";
 import pg from "pg";
 
+import { resolveBoundPatientIdForSession } from "../lib/auth/demo-patient-binding";
 import {
   DEMO_COHORT_DEFAULT_PASSWORD,
   DEMO_COHORT_EMAIL_DOMAIN,
@@ -39,6 +40,24 @@ import { USERS_PROFILES_SQL, EMAIL_VERIFICATION_SQL, LEARNING_EVENTS_SQL } from 
 const { Pool } = pg;
 const root = process.cwd();
 const seedDir = path.join(root, "data", "seed");
+
+function buildDemoPreferences(user: {
+  email: string;
+  role: string;
+  credentialsHint: string | null;
+}) {
+  const boundPatientId = resolveBoundPatientIdForSession({
+    role: user.role,
+    email: user.email,
+  });
+  return {
+    syntheticOnly: true,
+    liveEmis: false,
+    demoCohort: true,
+    credentialsHint: user.credentialsHint,
+    ...(boundPatientId ? { boundPatientId } : {}),
+  };
+}
 
 function parseArgs(argv: string[]) {
   return {
@@ -188,12 +207,7 @@ async function upsertUsers(pool: pg.Pool, password: string) {
           user.role,
           user.fullName,
           user.practiceOds,
-          JSON.stringify({
-            syntheticOnly: true,
-            liveEmis: false,
-            demoCohort: true,
-            credentialsHint: user.credentialsHint,
-          }),
+          JSON.stringify(buildDemoPreferences(user)),
         ]
       );
       updated += 1;
@@ -211,12 +225,7 @@ async function upsertUsers(pool: pg.Pool, password: string) {
           user.role,
           user.fullName,
           user.practiceOds,
-          JSON.stringify({
-            syntheticOnly: true,
-            liveEmis: false,
-            demoCohort: true,
-            credentialsHint: user.credentialsHint,
-          }),
+          JSON.stringify(buildDemoPreferences(user)),
         ]
       );
       inserted += 1;

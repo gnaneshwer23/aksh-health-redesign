@@ -68,7 +68,7 @@ export function PrecisionHealthStatusPanel() {
           fetch("/api/precision-health/twin/status"),
           fetch("/api/integrations/medplum-status", { credentials: "include" }),
           fetch("/api/integrations/emis-partner-checklist", { credentials: "include" }),
-          fetch("/api/consent/grants?patientId=P001", { credentials: "include" }),
+          fetch("/api/consent/grants?patientId=P002", { credentials: "include" }),
           fetch("/api/precision-health/connectors", { credentials: "include" }),
         ]);
 
@@ -153,7 +153,7 @@ export function PrecisionHealthStatusPanel() {
         </div>
 
         <div>
-          <p className="text-xs font-semibold">Consent summary (P001 demo)</p>
+          <p className="text-xs font-semibold">Consent summary (P002 Patel demo)</p>
           <p className="mt-1 text-xs text-muted">
             {activeGrants === null
               ? "Sign in as admin to load grants."

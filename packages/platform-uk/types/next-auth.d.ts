@@ -21,6 +21,8 @@ declare module "next-auth" {
     name?: string | null;
     organisation?: string | null;
     isEmailVerified?: boolean;
+    /** Passed via `session.update({ boundPatientId })` after invite-by-practice. */
+    boundPatientId?: string | null;
   }
 
   interface User {
@@ -43,5 +45,7 @@ declare module "next-auth/jwt" {
     onboardingComplete: boolean;
     isEmailVerified: boolean;
     organisation?: string | null;
+    /** Bound patient id for patient-role self-scope (FR-CORE-005). */
+    boundPatientId?: string | null;
   }
 }

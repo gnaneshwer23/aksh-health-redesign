@@ -35,6 +35,8 @@ npm run seed:demo-cohort -- --apply
 | ICS | `ics01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
 | Hospital | `hospital01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
 | Patient | `patient01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
+
+**Paired GP↔patient demo:** `patient01` binds to synthetic chart **P002 (Mr James Patel)** — the same id GP selects in the review queue. Ask Aksh / check-in require this `boundPatientId` on the session (`liveEmis:false`).
 | Researcher | `researcher01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
 
 - Emails: `{role}{01–NN}@demo.akshhealth.com` (see [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md)).
