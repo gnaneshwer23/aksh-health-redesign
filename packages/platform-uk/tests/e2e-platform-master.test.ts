@@ -2,11 +2,14 @@
  * AKSH-E2E-MASTER-001 — Master Journey unit gate.
  * Run: npm run test:e2e:platform-master  (alias: npm run test:master)
  *
- * Requires .env.local Neon access for durable HITL/learning steps unless
- * AKSH_MASTER_SKIP_DURABLE=true is set.
+ * Optionally loads `.env.local` when present (CI has none). Durable HITL/learning
+ * steps need Neon (`DATABASE_URL`); without it they degrade, or set
+ * AKSH_MASTER_SKIP_DURABLE=true to mark those steps SKIP explicitly.
  */
 
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 import {
   MASTER_JOURNEY_TEST_ID,
@@ -14,6 +17,30 @@ import {
   renderMasterJourneyMarkdown,
   runMasterJourney,
 } from "../lib/e2e/master-journey";
+
+/** Best-effort `.env.local` load so local runs keep Neon without `--env-file` (CI-safe). */
+function loadEnvLocalIfPresent() {
+  const path = resolve(process.cwd(), ".env.local");
+  if (!existsSync(path)) return;
+  for (const raw of readFileSync(path, "utf8").split("\n")) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq <= 0) continue;
+    const key = line.slice(0, eq).trim();
+    if (!key || process.env[key] !== undefined) continue;
+    let value = line.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
+loadEnvLocalIfPresent();
 
 async function run() {
   const skipDurable = process.env.AKSH_MASTER_SKIP_DURABLE === "true";

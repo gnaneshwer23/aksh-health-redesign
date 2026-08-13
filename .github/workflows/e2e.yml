@@ -34,6 +34,8 @@ jobs:
       ENABLE_LLM_NEXUS: "false"
       # Soft SLOs only — do not hard-fail cold CI latency
       PERF_SMOKE_STRICT: "false"
+      # Unit gates have no DATABASE_URL — skip Neon-backed Master Journey steps
+      AKSH_MASTER_SKIP_DURABLE: "true"
 
     steps:
       - name: Checkout
