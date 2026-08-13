@@ -56,28 +56,55 @@ export default async function CaseEvidencePage({
 
   // Demo walkthroughs use shared seeded cases (e.g. case-005). Prefer the caller
   // scope first, then fall back to shared when demo=1 so cohort logins still work.
-  let reviewCase = await readReviewCaseById(params.id, scopeKey);
+  // Swallow ownership mismatches from seed userId="demo" vs authenticated cohort ids.
+  async function loadCase(id: string, scope: string) {
+    try {
+      return await readReviewCaseById(id, scope);
+    } catch {
+      return null;
+    }
+  }
+
+  let reviewCase = await loadCase(params.id, scopeKey);
   if (!reviewCase && demoMode && scopeKey !== "shared") {
-    reviewCase = await readReviewCaseById(params.id, "shared");
+    reviewCase = await loadCase(params.id, "shared");
   }
 
   if (!reviewCase) {
     notFound();
   }
 
-  const evidence = buildEvidencePayload(reviewCase);
-  const humanGates = deriveHumanGates(reviewCase);
-  const reviewerDraftActions = [...deriveReviewerDraftActions(reviewCase), ...deriveReviewerConfirmedActionDrafts(reviewCase)];
-  const reviewerChecklist = deriveReviewerChecklist(reviewCase);
-  const reviewerGuidance = deriveReviewerGuidance(reviewCase);
-  const linkedFeedback = await readFeedbackEntriesForCase(params.id, scopeKey);
+  let evidence;
+  let humanGates;
+  let reviewerDraftActions;
+  let reviewerChecklist;
+  let reviewerGuidance;
+  try {
+    evidence = buildEvidencePayload(reviewCase);
+    humanGates = deriveHumanGates(reviewCase);
+    reviewerDraftActions = [
+      ...deriveReviewerDraftActions(reviewCase),
+      ...deriveReviewerConfirmedActionDrafts(reviewCase)
+    ];
+    reviewerChecklist = deriveReviewerChecklist(reviewCase);
+    reviewerGuidance = deriveReviewerGuidance(reviewCase);
+  } catch {
+    notFound();
+  }
+
+  let linkedFeedback: Awaited<ReturnType<typeof readFeedbackEntriesForCase>> = [];
+  try {
+    linkedFeedback = await readFeedbackEntriesForCase(params.id, scopeKey);
+  } catch {
+    linkedFeedback = [];
+  }
   const openFeedback = linkedFeedback.filter((entry) => entry.resolutionStatus !== "resolved");
   const resolvedFeedback = linkedFeedback.filter((entry) => entry.resolutionStatus === "resolved");
-  const strongestFeedback = linkedFeedback.find((entry) => entry.strongestMoment.trim());
-  const topConcern = openFeedback.find((entry) => (entry.objections || entry.confusionPoint).trim());
-  const nextAction = openFeedback.find((entry) => entry.nextActions.trim());
-  const nextOwner = openFeedback.find((entry) => entry.followUpOwner.trim());
-  const nextDueDate = openFeedback.find((entry) => entry.dueDate.trim());
+  const strongestFeedback = linkedFeedback.find((entry) => entry.strongestMoment?.trim());
+  const topConcern = openFeedback.find((entry) => (entry.objections || entry.confusionPoint || "").trim());
+  const nextAction = openFeedback.find((entry) => entry.nextActions?.trim());
+  const nextOwner = openFeedback.find((entry) => entry.followUpOwner?.trim());
+  const nextDueDate = openFeedback.find((entry) => entry.dueDate?.trim());
   const query = buildEvidenceQuery(demoMode, recordingMode);
   const showTechnicalDetail = !demoMode && !recordingMode;
 

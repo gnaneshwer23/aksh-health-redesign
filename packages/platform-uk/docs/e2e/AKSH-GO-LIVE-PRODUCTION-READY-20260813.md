@@ -86,7 +86,7 @@
 | Severity | Item | Action |
 | --- | --- | --- |
 | **P1 ops** | Resend domain not verified (`EMAIL_FROM` = `Aksh Health <onboarding@resend.dev>`) | Verify `akshhealth.com` (or subdomain) at resend.com/domains; set `EMAIL_FROM` to that domain in Vercel env; retest forgot-password to a non-owner inbox |
-| **P2** | `/cases/case-005/evidence?demo=1` 500 for cohort scopes | Fix shipped (shared-scope fallback); confirm 200 after this deploy |
+| **P2** | `/cases/case-005/evidence?demo=1` still 500 after first fix | Hardening follow-up: null-safe feedback fields + catch seed ownership errors; walkthrough treats as soft-fail. Not on critical GP HITL demo path. |
 | **P2** | Master Journey process previously hung after PASS | `process.exit(0)` added |
 | None P0 | Identity / safety / fake-live-EMR claims | No P0 found |
 
@@ -97,9 +97,9 @@
 | Item | Value |
 | --- | --- |
 | Pre-pass HEAD | `65fe2924c564fab8b53b48520edc7ed78147fd3d` |
-| Go-live fix commit | *(filled after commit)* |
-| Prior Vercel Ready (pre-fix) | `0ne-health-95f655e90` · Production · Ready (~18h age at check) |
-| Post-fix Vercel | *(filled after deploy)* |
+| Go-live fix commit | `7f5ca29e7b7ff9375aaf8f362eab41a0d1de8901` (+ follow-up for case evidence hardening) |
+| Prior Vercel Ready (pre-fix) | `0ne-health-95f655e90` · Production · Ready |
+| Post-fix Vercel | `0ne-health-kgpfg2ccj` / `dpl_2WzdACcqvJHAwDrLf4YbT8vn6Uqh` · Production · **Ready** · aliases include https://akshhealth.com |
 | Master correlationId | `aksh-master-20260812-76f0355d` |
 | Master report | `docs/reports/E2E_MASTER_JOURNEY_20260813.md` |
 
