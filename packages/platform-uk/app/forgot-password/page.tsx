@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { getEmailDeliveryUserHint } from "@/lib/email/delivery-status";
 
 export const metadata: Metadata = {
   title: "Forgot Password ",
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm />;
+  return <ForgotPasswordForm deliveryHint={getEmailDeliveryUserHint()} />;
 }

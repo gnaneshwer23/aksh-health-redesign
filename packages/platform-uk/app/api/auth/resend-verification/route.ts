@@ -44,33 +44,47 @@ export async function POST(request: Request) {
     const { token } = await createEmailVerificationToken(session.user.id);
     const verifyUrl = buildEmailVerificationUrl(token);
 
-    const emailResult = await sendEmail({
-      to: session.user.email,
-      subject: "Verify your Aksh Health email address",
-      text: [
-        "Welcome to Aksh Health.",
-        "",
-        "Please verify your email address to secure your account:",
-        verifyUrl,
-        "",
-        "This link expires in 24 hours. If you did not create an account, you can ignore this email.",
-      ].join("\n"),
-      html: [
-        "<p>Welcome to Aksh Health.</p>",
-        "<p>Please verify your email address to secure your account:</p>",
-        `<p><a href="${verifyUrl}">Verify email address</a></p>`,
-        "<p>This link expires in 24 hours. If you did not create an account, you can ignore this email.</p>",
-      ].join(""),
-    });
+    try {
+      const emailResult = await sendEmail({
+        to: session.user.email,
+        subject: "Verify your Aksh Health email address",
+        text: [
+          "Welcome to Aksh Health.",
+          "",
+          "Please verify your email address to secure your account:",
+          verifyUrl,
+          "",
+          "This link expires in 24 hours. If you did not create an account, you can ignore this email.",
+        ].join("\n"),
+        html: [
+          "<p>Welcome to Aksh Health.</p>",
+          "<p>Please verify your email address to secure your account:</p>",
+          `<p><a href="${verifyUrl}">Verify email address</a></p>`,
+          "<p>This link expires in 24 hours. If you did not create an account, you can ignore this email.</p>",
+        ].join(""),
+      });
 
-    if (!emailResult.sent && process.env.NODE_ENV !== "production") {
-      console.warn(`[email-verification] Dev verify link for ${session.user.email}: ${verifyUrl}`);
+      if (!emailResult.sent) {
+        reportError(new Error("Verification email was not sent"), {
+          route: "/api/auth/resend-verification",
+          provider: emailResult.provider,
+          userId: session.user.id,
+        });
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`[email-verification] Dev verify link for ${session.user.email}: ${verifyUrl}`);
+        }
+      }
+    } catch (emailError) {
+      // Never leak provider errors (e.g. Resend sandbox limits) to the client.
+      reportError(emailError, { route: "/api/auth/resend-verification", userId: session.user.id });
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[email-verification] Dev verify link for ${session.user.email}: ${verifyUrl}`);
+      }
     }
 
     return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
   } catch (error) {
     reportError(error, { route: "/api/auth/resend-verification", userId: session.user.id });
-    const message = error instanceof Error ? error.message : "Failed to resend verification email";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
   }
 }

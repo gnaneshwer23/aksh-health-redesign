@@ -10,6 +10,7 @@
     "data:seed": "node scripts/data-seed.mjs",
     "data:seed:postgres": "node --env-file=.env.local scripts/data-seed-postgres.mjs",
     "data:seed:neo4j": "npx tsx --env-file=.env.local scripts/seed-neo4j.ts",
+    "aura:resume": "node scripts/resume-neo4j-aura.mjs",
     "auth:schema": "node --env-file=.env.local scripts/ensure-auth-schema.mjs",
     "db:migrate:p1": "node --env-file=.env.local scripts/apply-neon-migrations-009-010.mjs",
     "db:migrate:d1": "node --env-file=.env.local scripts/apply-neon-migration-011.mjs",

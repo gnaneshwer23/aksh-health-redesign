@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { AuthCardLayout } from "@/components/auth/auth-card-layout";
 import { Button } from "@/components/ui/button";
 
-function VerifyEmailContent() {
+function VerifyEmailContent({ deliveryHint }: { deliveryHint?: string | null }) {
   const searchParams = useSearchParams();
   const status = searchParams.get("status") ?? "pending";
 
@@ -78,14 +78,19 @@ function VerifyEmailContent() {
       <p className="mt-4 text-sm text-steel">
         Did not receive the email? Check your spam folder or sign in and use the resend option on your dashboard.
       </p>
+      {deliveryHint ? (
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950">
+          {deliveryHint}
+        </p>
+      ) : null}
     </AuthCardLayout>
   );
 }
 
-export function VerifyEmailForm() {
+export function VerifyEmailForm({ deliveryHint }: { deliveryHint?: string | null }) {
   return (
     <Suspense fallback={<AuthCardLayout title="Verify your email">Loading…</AuthCardLayout>}>
-      <VerifyEmailContent />
+      <VerifyEmailContent deliveryHint={deliveryHint} />
     </Suspense>
   );
 }

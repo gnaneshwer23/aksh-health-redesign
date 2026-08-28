@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/auth/password-reset-schemas";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ deliveryHint }: { deliveryHint?: string | null }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -70,6 +70,7 @@ export function ForgotPasswordForm() {
       {message ? (
         <div className="mb-4 rounded-xl border border-emerald/20 bg-emerald/5 px-4 py-3 text-sm text-emerald" role="status">
           {message}
+          {deliveryHint ? <p className="mt-2 text-xs text-emerald/90">{deliveryHint}</p> : null}
         </div>
       ) : null}
 

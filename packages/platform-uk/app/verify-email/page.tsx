@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { VerifyEmailForm } from "@/components/auth/verify-email-form";
+import { getEmailDeliveryUserHint } from "@/lib/email/delivery-status";
 
 export const metadata: Metadata = {
   title: "Verify Email ",
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function VerifyEmailPage() {
-  return <VerifyEmailForm />;
+  return <VerifyEmailForm deliveryHint={getEmailDeliveryUserHint()} />;
 }

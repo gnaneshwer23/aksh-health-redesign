@@ -5,6 +5,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getEmailDeliveryUserHintClient, isResendSandboxModeClient } from "@/lib/email/delivery-status";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,9 @@ export function EmailVerificationBanner({ className }: { className?: string }) {
   const [message, setMessage] = useState("");
 
   if (!profile || profile.emailVerified || dismissed) return null;
+
+  const deliveryHint = getEmailDeliveryUserHintClient();
+  const sandboxMode = isResendSandboxModeClient();
 
   async function resendVerification() {
     setStatus("sending");
@@ -50,11 +54,15 @@ export function EmailVerificationBanner({ className }: { className?: string }) {
       <div className="pr-8 sm:pr-0">
         <p className="font-semibold">Verify your email address</p>
         <p className="mt-0.5 text-amber-900/90">
-          We sent a verification link to {profile.email ?? "your inbox"}. Check your email to confirm your account.{" "}
+          {sandboxMode
+            ? "Verification email may not reach all inboxes during demo launch."
+            : `We sent a verification link to ${profile.email ?? "your inbox"}.`}{" "}
+          Check your email to confirm your account, or continue using the demo clinic while unverified.{" "}
           <Link href="/verify-email" className="font-medium underline underline-offset-2 hover:text-amber-950">
             Learn more
           </Link>
         </p>
+        {deliveryHint ? <p className="mt-1 text-xs text-amber-900/80">{deliveryHint}</p> : null}
         {message ? <p className="mt-1 text-xs text-amber-900/80">{message}</p> : null}
       </div>
 
