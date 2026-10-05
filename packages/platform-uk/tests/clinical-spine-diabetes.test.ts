@@ -117,13 +117,13 @@ async function run() {
   assert.deepEqual(contribution.areaFailures, [], "normal fixture path should not degrade any area");
 
   // HbA1c must remain clinically "worsening" for P002.
-  // Fixture path: 7.4% → 8.1%. Patient-State ingest path (when Neon has golden
-  // re-ingests for P002): series may end at 8.4% but trend must still be
-  // worsening after same-timestamp dedupe (P1 DETECT integrity).
+  // Fixture path (synthetic longitudinal bundle): flagship 6.8% → 8.4%.
+  // Patient-State ingest path (when Neon has golden re-ingests): same ceiling,
+  // trend must still be worsening after same-timestamp dedupe (P1 DETECT integrity).
   assert.equal(contribution.signals.hba1c.trend, "worsening");
   assert.equal(contribution.signals.hba1c.isDiagnosticPrediction, false);
   if (contribution.signals.hba1c.readingsSource === "fixture") {
-    assert.equal(contribution.signals.hba1c.latestValuePercent, 8.1);
+    assert.equal(contribution.signals.hba1c.latestValuePercent, 8.4);
   } else {
     assert.equal(contribution.signals.hba1c.readingsSource, "patient_state_ingest");
     assert.ok(
