@@ -28,7 +28,7 @@ export default function TrustStrip({ variant = "default" }: TrustStripProps) {
         {trustBadges.map((badge, index) => (
           <li key={badge} className="inline-flex items-center">
             {index > 0 ? (
-              <span className="mx-2.5 hidden text-[var(--mk-line-strong,rgba(20,32,30,0.22))] sm:inline" aria-hidden>
+              <span className="mx-2.5 text-[var(--mk-line-strong,rgba(20,32,30,0.22))]" aria-hidden>
                 ·
               </span>
             ) : null}
