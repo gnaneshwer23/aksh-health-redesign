@@ -9,8 +9,9 @@ import { cn } from "@/lib/utils";
 
 const centerLinks = [
   { label: "Platform", href: "/platform" },
-  { label: "Security", href: "/security" },
-  { label: "Contact", href: "/contact" },
+  { label: "Solutions", href: "/solutions" },
+  { label: "Safety & Trust", href: "/security" },
+  { label: "Resources", href: "/resources" },
 ] as const;
 
 type NavbarProps = {
@@ -26,7 +27,7 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -72,11 +73,11 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/signin" className={cn("owkin-nav__ghost-link", focusRing)}>
-            Sign in
+          <Link href="/demo/patel" className={cn("owkin-nav__ghost-link", focusRing)}>
+            See Demo
           </Link>
           <Link href="/get-started" className={cn("owkin-nav__pill", focusRing)}>
-            Get started
+            Request Pilot
           </Link>
         </div>
 
@@ -118,13 +119,13 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">
             <SheetClose asChild>
-              <Link href="/signin" className={cn("owkin-nav__ghost-link text-center", focusRing)}>
-                Sign in
+              <Link href="/demo/patel" className={cn("owkin-nav__ghost-link text-center", focusRing)}>
+                See Demo
               </Link>
             </SheetClose>
             <SheetClose asChild>
               <Link href="/get-started" className={cn("owkin-nav__pill text-center", focusRing)}>
-                Get started
+                Request Pilot
               </Link>
             </SheetClose>
           </div>

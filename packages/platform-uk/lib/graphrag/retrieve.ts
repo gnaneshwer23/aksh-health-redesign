@@ -98,6 +98,14 @@ export async function retrieveGraphRag(input: {
 
   hits.sort((a, b) => b.score - a.score);
 
+  // High-fidelity longitudinal packs can emit many lab facts at score 1.
+  // Keep hybrid retrieval honest: always reserve guideline slots in the top window.
+  const guidelines = hits.filter((h) => h.kind === "guideline");
+  const other = hits.filter((h) => h.kind !== "guideline");
+  const guidelineSlots = Math.min(3, guidelines.length);
+  const mixed = [...other.slice(0, Math.max(0, 8 - guidelineSlots)), ...guidelines.slice(0, guidelineSlots)];
+  mixed.sort((a, b) => b.score - a.score);
+
   const uniqueSub = new Map(subgraph.map((e) => [`${e.from}|${e.rel}|${e.to}`, e]));
 
   return {
@@ -105,7 +113,7 @@ export async function retrieveGraphRag(input: {
     liveEmis: false,
     query,
     patientId: input.patientId,
-    hits: hits.slice(0, 8),
+    hits: mixed.slice(0, 8),
     subgraph: [...uniqueSub.values()].slice(0, 24),
   };
 }

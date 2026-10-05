@@ -7,6 +7,7 @@
 
 import type { ClinicalProfileId, OracleRisk, Patient } from "./types";
 import type { UserRole } from "../onboarding/roles";
+import { getLongitudinalBundle } from "./longitudinal-bundles";
 
 export const DEMO_COHORT_PATIENT_TARGET = 100;
 export const DEMO_COHORT_USER_TARGET = 100;
@@ -323,6 +324,31 @@ export function generateExtendedDemoPatients(
       equityFlag: equity || undefined,
       qaNotes: `Demo cohort synthetic patient ${padPatientId(idNum)} · liveEmis:false · IMD ${imd} · ${ics}`,
     };
+
+    const long = getLongitudinalBundle(patient.id);
+    if (long) {
+      const hba1cLatest = [...long.labs].reverse().find((l) => l.name === "HbA1c");
+      if (hba1cLatest && bundle.profiles.includes("t2d")) {
+        patient.digitalTwinPrediction = {
+          ...patient.digitalTwinPrediction,
+          deteriorationSignals: [
+            ...patient.digitalTwinPrediction.deteriorationSignals.filter((s) => !s.startsWith("Synthetic signal")),
+            `HbA1c series latest ${hba1cLatest.value}% (synthetic)`,
+            ...(long.missingInformation.includes("ADHERENCE")
+              ? ["Adherence not recorded (synthetic gap)"]
+              : []),
+          ].slice(0, 4),
+        };
+      }
+      if (long.draftSeed) {
+        patient.openAiItems = Math.max(patient.openAiItems, 1);
+        patient.qaNotes = `${patient.qaNotes} · draftSeed:${long.draftSeed.kind}`;
+      }
+      const egfr = long.labs.find((l) => l.name === "eGFR");
+      if (egfr && !patient.vitals) {
+        patient.lastObsTime = egfr.recordedAt.slice(0, 10);
+      }
+    }
 
     if (i % 4 === 0) {
       patient.appointmentTime = `${String(9 + (i % 8)).padStart(2, "0")}:${i % 2 === 0 ? "00" : "30"}`;

@@ -15,6 +15,7 @@ import { PatientCard } from "@/components/dashboard/PatientCard";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
 import { ClinicalIntelligenceWorkspace } from "@/components/dashboard/ClinicalIntelligenceWorkspace";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
+import { SimulatedEhrWrittenPanel } from "@/components/dashboard/SimulatedEhrWrittenPanel";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -292,6 +293,7 @@ export default function GpDashboardPage() {
                   ))}
                 </div>
               )}
+              <SimulatedEhrWrittenPanel patientId={selectedPatientId ?? patient?.id ?? null} />
             </section>
 
             <section>

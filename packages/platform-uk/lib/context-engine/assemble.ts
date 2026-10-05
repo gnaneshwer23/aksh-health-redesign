@@ -5,6 +5,7 @@ import { getPatientStateSnapshot } from "@/lib/patient-state/repository";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 
 import { DIABETES_GUIDELINE_FIXTURES } from "@/lib/graphrag/fixtures";
+import { getLongitudinalBundle } from "@/lib/mock-data/longitudinal-bundles";
 
 import { authorizeContextAssembly, stableContextHash } from "./policy";
 import {
@@ -48,9 +49,16 @@ export async function assembleClinicalContext(
   ]);
 
   const diabetes = getDiabetesFixtureBundle(input.patientId);
+  const longitudinal = getLongitudinalBundle(input.patientId);
   const conditions = chart?.conditions?.length ? chart.conditions : patient.activeConditions;
-  const medications = chart?.medications?.length ? chart.medications : patient.activeMedications;
-  const allergies = chart?.allergies?.length ? chart.allergies : patient.allergies;
+  const medications = chart?.medications?.length
+    ? chart.medications
+    : longitudinal?.medications.map((m) =>
+        m.status === "proposed" ? `${m.name} (proposed)` : m.name
+      ) ?? patient.activeMedications;
+  const allergies = chart?.allergies?.length
+    ? chart.allergies
+    : longitudinal?.allergies ?? patient.allergies;
 
   const observations: ClinicalContextPackage["observations"] = [];
   if (patient.vitals) {
@@ -62,40 +70,76 @@ export async function assembleClinicalContext(
 
   const laboratory_results: ClinicalContextPackage["laboratory_results"] = [];
   const hba1cFacts = chart?.diabetes.hba1c ?? [];
-  for (const row of hba1cFacts) {
+  const longHba1c = longitudinal?.labs.filter((l) => l.name === "HbA1c") ?? [];
+
+  if (hba1cFacts.length > 0) {
+    for (const row of hba1cFacts) {
+      laboratory_results.push({
+        name: "HbA1c",
+        value: `${row.valuePercent}%`,
+        recordedAt: row.recordedAt,
+      });
+    }
+  } else if (longHba1c.length > 0) {
+    for (const lab of longHba1c) {
+      laboratory_results.push({
+        name: "HbA1c",
+        value: `${lab.value}%`,
+        recordedAt: lab.recordedAt,
+      });
+    }
+  } else {
+    const snapshotHba1c = snapshot.current.hba1c;
+    if (snapshotHba1c) {
+      const v = factString(snapshotHba1c.value);
+      if (v) laboratory_results.push({ name: "HbA1c", value: v, recordedAt: snapshotHba1c.effectiveAt });
+    } else if (diabetes.hba1cReadings[0]) {
+      for (const row of diabetes.hba1cReadings) {
+        laboratory_results.push({
+          name: "HbA1c",
+          value: `${row.valuePercent}%`,
+          recordedAt: row.recordedAt,
+        });
+      }
+    }
+  }
+
+  for (const lab of longitudinal?.labs ?? []) {
+    if (lab.name === "HbA1c") continue;
     laboratory_results.push({
-      name: "HbA1c",
-      value: `${row.valuePercent}%`,
-      recordedAt: row.recordedAt,
+      name: lab.name,
+      value: lab.unit ? `${lab.value} ${lab.unit}` : lab.value,
+      recordedAt: lab.recordedAt,
     });
   }
+
   const snapshotHba1c = snapshot.current.hba1c;
-  if (snapshotHba1c && laboratory_results.length === 0) {
-    const v = factString(snapshotHba1c.value);
-    if (v) laboratory_results.push({ name: "HbA1c", value: v, recordedAt: snapshotHba1c.effectiveAt });
-  }
-  if (laboratory_results.length === 0 && diabetes.hba1cReadings[0]) {
-    laboratory_results.push({
-      name: "HbA1c",
-      value: `${diabetes.hba1cReadings[0].valuePercent}%`,
-      recordedAt: diabetes.hba1cReadings[0].recordedAt,
-    });
-  }
 
   const missing_information: string[] = [];
   if (!snapshot.current.adherence && !snapshot.current.medication_adherence) {
     missing_information.push("ADHERENCE");
   }
   if (!snapshot.current.egfr && !snapshot.current.eGFR) {
-    missing_information.push("EGFR");
+    const hasEgfrLab = laboratory_results.some((r) => /egfr/i.test(r.name));
+    if (!hasEgfrLab) missing_information.push("EGFR");
+  }
+  for (const m of longitudinal?.missingInformation ?? []) {
+    if (m === "EGFR" && laboratory_results.some((r) => /egfr/i.test(r.name))) continue;
+    if (!missing_information.includes(m)) missing_information.push(m);
   }
 
   const uncertainties: string[] = [];
   if (patient.digitalTwinPrediction.deteriorationSignals.some((s) => /hba1c/i.test(s))) {
     uncertainties.push("HbA1c review may be overdue — treat as deteriorating until confirmed lab.");
   }
-  if (medications.some((m) => /aspirin/i.test(m)) && medications.some((m) => /apixaban/i.test(m))) {
+  if (
+    medications.some((m) => /aspirin/i.test(m)) &&
+    medications.some((m) => /apixaban/i.test(m))
+  ) {
     uncertainties.push("Aspirin + anticoagulant combination recorded — conflict remains visible, not merged.");
+  }
+  for (const u of longitudinal?.uncertainties ?? []) {
+    if (!uncertainties.includes(u)) uncertainties.push(u);
   }
 
   const guidelines: ContextEvidenceItem[] =

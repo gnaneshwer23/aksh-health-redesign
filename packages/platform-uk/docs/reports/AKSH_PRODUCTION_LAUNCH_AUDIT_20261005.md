@@ -9,9 +9,11 @@
 | Launch target | Decision |
 |---|---|
 | **Synthetic diabetes demo / publication clinic** | **GO — CONDITIONAL** |
-| **Live patient PHI / live EMR write-back** | **NO-GO** |
+| **SIM-IG / SIM-EMR rehearsal (synthetic only)** | **Pass** — see [AKSH_SYNTHETIC_EHR_REHEARSAL.md](./AKSH_SYNTHETIC_EHR_REHEARSAL.md) |
+| **Live patient PHI / DPIA (GOV-002)** | **NO-GO / Blocked** |
+| **Live EMIS / SystmOne write-back** | **NO-GO / Blocked** |
 
-Ready to launch as a **simulated diabetes care-coordination platform** with named clinician HITL, FHIR staging (`liveEmis:false`), and honest “not a live EHR write” labelling.
+Ready to launch as a **simulated diabetes care-coordination platform** with named clinician HITL, FHIR staging (`liveEmis:false`), simulated EMIS/SystmOne chart round-trip rehearsal, and honest “not a live EHR write” labelling.
 
 **Not** ready to launch as live clinical software handling real patients or writing to EMIS/SystmOne.
 
@@ -29,8 +31,8 @@ Ready to launch as a **simulated diabetes care-coordination platform** with name
 
 ## Blockers for “true” clinical production
 
-1. **GOV-002** — DPIA / IG incomplete for live patient-data production.
-2. **Live EMR** — contract and product enforce `liveEmis:false`; no autonomous write-back.
+1. **GOV-002** — DPIA / IG incomplete for live patient-data production (**still Blocked**; synthetic EHR rehearsal does not clear this).
+2. **Live EMR** — contract and product enforce `liveEmis:false`; no autonomous write-back (**still Blocked / partner**). Simulated EMIS/SystmOne chart is rehearsal-only.
 3. **Neo4j** — configured but **mock** (Aura paused); GraphRAG falls back (acceptable for demo).
 
 ## Residual / accepted for demo launch
@@ -46,3 +48,4 @@ Do not market as: live NHS/EHR integration · real patient data handling · prod
 ## Immediate hygiene shipped with this audit
 
 - Updated `scripts/smoke-public-pages.mjs` and `scripts/smoke-walkthrough-path.mjs` to expect **Diabetes care** (was failing against production).
+- Synthetic EHR rehearsal: high-fidelity P002 longitudinal + HITL→BRIDGE→simulated chart; Master Journey MJ-41; see `docs/reports/AKSH_SYNTHETIC_EHR_REHEARSAL.md`.

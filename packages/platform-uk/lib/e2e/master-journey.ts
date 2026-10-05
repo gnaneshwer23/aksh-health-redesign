@@ -29,6 +29,8 @@ import { runContractedNexus } from "../agents/contracts/run-nexus";
 import { evaluateGuardianGateway } from "../guardian-gateway";
 import { retrieveGraphRag } from "../graphrag/retrieve";
 import { isModelApprovedForUse } from "../model-registry";
+import { runHitlStagingSimWritebackChain } from "../clinical-proof/hitl-writeback-chain";
+import { getLongitudinalBundle } from "../mock-data/longitudinal-bundles";
 
 import { assertOrchestrationInvariants } from "./agent-orchestration-assertions";
 import { resolveCareTeam, routePharmacyTaskToCareTeam } from "./care-team-sim";
@@ -1344,6 +1346,35 @@ export async function runMasterJourney(
         "LIVE",
         ok ? "PASS" : "FAIL",
         "aksh-nexus-synthetic-v1 approved_for_synthetic only",
+        t0
+      )
+    );
+  }
+
+  {
+    const t0 = Date.now();
+    const long = getLongitudinalBundle(MASTER_DEMO_PATIENT_ID);
+    const chain = await runHitlStagingSimWritebackChain({
+      caseId: `master-sim-ehr-${correlationId.slice(-8)}`,
+      clinicianId: "gp-master-journey",
+      clinicianName: "Dr Master Journey",
+      patientId: MASTER_DEMO_PATIENT_ID,
+    });
+    const ok =
+      Boolean(long) &&
+      long!.labs.some((l) => l.name === "HbA1c" && l.value === "8.4") &&
+      chain.accept.liveEmis === false &&
+      chain.accept.simulatedEhrEntryIds.length >= 2 &&
+      chain.reject.simulatedEhrUnchanged === true;
+    steps.push(
+      stepResult(
+        41,
+        "MJ-41-SIMULATED-EHR",
+        "High-fidelity synthetic P002 + HITL Accept lands on simulated EMIS/SystmOne chart",
+        "INTEGRATION",
+        "SIMULATED",
+        ok ? "PASS" : "FAIL",
+        `hba1c=${long?.labs.filter((l) => l.name === "HbA1c").map((l) => l.value).join("→")} · simEhr=${chain.accept.simulatedEhrEntryIds.length} · liveEmis=false`,
         t0
       )
     );

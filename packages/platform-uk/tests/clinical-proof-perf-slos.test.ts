@@ -7,7 +7,7 @@ import {
 } from "../lib/clinical-proof/perf-slos";
 import { runHitlStagingSimWritebackChain } from "../lib/clinical-proof/hitl-writeback-chain";
 
-function run() {
+async function run() {
   assert.equal(PERF_SLO_TARGETS.length, 3);
   assert.ok(getPerfSlo("dashboard_load").targetMs > 0);
   assert.ok(getPerfSlo("agent_draft").targetMs > 0);
@@ -25,7 +25,7 @@ function run() {
 
   // Review-action in-process timing (deterministic chain — always measurable in CI)
   const started = Date.now();
-  runHitlStagingSimWritebackChain({
+  await runHitlStagingSimWritebackChain({
     caseId: "perf-smoke-review",
     clinicianId: "gp-perf",
     clinicianName: "Dr Perf"

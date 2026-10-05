@@ -32,6 +32,14 @@ describe("demo cohort generator", () => {
     assert.ok(ics.size >= 5);
     assert.ok(risks.size >= 3);
     assert.ok(extended.every((p) => p.qaNotes?.includes("liveEmis:false")));
+    const t2d = extended.filter((p) => p.clinicalProfiles?.includes("t2d"));
+    assert.ok(t2d.length >= 8);
+    assert.ok(
+      t2d.some((p) =>
+        p.digitalTwinPrediction.deteriorationSignals.some((s) => /HbA1c series/.test(s))
+      )
+    );
+    assert.ok(extended.some((p) => p.qaNotes?.includes("draftSeed:")));
   });
 
   it("keeps P001–P012 demos and totals 100 patients in app mock", () => {
@@ -42,6 +50,9 @@ describe("demo cohort generator", () => {
     }
     const p002 = patients.find((p) => p.id === "P002");
     assert.equal(p002?.name, "Mr James Patel");
+    assert.ok(p002?.activeMedications.some((m) => /Aspirin/i.test(m)));
+    assert.ok(p002?.activeMedications.some((m) => /Apixaban/i.test(m)));
+    assert.match(p002?.qaNotes ?? "", /6\.8→8\.4/);
   });
 
   it("produces 100 users across all 8 roles", () => {

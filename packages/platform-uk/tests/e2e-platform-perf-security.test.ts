@@ -74,7 +74,7 @@ async function run() {
 
   // --- Perf: review_action in-process (always measurable) ---
   const reviewStarted = Date.now();
-  runHitlStagingSimWritebackChain({
+  await runHitlStagingSimWritebackChain({
     caseId: "e2e-perf-review-stage11",
     clinicianId: "gp-e2e-perf",
     clinicianName: "Dr E2E Perf",

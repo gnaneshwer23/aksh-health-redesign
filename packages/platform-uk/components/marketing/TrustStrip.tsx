@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
 
 const trustBadges = [
-  "In production",
-  "Audit trail on every decision",
-  "Draft until a clinician decides",
+  "Human review",
+  "Audit on every decision",
   "UK data residency",
-  "Built for diabetes & primary care",
+  "Diabetes & primary care",
 ] as const;
 
 type TrustStripProps = {

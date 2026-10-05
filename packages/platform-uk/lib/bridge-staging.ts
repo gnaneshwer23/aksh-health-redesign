@@ -20,12 +20,14 @@ import {
   type BridgeStagingRecord
 } from "@/lib/repositories/bridge-staging-repository";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
+import { upsertSimulatedEhrCharts } from "@/lib/simulated-ehr";
 import type { FhirExportBundle, ReviewCase } from "@/lib/types";
 
 export type BridgeAcceptStageResult = {
   bridgeRecord: BridgeStagingRecord;
   emisStagingEntryId: string;
   simWriteId: string | null;
+  simulatedEhrEntryIds: string[];
   fhirResourceCount: number;
   liveEmis: false;
   ehrWriteAttempted: false;
@@ -122,6 +124,7 @@ export async function stageAcceptedCaseToBridge(input: {
   scopeKey?: string;
   reviewCase?: ReviewCase | null;
   runSimWriteback?: boolean;
+  patientId?: string | null;
 }): Promise<BridgeAcceptStageResult> {
   const resolved = resolveAcceptStagingBundle({
     caseId: input.caseId,
@@ -166,11 +169,27 @@ export async function stageAcceptedCaseToBridge(input: {
     }
   }
 
+  const patientId =
+    input.patientId ??
+    input.reviewCase?.patientId ??
+    (typeof resolved.bundle.patientId === "string" ? resolved.bundle.patientId : null);
+
+  const simulatedEntries = await upsertSimulatedEhrCharts({
+    patientId,
+    caseId: input.caseId,
+    acceptedBy: input.acceptedBy,
+    clinicianId: input.clinicianId,
+    bridgeStagingId: bridgeRecord.id,
+    simWriteId,
+    bundleSummary: resolved.summary,
+    scopeKey: input.scopeKey,
+  });
+
   void persistShieldAuditEvent({
     action: "accept",
     actor: input.acceptedBy,
     label: "SHIELD: BRIDGE FHIR staging (sim only)",
-    detail: `bridge=${bridgeRecord.id}; emis=${emisEntry.id}; sim=${simWriteId ?? "skipped"}; liveEmis=false`,
+    detail: `bridge=${bridgeRecord.id}; emis=${emisEntry.id}; sim=${simWriteId ?? "skipped"}; simEhr=${simulatedEntries.length}; liveEmis=false`,
     category: "clinical",
     practiceId: input.practiceId,
     caseId: input.caseId,
@@ -180,6 +199,7 @@ export async function stageAcceptedCaseToBridge(input: {
       bridgeStagingId: bridgeRecord.id,
       emisStagingEntryId: emisEntry.id,
       simWriteId,
+      simulatedEhrEntryIds: simulatedEntries.map((e) => e.id),
       liveEmis: false,
       ehrWriteAttempted: false,
       medplumRequired: false,
@@ -193,6 +213,7 @@ export async function stageAcceptedCaseToBridge(input: {
     bridgeRecord,
     emisStagingEntryId: emisEntry.id,
     simWriteId,
+    simulatedEhrEntryIds: simulatedEntries.map((e) => e.id),
     fhirResourceCount: resolved.resourceCount || resourceCountFromBundle(resolved.bundle),
     liveEmis: false,
     ehrWriteAttempted: false,
@@ -229,7 +250,8 @@ export async function getBridgeStagingStatus(options?: {
       api: "/api/integrations/bridge-staging",
       fhirExport: "/api/review-cases/{id}/export/fhir",
       emisStaging: "/api/integrations/emis-staging",
-      ehrWritebackSim: "/api/integrations/ehr-writeback-sim"
+      ehrWritebackSim: "/api/integrations/ehr-writeback-sim",
+      simulatedEhr: "/api/integrations/simulated-ehr"
     }
   };
 }

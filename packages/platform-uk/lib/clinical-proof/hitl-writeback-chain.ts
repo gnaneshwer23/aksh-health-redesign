@@ -13,6 +13,11 @@ import {
 } from "./ehr-writeback-sim";
 import { buildAcceptedFhirR4StagingBundle, summariseStagedBundle } from "./staged-fhir";
 import { assertFhirR4Valid } from "./fhir-r4-validator";
+import {
+  resetSimulatedEhrForTests,
+  upsertSimulatedEhrCharts,
+  listSimulatedEhrCharts
+} from "../simulated-ehr";
 
 export type HitlWritebackChainResult = {
   accept: {
@@ -20,12 +25,14 @@ export type HitlWritebackChainResult = {
     stagingEntryId: string;
     ehrWriteAttempted: false;
     simWriteId: string;
+    simulatedEhrEntryIds: string[];
     liveEmis: false;
   };
   reject: {
     staged: false;
     simWritesBefore: number;
     simWritesAfter: number;
+    simulatedEhrUnchanged: true;
   };
   replayDenied: true;
   unauthenticatedDenied: true;
@@ -34,25 +41,27 @@ export type HitlWritebackChainResult = {
 
 /**
  * Full platform-side chain without HTTP.
- * Proves architecture up to simulated write-back; never calls EMIS.
+ * Proves architecture up to simulated write-back chart; never calls live EMIS.
  */
-export function runHitlStagingSimWritebackChain(options?: {
+export async function runHitlStagingSimWritebackChain(options?: {
   caseId?: string;
   clinicianId?: string;
   clinicianName?: string;
-}): HitlWritebackChainResult {
+  patientId?: string;
+}): Promise<HitlWritebackChainResult> {
   resetEhrWritebackSimForTests();
+  await resetSimulatedEhrForTests("proof-chain");
 
   const caseId = options?.caseId ?? `proof-chain-${Date.now()}`;
   const clinicianId = options?.clinicianId ?? "gp-proof-chain";
   const clinicianName = options?.clinicianName ?? "Dr Proof Chain";
+  const patientId = options?.patientId ?? "P002";
 
   const emisStatus = getEmisIntegrationStatus();
   if (emisStatus.liveWriteBack !== false || emisStatus.enabled !== false) {
     throw new Error("EMIS must remain disabled for clinical-proof chain");
   }
 
-  // --- Accept path ---
   const bundle = buildAcceptedFhirR4StagingBundle({
     caseId,
     acceptedBy: clinicianName,
@@ -102,6 +111,24 @@ export function runHitlStagingSimWritebackChain(options?: {
     throw new Error("Sim write claimed live EMIS");
   }
 
+  const chartEntries = await upsertSimulatedEhrCharts({
+    patientId,
+    caseId,
+    acceptedBy: clinicianName,
+    clinicianId,
+    bridgeStagingId: `bridge-${stagingEntry.id}`,
+    simWriteId: simWrite.write.id,
+    bundleSummary: stagingEntry.bundleSummary,
+    resourceTypes: staged.resourceTypes,
+    scopeKey: "proof-chain"
+  });
+  if (chartEntries.length < 2) {
+    throw new Error("Expected simulated EMIS + SystmOne chart entries");
+  }
+  if (chartEntries.some((e) => e.liveEmis !== false || e.realPatientData !== false)) {
+    throw new Error("Simulated chart must stay liveEmis:false / realPatientData:false");
+  }
+
   const replay = attemptSimulatedEhrWrite({
     approvalToken: approval.token,
     actorId: clinicianId
@@ -110,7 +137,6 @@ export function runHitlStagingSimWritebackChain(options?: {
     throw new Error("Replay of consumed approval token must fail");
   }
 
-  // Unauthenticated / missing token
   const unauth = attemptSimulatedEhrWrite({
     resourceSummary: "bypass attempt"
   });
@@ -118,9 +144,8 @@ export function runHitlStagingSimWritebackChain(options?: {
     throw new Error("Missing-token write must fail");
   }
 
-  // --- Reject path: never stages, never sim-writes ---
   const writesBeforeReject = listSimulatedEhrWrites(50).length;
-  // Explicitly do NOT call buildAcceptedFhirR4StagingBundle / queue / issue token for reject
+  const chartsBeforeReject = (await listSimulatedEhrCharts({ scopeKey: "proof-chain", limit: 200 })).length;
   const rejectDecision = {
     decision: "reject" as const,
     caseId: `${caseId}-reject`,
@@ -130,8 +155,12 @@ export function runHitlStagingSimWritebackChain(options?: {
     throw new Error("Reject fixture broken");
   }
   const writesAfterReject = listSimulatedEhrWrites(50).length;
+  const chartsAfterReject = (await listSimulatedEhrCharts({ scopeKey: "proof-chain", limit: 200 })).length;
   if (writesAfterReject !== writesBeforeReject) {
     throw new Error("Reject path must not create simulated EHR writes");
+  }
+  if (chartsAfterReject !== chartsBeforeReject) {
+    throw new Error("Reject path must not mutate simulated EHR chart");
   }
 
   const simStatus = getEhrWritebackSimStatus();
@@ -145,12 +174,14 @@ export function runHitlStagingSimWritebackChain(options?: {
       stagingEntryId: stagingEntry.id,
       ehrWriteAttempted: false,
       simWriteId: simWrite.write.id,
+      simulatedEhrEntryIds: chartEntries.map((e) => e.id),
       liveEmis: false
     },
     reject: {
       staged: false,
       simWritesBefore: writesBeforeReject,
-      simWritesAfter: writesAfterReject
+      simWritesAfter: writesAfterReject,
+      simulatedEhrUnchanged: true
     },
     replayDenied: true,
     unauthenticatedDenied: true,

@@ -95,8 +95,12 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
       { recordedAt: "2026-06-01T13:00:00.000Z", glucoseMgDl: 201, context: "post_prandial" }
     ],
     hba1cReadings: [
-      { recordedAt: "2026-01-10T00:00:00.000Z", valuePercent: 7.4 },
-      { recordedAt: "2026-07-10T00:00:00.000Z", valuePercent: 8.1 }
+      { recordedAt: "2025-07-10T00:00:00.000Z", valuePercent: 6.8 },
+      { recordedAt: "2025-10-10T00:00:00.000Z", valuePercent: 7.1 },
+      { recordedAt: "2026-01-10T00:00:00.000Z", valuePercent: 7.6 },
+      { recordedAt: "2026-04-10T00:00:00.000Z", valuePercent: 8.0 },
+      { recordedAt: "2026-06-10T00:00:00.000Z", valuePercent: 8.2 },
+      { recordedAt: "2026-07-10T00:00:00.000Z", valuePercent: 8.4 }
     ],
     insulinRegimen: {
       medications: ["No insulin — Metformin 1g BD only"],

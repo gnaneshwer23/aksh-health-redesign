@@ -61,7 +61,12 @@ const corePatients: Patient[] = [
     oracleScore: 82,
     oracleRisk: "High",
     activeConditions: ["Type 2 diabetes mellitus", "Deep vein thrombosis: right popliteal", "Essential hypertension"],
-    activeMedications: ["Metformin 1g BD", "Aspirin 75mg OD", "Atorvastatin 20mg ON"],
+    activeMedications: [
+      "Metformin 1g BD",
+      "Aspirin 75mg OD",
+      "Atorvastatin 20mg ON",
+      "Apixaban 10mg BD (proposed)",
+    ],
     allergies: ["None known"],
     lastEncounterDate: "2026-07-10",
     nextAppointmentDate: "2026-07-24",
@@ -70,14 +75,15 @@ const corePatients: Patient[] = [
     digitalTwinPrediction: {
       admissionRisk14Days: 42,
       deteriorationSignals: [
-        "HbA1c review overdue 12 months",
+        "HbA1c 6.8→8.4% over 12 months (synthetic labs)",
         "New DVT diagnosis with T2D combination",
         "Proposed anticoagulant + aspirin combination risk",
+        "eGFR mildly declining 72→68",
       ],
       recommendedActions: [
         "Urgent medication review: aspirin vs apixaban",
         "2-week follow-up for DVT management",
-        "HbA1c and lipid profile within 2 weeks",
+        "Confirm latest HbA1c and lipid profile",
       ],
     },
     flags: ["GUARDIAN", "URGENT"],
@@ -96,6 +102,8 @@ const corePatients: Patient[] = [
       recordedAt: "2026-07-10 08:45",
       recordedBy: "Practice Nurse Adeyemi",
     },
+    qaNotes:
+      "Flagship synthetic diabetes + DVT clinic patient. Longitudinal HbA1c 6.8→8.4 · liveEmis:false · realPatientData:false.",
   },
   {
     id: "P003",

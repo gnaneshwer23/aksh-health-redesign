@@ -39,6 +39,8 @@ data/review-cases.whole_loop_*.json
 data/review-cases.benchmark_concurrency_*.json
 data/review-cases.readiness_contract_*.json
 data/bridge-staging-bundles.json
+data/simulated-ehr-charts.json
+data/simulated-ehr-charts.*.json
 data/benchmark-signoffs.benchmark_concurrency_*.json
 data/benchmark-signoffs.readiness_contract_*.json
 data/feedback-state.benchmark_concurrency_*.json

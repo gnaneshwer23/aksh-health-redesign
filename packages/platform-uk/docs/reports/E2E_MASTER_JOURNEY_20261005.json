@@ -2,8 +2,8 @@
   "artifactType": "aksh-e2e-master-journey-trace",
   "testId": "AKSH-E2E-MASTER-001",
   "title": "Master Aksh Journey — progressive T2D + simulated multi-stakeholder clinic",
-  "generatedAt": "2026-10-05T14:28:03.246Z",
-  "correlationId": "aksh-master-20260812-cf49d4b8",
+  "generatedAt": "2026-10-05T15:15:36.672Z",
+  "correlationId": "aksh-master-20260812-95e75baf",
   "seed": 20260812,
   "identity": {
     "canonicalPatientId": "P002",
@@ -59,7 +59,7 @@
       "status": "PASS",
       "detail": "HbA1c 6.8→8.4 · facts ok · P002",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "step": 4,
@@ -69,7 +69,7 @@
       "status": "PASS",
       "detail": "projected hba1c fact present for P002",
       "classification": "LIVE",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "step": 5,
@@ -89,7 +89,7 @@
       "status": "PASS",
       "detail": "patient=P002 priority=Urgent route=urgent_flag",
       "classification": "LIVE",
-      "durationMs": 3409
+      "durationMs": 494
     },
     {
       "step": 7,
@@ -99,7 +99,7 @@
       "status": "PASS",
       "detail": "slots=SYNTHESIS,GUARDIAN,ORACLE,NEXUS",
       "classification": "LIVE",
-      "durationMs": 3409
+      "durationMs": 494
     },
     {
       "step": 8,
@@ -109,7 +109,7 @@
       "status": "PASS",
       "detail": "safetyRoute=urgent_flag · REQUEST_APPROVAL family",
       "classification": "LIVE",
-      "durationMs": 3409
+      "durationMs": 494
     },
     {
       "step": 9,
@@ -117,79 +117,79 @@
       "name": "Orchestration tied to Master correlationId",
       "layer": "PROVENANCE",
       "status": "PASS",
-      "detail": "correlationId=aksh-master-20260812-cf49d4b8 · orchPatient=P002",
+      "detail": "correlationId=aksh-master-20260812-95e75baf · orchPatient=P002",
       "classification": "CONTRACT",
-      "durationMs": 3409
+      "durationMs": 494
     },
     {
       "step": 10,
       "id": "MJ-10-HITL-ACCEPT",
       "name": "HITL Accept on draft recommendation",
       "layer": "DECIDE",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "learningEvents=1",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 235
     },
     {
       "step": 11,
       "id": "MJ-11-HEALTH-PLAN",
       "name": "Intervention health plan created from Accept",
       "layer": "ACT",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
-      "classification": "LIVE",
-      "durationMs": 0
+      "status": "PASS",
+      "detail": "healthPlanId=plan-P002-1791213336064",
+      "classification": "PARTIAL",
+      "durationMs": 235
     },
     {
       "step": 12,
       "id": "MJ-12-LEARNING-ACCEPT",
       "name": "Learning event recorded for Accept",
       "layer": "LEARN",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "eventId=learn-3a2ccae4-2472-4f6b-b1c6-53bc3a6b304e",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 260
     },
     {
       "step": 13,
       "id": "MJ-13-OUTCOME",
       "name": "Follow-up outcome captured and linked",
       "layer": "MONITOR",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "outcomeEventId=learn-a05321e5-cc09-406e-ba13-cde0656c3f9b",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 355
     },
     {
       "step": 14,
       "id": "MJ-14-LOOP",
       "name": "Outcomes loop closes (awaiting→linked)",
       "layer": "LEARN",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "awaiting→outcome_linked · linkedCount=1",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 424
     },
     {
       "step": 15,
       "id": "MJ-15-DIABETES-ACCEPT",
       "name": "Diabetes coaching Accept (synthetic)",
       "layer": "INTERVENTION",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "diabetes learning id=learn-e974975f-7cd3-499d-81a3-a1916b341644",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 497
     },
     {
       "step": 16,
       "id": "MJ-16-SHIELD-SCOPE",
       "name": "Durable writes scoped by correlationId",
       "layer": "PROVENANCE",
-      "status": "SKIP",
-      "detail": "skipDurableWrites=true — Neon HITL path not executed",
+      "status": "PASS",
+      "detail": "scopeKey=aksh-master-20260812-95e75baf · shieldDualWrite used by spine",
       "classification": "LIVE",
-      "durationMs": 0
+      "durationMs": 497
     },
     {
       "step": 17,
@@ -197,7 +197,7 @@
       "name": "Lab delay simulation (no fabricated value)",
       "layer": "ACT",
       "status": "PASS",
-      "detail": "delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-cf49d4b8",
+      "detail": "delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-95e75baf",
       "classification": "SIMULATED",
       "durationMs": 0
     },
@@ -209,7 +209,7 @@
       "status": "PASS",
       "detail": "factType=egfr value=58",
       "classification": "SIMULATED",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "step": 19,
@@ -219,7 +219,7 @@
       "status": "PASS",
       "detail": "task→gp · livePrescribing:false",
       "classification": "SIMULATED",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "step": 20,
@@ -227,7 +227,7 @@
       "name": "Nurse completes diabetes follow-up after encounter draft (sim)",
       "layer": "MONITOR",
       "status": "PASS",
-      "detail": "followUp=e2e-nurse-fu-cf49d4b8 · members=4",
+      "detail": "followUp=e2e-nurse-fu-95e75baf · members=4",
       "classification": "SIMULATED",
       "durationMs": 0
     },
@@ -247,7 +247,7 @@
       "name": "PATHWAY referral draft Accept-for-send — no live e-Referral",
       "layer": "RECOMMEND",
       "status": "PASS",
-      "detail": "specialty=endocrinology · staging=ehr-stage-referral_draft-cf49d4b8",
+      "detail": "specialty=endocrinology · staging=ehr-stage-referral_draft-95e75baf",
       "classification": "SIMULATED",
       "durationMs": 0
     },
@@ -257,7 +257,7 @@
       "name": "Appointment book→remind→no-show→coordinator close (sim)",
       "layer": "ACT",
       "status": "PASS",
-      "detail": "appt=e2e-appt-cf49d4b8-diabetes_review · task=e2e-noshow-task-e2e-appt-cf49d4b8-diabetes_review",
+      "detail": "appt=e2e-appt-95e75baf-diabetes_review · task=e2e-noshow-task-e2e-appt-95e75baf-diabetes_review",
       "classification": "SIMULATED",
       "durationMs": 0
     },
@@ -277,7 +277,7 @@
       "name": "SIMULATED VOICE capture → SYNTHESIS draft (HITL)",
       "layer": "UNDERSTAND",
       "status": "PASS",
-      "detail": "voice=e2e-voice-cf49d4b8 · synth=e2e-synth-e2e-voice-cf49d4b8 · liveMic=false",
+      "detail": "voice=e2e-voice-95e75baf · synth=e2e-synth-e2e-voice-95e75baf · liveMic=false",
       "classification": "SIMULATED",
       "durationMs": 0
     },
@@ -367,7 +367,7 @@
       "name": "Single Master correlationId minted and reused",
       "layer": "PROVENANCE",
       "status": "PASS",
-      "detail": "aksh-master-20260812-cf49d4b8",
+      "detail": "aksh-master-20260812-95e75baf",
       "classification": "CONTRACT",
       "durationMs": 0
     },
@@ -387,9 +387,9 @@
       "name": "Context Engine V1 assembles authorised P002 package",
       "layer": "KNOWLEDGE",
       "status": "PASS",
-      "detail": "ctx_5efd948d9fe5e84c9af95c52 missing=ADHERENCE,EGFR",
+      "detail": "ctx_d93f48182c0f5a8a82109883 missing=ADHERENCE",
       "classification": "LIVE",
-      "durationMs": 45
+      "durationMs": 162
     },
     {
       "step": 37,
@@ -397,9 +397,9 @@
       "name": "Hybrid GraphRAG returns provenance-tagged hits (mock-safe)",
       "layer": "RETRIEVAL",
       "status": "PASS",
-      "detail": "source=mock hits=5",
+      "detail": "source=mock hits=8",
       "classification": "SIMULATED",
-      "durationMs": 218
+      "durationMs": 51
     },
     {
       "step": 38,
@@ -407,9 +407,9 @@
       "name": "NEXUS operates under Document-06 contract",
       "layer": "INTELLIGENCE",
       "status": "PASS",
-      "detail": "escalation=REVIEW evidence=5",
+      "detail": "escalation=REVIEW evidence=8",
       "classification": "LIVE",
-      "durationMs": 56
+      "durationMs": 50
     },
     {
       "step": 39,
@@ -419,7 +419,7 @@
       "status": "PASS",
       "detail": "status=REVIEW injection=BLOCK unapproved=BLOCK",
       "classification": "LIVE",
-      "durationMs": 36
+      "durationMs": 66
     },
     {
       "step": 40,
@@ -430,12 +430,22 @@
       "detail": "aksh-nexus-synthetic-v1 approved_for_synthetic only",
       "classification": "LIVE",
       "durationMs": 0
+    },
+    {
+      "step": 41,
+      "id": "MJ-41-SIMULATED-EHR",
+      "name": "High-fidelity synthetic P002 + HITL Accept lands on simulated EMIS/SystmOne chart",
+      "layer": "INTEGRATION",
+      "status": "PASS",
+      "detail": "hba1c=6.8→7.1→7.6→8.0→8.2→8.4 · simEhr=2 · liveEmis=false",
+      "classification": "SIMULATED",
+      "durationMs": 6
     }
   ],
   "overall": "PASS",
-  "passed": 33,
+  "passed": 41,
   "failed": 0,
-  "skipped": 7,
+  "skipped": 0,
   "firstFailure": null,
   "readiness": {
     "engineering": "INTERNAL TEST READY",

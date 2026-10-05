@@ -42,9 +42,9 @@
       "icsRegion": "South East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P027 · liveEmis:false · IMD Q1 · South East London",
+      "lastObsTime": "2026-07-10 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-10 09:00",
       "vitals": {
         "bloodPressure": "110/70",
         "heartRate": 60,
@@ -86,8 +86,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 30,
         "deteriorationSignals": [
-          "Synthetic signal 28: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 7.6% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -105,7 +106,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "West Yorkshire",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P028 · liveEmis:false · IMD Q2 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P028 · liveEmis:false · IMD Q2 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P029",
@@ -158,7 +160,8 @@
       "organisation": "Valley View Surgery",
       "imdQuintile": "Q3",
       "icsRegion": "Birmingham & Solihull",
-      "qaNotes": "Demo cohort synthetic patient P029 · liveEmis:false · IMD Q3 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P029 · liveEmis:false · IMD Q3 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P030",
@@ -208,7 +211,8 @@
       "organisation": "Harrogate Road GP",
       "imdQuintile": "Q4",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P030 · liveEmis:false · IMD Q4 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P030 · liveEmis:false · IMD Q4 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P031",
@@ -263,9 +267,9 @@
       "imdQuintile": "Q5",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P031 · liveEmis:false · IMD Q5 · North East London",
+      "lastObsTime": "2026-07-14 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-14 13:00",
       "vitals": {
         "bloodPressure": "114/74",
         "heartRate": 64,
@@ -326,7 +330,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Surrey Heartlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P032 · liveEmis:false · IMD Q1 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P032 · liveEmis:false · IMD Q1 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P033",
@@ -374,7 +379,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Cheshire & Merseyside",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P033 · liveEmis:false · IMD Q2 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P033 · liveEmis:false · IMD Q2 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P034",
@@ -423,7 +429,8 @@
       "organisation": "Riverside Medical Centre",
       "imdQuintile": "Q3",
       "icsRegion": "West Midlands",
-      "qaNotes": "Demo cohort synthetic patient P034 · liveEmis:false · IMD Q3 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P034 · liveEmis:false · IMD Q3 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P035",
@@ -466,9 +473,9 @@
       "imdQuintile": "Q4",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P035 · liveEmis:false · IMD Q4 · South East London",
+      "lastObsTime": "2026-07-13 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-13 09:00",
       "vitals": {
         "bloodPressure": "118/78",
         "heartRate": 68,
@@ -501,7 +508,7 @@
       ],
       "lastEncounterDate": "2026-04-19",
       "nextAppointmentDate": "2026-08-21",
-      "openAiItems": 0,
+      "openAiItems": 1,
       "carePathways": [],
       "digitalTwinPrediction": {
         "admissionRisk14Days": 11,
@@ -518,7 +525,8 @@
       "organisation": "Valley View Surgery",
       "imdQuintile": "Q5",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P036 · liveEmis:false · IMD Q5 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P036 · liveEmis:false · IMD Q5 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P037",
@@ -557,7 +565,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Birmingham & Solihull",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P037 · liveEmis:false · IMD Q1 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P037 · liveEmis:false · IMD Q1 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P038",
@@ -590,8 +599,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 39,
         "deteriorationSignals": [
-          "Synthetic signal 38: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 8.9% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -609,7 +619,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Greater Manchester",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P038 · liveEmis:false · IMD Q2 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P038 · liveEmis:false · IMD Q2 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P039",
@@ -663,9 +674,9 @@
       "imdQuintile": "Q3",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P039 · liveEmis:false · IMD Q3 · North East London",
+      "lastObsTime": "2026-07-12 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-12 13:00",
       "vitals": {
         "bloodPressure": "122/82",
         "heartRate": 72,
@@ -724,7 +735,8 @@
       "organisation": "Harrogate Medical Centre",
       "imdQuintile": "Q4",
       "icsRegion": "Surrey Heartlands",
-      "qaNotes": "Demo cohort synthetic patient P040 · liveEmis:false · IMD Q4 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P040 · liveEmis:false · IMD Q4 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P041",
@@ -778,7 +790,8 @@
       "organisation": "Riverside Medical Centre",
       "imdQuintile": "Q5",
       "icsRegion": "Cheshire & Merseyside",
-      "qaNotes": "Demo cohort synthetic patient P041 · liveEmis:false · IMD Q5 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P041 · liveEmis:false · IMD Q5 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P042",
@@ -830,7 +843,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "West Midlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P042 · liveEmis:false · IMD Q1 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P042 · liveEmis:false · IMD Q1 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P043",
@@ -879,9 +893,9 @@
       "icsRegion": "South East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P043 · liveEmis:false · IMD Q2 · South East London",
+      "lastObsTime": "2026-07-11 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-11 09:00",
       "vitals": {
         "bloodPressure": "126/71",
         "heartRate": 76,
@@ -939,7 +953,8 @@
       "organisation": "Harrogate Road GP",
       "imdQuintile": "Q3",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P044 · liveEmis:false · IMD Q3 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P044 · liveEmis:false · IMD Q3 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P045",
@@ -981,7 +996,8 @@
       "organisation": "East Leeds Family Practice",
       "imdQuintile": "Q4",
       "icsRegion": "Birmingham & Solihull",
-      "qaNotes": "Demo cohort synthetic patient P045 · liveEmis:false · IMD Q4 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P045 · liveEmis:false · IMD Q4 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P046",
@@ -1022,7 +1038,8 @@
       "organisation": "The Oakfield Surgery",
       "imdQuintile": "Q5",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P046 · liveEmis:false · IMD Q5 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P046 · liveEmis:false · IMD Q5 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P047",
@@ -1062,9 +1079,9 @@
       "icsRegion": "North East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P047 · liveEmis:false · IMD Q1 · North East London",
+      "lastObsTime": "2026-07-10 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-10 13:00",
       "vitals": {
         "bloodPressure": "130/75",
         "heartRate": 80,
@@ -1099,7 +1116,7 @@
       ],
       "lastEncounterDate": "2026-04-13",
       "nextAppointmentDate": "2026-08-17",
-      "openAiItems": 0,
+      "openAiItems": 1,
       "carePathways": [
         "CP001"
       ],
@@ -1125,7 +1142,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Surrey Heartlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P048 · liveEmis:false · IMD Q2 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P048 · liveEmis:false · IMD Q2 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P049",
@@ -1178,7 +1196,8 @@
       "organisation": "Oakwood Health Practice",
       "imdQuintile": "Q3",
       "icsRegion": "Cheshire & Merseyside",
-      "qaNotes": "Demo cohort synthetic patient P049 · liveEmis:false · IMD Q3 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P049 · liveEmis:false · IMD Q3 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P050",
@@ -1228,7 +1247,8 @@
       "organisation": "Valley View Surgery",
       "imdQuintile": "Q4",
       "icsRegion": "West Midlands",
-      "qaNotes": "Demo cohort synthetic patient P050 · liveEmis:false · IMD Q4 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P050 · liveEmis:false · IMD Q4 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P051",
@@ -1283,9 +1303,9 @@
       "imdQuintile": "Q5",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P051 · liveEmis:false · IMD Q5 · South East London",
+      "lastObsTime": "2026-07-14 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-14 09:00",
       "vitals": {
         "bloodPressure": "134/79",
         "heartRate": 84,
@@ -1346,7 +1366,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "West Yorkshire",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P052 · liveEmis:false · IMD Q1 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P052 · liveEmis:false · IMD Q1 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P053",
@@ -1394,7 +1415,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Birmingham & Solihull",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P053 · liveEmis:false · IMD Q2 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P053 · liveEmis:false · IMD Q2 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P054",
@@ -1443,7 +1465,8 @@
       "organisation": "Harrogate Medical Centre",
       "imdQuintile": "Q3",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P054 · liveEmis:false · IMD Q3 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P054 · liveEmis:false · IMD Q3 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P055",
@@ -1486,9 +1509,9 @@
       "imdQuintile": "Q4",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P055 · liveEmis:false · IMD Q4 · North East London",
+      "lastObsTime": "2026-07-13 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-13 13:00",
       "vitals": {
         "bloodPressure": "138/83",
         "heartRate": 88,
@@ -1538,7 +1561,8 @@
       "organisation": "Oakwood Health Practice",
       "imdQuintile": "Q5",
       "icsRegion": "Surrey Heartlands",
-      "qaNotes": "Demo cohort synthetic patient P056 · liveEmis:false · IMD Q5 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P056 · liveEmis:false · IMD Q5 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P057",
@@ -1577,7 +1601,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Cheshire & Merseyside",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P057 · liveEmis:false · IMD Q1 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P057 · liveEmis:false · IMD Q1 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P058",
@@ -1610,8 +1635,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 30,
         "deteriorationSignals": [
-          "Synthetic signal 58: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 8.8% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -1629,7 +1655,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "West Midlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P058 · liveEmis:false · IMD Q2 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P058 · liveEmis:false · IMD Q2 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P059",
@@ -1683,9 +1710,9 @@
       "imdQuintile": "Q3",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P059 · liveEmis:false · IMD Q3 · South East London",
+      "lastObsTime": "2026-07-12 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-12 09:00",
       "vitals": {
         "bloodPressure": "112/72",
         "heartRate": 92,
@@ -1720,7 +1747,7 @@
       ],
       "lastEncounterDate": "2026-04-25",
       "nextAppointmentDate": "2026-08-13",
-      "openAiItems": 0,
+      "openAiItems": 1,
       "carePathways": [],
       "digitalTwinPrediction": {
         "admissionRisk14Days": 47,
@@ -1744,7 +1771,8 @@
       "organisation": "The Oakfield Surgery",
       "imdQuintile": "Q4",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P060 · liveEmis:false · IMD Q4 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P060 · liveEmis:false · IMD Q4 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P061",
@@ -1798,7 +1826,8 @@
       "organisation": "Harrogate Medical Centre",
       "imdQuintile": "Q5",
       "icsRegion": "Birmingham & Solihull",
-      "qaNotes": "Demo cohort synthetic patient P061 · liveEmis:false · IMD Q5 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P061 · liveEmis:false · IMD Q5 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P062",
@@ -1850,7 +1879,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Greater Manchester",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P062 · liveEmis:false · IMD Q1 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P062 · liveEmis:false · IMD Q1 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P063",
@@ -1899,9 +1929,9 @@
       "icsRegion": "North East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P063 · liveEmis:false · IMD Q2 · North East London",
+      "lastObsTime": "2026-07-11 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-11 13:00",
       "vitals": {
         "bloodPressure": "116/76",
         "heartRate": 96,
@@ -1959,7 +1989,8 @@
       "organisation": "Valley View Surgery",
       "imdQuintile": "Q3",
       "icsRegion": "Surrey Heartlands",
-      "qaNotes": "Demo cohort synthetic patient P064 · liveEmis:false · IMD Q3 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P064 · liveEmis:false · IMD Q3 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P065",
@@ -2001,7 +2032,8 @@
       "organisation": "Harrogate Road GP",
       "imdQuintile": "Q4",
       "icsRegion": "Cheshire & Merseyside",
-      "qaNotes": "Demo cohort synthetic patient P065 · liveEmis:false · IMD Q4 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P065 · liveEmis:false · IMD Q4 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P066",
@@ -2042,7 +2074,8 @@
       "organisation": "East Leeds Family Practice",
       "imdQuintile": "Q5",
       "icsRegion": "West Midlands",
-      "qaNotes": "Demo cohort synthetic patient P066 · liveEmis:false · IMD Q5 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P066 · liveEmis:false · IMD Q5 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P067",
@@ -2082,9 +2115,9 @@
       "icsRegion": "South East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P067 · liveEmis:false · IMD Q1 · South East London",
+      "lastObsTime": "2026-07-10 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-10 09:00",
       "vitals": {
         "bloodPressure": "120/80",
         "heartRate": 60,
@@ -2126,8 +2159,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 39,
         "deteriorationSignals": [
-          "Synthetic signal 68: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 8.1% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -2145,7 +2179,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "West Yorkshire",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P068 · liveEmis:false · IMD Q2 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P068 · liveEmis:false · IMD Q2 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P069",
@@ -2198,7 +2233,8 @@
       "organisation": "Riverside Medical Centre",
       "imdQuintile": "Q3",
       "icsRegion": "Birmingham & Solihull",
-      "qaNotes": "Demo cohort synthetic patient P069 · liveEmis:false · IMD Q3 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P069 · liveEmis:false · IMD Q3 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P070",
@@ -2248,7 +2284,8 @@
       "organisation": "Oakwood Health Practice",
       "imdQuintile": "Q4",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P070 · liveEmis:false · IMD Q4 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P070 · liveEmis:false · IMD Q4 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P071",
@@ -2303,9 +2340,9 @@
       "imdQuintile": "Q5",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P071 · liveEmis:false · IMD Q5 · North East London",
+      "lastObsTime": "2026-07-14 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-14 13:00",
       "vitals": {
         "bloodPressure": "124/84",
         "heartRate": 64,
@@ -2366,7 +2403,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Surrey Heartlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P072 · liveEmis:false · IMD Q1 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P072 · liveEmis:false · IMD Q1 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P073",
@@ -2414,7 +2452,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Cheshire & Merseyside",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P073 · liveEmis:false · IMD Q2 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P073 · liveEmis:false · IMD Q2 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P074",
@@ -2463,7 +2502,8 @@
       "organisation": "The Oakfield Surgery",
       "imdQuintile": "Q3",
       "icsRegion": "West Midlands",
-      "qaNotes": "Demo cohort synthetic patient P074 · liveEmis:false · IMD Q3 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P074 · liveEmis:false · IMD Q3 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P075",
@@ -2506,9 +2546,9 @@
       "imdQuintile": "Q4",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P075 · liveEmis:false · IMD Q4 · South East London",
+      "lastObsTime": "2026-07-13 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-13 09:00",
       "vitals": {
         "bloodPressure": "128/73",
         "heartRate": 68,
@@ -2558,7 +2598,8 @@
       "organisation": "Riverside Medical Centre",
       "imdQuintile": "Q5",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P076 · liveEmis:false · IMD Q5 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P076 · liveEmis:false · IMD Q5 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P077",
@@ -2597,7 +2638,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Birmingham & Solihull",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P077 · liveEmis:false · IMD Q1 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P077 · liveEmis:false · IMD Q1 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P078",
@@ -2649,7 +2691,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Greater Manchester",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P078 · liveEmis:false · IMD Q2 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P078 · liveEmis:false · IMD Q2 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P079",
@@ -2703,9 +2746,9 @@
       "imdQuintile": "Q3",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P079 · liveEmis:false · IMD Q3 · North East London",
+      "lastObsTime": "2026-07-12 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-12 13:00",
       "vitals": {
         "bloodPressure": "132/77",
         "heartRate": 72,
@@ -2764,7 +2807,8 @@
       "organisation": "East Leeds Family Practice",
       "imdQuintile": "Q4",
       "icsRegion": "Surrey Heartlands",
-      "qaNotes": "Demo cohort synthetic patient P080 · liveEmis:false · IMD Q4 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P080 · liveEmis:false · IMD Q4 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P081",
@@ -2818,7 +2862,8 @@
       "organisation": "The Oakfield Surgery",
       "imdQuintile": "Q5",
       "icsRegion": "Cheshire & Merseyside",
-      "qaNotes": "Demo cohort synthetic patient P081 · liveEmis:false · IMD Q5 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P081 · liveEmis:false · IMD Q5 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P082",
@@ -2870,7 +2915,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "West Midlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P082 · liveEmis:false · IMD Q1 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P082 · liveEmis:false · IMD Q1 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P083",
@@ -2919,9 +2965,9 @@
       "icsRegion": "South East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P083 · liveEmis:false · IMD Q2 · South East London",
+      "lastObsTime": "2026-07-11 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-11 09:00",
       "vitals": {
         "bloodPressure": "136/81",
         "heartRate": 76,
@@ -2955,7 +3001,7 @@
       ],
       "lastEncounterDate": "2026-04-13",
       "nextAppointmentDate": "2026-08-21",
-      "openAiItems": 0,
+      "openAiItems": 1,
       "carePathways": [],
       "digitalTwinPrediction": {
         "admissionRisk14Days": 39,
@@ -2979,7 +3025,8 @@
       "organisation": "Oakwood Health Practice",
       "imdQuintile": "Q3",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P084 · liveEmis:false · IMD Q3 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P084 · liveEmis:false · IMD Q3 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P085",
@@ -3021,7 +3068,8 @@
       "organisation": "Valley View Surgery",
       "imdQuintile": "Q4",
       "icsRegion": "Birmingham & Solihull",
-      "qaNotes": "Demo cohort synthetic patient P085 · liveEmis:false · IMD Q4 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P085 · liveEmis:false · IMD Q4 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P086",
@@ -3062,7 +3110,8 @@
       "organisation": "Harrogate Road GP",
       "imdQuintile": "Q5",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P086 · liveEmis:false · IMD Q5 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P086 · liveEmis:false · IMD Q5 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P087",
@@ -3102,9 +3151,9 @@
       "icsRegion": "North East London",
       "equityFlag": true,
       "qaNotes": "Demo cohort synthetic patient P087 · liveEmis:false · IMD Q1 · North East London",
+      "lastObsTime": "2026-07-10 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-10 13:00",
       "vitals": {
         "bloodPressure": "110/70",
         "heartRate": 80,
@@ -3146,8 +3195,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 30,
         "deteriorationSignals": [
-          "Synthetic signal 88: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 8.0% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -3165,7 +3215,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Surrey Heartlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P088 · liveEmis:false · IMD Q2 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P088 · liveEmis:false · IMD Q2 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P089",
@@ -3218,7 +3269,8 @@
       "organisation": "Harrogate Medical Centre",
       "imdQuintile": "Q3",
       "icsRegion": "Cheshire & Merseyside",
-      "qaNotes": "Demo cohort synthetic patient P089 · liveEmis:false · IMD Q3 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P089 · liveEmis:false · IMD Q3 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P090",
@@ -3268,7 +3320,8 @@
       "organisation": "Riverside Medical Centre",
       "imdQuintile": "Q4",
       "icsRegion": "West Midlands",
-      "qaNotes": "Demo cohort synthetic patient P090 · liveEmis:false · IMD Q4 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P090 · liveEmis:false · IMD Q4 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P091",
@@ -3323,9 +3376,9 @@
       "imdQuintile": "Q5",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P091 · liveEmis:false · IMD Q5 · South East London",
+      "lastObsTime": "2026-07-14 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-14 09:00",
       "vitals": {
         "bloodPressure": "114/74",
         "heartRate": 84,
@@ -3386,7 +3439,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "West Yorkshire",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P092 · liveEmis:false · IMD Q1 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P092 · liveEmis:false · IMD Q1 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P093",
@@ -3434,7 +3488,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "Birmingham & Solihull",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P093 · liveEmis:false · IMD Q2 · Birmingham & Solihull"
+      "qaNotes": "Demo cohort synthetic patient P093 · liveEmis:false · IMD Q2 · Birmingham & Solihull",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P094",
@@ -3483,7 +3538,8 @@
       "organisation": "East Leeds Family Practice",
       "imdQuintile": "Q3",
       "icsRegion": "Greater Manchester",
-      "qaNotes": "Demo cohort synthetic patient P094 · liveEmis:false · IMD Q3 · Greater Manchester"
+      "qaNotes": "Demo cohort synthetic patient P094 · liveEmis:false · IMD Q3 · Greater Manchester",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P095",
@@ -3526,9 +3582,9 @@
       "imdQuintile": "Q4",
       "icsRegion": "North East London",
       "qaNotes": "Demo cohort synthetic patient P095 · liveEmis:false · IMD Q4 · North East London",
+      "lastObsTime": "2026-07-13 13:00",
       "appointmentTime": "13:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-13 13:00",
       "vitals": {
         "bloodPressure": "118/78",
         "heartRate": 88,
@@ -3561,7 +3617,7 @@
       ],
       "lastEncounterDate": "2026-04-25",
       "nextAppointmentDate": "2026-08-17",
-      "openAiItems": 0,
+      "openAiItems": 1,
       "carePathways": [],
       "digitalTwinPrediction": {
         "admissionRisk14Days": 7,
@@ -3578,7 +3634,8 @@
       "organisation": "Harrogate Medical Centre",
       "imdQuintile": "Q5",
       "icsRegion": "Surrey Heartlands",
-      "qaNotes": "Demo cohort synthetic patient P096 · liveEmis:false · IMD Q5 · Surrey Heartlands"
+      "qaNotes": "Demo cohort synthetic patient P096 · liveEmis:false · IMD Q5 · Surrey Heartlands · draftSeed:safety",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P097",
@@ -3617,7 +3674,8 @@
       "imdQuintile": "Q1",
       "icsRegion": "Cheshire & Merseyside",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P097 · liveEmis:false · IMD Q1 · Cheshire & Merseyside"
+      "qaNotes": "Demo cohort synthetic patient P097 · liveEmis:false · IMD Q1 · Cheshire & Merseyside",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P098",
@@ -3650,8 +3708,9 @@
       "digitalTwinPrediction": {
         "admissionRisk14Days": 32,
         "deteriorationSignals": [
-          "Synthetic signal 98: risk band Medium",
-          "IMD deprivation marker (synthetic)"
+          "IMD deprivation marker (synthetic)",
+          "HbA1c series latest 8.6% (synthetic)",
+          "Adherence not recorded (synthetic gap)"
         ],
         "recommendedActions": [
           "Routine follow-up"
@@ -3669,7 +3728,8 @@
       "imdQuintile": "Q2",
       "icsRegion": "West Midlands",
       "equityFlag": true,
-      "qaNotes": "Demo cohort synthetic patient P098 · liveEmis:false · IMD Q2 · West Midlands"
+      "qaNotes": "Demo cohort synthetic patient P098 · liveEmis:false · IMD Q2 · West Midlands",
+      "lastObsTime": "2026-07-15"
     },
     {
       "id": "P099",
@@ -3723,9 +3783,9 @@
       "imdQuintile": "Q3",
       "icsRegion": "South East London",
       "qaNotes": "Demo cohort synthetic patient P099 · liveEmis:false · IMD Q3 · South East London",
+      "lastObsTime": "2026-07-12 09:00",
       "appointmentTime": "09:00",
       "room": "Consulting Room 1",
-      "lastObsTime": "2026-07-12 09:00",
       "vitals": {
         "bloodPressure": "122/82",
         "heartRate": 92,
@@ -3784,7 +3844,8 @@
       "organisation": "Harrogate Road GP",
       "imdQuintile": "Q4",
       "icsRegion": "West Yorkshire",
-      "qaNotes": "Demo cohort synthetic patient P100 · liveEmis:false · IMD Q4 · West Yorkshire"
+      "qaNotes": "Demo cohort synthetic patient P100 · liveEmis:false · IMD Q4 · West Yorkshire · draftSeed:documentation",
+      "lastObsTime": "2026-07-15"
     }
   ]
 }

@@ -34,7 +34,7 @@ export const DASHBOARD_LABELS = {
 } as const;
 
 export const SEO_DEFAULTS = {
-  title: "Aksh Health | Diabetes care coordination with human review",
+  title: "Aksh Health | Clinical Intelligence, Under Clinical Control",
   description:
-    "Diabetes-first care coordination in production: authorised patient context, cited evidence, FHIR R4 staging, and named-clinician review. Not a live EHR write."
+    "Aksh Health helps clinical teams capture, understand, review and coordinate care with AI-assisted intelligence and named clinician oversight. Diabetes-first. Primary-care ready."
 };

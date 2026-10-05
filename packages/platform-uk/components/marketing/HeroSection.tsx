@@ -10,26 +10,31 @@ export default function HeroSection() {
       <div className={`relative z-10 flex flex-col ${container} pb-6 pt-16 md:pb-8 md:pt-20`}>
         <div className="owkin-hero__grid">
           <div className="owkin-hero__copy">
+            <p className="owkin-hero__eyebrow">Clinical intelligence platform</p>
             <h1 className="owkin-hero__heading">
               <span className="owkin-hero__brand">Aksh Health</span>
               <span className="owkin-hero__title">
-                Diabetes care,
-                <span className="block">properly coordinated.</span>
+                Clinical intelligence,
+                <span className="block">under clinical control.</span>
               </span>
             </h1>
+            <p className="owkin-hero__product">Diabetes care, properly coordinated.</p>
             <p className="owkin-hero__lede">
-              Capture, draft, approve. Evidence and missing labs sit with the queue. A named clinician reviews every
-              output before it can reach the record.
+              AI-assisted clinical workflows that help teams capture, understand, review and coordinate care — while
+              keeping clinical decisions with clinicians.
             </p>
             <div className="owkin-hero__actions">
               <Link href="/get-started" className="owkin-btn-ink">
-                Request access
+                Request a Pilot
               </Link>
               <Link href="/platform" className="owkin-text-cta">
-                View platform
+                Explore the Platform
                 <span aria-hidden>→</span>
               </Link>
             </div>
+            <p className="owkin-hero__signature">
+              AI assists. Clinicians decide. Every decision is attributable.
+            </p>
           </div>
 
           <div className="owkin-hero__visual">

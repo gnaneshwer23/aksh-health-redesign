@@ -101,7 +101,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         practiceId: tenant.practiceId,
         scopeKey,
         reviewCase: updated,
-        runSimWriteback: true
+        runSimWriteback: true,
+        patientId: updated.patientId ?? null
       });
     } catch (bridgeError) {
       console.error("[bridge-staging] Accept staging failed (non-blocking)", bridgeError);

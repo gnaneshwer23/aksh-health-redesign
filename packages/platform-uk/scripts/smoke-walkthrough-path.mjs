@@ -8,7 +8,7 @@ const publicPages = [
   {
     label: "Landing",
     path: "/",
-    expectedText: ["Diabetes care", "properly coordinated"]
+    expectedText: ["Clinical intelligence", "Diabetes care", "properly coordinated"]
   },
   {
     label: "Get started",

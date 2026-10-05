@@ -137,7 +137,7 @@ async function run() {
   assert.equal(rejectAction?.loopStage, "no_action_required");
   assert.equal(rejectLoop.noActionRequiredCount, 1);
 
-  const chain = runHitlStagingSimWritebackChain({
+  const chain = await runHitlStagingSimWritebackChain({
     caseId: "e2e-hitl-reject-chain",
     clinicianId: "gp-e2e-hitl",
     clinicianName: "Dr E2E Hitl",

@@ -95,9 +95,13 @@ export default function RolesGridSection({ variant = "home" }: RolesGridSectionP
     <section id="roles" className="owkin-roles scroll-mt-24" aria-labelledby="roles-heading" data-section="09">
       <div className={container}>
         <ScrollReveal className="owkin-roles__intro">
-          <p className="owkin-roles__eyebrow">Roles</p>
+          <p className="owkin-roles__eyebrow">
+            {variant === "home" ? "Designed around the people who deliver care" : "Roles"}
+          </p>
           <h2 id="roles-heading" className="owkin-roles__title">
-            Designed for every role.
+            {variant === "home"
+              ? "One coordination layer. Different clinical realities."
+              : "Designed for every role."}
           </h2>
           <p className="owkin-roles__lede">Same coordination layer. Different work for each role.</p>
         </ScrollReveal>
