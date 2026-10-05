@@ -10238,7 +10238,23 @@ input:focus, textarea:focus {
   background: #0b1220;
   color: #f8fafc;
 }
-.owkin-roles__eyebrow--on-dark { color: rgba(248, 250, 252, 0.55) !important; }
+
+/* Beat .marketing-site h1/h2/h3 ink on dark surfaces (same pattern as clinician-gate). */
+.marketing-site .owkin-intelligence-layer :is(h1, h2, h3),
+.marketing-site .owkin-safety-trust :is(h1, h2, h3),
+.owkin-intelligence-layer__title {
+  color: #ffffff !important;
+}
+
+.marketing-site .owkin-intelligence-layer p,
+.marketing-site .owkin-safety-trust p {
+  color: rgba(248, 250, 252, 0.72) !important;
+}
+
+.owkin-roles__eyebrow--on-dark {
+  color: rgba(20, 224, 164, 0.9) !important;
+}
+
 .owkin-intelligence-layer__title {
   margin: 0;
   max-width: 36rem;
@@ -10246,74 +10262,96 @@ input:focus, textarea:focus {
   font-weight: 650;
   letter-spacing: -0.035em;
   line-height: 1.12;
-  color: #fff;
 }
+
 .owkin-intelligence-layer__lede {
   margin: 1rem 0 0;
   max-width: 34rem;
   font-size: 1.05rem;
   line-height: 1.55;
-  color: rgba(248, 250, 252, 0.68);
+  color: rgba(248, 250, 252, 0.72) !important;
 }
+
 .owkin-intelligence-layer__grid,
 .owkin-safety-trust__grid {
   display: grid;
   gap: 0.85rem;
   grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
 }
+
 .owkin-intelligence-layer__card,
 .owkin-safety-trust__card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem 1.05rem;
 }
+
 .owkin-intelligence-layer__card h3,
-.owkin-safety-trust__card h3 {
+.owkin-safety-trust__card h3,
+.marketing-site .owkin-intelligence-layer__card h3,
+.marketing-site .owkin-safety-trust__card h3 {
   margin: 0.35rem 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff !important;
 }
+
 .owkin-intelligence-layer__card p,
-.owkin-safety-trust__card p {
+.owkin-safety-trust__card p,
+.marketing-site .owkin-intelligence-layer__card p,
+.marketing-site .owkin-safety-trust__card p {
   margin: 0;
   font-size: 0.86rem;
   line-height: 1.45;
-  color: rgba(248, 250, 252, 0.62);
+  color: rgba(248, 250, 252, 0.7) !important;
 }
+
 .owkin-intelligence-layer__index {
   margin: 0;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(248, 250, 252, 0.4);
+  color: rgba(248, 250, 252, 0.45) !important;
 }
+
 .owkin-intelligence-layer__footnote {
   margin: 0;
   font-size: 0.8rem;
-  color: rgba(248, 250, 252, 0.5);
+  color: rgba(248, 250, 252, 0.55) !important;
 }
-.owkin-text-cta--on-dark { color: #fff !important; }
+
+.owkin-text-cta--on-dark {
+  color: #ffffff !important;
+}
 
 .owkin-honesty-panel {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   padding: 1.25rem 1.35rem;
 }
-.owkin-honesty-panel h3 {
+
+.owkin-honesty-panel h3,
+.marketing-site .owkin-honesty-panel h3 {
   margin: 0 0 0.55rem;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff !important;
 }
-.owkin-honesty-panel p {
+
+.owkin-honesty-panel p,
+.marketing-site .owkin-honesty-panel p {
   margin: 0;
   max-width: 42rem;
   font-size: 0.92rem;
   line-height: 1.55;
-  color: rgba(248, 250, 252, 0.68);
+  color: rgba(248, 250, 252, 0.72) !important;
+}
+
+.marketing-site .owkin-intelligence-layer .owkin-text-cta,
+.marketing-site .owkin-safety-trust .owkin-text-cta {
+  color: #ffffff !important;
 }
 
 .aksh-patel-timeline {
