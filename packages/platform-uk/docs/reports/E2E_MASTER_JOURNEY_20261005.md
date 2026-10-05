@@ -1,8 +1,8 @@
 # AKSH-E2E-MASTER-001 — Master Journey Trace
 
-**Generated:** 2026-10-05T15:15:36.672Z  
-**Overall:** PASS (41 pass · 0 fail · 0 skip)  
-**correlationId:** `aksh-master-20260812-95e75baf`  
+**Generated:** 2026-10-05T17:05:17.564Z  
+**Overall:** PASS (34 pass · 0 fail · 7 skip)  
+**correlationId:** `aksh-master-20260812-c36a76ed`  
 **Seed:** 20260812  
 
 ## Executive summary
@@ -51,23 +51,23 @@ P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j se
 | 6 | MJ-06-ORCHESTRATE | REASON | LIVE | **PASS** | patient=P002 priority=Urgent route=urgent_flag |
 | 7 | MJ-07-AGENTS | REASON | LIVE | **PASS** | slots=SYNTHESIS,GUARDIAN,ORACLE,NEXUS |
 | 8 | MJ-08-DECISION | DECIDE | LIVE | **PASS** | safetyRoute=urgent_flag · REQUEST_APPROVAL family |
-| 9 | MJ-09-CORRELATION-ORCH | PROVENANCE | CONTRACT | **PASS** | correlationId=aksh-master-20260812-95e75baf · orchPatient=P002 |
-| 10 | MJ-10-HITL-ACCEPT | DECIDE | LIVE | **PASS** | learningEvents=1 |
-| 11 | MJ-11-HEALTH-PLAN | ACT | PARTIAL | **PASS** | healthPlanId=plan-P002-1791213336064 |
-| 12 | MJ-12-LEARNING-ACCEPT | LEARN | LIVE | **PASS** | eventId=learn-3a2ccae4-2472-4f6b-b1c6-53bc3a6b304e |
-| 13 | MJ-13-OUTCOME | MONITOR | LIVE | **PASS** | outcomeEventId=learn-a05321e5-cc09-406e-ba13-cde0656c3f9b |
-| 14 | MJ-14-LOOP | LEARN | LIVE | **PASS** | awaiting→outcome_linked · linkedCount=1 |
-| 15 | MJ-15-DIABETES-ACCEPT | INTERVENTION | LIVE | **PASS** | diabetes learning id=learn-e974975f-7cd3-499d-81a3-a1916b341644 |
-| 16 | MJ-16-SHIELD-SCOPE | PROVENANCE | LIVE | **PASS** | scopeKey=aksh-master-20260812-95e75baf · shieldDualWrite used by spine |
-| 17 | MJ-17-LAB-DELAY | ACT | SIMULATED | **PASS** | delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-95e75baf |
+| 9 | MJ-09-CORRELATION-ORCH | PROVENANCE | CONTRACT | **PASS** | correlationId=aksh-master-20260812-c36a76ed · orchPatient=P002 |
+| 10 | MJ-10-HITL-ACCEPT | DECIDE | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 11 | MJ-11-HEALTH-PLAN | ACT | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 12 | MJ-12-LEARNING-ACCEPT | LEARN | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 13 | MJ-13-OUTCOME | MONITOR | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 14 | MJ-14-LOOP | LEARN | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 15 | MJ-15-DIABETES-ACCEPT | INTERVENTION | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 16 | MJ-16-SHIELD-SCOPE | PROVENANCE | LIVE | **SKIP** | skipDurableWrites=true — Neon HITL path not executed |
+| 17 | MJ-17-LAB-DELAY | ACT | SIMULATED | **PASS** | delayed eGFR for E2P076 · liveNhsLab:false · corr=aksh-master-20260812-c36a76ed |
 | 18 | MJ-18-LAB-COMPLETE | MONITOR | SIMULATED | **PASS** | factType=egfr value=58 |
 | 19 | MJ-19-PHARMACY | ACT | SIMULATED | **PASS** | task→gp · livePrescribing:false |
-| 20 | MJ-20-NURSE-FOLLOWUP | MONITOR | SIMULATED | **PASS** | followUp=e2e-nurse-fu-95e75baf · members=4 |
+| 20 | MJ-20-NURSE-FOLLOWUP | MONITOR | SIMULATED | **PASS** | followUp=e2e-nurse-fu-c36a76ed · members=4 |
 | 21 | MJ-21-IMPROVEMENT | LEARN | LIVE | **PASS** | cohort H E2P096 improved=true |
-| 22 | MJ-22-REFERRAL-DRAFT | RECOMMEND | SIMULATED | **PASS** | specialty=endocrinology · staging=ehr-stage-referral_draft-95e75baf |
-| 23 | MJ-23-APPOINTMENT-NOSHOW | ACT | SIMULATED | **PASS** | appt=e2e-appt-95e75baf-diabetes_review · task=e2e-noshow-task-e2e-appt-95e75baf-diabetes_review |
+| 22 | MJ-22-REFERRAL-DRAFT | RECOMMEND | SIMULATED | **PASS** | specialty=endocrinology · staging=ehr-stage-referral_draft-c36a76ed |
+| 23 | MJ-23-APPOINTMENT-NOSHOW | ACT | SIMULATED | **PASS** | appt=e2e-appt-c36a76ed-diabetes_review · task=e2e-noshow-task-e2e-appt-c36a76ed-diabetes_review |
 | 24 | MJ-24-CONSENT-REVOKE | CONNECT | SIMULATED | **PASS** | grants=6 · revokeBlocks=true |
-| 25 | MJ-25-VOICE-SYNTHESIS | UNDERSTAND | SIMULATED | **PASS** | voice=e2e-voice-95e75baf · synth=e2e-synth-e2e-voice-95e75baf · liveMic=false |
+| 25 | MJ-25-VOICE-SYNTHESIS | UNDERSTAND | SIMULATED | **PASS** | voice=e2e-voice-c36a76ed · synth=e2e-synth-e2e-voice-c36a76ed · liveMic=false |
 | 26 | MJ-26-CGM-SAFETY | DETECT | SIMULATED | **PASS** | alert=e2e-cgm-alert-E2P056 · hypos=9 |
 | 27 | MJ-27-COORDINATOR | ACT | SIMULATED | **PASS** | tasks=1 all done |
 | 28 | MJ-28-NOTIFICATIONS | MONITOR | SIMULATED | **PASS** | notifications=4 · livePush=false |
@@ -76,7 +76,7 @@ P1-ID-001 resolved: canonical patient id is P002 across clinical-proof, Neo4j se
 | 31 | MJ-31-EHR-ADAPTER | CONNECT | SIMULATED | **PASS** | adapter=simulated_ehr_v1 · org=org-dc-3 · clinic=clinic-org-dc-3 |
 | 32 | MJ-32-STAKEHOLDER-MATRIX | OBSERVABILITY | SIMULATED | **PASS** | patient:Y · gp:Y · nurse:Y · specialist:Y · lab:Y · pharmacy:Y · care_coordinator:Y · admin:Y · safety:Y · population_ops:Y |
 | 33 | MJ-33-HONESTY | GOVERNANCE | CONTRACT | **PASS** | liveEmis:false · sims only · not clinically validated · not autonomous-care ready |
-| 34 | MJ-34-CORRELATION | PROVENANCE | CONTRACT | **PASS** | aksh-master-20260812-95e75baf |
+| 34 | MJ-34-CORRELATION | PROVENANCE | CONTRACT | **PASS** | aksh-master-20260812-c36a76ed |
 | 35 | MJ-35-TRACE | OBSERVABILITY | CONTRACT | **PASS** | stepsBeforeTrace=34 · relatedGoldens=AKSH-E2E-0002,AKSH-E2E-0004,AKSH-E2E-0010,AKSH-E2E-0013,AKSH-E2E-0014,AKSH-E2E-0015,AKSH-E2E-0017,AKSH-E2E-0019 · clinic=PA |
 | 36 | MJ-36-CONTEXT-ENGINE | KNOWLEDGE | LIVE | **PASS** | ctx_d93f48182c0f5a8a82109883 missing=ADHERENCE |
 | 37 | MJ-37-GRAPHRAG | RETRIEVAL | SIMULATED | **PASS** | source=mock hits=8 |
