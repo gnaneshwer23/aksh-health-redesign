@@ -3,7 +3,10 @@
  * Keep claims aligned with FAQ / security / platform copy — no invented certifications.
  */
 
-export const CHAT_MODEL = "openai/gpt-5.4-mini";
+// Free-tier AI Gateway blocks newer OpenAI mini models (e.g. gpt-5.4-mini).
+// gpt-4o-mini works without paid credits; override via CHAT_MODEL when topped up.
+export const CHAT_MODEL =
+  (typeof process !== "undefined" && process.env.CHAT_MODEL?.trim()) || "openai/gpt-4o-mini";
 
 export const CHAT_KNOWLEDGE = `
 # Aksh Health — product knowledge (grounding)

@@ -1,0 +1,11 @@
+**/node_modules
+**/.next
+**/.git
+**/dist
+**/coverage
+**/.turbo
+**/*.log
+packages/*/node_modules
+packages/*/.next
+packages/platform-uk/node_modules
+packages/platform-uk/.next

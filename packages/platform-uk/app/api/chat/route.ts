@@ -18,7 +18,22 @@ export const maxDuration = 30;
 const MAX_MESSAGES = 24;
 
 function isChatConfigured(): boolean {
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return (
+    Boolean(process.env.AI_GATEWAY_API_KEY) ||
+    Boolean(process.env.VERCEL_OIDC_TOKEN) ||
+    process.env.VERCEL === "1"
+  );
+}
+
+function publicChatError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  if (/free tier|paid credits|top-up|top up/i.test(message)) {
+    return "Chat model is unavailable on the current AI Gateway plan. Please try again later, or use Contact (/contact).";
+  }
+  if (/authentication|api key|oidc/i.test(message)) {
+    return "Chat authentication failed. Please try again later, or use Contact (/contact).";
+  }
+  return "We could not reach the assistant just now. Please try again, or use Contact (/contact) or Security (/security).";
 }
 
 export async function GET() {
@@ -63,18 +78,22 @@ export async function POST(req: Request) {
       messages: await convertToModelMessages(messages),
       maxOutputTokens: 700,
       temperature: 0.3,
+      onError: ({ error }) => {
+        console.error("[api/chat] stream error:", error);
+      },
     });
 
     return createUIMessageStreamResponse({
-      stream: toUIMessageStream({ stream: result.stream }),
+      stream: toUIMessageStream({
+        stream: result.stream,
+        onError: (error) => {
+          console.error("[api/chat] ui stream error:", error);
+          return publicChatError(error);
+        },
+      }),
     });
-  } catch {
-    return Response.json(
-      {
-        error:
-          "We could not reach the assistant just now. Please try again, or use Contact (/contact) or Security (/security).",
-      },
-      { status: 502 }
-    );
+  } catch (error) {
+    console.error("[api/chat] request error:", error);
+    return Response.json({ error: publicChatError(error) }, { status: 502 });
   }
 }
