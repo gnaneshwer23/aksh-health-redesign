@@ -443,6 +443,8 @@ async function run() {
   await assertFileIncludes("components/marketing/HeroSection.tsx", "Diabetes care");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "InteroperabilityDiagram");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "Request a Pilot");
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "aksh-hero-float-chip");
+  await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");
   await assertFileIncludes("components/marketing/ClinicalControlSection.tsx", "AI doesn");
   await assertFileIncludes("components/marketing/ClinicalControlSection.tsx", "final say");
   await assertFileIncludes("components/marketing/SafetyTrustSection.tsx", "Trust is a gate");

@@ -54,11 +54,11 @@ test.describe("Marketing smoke", () => {
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
     await page.goto("/");
 
-    const trustStrip = page.getByLabel("Product trust signals");
+    const trustStrip = page.getByLabel("Product trust signals").first();
     await expect(trustStrip).toBeVisible();
     await expect(trustStrip.getByText("Human review").first()).toBeVisible();
-    await expect(trustStrip.getByText("Audit on every decision").first()).toBeVisible();
-    await expect(trustStrip.getByText("UK data residency").first()).toBeVisible();
+    await expect(trustStrip.getByText("Auditability").first()).toBeVisible();
+    await expect(trustStrip.getByText("UK data posture").first()).toBeVisible();
     await expect(trustStrip.getByText("Diabetes & primary care").first()).toBeVisible();
   });
 
@@ -123,7 +123,7 @@ test.describe("Marketing smoke", () => {
 
     const primary = band.getByRole("link", { name: "Request a Pilot" });
     await expect(primary).toBeVisible();
-    await expect(band.getByRole("link", { name: /Explore the Platform/i })).toBeVisible();
+    await expect(band.getByRole("link", { name: /Open the Patel Walkthrough/i })).toBeVisible();
     const primaryBg = await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     const primaryColor = await primary.evaluate((el) => window.getComputedStyle(el).color);
     expect(primaryBg).toBe("rgb(0, 168, 142)");
@@ -137,6 +137,9 @@ test.describe("Marketing smoke", () => {
     const visual = hero.locator(".owkin-hero__visual");
     await expect(visual).toBeVisible();
     await expect(visual.getByText("Aksh Health", { exact: true })).toHaveCount(0);
+    await expect(page.locator(".owkin-float-chip")).toHaveCount(0);
+    await expect(hero.getByLabel("Trust signals").getByText("Human review")).toBeVisible();
+    await expect(hero.getByLabel("Trust signals").getByText("FHIR staging")).toBeVisible();
     await expect(visual.getByText("Capture", { exact: true }).first()).toBeVisible();
     await expect(visual.getByText("Orchestrate", { exact: true })).toBeVisible();
     await expect(visual.getByText("Documentation", { exact: true }).first()).toBeVisible();

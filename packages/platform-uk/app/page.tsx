@@ -60,7 +60,7 @@ export default function HomePage() {
       <SafetyTrustSection />
       <PlatformFlowSection />
 
-      <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band data-section="14">
+      <section className={`owkin-cta-band aksh-cta-med ${sectionTight} text-center`} data-cta-band data-section="14">
         <div className={`${container} max-w-2xl`}>
           <p className="owkin-roles__eyebrow mb-3">Start with a controlled use case</p>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
@@ -74,9 +74,8 @@ export default function HomePage() {
             <Link href="/get-started" className="owkin-cta-band__btn">
               Request a Pilot
             </Link>
-            <Link href="/platform" className="owkin-cta-band__link">
-              Explore the Platform
-              <span aria-hidden>→</span>
+            <Link href="/demo/patel" className="aksh-btn-soft aksh-btn-soft--on-light">
+              Open the Patel Walkthrough
             </Link>
           </div>
         </div>
