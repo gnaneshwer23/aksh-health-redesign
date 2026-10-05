@@ -9,6 +9,7 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { OracleRiskPanel } from "@/components/dashboard/OracleRiskPanel";
 import { CausalHypothesisPanel } from "@/components/dashboard/precision-health/CausalHypothesisPanel";
+import { ClinicalIntelligenceWorkspace } from "@/components/dashboard/ClinicalIntelligenceWorkspace";
 import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-health/ClinicalOrchestratePanel";
 import { ConnectorsIngestPanel } from "@/components/dashboard/precision-health/ConnectorsIngestPanel";
 import { ConsentGrantsPanel } from "@/components/dashboard/precision-health/ConsentGrantsPanel";
@@ -101,6 +102,7 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
           </div>
         </header>
 
+        <ClinicalIntelligenceWorkspace patientId={patient.id} patientLabel={patient.name} />
         <ClinicalOrchestratePanel
           patientId={patient.id}
           patientLabel={patient.name}

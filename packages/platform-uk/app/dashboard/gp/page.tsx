@@ -13,6 +13,7 @@ import { DigitalTwinPanel } from "@/components/dashboard/DigitalTwinPanel";
 import { GpHeroDemoPath } from "@/components/dashboard/GpHeroDemoPath";
 import { PatientCard } from "@/components/dashboard/PatientCard";
 import { PatientPanel } from "@/components/dashboard/PatientPanel";
+import { ClinicalIntelligenceWorkspace } from "@/components/dashboard/ClinicalIntelligenceWorkspace";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { RiskScoreBadge } from "@/components/dashboard/RiskScoreBadge";
 import { Button } from "@/components/ui/button";
@@ -251,6 +252,10 @@ export default function GpDashboardPage() {
                 )}
               </header>
             )}
+
+            {patient ? (
+              <ClinicalIntelligenceWorkspace patientId={patient.id} patientLabel={patient.name} />
+            ) : null}
 
             <ReviewQueue
               patientId={selectedPatientId}

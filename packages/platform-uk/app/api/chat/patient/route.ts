@@ -11,6 +11,8 @@ import {
   patientChatAllowedAppRoles,
   type PatientChatAudience,
 } from "@/lib/chat/patient-access";
+import { assembleClinicalContext } from "@/lib/context-engine/assemble";
+import { evaluateGuardianGateway } from "@/lib/guardian-gateway";
 import { loadPatientChatContext } from "@/lib/chat/patient-context";
 import {
   PATIENT_CHAT_MODEL,
@@ -159,6 +161,32 @@ export async function POST(request: Request) {
   }
 
   const userText = latestUserText(messages);
+  const assembled = await assembleClinicalContext({
+    patientId,
+    purpose: audience === "patient" ? "patient_self" : "clinical_decision_support",
+    actorRole: auth.context.userRole,
+    boundPatientId: auth.context.boundPatientId,
+  });
+  if (assembled.ok) {
+    const gate = evaluateGuardianGateway({
+      context: assembled.package,
+      modelId: "aksh-patient-chat-v1",
+      environment: "synthetic",
+      userText,
+    });
+    if (gate.output_status === "BLOCK") {
+      return Response.json(
+        {
+          error: "Ask Aksh blocked this request (safety gateway).",
+          output_status: "BLOCK",
+          reasons: gate.reasons,
+          liveEmis: false,
+        },
+        { status: 403 }
+      );
+    }
+  }
+
   const escalation =
     audience === "patient" && userText
       ? detectCheckInEscalation(userText)

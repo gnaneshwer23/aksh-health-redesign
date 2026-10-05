@@ -41,6 +41,8 @@ async function ensureConstraints(session: Session) {
     "CREATE CONSTRAINT imd_quintile IF NOT EXISTS FOR (i:ImdQuintile) REQUIRE i.quintile IS UNIQUE",
     "CREATE CONSTRAINT forecast_day IF NOT EXISTS FOR (f:AdmissionForecast) REQUIRE f.day IS UNIQUE",
     "CREATE CONSTRAINT equity_category IF NOT EXISTS FOR (e:EquityFlag) REQUIRE e.category IS UNIQUE",
+    "CREATE CONSTRAINT guideline_id IF NOT EXISTS FOR (g:Guideline) REQUIRE g.id IS UNIQUE",
+    "CREATE CONSTRAINT evidence_id IF NOT EXISTS FOR (e:Evidence) REQUIRE e.id IS UNIQUE",
   ];
 
   for (const statement of statements) {
@@ -225,6 +227,64 @@ async function seedOrganizations(session: Session) {
   );
 }
 
+async function seedKnowledgeGraphOntology(session: Session) {
+  const guidelines = [
+    {
+      id: "gl-t2d-hba1c-review-v1",
+      title: "Type 2 diabetes — glycaemic review interval",
+      version: "1.0",
+      citation: "Aksh synthetic guideline GL-T2D-001 v1",
+      treats: "Type 2 diabetes mellitus",
+    },
+    {
+      id: "gl-t2d-metformin-renal-v1",
+      title: "Metformin and renal function",
+      version: "1.0",
+      citation: "Aksh synthetic guideline GL-T2D-002 v1",
+      treats: "Type 2 diabetes mellitus",
+    },
+    {
+      id: "gl-antithrombotic-dual-v1",
+      title: "Antiplatelet plus anticoagulant combination",
+      version: "1.0",
+      citation: "Aksh synthetic safety statement GL-HEM-001 v1",
+      treats: "Deep vein thrombosis",
+    },
+  ];
+
+  for (const g of guidelines) {
+    await session.run(
+      `MERGE (gl:Guideline {id: $id})
+       SET gl.title = $title, gl.version = $version, gl.citation = $citation, gl.synthetic = true
+       MERGE (ev:Evidence {id: $evidenceId})
+       SET ev.title = $title, ev.citation = $citation, ev.synthetic = true
+       MERGE (gl)-[:SUPPORTED_BY]->(ev)
+       MERGE (c:Condition {name: $treats})
+       MERGE (gl)-[:SUPPORTS_CONDITION]->(c)
+       MERGE (c)-[:SUPPORTED_BY]->(gl)`,
+      {
+        id: g.id,
+        evidenceId: `ev-${g.id}`,
+        title: g.title,
+        version: g.version,
+        citation: g.citation,
+        treats: g.treats,
+      }
+    );
+  }
+
+  await session.run(
+    `MATCH (p:Patient {id: 'P002'})
+     MERGE (enc:Encounter {id: 'enc-p002-last'})
+     SET enc.kind = 'follow-up', enc.date = p.lastEncounterDate
+     MERGE (p)-[:HAS_ENCOUNTER]->(enc)
+     MERGE (c:Condition {name: 'Type 2 diabetes mellitus'})
+     MERGE (enc)-[:CONTAINS]->(c)
+     MERGE (met:Medication {name: 'Metformin'})
+     MERGE (met)-[:TREATS]->(c)`
+  );
+}
+
 async function seedPopulationAggregates(session: Session) {
   for (const row of populationData.conditionPrevalenceByIMD) {
     await session.run(
@@ -284,6 +344,7 @@ async function run() {
     await seedMedicationInteractions(session);
     await seedOrganizations(session);
     await seedPopulationAggregates(session);
+    await seedKnowledgeGraphOntology(session);
 
     const counts = await session.run(
       `MATCH (p:Patient) WITH count(p) AS patients

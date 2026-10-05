@@ -8,11 +8,20 @@ import {
 } from "../shield-audit";
 import { formatCaseTimestamp } from "../time-format";
 import type { ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "../types";
+import type { AgentEscalation } from "../agents/contracts/types";
 
 export { deriveReviewQueueItems, deriveAgentCards, deriveActiveAgents } from "../agents";
 
 export function resolveReviewQueueItems(reviewCase: ReviewCase): ReviewQueueItem[] {
   return deriveReviewQueueItems(reviewCase);
+}
+
+/**
+ * Guardian gateway enqueue rule: BLOCK never becomes an actionable clinician draft.
+ * REVIEW and PASS still HITL (Accept/Edit/Reject) before FHIR staging.
+ */
+export function mayEnqueueAgentDraft(outputStatus: AgentEscalation | undefined | null): boolean {
+  return outputStatus !== "BLOCK";
 }
 
 export function countDraftQueueItems(reviewCase: ReviewCase) {

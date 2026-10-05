@@ -540,6 +540,14 @@ async function run() {
   await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "/state");
   await assertFileIncludes("components/dashboard/precision-health/PatientStatePanel.tsx", "patient-state-fact-superseded");
   await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "PatientStatePanel");
+  await assertFileIncludes("app/dashboard/gp/patients/[id]/page.tsx", "ClinicalIntelligenceWorkspace");
+  await assertFileIncludes("app/dashboard/gp/page.tsx", "ClinicalIntelligenceWorkspace");
+  await assertFileIncludes("app/dashboard/gp/review-queue/page.tsx", "ClinicalIntelligenceWorkspace");
+  await assertFileIncludes("lib/workflow/review-queue.ts", "mayEnqueueAgentDraft");
+  await assertFileIncludes("lib/db/schema-sql.ts", "aksh.model_registry");
+  await assertFileIncludes("app/api/context/package/route.ts", "assembleClinicalContext");
+  await assertFileIncludes("lib/guardian-gateway/index.ts", "independentOfAgentModel");
+  await assertFileIncludes("lib/agents/contracts/types.ts", "NEXUS_AGENT_CONTRACT");
 
   // D6 (docs/PHASED_BUILD_PLAN_D.md, P2-4): Data & Interoperability audit panel.
   await assertFileIncludes(

@@ -15,7 +15,11 @@ import { isDiabetesModuleEnabled } from "@/lib/integration-config";
 import { getPatientById } from "@/lib/mock-data/patients";
 import { getOracleModelCard, type OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import { runScenario, type TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
+import { assembleClinicalContext } from "@/lib/context-engine/assemble";
+import { runContractedNexus } from "@/lib/agents/contracts/run-nexus";
+import { evaluateGuardianGateway } from "@/lib/guardian-gateway";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
+import { mayEnqueueAgentDraft } from "@/lib/workflow/review-queue";
 
 import { resolveDecision, type DecisionEscalation } from "@/lib/decision";
 
@@ -33,6 +37,24 @@ export type ClinicalSpineOrchestrateResult = {
   diabetes: DiabetesRiskContribution | null;
   /** C6 (P1-3) — Decision.escalation for the diabetes contribution; always "none" when `diabetes` is null (non-diabetes patient or module off) — byte-identical to pre-C6 output. */
   diabetesEscalation: DecisionEscalation;
+  contextPackage?: {
+    contextId: string;
+    schemaVersion: string;
+    missing_information: string[];
+    uncertainties: string[];
+  };
+  contractedNexus?: {
+    escalation: "PASS" | "REVIEW" | "BLOCK";
+    findings: string[];
+    evidence: string[];
+    tools_used: string[];
+  };
+  guardianGateway?: {
+    output_status: "PASS" | "REVIEW" | "BLOCK";
+    reasons: string[];
+  };
+  /** False when Guardian BLOCK — drafts must not enter the HITL review queue. */
+  draftEnqueueAllowed: boolean;
   ehrWrite: false;
   hitlRequired: true;
   physiologicalTwin: false;
@@ -168,6 +190,24 @@ export async function runClinicalSpineOrchestrate(
   }
 
   const actor = input.actor ?? "clinical-spine-orchestrate";
+
+  const assembled = await assembleClinicalContext({
+    patientId: input.patientId,
+    purpose: "clinical_decision_support",
+    actorRole: "clinical_reviewer",
+  });
+  const contextPackage = assembled.ok ? assembled.package : undefined;
+  const contractedNexus = contextPackage ? await runContractedNexus({ context: contextPackage }) : undefined;
+  const guardianGateway = contextPackage
+    ? evaluateGuardianGateway({
+        context: contextPackage,
+        agentOutput: contractedNexus,
+        modelId: "aksh-nexus-synthetic-v1",
+        environment: "synthetic",
+        userText: input.transcript,
+      })
+    : undefined;
+
   // FR-DIAB-016: every diabetes-module output reaching a clinician is
   // SHIELD-audited exactly like existing agent outputs — reuses this same
   // orchestrate audit event (no new audit table/event schema); the payload
@@ -202,7 +242,12 @@ export async function runClinicalSpineOrchestrate(
       diabetesContributingFactorCount: diabetes?.horizonContributingFactors.length ?? 0,
       diabetesSafetyFlagCount: diabetes?.guardianSafetyFlags.length ?? 0,
       diabetesAreaFailures: diabetes?.areaFailures ?? [],
-      diabetesEscalation: decision.escalation
+      diabetesEscalation: decision.escalation,
+      contextId: contextPackage?.contextId ?? null,
+      context_version: contextPackage?.schemaVersion ?? null,
+      model_version: "aksh-nexus-synthetic-v1",
+      tools_used: contractedNexus?.tools_used ?? [],
+      output_status: guardianGateway?.output_status ?? null
     }
   });
 
@@ -216,6 +261,26 @@ export async function runClinicalSpineOrchestrate(
     diabetesModuleEnabled,
     diabetes,
     diabetesEscalation: decision.escalation,
+    contextPackage: contextPackage
+      ? {
+          contextId: contextPackage.contextId,
+          schemaVersion: contextPackage.schemaVersion,
+          missing_information: contextPackage.missing_information,
+          uncertainties: contextPackage.uncertainties,
+        }
+      : undefined,
+    contractedNexus: contractedNexus
+      ? {
+          escalation: contractedNexus.escalation,
+          findings: contractedNexus.findings,
+          evidence: contractedNexus.evidence,
+          tools_used: contractedNexus.tools_used,
+        }
+      : undefined,
+    guardianGateway: guardianGateway
+      ? { output_status: guardianGateway.output_status, reasons: guardianGateway.reasons }
+      : undefined,
+    draftEnqueueAllowed: mayEnqueueAgentDraft(guardianGateway?.output_status),
     ehrWrite: false,
     hitlRequired: true,
     physiologicalTwin: false,

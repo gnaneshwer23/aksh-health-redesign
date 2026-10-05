@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { GpHeroDemoPath } from "@/components/dashboard/GpHeroDemoPath";
+import { ClinicalIntelligenceWorkspace } from "@/components/dashboard/ClinicalIntelligenceWorkspace";
 import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-health/ClinicalOrchestratePanel";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { getPatientById } from "@/lib/mock-data";
@@ -31,7 +32,10 @@ function GpReviewQueueContent() {
         <GpHeroDemoPath />
         <ConsentBanner />
         {patient && (
-          <ClinicalOrchestratePanel patientId={patient.id} patientLabel={patient.name} />
+          <>
+            <ClinicalIntelligenceWorkspace patientId={patient.id} patientLabel={patient.name} />
+            <ClinicalOrchestratePanel patientId={patient.id} patientLabel={patient.name} />
+          </>
         )}
         <ReviewQueue
           patientId={patientId}
