@@ -36,5 +36,5 @@ export const DASHBOARD_LABELS = {
 export const SEO_DEFAULTS = {
   title: "Aksh Health | Diabetes care coordination with human review",
   description:
-    "Diabetes-first care coordination platform with FHIR R4 staging, human-in-the-loop review, and multi-framework compliance design pathways for clinical teams."
+    "Diabetes-first care coordination in production: authorised patient context, cited evidence, FHIR R4 staging, and named-clinician review. Not a live EHR write."
 };

@@ -19,7 +19,7 @@ const careRoles: RoleSignal[] = [
     id: "gp",
     label: "GP",
     dashboard: "Clinician dashboard",
-    description: "Consult context, documentation, and safety drafts in one review queue.",
+    description: "Authorised context, documentation, and safety drafts in one review queue.",
   },
   {
     id: "nurse",

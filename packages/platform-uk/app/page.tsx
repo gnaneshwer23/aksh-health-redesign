@@ -9,6 +9,10 @@ import StatsBand from "@/components/marketing/StatsBand";
 import { container, sectionTight } from "@/components/marketing/marketing-ui";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
+const WhatsNewSection = dynamic(() => import("@/components/marketing/WhatsNewSection"), {
+  loading: () => <div className="min-h-[16rem]" aria-hidden />,
+});
+
 const PlatformFlowSection = dynamic(() => import("@/components/marketing/PlatformFlowSection"), {
   loading: () => <div className="min-h-[16rem]" aria-hidden />,
 });
@@ -28,16 +32,17 @@ export default function HomePage() {
       <HeroSection />
       <StatsBand />
       <ProductFeatureBand />
+      <WhatsNewSection />
       <RolesGridSection />
       <PlatformFlowSection />
 
       <section className={`owkin-cta-band ${sectionTight} text-center`} data-cta-band data-section="10">
         <div className={`${container} max-w-xl`}>
           <h2 className="owkin-display owkin-cta-band__title mb-4 text-3xl md:text-4xl">
-            Clinical work that stays under control.
+            Diabetes care that stays under control.
           </h2>
           <p className="owkin-cta-band__lede mb-8 text-base leading-relaxed md:text-lg">
-            One review queue. Named clinician approval. Sits beside your existing EHR.
+            One review queue. Named clinician approval. Sits beside your existing EHR — no automatic write-back.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link href="/get-started" className="owkin-cta-band__btn">

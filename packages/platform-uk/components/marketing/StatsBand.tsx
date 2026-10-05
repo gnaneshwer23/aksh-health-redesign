@@ -4,12 +4,12 @@ const pillars = [
   {
     label: "Capture",
     title: "Voice or notes",
-    detail: "The consult becomes a structured draft.",
+    detail: "The consult becomes a structured diabetes draft.",
   },
   {
     label: "Review",
     title: "One queue",
-    detail: "Documentation, safety, and risk — together.",
+    detail: "Documentation, evidence, and safety — together.",
   },
   {
     label: "Govern",
@@ -19,7 +19,7 @@ const pillars = [
   {
     label: "Integrate",
     title: "FHIR staging",
-    detail: "Approved outputs stage as FHIR for your EHR.",
+    detail: "Approved outputs stage as FHIR. Not a live EHR write.",
   },
 ] as const;
 

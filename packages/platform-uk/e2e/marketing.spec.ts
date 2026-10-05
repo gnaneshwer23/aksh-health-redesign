@@ -12,7 +12,7 @@ test.describe("Marketing smoke", () => {
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
     expect(brandColor).toBe("rgb(20, 32, 30)");
 
-    await expect(page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Diabetes care,\s*properly coordinated/i })).toBeVisible();
     await expect(page.locator("section.owkin-hero .owkin-hero__brand")).toHaveText("Aksh Health");
     const desktopNav = page.locator("nav.owkin-nav .owkin-nav__center");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
@@ -57,6 +57,7 @@ test.describe("Marketing smoke", () => {
 
     const trustStrip = page.getByLabel("Product trust signals");
     await expect(trustStrip).toBeVisible();
+    await expect(trustStrip.getByText("In production").first()).toBeVisible();
     await expect(trustStrip.getByText("Audit trail on every decision").first()).toBeVisible();
     await expect(trustStrip.getByText("Draft until a clinician decides").first()).toBeVisible();
     await expect(trustStrip.getByText("UK data residency").first()).toBeVisible();
@@ -101,7 +102,7 @@ test.describe("Marketing smoke", () => {
   test("homepage surfaces how-it-works pillars after the hero", async ({ page }) => {
     await page.goto("/");
 
-    const hero = page.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
+    const hero = page.getByRole("heading", { name: /Diabetes care,\s*properly coordinated/i });
     await expect(hero).toBeVisible();
     await expect(page.getByText("How it works", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Capture", { exact: true }).first()).toBeVisible();
@@ -115,10 +116,10 @@ test.describe("Marketing smoke", () => {
 
     const band = page.locator("[data-cta-band]");
     await expect(band).toBeVisible();
-    await expect(band.getByRole("heading", { name: /Clinical work that stays under control/i })).toBeVisible();
+    await expect(band.getByRole("heading", { name: /Diabetes care that stays under control/i })).toBeVisible();
 
     const titleColor = await band
-      .getByRole("heading", { name: /Clinical work that stays under control/i })
+      .getByRole("heading", { name: /Diabetes care that stays under control/i })
       .evaluate((el) => window.getComputedStyle(el).color);
     expect(titleColor).toBe("rgb(20, 32, 30)");
 
@@ -163,7 +164,7 @@ test.describe("Marketing smoke", () => {
     expect(await hero.getByTestId("pipeline-arrow-down").count()).toBeGreaterThanOrEqual(3);
     expect(await hero.getByTestId("pipeline-arrow-right").count()).toBeGreaterThanOrEqual(2);
 
-    const headline = hero.getByRole("heading", { name: /Clinical work,\s*properly coordinated/i });
+    const headline = hero.getByRole("heading", { name: /Diabetes care,\s*properly coordinated/i });
     const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });
     await expect(diagram).toBeVisible();
     const headlineBox = await headline.boundingBox();
@@ -214,6 +215,15 @@ test.describe("Marketing smoke", () => {
     await expect(mock).toBeVisible();
     await expect(mock.locator(".owkin-product-card__title")).toHaveText("Mr J. Patel");
     await expect(page.locator(".owkin-float-chip")).toHaveCount(0);
+  });
+
+  test("homepage clinical picture section is live in production messaging", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { name: /The clinical picture/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Authorised patient picture/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Cited, not invented/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Held until a clinician decides/i })).toBeVisible();
   });
 
   test("footer is compact with product, company, and legal links", async ({ page }) => {

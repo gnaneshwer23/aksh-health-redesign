@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 
 const trustBadges = [
+  "In production",
   "Audit trail on every decision",
   "Draft until a clinician decides",
   "UK data residency",

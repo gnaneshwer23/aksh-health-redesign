@@ -13,12 +13,13 @@ export default function HeroSection() {
             <h1 className="owkin-hero__heading">
               <span className="owkin-hero__brand">Aksh Health</span>
               <span className="owkin-hero__title">
-                Clinical work,
+                Diabetes care,
                 <span className="block">properly coordinated.</span>
               </span>
             </h1>
             <p className="owkin-hero__lede">
-              Capture, draft, approve. A named clinician reviews every output before it can reach the record.
+              Capture, draft, approve. Evidence and missing labs sit with the queue. A named clinician reviews every
+              output before it can reach the record.
             </p>
             <div className="owkin-hero__actions">
               <Link href="/get-started" className="owkin-btn-ink">

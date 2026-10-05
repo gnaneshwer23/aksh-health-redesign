@@ -428,6 +428,7 @@ async function run() {
   await assertFileIncludes("lib/onboarding/roles.ts", "hasTutorial: true");
   await assertFileIncludes("components/onboarding/OnboardingCard.tsx", "onboarding-honesty-banner");
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
+  await assertFileIncludes("components/marketing/HeroSection.tsx", "Diabetes care");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "Request access");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "View platform");
   await assertFileIncludes("components/marketing/HeroSection.tsx", "InteroperabilityDiagram");

@@ -17,16 +17,16 @@ const queueRows = [
     meta: "Structured note · referral recommendation",
   },
   {
-    label: "Risk",
+    label: "Evidence",
     tone: "oracle" as const,
-    title: "Admission risk signal",
-    meta: "14-day horizon · awaiting review",
+    title: "HbA1c 72 mmol/mol",
+    meta: "Guideline cited · adherence not recorded",
   },
   {
-    label: "Audit",
+    label: "Safety",
     tone: "shield" as const,
-    title: "No auto-writes",
-    meta: "Attributed · awaiting Accept",
+    title: "Held for review",
+    meta: "No auto-writes · awaiting Accept",
   },
 ] as const;
 
@@ -60,7 +60,10 @@ export default function ProductFeatureBand() {
             </div>
 
             <div className="owkin-product-card__bubble">
-              <p>SOAP draft prepared with referral recommendation awaiting clinician review.</p>
+              <p>
+                SOAP draft with cited labs and a safety hold — still a draft until a named clinician accepts, edits, or
+                rejects.
+              </p>
             </div>
           </div>
         </ScrollReveal>
@@ -69,7 +72,7 @@ export default function ProductFeatureBand() {
           <p className="owkin-product-band__logo">Review queue</p>
           <h2 id="product-band-heading">One queue. Named clinician approval.</h2>
           <p>
-            Documentation, safety checks, and risk signals wait together. Nothing writes to the record until a clinician
+            Documentation, cited evidence, and safety holds wait together. Nothing writes to the record until a clinician
             accepts, edits, or rejects.
           </p>
           <div className="owkin-product-band__actions">
