@@ -11,7 +11,7 @@
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 
 const pages = [
-  { path: "/", text: "Clinical work" },
+  { path: "/", text: "Diabetes care" },
   { path: "/platform", text: "One platform, eight roles" },
   {
     path: "/security",
