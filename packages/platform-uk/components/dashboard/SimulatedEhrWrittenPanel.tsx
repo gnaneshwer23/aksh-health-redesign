@@ -35,7 +35,12 @@ export function SimulatedEhrWrittenPanel({ patientId }: { patientId: string | nu
           liveEmis?: boolean;
         };
         if (!res.ok) {
-          if (!cancelled) setError(json.error ?? "Simulated EHR unavailable");
+          if (!cancelled)
+            setError(
+              res.status === 401
+                ? "Sign in to see staged entries in the simulated chart."
+                : (json.error ?? "Simulated EHR unavailable")
+            );
           return;
         }
         if (!cancelled) {
