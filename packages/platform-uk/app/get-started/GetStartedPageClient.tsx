@@ -2,20 +2,46 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
-import { btnPrimary, btnSecondary, frame } from "@/components/marketing/marketing-ui";
-import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
-import TrustStrip from "@/components/marketing/TrustStrip";
 import {
   EHR_SYSTEMS,
   ICS_REGIONS,
   LIST_SIZES,
   ORG_TYPES,
   ORGANISATION_COMMITMENTS,
+  accessRequestSchema,
 } from "@/lib/access-requests/validation";
 
-const STEPS = ["Organisation", "Technical Setup", "Commitments"];
+const STEPS = ["Organisation", "Technical Setup", "Commitments"] as const;
+
+// Validate each step against the same schema the API uses, so errors surface before submit.
+const STEP_SCHEMAS = [
+  accessRequestSchema.pick({
+    orgType: true,
+    orgName: true,
+    odsCode: true,
+    region: true,
+    contactName: true,
+    contactEmail: true,
+  }),
+  accessRequestSchema.pick({ ehrSystems: true, listSize: true, itContact: true }),
+  accessRequestSchema.pick({ commitments: true }),
+] as const;
+
+const FIELD_MESSAGES: Record<string, string> = {
+  orgType: "Choose an organisation type.",
+  orgName: "Enter your organisation name.",
+  odsCode: "Keep the organisation ID under 32 characters.",
+  region: "Choose a region.",
+  contactName: "Enter a contact name.",
+  contactEmail: "Enter a valid email address.",
+  ehrSystems: "Select at least one EHR system.",
+  listSize: "Choose an approximate list size.",
+  itContact: "Keep the IT contact under 200 characters.",
+  commitments: "Confirm at least one commitment.",
+};
 
 type FormState = {
   orgType: string;
@@ -24,14 +50,17 @@ type FormState = {
   region: string;
   contactName: string;
   contactEmail: string;
-  ehrSystem: string[];
+  ehrSystems: string[];
   listSize: string;
   itContact: string;
   commitments: string[];
 };
 
-const fieldClass =
-  "w-full rounded-2xl border border-[var(--mk-line)] bg-white px-4 py-2.5 text-[var(--mk-ink)] shadow-sm focus:border-[var(--mk-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--mk-accent)]/25";
+const NEXT_STEPS = [
+  { title: "We reply within two business days", note: "A named contact, not an autoresponder" },
+  { title: "Scoping call with your clinical and IT leads", note: "One workflow, named reviewers, governance boundaries" },
+  { title: "Rehearse on a synthetic clinic", note: "Live patient data waits for your DPIA and approvals" },
+] as const;
 
 export default function GetStartedPageClient() {
   const [step, setStep] = useState(0);
@@ -39,6 +68,7 @@ export default function GetStartedPageClient() {
   const [referenceLabel, setReferenceLabel] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<FormState>({
     orgType: "",
     orgName: "",
@@ -46,21 +76,48 @@ export default function GetStartedPageClient() {
     region: "",
     contactName: "",
     contactEmail: "",
-    ehrSystem: [],
+    ehrSystems: [],
     listSize: "",
     itContact: "",
     commitments: [],
   });
 
-  const update = (key: keyof FormState, value: unknown) =>
+  const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
+    setErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
 
-  const toggleArr = (key: "ehrSystem" | "commitments", value: string) => {
+  const toggleArr = (key: "ehrSystems" | "commitments", value: string) => {
     const arr = form[key];
     update(key, arr.includes(value) ? arr.filter((item) => item !== value) : [...arr, value]);
   };
 
+  const validateStep = (index: number) => {
+    const result = STEP_SCHEMAS[index].safeParse(form);
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+    const next: Record<string, string> = {};
+    for (const issue of result.error.issues) {
+      const key = String(issue.path[0]);
+      next[key] = FIELD_MESSAGES[key] ?? "Check this field.";
+    }
+    setErrors(next);
+    return false;
+  };
+
+  const goNext = () => {
+    if (validateStep(step)) setStep((current) => current + 1);
+  };
+
   const handleSubmit = async () => {
+    if (!validateStep(step)) return;
     setSubmitting(true);
     setSubmitError(null);
 
@@ -68,18 +125,7 @@ export default function GetStartedPageClient() {
       const response = await fetch("/api/access-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orgType: form.orgType,
-          orgName: form.orgName,
-          odsCode: form.odsCode,
-          region: form.region,
-          contactName: form.contactName,
-          contactEmail: form.contactEmail,
-          ehrSystems: form.ehrSystem,
-          listSize: form.listSize,
-          itContact: form.itContact,
-          commitments: form.commitments,
-        }),
+        body: JSON.stringify(form),
       });
 
       const payload = (await response.json().catch(() => ({}))) as {
@@ -100,253 +146,302 @@ export default function GetStartedPageClient() {
     }
   };
 
-  if (submitted) {
-    return (
-      <MarketingShell editorial>
-        <div className="flex flex-1 items-center justify-center py-16">
-          <div className="max-w-md rounded-[2rem] border border-[var(--mk-line)] bg-white px-8 py-10 text-center shadow-[var(--mk-shadow-frame)]">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-pastel-mint">
-              <span className="text-4xl text-[var(--mk-accent)]">✓</span>
-            </div>
-            <h1 className="mb-3 font-display text-2xl font-bold text-[var(--mk-ink)]">Enquiry received</h1>
-            <p className="mb-6 text-[var(--mk-muted)]">
-              Our team will respond within two business days to discuss onboarding your organisation.
-            </p>
-            {referenceLabel ? (
-              <p className="rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] px-4 py-3 text-sm text-[var(--mk-muted)]">
-                Reference:{" "}
-                <span className="font-mono font-semibold text-[var(--mk-ink)]">{referenceLabel}</span>
-              </p>
-            ) : null}
-          </div>
-        </div>
-      </MarketingShell>
-    );
-  }
+  const fieldProps = (key: keyof FormState) => ({
+    "aria-invalid": errors[key] ? (true as const) : undefined,
+    "aria-describedby": errors[key] ? `${key}-error` : undefined,
+  });
+
+  const fieldError = (key: keyof FormState) =>
+    errors[key] ? (
+      <span id={`${key}-error`} className="text-xs text-[#b42318]">
+        {errors[key]}
+      </span>
+    ) : null;
 
   return (
-    <MarketingShell editorial>
-      <MarketingPageHero
-        eyebrow="Organisation access"
-        title="Request access for your organisation"
-        lede="For practice managers, regional leads, hospital procurement, and IT teams. Tell us about your organisation and we will arrange a conversation with your clinical and technical leads."
-        secondary={{ label: "Create your account instead", href: "/signup" }}
-      />
+    <MarketingShell overLightHero>
+      <section className="lv-book" aria-labelledby="get-started-title">
+        <div className="lv-book__grid">
+          <aside className="lv-book__aside">
+            <span className="lv-hero__badge">
+              <span className="lv-hero__badge-dot" aria-hidden>
+                ✦
+              </span>
+              Organisation access
+            </span>
+            <h1 id="get-started-title" className="lv-book__title">
+              Request a pilot for your organisation
+            </h1>
+            <p className="lv-book__lede">
+              For practice managers, regional leads, hospital procurement and IT teams. Three short steps, then we
+              arrange a conversation with your clinical and technical leads.
+            </p>
 
-      <TrustStrip />
+            <p className="mt-8 text-sm font-medium text-white">What happens next</p>
+            <ol className="lv-timeline mt-3">
+              {NEXT_STEPS.map((item, i) => (
+                <li key={item.title}>
+                  <b aria-hidden>{i + 1}</b>
+                  <span>
+                    {item.title}
+                    <small>{item.note}</small>
+                  </span>
+                </li>
+              ))}
+            </ol>
 
-      <div className="py-12 md:py-16">
-        <div className="mx-auto w-full max-w-2xl px-6 lg:px-8">
-          <div className="mb-8 flex items-center gap-2">
-            {STEPS.map((label, index) => (
-              <div key={label} className="flex flex-1 items-center gap-2">
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                    index < step
-                      ? "bg-[var(--mk-accent)] text-white"
-                      : index === step
-                        ? "bg-[var(--mk-accent)] text-white"
-                        : "bg-[#eef1f4] text-[var(--mk-muted)]"
-                  }`}
-                >
-                  {index < step ? "✓" : index + 1}
-                </div>
-                <span
-                  className={`hidden text-xs font-medium sm:block ${
-                    index === step ? "text-[var(--mk-ink)]" : "text-[var(--mk-muted)]"
-                  }`}
-                >
-                  {label}
-                </span>
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={`h-1 flex-1 rounded-full ${
-                      index < step ? "bg-[var(--mk-accent)]" : "bg-[#eef1f4]"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
+            <p className="lv-book__note">
+              Individual clinicians can{" "}
+              <Link href="/signup" className="font-medium text-white underline underline-offset-2">
+                create an account instead
+              </Link>
+              .
+            </p>
+          </aside>
 
-          <div className={frame}>
-            {step === 0 && (
-              <div className="space-y-5">
-                <h2 className="mb-2 font-display text-xl font-bold text-[var(--mk-ink)]">Organisation details</h2>
-                <p className="mb-4 text-sm text-[var(--mk-muted)]">
-                  We will respond within two business days after you submit.
+          <div className="lv-book__panel">
+            {submitted ? (
+              <div className="py-10 text-center" role="status">
+                <CheckCircle2 className="mx-auto h-14 w-14 text-[var(--lv-violet)]" aria-hidden />
+                <h2 className="lv-book__h mt-5">Enquiry received</h2>
+                <p className="mx-auto mt-3 max-w-sm text-[var(--lv-muted)]">
+                  Our team will respond within two business days to discuss onboarding your organisation.
                 </p>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">Organisation type *</label>
-                  <select
-                    className={fieldClass}
-                    value={form.orgType}
-                    onChange={(event) => update("orgType", event.target.value)}
-                  >
-                    <option value="">Select type</option>
-                    {ORG_TYPES.map((option) => (
-                      <option key={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-                {(
-                  [
-                    ["Organisation name *", "orgName"],
-                    ["Organisation ID (optional)", "odsCode"],
-                    ["Contact name *", "contactName"],
-                    ["Contact email *", "contactEmail"],
-                  ] as const
-                ).map(([label, key]) => (
-                  <div key={key}>
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">{label}</label>
-                    <input
-                      className={fieldClass}
-                      type={key === "contactEmail" ? "email" : "text"}
-                      placeholder={key === "odsCode" ? "e.g. clinic code or ODS if UK" : undefined}
-                      value={form[key]}
-                      onChange={(event) => update(key, event.target.value)}
-                    />
-                  </div>
-                ))}
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">Region *</label>
-                  <select
-                    className={fieldClass}
-                    value={form.region}
-                    onChange={(event) => update("region", event.target.value)}
-                  >
-                    <option value="">Select region</option>
-                    {ICS_REGIONS.map((option) => (
-                      <option key={option}>{option}</option>
-                    ))}
-                  </select>
+                {referenceLabel ? (
+                  <p className="lv-summary mx-auto mt-6 max-w-xs">
+                    <span>
+                      Reference <span className="font-mono font-semibold">{referenceLabel}</span>
+                    </span>
+                  </p>
+                ) : null}
+                <div className="mt-8 flex flex-wrap justify-center gap-3">
+                  <Link href="/demo/patel" className="lv-btn lv-btn--violet">
+                    Walk through the Patel case
+                  </Link>
+                  <Link href="/" className="lv-btn lv-btn--outline">
+                    Back to home
+                  </Link>
                 </div>
               </div>
-            )}
-
-            {step === 1 && (
-              <div className="space-y-5">
-                <h2 className="mb-6 font-display text-xl font-bold text-[var(--mk-ink)]">Technical setup</h2>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-[var(--mk-ink)]">Current EHR system(s) *</label>
-                  <div className="space-y-2">
-                    {EHR_SYSTEMS.map((ehr) => (
-                      <label
-                        key={ehr}
-                        className="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] px-4 py-3 transition-colors hover:border-[var(--mk-accent)]"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={form.ehrSystem.includes(ehr)}
-                          onChange={() => toggleArr("ehrSystem", ehr)}
-                          className="h-4 w-4 accent-[var(--mk-accent)]"
-                        />
-                        <span className="text-sm text-[var(--mk-ink)]">{ehr}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">
-                    Approximate patient list size *
-                  </label>
-                  <select
-                    className={fieldClass}
-                    value={form.listSize}
-                    onChange={(event) => update("listSize", event.target.value)}
-                  >
-                    <option value="">Select size</option>
-                    {LIST_SIZES.map((option) => (
-                      <option key={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--mk-ink)]">
-                    IT lead contact (optional)
-                  </label>
-                  <input
-                    className={fieldClass}
-                    placeholder="Name and email"
-                    value={form.itContact}
-                    onChange={(event) => update("itContact", event.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-5">
-                <h2 className="mb-6 font-display text-xl font-bold text-[var(--mk-ink)]">Commitments</h2>
-                <p className="text-sm text-[var(--mk-muted)]">
-                  Please confirm your organisation can commit to the following:
-                </p>
-                <div className="space-y-3">
-                  {ORGANISATION_COMMITMENTS.map((commitment) => (
-                    <label
-                      key={commitment}
-                      className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--mk-line)] bg-[#f7f8fa] p-4 transition-colors hover:border-[var(--mk-accent)]"
+            ) : (
+              <>
+                <ol className="lv-stepper" aria-label="Progress">
+                  {STEPS.map((label, index) => (
+                    <li
+                      key={label}
+                      data-state={index < step ? "done" : index === step ? "current" : "todo"}
+                      aria-current={index === step ? "step" : undefined}
                     >
-                      <input
-                        type="checkbox"
-                        checked={form.commitments.includes(commitment)}
-                        onChange={() => toggleArr("commitments", commitment)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--mk-accent)]"
-                      />
-                      <span className="text-sm text-[var(--mk-ink)]">{commitment}</span>
-                    </label>
+                      <span>
+                        {index + 1}. {label}
+                      </span>
+                    </li>
                   ))}
+                </ol>
+
+                {step === 0 && (
+                  <div className="grid gap-5">
+                    <div>
+                      <h2 className="lv-book__h">Organisation details</h2>
+                      <p className="mt-1 text-sm text-[var(--lv-muted)]">Who you are and who we should talk to.</p>
+                    </div>
+                    <label className="lv-field">
+                      <span>Organisation type *</span>
+                      <select
+                        className="lv-input"
+                        value={form.orgType}
+                        onChange={(event) => update("orgType", event.target.value)}
+                        {...fieldProps("orgType")}
+                      >
+                        <option value="">Select type</option>
+                        {ORG_TYPES.map((option) => (
+                          <option key={option}>{option}</option>
+                        ))}
+                      </select>
+                      {fieldError("orgType")}
+                    </label>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      {(
+                        [
+                          ["Organisation name *", "orgName", "text"],
+                          ["Organisation ID (optional)", "odsCode", "text"],
+                          ["Contact name *", "contactName", "text"],
+                          ["Contact email *", "contactEmail", "email"],
+                        ] as const
+                      ).map(([label, key, type]) => (
+                        <label key={key} className="lv-field">
+                          <span>{label}</span>
+                          <input
+                            className="lv-input"
+                            type={type}
+                            autoComplete={key === "contactEmail" ? "email" : key === "contactName" ? "name" : undefined}
+                            placeholder={key === "odsCode" ? "ODS code if UK" : undefined}
+                            value={form[key]}
+                            onChange={(event) => update(key, event.target.value)}
+                            {...fieldProps(key)}
+                          />
+                          {fieldError(key)}
+                        </label>
+                      ))}
+                    </div>
+                    <label className="lv-field">
+                      <span>Region *</span>
+                      <select
+                        className="lv-input"
+                        value={form.region}
+                        onChange={(event) => update("region", event.target.value)}
+                        {...fieldProps("region")}
+                      >
+                        <option value="">Select region</option>
+                        {ICS_REGIONS.map((option) => (
+                          <option key={option}>{option}</option>
+                        ))}
+                      </select>
+                      {fieldError("region")}
+                    </label>
+                  </div>
+                )}
+
+                {step === 1 && (
+                  <div className="grid gap-5">
+                    <div>
+                      <h2 className="lv-book__h">Technical setup</h2>
+                      <p className="mt-1 text-sm text-[var(--lv-muted)]">
+                        Aksh sits beside your EHR. This tells us which simulated integration to rehearse.
+                      </p>
+                    </div>
+                    <fieldset className="grid gap-2" {...fieldProps("ehrSystems")}>
+                      <legend className="mb-2 text-[0.8125rem] font-medium text-[var(--lv-ink)]">
+                        Current EHR system(s) *
+                      </legend>
+                      <div className="lv-option-grid lv-option-grid--2">
+                        {EHR_SYSTEMS.map((ehr) => (
+                          <label key={ehr} className="lv-option">
+                            <input
+                              type="checkbox"
+                              checked={form.ehrSystems.includes(ehr)}
+                              onChange={() => toggleArr("ehrSystems", ehr)}
+                            />
+                            <span>{ehr}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {fieldError("ehrSystems")}
+                    </fieldset>
+                    <label className="lv-field">
+                      <span>Approximate patient list size *</span>
+                      <select
+                        className="lv-input"
+                        value={form.listSize}
+                        onChange={(event) => update("listSize", event.target.value)}
+                        {...fieldProps("listSize")}
+                      >
+                        <option value="">Select size</option>
+                        {LIST_SIZES.map((option) => (
+                          <option key={option}>{option}</option>
+                        ))}
+                      </select>
+                      {fieldError("listSize")}
+                    </label>
+                    <label className="lv-field">
+                      <span>IT lead contact (optional)</span>
+                      <input
+                        className="lv-input"
+                        placeholder="Name and email"
+                        value={form.itContact}
+                        onChange={(event) => update("itContact", event.target.value)}
+                        {...fieldProps("itContact")}
+                      />
+                      {fieldError("itContact")}
+                    </label>
+                  </div>
+                )}
+
+                {step === 2 && (
+                  <div className="grid gap-5">
+                    <div>
+                      <h2 className="lv-book__h">Commitments</h2>
+                      <p className="mt-1 text-sm text-[var(--lv-muted)]">
+                        Please confirm what your organisation can commit to.
+                      </p>
+                    </div>
+                    <fieldset className="lv-option-grid" {...fieldProps("commitments")}>
+                      <legend className="sr-only">Organisation commitments</legend>
+                      {ORGANISATION_COMMITMENTS.map((commitment) => (
+                        <label key={commitment} className="lv-option">
+                          <input
+                            type="checkbox"
+                            checked={form.commitments.includes(commitment)}
+                            onChange={() => toggleArr("commitments", commitment)}
+                          />
+                          <span>{commitment}</span>
+                        </label>
+                      ))}
+                      {fieldError("commitments")}
+                    </fieldset>
+
+                    <dl className="lv-summary" aria-label="Enquiry summary">
+                      <div>
+                        <dt>Organisation</dt>
+                        <dd>{form.orgName || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Contact</dt>
+                        <dd>{form.contactEmail || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>EHR</dt>
+                        <dd>{form.ehrSystems.join(", ") || "—"}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                )}
+
+                {submitError ? (
+                  <p id="get-started-form-error" role="alert" className="lv-error">
+                    {submitError}
+                  </p>
+                ) : null}
+
+                <div className="lv-book__nav">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setErrors({});
+                      setStep((current) => current - 1);
+                    }}
+                    disabled={submitting}
+                    className={`lv-btn lv-btn--outline ${step === 0 ? "invisible" : ""}`}
+                  >
+                    Back
+                  </button>
+                  {step < STEPS.length - 1 ? (
+                    <button type="button" onClick={goNext} className="lv-btn lv-btn--ink px-8">
+                      Continue
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="lv-btn lv-btn--violet px-8"
+                    >
+                      {submitting ? "Submitting…" : "Submit enquiry"}
+                    </button>
+                  )}
                 </div>
-              </div>
+
+                <p className="mt-6 text-center text-sm text-[var(--lv-muted)]">
+                  Already have an account?{" "}
+                  <Link href="/signin" className="font-semibold text-[var(--lv-indigo)] hover:underline">
+                    Sign in
+                  </Link>
+                </p>
+              </>
             )}
-
-            {submitError ? (
-              <p
-                id="get-started-form-error"
-                role="alert"
-                className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-              >
-                {submitError}
-              </p>
-            ) : null}
-
-            <div
-              className="mt-8 flex justify-between border-t border-[var(--mk-line)] pt-6"
-              aria-describedby={submitError ? "get-started-form-error" : undefined}
-            >
-              <button
-                type="button"
-                onClick={() => setStep((current) => current - 1)}
-                disabled={submitting}
-                className={`${btnSecondary} px-5 ${step === 0 ? "invisible" : ""}`}
-              >
-                Back
-              </button>
-              {step < STEPS.length - 1 ? (
-                <button type="button" onClick={() => setStep((current) => current + 1)} className={`${btnPrimary} px-8`}>
-                  Continue
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className={`${btnPrimary} px-8 disabled:cursor-not-allowed disabled:opacity-60`}
-                >
-                  {submitting ? "Submitting…" : "Submit enquiry"}
-                </button>
-              )}
-            </div>
           </div>
-
-          <p className="mt-6 text-center text-sm text-[var(--mk-muted)]">
-            Already have an account?{" "}
-            <Link href="/signin" className="font-semibold text-[var(--mk-accent-strong)] hover:underline">
-              Sign in
-            </Link>
-          </p>
         </div>
-      </div>
+      </section>
     </MarketingShell>
   );
 }

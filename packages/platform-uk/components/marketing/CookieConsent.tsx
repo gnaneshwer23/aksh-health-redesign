@@ -48,6 +48,7 @@ export function CookieConsent() {
 
   return (
     <div
+      data-cookie-consent
       className="pointer-events-none fixed inset-x-0 bottom-0 z-50 p-4 motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-300 sm:p-6"
       role="dialog"
       aria-labelledby="cookie-consent-title"

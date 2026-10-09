@@ -4800,7 +4800,7 @@ input:focus, textarea:focus {
    compiled class name doesn't literally contain "text-"/"bg-", so without this exclusion
    this rule would win on specificity and silently override their colour (e.g. invisible
    white-on-white text on .btn-marketing-inverse). */
-.marketing-site main a:not([class*="text-"]):not([class*="bg-"]):not([class*="btn-marketing"]) {
+.marketing-site main a:not([class*="text-"]):not([class*="bg-"]):not([class*="btn-marketing"]):not(.lv-btn) {
   color: inherit;
 }
 
@@ -7599,7 +7599,7 @@ input:focus, textarea:focus {
   padding-block: var(--mk-section-tight) !important;
 }
 
-.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band):not(.owkin-story):not(.owkin-clinician-gate) {
+.marketing-site--editorial main > section:not(.owkin-page-hero):not(.marketing-homepage-hero):not(.owkin-cta-band):not(.owkin-story):not(.owkin-clinician-gate):not([class*="lv-"]) {
   padding-block: var(--mk-section) !important;
 }
 

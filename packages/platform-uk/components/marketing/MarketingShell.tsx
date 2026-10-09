@@ -41,7 +41,7 @@ export function MarketingShell({
     >
       <SkipToMain />
       <Navbar overDarkHero={overDarkHero} overLightHero={overLightHero} />
-      <main id="main-content" className={cn("flex-1", !overHero && "pt-16")}>
+      <main id="main-content" className={cn("flex-1", !overHero && "pt-[5.25rem]")}>
         {children}
       </main>
       <Footer />

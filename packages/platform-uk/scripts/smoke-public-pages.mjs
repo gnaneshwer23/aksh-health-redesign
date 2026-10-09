@@ -21,7 +21,7 @@ const pages = [
   { path: "/contact", text: "Talk to Aksh Health" },
   { path: "/signup", text: "Create your account" },
   { path: "/signin", text: "Sign in" },
-  { path: "/get-started", text: "Request access for your organisation" },
+  { path: "/get-started", text: "Request a pilot for your organisation" },
   { path: "/demo", text: "Mr James Patel walkthrough" },
   { path: "/demo/patel", text: "Mr James Patel walkthrough" },
 ];

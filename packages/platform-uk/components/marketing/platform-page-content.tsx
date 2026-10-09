@@ -13,7 +13,7 @@ import AgentGrid from "@/components/marketing/AgentGrid";
 import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { container } from "@/components/marketing/marketing-ui";
-import RolesGridSection from "@/components/marketing/RolesGridSection";
+import LvRoles from "@/components/marketing/lavender/LvRoles";
 import TrustStrip from "@/components/marketing/TrustStrip";
 
 const platformLayers = [
@@ -139,7 +139,7 @@ export function PlatformPageContent() {
       </div>
 
       <div className="border-t border-[var(--mk-line)]">
-        <RolesGridSection variant="platform" />
+        <LvRoles variant="platform" />
       </div>
 
       <section id="hitl" className="scroll-mt-24 border-t border-[var(--mk-line)] py-16 md:py-20">
