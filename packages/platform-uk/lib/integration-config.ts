@@ -138,6 +138,15 @@ export function getIntegrationAdapterRegistry() {
       defaultMode: "hitl_escalation_only",
       boundary:
         "POST /api/agents/voice-care. Synthetic Day-3 outbound script → SHIELD + nurse task. No telephony. Never writes to EHR."
+    },
+    {
+      id: "patient-access-synthetic",
+      label: "Patient access integration (synthetic)",
+      status: "available" as const,
+      enabled: false,
+      defaultMode: "hitl_outreach_only",
+      boundary:
+        "lib/patient-access. Inbound referral/intake/booking/no-show events → tagged FHIR + Provenance → diabetes access signals → clinician accept/reject → one non-clinical outreach request per patient. Mock transport only. No telephony. Never writes to EHR."
     }
   ];
 }

@@ -26,6 +26,7 @@
     "report:master": "npx tsx --env-file=.env.local scripts/report-master-e2e.ts",
     "db:migrate:e2e": "node --env-file=.env.local scripts/apply-neon-migration-014.mjs",
     "test:smoke": "npm run smoke:all",
+    "test:patient-access": "npx tsx tests/patient-access-diabetes.test.ts",
     "test:golden": "npm run test:e2e:platform-journeys && npm run test:e2e:platform-agent-journeys && npm run test:e2e:platform-decision-journeys && npm run test:e2e:platform-hitl-journeys && npm run test:e2e:platform-sim-journeys && npm run test:e2e:platform-learning-journeys && npm run test:e2e:platform-perf-security-journeys",
     "test:master": "npm run test:e2e:platform-master",
     "test:e2e:platform": "npx tsx --test tests/e2e-platform-generator.test.ts",

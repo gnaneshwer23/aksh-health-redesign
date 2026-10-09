@@ -50,7 +50,8 @@ const RESOURCE_TYPE_BY_ADAPTER_ID: Record<string, string> = {
   "llm-dr-assist": "Clinical coding draft (SNOMED/ICD-10)",
   "llm-equity": "Population equity brief",
   "diabetes-module": "Diabetes risk contribution (rules-based)",
-  "voice-care-synthetic": "Synthetic outbound care script"
+  "voice-care-synthetic": "Synthetic outbound care script",
+  "patient-access-synthetic": "Access events → FHIR R4 resources; CommunicationRequest outreach (synthetic)"
 };
 
 /**
