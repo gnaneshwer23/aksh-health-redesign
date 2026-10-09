@@ -1,0 +1,13 @@
+[project]
+name = "aksh-parakeet"
+version = "0.1.0"
+description = "Aksh Health patient-access diabetes intake prototype (synthetic only)"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
