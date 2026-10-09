@@ -676,7 +676,7 @@ export const reviewCases: ReviewCase[] = [
         "status": "DRAFT",
         "title": "SOAP note draft",
         "summary": "SYNTHESIS: DVT suspicion with poor glycaemic control in T2D patient.",
-        "content": "Subjective: Five-day left calf swelling and tightness. T2D: HbA1c 58 mmol/mol. On metformin and aspirin 75mg.\nObjective: Left calf swelling. HbA1c 58 mmol/mol. Wells score moderate.\nAssessment: Suspected DVT (left). T2D with hyperglycaemia (E11.65). Poor glycaemic control.\nPlan: Urgent DVT imaging. Consider apixaban if confirmed: GUARDIAN review required (aspirin interaction). Diabetes optimisation.",
+        "content": "Subjective: Five-day left calf swelling and tightness. T2D: HbA1c 58 mmol/mol. On metformin and aspirin 75mg.\nObjective: Left calf swelling. HbA1c 58 mmol/mol. Wells score moderate.\nAssessment: Suspected DVT (left). T2D (SNOMED CT 44054006). Poor glycaemic control.\nPlan: Urgent DVT imaging. Consider apixaban if confirmed: GUARDIAN review required (aspirin interaction). Diabetes optimisation.",
         "metadata": {
           "encounterReason": "Leg swelling with T2D review",
           "condition": "Suspected deep vein thrombosis: left leg"
@@ -688,12 +688,12 @@ export const reviewCases: ReviewCase[] = [
         "itemType": "diagnosis_codes",
         "status": "DRAFT",
         "title": "Diagnosis code suggestions",
-        "summary": "I82.4 · E11.65: confidence 94%",
-        "content": "I82.4: Acute embolism and thrombosis of deep veins of lower extremity\nE11.65: Type 2 diabetes mellitus with hyperglycaemia",
+        "summary": "SNOMED CT 128053003 · 44054006 (ICD-10 I80.2 · E11.9): confidence 94%",
+        "content": "SNOMED CT 128053003 | Deep venous thrombosis (ICD-10 I80.2)\nSNOMED CT 44054006 | Type 2 diabetes mellitus (ICD-10 E11.9)",
         "metadata": {
           "icdCodes": [
-            "I82.4: Acute embolism and thrombosis of deep veins of lower extremity",
-            "E11.65: Type 2 diabetes mellitus with hyperglycaemia"
+            "SNOMED CT 128053003 | Deep venous thrombosis (ICD-10 I80.2)",
+            "SNOMED CT 44054006 | Type 2 diabetes mellitus (ICD-10 E11.9)"
           ],
           "confidence": 94
         }

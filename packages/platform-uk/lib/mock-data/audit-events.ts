@@ -2,7 +2,7 @@ import type { AuditEvent } from "./types";
 
 export const auditEvents: AuditEvent[] = [
   { id: "AE001", timestamp: "2026-07-10T09:42:00Z", user: "Dr Morgan", agent: "SYNTHESIS", action: "Accepted SOAP note", resource: "RQ001 / Mr James Patel" },
-  { id: "AE002", timestamp: "2026-07-10T09:15:00Z", user: "Dr Morgan", agent: "DrASSIST", action: "Rejected clinical code", resource: "E11.9 → reason: use E11.65" },
+  { id: "AE002", timestamp: "2026-07-10T09:15:00Z", user: "Dr Morgan", agent: "DrASSIST", action: "Rejected clinical code", resource: "E11.65 → reason: US ICD-10-CM; use SNOMED CT 44054006 (ICD-10 E11.9)" },
   { id: "AE003", timestamp: "2026-07-10T08:30:00Z", user: "Nurse Davies", agent: "Nurse", action: "Saved vital signs", resource: "Mrs Sarah Johnson: BP 142/88" },
   { id: "AE004", timestamp: "2026-07-10T08:12:00Z", user: "System", agent: "VOICE", action: "Voice transcript generated", resource: "Mrs Sarah Johnson: Day 3 check-in" },
   { id: "AE005", timestamp: "2026-07-09T16:45:00Z", user: "Admin Singh", agent: "Admin", action: "Invited user", resource: "pharmacist@riverside.nhs.uk: Pharmacist" },

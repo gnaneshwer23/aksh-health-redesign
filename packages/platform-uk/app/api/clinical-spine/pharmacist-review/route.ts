@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { canRecordMedicationReview } from "@/lib/clinical-decision-scope";
 import { recordPharmacistReviewOnSpine } from "@/lib/clinical-spine/role-events";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -13,6 +14,14 @@ export const maxDuration = 30;
 export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
+
+  const scope = canRecordMedicationReview(auth.context.clinicalPersona);
+  if (!scope.allowed) {
+    return NextResponse.json(
+      { error: `Forbidden. ${scope.reason}`, ehrWrite: false, liveEmis: false },
+      { status: 403 }
+    );
+  }
 
   let body: {
     patientId?: string;

@@ -36,7 +36,7 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     agentType: "DrASSIST",
     title: "Clinical coding | DVT + T2D poor control",
     content:
-      "Proposed clinical codes: [1] I82.4: Deep vein thrombosis of right popliteal vein (94% confidence) [2] E11.65: Type 2 diabetes mellitus with hyperglycaemia (97% confidence)",
+      "Proposed clinical codes (SNOMED CT, WHO ICD-10): [1] SNOMED CT 128053003 Deep venous thrombosis, right popliteal vein · ICD-10 I80.2 (94% confidence) [2] SNOMED CT 44054006 Type 2 diabetes mellitus · ICD-10 E11.9, poor glycaemic control noted in free text (97% confidence)",
     confidenceScore: 94,
     evidenceSources: [
       { resourceType: "Condition", resourceId: "cond-dvt-p002", summary: "Ultrasound-confirmed DVT" },
@@ -78,7 +78,7 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     agentType: "ORACLE",
     title: "Risk score update after DVT",
     content:
-      "Risk score updated from 78 → 82 (Very High). Primary contributors: (1) New DVT diagnosis with T2D combination (+8 points), (2) Proposed anticoagulant + Aspirin combination risk (+4 points), (3) Missed HbA1c review 12 months (+2 points). Recommended: urgent medication review, 2-week follow-up.",
+      "Risk score updated from 78 (High) → 82 (Very High), +4 points. Contributors to the change: (1) New DVT with T2D (+2), (2) Proposed anticoagulant + aspirin combination (+1), (3) HbA1c review overdue at 12 months (+1). Recommended: urgent medication review, 2-week follow-up.",
     confidenceScore: 82,
     evidenceSources: [
       { resourceType: "RiskAssessment", resourceId: "oracle-p002", summary: "HORIZON composite risk model" },

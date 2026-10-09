@@ -76,6 +76,7 @@ async function run() {
       userId: "user-001",
       userEmail: "doctor@akshhealth.com",
       userRole: "clinical_reviewer",
+      clinicalPersona: "gp",
       boundPatientId: null
     },
     "Authenticated API scope should bind workflow storage to the signed-in user"

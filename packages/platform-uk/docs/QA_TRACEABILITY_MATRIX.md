@@ -28,7 +28,7 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | REQ-018 | Patel golden path (UI) | `/dashboard/gp`, `/demo/patel` | CP-PATEL-001 | Patient, queue, GUARDIAN, ORACLE, HITL | `e2e/clinical-proof-patel.spec.ts` | PASS |
 | REQ-019 | Patel EHR write-back step | EMIS | CP-PATEL-002 | Live write | — | BLOCKED: partner |
 | REQ-020 | SHIELD append-only via API | `/api/audit/shield` | CP-SHIELD-001 | No PUT/DELETE handlers | `tests/clinical-proof-shield.test.ts` | PASS |
-| REQ-021 | RBAC cross-role denial | Middleware | CP-RBAC-001 | Nurse cannot use GP-only paths as GP session | e2e + redirects | PARTIAL |
+| REQ-021 | RBAC cross-role denial | Middleware + `lib/clinical-decision-scope.ts` | CP-RBAC-001 | Nurse cannot use GP-only paths as GP session; nurse never confirms a disposition/gate, pharmacist confirms `medication_decision` only (EC-CLIN-3), enforced in `PUT /api/review-cases/[id]` and `POST /api/clinical-spine/pharmacist-review` | e2e + redirects + `tests/clinical-decision-scope.test.ts` | PASS |
 | REQ-022 | Public GP/ICS/Hospital allowlist | Middleware | CP-RBAC-002 | Admin/pharmacist require auth; demos open | `e2e/clinical-proof-rbac.spec.ts` | PASS |
 | REQ-023 | Role smoke matrix | Smoke scripts | CP-ROLE-001 | All 8 dashboards HTTP smoke | `npm run smoke:all` | PASS |
 | REQ-024 | Mirth / HL7 v2 intake | — | — | Message round-trip | — | GAP |
@@ -51,8 +51,8 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | Bucket | Count |
 | --- | ---: |
 | Requirements in matrix | 37 |
-| Automated PASS | 29 |
-| PARTIAL | 1 |
+| Automated PASS | 30 |
+| PARTIAL | 0 |
 | BLOCKED: partner | 3 |
 | GAP | 2 |
 | MANUAL | 2 |

@@ -252,9 +252,15 @@ function buildDrAssistItem(reviewCase: ReviewCase): ReviewQueueItem {
 
 function inferIcdCodes(conditionText: string) {
   const lower = conditionText.toLowerCase();
-  if (lower.includes("dvt") || lower.includes("deep vein")) return ["I82.4: Acute embolism and thrombosis of deep veins of lower extremity"];
+  // SNOMED CT first (UK primary care record), WHO ICD-10 second. Never US ICD-10-CM.
+  if (lower.includes("dvt") || lower.includes("deep vein")) {
+    return [
+      "SNOMED CT 128053003 | Deep venous thrombosis",
+      "ICD-10 I80.2 | Phlebitis and thrombophlebitis of other deep vessels of lower extremities",
+    ];
+  }
   if (lower.includes("type 2") || lower.includes("t2d") || lower.includes("diabetes")) {
-    return ["E11.65 | Type 2 diabetes mellitus with hyperglycaemia"];
+    return ["SNOMED CT 44054006 | Type 2 diabetes mellitus", "ICD-10 E11.9 | Type 2 diabetes mellitus without complications"];
   }
   return [`Provisional: ${conditionText}`];
 }

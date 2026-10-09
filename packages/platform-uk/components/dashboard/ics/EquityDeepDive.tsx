@@ -40,12 +40,12 @@ export function EquityDeepDive() {
         toast({ title: "COMPASS unavailable", description: "Could not generate an equity action brief." });
         return;
       }
-      const payload = (await response.json()) as { draft: EquityDraft };
+      const payload = (await response.json()) as { draft: EquityDraft; shieldLogged?: boolean };
       setDraft(payload.draft);
       setPlanLogged(true);
       toast({
         title: "COMPASS draft ready",
-        description: `${payload.draft.mode}/${payload.draft.dataSource} · SHIELD logged · no EHR write`
+        description: `${payload.draft.mode}/${payload.draft.dataSource} · ${payload.shieldLogged ? "SHIELD logged" : "SHIELD write failed, not audited"} · no EHR write`
       });
     } catch {
       toast({

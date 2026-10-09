@@ -12,6 +12,7 @@ import type { SafetyRoute } from "@/lib/clinical-spine/safety-route";
 import type { DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
 import type { OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
+import { formatHbA1c } from "@/lib/diabetes-units";
 
 /** B4: HORIZON/GUARDIAN items sourced from the Diabetes module are prefixed "[Diabetes] " by
  * lib/clinical-spine/orchestrate.ts (applyDiabetesContributionAdditively) — strip the prefix for
@@ -425,7 +426,7 @@ export function ClinicalOrchestratePanel({
                     <p className="font-semibold">HbA1c</p>
                     <p className="text-muted">
                       {result.diabetes.signals.hba1c.latestValuePercent !== null
-                        ? `Latest ${result.diabetes.signals.hba1c.latestValuePercent}% · trend ${result.diabetes.signals.hba1c.trend}`
+                        ? `Latest ${formatHbA1c(result.diabetes.signals.hba1c.latestValuePercent)} · trend ${result.diabetes.signals.hba1c.trend}`
                         : (result.diabetes.signals.hba1c.limitations[0] ?? "no data on file")}
                     </p>
                   </div>
