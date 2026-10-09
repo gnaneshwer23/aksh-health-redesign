@@ -55,7 +55,15 @@ export type DemoCohortLearningSeed = {
   linkOutcomeSummary: string;
 };
 
-const TITLES = ["Mr", "Mrs", "Ms", "Mx"] as const;
+/** Gender follows the first name so titles never contradict it ("Mr Aisha" was a real defect). */
+const FIRST_NAME_GENDER: Record<string, "Female" | "Male" | "Non-binary"> = {
+  Aisha: "Female", Benjamin: "Male", Chloe: "Female", Daniel: "Male", Elena: "Female", Farah: "Female",
+  George: "Male", Hannah: "Female", Ibrahim: "Male", Jessica: "Female", Kwame: "Male", Layla: "Female",
+  Marcus: "Male", Nia: "Female", Oliver: "Male", Priya: "Female", Quinn: "Non-binary", Rosa: "Female",
+  Samir: "Male", Tanya: "Female", Umar: "Male", Vera: "Female", William: "Male", Yasmin: "Female",
+  Zara: "Female", Amelia: "Female", Callum: "Male", Devi: "Female", Ethan: "Male", Freya: "Female",
+  Gita: "Female", Harvey: "Male", Isla: "Female", Jonah: "Male",
+};
 const FIRST_NAMES = [
   "Aisha", "Benjamin", "Chloe", "Daniel", "Elena", "Farah", "George", "Hannah",
   "Ibrahim", "Jessica", "Kwame", "Layla", "Marcus", "Nia", "Oliver", "Priya",
@@ -69,7 +77,6 @@ const SURNAMES = [
   "Campbell", "Fraser", "MacLeod", "Owens", "Price",
 ];
 
-const GENDERS = ["Female", "Male", "Non-binary"] as const;
 
 const ICS_REGIONS = [
   "South East London",
@@ -239,9 +246,29 @@ function ageForProfile(profiles: ClinicalProfileId[], salt: number): { age: numb
   return { age, dob: `${year}-${month}-${day}` };
 }
 
-function genderForIndex(i: number, profiles: ClinicalProfileId[]): string {
-  if (profiles.includes("pregnancy")) return "Female";
-  return GENDERS[i % GENDERS.length]!;
+function firstNameFor(i: number, profiles: ClinicalProfileId[]): string {
+  // Pregnancy profiles take the next female name so name, gender and profile agree.
+  for (let step = 0; step < FIRST_NAMES.length; step++) {
+    const name = FIRST_NAMES[(i + step) % FIRST_NAMES.length]!;
+    if (!profiles.includes("pregnancy") || FIRST_NAME_GENDER[name] === "Female") return name;
+  }
+  return FIRST_NAMES[i % FIRST_NAMES.length]!;
+}
+
+function titleFor(gender: string, age: number, i: number): string {
+  if (age < 16) return gender === "Male" ? "Master" : gender === "Female" ? "Miss" : "Mx";
+  if (gender === "Male") return "Mr";
+  if (gender === "Female") return i % 3 === 0 ? "Ms" : "Mrs";
+  return "Mx";
+}
+
+/** Distinct 10-minute slots across morning and afternoon surgery, clear of the hand fixtures' :00/:30 slots. */
+function appointmentSlot(ordinal: number): string {
+  const minutes = [10, 20, 40, 50];
+  const hours = [8, 9, 10, 11, 14, 15, 16, 17];
+  const hour = hours[Math.floor(ordinal / minutes.length) % hours.length]!;
+  const minute = minutes[ordinal % minutes.length]!;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 /**
@@ -259,14 +286,10 @@ export function generateExtendedDemoPatients(
     const bundle = PROFILE_BUNDLES[i % PROFILE_BUNDLES.length]!;
     const { age, dob } = ageForProfile(bundle.profiles, idNum);
     const { score, risk } = riskScore(bundle.riskBias, idNum);
-    const first = FIRST_NAMES[i % FIRST_NAMES.length]!;
+    const first = firstNameFor(i, bundle.profiles);
     const surname = SURNAMES[(i * 3) % SURNAMES.length]!;
-    const title =
-      bundle.profiles.includes("paediatric")
-        ? age < 16
-          ? "Master"
-          : "Ms"
-        : TITLES[i % TITLES.length]!;
+    const gender = FIRST_NAME_GENDER[first] ?? "Non-binary";
+    const title = titleFor(gender, age, i);
     const imd = IMD_QUINTILES[i % IMD_QUINTILES.length]!;
     const ics = ICS_REGIONS[i % ICS_REGIONS.length]!;
     const org = ORGANISATIONS[i % ORGANISATIONS.length]!;
@@ -282,7 +305,7 @@ export function generateExtendedDemoPatients(
       nhsNumber: syntheticNhsNumber(idNum),
       dob,
       age,
-      gender: genderForIndex(i, bundle.profiles),
+      gender,
       postcode: POSTCODES[i % POSTCODES.length]!,
       oracleScore: score,
       oracleRisk: risk,
@@ -351,7 +374,7 @@ export function generateExtendedDemoPatients(
     }
 
     if (i % 4 === 0) {
-      patient.appointmentTime = `${String(9 + (i % 8)).padStart(2, "0")}:${i % 2 === 0 ? "00" : "30"}`;
+      patient.appointmentTime = appointmentSlot(i / 4);
       patient.room = `Consulting Room ${(i % 4) + 1}`;
       patient.lastObsTime = `2026-07-${String(10 + (i % 5)).padStart(2, "0")} ${patient.appointmentTime}`;
       patient.vitals = {

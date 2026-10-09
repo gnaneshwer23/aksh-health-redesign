@@ -8,7 +8,7 @@
   "counts": {
     "requirements": 37,
     "pass": 30,
-    "partial": 1,
+    "partial": 0,
     "blockedPartner": 3,
     "gap": 2,
     "manual": 2
@@ -159,9 +159,9 @@
     {
       "id": "REQ-021",
       "testId": "CP-RBAC-001",
-      "status": "PARTIAL",
-      "component": "middleware RBAC",
-      "evidence": "e2e/clinical-proof-rbac.spec.ts"
+      "status": "PASS",
+      "component": "middleware RBAC + lib/clinical-decision-scope.ts (EC-CLIN-3)",
+      "evidence": "e2e/clinical-proof-rbac.spec.ts; tests/clinical-decision-scope.test.ts"
     },
     {
       "id": "REQ-022",

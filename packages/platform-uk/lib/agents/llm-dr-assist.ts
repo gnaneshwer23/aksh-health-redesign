@@ -8,14 +8,15 @@ import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
 export const DR_ASSIST_MODEL = "openai/gpt-5.4-mini";
 
 const DR_ASSIST_SYSTEM = `You are Aksh Health Dr.Assist — a clinical coding assistant for primary care and diabetes care coordination rehearsal.
-Given known conditions, medications, and risk context, suggest SNOMED CT and ICD-10 codes for clinician review.
+Given known conditions, medications, and risk context, suggest SNOMED CT codes (primary, as used in UK primary care records) and WHO ICD-10 codes (secondary) for clinician review.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim codes are filed.
 - Be conservative; escalate uncertainty.
 - Use UK clinical English.
 - Do not invent conditions that are not supplied.
 - Output JSON only with keys: summary (string), codes (array of {system, code, display, confidence}), clinicianActions (array of strings), safetyNotes (array of strings), confidence (0-1 number).
-- system must be "SNOMED CT" or "ICD-10".`;
+- system must be "SNOMED CT" or "ICD-10".
+- ICD-10 means the WHO edition used in the UK (e.g. I80.2, E11.9). Never use US ICD-10-CM codes (e.g. I82.4x, E11.65).`;
 
 export function isLlmDrAssistConfigured() {
   if (process.env.ENABLE_LLM_DR_ASSIST === "false") return false;
@@ -100,8 +101,8 @@ export function suggestCodesFromConditions(conditions: string[]): DrAssistCodeSu
       });
       push({
         system: "ICD-10",
-        code: "I82.4",
-        display: "Acute embolism and thrombosis of deep veins of lower extremity",
+        code: "I80.2",
+        display: "Phlebitis and thrombophlebitis of other deep vessels of lower extremities",
         confidence: 0.86
       });
     }
@@ -119,14 +120,6 @@ export function suggestCodesFromConditions(conditions: string[]): DrAssistCodeSu
         display: "Type 2 diabetes mellitus without complications",
         confidence: 0.85
       });
-      if (lower.includes("poor control") || lower.includes("hyperglyc")) {
-        push({
-          system: "ICD-10",
-          code: "E11.65",
-          display: "Type 2 diabetes mellitus with hyperglycaemia",
-          confidence: 0.82
-        });
-      }
     }
 
     if (lower.includes("hypertension") || lower.includes("high blood pressure")) {

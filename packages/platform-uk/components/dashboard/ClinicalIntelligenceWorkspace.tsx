@@ -44,7 +44,15 @@ export function ClinicalIntelligenceWorkspace({
       });
       const ctxJson = (await ctxRes.json()) as WorkspacePayload & { package?: WorkspacePayload["package"] };
       if (!ctxRes.ok) {
-        if (!cancelled) setData({ liveEmis: false, hitlRequired: true, error: ctxJson.error ?? "Context unavailable" });
+        if (!cancelled)
+          setData({
+            liveEmis: false,
+            hitlRequired: true,
+            error:
+              ctxRes.status === 401
+                ? "Sign in to load the authorised patient context and cited evidence. The review queue below is a synthetic demo."
+                : (ctxJson.error ?? "Context unavailable"),
+          });
         return;
       }
       const ragRes = await fetch("/api/graphrag/retrieve", {
@@ -81,7 +89,7 @@ export function ClinicalIntelligenceWorkspace({
           {patientLabel} · evidence before persuasion · fact ≠ inference · liveEmis:false · HITL required
         </p>
       </div>
-      {data?.error && <p className="text-sm text-coral-deep">{data.error}</p>}
+      {data?.error && <p className="text-sm text-muted">{data.error}</p>}
       {pkg && (
         <div className="grid gap-4 lg:grid-cols-2">
           <div>

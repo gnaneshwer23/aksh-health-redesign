@@ -11,7 +11,9 @@ import { VoiceRecorder } from "@/components/dashboard/VoiceRecorder";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
+import { useReviewerIdentity } from "@/lib/hooks/use-reviewer-identity";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
+import { describeShieldOutcome, recordShieldEvent } from "@/lib/shield-client";
 import {
   AGENT_JOB_IN_LOOP,
   AGENT_SUB_CAPABILITIES
@@ -76,31 +78,27 @@ async function postAgent(path: string, body: Record<string, unknown>) {
   return response.json() as Promise<{ draft?: AgentDraftState }>;
 }
 
-async function shieldAccept(payload: {
-  agentLabel: string;
-  label: string;
-  detail: string;
-  resourceRef: string;
-  extra?: Record<string, unknown>;
-}) {
-  try {
-    await fetch("/api/audit/shield", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "accept",
-        agentLabel: payload.agentLabel,
-        label: payload.label,
-        detail: payload.detail.slice(0, 280),
-        resourceRef: payload.resourceRef,
-        category: "reviewer_decision",
-        payload: payload.extra
-      })
-    });
-  } catch {
-    // Local staging still applies.
-  }
+function shieldAccept(
+  payload: {
+    agentLabel: string;
+    label: string;
+    detail: string;
+    resourceRef: string;
+    extra?: Record<string, unknown>;
+  },
+  authenticated: boolean
+) {
+  return recordShieldEvent(
+    {
+      action: "accept",
+      agentLabel: payload.agentLabel,
+      label: payload.label,
+      detail: payload.detail,
+      resourceRef: payload.resourceRef,
+      payload: payload.extra,
+    },
+    { authenticated }
+  );
 }
 
 export function AgentControlPanel({
@@ -121,7 +119,8 @@ export function AgentControlPanel({
   const stageVoiceTranscript = useDashboardStore((state) => state.stageVoiceTranscript);
   const stageAgentDraft = useDashboardStore((state) => state.stageAgentDraft);
   const { profile } = useUserProfile();
-  const reviewerName = profile?.fullName ?? "Clinician";
+  const reviewer = useReviewerIdentity();
+  const reviewerName = reviewer.authenticated ? (profile?.fullName ?? reviewer.name) : reviewer.name;
 
   const [lastDictationAt, setLastDictationAt] = useState<string | null>(null);
   const [running, setRunning] = useState<string | null>(null);
@@ -228,17 +227,20 @@ export function AgentControlPanel({
           : null,
       reviewerName
     });
-    await shieldAccept({
-      agentLabel: "DrASSIST",
-      label: "SHIELD: Dr.Assist coding draft staged for GP review",
-      detail: drAssistNote,
-      resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: drAssistDraft.mode, dataSource: drAssistDraft.dataSource, viaBridge: true }
-    });
+    const shieldOutcome = await shieldAccept(
+      {
+        agentLabel: "DrASSIST",
+        label: "SHIELD: Dr.Assist coding draft staged for GP review",
+        detail: drAssistNote,
+        resourceRef: `${current.name} (${current.id})`,
+        extra: { mode: drAssistDraft.mode, dataSource: drAssistDraft.dataSource, viaBridge: true }
+      },
+      reviewer.authenticated
+    );
     setDrAssistStaged(true);
     toast({
       title: "Staged via BRIDGE",
-      description: "Dr.Assist codes · SHIELD logged · liveEmis:false · no EHR write-back"
+      description: `Dr.Assist codes · ${describeShieldOutcome(shieldOutcome)} · liveEmis:false · no EHR write-back`
     });
   }
 
@@ -280,17 +282,20 @@ export function AgentControlPanel({
       priority: "High",
       reviewerName
     });
-    await shieldAccept({
-      agentLabel: "HORIZON",
-      label: "SHIELD: HORIZON risk brief staged for GP review",
-      detail: oracleNote,
-      resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource, viaBridge: true }
-    });
+    const shieldOutcome = await shieldAccept(
+      {
+        agentLabel: "HORIZON",
+        label: "SHIELD: HORIZON risk brief staged for GP review",
+        detail: oracleNote,
+        resourceRef: `${current.name} (${current.id})`,
+        extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource, viaBridge: true }
+      },
+      reviewer.authenticated
+    );
     setOracleStaged(true);
     toast({
       title: "Staged via BRIDGE",
-      description: "HORIZON brief · SHIELD logged · liveEmis:false · no EHR write-back"
+      description: `HORIZON brief · ${describeShieldOutcome(shieldOutcome)} · liveEmis:false · no EHR write-back`
     });
   }
 
@@ -337,17 +342,20 @@ export function AgentControlPanel({
           : null,
       reviewerName
     });
-    await shieldAccept({
-      agentLabel: "GUARDIAN",
-      label: "SHIELD: GUARDIAN brief staged for GP review",
-      detail: content,
-      resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: guardianDraft.mode, dataSource: guardianDraft.dataSource, viaBridge: true }
-    });
+    const shieldOutcome = await shieldAccept(
+      {
+        agentLabel: "GUARDIAN",
+        label: "SHIELD: GUARDIAN brief staged for GP review",
+        detail: content,
+        resourceRef: `${current.name} (${current.id})`,
+        extra: { mode: guardianDraft.mode, dataSource: guardianDraft.dataSource, viaBridge: true }
+      },
+      reviewer.authenticated
+    );
     setGuardianStaged(true);
     toast({
       title: "Staged via BRIDGE",
-      description: "GUARDIAN brief · SHIELD logged · liveEmis:false · no EHR write-back"
+      description: `GUARDIAN brief · ${describeShieldOutcome(shieldOutcome)} · liveEmis:false · no EHR write-back`
     });
   }
 
@@ -408,17 +416,20 @@ export function AgentControlPanel({
           : null,
       reviewerName
     });
-    await shieldAccept({
-      agentLabel: "SYNTHESIS",
-      label: "SHIELD: SYNTHESIS SOAP draft staged for GP review",
-      detail: synthesisNote,
-      resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: synthesisDraft.mode, level: synthesisLevel, viaBridge: true }
-    });
+    const shieldOutcome = await shieldAccept(
+      {
+        agentLabel: "SYNTHESIS",
+        label: "SHIELD: SYNTHESIS SOAP draft staged for GP review",
+        detail: synthesisNote,
+        resourceRef: `${current.name} (${current.id})`,
+        extra: { mode: synthesisDraft.mode, level: synthesisLevel, viaBridge: true }
+      },
+      reviewer.authenticated
+    );
     setSynthesisStaged(true);
     toast({
       title: "Staged via BRIDGE",
-      description: "SYNTHESIS note · SHIELD logged · liveEmis:false · no EHR write-back"
+      description: `SYNTHESIS note · ${describeShieldOutcome(shieldOutcome)} · liveEmis:false · no EHR write-back`
     });
   }
 
@@ -471,17 +482,20 @@ export function AgentControlPanel({
           : null,
       reviewerName
     });
-    await shieldAccept({
-      agentLabel: "PATHWAY",
-      label: "SHIELD: PATHWAY package staged for GP review",
-      detail: content,
-      resourceRef: `${current.name} (${current.id})`,
-      extra: { mode: referralDraft.mode, eReferralWrite: false, viaBridge: true }
-    });
+    const shieldOutcome = await shieldAccept(
+      {
+        agentLabel: "PATHWAY",
+        label: "SHIELD: PATHWAY package staged for GP review",
+        detail: content,
+        resourceRef: `${current.name} (${current.id})`,
+        extra: { mode: referralDraft.mode, eReferralWrite: false, viaBridge: true }
+      },
+      reviewer.authenticated
+    );
     setReferralStaged(true);
     toast({
       title: "Staged via BRIDGE",
-      description: "PATHWAY package · SHIELD logged · no e-Referral write · liveEmis:false"
+      description: `PATHWAY package · ${describeShieldOutcome(shieldOutcome)} · no e-Referral write · liveEmis:false`
     });
   }
 

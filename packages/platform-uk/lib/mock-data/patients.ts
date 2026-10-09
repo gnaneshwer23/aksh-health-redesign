@@ -1,5 +1,6 @@
 import type { Patient } from "./types";
 import { generateExtendedDemoPatients } from "./demo-cohort-generator";
+import { riskBandForScore } from "./risk-band";
 
 /** Hand-authored clinical-proof fixtures P001–P026 — do not renumber. */
 const corePatients: Patient[] = [
@@ -59,7 +60,7 @@ const corePatients: Patient[] = [
     gender: "Male",
     postcode: "HG1",
     oracleScore: 82,
-    oracleRisk: "High",
+    oracleRisk: "VeryHigh",
     activeConditions: ["Type 2 diabetes mellitus", "Deep vein thrombosis: right popliteal", "Essential hypertension"],
     activeMedications: [
       "Metformin 1g BD",
@@ -75,7 +76,7 @@ const corePatients: Patient[] = [
     digitalTwinPrediction: {
       admissionRisk14Days: 42,
       deteriorationSignals: [
-        "HbA1c 6.8→8.4% over 12 months (synthetic labs)",
+        "HbA1c 51→68 mmol/mol over 12 months (synthetic labs)",
         "New DVT diagnosis with T2D combination",
         "Proposed anticoagulant + aspirin combination risk",
         "eGFR mildly declining 72→68",
@@ -103,7 +104,7 @@ const corePatients: Patient[] = [
       recordedBy: "Practice Nurse Adeyemi",
     },
     qaNotes:
-      "Flagship synthetic diabetes + DVT clinic patient. Longitudinal HbA1c 6.8→8.4 · liveEmis:false · realPatientData:false.",
+      "Flagship synthetic diabetes + DVT clinic patient. Longitudinal HbA1c 51→68 mmol/mol · liveEmis:false · realPatientData:false.",
   },
   {
     id: "P003",
@@ -614,7 +615,7 @@ const corePatients: Patient[] = [
     gender: "Male",
     postcode: "HG1",
     oracleScore: 82,
-    oracleRisk: "High",
+    oracleRisk: "VeryHigh",
     activeConditions: ["Type 2 diabetes mellitus"],
     activeMedications: ["Metformin 1g BD"],
     allergies: ["None known"],
@@ -897,10 +898,10 @@ const corePatients: Patient[] = [
  * Full synthetic cohort: P001–P026 (hand fixtures) + P027–P100 (demo cohort generator).
  * Total 100 — liveEmis:false · never real patient data.
  */
-export const patients: Patient[] = [
-  ...corePatients,
-  ...generateExtendedDemoPatients(),
-];
+export const patients: Patient[] = [...corePatients, ...generateExtendedDemoPatients()].map((p) => ({
+  ...p,
+  oracleRisk: riskBandForScore(p.oracleScore),
+}));
 
 export function getPatientById(id: string): Patient | undefined {
   return patients.find((p) => p.id === id);

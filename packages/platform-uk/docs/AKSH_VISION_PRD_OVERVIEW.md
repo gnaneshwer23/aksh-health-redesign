@@ -1,7 +1,7 @@
 # Aksh Health — Vision (End-to-End) & Product Requirements Overview
 
 **Document ID:** AKSH-VISION-PRD-OVERVIEW
-**Version:** 1.1
+**Version:** 1.2
 **Date:** 2026-10-10
 **Product:** Aksh Intelligence Platform (UK/EU) · first module: Aksh Diabetes
 **Live:** https://akshhealth.com
@@ -190,7 +190,7 @@ From Volume I §1.5.1 — engineering/pilot gates:
 - **SC-5–SC-6** Diabetes v0/v1 scope + non-diagnostic labels.
 - **SC-7–SC-8** Honest Volume status + evidence-pack gates.
 
-SC-1 and SC-3 hold for **authenticated** sessions. The public demo dashboard is a carve-out — see §3.4.
+SC-1 and SC-3 apply to authenticated sessions. Public demo dashboards label every decision "Demo only, not audited" and send no audit write (fixed 2026-10-10, guarded by `e2e/clinical-proof-hitl.spec.ts`).
 
 Aspirational commercial/clinical outcomes (SC-9–SC-13) need baselines — **do not quote externally as achieved**. SC-13 (clinical outcome claims) requires a formal clinical evaluation that does not exist today.
 
@@ -229,13 +229,13 @@ Performance smoke SLOs exist (`CP-PERF-001`). WCAG 2.1 AA is the named a11y targ
 
 | Status | Count | Examples |
 | --- | ---: | --- |
-| PASS | 29 | HITL, SHIELD, Patel path, tenant isolation |
-| PARTIAL | 1 | RBAC cross-role denial (REQ-021) |
+| PASS | 30 | HITL, SHIELD, Patel path, tenant isolation, RBAC cross-role denial (REQ-021) |
+| PARTIAL | 0 | — |
 | BLOCKED: partner | 3 | Live EMIS write-back (REQ-017/019), CIS2 (REQ-025) |
 | GAP | 2 | Mirth HL7 (REQ-024), pen-test report (REQ-027) |
 | MANUAL | 2 | Gate 1–3 sign-off (REQ-030), model release SOP (REQ-037) |
 
-(Matrix summary previously read 30 PASS against 29 PASS rows; corrected 2026-10-10.)
+(Matrix summary previously read 30 PASS against 29 PASS rows; corrected 2026-10-10. REQ-021 moved PARTIAL → PASS the same day after server-side EC-CLIN-3 enforcement.)
 
 ### 3.4 Known product–vision gaps (do not overclaim)
 
@@ -245,12 +245,15 @@ Performance smoke SLOs exist (`CP-PERF-001`). WCAG 2.1 AA is the named a11y targ
 - Diabetes CGM modality / full v1 wiring still incomplete relative to Volume I Chapter 8 ambition.
 - Marketing visual refresh is **built but not on production**: lavender redesign in PR #3 (stacked on draft PR #2) and the review build above. akshhealth.com still runs the previous design.
 
-**Found in the 2026-10-09 independent production audit (open):**
+**Found in the 2026-10-09 independent production audit — fixed 2026-10-10 (redesign branch / PR #3, not yet on akshhealth.com):**
 
-- **Public demo Accept is not audited.** On `/dashboard/gp` without a session, Accept updates the sim chart client-side and the toast says “SHIELD logged”, attributed to a hard-coded reviewer — but no server call or SHIELD event occurs. Either show “demo only — not audited” when unauthenticated, or require sign-in to Accept. Until fixed, SC-1/SC-3 cannot be claimed for the public demo.
-- **Coding drafts use US codes.** Dr.Assist proposes ICD-10-CM (`I82.4`, `E11.65`). UK primary care expects SNOMED CT; WHO ICD-10 places lower-limb DVT under I80.x.
-- **P002 fixture inconsistencies:** HORIZON contributors (+8, +4, +2) do not sum to the stated 78→82 change, and 82 is labelled “Very High” in text but “HIGH” in the queue. HbA1c units mix % and mmol/mol on the GP dashboard. (Homepage HbA1c 72 → 68 mmol/mol and the adherence contradiction are fixed in PR #3.)
-- **Synthetic cohort credibility:** titles do not match names/gender (“Mr Aisha Ahmed”) and many patients share 09:00/13:00 slots.
+- **Public demo audit claims.** Dashboard decisions now report the real SHIELD outcome (`lib/shield-client.ts`): "SHIELD logged" only on a successful durable write; "Demo only, not audited" without a session; attribution is the signed-in user or "Demo viewer (not signed in)", never a hard-coded clinician.
+- **UK coding.** Dr.Assist proposes SNOMED CT first with WHO ICD-10 secondary (DVT lower limb I80.2, T2DM E11.9); the prompt forbids US ICD-10-CM. **Needs clinical coding sign-off** before external use.
+- **P002 consistency.** HORIZON contributors sum to the 78 → 82 change; risk bands derive from score in one place (82 = Very High); HbA1c shown as mmol/mol (51 → 68) in UK-facing text; Patel voice stub and PATHWAY package use the right limb.
+- **Synthetic cohort.** Titles follow first-name gender; generated appointments use distinct 10-minute slots.
+- **REQ-021.** Nurse/pharmacist disposition limits enforced server-side (EC-CLIN-3).
+
+**Still open:** Patel narrative mixes "suspected DVT → urgent duplex + D-dimer" (walkthrough, PATHWAY) with "newly diagnosed right popliteal DVT" (SOAP, HORIZON, Dr.Assist coding a confirmed DVT). Pick one clinical story; this is a clinical-content decision, not a code fix.
 
 ---
 
@@ -318,6 +321,7 @@ For the full backlog: Volume I Chapter 21.
 | Version | Date | Change |
 | --- | --- | --- |
 | 1.0 | 2026-10-09 | Initial consolidated Vision + PRD overview for independent review; points to Volume I v0.21 as full PRD; reflects Oct 2026 production GO (Track A) and staged patient-access. |
+| 1.2 | 2026-10-10 | Audit findings fixed on the redesign branch: honest SHIELD outcomes on demo dashboards, SNOMED CT + WHO ICD-10 coding, P002 risk/HbA1c/laterality consistency, cohort titles and slots, REQ-021 → PASS. Patel suspected-vs-confirmed DVT narrative left open for clinical decision. |
 | 1.1 | 2026-10-10 | REQ snapshot corrected to 29 PASS of 37 (matrix summary fixed); added redesign review build and its shared-database status; replaced design-debt line with PR #3 status; added open findings from the 2026-10-09 production audit (public-demo SHIELD claim, US coding, P002 fixture inconsistencies, cohort titles); clarified SC-1/SC-3 scope. |
 
 **Owners for Acceptance of Volume I chapters:** Product · Architecture · Clinical Safety Lead (mechanism in Volume I §21.10 — Proposed, not ratified).

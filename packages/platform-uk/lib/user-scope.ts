@@ -48,6 +48,21 @@ export function mapSessionRoleToAppRole(role: string | null | undefined): AppRol
   return "restricted";
 }
 
+/**
+ * Accountable clinical persona behind a `clinical_reviewer` AppRole (EC-CLIN-3). The AppRole
+ * deliberately collapses GP / Nurse / Pharmacist for read access; disposition rights differ, so
+ * decision routes need the underlying persona. `null` for non-clinical roles.
+ */
+export type ClinicalPersona = "gp" | "nurse" | "clinical-pharmacist";
+
+export function mapSessionRoleToClinicalPersona(role: string | null | undefined): ClinicalPersona | null {
+  const normalized = role?.trim();
+  if (normalized === "gp" || normalized === "clinical_reviewer") return "gp";
+  if (normalized === "nurse") return "nurse";
+  if (normalized === "clinical-pharmacist") return "clinical-pharmacist";
+  return null;
+}
+
 export function resolveUserScope(request: Request) {
   const authenticatedUserId = sanitizeScopeKey(request.headers.get("x-user-id"));
   if (authenticatedUserId) {
@@ -96,6 +111,8 @@ export type AuthenticatedUserScope = {
   userId: string;
   userEmail: string | null;
   userRole: AppRole;
+  /** Underlying clinical persona for decision-scope checks (EC-CLIN-3); null when not clinical. */
+  clinicalPersona: ClinicalPersona | null;
   /**
    * Bound patient id for a `patient`-role session (FR-CORE-005, `evaluatePatientUrlAccess`).
    * `null` for every other role, and — honestly — `null` for a real `patient` session today too,
@@ -127,6 +144,7 @@ export function resolveAuthenticatedUserScopeFromSession(session: {
     userId,
     userEmail: session?.user?.email?.trim() || null,
     userRole: mapSessionRoleToAppRole(session?.user?.role),
+    clinicalPersona: mapSessionRoleToClinicalPersona(session?.user?.role),
     boundPatientId: session?.user?.boundPatientId?.trim() || null,
   };
 }
@@ -147,6 +165,7 @@ function resolveTestAuthenticatedUserScope(request: Request | undefined): Authen
     userId,
     userEmail: request.headers.get("x-user-email")?.trim() || null,
     userRole: mapSessionRoleToAppRole(roleHeader),
+    clinicalPersona: mapSessionRoleToClinicalPersona(roleHeader),
     // Test-only: gated by the same AKSH_TEST_AUTH_HEADER check as x-user-id/x-user-role above,
     // so this can never be used to spoof a bound patient id against a real NextAuth session.
     boundPatientId: request.headers.get("x-bound-patient-id")?.trim() || null,

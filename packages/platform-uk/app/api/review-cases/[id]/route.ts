@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { stageAcceptedCaseToBridge } from "@/lib/bridge-staging";
+import { evaluateDecisionScope } from "@/lib/clinical-decision-scope";
 import { recordSpineQueueDecisions } from "@/lib/clinical-spine/queue-decision";
 import { shouldSyncAcceptedCaseToMedplum } from "@/lib/integration-config";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
@@ -55,6 +56,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   // Ownership validation
   if (existing.userId && existing.userId !== userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  // EC-CLIN-3 / REQ-021: the AppRole collapses GP/Nurse/Pharmacist; disposition rights do not.
+  const scope = evaluateDecisionScope({
+    persona: auth.context.clinicalPersona,
+    existing,
+    next: payload,
+  });
+  if (!scope.allowed) {
+    return NextResponse.json({ error: `Forbidden. ${scope.reason}` }, { status: 403 });
   }
 
   const offerHealthPlan =

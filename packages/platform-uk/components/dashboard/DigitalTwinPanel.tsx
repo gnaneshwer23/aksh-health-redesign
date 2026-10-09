@@ -5,7 +5,7 @@ import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 
 import { HitlActions } from "@/components/dashboard/SOAPEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CURRENT_GP } from "@/lib/mock-data";
+import { useReviewerIdentity } from "@/lib/hooks/use-reviewer-identity";
 import type { PopulationData } from "@/lib/mock-data/types";
 import type { Patient } from "@/lib/mock-data/types";
 import {
@@ -26,6 +26,7 @@ export function DigitalTwinPanel(props: DigitalTwinPanelProps) {
 }
 
 export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
+  const reviewer = useReviewerIdentity();
   const [accepted, setAccepted] = useState(false);
   const [apiRiskState, setApiRiskState] = useState<PatientRiskState | null>(null);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -224,7 +225,7 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
               )}
               {accepted && (
                 <p className="mt-1 text-accent text-[10px]">
-                  Accepted for review queue · {CURRENT_GP} · no EHR write-back
+                  Accepted for review queue · {reviewer.name} · no EHR write-back
                 </p>
               )}
             </div>
