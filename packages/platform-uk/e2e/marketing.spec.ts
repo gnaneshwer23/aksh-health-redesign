@@ -12,9 +12,13 @@ test.describe("Marketing smoke", () => {
     const brandColor = await brandTitle.evaluate((element) => window.getComputedStyle(element).color);
     expect(brandColor).toBe("rgb(20, 32, 30)");
 
-    await expect(page.getByRole("heading", { name: /Clinical intelligence,\s*under clinical control/i })).toBeVisible();
-    await expect(page.getByText(/Diabetes care,\s*properly coordinated/i).first()).toBeVisible();
-    await expect(page.locator("section.owkin-hero .owkin-hero__brand")).toHaveText("Aksh Health");
+    await expect(
+      page.getByRole("heading", {
+        name: /Diabetes care produces signals every week\.\s*Nobody sees them together until the review\./i,
+      })
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Walk through Mr Patel/i })).toBeVisible();
+    await expect(page.getByText(/Synthetic patient\. Not a live record\./i)).toBeVisible();
     const desktopNav = page.locator("nav.owkin-nav .owkin-nav__center");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Solutions" })).toBeVisible();
@@ -100,8 +104,11 @@ test.describe("Marketing smoke", () => {
   test("homepage surfaces how-it-works pillars after the hero", async ({ page }) => {
     await page.goto("/");
 
-    const hero = page.getByRole("heading", { name: /Clinical intelligence,\s*under clinical control/i });
-    await expect(hero).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: /Diabetes care produces signals every week\.\s*Nobody sees them together until the review\./i,
+      })
+    ).toBeVisible();
     await expect(page.getByText("How it works", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Capture", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Review", { exact: true }).first()).toBeVisible();
@@ -130,83 +137,38 @@ test.describe("Marketing smoke", () => {
     expect(primaryColor).toBe("rgb(255, 255, 255)");
   });
 
-  test("homepage hero does not render readable labels behind the headline", async ({ page }) => {
+  test("homepage evidence hero shows Patel signals and status legend", async ({ page }) => {
     await page.goto("/");
 
-    const hero = page.locator("section.owkin-hero");
-    const visual = hero.locator(".owkin-hero__visual");
-    await expect(visual).toBeVisible();
-    await expect(visual.getByText("Aksh Health", { exact: true })).toHaveCount(0);
+    const hero = page.locator("section").filter({
+      has: page.getByRole("heading", {
+        name: /Diabetes care produces signals every week/i,
+      }),
+    });
+    await expect(hero).toBeVisible();
+    const signals = hero.getByRole("list", { name: /Signals from a synthetic patient/i });
+    await expect(signals).toBeVisible();
+    await expect(signals.getByText("HbA1c 72 mmol/mol")).toBeVisible();
+    await expect(signals.getByText("LOINC 59261-8")).toBeVisible();
+    await expect(signals.getByText("Apixaban with aspirin")).toBeVisible();
+    await expect(signals.getByText("HbA1c “about 60”")).toBeVisible();
+    await expect(signals.getByText("Medication review booked")).toBeVisible();
+    await expect(signals.getByText("needs review").first()).toBeVisible();
+    await expect(signals.getByText("held", { exact: true })).toBeVisible();
+    await expect(signals.getByText("unverified", { exact: true })).toBeVisible();
+    await expect(signals.getByText("approved", { exact: true })).toBeVisible();
+    await expect(hero.getByText(/Raised by Aksh, waiting for a clinician/i)).toBeVisible();
+    await expect(hero.getByText(/Patient-reported; can raise a concern/i)).toBeVisible();
+    await expect(hero.getByRole("link", { name: /Walk through Mr Patel/i })).toHaveAttribute(
+      "href",
+      "/demo/patel"
+    );
+    await expect(hero.getByRole("link", { name: /Request a pilot/i })).toHaveAttribute(
+      "href",
+      "/get-started"
+    );
+    await expect(page.locator("section.owkin-hero")).toHaveCount(0);
     await expect(page.locator(".owkin-float-chip")).toHaveCount(0);
-    await expect(hero.getByLabel("Trust signals").getByText("Human review")).toBeVisible();
-    await expect(hero.getByLabel("Trust signals").getByText("FHIR staging")).toBeVisible();
-    await expect(visual.getByText("Capture", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Orchestrate", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Documentation", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Drug safety", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Risk", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Referral", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Clinician review", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Record staging", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Audit", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("EMIS Web", { exact: true })).toBeVisible();
-    await expect(visual.getByText("SystmOne", { exact: true })).toBeVisible();
-    await expect(visual.getByText("Parallel checks", { exact: true }).first()).toBeVisible();
-    await expect(visual.getByText("Clinician-approved only · not a live record write", { exact: true })).toBeVisible();
-    await expect(visual.getByText("CANVAS", { exact: true })).toHaveCount(0);
-    await expect(visual.getByText("SYNTHESIS", { exact: true })).toHaveCount(0);
-    await expect(visual.getByText("Parallel drafts", { exact: true })).toHaveCount(0);
-    await expect(visual.getByText(/Drafts only/i)).toHaveCount(0);
-    await expect(hero.getByText("HITL")).toHaveCount(0);
-    await expect(hero.locator(".owkin-hero__scrim")).toHaveCount(0);
-    await expect(hero.locator(".owkin-hero__atmosphere")).toHaveCount(0);
-    await expect(hero.getByTestId("interop-pipeline-diagram")).toBeVisible();
-    await expect(hero.getByTestId("hero-agent-pipeline")).toBeVisible();
-    expect(await hero.getByTestId("pipeline-arrow-down").count()).toBeGreaterThanOrEqual(3);
-    expect(await hero.getByTestId("pipeline-arrow-right").count()).toBeGreaterThanOrEqual(2);
-
-    const headline = hero.getByRole("heading", { name: /Clinical intelligence,\s*under clinical control/i });
-    const diagram = hero.getByRole("img", { name: /Interoperability diagram/i });
-    await expect(diagram).toBeVisible();
-    const headlineBox = await headline.boundingBox();
-    const diagramBox = await diagram.boundingBox();
-    expect(headlineBox).not.toBeNull();
-    expect(diagramBox).not.toBeNull();
-    const overlapX =
-      Math.min(headlineBox!.x + headlineBox!.width, diagramBox!.x + diagramBox!.width) -
-      Math.max(headlineBox!.x, diagramBox!.x);
-    const overlapY =
-      Math.min(headlineBox!.y + headlineBox!.height, diagramBox!.y + diagramBox!.height) -
-      Math.max(headlineBox!.y, diagramBox!.y);
-    expect(overlapX <= 0 || overlapY <= 0).toBe(true);
-
-    const captureBox = await visual.getByText("Capture", { exact: true }).first().boundingBox();
-    const orchestrateBox = await visual.getByText("Orchestrate", { exact: true }).boundingBox();
-    const reviewBox = await visual.getByText("Clinician review", { exact: true }).boundingBox();
-    expect(captureBox).not.toBeNull();
-    expect(orchestrateBox).not.toBeNull();
-    expect(reviewBox).not.toBeNull();
-    expect(Math.abs(captureBox!.y - orchestrateBox!.y)).toBeLessThan(24);
-    expect(captureBox!.x).toBeLessThan(orchestrateBox!.x);
-    expect(orchestrateBox!.y).toBeLessThan(reviewBox!.y);
-    expect(diagramBox!.height).toBeLessThan(720);
-
-    const docs = await visual.getByText("Documentation", { exact: true }).first().boundingBox();
-    const safety = await visual.getByText("Drug safety", { exact: true }).boundingBox();
-    const risk = await visual.getByText("Risk", { exact: true }).first().boundingBox();
-    const referral = await visual.getByText("Referral", { exact: true }).first().boundingBox();
-    expect(docs).not.toBeNull();
-    expect(safety).not.toBeNull();
-    expect(risk).not.toBeNull();
-    expect(referral).not.toBeNull();
-    expect(docs!.width).toBeGreaterThan(70);
-    expect(safety!.width).toBeGreaterThan(70);
-    expect(risk!.width).toBeGreaterThan(40);
-    expect(referral!.width).toBeGreaterThan(60);
-    expect(Math.abs(docs!.y - safety!.y)).toBeLessThan(12);
-    expect(Math.abs(risk!.y - referral!.y)).toBeLessThan(12);
-    expect(risk!.y).toBeGreaterThan(docs!.y + docs!.height - 4);
-    expect(safety!.x).toBeGreaterThan(docs!.x + docs!.width + 6);
   });
 
   test("homepage product band shows the review queue mock", async ({ page }) => {

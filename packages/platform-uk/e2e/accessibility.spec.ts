@@ -9,7 +9,11 @@ function criticalViolations(violations: Result[]) {
 test.describe("Accessibility (axe-core)", () => {
   test("homepage has no critical axe violations", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /Clinical intelligence,\s*under clinical control/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: /Diabetes care produces signals every week\.\s*Nobody sees them together until the review\./i,
+      })
+    ).toBeVisible();
 
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])

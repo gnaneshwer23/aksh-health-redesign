@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { MarketingShell } from "@/components/marketing/MarketingShell";
-import HeroSection from "@/components/marketing/HeroSection";
+import EvidenceHero from "@/components/marketing/EvidenceHero";
 import StatsBand from "@/components/marketing/StatsBand";
 import ProductFeatureBand from "@/components/marketing/ProductFeatureBand";
 import ProblemWorkflowSection from "@/components/marketing/ProblemWorkflowSection";
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <MarketingShell overLightHero>
-      <HeroSection />
+      <EvidenceHero />
       <ProblemWorkflowSection />
       <StatsBand />
       <ClinicalControlSection />

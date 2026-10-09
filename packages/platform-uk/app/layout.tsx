@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
@@ -19,6 +19,14 @@ const hankenGrotesk = Hanken_Grotesk({
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-aksh-display",
+  display: "swap",
+});
+
+// Mono: clinical identifiers only (LOINC, SNOMED, NHS numbers). Never for labels or prose.
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-aksh-mono",
   display: "swap",
 });
 
@@ -54,7 +62,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable}`}>
+    <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${plexMono.variable}`}>
       <body>
         <AuthProvider>
           {children}

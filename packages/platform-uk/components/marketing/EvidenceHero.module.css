@@ -1,0 +1,233 @@
+/* Evidence hero. Self-contained: does not depend on .owkin-* or .aksh-* globals.
+   Selectors are two classes deep (0,2,0) so they beat `.marketing-site :is(h1, h2)` (0,1,1). */
+
+.root {
+  --ink: #14201e;
+  --spruce: #0b4a42;
+  --teal: #0a7a68;
+  --mist: #f7f8fa;
+  --line: rgb(20 32 30 / 0.12);
+  --amber: #b45309;
+  --amber-bg: #fff6e5;
+  --coral: #c2410c;
+  --coral-bg: #fdf0ea;
+  --teal-bg: #e6f7f3;
+  --slate: #5b6b66;
+
+  position: relative;
+  padding: clamp(5.5rem, 10vw, 8rem) 1.25rem 3rem;
+  background:
+    linear-gradient(rgb(20 32 30 / 0.045) 1px, transparent 1px) 0 0 / 100% 2.5rem,
+    var(--mist);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.root .stage {
+  position: relative;
+  max-width: 76rem;
+  margin-inline: auto;
+  min-height: 36rem;
+  display: grid;
+  place-items: center;
+}
+
+.root .copy {
+  position: relative;
+  z-index: 2;
+  max-width: 38rem;
+  text-align: center;
+}
+
+.root .title {
+  margin: 0;
+  font-family: var(--font-aksh-display), "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.root .titleSecond {
+  color: var(--teal);
+}
+
+.root .lede {
+  max-width: 34rem;
+  margin: 1.5rem auto 0;
+  font-family: var(--font-aksh-body), "Hanken Grotesk", system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+.root .actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.root .primary,
+.root .secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border-radius: 0.6rem;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+}
+.root .primary { background: var(--spruce); color: #fff; }
+.root .primary:hover { background: var(--ink); }
+.root .secondary { color: var(--spruce); box-shadow: inset 0 0 0 1.5px var(--spruce); }
+.root .secondary:hover { background: #fff; }
+.root .primary:focus-visible,
+.root .secondary:focus-visible { outline: 3px solid #5ed4b8; outline-offset: 3px; }
+
+/* ---- Signals ---------------------------------------------------------- */
+
+.root .signals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.root .signal {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  grid-template-areas: "title" "kind" "state";
+  row-gap: 0.3rem;
+  justify-items: start;
+  width: max-content;
+  min-width: 12.5rem;
+  padding: 0.8rem 0.9rem 0.8rem 1rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 0 rgb(20 32 30 / 0.04), 0 12px 28px -18px rgb(20 32 30 / 0.35);
+  animation: arrive 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(250ms + var(--i) * 110ms);
+}
+
+.root .signalTitle {
+  grid-area: title;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 0.98rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.root .signalKind {
+  grid-area: kind;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--slate);
+}
+
+/* Codes are real identifiers, so they get the mono face. Nothing else does. */
+.root .code {
+  font-family: var(--font-aksh-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.76rem;
+  color: var(--teal);
+}
+
+.root .state {
+  grid-area: state;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+/* Status encoding: colour AND border style, so it survives colour-blindness. */
+.root .is-needs-review .state { background: var(--coral-bg); color: var(--coral); }
+.root .is-held { border-left: 4px solid var(--amber); }
+.root .is-held .state { background: var(--amber-bg); color: var(--amber); }
+.root .is-unverified { border-style: dashed; border-color: rgb(20 32 30 / 0.35); background: rgb(255 255 255 / 0.7); }
+.root .is-unverified .state { background: transparent; color: var(--slate); box-shadow: inset 0 0 0 1px rgb(20 32 30 / 0.3); }
+.root .is-approved .state { background: var(--teal-bg); color: var(--teal); }
+.root .is-approved .state::before { content: "✓ "; }
+
+/* Desktop: two side columns, staggered. Chips never sit over the copy. */
+.root .slot-a { top: 4%;  left: 2%; }
+.root .slot-c { top: 39%; left: 0; }
+.root .slot-e { top: 74%; left: 3%; }
+.root .slot-b { top: 0;   right: 3%; }
+.root .slot-d { top: 35%; right: 0; }
+.root .slot-f { top: 70%; right: 2%; }
+
+/* ---- Legend ------------------------------------------------------------ */
+
+.root .legend {
+  max-width: 64rem;
+  margin: 2.5rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.root .legendItem { display: grid; gap: 0.4rem; justify-items: start; }
+.root .legendItem .state { grid-area: auto; margin-top: 0; }
+.root .legendItem dd {
+  margin: 0;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--slate);
+}
+.root .legendItem.is-held,
+.root .legendItem.is-unverified { border: 0; background: none; }
+
+.root .footnote {
+  max-width: 64rem;
+  margin: 1rem auto 0;
+  font-family: var(--font-aksh-body), system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--slate);
+}
+
+/* ---- Motion ----------------------------------------------------------- */
+
+@keyframes arrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .root .signal { animation: none; }
+}
+
+/* ---- Below desktop: chips leave the orbit and form a grid ------------- */
+
+@media (max-width: 1179px) {
+  .root .stage { min-height: 0; display: block; }
+  .root .copy { margin-inline: auto; background: none; padding-inline: 0; }
+  .root .signals {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 2.5rem;
+  }
+  .root .signal { position: static; width: auto; min-width: 0; max-width: none; }
+  .root .signalTitle { white-space: normal; }
+  .root .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .root .signals { grid-template-columns: 1fr; }
+  .root .legend { grid-template-columns: 1fr; }
+}
