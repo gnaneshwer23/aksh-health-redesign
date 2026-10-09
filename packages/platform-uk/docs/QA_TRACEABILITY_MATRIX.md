@@ -51,7 +51,7 @@ Generate JSON companion: `docs/qa-traceability-matrix.json` (kept in sync with t
 | Bucket | Count |
 | --- | ---: |
 | Requirements in matrix | 37 |
-| Automated PASS | 30 |
+| Automated PASS | 29 |
 | PARTIAL | 1 |
 | BLOCKED: partner | 3 |
 | GAP | 2 |
