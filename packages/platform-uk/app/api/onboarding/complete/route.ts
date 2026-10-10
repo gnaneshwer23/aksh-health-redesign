@@ -7,6 +7,7 @@ import { completeOnboarding } from "@/lib/auth/user-repository";
 import { syncOnboardingConsentsToRegistry } from "@/lib/onboarding/consent-registry-sync";
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
+import { provisionSandbox } from "@/lib/network/sandbox";
 import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
@@ -72,6 +73,27 @@ export async function POST(request: Request) {
 
     await clearOnboardingProgress(session.user.id);
 
+    // Professionals who completed the organisation step get their own sandbox organisation (admin), with sample
+    // data when they chose the sandbox clinic. Failure must not block dashboard access.
+    let sandbox: { organisationId: string; created: boolean } | null = null;
+    if (role !== "patient" && organisation && session.user.email) {
+      try {
+        const org = organisation as Record<string, unknown>;
+        const described = org.useSynthetic === false;
+        sandbox = await provisionSandbox(
+          {
+            userId: session.user.id,
+            email: session.user.email,
+            displayName: (fullName ?? (typeof identity?.fullName === "string" ? identity.fullName : null) ?? session.user.email).trim(),
+            role,
+          },
+          { organisationName: described && typeof org.organisationName === "string" ? org.organisationName : undefined, withSampleData: !described }
+        );
+      } catch (provisionError) {
+        console.error("[onboarding] sandbox provisioning failed", provisionError instanceof Error ? provisionError.message : provisionError);
+      }
+    }
+
     // Mirror onboarding checkboxes into the shared PH consent registry (same spine).
     // Failure here must not block dashboard access — profile is already complete.
     let consentRegistry: Awaited<ReturnType<typeof syncOnboardingConsentsToRegistry>> | null =
@@ -97,6 +119,7 @@ export async function POST(request: Request) {
       role: profile.role,
       onboardingComplete: profile.onboardingComplete,
       patientBinding: binding?.status ?? null,
+      sandboxOrganisationId: sandbox?.organisationId ?? null,
       completedAt: new Date().toISOString(),
       consentRegistry: consentRegistry
         ? {
