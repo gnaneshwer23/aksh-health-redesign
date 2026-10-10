@@ -1,5 +1,17 @@
 # Environments: production, simulation, preview
 
+## Current state (2026-10-10)
+
+| Environment | Neon | Vercel (`aksh-health-redesign`) |
+| --- | --- | --- |
+| Production | Project **Aksh Health Production** (`tiny-river-29853628`, eu-west-2): schema from migrations 001–022, no data | Production: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AKSH_ENVIRONMENT=production`, `CRON_SECRET` (all sensitive) |
+| Simulation | Project **Aksh Health** (`floral-salad-21467299`), branch `production` (default; name predates this split): all test, demo and scenario data | Preview: per-branch Neon branches via the integration, `AKSH_ENVIRONMENT=simulation`, `NEXT_PUBLIC_AKSH_ENVIRONMENT=simulation`, `SIMULATION_RUNNER_TOKEN` |
+
+Schema-only branching is not available on the simulation project (it has the custom `aksh_tenant` role), so production is a separate Neon project. That also separates credentials, compute and backups.
+
+Local: `.env.local` targets simulation; `.env.production.local` (gitignored) targets production for `db:migrate` and `db:inventory` only.
+
+
 Aksh runs the same code in every environment. What differs is the database and `AKSH_ENVIRONMENT`.
 
 | Environment | `AKSH_ENVIRONMENT` | Database | Holds |
