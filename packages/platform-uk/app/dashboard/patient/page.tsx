@@ -16,11 +16,10 @@ export default function PatientDashboardPage() {
   return (
     <DashboardShell role="patient" title={loading ? "My Health" : patientTitle} hideSidebar hideSearch showFirstRun>
       {loading ? null : selfServe ? (
-        bound ? (
-          <LinkedNetworkPatientView />
-        ) : (
-          <UnlinkedPatientView name={profile?.fullName} />
-        )
+        // The shell's main area does not scroll; self-serve views bring their own scroll container (mobile).
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {bound ? <LinkedNetworkPatientView /> : <UnlinkedPatientView name={profile?.fullName} />}
+        </div>
       ) : (
         <PatientCompanion />
       )}
