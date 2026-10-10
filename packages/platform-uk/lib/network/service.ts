@@ -312,6 +312,10 @@ export async function addPatientRecord(ctx: NetworkContext, patientId: string, i
   if (input.type === "medication" && isPatientSelf) throw new NetworkError("Medicines are recorded by the care team", 403);
   if ((input.type === "care_team") && !PATIENT_ADMIN_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot change care teams", 403);
   if (input.type === "consent" && !isPatientSelf && !PATIENT_ADMIN_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot record consent", 403);
+  if (input.type === "consent") {
+    const exists = await withPrivileged(async (client) => (await client.query(`SELECT 1 FROM aksh.organisations WHERE id = $1`, [input.granteeOrganisationId])).rowCount);
+    if (!exists) throw new NetworkError("No organisation with that ID. Ask them for the ID shown in their settings.", 404);
+  }
   // Resolve cross-organisation members before opening the tenant transaction: never hold two pool connections at once.
   if (input.type === "care_team" && !(await withPrivilegedLookup(input.membershipId))) throw new NetworkError("Care team member not found", 404);
 

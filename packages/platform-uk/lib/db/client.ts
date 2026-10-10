@@ -47,6 +47,8 @@ export async function withPracticeContext<T>(
   const client = await getPgPool().connect();
   try {
     await client.query("BEGIN");
+    // Run as the restricted role so the review_cases policy is enforced (the owner role bypasses RLS).
+    await client.query("SET LOCAL ROLE aksh_tenant");
     await client.query("SELECT set_config('app.practice_id', $1, true)", [practiceId]);
     const result = await fn(client);
     await client.query("COMMIT");
