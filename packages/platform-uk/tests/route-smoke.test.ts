@@ -190,8 +190,8 @@ async function run() {
   await assertFileExcludes("lib/agents.ts", "14 live agents");
   await assertFileExcludes("components/marketing/platform-page-content.tsx", "Seven agents");
   await assertFileExcludes("components/marketing/platform-page-content.tsx", "Twelve Phase-1 directory agents");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "Four steps from intake to exchange");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "supporting intelligence under clinician review");
+  await assertFileIncludes("components/marketing/platform-page-content.tsx", "The Aksh Intelligence Platform");
+  await assertFileIncludes("components/marketing/platform-page-content.tsx", "a named clinician decides");
   await assertFileIncludes(
     "components/marketing/InteroperabilityDiagram.tsx",
     "Clinician-approved only · not a live record write"
@@ -204,8 +204,8 @@ async function run() {
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Orchestrate");
   await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");
   await assertFileIncludes(
-    "components/marketing/AgentGrid.tsx",
-    "Supporting intelligence. One review queue."
+    "components/marketing/lavender/LvAgents.tsx",
+    "None of them decides."
   );
   await assertFileIncludes("components/gp/voice-mic-panel.tsx", "feeds CANVAS");
   await assertFileExcludes("components/gp/voice-mic-panel.tsx", "feeds VOICE agent");
@@ -440,7 +440,7 @@ async function run() {
   await assertFileIncludes("components/onboarding/OnboardingCard.tsx", "onboarding-honesty-banner");
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Clinical intelligence");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Diabetes-first");
+  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Aksh Intelligence Platform");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Request a pilot");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Not a live record");
   await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");

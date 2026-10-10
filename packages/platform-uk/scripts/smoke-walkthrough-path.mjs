@@ -18,7 +18,7 @@ const publicPages = [
   {
     label: "Platform roles",
     path: "/platform",
-    expectedText: ["One platform, eight roles"]
+    expectedText: ["One intelligence layer"]
   },
   {
     label: "Product tour",
