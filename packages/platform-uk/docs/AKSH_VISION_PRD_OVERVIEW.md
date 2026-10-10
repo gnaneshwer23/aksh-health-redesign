@@ -1,7 +1,7 @@
 # Aksh Health — Vision (End-to-End) & Product Requirements Overview
 
 **Document ID:** AKSH-VISION-PRD-OVERVIEW
-**Version:** 1.3
+**Version:** 1.4
 **Date:** 2026-10-10
 **Product:** Aksh Intelligence Platform (UK/EU) · first module: Aksh Diabetes
 **Live:** https://akshhealth.com
@@ -153,6 +153,22 @@ VOICE and Dr.Assist are **sub-capabilities** of CANVAS and SYNTHESIS (N4 audit l
 | CONDUCTOR | Supervisor | Deterministic orchestration | Live |
 | PRISM | Imaging intelligence | Imaging review support | **`live:false` · not built** |
 | ATLAS | Clinical research | Research / trial support | **`live:false` · not built** |
+
+### 2.4a Patient access: Front Desk module and Asha (added 2026-10-10)
+
+See `docs/PATIENT_ACCESS_AND_ASHA.md`. **Front Desk** is a module (like Aksh Diabetes), not new agents: the roster stays at 12. **Asha** is the patient-facing voice and chat channel of CANVAS.
+
+| Workflow | What it does | Gate |
+| --- | --- | --- |
+| Answer (inbound) | Safety screen every turn → identity (name + DOB) → intent | Emergency / crisis → fixed 999 / 111 message + staff hand-off |
+| Scheduling | Book, move, cancel; idempotent; Slot Fill offers cancellations to the waiting list | Admin; patient confirms |
+| Referral Desk | Letter → matched patient → proposed slot | Urgent referrals go to a clinician first |
+| Answers | Cited retrieval over a curated, non-clinical practice knowledge base | Clinical questions → hand-off, never answered |
+| Health updates | Readings, symptoms, adherence → patient-reported, unverified FHIR drafts | GP Accept / Reject (EC-CLIN-3), SHIELD-audited |
+| Recall campaigns | Missed, lapsed, annual recall, health check-ins (Asha calls) | GP approves check-ins; GP / practice manager approves rebooking; contact preference respected |
+| Metrics | Baseline locked before go-live → lift | Labelled unverified until checked against practice data |
+
+Track A only: synthetic patients, simulated telephony, no live EHR write. Thresholds await CSO sign-off. Live use needs a DPIA, DCB0129/0160, a PECR review for automated calls, and an MHRA opinion on whether symptom capture is a device function.
 
 ### 2.5 Core functional requirement themes
 
@@ -322,6 +338,7 @@ For the full backlog: Volume I Chapter 21.
 | Version | Date | Change |
 | --- | --- | --- |
 | 1.0 | 2026-10-09 | Initial consolidated Vision + PRD overview for independent review; points to Volume I v0.21 as full PRD; reflects Oct 2026 production GO (Track A) and staged patient-access. |
+| 1.4 | 2026-10-10 | Added §2.4a Patient access: Front Desk module and Asha (Track A build). |
 | 1.3 | 2026-10-10 | §2.4 corrected to the code roster: PRISM/ATLAS are within the canonical 12; VOICE and Dr.Assist are sub-capabilities, not peers. Added human labels. |
 | 1.2 | 2026-10-10 | Audit findings fixed on the redesign branch: honest SHIELD outcomes on demo dashboards, SNOMED CT + WHO ICD-10 coding, P002 risk/HbA1c/laterality consistency, cohort titles and slots, REQ-021 → PASS. Patel suspected-vs-confirmed DVT narrative left open for clinical decision. |
 | 1.1 | 2026-10-10 | REQ snapshot corrected to 29 PASS of 37 (matrix summary fixed); added redesign review build and its shared-database status; replaced design-debt line with PR #3 status; added open findings from the 2026-10-09 production audit (public-demo SHIELD claim, US coding, P002 fixture inconsistencies, cohort titles); clarified SC-1/SC-3 scope. |

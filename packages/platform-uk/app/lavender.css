@@ -1957,3 +1957,91 @@ body:has(.marketing-site) [data-cookie-consent] .bg-primary:hover {
 .lv-steps-wrap .lv-steps {
   margin-top: 2.5rem;
 }
+
+/* ---------- Patient access flow (Front Desk + Asha) ---------- */
+
+.marketing-site :is(.lv-access__row) {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lv-access {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lv-access__row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .lv-access__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lv-access__row--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .lv-access__row--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.lv-access__card,
+.lv-access__hub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.125rem;
+  border-radius: var(--lv-radius-card);
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--lv-line);
+}
+
+.lv-access__card--soft {
+  background: #f1f0ff;
+  box-shadow: 0 0 0 1px rgba(91, 91, 251, 0.18);
+}
+
+.lv-access__hub {
+  align-items: center;
+  text-align: center;
+  background: var(--lv-gradient);
+  color: #fff;
+  box-shadow: none;
+}
+
+.lv-access__hub .lv-access__detail {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.lv-access__title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.lv-access__detail {
+  font-size: 0.8125rem;
+  color: var(--lv-muted);
+}
+
+.lv-access__lift {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  border-radius: var(--lv-radius-card);
+  background: #ececff;
+  font-size: 0.8125rem;
+  color: var(--lv-ink);
+}
+
+@media (min-width: 900px) {
+  .lv-access__lift {
+    grid-template-columns: 1fr 1fr;
+  }
+}

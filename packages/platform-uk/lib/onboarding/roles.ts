@@ -59,6 +59,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#003D7A",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/gp",
+    alternateDashboardPaths: ["/dashboard/front-desk"],
     hasTutorial: true,
   },
   {
@@ -69,6 +70,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#006B4F",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/nurse",
+    alternateDashboardPaths: ["/dashboard/front-desk"],
     hasTutorial: true,
   },
   {
@@ -89,6 +91,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#64748B",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/admin",
+    alternateDashboardPaths: ["/dashboard/front-desk"],
     hasTutorial: true,
   },
   {

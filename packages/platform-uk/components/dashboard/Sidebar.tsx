@@ -15,6 +15,7 @@ import {
   Heart,
   LayoutDashboard,
   Layers,
+  PhoneCall,
   Pill,
   Settings,
   Shield,
@@ -41,6 +42,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/gp", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/review", label: "Case Review Workspace", icon: Layers },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
     { href: "/dashboard/gp/reports", label: "Reports", icon: BarChart3 },
@@ -51,6 +53,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/nurse/observations", label: "Observations", icon: Stethoscope },
     { href: "/dashboard/nurse/handover", label: "Handover", icon: ClipboardList },
     { href: "/dashboard/nurse/alerts", label: "GUARDIAN Alerts", icon: Shield },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
   pharmacist: [
@@ -62,6 +65,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   ],
   admin: [
     { href: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
     { href: "/dashboard/admin/precision-health", label: "System spine", icon: Heart },

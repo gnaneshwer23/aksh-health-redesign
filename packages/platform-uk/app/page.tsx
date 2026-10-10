@@ -13,6 +13,7 @@ const lazy = (loader: () => Promise<{ default: React.ComponentType }>) =>
 
 const LvDiabetesModule = lazy(() => import("@/components/marketing/lavender/LvDiabetesModule"));
 const LvAgents = lazy(() => import("@/components/marketing/lavender/LvAgents"));
+const LvPatientAccess = lazy(() => import("@/components/marketing/lavender/LvPatientAccess"));
 const LvLayers = lazy(() => import("@/components/marketing/lavender/LvLayers"));
 const LvRoles = lazy(() => import("@/components/marketing/lavender/LvRoles"));
 const PatelJourneySection = lazy(() => import("@/components/marketing/PatelJourneySection"));
@@ -33,6 +34,7 @@ export default function HomePage() {
       <LvLoop flush />
       <LvClinicianGate />
       <LvDiabetesModule />
+      <LvPatientAccess />
       <LvAgents />
       <LvLayers />
       <LvRoles />
