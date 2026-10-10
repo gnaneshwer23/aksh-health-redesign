@@ -25,10 +25,12 @@ type PreferencesPanelProps = {
 };
 
 function RadioOptions({
+  name,
   options,
   value,
   onChange,
 }: {
+  name: string;
   options: string[];
   value: string;
   onChange: (value: string) => void;
@@ -37,8 +39,9 @@ function RadioOptions({
     <RadioGroup value={value} onValueChange={onChange} className="space-y-2">
       {options.map((option) => (
         <div key={option} className="flex items-center space-x-2">
-          <RadioGroupItem value={option} id={option} />
-          <Label htmlFor={option}>{option}</Label>
+          {/* Ids are scoped by field: several groups share option labels like "Off". */}
+          <RadioGroupItem value={option} id={`${name}-${option}`} />
+          <Label htmlFor={`${name}-${option}`}>{option}</Label>
         </div>
       ))}
     </RadioGroup>
@@ -53,9 +56,19 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
   if (!schema) return null;
 
   type FormValues = Record<string, unknown>;
+  // Pre-select the first option of every choice so Continue works without clicking each group.
+  const schemaDefaults: FormValues = Object.fromEntries(
+    Object.entries((schema as z.ZodObject<z.ZodRawShape>).shape).flatMap(([key, field]) =>
+      field instanceof z.ZodEnum ? [[key, (field.options as string[])[0]]] : []
+    )
+  );
   const form = useForm<FormValues>({
     resolver: zodResolver(schema) as never,
-    defaultValues: preferences as FormValues,
+    defaultValues: {
+      ...schemaDefaults,
+      ...(role === "hospital-executive" ? { edWaitingThreshold: 4 } : {}),
+      ...(preferences as FormValues),
+    },
     mode: "onChange",
   });
 
@@ -154,6 +167,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
                     />
                   ) : (
                     <RadioOptions
+                      name={String(fieldDef.name)}
                       options={fieldDef.options}
                       value={String(field.value ?? fieldDef.options[0])}
                       onChange={field.onChange}

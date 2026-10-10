@@ -3,11 +3,11 @@ import { expect, test } from "@playwright/test";
 import { createOnboardedTestUser, signInViaUi } from "./helpers/auth";
 
 const SIGNUP_ROLE_LABELS = [
-  "GP",
-  "Nurse / Care Coordinator",
+  "Physician (GP / family doctor)",
+  "Nurse / Diabetes educator",
   "Clinical Pharmacist",
-  "Practice Manager / Admin",
-  "ICS Lead / Clinical Informatics",
+  "Clinic manager / Admin",
+  "Population health lead",
   "Hospital Executive",
   "Patient",
   "Researcher / Analyst",

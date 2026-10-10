@@ -50,8 +50,8 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
     eyebrow: "For physicians, nurses & diabetes educators",
     title: "Walk into every diabetes review already prepared.",
     lede: "Aksh reads labs, medicines, readings and what the patient told Asha, then drafts the note, the coding and the risk picture. Nothing reaches the record until you accept it.",
-    primary: { label: "Open the clinician demo", href: "/dashboard/gp" },
-    secondary: { label: "Walk through Mr Patel's case", href: "/demo/patel" },
+    primary: { label: "Start free", href: "/signup" },
+    secondary: { label: "Try without an account", href: "/dashboard/gp" },
     scenario: {
       heading: "A Tuesday clinic, synthetic patient",
       steps: [
@@ -91,7 +91,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
     title: "Help between appointments, without waiting on hold.",
     lede: "Asha is the voice and chat assistant for your clinic. Book or move an appointment, ask a practical question, or share a reading. Your own care team decides anything clinical.",
     primary: { label: "Talk to Asha", href: "/asha" },
-    secondary: { label: "How your data is protected", href: "/security" },
+    secondary: { label: "Create a free account", href: "/signup" },
     scenario: {
       heading: "An evening check-in, synthetic patient",
       steps: [
@@ -130,7 +130,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
     title: "See the medication risk before the prescription moves.",
     lede: "Aksh checks every diabetes medication change against kidney function, interactions and allergies, then holds it for you. You confirm the medication decision; the physician stays co-accountable.",
     primary: { label: "See the pharmacy step", href: "/demo/patel" },
-    secondary: { label: "Request a pilot", href: "/get-started" },
+    secondary: { label: "Start free", href: "/signup" },
     scenario: {
       heading: "A medication review, synthetic patient",
       steps: [
@@ -166,7 +166,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
     eyebrow: "For clinics, health systems & payers",
     title: "Close diabetes care gaps across a whole population.",
     lede: "Aksh sits beside the EHR you already run. It finds who needs attention, prepares the work for your teams and measures what changed against a baseline locked before go-live.",
-    primary: { label: "Request a pilot", href: "/get-started" },
+    primary: { label: "Bring Aksh to your organisation", href: "/get-started" },
     secondary: { label: "Explore the care network", href: "/dashboard/network" },
     scenario: {
       heading: "A quarter in a pilot, synthetic network",

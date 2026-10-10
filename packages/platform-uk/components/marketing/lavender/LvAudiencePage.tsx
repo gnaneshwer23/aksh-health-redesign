@@ -117,11 +117,11 @@ export default function LvAudiencePage({ audience }: { audience: AudienceKey }) 
       </section>
 
       <LvCtaBand
-        eyebrow="Start with a controlled use case"
-        title="One diabetes workflow first. Expand on evidence."
-        lede="Pilots start on synthetic data, with your reviewers and your governance boundaries."
-        primary={{ label: "Request a Pilot", href: "/get-started" }}
-        secondary={{ label: "Open the Patel Walkthrough", href: "/demo/patel" }}
+        eyebrow="Free to start"
+        title="Start in a synthetic clinic today. Go live on evidence."
+        lede="Create an account in two minutes. When your organisation is ready for real patients, we go live one workflow at a time."
+        primary={{ label: "Start free", href: "/signup" }}
+        secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
       />
     </MarketingShell>
   );

@@ -38,11 +38,11 @@ export default function HomePage() {
       <LvTracks />
       <LvPilotSteps />
       <LvCtaBand
-        eyebrow="Start with a controlled use case"
+        eyebrow="Free to start"
         title="Clinical intelligence should help clinicians think, not replace them."
-        lede="Start with a focused workflow. Define the governance boundaries. Measure the outcomes. Expand when the evidence supports it."
-        primary={{ label: "Request a Pilot", href: "/get-started" }}
-        secondary={{ label: "Open the Patel Walkthrough", href: "/demo/patel" }}
+        lede="Create an account and work in a synthetic clinic today. When your organisation is ready for real patients, we go live one workflow at a time."
+        primary={{ label: "Start free", href: "/signup" }}
+        secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
       />
     </MarketingShell>
   );

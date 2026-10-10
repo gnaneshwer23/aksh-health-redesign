@@ -129,7 +129,7 @@ export default function LvRoles({ variant = "home" }: LvRolesProps) {
             </Link>
           ) : (
             <Link href="/get-started" className="lv-btn lv-btn--outline">
-              Request organisation access
+              Bring Aksh to your organisation
             </Link>
           )}
           <Link href="/demo/patel" className="lv-btn lv-btn--outline">

@@ -107,7 +107,7 @@ export function CookieConsent() {
               <div className="mt-5 space-y-2.5">
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-accent text-white hover:bg-accent/90")}
+                  className={cn(actionButtonBase, "bg-secondary text-white hover:bg-secondary/90")}
                   onClick={savePreferences}
                 >
                   Save preferences
@@ -164,7 +164,7 @@ export function CookieConsent() {
                 </button>
                 <button
                   type="button"
-                  className={cn(compactButtonBase, "bg-accent text-white hover:bg-accent/90")}
+                  className={cn(compactButtonBase, "bg-secondary text-white hover:bg-secondary/90")}
                   onClick={() => accept("all")}
                 >
                   Accept all

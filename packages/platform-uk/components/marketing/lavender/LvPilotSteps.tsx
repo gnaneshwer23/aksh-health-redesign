@@ -4,8 +4,8 @@ import { ClipboardList, FlaskConical, Send, TrendingUp } from "lucide-react";
 const STEPS = [
   {
     label: "Step one",
-    title: "Request organisation access",
-    body: "Tell us about your clinic, health system or programme. We reply within two business days.",
+    title: "Start free",
+    body: "Anyone on your team creates an account and works in a synthetic clinic straight away.",
     icon: Send,
   },
   {
@@ -22,8 +22,8 @@ const STEPS = [
   },
   {
     label: "Step four",
-    title: "Expand on evidence",
-    body: "Measure review time and safety holds, then widen scope only when the evidence supports it.",
+    title: "Go live on evidence",
+    body: "Tell us about your organisation. Live use starts with one workflow and widens only when the evidence supports it.",
     icon: TrendingUp,
   },
 ] as const;
@@ -37,7 +37,7 @@ export default function LvPilotSteps() {
             <div>
               <p className="lv-eyebrow">Start with a controlled use case</p>
               <h2 id="lv-pilot-title" className="lv-h2 mt-3">
-                A pilot that earns its next step.
+                From free account to live clinic, one step at a time.
               </h2>
             </div>
             <p className="lv-lede">
@@ -65,9 +65,12 @@ export default function LvPilotSteps() {
             })}
           </ol>
 
-          <div className="mt-8 flex justify-center">
-            <Link href="/get-started" className="lv-btn lv-btn--violet">
-              Request a pilot
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/signup" className="lv-btn lv-btn--violet">
+              Start free
+            </Link>
+            <Link href="/get-started" className="lv-btn lv-btn--outline">
+              Bring Aksh to your organisation
             </Link>
           </div>
         </div>

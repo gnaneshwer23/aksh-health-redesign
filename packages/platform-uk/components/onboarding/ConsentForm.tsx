@@ -46,9 +46,9 @@ const CONSENT_COPY: Record<
     { key: "anonymisedOutcomes", label: "I consent to anonymised outcome data improving the model", required: false },
   ],
   "practice-manager": [
-    { key: "dpa", label: "I accept the Data Processing Agreement as practice data controller", required: true },
+    { key: "dpa", label: "I accept the Data Processing Agreement for my clinic as data controller", required: true },
     { key: "dspt", label: "I understand healthcare data security obligations apply for this organisation — this checkbox is not a completed toolkit submission", required: true },
-    { key: "ehrIntegration", label: "I consent to EHR staging pathways on behalf of the organisation (liveEmis:false — no live write-back)", required: true },
+    { key: "ehrIntegration", label: "I consent to EHR staging on behalf of the organisation (no live write-back to the EHR)", required: true },
   ],
   "ics-lead": [
     { key: "dataSharing", label: "I accept data sharing terms across clinics in my regional boundary", required: true },
@@ -57,11 +57,11 @@ const CONSENT_COPY: Record<
   ],
   "hospital-executive": [
     { key: "enterpriseDpa", label: "I accept the Enterprise Data Processing Agreement", required: true },
-    { key: "gdprController", label: "I confirm GDPR Data Controller responsibilities", required: true },
+    { key: "gdprController", label: "I confirm data-protection controller responsibilities for my market (e.g. GDPR, HIPAA, DPDP)", required: true },
   ],
   patient: [
     { key: "healthContact", label: "I agree to Aksh Health contacting me about my health", required: true },
-    { key: "gpApproval", label: "I understand my GP approves all AI suggestions", required: true },
+    { key: "gpApproval", label: "I understand my care team approves all AI suggestions", required: true },
     { key: "careImprovement", label: "I consent to my health data being used to improve my care", required: false },
     { key: "voiceCalls", label: "I consent to voice calls for post-appointment check-ins", required: false },
   ],

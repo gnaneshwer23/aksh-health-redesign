@@ -75,7 +75,7 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
     <>
       {authConfig.proofMode ? (
         <div className="mb-4 rounded-2xl border border-accent/15 bg-pastel-mint px-4 py-3 text-sm text-foreground" role="note">
-          <strong className="text-accent">{PROOF_MODE_BANNER.title}</strong>
+          <strong className="text-secondary">{PROOF_MODE_BANNER.title}</strong>
           <p className="mt-1 text-muted">{PROOF_MODE_BANNER.body}</p>
         </div>
       ) : null}
@@ -182,7 +182,7 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
           <Button
             data-testid="signin-submit"
             type="submit"
-            className="w-full rounded-xl bg-accent hover:bg-accent/90"
+            className="w-full rounded-xl bg-secondary hover:bg-secondary/90"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? "Signing in…" : "Sign in"}

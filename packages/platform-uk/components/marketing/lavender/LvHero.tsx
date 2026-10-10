@@ -51,13 +51,19 @@ export default function LvHero() {
             </p>
 
             <div className="lv-hero__actions">
-              <Link href="/demo/patel" className="lv-btn lv-btn--glass">
-                Walk through Mr Patel’s case
+              <Link href="/signup" className="lv-btn lv-btn--ink">
+                Start free
               </Link>
-              <Link href="/get-started" className="lv-btn lv-btn--ink">
-                Request a pilot
+              <Link href="/dashboard/gp" className="lv-btn lv-btn--glass">
+                Try without an account
               </Link>
             </div>
+            <p className="lv-hero__sub">
+              Free synthetic workspace with 500 patients. No card, no real patient data.{" "}
+              <Link href="/demo/patel" className="lv-hero__sublink lv-focus">
+                Or walk through Mr Patel’s case →
+              </Link>
+            </p>
 
             <Link href="/platform#roles" className="lv-hero__chip lv-focus">
               <span className="lv-hero__roles" aria-hidden>

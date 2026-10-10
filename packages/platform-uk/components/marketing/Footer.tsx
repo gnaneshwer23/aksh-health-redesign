@@ -26,10 +26,10 @@ const footerColumns = [
   {
     title: "Company",
     links: [
-      { label: "Request Pilot", href: "/get-started" },
-      { label: "Contact", href: "/contact" },
+      { label: "Start free", href: "/signup" },
       { label: "Sign in", href: "/signin" },
-      { label: "Create account", href: "/signup" },
+      { label: "Go live with your organisation", href: "/get-started" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   {

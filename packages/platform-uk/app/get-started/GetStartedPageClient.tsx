@@ -170,11 +170,11 @@ export default function GetStartedPageClient() {
               Organisation access
             </span>
             <h1 id="get-started-title" className="lv-book__title">
-              Request a pilot for your organisation
+              Bring Aksh to your organisation
             </h1>
             <p className="lv-book__lede">
-              For practice managers, regional leads, hospital procurement and IT teams. Three short steps, then we
-              arrange a conversation with your clinical and technical leads.
+              Anyone can start free in a synthetic workspace. To use Aksh with real patients, tell us about your
+              organisation: three short steps, then a conversation with your clinical and technical leads.
             </p>
 
             <p className="mt-8 text-sm font-medium text-white">What happens next</p>

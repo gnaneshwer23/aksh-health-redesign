@@ -49,11 +49,23 @@ export function HonestyStatusBar({
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {isPublicDemo ? (
-          <span data-testid="demo-data-banner" className="font-medium text-pastel-amber-ink">
-            Public {surface} demo · synthetic
-          </span>
+          <>
+            <span data-testid="demo-data-banner" className="font-medium text-pastel-amber-ink">
+              Public {surface} demo · synthetic
+            </span>
+            <Link href="/signup" className="font-semibold text-secondary underline underline-offset-2">
+              Start free
+            </Link>
+          </>
         ) : (
-          <span className="font-medium text-foreground/80">Synthetic rehearsal</span>
+          <>
+            <span data-testid="synthetic-workspace-banner" className="font-medium text-foreground/80">
+              Synthetic workspace — live patient data needs your organisation to go live
+            </span>
+            <Link href="/get-started" className="font-semibold text-secondary underline underline-offset-2">
+              Bring Aksh to your organisation
+            </Link>
+          </>
         )}
         <span aria-hidden className="text-border">
           ·

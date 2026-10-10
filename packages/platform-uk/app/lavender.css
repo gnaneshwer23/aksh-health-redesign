@@ -2391,3 +2391,18 @@ body:has(.marketing-site) [data-cookie-consent] .bg-primary:hover {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+.lv-hero__sub {
+  margin-top: 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 34rem;
+}
+
+.marketing-site .lv-hero__sublink {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

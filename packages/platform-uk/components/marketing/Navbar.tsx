@@ -57,11 +57,11 @@ export default function Navbar(_props: NavbarProps) {
         </div>
 
         <div className="hidden items-center gap-1 lg:flex">
-          <Link href="/demo/patel" className="lv-nav__ghost lv-focus">
-            See Demo
+          <Link href="/signin" className="lv-nav__ghost lv-focus">
+            Sign in
           </Link>
-          <Link href="/get-started" className="lv-btn lv-btn--ink">
-            Request Pilot
+          <Link href="/signup" className="lv-btn lv-btn--ink">
+            Start free
           </Link>
         </div>
 
@@ -104,13 +104,13 @@ export default function Navbar(_props: NavbarProps) {
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">
             <SheetClose asChild>
-              <Link href="/demo/patel" className="lv-btn lv-btn--outline">
-                See Demo
+              <Link href="/signin" className="lv-btn lv-btn--outline">
+                Sign in
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/get-started" className="lv-btn lv-btn--ink">
-                Request Pilot
+              <Link href="/signup" className="lv-btn lv-btn--ink">
+                Start free
               </Link>
             </SheetClose>
           </div>

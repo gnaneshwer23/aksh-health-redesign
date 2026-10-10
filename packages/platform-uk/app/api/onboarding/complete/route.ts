@@ -7,6 +7,7 @@ import { completeOnboarding } from "@/lib/auth/user-repository";
 import { syncOnboardingConsentsToRegistry } from "@/lib/onboarding/consent-registry-sync";
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
+import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
 const roleValues = ROLES.map((role) => role.id) as [string, ...string[]];
@@ -42,6 +43,16 @@ export async function POST(request: Request) {
     practiceOds?.trim() ||
     resolveOrganisationOdsCode(organisation as Record<string, unknown> | undefined);
 
+  // Server is authoritative for patient binding: re-check code + date of birth, never trust the client.
+  const binding = role === "patient" ? resolvePatientBinding(identity) : null;
+  const bindingPreferences =
+    binding?.status === "linked"
+      ? { boundPatientId: binding.patientId, boundOrganisationId: binding.organisationId, inviteStatus: "linked" }
+      : binding
+        ? { inviteStatus: binding.status === "none" ? "none" : "rejected" }
+        : {};
+  const market = typeof identity?.market === "string" ? identity.market : undefined;
+
   try {
     const profile = await completeOnboarding({
       userId: session.user.id,
@@ -50,6 +61,9 @@ export async function POST(request: Request) {
       practiceOds: resolvedPracticeOds,
       preferences: {
         ...(preferences ?? {}),
+        ...bindingPreferences,
+        ...(market ? { market } : {}),
+        workspace: "synthetic",
         identity: identity ?? {},
         organisation: organisation ?? {},
         consents: consents ?? {},
@@ -82,6 +96,7 @@ export async function POST(request: Request) {
       ok: true,
       role: profile.role,
       onboardingComplete: profile.onboardingComplete,
+      patientBinding: binding?.status ?? null,
       completedAt: new Date().toISOString(),
       consentRegistry: consentRegistry
         ? {

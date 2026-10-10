@@ -53,7 +53,7 @@ const CLINICAL_ORG_STEPS: OnboardingStepId[] = [
 export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
-    label: "GP",
+    label: "Physician (GP / family doctor)",
     description: "Review clinical drafts — Accept, Edit, or Reject before anything is staged",
     icon: "stethoscope",
     color: "#003D7A",
@@ -64,7 +64,7 @@ export const ROLES: RoleDefinition[] = [
   },
   {
     id: "nurse",
-    label: "Nurse / Care Coordinator",
+    label: "Nurse / Diabetes educator",
     description: "Observations, handover drafts, and safety alerts — you confirm each step",
     icon: "heart-pulse",
     color: "#006B4F",
@@ -86,7 +86,7 @@ export const ROLES: RoleDefinition[] = [
   },
   {
     id: "practice-manager",
-    label: "Practice Manager / Admin",
+    label: "Clinic manager / Admin",
     description: "Integrations, audit, and enquiries — clinicians keep clinical Accept",
     icon: "building",
     color: "#64748B",
@@ -97,7 +97,7 @@ export const ROLES: RoleDefinition[] = [
   },
   {
     id: "ics-lead",
-    label: "ICS Lead / Clinical Informatics",
+    label: "Population health lead",
     description: "Population, equity, and forecast views on synthetic cohorts",
     icon: "network",
     color: "#0D9488",
@@ -119,7 +119,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "patient",
     label: "Patient",
-    description: "My Health check-ins — your care team keeps clinical approval",
+    description: "Asha, your readings and — with a clinic invite — your care team",
     icon: "user",
     color: "#0EA5E9",
     steps: ["role-select", "identity", "consent", "tutorial", "complete"],

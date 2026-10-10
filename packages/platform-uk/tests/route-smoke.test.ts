@@ -441,7 +441,7 @@ async function run() {
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Clinical intelligence");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Aksh Intelligence Platform");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Request a pilot");
+  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Start free");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Not a live record");
   await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");
   await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "Every output is a draft");
