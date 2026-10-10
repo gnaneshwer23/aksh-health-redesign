@@ -93,7 +93,7 @@ export function PharmacistHeroDemoPath({ className }: { className?: string }) {
                   data-testid={`pharmacist-hero-beat-${beat.n}`}
                   onClick={dismiss}
                 >
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-accent">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-secondary">
                     {beat.n} · {beat.label}
                   </span>
                   <span className="text-[10px] text-muted">{beat.hint}</span>

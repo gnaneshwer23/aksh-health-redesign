@@ -61,7 +61,7 @@ export default function GpPatientDetailPage({ params }: { params: { id: string }
                   <span>SpO₂ {patient.vitals.spo2}%</span>
                   <span>RR {patient.vitals.respiratoryRate}/min</span>
                   <span>Temp {patient.vitals.temperature}°C</span>
-                  <span className="text-muted/70">
+                  <span className="text-muted">
                     Recorded {patient.vitals.recordedAt} · {patient.vitals.recordedBy}
                   </span>
                 </div>

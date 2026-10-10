@@ -9,6 +9,7 @@ import {
   type OnboardingStepId,
   type UserRole,
 } from "./roles";
+import { DEFAULT_MARKET, isOnboardingMarket, type OnboardingMarket } from "./markets";
 import type {
   ConsentData,
   IdentityData,
@@ -31,6 +32,9 @@ type PersistableOnboardingState = {
 };
 
 export type OnboardingState = PersistableOnboardingState & {
+  /** Chosen before the role; copied into identity.market when the identity step is submitted. */
+  market: OnboardingMarket;
+  setMarket: (market: OnboardingMarket) => void;
   savedAt: string | null;
   verificationStatus: Record<string, "idle" | "pending" | "verified" | "error">;
   isHydrated: boolean;
@@ -53,6 +57,7 @@ export type OnboardingState = PersistableOnboardingState & {
 };
 
 const initialState = {
+  market: DEFAULT_MARKET as OnboardingMarket,
   role: null as UserRole | null,
   currentStep: 0,
   totalSteps: 0,
@@ -143,6 +148,7 @@ export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set, get) => ({
       ...initialState,
+      setMarket: (market) => set({ market }),
       setRole: (role) => {
         const def = getRoleDefinition(role);
         const previous = get();
@@ -233,7 +239,9 @@ export const useOnboardingStore = create<OnboardingState>()(
             data.totalSteps ?? getRoleDefinition(role)?.steps.length ?? 0;
 
           serverSyncEnabled = true;
+          const savedMarket = (data.identity as Record<string, unknown> | undefined)?.market;
           set({
+            ...(isOnboardingMarket(savedMarket) ? { market: savedMarket } : {}),
             role,
             currentStep: data.currentStep,
             totalSteps,
@@ -268,6 +276,7 @@ export const useOnboardingStore = create<OnboardingState>()(
     {
       name: "aksh_onboarding_v2",
       partialize: (state) => ({
+        market: state.market,
         role: state.role,
         currentStep: state.currentStep,
         totalSteps: state.totalSteps,

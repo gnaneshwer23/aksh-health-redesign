@@ -301,7 +301,7 @@ export async function buildSpineAggregates(options: {
     healthPlanCount: planRows.length,
     recentEventTitles,
     source: "shared_spine_apis",
-    note: "Aggregates from modality / learning / consent / health-plan stores used by GP timeline — not a parallel ICS warehouse or live PAS.",
+    note: "Aggregates from modality / learning / consent / health-plan stores used by GP timeline — not a parallel regional warehouse or live hospital system.",
     ...SPINE_ROLE_HONESTY
   };
 }

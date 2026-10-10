@@ -1,14 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,527 +20,186 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { verifyNhsNumber } from "@/lib/onboarding/nhs-number";
-import { useOnboardingStore } from "@/lib/onboarding/store";
+import { registrationFieldFor, type OnboardingMarket } from "@/lib/onboarding/markets";
 import type { UserRole } from "@/lib/onboarding/roles";
+import { useOnboardingStore } from "@/lib/onboarding/store";
 import { getIdentitySchema } from "@/lib/onboarding/validation";
-import {
-  verifyGmc,
-  verifyGphc,
-  verifyNmc,
-} from "@/lib/onboarding/verifications";
 
 type IdentityFormProps = {
   role: UserRole;
   onSubmit: () => void;
 };
 
+type FieldSpec = {
+  name: string;
+  label: string;
+  type?: "text" | "email" | "tel" | "date";
+  placeholder?: string;
+  hint?: string;
+  options?: readonly string[];
+  half?: boolean;
+};
+
+const PHONE_HINT = "Optional. Include the country code if you are outside your market.";
+
+function fieldsFor(role: UserRole, market: OnboardingMarket): FieldSpec[] {
+  const registration = registrationFieldFor(role, market);
+  switch (role) {
+    case "gp":
+    case "nurse":
+    case "clinical-pharmacist":
+      return [
+        { name: "fullName", label: "Full name" },
+        {
+          name: "registrationNumber",
+          label: `${registration?.label ?? "Registration number"} (optional)`,
+          placeholder: registration?.placeholder,
+          hint: "Recorded as unverified. Not needed for the sandbox; checked before any live patient data.",
+        },
+        {
+          name: "registrationBody",
+          label: "Issuing regulator (optional)",
+          placeholder: "The body that issued your registration",
+          hint: "Lets us check the right register before your organisation goes live.",
+        },
+        { name: "workEmail", label: "Work email", type: "email" },
+        { name: "phone", label: "Phone", type: "tel", hint: PHONE_HINT },
+      ];
+    case "practice-manager":
+      return [
+        { name: "fullName", label: "Full name" },
+        { name: "workEmail", label: "Work email", type: "email" },
+        { name: "jobTitle", label: "Job title" },
+        { name: "phone", label: "Phone", type: "tel", hint: PHONE_HINT },
+      ];
+    case "ics-lead":
+      return [
+        { name: "fullName", label: "Full name" },
+        { name: "workEmail", label: "Work email", type: "email" },
+        { name: "jobTitle", label: "Job title" },
+        { name: "networkName", label: "Network, region or health system (optional)" },
+      ];
+    case "hospital-executive":
+      return [
+        { name: "fullName", label: "Full name" },
+        { name: "workEmail", label: "Work email", type: "email" },
+        { name: "jobTitle", label: "Job title", options: ["CEO", "COO", "CMO", "CFO", "CIO", "Other"] },
+        { name: "phone", label: "Phone", type: "tel", hint: PHONE_HINT },
+      ];
+    case "researcher":
+      return [
+        { name: "fullName", label: "Full name" },
+        { name: "institutionalEmail", label: "Institutional email", type: "email" },
+        { name: "institutionName", label: "Institution" },
+        { name: "orcid", label: "ORCID (optional)", placeholder: "0000-0000-0000-0000" },
+      ];
+    case "patient":
+      return [
+        { name: "firstName", label: "First name", half: true },
+        { name: "lastName", label: "Last name", half: true },
+        { name: "dateOfBirth", label: "Date of birth", type: "date" },
+        {
+          name: "inviteCode",
+          label: "Clinic invite code (optional)",
+          placeholder: "e.g. ABCD-EFGH-JKLM-NPQR",
+          hint: "From your clinic. It links your account to your care team. Without one you can still use Asha and track your own readings.",
+        },
+        { name: "email", label: "Email", type: "email", half: true },
+        { name: "phone", label: "Phone", type: "tel", half: true },
+      ];
+  }
+}
+
 export function IdentityForm({ role, onSubmit }: IdentityFormProps) {
   const identity = useOnboardingStore((s) => s.identity);
   const setIdentity = useOnboardingStore((s) => s.setIdentity);
-  const verificationStatus = useOnboardingStore((s) => s.verificationStatus);
-  const setVerificationStatus = useOnboardingStore((s) => s.setVerificationStatus);
-  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  const market = useOnboardingStore((s) => s.market);
 
-  const schema = getIdentitySchema(role);
   type FormValues = Record<string, unknown>;
-
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema) as never,
+    resolver: zodResolver(getIdentitySchema(role)) as never,
     defaultValues: identity as FormValues,
     mode: "onChange",
   });
 
-  async function handleCredentialVerify(
-    key: string,
-    value: string,
-    verifier: (v: string) => Promise<string>
-  ) {
-    setVerificationStatus(key, "pending");
-    setVerifyMessage(null);
-    try {
-      const message = await verifier(value);
-      setVerificationStatus(key, "verified");
-      setVerifyMessage(message);
-    } catch {
-      setVerificationStatus(key, "error");
-      setVerifyMessage("Verification failed. Check the number format.");
+  async function submit(values: FormValues) {
+    const inviteCode = typeof values.inviteCode === "string" ? values.inviteCode.trim() : "";
+    if (role === "patient" && inviteCode) {
+      const res = await fetch("/api/onboarding/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteCode, dateOfBirth: values.dateOfBirth }),
+      }).catch(() => null);
+      const body = (await res?.json().catch(() => null)) as { status?: string; error?: string } | null;
+      if (body?.status !== "linked") {
+        form.setError("inviteCode", {
+          message:
+            res?.status === 429
+              ? body?.error ?? "Too many attempts. Try again later."
+              : "We could not match this code with your date of birth. Check both with your clinic, or leave the code blank to continue without linking.",
+        });
+        return;
+      }
     }
-  }
-
-  function submit(values: FormValues) {
-    setIdentity(values as Record<string, unknown>);
+    const registration = typeof values.registrationNumber === "string" ? values.registrationNumber.trim() : "";
+    setIdentity({
+      ...values,
+      market,
+      // Never claim verification we have not done: registration is stored as unverified.
+      ...(registration ? { registrationStatus: "unverified" } : {}),
+    });
     onSubmit();
   }
 
-  const isPatient = role === "patient";
+  const fields = fieldsFor(role, market);
 
   return (
     <Form {...form}>
       <form
         id="identity-form"
         onSubmit={form.handleSubmit(submit)}
-        className="space-y-4 animate-in fade-in duration-200"
+        className="grid gap-4 animate-in fade-in duration-200 sm:grid-cols-2"
       >
-        {isPatient ? (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
+        {fields.map((spec) => (
+          <FormField
+            key={spec.name}
+            control={form.control}
+            name={spec.name}
+            render={({ field }) => (
+              <FormItem className={spec.half ? undefined : "sm:col-span-2"}>
+                <FormLabel>{spec.label}</FormLabel>
+                {spec.options ? (
+                  <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
                     <FormControl>
-                      <Input {...field} value={String(field.value ?? "")} />
+                      <SelectTrigger aria-label={spec.label}>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={String(field.value ?? "")} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date of birth</FormLabel>
+                    <SelectContent>
+                      {spec.options.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
                   <FormControl>
-                      <Input type="date" {...field} value={String(field.value ?? "")} />
+                    <Input
+                      type={spec.type ?? "text"}
+                      placeholder={spec.placeholder}
+                      autoComplete={spec.type === "email" ? "email" : spec.type === "tel" ? "tel" : undefined}
+                      {...field}
+                      value={String(field.value ?? "")}
+                    />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="nhsNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Patient ID</FormLabel>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input maxLength={10} placeholder="10-digit ID" {...field} value={String(field.value ?? "")} />
-                    </FormControl>
-                    <button
-                      type="button"
-                      className="rounded-sm border border-border px-3 text-sm"
-                      disabled={verificationStatus.nhs === "pending"}
-                      onClick={async () => {
-                        const result = await verifyNhsNumber(String(field.value ?? ""));
-                        setVerifyMessage(result.message);
-                        setVerificationStatus(
-                          "nhs",
-                          result.valid ? "verified" : "error"
-                        );
-                      }}
-                    >
-                      {verificationStatus.nhs === "pending" ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        "Verify"
-                      )}
-                    </button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        ) : (
-          <>
-            <FormField
-              control={form.control}
-              name={"fullName" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full name</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {role === "gp" ? (
-              <FormField
-                control={form.control}
-                name={"gmcNumber" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>GMC number</FormLabel>
-                    <div className="flex gap-2">
-                      <FormControl>
-                        <Input maxLength={7} {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <button
-                        type="button"
-                        className="rounded-sm border border-border px-3 text-sm"
-                        onClick={() =>
-                          handleCredentialVerify("gmc", String(field.value), verifyGmc)
-                        }
-                      >
-                        {verificationStatus.gmc === "pending" ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          "Verify"
-                        )}
-                      </button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
                 )}
-              />
-            ) : null}
-
-            {role === "nurse" ? (
-              <FormField
-                control={form.control}
-                name={"nmcNumber" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>NMC number</FormLabel>
-                    <div className="flex gap-2">
-                      <FormControl>
-                        <Input placeholder="12A3456B" {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <button
-                        type="button"
-                        className="rounded-sm border border-border px-3 text-sm"
-                        onClick={() =>
-                          handleCredentialVerify("nmc", String(field.value), verifyNmc)
-                        }
-                      >
-                        Verify
-                      </button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : null}
-
-            {role === "clinical-pharmacist" ? (
-              <FormField
-                control={form.control}
-                name={"gphcNumber" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>GPhC number</FormLabel>
-                    <div className="flex gap-2">
-                      <FormControl>
-                        <Input maxLength={7} {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <button
-                        type="button"
-                        className="rounded-sm border border-border px-3 text-sm"
-                        onClick={() =>
-                          handleCredentialVerify("gphc", String(field.value), verifyGphc)
-                        }
-                      >
-                        Verify
-                      </button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : null}
-
-            {(role === "gp" || role === "nurse" || role === "clinical-pharmacist") && (
-              <FormField
-                control={form.control}
-                name={"nhsEmail" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Work email</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} value={String(field.value ?? "")} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                {spec.hint ? <FormDescription>{spec.hint}</FormDescription> : null}
+                <FormMessage />
+              </FormItem>
             )}
-
-            {role === "practice-manager" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name={"workEmail" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Work email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"jobTitle" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job title</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {role === "ics-lead" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name={"orgEmail" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Organisation email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"jobTitle" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job title</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"icsName" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Regional network name</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"nhsDigitalRef" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Organisation reference (optional)</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {role === "hospital-executive" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name={"workEmail" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Work email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"jobTitle" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job title</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={String(field.value ?? "")}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select title" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {["CEO", "COO", "CMO", "CFO", "CIO", "Other"].map((title) => (
-                            <SelectItem key={title} value={title}>
-                              {title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"trustName" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hospital trust name</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {role === "researcher" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name={"institutionalEmail" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Institutional email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"institutionName" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Institution name</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={"orcid" as keyof FormValues}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ORCID (optional)</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={String(field.value ?? "")} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {role !== "researcher" && role !== "ics-lead" && role !== "practice-manager" && role !== "hospital-executive" && (
-              <FormField
-                control={form.control}
-                name={"mobile" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mobile (MFA)</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={String(field.value ?? "")} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {(role === "practice-manager" || role === "hospital-executive") && (
-              <FormField
-                control={form.control}
-                name={"mobile" as keyof FormValues}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mobile</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={String(field.value ?? "")} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-          </>
-        )}
-
-        {verifyMessage ? (
-          <p
-            className={
-              verificationStatus.gmc === "error" ||
-              verificationStatus.nmc === "error" ||
-              verificationStatus.gphc === "error" ||
-              verificationStatus.nhs === "error"
-                ? "text-sm text-danger"
-                : "text-sm text-accent"
-            }
-          >
-            {verifyMessage}
-          </p>
-        ) : null}
+          />
+        ))}
       </form>
     </Form>
   );

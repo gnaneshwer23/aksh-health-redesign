@@ -169,8 +169,8 @@ const PARTNER_GAPS = [
   "Live wearable / Fitbit streams — partner OAuth + DPIA (connectors are synthetic/stub)",
   "DICOM / PACS pixel archive — imaging_meta stubs only (dicomPresent:false)",
   "Multi-omics sequencing pipeline — panel meta stubs only (rawOmicsPresent:false)",
-  "Live EMIS / SystmOne write-back — Partner API + CSO sign-off (liveEmis:false)",
-  "MHRA-approved CDS / physiological digital twin validation study",
+  "Live the EHR write-back — Partner API + CSO sign-off (liveEmis:false)",
+  "medical device regulator-approved CDS / physiological digital twin validation study",
   "Auto-retrain from RWE — governed release only (autoRetrain:false)"
 ];
 
@@ -200,7 +200,7 @@ function buildStakeholderGlimpses(patientId: string): StakeholderGlimpse[] {
     },
     {
       id: "ics_equity",
-      label: "ICS equity overlay",
+      label: "regional equity overlay",
       href: `/dashboard/ics/equity`,
       note: "Aggregate synthetic EQUITY — not live population feed"
     },
@@ -235,7 +235,7 @@ export function getWholeLoopCapabilities(): WholeLoopCapabilities {
       liveStream: false,
       realPatientData: false,
       note:
-        "Whole-loop demo is a synthetic closed rehearsal of the Precision Health flowchart. Not a living twin, not live EMR, not MHRA-approved CDS."
+        "Whole-loop demo is a synthetic closed rehearsal of the Precision Health flowchart. Not a living twin, not live EMR, not medical device regulator-approved CDS."
     },
     partnerGaps: PARTNER_GAPS,
     stakeholderGlimpsesTemplate: buildStakeholderGlimpses(DEMO_PUBLIC_PATIENT)

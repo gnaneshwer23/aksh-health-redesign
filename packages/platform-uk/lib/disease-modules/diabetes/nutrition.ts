@@ -25,7 +25,7 @@ export function buildNutritionDiabetesCoachingDraft(
   const suggestions = [
     "Offer glycaemic-load education materials approved by the practice",
     "Discuss protein/fibre-first meal ordering as a talking point (clinician confirms for an individual plan)",
-    "Signpost to NHS / practice-approved diabetes diet resources only"
+    "Signpost to health system / practice-approved diabetes diet resources only"
   ];
   if (signals?.hba1c?.trend === "worsening") {
     suggestions.unshift(

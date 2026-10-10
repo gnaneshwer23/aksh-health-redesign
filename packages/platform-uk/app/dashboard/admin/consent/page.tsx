@@ -15,7 +15,7 @@ export default function AdminConsentPage() {
           <h2 className="text-lg font-semibold text-foreground">Purpose-bound consent grants</h2>
           <p className="text-sm text-muted">
             Phase 1 registry for modalities + purposes. SHIELD dual-write on grant/revoke. Does not replace
-            DPIA or NHS Login. Demo scoped to synthetic patient P001.
+            DPIA or health system Login. Demo scoped to synthetic patient P001.
           </p>
         </div>
         <ConsentGrantsPanel

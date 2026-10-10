@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   return NextResponse.json(
     {
       ...report,
-      generatedBy: userEmail ?? "Aksh Health UK/EU synthetic proof system"
+      generatedBy: userEmail ?? "Aksh Health synthetic proof system"
     },
     {
       headers: {

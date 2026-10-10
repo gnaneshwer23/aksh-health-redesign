@@ -40,7 +40,7 @@ export function buildEvidenceArtifactMetadata(input: {
     artifactType: input.artifactType,
     artifactVersion: input.artifactVersion,
     generatedAt: input.generatedAt ?? formatCaseTimestamp(),
-    generatedBy: input.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: input.generatedBy ?? "Aksh Health synthetic proof system",
     scopeKey: input.scopeKey,
     subjectCaseId: input.subjectCaseId,
     ...buildEvidenceArtifactBoundaries()

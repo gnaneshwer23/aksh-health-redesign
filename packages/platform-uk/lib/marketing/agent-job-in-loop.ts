@@ -60,7 +60,7 @@ export const AGENT_JOB_IN_LOOP: Record<string, AgentJobInLoop> = {
   },
   COMPASS: {
     stage: "population",
-    job: "Aggregates risk and equity signals for ICS views — no patient-level spill to population users.",
+    job: "Aggregates risk and equity signals for regional views — no patient-level spill to population users.",
   },
   PRISM: {
     stage: "roadmap",
@@ -103,7 +103,7 @@ export const AGENT_SUB_CAPABILITIES = [
 export const TWO_MINUTE_MARKETING_SCRIPT = [
   {
     beat: "1 · Home",
-    say: "Capture → draft → approve. Clinician review on every output across EMIS Web and SystmOne pathways.",
+    say: "Capture → draft → approve. Clinician review on every output across the EHR pathways.",
     href: "/",
   },
   {

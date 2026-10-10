@@ -223,7 +223,7 @@ export default function GpDashboardPage() {
                         Last seen: {patient.lastEncounterDate}
                         {patient.nextAppointmentDate && ` · Next: ${patient.nextAppointmentDate}`}
                       </p>
-                      <p className="mt-1 text-xs font-medium text-warning">
+                      <p className="mt-1 text-xs font-medium text-[#8a5a00]">
                         14-day admission risk:{" "}
                         {oracleData?.admissionRisk14Days ??
                           patient.digitalTwinPrediction.admissionRisk14Days}
@@ -243,7 +243,7 @@ export default function GpDashboardPage() {
                             <span>SpO₂ {vitals.spo2}%</span>
                             <span>RR {vitals.respiratoryRate}/min</span>
                             <span>Temp {vitals.temperature}°C</span>
-                            <span className="text-muted/70">Recorded {vitals.recordedAt}</span>
+                            <span className="text-muted">Recorded {vitals.recordedAt}</span>
                           </div>
                         );
                       })()}

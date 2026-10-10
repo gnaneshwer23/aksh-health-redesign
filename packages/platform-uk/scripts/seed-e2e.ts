@@ -28,6 +28,7 @@ import {
   PATIENT_STATE_FACTS_SQL,
   USERS_PROFILES_SQL,
 } from "../lib/db/schema-sql";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 
 const { Pool } = pg;
 const root = process.cwd();
@@ -219,6 +220,7 @@ async function upsertPatientStateFacts(pool: pg.Pool, dataset: ReturnType<typeof
 }
 
 async function run() {
+  assertSeedingAllowed("seed-e2e");
   if (process.env.E2E_TEST_MODE !== "true" && process.env.SYNTHETIC_DATA !== "true") {
     console.warn("Tip: set E2E_TEST_MODE=true or SYNTHETIC_DATA=true when seeding E2E data.");
   }

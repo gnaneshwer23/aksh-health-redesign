@@ -195,7 +195,7 @@ export function deriveStreamTransitionChecklist(reviewCase: ReviewCase) {
         dataCollectionProfile.validationStream === "ics_pilot_preparation" ||
         dataCollectionProfile.validationStream === "rwe_pipeline_candidate"
           ? "The case already sits in a pilot-prep or later stream."
-          : "Move the case out of synthetic validation/remediation into the ICS pilot-preparation stream."
+          : "Move the case out of synthetic validation/remediation into the regional pilot-preparation stream."
     },
     {
       id: `${reviewCase.id}-to-rwe-acceptance`,
@@ -637,7 +637,7 @@ export function deriveValidationFailureDrilldown(
                 ? [
                     {
                       label: "Promote validation stream",
-                      detail: "Move the case out of remediation/synthetic validation into the ICS pilot-preparation stream."
+                      detail: "Move the case out of remediation/synthetic validation into the regional pilot-preparation stream."
                     },
                     {
                       label: "Confirm governance readiness",

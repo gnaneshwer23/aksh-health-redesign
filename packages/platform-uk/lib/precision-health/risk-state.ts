@@ -72,7 +72,7 @@ export function buildPatientRiskState(
     limitations: [
       "This is a risk-state model for clinical review demos — not a physiological digital twin.",
       "No intervention simulation or counterfactual ranking is performed.",
-      "Scores are not calibrated against live NHS outcomes.",
+      "Scores are not calibrated against live health system outcomes.",
       "HITL required before any care action; zero autonomous EHR write.",
       `Model ${modelCard.modelId}@${modelCard.version} — no auto-retrain; see ${modelCard.governedReleaseSop}.`
     ],
@@ -100,7 +100,7 @@ export function buildPopulationRiskState(input: {
     signals: input.signals,
     recommendedActions: input.recommendedActions,
     limitations: [
-      "Aggregate population risk-state view — not an ICS physiological twin.",
+      "Aggregate population risk-state view — not a regional physiological twin.",
       "Forecasts are synthetic / demo-grade unless a clinical owner model is approved (Phase 2+)."
     ],
     hitlRequired: true,

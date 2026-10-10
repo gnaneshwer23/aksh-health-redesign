@@ -46,7 +46,7 @@ export function deriveSyntheticOutcomeCapture(reviewCase: ReviewCase) {
     evaluationUse: "offline_synthetic_benchmark_and_quality_learning_only" as const,
     prohibitedUses: [
       "real patient model training",
-      "live NHS integration learning",
+      "live health system integration learning",
       "autonomous clinical decisioning",
       "production clinical safety assurance"
     ]

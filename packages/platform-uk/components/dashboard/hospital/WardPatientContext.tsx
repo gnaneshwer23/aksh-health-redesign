@@ -21,7 +21,7 @@ export function WardPatientContext({
   onClear: () => void;
   className?: string;
 }) {
-  // Synthetic rehearsal cohort — illustrative occupancy names, not a live PAS census.
+  // Synthetic rehearsal cohort — illustrative occupancy names, not a live hospital system census.
   const samplePatients = patients.slice(0, Math.min(4, Math.max(2, ward.awaitingDischarge ?? 2)));
 
   return (

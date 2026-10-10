@@ -56,7 +56,7 @@ export default function HospitalOverviewPage({
     <div className="space-y-5 p-4">
       {!showRiskState ? <HospitalHeroDemoPath /> : null}
       <p className="sr-only" data-testid="hospital-honesty-banner">
-        Not live PAS · synthetic PAS rehearsal · liveEmis:false. PATHWAY / HORIZON draft operational
+        Not live hospital system · synthetic hospital system rehearsal · liveEmis:false. PATHWAY / HORIZON draft operational
         foresight; CONDUCTOR keeps HITL on capacity recommendations — no hospital system write-back.
       </p>
 
@@ -67,7 +67,7 @@ export default function HospitalOverviewPage({
         <p className="mt-1 text-sm text-muted">
           {showRiskState
             ? "Population / patient risk state and synthetic scenario ranking — not a physiological digital twin"
-            : `${hospitalName}: synthetic operational intelligence across ${hospitalData.wards.length} wards (rehearsal — not a live PAS feed)`}
+            : `${hospitalName}: synthetic operational intelligence across ${hospitalData.wards.length} wards (rehearsal — not a live hospital system feed)`}
         </p>
       </div>
 

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { createOnboardedTestUser } from "./helpers/auth";
 
 test.describe("Clinical proof — Neo4j data source honesty", () => {
-  test("public ICS population stays synthetic demo", async ({ request }) => {
+  test("public regional population stays synthetic demo", async ({ request }) => {
     const response = await request.get("/api/neo4j/ics-population");
     expect(response.ok()).toBeTruthy();
     expect(response.headers()["x-data-source"]).toBe("demo");

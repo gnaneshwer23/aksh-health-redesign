@@ -57,7 +57,7 @@ P: Discuss GUARDIAN alert re aspirin/apixaban. Arrange urgent medication review.
     agentType: "GUARDIAN",
     title: "Drug interaction | Aspirin + Apixaban",
     content:
-      "🔴 HIGH RISK: Aspirin 75mg (current) and Apixaban 10mg (proposed) share additive bleeding risk. BNF section 2.9. Recommend: review Aspirin indication before co-prescribing anticoagulant. If co-prescribing necessary, consider gastroprotection.",
+      "🔴 HIGH RISK: Aspirin 75mg (current) and Apixaban 10mg (proposed) share additive bleeding risk. formulary section 2.9. Recommend: review Aspirin indication before co-prescribing anticoagulant. If co-prescribing necessary, consider gastroprotection.",
     confidenceScore: null,
     evidenceSources: [
       { resourceType: "MedicationStatement", resourceId: "med-aspirin-p002", summary: "Aspirin 75mg current" },

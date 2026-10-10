@@ -5,6 +5,10 @@ const SITE_URL = "https://akshhealth.com";
 const PUBLIC_PATHS = [
   "/",
   "/platform",
+  "/for-clinicians",
+  "/for-patients",
+  "/for-pharmacists",
+  "/for-organisations",
   "/security",
   "/privacy",
   "/terms",

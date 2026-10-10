@@ -10,18 +10,19 @@ test.describe("Marketing smoke", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: /Clinical intelligence, under clinical control/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Walk through Mr Patel/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Try without an account" }).first()).toHaveAttribute("href", "/dashboard/gp");
     await expect(page.getByText("Synthetic patient. Not a live record.", { exact: true })).toBeVisible();
     const desktopNav = nav.locator("[data-nav-center]");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Aksh Diabetes" })).toHaveAttribute("href", "/platform#diabetes");
     await expect(desktopNav.getByRole("link", { name: "Safety & Trust" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Resources" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "See Demo" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
     await expect(page.getByRole("navigation").getByRole("button", { name: "Platform" })).toHaveCount(0);
 
-    const primaryCta = nav.getByRole("link", { name: "Request Pilot" });
+    const primaryCta = nav.getByRole("link", { name: "Start free" });
     await expect(primaryCta).toBeVisible();
-    await expect(primaryCta).toHaveAttribute("href", "/get-started");
+    await expect(primaryCta).toHaveAttribute("href", "/signup");
     const ctaColor = await primaryCta.evaluate((el) => window.getComputedStyle(el).color);
     expect(ctaColor).toBe("rgb(255, 255, 255)");
   });
@@ -42,8 +43,8 @@ test.describe("Marketing smoke", () => {
     await expect(mobileNav.getByRole("link", { name: "Aksh Diabetes" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Safety & Trust" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
-    await expect(mobileMenu.getByRole("link", { name: "See Demo" })).toBeVisible();
-    await expect(mobileMenu.getByRole("link", { name: "Request Pilot" })).toBeVisible();
+    await expect(mobileMenu.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(mobileMenu.getByRole("link", { name: "Start free" })).toBeVisible();
   });
 
   test("trust strip shows compliance badges on homepage", async ({ page }) => {
@@ -53,7 +54,7 @@ test.describe("Marketing smoke", () => {
     await expect(trustStrip).toBeVisible();
     await expect(trustStrip.getByText("Human review").first()).toBeVisible();
     await expect(trustStrip.getByText("Auditability").first()).toBeVisible();
-    await expect(trustStrip.getByText("UK data posture").first()).toBeVisible();
+    await expect(trustStrip.getByText("Regional data residency").first()).toBeVisible();
     await expect(trustStrip.getByText("Diabetes & primary care").first()).toBeVisible();
   });
 
@@ -75,22 +76,46 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText(/100 patients and 100 users/i)).toHaveCount(0);
   });
 
-  test("homepage roles section highlights product-aligned role dashboards", async ({ page }) => {
+  test("homepage audience section routes every stakeholder to a working surface", async ({ page }) => {
     await page.goto("/");
 
+    const audiences = page.locator('[data-section="audiences"]');
+    await expect(audiences.getByRole("heading", { name: /One diabetes care loop\. Everyone in it/i })).toBeVisible();
+    await expect(audiences.getByRole("link", { name: /Open the clinician demo/i })).toHaveAttribute("href", "/dashboard/gp");
+    await expect(audiences.getByRole("link", { name: /Talk to Asha/i })).toHaveAttribute("href", "/asha");
+    await expect(audiences.getByRole("link", { name: /See the pharmacy step/i })).toHaveAttribute("href", "/demo/patel");
+    await expect(audiences.getByRole("link", { name: /Explore the care network/i })).toHaveAttribute(
+      "href",
+      "/dashboard/network"
+    );
+  });
+
+  test("audience pages render a scenario, limits and working demo links", async ({ page }) => {
+    for (const [path, heading, demo] of [
+      ["/for-clinicians", /Walk into every diabetes review/i, "/dashboard/gp"],
+      ["/for-patients", /Help between appointments/i, "/asha"],
+      ["/for-pharmacists", /See the medication risk/i, "/demo/patel"],
+      ["/for-organisations", /Close diabetes care gaps/i, "/dashboard/network"],
+    ] as const) {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+      await expect(page.getByText("Synthetic people and data. Not a live record.")).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Clear limits, enforced on the server/i })).toBeVisible();
+      await expect(page.locator('[data-section="audience-try"]').locator(`a[href="${demo}"]`).first()).toBeVisible();
+    }
+  });
+
+  test("platform roles section highlights product-aligned role dashboards", async ({ page }) => {
+    await page.goto("/platform");
+
     const roles = page.locator("section#roles");
-    await expect(roles.getByRole("heading", { name: /One coordination layer\. Different clinical realities/i })).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Care delivery" }).first()).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Governance" }).first()).toBeVisible();
-    await expect(roles.getByRole("heading", { name: "GP", exact: true })).toBeVisible();
+    await expect(roles.getByRole("heading", { name: "Physician (GP / family doctor)", exact: true })).toBeVisible();
     await expect(roles.getByText("Clinician dashboard")).toBeVisible();
     await expect(roles.getByText("Admin · Audit")).toBeVisible();
     // Only dashboards that open without sign-in get a direct link.
     await expect(roles.getByRole("link", { name: "Open synthetic demo" })).toHaveCount(2);
-    await expect(roles.getByRole("link", { name: /View roles on the platform/i })).toHaveAttribute(
-      "href",
-      "/platform#roles"
-    );
     await expect(roles.getByRole("link", { name: /Open Patel demo/i })).toHaveAttribute("href", "/demo/patel");
   });
 
@@ -110,7 +135,7 @@ test.describe("Marketing smoke", () => {
 
     const gate = page.locator("section[data-clinician-gate]");
     await expect(gate.getByText("Mandatory human gates")).toBeVisible();
-    await expect(gate.getByText("Pharmacist confirms, GP co-accountable")).toBeVisible();
+    await expect(gate.getByText("Pharmacist confirms, physician co-accountable")).toBeVisible();
   });
 
   test("homepage closing CTA band has readable contrast", async ({ page }) => {
@@ -122,9 +147,9 @@ test.describe("Marketing smoke", () => {
     await expect(title).toBeVisible();
     expect(await title.evaluate((el) => window.getComputedStyle(el).color)).toBe("rgb(255, 255, 255)");
 
-    const primary = band.getByRole("link", { name: "Request a Pilot" });
-    await expect(primary).toBeVisible();
-    await expect(band.getByRole("link", { name: /Open the Patel Walkthrough/i })).toBeVisible();
+    const primary = band.getByRole("link", { name: "Start free" });
+    await expect(primary).toHaveAttribute("href", "/signup");
+    await expect(band.getByRole("link", { name: /Bring Aksh to your organisation/i })).toHaveAttribute("href", "/get-started");
     expect(await primary.evaluate((el) => window.getComputedStyle(el).backgroundColor)).toBe("rgb(255, 255, 255)");
     expect(await primary.evaluate((el) => window.getComputedStyle(el).color)).toBe("rgb(5, 4, 10)");
   });
@@ -151,10 +176,10 @@ test.describe("Marketing smoke", () => {
     await expect(signals.getByText("approved", { exact: true })).toBeVisible();
     await expect(hero.getByText(/Not a live EHR write/i)).toBeVisible();
     await expect(hero.getByRole("link", { name: /Walk through Mr Patel/i })).toHaveAttribute("href", "/demo/patel");
-    await expect(hero.getByRole("link", { name: /Request a pilot/i })).toHaveAttribute("href", "/get-started");
+    await expect(hero.getByRole("link", { name: "Start free" })).toHaveAttribute("href", "/signup");
   });
 
-  test("homepage shows the nine Aksh Diabetes areas and the twelve-agent roster honestly", async ({ page }) => {
+  test("homepage shows the nine Aksh Diabetes areas honestly", async ({ page }) => {
     await page.goto("/");
 
     const diabetes = page.locator('[data-section="diabetes"]');
@@ -162,7 +187,12 @@ test.describe("Marketing smoke", () => {
     await expect(diabetes.locator(".lv-card")).toHaveCount(9);
     await expect(diabetes.getByText("Awaiting CGM data model")).toBeVisible();
     await expect(diabetes.getByText(/never an executable dose/i).first()).toBeVisible();
+  });
 
+  test("platform shows the twelve-agent roster honestly and the layer stack", async ({ page }) => {
+    await page.goto("/platform");
+
+    await expect(page.locator('[data-section="layers"]').getByText("Your EHR")).toBeVisible();
     const agents = page.locator('[data-section="agents"]');
     await expect(agents.locator(".lv-agent")).toHaveCount(12);
     await expect(agents.getByRole("heading", { name: "Medication safety" })).toBeVisible();
@@ -171,22 +201,21 @@ test.describe("Marketing smoke", () => {
     await expect(agents.getByText("VOICE", { exact: true })).toHaveCount(0);
   });
 
-  test("homepage separates Track A from Track B and lists hard limits", async ({ page }) => {
+  test("homepage separates sandbox from live use and lists hard limits", async ({ page }) => {
     await page.goto("/");
 
     const tracks = page.locator('[data-section="tracks"]');
-    await expect(tracks.getByRole("heading", { name: /Track A/ })).toBeVisible();
-    await expect(tracks.getByRole("heading", { name: /Track B/ })).toBeVisible();
+    await expect(tracks.getByRole("heading", { name: /Sandbox/ })).toBeVisible();
+    await expect(tracks.getByRole("heading", { name: /^Live/ })).toBeVisible();
     await expect(tracks.getByText("Not available by design")).toBeVisible();
     await expect(tracks.getByText("No autonomous clinical decisions")).toBeVisible();
     await expect(tracks.getByText(/No fake or implied certification/)).toBeVisible();
-    await expect(page.locator('[data-section="layers"]').getByText("Your EHR")).toBeVisible();
     await expect(page.getByRole("heading", { name: /In production/i })).toHaveCount(0);
   });
 
   test("homepage pilot steps keep live patient data behind approvals", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /A pilot that earns its next step/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /From free account to live clinic/i })).toBeVisible();
     await expect(page.getByText(/Live patient data waits for your DPIA and approvals/i)).toBeVisible();
   });
 
@@ -233,19 +262,19 @@ test.describe("Marketing smoke", () => {
   test("contact page renders production content and common questions", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.getByRole("heading", { name: /Talk to Aksh Health/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Request organisation access/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Bring Aksh to your organisation/i }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /hello@akshhealth.com/i })).toHaveAttribute(
       "href",
       "mailto:hello@akshhealth.com"
     );
     await expect(page.getByText(/Does Aksh Health replace my EHR/i)).toBeVisible();
-    await expect(page.getByText(/Is Aksh Health MHRA-certified/i)).toBeVisible();
+    await expect(page.getByText(/Is Aksh Health a certified medical device/i)).toBeVisible();
   });
 
   test("get-started page is organisation enquiry, distinct from signup", async ({ page }) => {
     await page.goto("/get-started");
 
-    await expect(page.getByRole("heading", { name: /Request a pilot for your organisation/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Bring Aksh to your organisation/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /create an account instead/i })).toHaveAttribute("href", "/signup");
     await expect(page.getByText(/Live patient data waits for your DPIA and approvals/i)).toBeVisible();
 
@@ -269,9 +298,9 @@ test.describe("Marketing smoke", () => {
   test("security page loads with expected headings", async ({ page }) => {
     await page.goto("/security");
     await expect(page.getByRole("heading", { name: /Trust is a gate, not a slogan/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /GDPR Art\. 9 special category data/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Special category health data/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Honest limits/i })).toBeVisible();
-    await expect(page.getByText(/MHRA certification, registration, or device marking/i)).toBeVisible();
+    await expect(page.getByText(/Medical device certification, registration, or marking by any regulator/i)).toBeVisible();
   });
 
   test("/demo redirects to flagship clinical walkthrough", async ({ page }) => {
@@ -299,8 +328,11 @@ test.describe("Marketing smoke", () => {
     await page.goto("/how-it-works");
     await expect(page).toHaveURL(/\/platform/);
 
-    await page.goto("/for-clinicians");
-    await expect(page).toHaveURL(/\/platform/);
+    await page.goto("/for-practices");
+    await expect(page).toHaveURL(/\/for-organisations/);
+
+    await page.goto("/for-pharmacies");
+    await expect(page).toHaveURL(/\/for-pharmacists/);
 
     await page.goto("/faq");
     await expect(page).toHaveURL(/\/contact/);

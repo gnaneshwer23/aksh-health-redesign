@@ -78,7 +78,7 @@ export function UserManagementPanel({ embedded = false }: { embedded?: boolean }
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {["GP", "Nurse", "Pharmacist", "Admin", "ICS Lead", "Hospital Ops", "Patient", "Regional Lead"].map((r) => (
+              {["GP", "Nurse", "Pharmacist", "Admin", "Population Lead", "Hospital Ops", "Patient", "Regional Lead"].map((r) => (
                 <SelectItem key={r} value={r}>
                   {r}
                 </SelectItem>

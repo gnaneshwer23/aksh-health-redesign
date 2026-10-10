@@ -59,8 +59,8 @@ export default async function CaseReportPage({
           data-testid="report-handoff-honesty"
           style={{ background: "var(--accent-soft)", boxShadow: "none" }}
         >
-          Handoff summary only — Download FHIR Bundle or Print/Save PDF for demo filing. Not live EMIS /
-          Partner write-back · liveEmis:false · HITL Accept required before staging.
+          Handoff summary only — Download FHIR Bundle or Print/Save PDF for demo filing. Not live EHR
+          write-back · liveEmis:false · HITL Accept required before staging.
         </div>
         <div className="pill-row">
           <span className="pill">{evidence.finalizationState}</span>

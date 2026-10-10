@@ -40,7 +40,7 @@ export function PharmaPayerStubPanel() {
       <CardHeader className="p-4 pb-2">
         <CardTitle className="text-sm">Pharma / payer stubs (read-only)</CardTitle>
         <p className="text-xs text-muted">
-          Not a live payer/pharma integration — synthetic ICS aggregate placeholders only
+          Not a live payer/pharma integration — synthetic regional aggregate placeholders only
         </p>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-2">

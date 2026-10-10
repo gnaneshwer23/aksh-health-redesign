@@ -134,7 +134,7 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
       { recordedAt: "2026-07-08T00:00:00.000Z", valuePercent: 7.3 }
     ],
     insulinRegimen: {
-      medications: ["No insulin recorded — Metformin/Ramipril per EMIS; SystmOne export conflicting"],
+      medications: ["No insulin recorded — Metformin/Ramipril per EHR; EHR export conflicting"],
       reportedHypoEventCount: 0
     },
     glp1SideEffects: [],

@@ -21,7 +21,7 @@ export default function LvLoop({ flush = false }: { flush?: boolean }) {
           </p>
         </div>
 
-        <ol className="lv-loop">
+        <ol className="lv-loop" tabIndex={0} aria-label="Loop steps">
           {PRODUCT_LOOP.map((s, i) => (
             <li key={s.step} className={`lv-loop__step${s.step === "Clinician decides" ? " is-human" : ""}`}>
               <span className="lv-card__num">{String(i + 1).padStart(2, "0")}</span>
@@ -31,6 +31,7 @@ export default function LvLoop({ flush = false }: { flush?: boolean }) {
             </li>
           ))}
         </ol>
+        <p className="lv-swipe-hint" aria-hidden>Swipe to see all nine →</p>
       </div>
     </section>
   );

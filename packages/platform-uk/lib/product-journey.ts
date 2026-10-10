@@ -59,13 +59,13 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
     firstFocus: "Review handover and alerts before the next ward round.",
     agents: ["CANVAS", "SYNTHESIS", "GUARDIAN", "SHIELD"],
     youApprove: "Observations and handover drafts (you confirm before they append).",
-    honesty: `${LIVE_EMIS_FALSE} — no EMIS write from this proof build.`,
+    honesty: `${LIVE_EMIS_FALSE} — no EHR write from this proof build.`,
   },
   "clinical-pharmacist": {
     workspaceLabel: "Clinical Pharmacist",
     bullets: [
       "Medication review queue with interaction checks",
-      "BNF-backed safety alerts",
+      "formulary-backed safety alerts",
       "Drafts held until you approve",
     ],
     firstFocus: "Start with open interaction alerts in your med review queue.",
@@ -101,14 +101,14 @@ export const ROLE_DASHBOARD_PREVIEW: Record<UserRole, JourneyPreview> = {
   "hospital-executive": {
     workspaceLabel: "Hospital Command Centre",
     bullets: [
-      "Wards → capacity → staffing (synthetic PAS demo)",
+      "Wards → capacity → staffing (synthetic hospital system demo)",
       "Capacity recommendations with review before action",
       "Risk state and scenario ranking (scaffolding — synthetic demo)",
     ],
     firstFocus: "Start the command-centre demo: wards → capacity → staffing.",
     agents: ["HORIZON", "PATHWAY", "COMPASS", "CONDUCTOR"],
     youApprove: "Operational capacity / staffing recommendations.",
-    honesty: `${LIVE_EMIS_FALSE} — synthetic PAS, not live EPR.`,
+    honesty: `${LIVE_EMIS_FALSE} — synthetic hospital system, not live EPR.`,
   },
   patient: {
     workspaceLabel: "My Health",
@@ -206,7 +206,7 @@ export const FIRST_RUN_BY_DASHBOARD: Record<DashboardRole, FirstRunCopy> = {
   },
   hospital: {
     title: "Command Centre ready",
-    body: "Wards → capacity → staffing. Operational recommendations wait for review. Synthetic PAS rehearsal — not a live PAS/EPR.",
+    body: "Wards → capacity → staffing. Operational recommendations wait for review. Synthetic hospital system rehearsal — not a live hospital system.",
     primaryHref: "/dashboard/hospital/wards",
     primaryLabel: "Start wards demo",
     secondaryHref: "/demo/script",

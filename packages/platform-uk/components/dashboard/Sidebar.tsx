@@ -15,12 +15,13 @@ import {
   Heart,
   LayoutDashboard,
   Layers,
+  Network,
+  PhoneCall,
   Pill,
   Settings,
   Shield,
   Stethoscope,
-  Users,
-} from "lucide-react";
+  Users, CalendarClock } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PRACTICE_NAME } from "@/lib/mock-data";
@@ -41,6 +42,9 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/gp", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
+    { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/review", label: "Case Review Workspace", icon: Layers },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
     { href: "/dashboard/gp/reports", label: "Reports", icon: BarChart3 },
@@ -51,17 +55,24 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/nurse/observations", label: "Observations", icon: Stethoscope },
     { href: "/dashboard/nurse/handover", label: "Handover", icon: ClipboardList },
     { href: "/dashboard/nurse/alerts", label: "GUARDIAN Alerts", icon: Shield },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
+    { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
   pharmacist: [
     { href: "/dashboard/pharmacist", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/pharmacist/reviews", label: "Med Review", icon: Pill },
     { href: "/dashboard/pharmacist/interactions", label: "Interactions", icon: Shield },
-    { href: "/dashboard/pharmacist/bnf", label: "BNF Reference", icon: ClipboardList },
+    { href: "/dashboard/pharmacist/bnf", label: "Formulary Reference", icon: ClipboardList },
+    { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/pharmacist?section=settings", label: "Settings", icon: Settings },
   ],
   admin: [
     { href: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
+    { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
     { href: "/dashboard/admin/precision-health", label: "System spine", icon: Heart },
@@ -77,6 +88,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/ics/equity", label: "Equity Metrics", icon: BarChart3 },
     { href: "/dashboard/ics/benchmarking", label: "Benchmarking", icon: Activity },
     { href: "/dashboard/ics/forecast", label: "Risk state", icon: Heart },
+    { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/ics?section=settings", label: "Settings", icon: Settings },
   ],
   hospital: [
@@ -103,7 +115,7 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
   nurse: "Nurse",
   pharmacist: "Pharmacist",
   admin: "Admin",
-  ics: "ICS Lead",
+  ics: "Population health lead",
   hospital: "Hospital Ops",
   researcher: "Researcher",
   patient: "Patient",
@@ -111,14 +123,14 @@ const ROLE_LABELS: Record<DashboardRole, string> = {
 
 /** Nightingale seafoam / spruce role chips — no purple pharmacist chrome. */
 const ROLE_COLORS: Record<DashboardRole, string> = {
-  gp: "bg-accent",
+  gp: "bg-secondary",
   nurse: "bg-secondary",
-  pharmacist: "bg-accent",
+  pharmacist: "bg-secondary",
   admin: "bg-primary",
   ics: "bg-secondary",
-  hospital: "bg-accent",
+  hospital: "bg-secondary",
   researcher: "bg-steel",
-  patient: "bg-accent",
+  patient: "bg-secondary",
 };
 
 function isNavItemActive(pathname: string, searchParams: URLSearchParams, href: string) {
@@ -182,7 +194,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
       >
         <div className="border-b border-border-subtle/60 px-4 py-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-sm font-bold text-white shadow-soft">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-secondary text-sm font-bold text-white shadow-soft">
               {collapsed ? "A" : "A"}
             </span>
             {!collapsed && (
@@ -242,7 +254,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
                 <span
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
-                    active ? "bg-accent text-white shadow-soft" : "bg-transparent text-steel"
+                    active ? "bg-secondary text-white shadow-soft" : "bg-transparent text-steel"
                   )}
                 >
                   <Icon className="h-[18px] w-[18px]" />

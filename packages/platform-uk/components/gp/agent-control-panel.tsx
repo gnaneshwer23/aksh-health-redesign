@@ -47,7 +47,7 @@ export function GpAgentControlPanel({
 
       <div className="gp-proof-banner">
         <strong>Proof mode</strong>
-        <p>No live EMIS, Mirth, or Medplum write-back. All agent outputs remain draft until GP Accept / Edit / Reject.</p>
+        <p>No live EHR, Mirth, or Medplum write-back. All agent outputs remain draft until GP Accept / Edit / Reject.</p>
       </div>
     </section>
   );

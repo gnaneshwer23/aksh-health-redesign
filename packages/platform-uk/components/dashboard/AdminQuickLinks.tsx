@@ -10,7 +10,7 @@ const LINKS = [
   {
     href: "/dashboard/admin/integrations",
     label: "Integrations",
-    description: "BRIDGE staging · designed for EMIS / SystmOne · liveEmis:false",
+    description: "BRIDGE staging · designed for the EHR · liveEmis:false",
     icon: Activity,
   },
   {

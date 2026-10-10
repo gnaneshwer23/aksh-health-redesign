@@ -34,9 +34,9 @@ const MOCK_ENQUIRIES: OrganisationEnquiryRow[] = [
   },
   {
     id: "mock-london-pcn",
-    orgName: "Central London Clinic Network",
+    orgName: "Central City Clinic Network",
     orgType: "Primary care / clinic network",
-    region: "London",
+    region: "Europe",
     contactName: "James Okonkwo",
     contactEmail: "j.okonkwo@example.org",
     status: "submitted",

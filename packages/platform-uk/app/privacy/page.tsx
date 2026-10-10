@@ -5,7 +5,7 @@ import { LegalPageLayout } from "@/components/marketing/legal-page-layout";
 export const metadata: Metadata = {
   title: "Privacy Policy ",
   description:
-    "How Aksh Health Ltd processes personal and health data under UK GDPR, including special category data under Article 9.",
+    "How Aksh Health Ltd processes personal and health data under applicable data-protection law, including special category health data.",
 };
 
 const DATA_CONTROLLER = "Aksh Health Ltd";
@@ -42,13 +42,13 @@ export default function PrivacyPage() {
                 <li>Account details such as name, email address, role, and organisation</li>
                 <li>Authentication and session data required to secure your account</li>
                 <li>Clinical workflow data you submit or review within the platform</li>
-                <li>Health data classified as special category data under UK GDPR Article 9</li>
+                <li>Health data, treated as special category data</li>
                 <li>Technical logs, audit records, and security events</li>
                 <li>Organisation enquiry details submitted via our access request form</li>
               </ul>
               <p>
                 Production deployments process patient data under organisation agreements, with role-based access,
-                audit logging, and UK GDPR Article 9 safeguards for special category health data.
+                audit logging, and safeguards for special category health data.
               </p>
             </>
           ),
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                 consent where required.
               </p>
               <p>
-                Health data is special category data under UK GDPR Article 9. We process it only where a valid
+                Health data is special category data under data-protection law such as the GDPR. We process it only where a valid
                 condition applies, which may include explicit consent, provision of health or social care, or
                 other lawful bases agreed for your deployment. We apply purpose limitation, data minimisation, and
                 access controls so only authorised users can view data required for their role.
@@ -130,8 +130,8 @@ export default function PrivacyPage() {
           title: "International transfers",
           content: (
             <p>
-              We design for UK and EU data residency appropriate to NHS workloads. Where data is transferred
-              outside the UK, we use appropriate safeguards such as standard contractual clauses or equivalent
+              Each organisation chooses the region where its data is hosted. Where data is transferred
+              across borders, we use appropriate safeguards such as standard contractual clauses or equivalent
               protections.
             </p>
           ),
@@ -152,7 +152,7 @@ export default function PrivacyPage() {
           title: "Your rights",
           content: (
             <>
-              <p>Under UK GDPR you may have rights to:</p>
+              <p>Depending on the data-protection law that applies to you, you may have rights to:</p>
               <ul className="list-disc space-y-2 pl-5">
                 <li>Access your personal data</li>
                 <li>Rectify inaccurate data</li>

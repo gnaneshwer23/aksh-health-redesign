@@ -218,7 +218,7 @@ function AskAkshChatSession({
             role="alert"
           >
             {availability.accessReason ??
-              "Your role cannot open named patient chat (ICS / researcher / admin default off)."}
+              "Your role cannot open named patient chat (regional / researcher / admin default off)."}
           </div>
         ) : availability.available === null ? (
           <div

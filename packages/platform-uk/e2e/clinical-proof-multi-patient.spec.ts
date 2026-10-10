@@ -22,7 +22,7 @@ test.describe("Clinical proof — multi-patient golden paths", () => {
   });
 
   for (const patient of MULTI_PATIENT_E2E_COHORT) {
-    test(`${patient.id} (${patient.profiles[0]}) agents HITL-only + UI + EMIS blocked`, async ({
+    test(`${patient.id} (${patient.profiles[0]}) agents HITL-only + UI + EHR blocked`, async ({
       page,
       request,
       baseURL,

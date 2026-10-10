@@ -70,7 +70,7 @@ export function PatientHeroDemoPath({ className }: { className?: string }) {
                   className="inline-flex min-w-[9.5rem] flex-col rounded-lg border border-border-subtle bg-card px-3 py-2 transition hover:border-accent/40 hover:bg-accent/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   data-testid={`patient-hero-beat-${beat.n}`}
                 >
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-accent">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-secondary">
                     {beat.n} · {beat.label}
                   </span>
                   <span className="text-[10px] text-muted">{beat.hint}</span>

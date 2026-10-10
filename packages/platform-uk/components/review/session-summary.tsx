@@ -53,7 +53,7 @@ export function SessionSummary({ demoMode = false, recordingMode = false }: { de
         ) : null}
         <h2>Review Session Summary</h2>
         <p>
-          This page gives a demo-level summary of the current UK review proof state: what is blocked, what is high risk,
+          This page gives a demo-level summary of the current review proof state: what is blocked, what is high risk,
           and which reviewed artifacts are ready to show externally.
         </p>
       </div>

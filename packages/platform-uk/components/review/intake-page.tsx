@@ -489,7 +489,7 @@ export function IntakePage({
           </div>
           <p>
             Profiles cover voice or note intake, public-health and SDOH context, wearable monitoring, imaging or lab
-            handoffs, genomics or family-history prompts, and synthetic EMIS or SystmOne placeholders.
+            handoffs, genomics or family-history prompts, and synthetic the EHR placeholders.
           </p>
         </div>
       </div>

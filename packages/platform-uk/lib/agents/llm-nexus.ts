@@ -67,7 +67,7 @@ function deterministicCorrelations(patient: Neo4jPatientResponse): NexusCorrelat
   if (has(conditions, "diabetes") && has(medications, "metformin") && has(conditions, "ckd")) {
     correlations.push({
       link: "Type 2 diabetes on metformin with co-existing CKD",
-      significance: "Renal function determines metformin safety and dosing (BNF renal impairment guidance).",
+      significance: "Renal function determines metformin safety and dosing (formulary renal impairment guidance).",
       suggestedConsideration: "Confirm recent eGFR before continuing current metformin dose."
     });
   }
@@ -81,7 +81,7 @@ function deterministicCorrelations(patient: Neo4jPatientResponse): NexusCorrelat
   if (has(medications, "warfarin") && (has(medications, "ibuprofen") || has(medications, "aspirin"))) {
     correlations.push({
       link: "Anticoagulant co-prescribed with antiplatelet/NSAID",
-      significance: "Additive bleeding risk (BNF interaction guidance).",
+      significance: "Additive bleeding risk (formulary interaction guidance).",
       suggestedConsideration: "Route to GUARDIAN interaction review before any new prescription."
     });
   }

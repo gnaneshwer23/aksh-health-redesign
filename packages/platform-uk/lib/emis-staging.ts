@@ -30,7 +30,7 @@ export type EmisStagingEnvelope = {
 const memoryQueue: EmisStagingEnvelope[] = [];
 
 export const EMIS_NOT_LIVE_BANNER =
-  "NOT LIVE EMIS — internal staging / sim only. No Partner network call. liveEmis:false until credentials + DPIA + CSO go/no-go are signed out-of-band.";
+  "NOT LIVE EHR — internal staging / sim only. No Partner network call. liveEmis:false until credentials + DPIA + CSO go/no-go are signed out-of-band.";
 
 /** @deprecated Prefer isEmisPartnerSandboxCredentialsConfigured — kept for checklist callers. */
 export function isEmisPartnerConfigured() {
@@ -76,7 +76,7 @@ export function getEmisIntegrationStatus() {
       canFlipLiveEmisFromEnv: false as const
     },
     requiredEnv: [...sandbox.requiredEnv, "ENABLE_EMIS_PARTNER_SANDBOX"],
-    note: `${sandbox.note} Aksh stages HITL-approved FHIR R4 evidence internally. Live EMIS / SystmOne write-back requires Partner onboarding + CSO sign-off. liveEmis always false.`
+    note: `${sandbox.note} Aksh stages HITL-approved FHIR R4 evidence internally. Live the EHR write-back requires Partner onboarding + CSO sign-off. liveEmis always false.`
   };
 }
 
@@ -105,7 +105,7 @@ export function queueEmisFhirStaging(input: {
     status,
     ehrWriteAttempted: false,
     liveEmis: false,
-    note: `${EMIS_NOT_LIVE_BANNER} Scaffold queue only — no EMIS network call was made. writePath:${sandbox.writePath}.`
+    note: `${EMIS_NOT_LIVE_BANNER} Scaffold queue only — no EHR network call was made. writePath:${sandbox.writePath}.`
   };
   memoryQueue.unshift(entry);
   if (memoryQueue.length > 100) memoryQueue.length = 100;

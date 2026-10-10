@@ -18,7 +18,7 @@ const contacts = [
     title: "Organisation access",
     body: "For practice managers, regional leads, and hospital procurement.",
     href: "/get-started",
-    cta: "Request access",
+    cta: "Bring Aksh to your organisation",
   },
   {
     title: "Product walkthrough",
@@ -40,8 +40,8 @@ const faqs = [
     a: "No. It sits above existing EHR workflows. Production write-back stays gated behind organisation governance and clinical safety sign-off.",
   },
   {
-    q: "Is Aksh Health MHRA-certified?",
-    a: "No. We position the product as clinical decision support with human review. We do not claim MHRA certification, completed clinical safety case sign-off, or CQC readiness.",
+    q: "Is Aksh Health a certified medical device?",
+    a: "No. We position the product as clinical workflow support with human review. We do not claim medical-device certification from any regulator, a completed clinical safety case sign-off, or care-regulator readiness.",
   },
   {
     q: "What is human-in-the-loop?",
@@ -56,7 +56,7 @@ export default function ContactPage() {
         eyebrow="Contact"
         title="Talk to Aksh Health"
         lede="Organisation access, a product walkthrough, or a clinical safety conversation."
-        primary={{ label: "Request organisation access", href: "/get-started" }}
+        primary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
         secondary={{ label: "Create an account", href: "/signup" }}
       />
 
@@ -110,8 +110,8 @@ export default function ContactPage() {
 
       <MarketingCtaBand
         title="Need a guided conversation?"
-        lede="Request organisation access and we will route it to the right team."
-        primary={{ label: "Request access", href: "/get-started" }}
+        lede="Tell us about your organisation and we will route it to the right team."
+        primary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
         secondary={{ label: "Platform overview", href: "/platform" }}
       />
     </MarketingShell>

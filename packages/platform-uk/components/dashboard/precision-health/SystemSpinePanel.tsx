@@ -97,7 +97,7 @@ const AGENT_PROBES: Array<{ id: string; label: string; href: string }> = [
 ];
 
 /**
- * Single ops view of the Aksh clinical spine — Postgres, Neo4j, agents, EMIS/Medplum honesty,
+ * Single ops view of the Aksh clinical spine — Postgres, Neo4j, agents, EHR/Medplum honesty,
  * whole-loop capabilities. Extends admin Precision Health; not a second product.
  */
 export function SystemSpinePanel() {
@@ -218,10 +218,10 @@ export function SystemSpinePanel() {
           >
             <strong>Medplum:</strong>{" "}
             {medplumInner.mode === "disabled" || !medplumInner.syncFlagEnabled
-              ? "Sync flag off (default) — accept path never pushes; dry-run cleared. Not live EMIS."
+              ? "Sync flag off (default) — accept path never pushes; dry-run cleared. Not live EHR."
               : medplumInner.mode === "rehearsal_no_credentials"
                 ? "Flag on but credentials missing — set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET. Staging rehearsal only · liveEmis:false."
-                : "CLIENT_ID/SECRET present — OAuth not verified. If smoke:medplum / ?probe=auth returns Invalid client, regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EMIS · liveEmis:false."}{" "}
+                : "CLIENT_ID/SECRET present — OAuth not verified. If smoke:medplum / ?probe=auth returns Invalid client, regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EHR · liveEmis:false."}{" "}
             {medplumInner.note ?? medplum?.note ?? ""}
           </p>
         ) : null}
@@ -422,7 +422,7 @@ export function SystemSpinePanel() {
         <div data-testid="spine-phase-f-partners">
           <p className="text-xs font-semibold">Phase F partner / regulatory track</p>
           <p className="mt-1 text-xs text-muted">
-            In-repo readiness only — EMIS/SystmOne staging + N5 sandbox flag, DPIA/CSO/G-ML gate
+            In-repo readiness only — the EHR staging + N5 sandbox flag, DPIA/CSO/G-ML gate
             tracker, evidence pack export.{" "}
             {partnerReady?.tracks?.length
               ? partnerReady.tracks.map((t) => `${t.id}:${t.uiStatus}`).join(" · ")
@@ -440,7 +440,7 @@ export function SystemSpinePanel() {
               {partnerReady.sandbox.missingEnv?.length
                 ? ` · needs_partner missing:${partnerReady.sandbox.missingEnv.join(",")}`
                 : ""}{" "}
-              — not live EMIS.
+              — not live EHR.
             </p>
           ) : null}
           {partnerReady?.notLiveBanner ? (

@@ -39,7 +39,7 @@ export function buildM1ActionInboxEvidencePayload(
   return {
     artifactType: "aksh-uk-eu-m1-action-inbox-evidence",
     generatedAt,
-    generatedBy: options?.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: options?.generatedBy ?? "Aksh Health synthetic proof system",
     syntheticOnly: true,
     productionClinicalSoftware: false,
     liveNhsIntegration: false,
@@ -94,7 +94,7 @@ export function buildRoadmapEvidencePayload(
   return {
     artifactType: "aksh-uk-eu-12-month-roadmap-evidence",
     generatedAt,
-    generatedBy: options?.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: options?.generatedBy ?? "Aksh Health synthetic proof system",
     syntheticOnly: true,
     productionClinicalSoftware: false,
     liveNhsIntegration: false,

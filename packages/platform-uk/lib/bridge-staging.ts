@@ -140,7 +140,7 @@ export async function stageAcceptedCaseToBridge(input: {
     status: "preliminary",
     bundleSummary: resolved.summary,
     bundle: resolved.bundle,
-    note: `BRIDGE Accept staging (${resolved.source}) · not Medplum · not live EMIS · liveEmis:false`
+    note: `BRIDGE Accept staging (${resolved.source}) · not Medplum · not live EHR · liveEmis:false`
   });
 
   const emisEntry = queueEmisFhirStaging({

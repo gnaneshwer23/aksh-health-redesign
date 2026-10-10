@@ -25,7 +25,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
       organisation={profile?.organisation}
       showFirstRun
       honesty={{
-        surface: "ICS",
+        surface: "Population",
         // Public demo: keep honesty strip synthetic-only (no Neo4j mock/live chips).
         neo4jSource: isPublicDemo ? null : source,
         neo4jLoading: isPublicDemo ? false : loading,
@@ -36,7 +36,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <ConsentBanner className="flex-1" />
           <Select value={icsDateRange} onValueChange={(v) => setIcsDateRange(v as typeof icsDateRange)}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32" aria-label="Date range">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

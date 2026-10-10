@@ -98,7 +98,7 @@ export function OpsReport({
         <ReportActions backHref={`/review/ops${query}`} />
         <h1>Clinical Operations Report</h1>
         <p>
-          Snapshot of current review workflow performance and cross-session feedback trends for the Aksh Health UK/EU
+          Snapshot of current review workflow performance and cross-session feedback trends for the Aksh Health
           proof platform.
         </p>
         <div className="pill-row">

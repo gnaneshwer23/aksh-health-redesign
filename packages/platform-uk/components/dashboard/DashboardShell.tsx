@@ -57,8 +57,9 @@ export function DashboardShell({
   // Always render route children (including during profile fetch / SSR). Gating the
   // main pane behind `loading` left fetch-based smoke and first paint on a skeleton
   // with no page copy. First-run chrome can wait for profile; page content should not.
+  // Phones: the whole page scrolls so banners never squeeze the content to zero height. Desktop: fixed shell.
   return (
-    <div className={cn("dashboard-root dashboard-surface flex h-screen flex-col overflow-hidden")}>
+    <div className={cn("dashboard-root dashboard-surface flex min-h-screen flex-col md:h-screen md:overflow-hidden")}>
       <EmailVerificationBanner />
       <TopBar
         role={role}
@@ -67,9 +68,9 @@ export function DashboardShell({
         organisation={resolvedOrganisation}
         showBrandMark={!showSidebar}
       />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 md:overflow-hidden">
         {showSidebar ? <Sidebar role={role} /> : null}
-        <main className="flex flex-1 flex-col overflow-hidden">
+        <main className="flex min-w-0 flex-1 flex-col md:overflow-hidden">
           <HonestyStatusBar
             surface={honesty?.surface ?? title ?? "Clinical"}
             isPublicDemo={isPublicDemo}

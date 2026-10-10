@@ -67,10 +67,10 @@ const DEMO_STEPS = [
   },
   {
     id: "regional",
-    title: "ICS population & COMPASS view",
+    title: "Regional population & COMPASS view",
     route: "/dashboard/ics",
     publicSurface: true,
-    narrative: "Aggregate ICS metrics + COMPASS disparity insights across practices (synthetic public demo).",
+    narrative: "Aggregate regional metrics + COMPASS disparity insights across practices (synthetic public demo).",
     demoSection: "§5.11",
   },
 ] as const;
@@ -111,8 +111,8 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
             Mr James Patel walkthrough
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and public ICS
-            COMPASS view. Proof-mode only. No production claims. Clinician and ICS dashboard steps are open without
+            Ordered synthetic demo from midnight ETL through GP consult, HITL queue, referral package, and public regional
+            COMPASS view. Proof-mode only. No production claims. Clinician and population dashboard steps are open without
             sign-in; admin, pharmacy, and audit surfaces require an account.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">

@@ -1,14 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,198 +20,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ICS_REGIONS } from "@/lib/access-requests/validation";
 import type { UserRole } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
-import { getOrgSchema } from "@/lib/onboarding/validation";
-import { lookupOdsCode } from "@/lib/onboarding/verifications";
+import { ORG_EHR_OPTIONS, getOrgSchema } from "@/lib/onboarding/validation";
 
 type OrgFormProps = {
   role: UserRole;
   onSubmit: () => void;
 };
 
-const ICS_REGIONS = [
-  "South East London",
-  "West Yorkshire",
-  "Greater Manchester",
-  "Birmingham and Solihull",
-  "Other",
-];
-
-const EHR_OPTIONS = ["EMIS Web", "SystmOne", "Other"] as const;
-const EHR_MIX = ["EMIS Web", "SystmOne", "Mixed", "Other"] as const;
+const ORG_NAME_LABEL: Partial<Record<UserRole, string>> = {
+  "ics-lead": "Network, region or health system",
+  "hospital-executive": "Hospital or health system",
+  researcher: "Research institution",
+};
 
 export function OrgForm({ role, onSubmit }: OrgFormProps) {
   const organisation = useOnboardingStore((s) => s.organisation);
   const setOrganisation = useOnboardingStore((s) => s.setOrganisation);
-  const [lookupMessage, setLookupMessage] = useState<string | null>(null);
-  const [lookupPending, setLookupPending] = useState(false);
-
   const schema = getOrgSchema(role);
-  if (!schema) return null;
 
   type FormValues = Record<string, unknown>;
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema) as never,
-    defaultValues: organisation as FormValues,
+    resolver: schema ? (zodResolver(schema) as never) : undefined,
+    defaultValues: { useSynthetic: true, ...(organisation as FormValues) },
     mode: "onChange",
   });
 
-  async function handleOdsLookup(code: string) {
-    setLookupPending(true);
-    const result = await lookupOdsCode(code);
-    setLookupMessage(result.message);
-    if (result.found) {
-      if (result.name && "practiceName" in form.getValues()) {
-        form.setValue("practiceName" as keyof FormValues, result.name as never);
-      }
-      if (result.ehr && "ehrSystem" in form.getValues()) {
-        form.setValue("ehrSystem" as keyof FormValues, result.ehr as never);
-      }
-      if (result.ics && "icsRegion" in form.getValues()) {
-        form.setValue("icsRegion" as keyof FormValues, result.ics as never);
-      }
-      if (result.beds && "numberOfBeds" in form.getValues()) {
-        form.setValue("numberOfBeds" as keyof FormValues, result.beds as never);
-      }
-    }
-    setLookupPending(false);
-  }
+  const useSynthetic = form.watch("useSynthetic") !== false;
 
   function submit(values: FormValues) {
-    setOrganisation(values as Record<string, unknown>);
+    setOrganisation(
+      values.useSynthetic === false
+        ? values
+        : { useSynthetic: true, organisationName: "Aksh sandbox clinic" }
+    );
     onSubmit();
   }
 
-  const odsFieldName =
-    role === "ics-lead"
-      ? "icsOdsCode"
-      : role === "hospital-executive"
-        ? "trustOdsCode"
-        : "odsCode";
-
-  const showOdsLookup = role !== "researcher";
-
   return (
     <Form {...form}>
-      <form
-        id="org-form"
-        onSubmit={form.handleSubmit(submit)}
-        className="space-y-4 animate-in fade-in duration-200"
-      >
-        {showOdsLookup ? (
-          <FormField
-            control={form.control}
-            name={odsFieldName as keyof FormValues}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Organisation ID</FormLabel>
-                <div className="flex gap-2">
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} placeholder="Clinic / org code" />
-                  </FormControl>
-                  <button
-                    type="button"
-                    className="rounded-sm border border-border px-3 text-sm"
-                    onClick={() => handleOdsLookup(String(field.value))}
-                  >
-                    {lookupPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lookup"}
-                  </button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ) : null}
+      <form id="org-form" onSubmit={form.handleSubmit(submit)} className="space-y-5 animate-in fade-in duration-200">
+        <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Workspace">
+          {[
+            {
+              value: true,
+              title: "Start in the sandbox clinic",
+              body: "A full test clinic with patients, care team and pharmacy. Ready now."
+            },
+            {
+              value: false,
+              title: "Describe my organisation",
+              body: "Still synthetic data today. Helps us prepare when your organisation goes live.",
+            },
+          ].map((option) => {
+            const checked = useSynthetic === option.value;
+            return (
+              <button
+                key={String(option.value)}
+                type="button"
+                role="radio"
+                aria-checked={checked}
+                onClick={() => form.setValue("useSynthetic", option.value, { shouldValidate: true })}
+                className={
+                  checked
+                    ? "rounded-2xl border-2 border-secondary bg-secondary/5 p-4 text-left"
+                    : "rounded-2xl border border-border-subtle bg-white p-4 text-left hover:border-secondary/40"
+                }
+              >
+                <span className="block text-sm font-semibold text-foreground">{option.title}</span>
+                <span className="mt-1 block text-xs leading-relaxed text-muted">{option.body}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        {lookupMessage ? <p className="text-sm text-muted">{lookupMessage}</p> : null}
-
-        {role === "gp" && (
-          <>
+        {useSynthetic ? null : (
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name={"listSize" as keyof FormValues}
+              name="organisationName"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>List size</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select list size" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {["<5,000", "5,000–10,000", "10,000–15,000", "15,000+"].map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"ehrSystem" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>EHR system</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {EHR_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>
-                          {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"icsRegion" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Region / care network</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {ICS_REGIONS.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {region}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {role === "nurse" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"supervisingGp" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Supervising GP name</FormLabel>
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>{ORG_NAME_LABEL[role] ?? "Clinic or organisation name"}</FormLabel>
                   <FormControl>
                     <Input {...field} value={String(field.value ?? "")} />
                   </FormControl>
@@ -223,93 +113,34 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
             />
             <FormField
               control={form.control}
-              name={"wardTeam" as keyof FormValues}
+              name="organisationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ward / team</FormLabel>
+                  <FormLabel>Organisation identifier (optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
+                    <Input placeholder="Registration, facility or licence ID" {...field} value={String(field.value ?? "")} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {role === "clinical-pharmacist" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"pcnAffiliation" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>PCN affiliation</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
+                  <FormDescription>Stored as provided; not verified yet.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name={"ehrSystem" as keyof FormValues}
+              name="ehrSystem"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>EHR system</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
+                  <FormLabel>EHR in use (optional)</FormLabel>
+                  <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger aria-label="EHR in use">
+                        <SelectValue placeholder="Select" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {EHR_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>
-                          {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {role === "practice-manager" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"practiceName" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Practice name</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"icsRegion" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Region / care network</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {ICS_REGIONS.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {region}
+                      {ORG_EHR_OPTIONS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -320,80 +151,20 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
             />
             <FormField
               control={form.control}
-              name={"numberOfGps" as keyof FormValues}
+              name="region"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of GPs</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={1} {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {role === "ics-lead" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"practicesInScope" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Practices in scope</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={1} {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"ehrMix" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>EHR mix</FormLabel>
-                  <div className="space-y-2">
-                    {EHR_MIX.map((option) => {
-                      const selected = (field.value as string[] | undefined) ?? [];
-                      return (
-                        <label key={option} className="flex items-center gap-2 text-sm">
-                          <Checkbox
-                            checked={selected.includes(option)}
-                            onCheckedChange={(checked) => {
-                              const next = checked
-                                ? [...selected, option]
-                                : selected.filter((v) => v !== option);
-                              field.onChange(next);
-                            }}
-                          />
-                          {option}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"pilotCohort" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deployment phase</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Region (optional)</FormLabel>
+                  <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger aria-label="Region">
+                        <SelectValue placeholder="Select" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {["Phase 1", "Phase 2", "Observer"].map((cohort) => (
-                        <SelectItem key={cohort} value={cohort}>
-                          {cohort}
+                      {ICS_REGIONS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -402,117 +173,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
                 </FormItem>
               )}
             />
-          </>
-        )}
-
-        {role === "hospital-executive" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"numberOfBeds" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of beds</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={1} {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"hospitalType" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Hospital type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {["Acute", "Mental Health", "Community", "Private"].map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"ehrSystem" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>EHR system</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value ?? "")}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {["Epic", "Oracle Health", "EMIS", "Other"].map((opt) => (
-                        <SelectItem key={opt} value={opt}>
-                          {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {role === "researcher" && (
-          <>
-            <FormField
-              control={form.control}
-              name={"researchInstitution" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Research institution</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"ethicsBoardRef" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ethics board reference (optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"affiliatedTrust" as keyof FormValues}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Affiliated hospital or health system (optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={String(field.value ?? "")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
+          </div>
         )}
       </form>
     </Form>

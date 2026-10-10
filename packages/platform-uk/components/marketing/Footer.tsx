@@ -10,24 +10,26 @@ const footerColumns = [
       { label: "Platform", href: "/platform" },
       { label: "How it works", href: "/platform#loop" },
       { label: "Patel walkthrough", href: "/demo/patel" },
+      { label: "Safety & security", href: "/security" },
       { label: "Integrations", href: "/integrations" },
     ],
   },
   {
-    title: "Trust",
+    title: "Who it is for",
     links: [
-      { label: "Safety & security", href: "/security" },
-      { label: "Resources", href: "/resources" },
-      { label: "FAQ", href: "/faq" },
+      { label: "Physicians & nurses", href: "/for-clinicians" },
+      { label: "People with diabetes", href: "/for-patients" },
+      { label: "Pharmacists", href: "/for-pharmacists" },
+      { label: "Clinics, systems & payers", href: "/for-organisations" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "Request Pilot", href: "/get-started" },
-      { label: "Contact", href: "/contact" },
+      { label: "Start free", href: "/signup" },
       { label: "Sign in", href: "/signin" },
-      { label: "Create account", href: "/signup" },
+      { label: "Go live with your organisation", href: "/get-started" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   {
@@ -78,7 +80,7 @@ export default function Footer() {
               Security &amp; clinical safety
             </Link>
           </p>
-          <p>© 2026 Aksh Health Ltd · Registered in England &amp; Wales</p>
+          <p>© 2026 Aksh Health Ltd</p>
         </div>
       </div>
     </footer>

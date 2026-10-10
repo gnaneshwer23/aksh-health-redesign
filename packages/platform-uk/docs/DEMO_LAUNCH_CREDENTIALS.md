@@ -28,16 +28,16 @@ npm run seed:demo-cohort -- --apply
 
 | Role | Sample email | Password |
 |------|--------------|----------|
-| GP | `gp01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| Nurse | `nurse01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| Pharmacist | `pharmacist01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| Admin | `admin01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| ICS | `ics01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| Hospital | `hospital01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
-| Patient | `patient01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
+| GP | `gp01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| Nurse | `nurse01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| Pharmacist | `pharmacist01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| Admin | `admin01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| ICS | `ics01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| Hospital | `hospital01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| Patient | `patient01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
 
 **Paired GP↔patient demo:** `patient01` binds to synthetic chart **P002 (Mr James Patel)** — the same id GP selects in the review queue. Ask Aksh / check-in require this `boundPatientId` on the session (`liveEmis:false`).
-| Researcher | `researcher01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
+| Researcher | `researcher01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
 
 - Emails: `{role}{01–NN}@demo.akshhealth.com` (see [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md)).
 - Override: set `DEMO_COHORT_PASSWORD` in `.env.local` before `--apply`.
@@ -52,21 +52,21 @@ Demo cohort accounts (after `npm run seed:demo-cohort -- --apply`) map cleanly:
 ```bash
 export SMOKE_BASE_URL=http://127.0.0.1:3000
 export SMOKE_GP_EMAIL="gp01@demo.akshhealth.com"
-export SMOKE_GP_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_GP_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_NURSE_EMAIL="nurse01@demo.akshhealth.com"
-export SMOKE_NURSE_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_NURSE_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_PHARMACIST_EMAIL="pharmacist01@demo.akshhealth.com"
-export SMOKE_PHARMACIST_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_PHARMACIST_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_ADMIN_EMAIL="admin01@demo.akshhealth.com"
-export SMOKE_ADMIN_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_ADMIN_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_PATIENT_EMAIL="patient01@demo.akshhealth.com"
-export SMOKE_PATIENT_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_PATIENT_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_ICS_EMAIL="ics01@demo.akshhealth.com"
-export SMOKE_ICS_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_ICS_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_HOSPITAL_EMAIL="hospital01@demo.akshhealth.com"
-export SMOKE_HOSPITAL_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_HOSPITAL_PASSWORD="<DEMO_COHORT_PASSWORD>"
 export SMOKE_RESEARCHER_EMAIL="researcher01@demo.akshhealth.com"
-export SMOKE_RESEARCHER_PASSWORD="AkshDemoCohort!2026"
+export SMOKE_RESEARCHER_PASSWORD="<DEMO_COHORT_PASSWORD>"
 
 npm run smoke:all
 # or: npm run smoke:walkthrough with SMOKE_EMAIL / SMOKE_PASSWORD

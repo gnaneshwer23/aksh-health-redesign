@@ -73,14 +73,14 @@ export const syntheticSourceProfiles: SyntheticSourceProfilePreset[] = [
   },
   {
     id: "ehr_handoff_placeholder",
-    label: "EMIS / SystmOne Placeholder",
+    label: "the EHR Placeholder",
     description: "Synthetic EHR handoff placeholder showing how imported review context could be staged without live integration.",
     patientLabel: "Synthetic EHR Handoff Patient",
     sourceType: "note",
     pathwayHint: "hypertension",
     confidenceMode: "auto",
     includeMedicationDraft: false,
-    text: "Synthetic EMIS handoff summary. Hypertension annual review due. Blood pressure recorded as 142/88. Current medications include amlodipine and ramipril. No real EHR connection is active; clinician must confirm imported summary before finalization."
+    text: "Synthetic EHR handoff summary. Hypertension annual review due. Blood pressure recorded as 142/88. Current medications include amlodipine and ramipril. No real EHR connection is active; clinician must confirm imported summary before finalization."
   }
 ];
 
@@ -103,7 +103,7 @@ export function buildSyntheticSourceFixtureCatalog() {
       description: profile.description
     })),
     boundary:
-      "These fixtures simulate six source categories from the architecture map without connecting to live NHS, EHR, wearable, genomics, imaging, or public-health systems."
+      "These fixtures simulate six source categories from the architecture map without connecting to live health system, EHR, wearable, genomics, imaging, or public-health systems."
   };
 }
 

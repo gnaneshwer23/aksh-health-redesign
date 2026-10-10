@@ -23,7 +23,7 @@ export async function notifyAccessRequestSubmitted(record: AccessRequestRecord) 
       `Organisation: ${record.orgName}`,
       `Type: ${record.orgType}`,
       `Region: ${record.region ?? "Not specified"}`,
-      `ODS code: ${record.odsCode ?? "Not specified"}`,
+      `organisation ID: ${record.odsCode ?? "Not specified"}`,
       `Contact: ${record.contactName} <${record.contactEmail}>`,
       `EHR systems: ${record.ehrSystems.join(", ") || "Not specified"}`,
       `List size: ${record.listSize ?? "Not specified"}`,

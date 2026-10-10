@@ -1,23 +1,30 @@
 import { z } from "zod";
 
 export const ORG_TYPES = [
-  "Integrated care / regional network",
   "Primary care / clinic network",
+  "Specialist diabetes centre",
   "Hospital / health system",
+  "Regional or integrated care network",
+  "Pharmacy group",
+  "Payer / insurer",
   "Private healthcare provider",
+  "Employer or digital health programme",
 ] as const;
 
+/** Where the organisation operates. Aksh is not tied to one health system. (Name kept for API compatibility.) */
 export const ICS_REGIONS = [
-  "London",
-  "South East",
-  "South West",
-  "Midlands",
-  "East of England",
-  "North West",
-  "North East & Yorkshire",
+  "Europe",
+  "North America",
+  "Latin America",
+  "Middle East",
+  "Africa",
+  "South Asia",
+  "East & Southeast Asia",
+  "Oceania",
+  "Other",
 ] as const;
 
-export const EHR_SYSTEMS = ["EMIS Web", "SystmOne", "Epic", "Oracle Health", "Other"] as const;
+export const EHR_SYSTEMS = ["Epic", "Oracle Health (Cerner)", "athenahealth", "eClinicalWorks", "Other EHR", "Practice management system only", "No EHR yet"] as const;
 
 export const LIST_SIZES = [
   "Under 5,000",

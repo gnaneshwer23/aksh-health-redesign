@@ -41,7 +41,7 @@ export const PURPOSE_CATALOGUE: Record<
   },
   population_analytics: {
     label: "Population analytics",
-    description: "ICS-style aggregate risk and equity overlays (demo or pilot).",
+    description: "Regional aggregate risk and equity overlays (demo or pilot).",
     allowsClinicalWrite: false
   },
   coaching_wellness: {

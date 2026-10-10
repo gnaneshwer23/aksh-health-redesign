@@ -115,7 +115,7 @@ export function IntegrationStatus() {
 
       next.push({
         id: "emis-staging",
-        label: "EMIS FHIR staging",
+        label: "EHR FHIR staging",
         status: emis?.liveWriteBack
           ? "Live write-back (unexpected)"
           : emis?.configured
@@ -124,8 +124,8 @@ export function IntegrationStatus() {
         detail: emis?.note
           ? `${emis.note}${typeof emis.queueDepth === "number" ? ` · queue ${emis.queueDepth}` : ""}`
           : emisRes.ok
-            ? "No live EMIS Partner write-back in this build."
-            : "Sign in required to load EMIS staging status.",
+            ? "No live EHR partner write-back in this build."
+            : "Sign in required to load EHR staging status.",
         tone: emis?.liveWriteBack ? "warn" : "muted"
       });
 
@@ -191,7 +191,7 @@ export function IntegrationStatus() {
       <CardContent className="p-4 space-y-2">
         <p className="text-[10px] text-muted">
           Live probe from <code>/api/health</code>, EMIS staging, and integration contract — not fake “Healthy”
-          EHR syncs. No live EMIS/SystmOne write-back.
+          EHR syncs. No live the EHR write-back.
         </p>
         {error ? <p className="text-[10px] text-danger">{error}</p> : null}
         {rows.map((svc) => (

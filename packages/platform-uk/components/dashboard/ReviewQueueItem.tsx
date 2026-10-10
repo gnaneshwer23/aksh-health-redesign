@@ -118,7 +118,7 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
               <span>Confidence</span>
               <span className="text-foreground">{item.confidenceScore}%</span>
             </div>
-            <Progress value={item.confidenceScore} className="h-2" />
+            <Progress value={item.confidenceScore} className="h-2" aria-label="Confidence score" />
           </div>
         )}
         {item.evidenceSources.length > 0 && (

@@ -26,8 +26,8 @@ export function PlatformPageContent() {
         eyebrow="The Aksh Intelligence Platform"
         title="One intelligence layer. Eight roles. Clinician-owned decisions."
         lede="A single, auditable, human-in-the-loop layer beside your EHR. Agents draft, check and stage; a named clinician decides; every decision is audited. First module: Aksh Diabetes."
-        primary={{ label: "Request access", href: "/get-started" }}
-        secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
+        primary={{ label: "Start free", href: "/signup" }}
+        secondary={{ label: "Try without an account", href: "/dashboard/gp" }}
       >
         <nav className="mt-8 flex flex-wrap items-center gap-x-1 gap-y-2" aria-label="Platform page sections">
           {sectionNav.map((item, index) => (
@@ -72,9 +72,9 @@ export function PlatformPageContent() {
 
       <LvCtaBand
         title="Ready to explore the platform?"
-        lede="Start on the synthetic clinic. Live patient data waits for your DPIA, clinical safety sign-off and partner approvals."
-        primary={{ label: "Request access", href: "/get-started" }}
-        secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
+        lede="Start in a sandbox clinic. Live patient data waits for your DPIA, clinical safety sign-off and partner approvals."
+        primary={{ label: "Start free", href: "/signup" }}
+        secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
       />
     </>
   );

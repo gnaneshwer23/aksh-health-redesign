@@ -90,7 +90,7 @@ export function buildGovernancePack(cases: ReviewCase[]): GovernancePack {
       title: "Own-system records are treated as externally integrated records",
       severity: "medium",
       status: "needs_safety_owner",
-      evidence: "Current architecture uses internal synthetic records and evidence exports; no live NHS/EHR writeback is enabled.",
+      evidence: "Current architecture uses internal synthetic records and evidence exports; no live health system/EHR writeback is enabled.",
       requiredControl: "Document own-system record lifecycle, retention, access, audit, and downstream export rules before production."
     }
   ];
@@ -130,7 +130,7 @@ export function buildGovernancePack(cases: ReviewCase[]): GovernancePack {
     hazards,
     productionReadinessGaps: [
       "Named clinical safety officer sign-off",
-      "Formal DCB0129-style hazard log ownership",
+      "Formal clinical safety case standard-style hazard log ownership",
       "Production data protection impact assessment",
       "Role-based access control and audit integrity",
       "Offline ML/research evaluation protocol and model-output governance",

@@ -27,7 +27,7 @@ export function ValidationStreamReadoutCard({
         </div>
         <div className="row">
           <div>
-            <strong>ICS pilot preparation</strong>
+            <strong>regional pilot preparation</strong>
             <p>Cases suitable for training flows and pre-pilot walk-throughs.</p>
           </div>
           <span className="pill">{dataCollectionAnalytics.streamCounts.ics_pilot_preparation}</span>
@@ -318,7 +318,7 @@ export function AverageScoreByStreamCard({
         {[
           ["Phase 1 synthetic", "Average validation protocol score for the baseline synthetic cohort.", validationProtocolAnalytics.streamAverages.phase_1_synthetic],
           ["Phase 1 remediation", "Average score for cases still blocked in remediation.", validationProtocolAnalytics.streamAverages.phase_1_remediation],
-          ["ICS pilot preparation", "Average score for cases already promoted into pilot-prep handling.", validationProtocolAnalytics.streamAverages.ics_pilot_preparation],
+          ["regional pilot preparation", "Average score for cases already promoted into pilot-prep handling.", validationProtocolAnalytics.streamAverages.ics_pilot_preparation],
           ["RWE pipeline candidate", "Average score for frozen evidence-ready artifacts.", validationProtocolAnalytics.streamAverages.rwe_pipeline_candidate]
         ].map(([label, detail, value]) => (
           <div className="row" key={label}>

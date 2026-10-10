@@ -13,8 +13,8 @@ export function ProductModeBanner({
   const headline = recordingMode
     ? "Presentation capture is active. Synthetic proof boundaries and evidence labels stay visible."
     : demoMode
-      ? "External walkthrough path is active. Live NHS/EHR integration remains off."
-      : "Review, safety, and evidence workflows are active. Live NHS/EHR integration is off.";
+      ? "External walkthrough path is active. Live health system/EHR integration remains off."
+      : "Review, safety, and evidence workflows are active. Live health system/EHR integration is off.";
   const chips = recordingMode
     ? ["Synthetic data only", "Recording-safe UI", "No production clinical claims"]
     : demoMode

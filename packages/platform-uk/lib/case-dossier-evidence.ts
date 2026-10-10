@@ -44,7 +44,7 @@ export function buildCaseValidationDossierPayload(
     patientLabel: reviewCase.patientLabel,
     knownLimitations: [...doNotClaimYet],
     limitationsNotice:
-      "Synthetic proof artifact for internal review and advisor walkthrough. Not production clinical software, live NHS/EHR integration, or real-patient-data evidence.",
+      "Synthetic proof artifact for internal review and advisor walkthrough. Not production clinical software, live health system/EHR integration, or real-patient-data evidence.",
     reviewDecision: {
       lastReviewer: evidence.reviewSummary.lastReviewer ?? null,
       lastDecision: evidence.reviewSummary.lastDecision ?? null,

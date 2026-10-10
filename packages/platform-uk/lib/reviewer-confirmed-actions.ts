@@ -66,7 +66,7 @@ export function deriveReviewerConfirmedActionDrafts(reviewCase: ReviewCase): Rev
       title: "L9 medication decision draft",
       actionLabel: "Confirm, edit, reject, or override the medication decision with reviewer rationale.",
       instruction:
-        "Medication actions are reviewer-confirmed drafts only; this synthetic proof does not autonomously prescribe or integrate with live NHS systems.",
+        "Medication actions are reviewer-confirmed drafts only; this synthetic proof does not autonomously prescribe or integrate with live health system systems.",
       category: medicationGate.mandatory ? "override" : "must_confirm",
       actionType: "medication_decision",
       severity: severityForGate(medicationGate.status, medicationGate.mandatory),

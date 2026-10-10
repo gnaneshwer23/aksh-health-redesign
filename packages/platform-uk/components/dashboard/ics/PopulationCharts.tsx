@@ -21,7 +21,7 @@ export function PopulationCharts() {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="text-sm">Patient Risk Profile Across ICS</CardTitle>
+          <CardTitle className="text-sm">Patient Risk Profile Across regional</CardTitle>
         </CardHeader>
         <CardContent className="h-64">
           {loading && !liveData ? (

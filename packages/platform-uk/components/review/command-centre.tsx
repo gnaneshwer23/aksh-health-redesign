@@ -57,7 +57,7 @@ export function CommandCentre() {
         <span className="hero-kicker">Product command centre</span>
         <h2>One view for what is built, what is safe to show, and what needs work next.</h2>
         <p>
-          Aksh Health UK/EU is currently a synthetic-data, review-first clinical proof platform. This page connects the
+          Aksh Health is currently a synthetic-data, review-first clinical proof platform. This page connects the
           clinical workflow, evidence layer, operations layer, and 12-month roadmap so the product feels like one system.
         </p>
         <div className="actions">
@@ -97,7 +97,7 @@ export function CommandCentre() {
           </div>
           <div className="hero-stat">
             <strong>Synthetic boundary</strong>
-            <p>No production clinical software, real patient-data handling, or live NHS integration claim yet.</p>
+            <p>No production clinical software, real patient-data handling, or live health system integration claim yet.</p>
             <span className="hero-stat-value">Strict</span>
           </div>
           <div className="hero-stat">
@@ -144,7 +144,7 @@ export function CommandCentre() {
             <h3>Built Product Map</h3>
             <p>The current platform is strongest as a clinical-governance and evidence-quality proof system.</p>
           </div>
-          <span className="pill">UK/EU active target</span>
+          <span className="pill">regional/EU active target</span>
         </div>
         <div className="layout-grid">
           <div className="metric">

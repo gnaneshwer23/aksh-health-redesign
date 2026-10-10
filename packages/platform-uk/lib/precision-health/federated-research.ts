@@ -68,7 +68,7 @@ function buildSyntheticAggregate(): FederatedAggregate {
     meanOracleScore: 41.2,
     highRiskSharePercent: 18,
     sitesParticipating: 3,
-    note: "Synthetic ICS-style aggregate — not a live federated training round."
+    note: "Synthetic regional aggregate — not a live federated training round."
   };
 }
 
@@ -119,7 +119,7 @@ export function createFederatedJob(input: {
     limitations: [
       "Synthetic cohort aggregates only — not a multi-site FL round on real PHI.",
       "patientLevelExport: false by default.",
-      "Not approved for publication or MHRA/DTAC claims."
+      "Not approved for publication or medical device regulator/technology assessment claims."
     ]
   };
   jobStore.set(id, completed);

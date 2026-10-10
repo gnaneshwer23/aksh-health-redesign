@@ -28,7 +28,7 @@ Patients are available in-app immediately via `lib/mock-data/patients.ts` (no Ne
 
 | Role | Email | Password |
 |------|-------|----------|
-| GP | `gp01@demo.akshhealth.com` | `AkshDemoCohort!2026` |
+| GP | `gp01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
 | Nurse | `nurse01@demo.akshhealth.com` | same |
 | Pharmacist | `pharmacist01@demo.akshhealth.com` | same |
 | Admin | `admin01@demo.akshhealth.com` | same |

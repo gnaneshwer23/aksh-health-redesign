@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS aksh.fhir_staging_bundles (
   medplum_required BOOLEAN NOT NULL DEFAULT FALSE,
   bundle_summary TEXT NOT NULL,
   bundle JSONB NOT NULL,
-  note TEXT NOT NULL DEFAULT 'BRIDGE in-app FHIR staging · not live EMIS · liveEmis:false'
+  note TEXT NOT NULL DEFAULT 'BRIDGE in-app FHIR staging · not live EHR · liveEmis:false'
 );
 
 CREATE INDEX IF NOT EXISTS idx_fhir_staging_staged_at

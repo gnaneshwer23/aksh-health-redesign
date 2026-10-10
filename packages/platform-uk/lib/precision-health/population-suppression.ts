@@ -22,7 +22,7 @@
 export const MIN_POPULATION_CELL_SIZE = 10;
 
 export const POPULATION_SUPPRESSION_DISCLOSURE =
-  `Cell counts below ${MIN_POPULATION_CELL_SIZE} are suppressed ("fewer than ${MIN_POPULATION_CELL_SIZE}") — an engineering-chosen conservative interim default (Volume I OQ-POP-1/OQ-ARC-2; the NHS-approved threshold is not yet clinically/compliance-decided).`;
+  `Cell counts below ${MIN_POPULATION_CELL_SIZE} are suppressed ("fewer than ${MIN_POPULATION_CELL_SIZE}") — an engineering-chosen conservative interim default (Volume I OQ-POP-1/OQ-ARC-2; the health system-approved threshold is not yet clinically/compliance-decided).`;
 
 export type SuppressibleCell = {
   /** The true exact count — always `null` once suppressed; never returned alongside `suppressed: true`. */

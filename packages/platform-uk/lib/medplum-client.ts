@@ -90,7 +90,7 @@ export function getMedplumRehearsalStatus(): MedplumRehearsalStatus {
     dryRunEligible: true,
     lastDryRunAt: lastMedplumDryRunAt,
     note: credentialsConfigured
-      ? "Rehearsal mode: CLIENT_ID/SECRET present — OAuth not verified until ?probe=auth. Invalid client → regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EMIS write-back."
+      ? "Rehearsal mode: CLIENT_ID/SECRET present — OAuth not verified until ?probe=auth. Invalid client → regenerate Client Secret in Medplum App → Clients (UUID placeholders fail). Not EHR write-back."
       : "Flag on but credentials missing — dry-run/push will fail auth; set MEDPLUM_CLIENT_ID + MEDPLUM_CLIENT_SECRET."
   };
 }
@@ -115,7 +115,7 @@ export async function probeMedplumOAuth(): Promise<MedplumOAuthProbeResult> {
       liveEmis: false,
       tokenUrlHost,
       error: "MEDPLUM_CLIENT_ID / MEDPLUM_CLIENT_SECRET not configured",
-      note: "Credentials missing — staging OAuth skipped. Not live EMIS."
+      note: "Credentials missing — staging OAuth skipped. Not live EHR."
     };
   }
 
@@ -141,7 +141,7 @@ export async function probeMedplumOAuth(): Promise<MedplumOAuthProbeResult> {
         tokenUrlHost,
         error: ok ? undefined : "Token response missing access_token",
         note: ok
-          ? "OAuth client_credentials succeeded — staging rehearsal only; not EMIS."
+          ? "OAuth client_credentials succeeded — staging rehearsal only; not EHR."
           : "OAuth HTTP ok but no access_token — check Medplum Client Application."
       };
     }
@@ -165,7 +165,7 @@ export async function probeMedplumOAuth(): Promise<MedplumOAuthProbeResult> {
       status: authResponse.status,
       tokenUrlHost,
       error: errorHint,
-      note: "OAuth failed — provide a real Medplum Client Secret (UUID placeholders return Invalid client). Not EMIS."
+      note: "OAuth failed — provide a real Medplum Client Secret (UUID placeholders return Invalid client). Not EHR."
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -175,7 +175,7 @@ export async function probeMedplumOAuth(): Promise<MedplumOAuthProbeResult> {
       liveEmis: false,
       tokenUrlHost,
       error: message.slice(0, 200),
-      note: "OAuth unreachable — Medplum host down or network blocked. Not EMIS."
+      note: "OAuth unreachable — Medplum host down or network blocked. Not EHR."
     };
   }
 }

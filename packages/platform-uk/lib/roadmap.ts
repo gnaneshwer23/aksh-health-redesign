@@ -181,40 +181,40 @@ export const roadmapItems: RoadmapItem[] = [
   {
     month: "M6 (Sep 26)",
     phase: "1F",
-    deliverable: "DCB0129 Safety Case Draft + NHS Partners Engaged",
+    deliverable: "clinical safety case standard Safety Case Draft + health system Partners Engaged",
     owner: "CSO + CEO",
     budgetK: 38,
     team: 6,
-    validationGate: "DTAC pre-submission approved",
+    validationGate: "technology assessment pre-submission approved",
     workbookStatus: "Planned",
     buildStatus: "not_started",
-    currentReality: "Architecture docs and synthetic evidence reports exist. A DCB0129 safety case, DTAC approval, and partner engagement record are not built or approved.",
+    currentReality: "Architecture docs and synthetic evidence reports exist. A clinical safety case standard safety case, technology assessment approval, and partner engagement record are not built or approved.",
     nextBuild: "Create safety-file placeholders and evidence index, but keep approval language out until a CSO/regulatory owner signs off."
   },
   {
     month: "M7 (Oct 26)",
     phase: "2A",
-    deliverable: "EMIS Web Integration + 3 GP Pilot Sites Selected",
-    owner: "CTO + NHS BD",
+    deliverable: "the EHR Integration + 3 GP Pilot Sites Selected",
+    owner: "CTO + health system BD",
     budgetK: 52,
     team: 8,
-    validationGate: "EMIS sandbox testing passed",
+    validationGate: "EHR sandbox testing passed",
     workbookStatus: "Planned",
     buildStatus: "not_started",
-    currentReality: "No live EMIS/SystmOne integration exists. Current FHIR outputs are evidence-oriented and integration rehearsal only.",
-    nextBuild: "Define mocked EMIS/SystmOne contract tests before vendor or pilot claims."
+    currentReality: "No live the EHR integration exists. Current FHIR outputs are evidence-oriented and integration rehearsal only.",
+    nextBuild: "Define mocked the EHR contract tests before vendor or pilot claims."
   },
   {
     month: "M8 (Nov 26)",
     phase: "2B",
-    deliverable: "VOICE Agent + SystmOne prep",
+    deliverable: "VOICE Agent + EHR prep",
     owner: "AI/ML + Frontend",
     budgetK: 44,
     team: 8,
     validationGate: "SOAP auto-generation >85% accuracy",
     workbookStatus: "Planned",
     buildStatus: "not_started",
-    currentReality: "No production voice agent or SystmOne integration prep is complete. Existing voice behavior is a route-level rehearsal/fallback.",
+    currentReality: "No production voice agent or EHR integration prep is complete. Existing voice behavior is a route-level rehearsal/fallback.",
     nextBuild: "Create controlled voice evidence scenarios only after current clinical proof is maintainable."
   },
   {
@@ -233,8 +233,8 @@ export const roadmapItems: RoadmapItem[] = [
   {
     month: "M10 (Jan 27)",
     phase: "2D",
-    deliverable: "3 ICS Pilots Launch + ORACLE Agent MVP",
-    owner: "NHS BD + AI/ML",
+    deliverable: "3 Regional Pilots Launch + ORACLE Agent MVP",
+    owner: "health system BD + AI/ML",
     budgetK: 56,
     team: 10,
     validationGate: "150 clinicians trained, 5K patients",
@@ -259,14 +259,14 @@ export const roadmapItems: RoadmapItem[] = [
   {
     month: "M12 (Mar 27)",
     phase: "2F",
-    deliverable: "DCB0129 Safety Case Submission Ready + NHS App prep",
+    deliverable: "clinical safety case standard Safety Case Submission Ready + patient app prep",
     owner: "CSO + CTO",
     budgetK: 54,
     team: 8,
-    validationGate: "DTAC approval + MHRA pathway open",
+    validationGate: "technology assessment approval + medical device regulator pathway open",
     workbookStatus: "Planned",
     buildStatus: "blocked",
-    currentReality: "No DCB0129 submission, DTAC approval, MHRA pathway, or NHS App preparation is complete.",
+    currentReality: "No clinical safety case standard submission, technology assessment approval, medical device regulator pathway, or patient app preparation is complete.",
     nextBuild: "Keep as future programme milestone; current build can only support evidence preparation."
   }
 ];
@@ -329,17 +329,17 @@ export const defaultRoadmapTrackerItems: RoadmapTrackerItem[] = [
     buildStatus: "not_started",
     risk: "critical",
     evidenceLink: "/review/readiness",
-    notes: "Evidence readiness exists. DCB0129 safety case draft and DTAC pre-submission are not complete.",
+    notes: "Evidence readiness exists. clinical safety case standard safety case draft and technology assessment pre-submission are not complete.",
     lastUpdated: "2026-04-29"
   },
   {
     id: "2A",
-    owner: "CTO + NHS BD",
+    owner: "CTO + health system BD",
     dueDate: "2026-10-31",
     buildStatus: "not_started",
     risk: "critical",
     evidenceLink: "",
-    notes: "No EMIS sandbox or GP pilot-site selection is complete.",
+    notes: "No EHR sandbox or GP pilot-site selection is complete.",
     lastUpdated: "2026-04-29"
   },
   {
@@ -349,7 +349,7 @@ export const defaultRoadmapTrackerItems: RoadmapTrackerItem[] = [
     buildStatus: "not_started",
     risk: "high",
     evidenceLink: "",
-    notes: "VOICE dictation (CANVAS sub-capability) and SystmOne preparation are future roadmap items. JSL NLP remains not wired.",
+    notes: "VOICE dictation (CANVAS sub-capability) and EHR preparation are future roadmap items. JSL NLP remains not wired.",
     lastUpdated: "2026-04-29"
   },
   {
@@ -364,7 +364,7 @@ export const defaultRoadmapTrackerItems: RoadmapTrackerItem[] = [
   },
   {
     id: "2D",
-    owner: "NHS BD + AI/ML",
+    owner: "health system BD + AI/ML",
     dueDate: "2027-01-31",
     buildStatus: "blocked",
     risk: "critical",
@@ -389,7 +389,7 @@ export const defaultRoadmapTrackerItems: RoadmapTrackerItem[] = [
     buildStatus: "blocked",
     risk: "critical",
     evidenceLink: "",
-    notes: "DCB0129 submission, DTAC approval, MHRA pathway, and NHS App prep are not complete.",
+    notes: "clinical safety case standard submission, technology assessment approval, medical device regulator pathway, and patient app prep are not complete.",
     lastUpdated: "2026-04-29"
   }
 ];
@@ -398,7 +398,7 @@ export const defaultM1ChecklistItems: M1ChecklistItem[] = [
   {
     id: "m1-cso-hire",
     week: "Week 1",
-    title: "CSO job spec finalized + RCGP/NMC/GPhC reach-out",
+    title: "CSO job spec finalized + RCGP/NMC/pharmacy register reach-out",
     owner: "CEO",
     dueDate: "2026-04-05",
     doneWhen: "Clinical Safety Officer candidate pipeline identified and interview process scheduled.",
@@ -411,20 +411,20 @@ export const defaultM1ChecklistItems: M1ChecklistItem[] = [
   {
     id: "m1-emis-application",
     week: "Week 1",
-    title: "EMIS Web Partner Programme application submitted",
+    title: "the EHR Partner Programme application submitted",
     owner: "CTO",
     dueDate: "2026-04-05",
-    doneWhen: "Formal acknowledgement or next-step email from EMIS is captured.",
+    doneWhen: "Formal acknowledgement or next-step email from EHR is captured.",
     buildStatus: "not_started",
     risk: "critical",
     evidenceLink: "",
-    notes: "Do not claim EMIS integration until partner/sandbox pathway is confirmed.",
+    notes: "Do not claim EHR integration until partner/sandbox pathway is confirmed.",
     lastUpdated: "2026-04-30"
   },
   {
     id: "m1-reg-consultant",
     week: "Week 1",
-    title: "DTAC/DCB0129 regulatory consultant engaged",
+    title: "technology assessment/clinical safety case standard regulatory consultant engaged",
     owner: "CEO",
     dueDate: "2026-04-05",
     doneWhen: "Consultant contract signed and kickoff booked.",
@@ -437,7 +437,7 @@ export const defaultM1ChecklistItems: M1ChecklistItem[] = [
   {
     id: "m1-infra-decision",
     week: "Week 1",
-    title: "AWS London EKS/RDS decision and implementation plan",
+    title: "Regional cloud (EKS/RDS) decision and implementation plan",
     owner: "CTO + DevOps",
     dueDate: "2026-04-12",
     doneWhen: "Architecture decision record exists with environment, cost, security, and migration assumptions.",
@@ -476,7 +476,7 @@ export const defaultM1ChecklistItems: M1ChecklistItem[] = [
   {
     id: "m1-hazard-log-template",
     week: "Week 3",
-    title: "Hazard log template aligned to DCB0129/clinical safety work",
+    title: "Hazard log template aligned to clinical safety case standard/clinical safety work",
     owner: "CSO + Regulatory Consultant",
     dueDate: "2026-04-19",
     doneWhen: "Hazard log framework exists with owners, mitigations, evidence links, and open assumptions.",
@@ -507,23 +507,23 @@ export const criticalPathItems: CriticalPathItem[] = [
     priority: "critical",
     blocker: "Hire Clinical Safety Officer",
     owner: "CEO",
-    impact: "No clinical safety owner blocks DCB0129-style claims.",
+    impact: "No clinical safety owner blocks clinical safety case standard-style claims.",
     buildStatus: "not_started",
     currentReality: "Not an app feature; needs real hiring and governance."
   },
   {
     timeline: "Week 2",
     priority: "critical",
-    blocker: "Apply to EMIS Web Partner Programme",
+    blocker: "Apply to the EHR Partner Programme",
     owner: "CTO",
-    impact: "Delays any real EMIS pathway.",
+    impact: "Delays any real EHR pathway.",
     buildStatus: "not_started",
     currentReality: "No vendor application evidence is tracked in the app."
   },
   {
     timeline: "Week 3",
     priority: "critical",
-    blocker: "Engage DTAC/DCB0129 regulatory consultant",
+    blocker: "Engage technology assessment/clinical safety case standard regulatory consultant",
     owner: "CEO",
     impact: "Delays clinical safety and regulatory pathway.",
     buildStatus: "not_started",
@@ -532,7 +532,7 @@ export const criticalPathItems: CriticalPathItem[] = [
   {
     timeline: "Week 4",
     priority: "high",
-    blocker: "AWS EKS London setup + load 100 Synthea patients",
+    blocker: "Regional cloud setup + load 100 Synthea patients",
     owner: "CTO",
     impact: "Blocks production-style infrastructure and scaled synthetic validation.",
     buildStatus: "partial",
@@ -559,17 +559,17 @@ export const criticalPathItems: CriticalPathItem[] = [
   {
     timeline: "M7",
     priority: "high",
-    blocker: "EMIS Web API sandbox testing passed",
+    blocker: "the EHR API sandbox testing passed",
     owner: "CTO",
     impact: "Blocks GP integration claims.",
     buildStatus: "not_started",
-    currentReality: "No EMIS sandbox integration is implemented."
+    currentReality: "No EHR sandbox integration is implemented."
   },
   {
     timeline: "M10",
     priority: "high",
-    blocker: "3 ICS pilot sites trained and live with real patients",
-    owner: "NHS BD",
+    blocker: "3 regional pilot sites trained and live with real patients",
+    owner: "Health-system BD",
     impact: "Blocks real-world validation and scale-up.",
     buildStatus: "blocked",
     currentReality: "Out of scope until safety, privacy, infrastructure, and partner governance are ready."
@@ -577,7 +577,7 @@ export const criticalPathItems: CriticalPathItem[] = [
   {
     timeline: "M12",
     priority: "critical",
-    blocker: "DCB0129 Safety Case submission ready",
+    blocker: "clinical safety case standard Safety Case submission ready",
     owner: "CSO",
     impact: "Blocks regulated clinical deployment pathway.",
     buildStatus: "blocked",
@@ -586,13 +586,13 @@ export const criticalPathItems: CriticalPathItem[] = [
 ];
 
 export const budgetLines: BudgetLine[] = [
-  { category: "Personnel", item: "Engineering, AI/ML, frontend, DevOps, QA, clinical, NHS BD", totalK: 492, months: 12, monthlyK: 41, buildStatus: "planned" },
-  { category: "Regulatory", item: "DCB0129, DTAC, ISO 27001, DSPT", totalK: 168, months: 12, monthlyK: 14, buildStatus: "not_started" },
+  { category: "Personnel", item: "Engineering, AI/ML, frontend, DevOps, QA, clinical, health system BD", totalK: 492, months: 12, monthlyK: 41, buildStatus: "planned" },
+  { category: "Regulatory", item: "clinical safety case standard, technology assessment, ISO 27001, data security toolkit", totalK: 168, months: 12, monthlyK: 14, buildStatus: "not_started" },
   { category: "Cloud", item: "AWS EKS, RDS, egress, backup", totalK: 144, months: 12, monthlyK: 12, buildStatus: "not_started" },
   { category: "APIs & Licenses", item: "Deepgram (+ planned JSL NLP — not wired), ElevenLabs, Claude/GPT", totalK: 132, months: 12, monthlyK: 11, buildStatus: "partial" },
   { category: "Infrastructure", item: "Neo4j, Weaviate, Mirth Connect", totalK: 72, months: 12, monthlyK: 6, buildStatus: "not_started" },
   { category: "Clinical", item: "GP pilot sites and Phase 1 validation studies", totalK: 90, months: 12, monthlyK: 7.5, buildStatus: "blocked" },
-  { category: "Commercial", item: "EMIS + SystmOne partner engagement", totalK: 36, months: 12, monthlyK: 3, buildStatus: "not_started" },
+  { category: "Commercial", item: "EHR partner engagement", totalK: 36, months: 12, monthlyK: 3, buildStatus: "not_started" },
   { category: "Contingency", item: "Risk buffer", totalK: 118, months: 12, monthlyK: 9.8, buildStatus: "planned" }
 ];
 
@@ -601,12 +601,12 @@ export const workbookHeaderBudgetK = 1180;
 
 export const doNotClaimYet = [
   "Production clinical software",
-  "Live NHS/EHR integration",
+  "Live health system/EHR integration",
   "Real patient-data readiness",
-  "Completed DCB0129 safety case",
-  "DTAC approval",
-  "EMIS/SystmOne sandbox approval",
-  "Live GP/ICS pilot",
+  "Completed clinical safety case standard safety case",
+  "Technology assessment approval",
+  "the EHR sandbox approval",
+  "Live GP/regional pilot",
   "Clinically validated NLP/triage accuracy"
 ];
 

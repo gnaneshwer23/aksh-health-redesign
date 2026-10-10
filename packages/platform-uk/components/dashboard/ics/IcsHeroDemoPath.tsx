@@ -42,7 +42,7 @@ export function IcsHeroDemoPath({ className }: { className?: string }) {
 
   return (
     <section
-      aria-label="ICS hero demo path"
+      aria-label="Regional hero demo path"
       data-testid="ics-hero-demo-path"
       className={cn(
         "rounded-xl border border-primary/25 bg-primary/[0.04] px-4 py-3 text-sm shadow-sm",
@@ -53,7 +53,7 @@ export function IcsHeroDemoPath({ className }: { className?: string }) {
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
-              Population demo · ICS lead
+              Population demo · population health lead
             </p>
             <Badge variant="outline" className="text-[10px]">
               liveEmis:false

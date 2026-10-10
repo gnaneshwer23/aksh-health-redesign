@@ -15,7 +15,7 @@ export default function AdminIntegrationsPage() {
         <ConsentBanner />
         <AdminHeroDemoPath />
         <p className="text-xs text-muted" data-testid="admin-integrations-honesty">
-          Designed for EMIS Web / SystmOne via BRIDGE FHIR staging · liveEmis:false · no live
+          Designed for the EHR via BRIDGE FHIR staging · liveEmis:false · no live
           write-back. Partner checklist + Precision Health scaffolding:{" "}
           <Link
             href="/dashboard/admin/precision-health"

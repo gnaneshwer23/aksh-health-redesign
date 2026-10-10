@@ -42,7 +42,7 @@ export type SimulatedEhrUpsertInput = {
 
 const dataDir = path.join(process.cwd(), "data");
 const NOTE =
-  "Simulated EHR chart entry · staging rehearsal only · not live EMIS/SystmOne · liveEmis:false · realPatientData:false";
+  "Simulated EHR chart entry · staging rehearsal only · not live the EHR · liveEmis:false · realPatientData:false";
 
 function resolveFile(scopeKey = "shared") {
   const safe = /^[a-zA-Z0-9_-]{3,64}$/.test(scopeKey) ? scopeKey : "shared";

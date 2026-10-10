@@ -10,7 +10,7 @@ export function deriveDataCollectionProfile(reviewCase: ReviewCase): DataCollect
   if (isAccepted) {
     return {
       provenance: "rwe_candidate",
-      datasetLabel: "Aksh UK synthetic validation cohort",
+      datasetLabel: "Aksh synthetic validation cohort",
       ingestionStatus: "rwe_ready",
       validationStream: "rwe_pipeline_candidate",
       safetyGovernance: "safety_case_candidate",
@@ -25,7 +25,7 @@ export function deriveDataCollectionProfile(reviewCase: ReviewCase): DataCollect
   if (hasBlockingIssues) {
     return {
       provenance: "synthetic_sandbox",
-      datasetLabel: "Aksh UK Synthea-like sandbox cohort",
+      datasetLabel: "Aksh regional Synthea-like sandbox cohort",
       ingestionStatus: "draft_only",
       validationStream: "phase_1_remediation",
       safetyGovernance: "hazard_review_required",
@@ -40,21 +40,21 @@ export function deriveDataCollectionProfile(reviewCase: ReviewCase): DataCollect
   if (hasDecision || finalizationState === "ready" || finalizationState === "warn") {
     return {
       provenance: "pilot_candidate",
-      datasetLabel: "Aksh UK synthetic pilot-prep cohort",
+      datasetLabel: "Aksh synthetic pilot-prep cohort",
       ingestionStatus: "pilot_ready",
       validationStream: "ics_pilot_preparation",
       safetyGovernance: hasBlockingIssues ? "hazard_review_required" : "hazard_review_in_progress",
       trainingReadiness: "training_ready",
       collectionNotes: [
         "Case is positioned for synthetic pilot rehearsal and clinician training flows.",
-        "Use this cohort to support pilot-site walk-throughs before live EMIS/SystmOne integration."
+        "Use this cohort to support pilot-site walk-throughs before live the EHR integration."
       ]
     };
   }
 
   return {
     provenance: "synthetic_sandbox",
-    datasetLabel: "Aksh UK Synthea-like sandbox cohort",
+    datasetLabel: "Aksh regional Synthea-like sandbox cohort",
     ingestionStatus: "draft_only",
     validationStream: hasBlockingIssues ? "phase_1_remediation" : "phase_1_synthetic",
     safetyGovernance: "hazard_review_required",

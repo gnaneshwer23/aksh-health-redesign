@@ -8,7 +8,7 @@ test.describe("Role routing", () => {
     await expect(page.getByText(/Clinician Dashboard|Review Queue/i).first()).toBeVisible();
   });
 
-  test("unauthenticated users can access public ICS demo dashboard", async ({ page }) => {
+  test("unauthenticated users can access public regional demo dashboard", async ({ page }) => {
     await page.goto("/dashboard/ics");
     await expect(page).toHaveURL(/\/dashboard\/ics/);
     await expect(page.getByTestId("demo-data-banner")).toBeVisible();

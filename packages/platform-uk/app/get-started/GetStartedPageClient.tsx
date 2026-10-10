@@ -59,7 +59,7 @@ type FormState = {
 const NEXT_STEPS = [
   { title: "We reply within two business days", note: "A named contact, not an autoresponder" },
   { title: "Scoping call with your clinical and IT leads", note: "One workflow, named reviewers, governance boundaries" },
-  { title: "Rehearse on a synthetic clinic", note: "Live patient data waits for your DPIA and approvals" },
+  { title: "Rehearse in your sandbox", note: "Live patient data waits for your DPIA and approvals" },
 ] as const;
 
 export default function GetStartedPageClient() {
@@ -170,11 +170,11 @@ export default function GetStartedPageClient() {
               Organisation access
             </span>
             <h1 id="get-started-title" className="lv-book__title">
-              Request a pilot for your organisation
+              Bring Aksh to your organisation
             </h1>
             <p className="lv-book__lede">
-              For practice managers, regional leads, hospital procurement and IT teams. Three short steps, then we
-              arrange a conversation with your clinical and technical leads.
+              Anyone can start free in a sandbox workspace. To use Aksh with real patients, tell us about your
+              organisation: three short steps, then a conversation with your clinical and technical leads.
             </p>
 
             <p className="mt-8 text-sm font-medium text-white">What happens next</p>
@@ -275,7 +275,7 @@ export default function GetStartedPageClient() {
                             className="lv-input"
                             type={type}
                             autoComplete={key === "contactEmail" ? "email" : key === "contactName" ? "name" : undefined}
-                            placeholder={key === "odsCode" ? "ODS code if UK" : undefined}
+                            placeholder={key === "odsCode" ? "Registration, facility or licence ID" : undefined}
                             value={form[key]}
                             onChange={(event) => update(key, event.target.value)}
                             {...fieldProps(key)}

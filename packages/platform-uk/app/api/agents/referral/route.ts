@@ -57,7 +57,7 @@ export async function GET() {
   return NextResponse.json({
     available: true,
     mode: "synthetic_packaging_only",
-    note: "PATHWAY (formerly REFERRAL) packages are synthetic drafts only. No NHS e-Referral Service write-back. HITL Accept required before staging."
+    note: "PATHWAY (formerly REFERRAL) packages are synthetic drafts only. No health system e-Referral Service write-back. HITL Accept required before staging."
   });
 }
 
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
     queueItem,
     serviceRequest,
     safetyNotes: [
-      "Synthetic PATHWAY packaging only — not submitted to NHS e-Referral Service.",
+      "Synthetic PATHWAY packaging only — not submitted to health system e-Referral Service.",
       "HITL Accept/Edit/Reject required before any staging or record impact."
     ],
     confidence: 0.55

@@ -81,7 +81,7 @@ export function SignInFormSkeleton() {
           type="submit"
           data-testid="signin-submit"
           className={cn(
-            "inline-flex h-10 w-full items-center justify-center rounded-xl bg-accent px-4 text-sm font-medium text-primary-foreground"
+            "inline-flex h-10 w-full items-center justify-center rounded-xl bg-secondary px-4 text-sm font-medium text-primary-foreground"
           )}
         >
           Sign in

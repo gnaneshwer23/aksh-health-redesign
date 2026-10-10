@@ -19,7 +19,7 @@ export function PilotReport({
         <ReportActions backHref={`/review/pilot${query}`} />
         <h1>Pilot Package Report</h1>
         <p>
-          External-facing handoff summary for the Aksh Health UK/EU proof: fixed demo dataset, reviewer runbook,
+          External-facing handoff summary for the Aksh Health proof: fixed demo dataset, reviewer runbook,
           acceptance signals, and audience walkthrough structure.
         </p>
         <div className="pill-row">

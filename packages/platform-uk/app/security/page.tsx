@@ -34,27 +34,27 @@ const sections = [
   {
     id: "dcb0129",
     title: "Clinical safety case (in progress)",
-    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. Optional UK NHS-ready pathways (e.g. DCB0129-style rehearsal) remain secondary scaffolding — not approvals.",
+    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. The clinical-risk and medical-device pathways required where each organisation operates remain scaffolding, not approvals.",
     bullets: [
       "Hazard log is internal — not a public certificate",
       "Production EHR write-back stays gated until organisation sign-off",
     ],
   },
   {
-    title: "GDPR Art. 9 special category data",
-    body: "Health data is treated as special category information: purpose limitation, minimisation, and tenant isolation for organisation deployments.",
+    title: "Special category health data",
+    body: "Health data is treated as the most sensitive category of personal data: purpose limitation, minimisation, and tenant isolation for every organisation deployment.",
     bullets: [
-      "UK/EU residency framing for healthcare workloads",
+      "Data hosted in the region each organisation chooses",
       "Encryption in transit and at rest; role-based access",
     ],
   },
 ] as const;
 
 const notClaimed = [
-  "MHRA certification, registration, or device marking",
-  "Completed clinical safety case sign-off (including DCB0129)",
-  "Approved DTAC or equivalent procurement assessment outcome",
-  "CQC readiness or inspection evidence",
+  "Medical device certification, registration, or marking by any regulator",
+  "Completed clinical safety case sign-off",
+  "An approved health-system procurement or technology assessment outcome",
+  "Care-regulator readiness or inspection evidence",
   "Live production write-back to any EHR in this public build",
   "Autonomous diagnosis, prescribing, or treatment decisions",
   "A validated physiological digital twin — precision-health is scaffolding, not a live digital twin claim",

@@ -7,6 +7,8 @@ import { completeOnboarding } from "@/lib/auth/user-repository";
 import { syncOnboardingConsentsToRegistry } from "@/lib/onboarding/consent-registry-sync";
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
+import { provisionSandbox } from "@/lib/network/sandbox";
+import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
 const roleValues = ROLES.map((role) => role.id) as [string, ...string[]];
@@ -42,6 +44,16 @@ export async function POST(request: Request) {
     practiceOds?.trim() ||
     resolveOrganisationOdsCode(organisation as Record<string, unknown> | undefined);
 
+  // Server is authoritative for patient binding: re-check code + date of birth, never trust the client.
+  const binding = role === "patient" ? await resolvePatientBinding(session.user.id, identity, { consume: true }) : null;
+  const bindingPreferences =
+    binding?.status === "linked"
+      ? { boundPatientId: binding.patientId, networkPatientId: binding.patientId, boundOrganisationId: binding.organisationId, inviteStatus: "linked" }
+      : binding
+        ? { inviteStatus: binding.status === "none" ? "none" : "rejected" }
+        : {};
+  const market = typeof identity?.market === "string" ? identity.market : undefined;
+
   try {
     const profile = await completeOnboarding({
       userId: session.user.id,
@@ -50,6 +62,9 @@ export async function POST(request: Request) {
       practiceOds: resolvedPracticeOds,
       preferences: {
         ...(preferences ?? {}),
+        ...bindingPreferences,
+        ...(market ? { market } : {}),
+        workspace: "synthetic",
         identity: identity ?? {},
         organisation: organisation ?? {},
         consents: consents ?? {},
@@ -57,6 +72,27 @@ export async function POST(request: Request) {
     });
 
     await clearOnboardingProgress(session.user.id);
+
+    // Professionals who completed the organisation step get their own sandbox organisation (admin), with sample
+    // data when they chose the sandbox clinic. Failure must not block dashboard access.
+    let sandbox: { organisationId: string; created: boolean } | null = null;
+    if (role !== "patient" && organisation && session.user.email) {
+      try {
+        const org = organisation as Record<string, unknown>;
+        const described = org.useSynthetic === false;
+        sandbox = await provisionSandbox(
+          {
+            userId: session.user.id,
+            email: session.user.email,
+            displayName: (fullName ?? (typeof identity?.fullName === "string" ? identity.fullName : null) ?? session.user.email).trim(),
+            role,
+          },
+          { organisationName: described && typeof org.organisationName === "string" ? org.organisationName : undefined, withSampleData: !described }
+        );
+      } catch (provisionError) {
+        console.error("[onboarding] sandbox provisioning failed", provisionError instanceof Error ? provisionError.message : provisionError);
+      }
+    }
 
     // Mirror onboarding checkboxes into the shared PH consent registry (same spine).
     // Failure here must not block dashboard access — profile is already complete.
@@ -82,6 +118,8 @@ export async function POST(request: Request) {
       ok: true,
       role: profile.role,
       onboardingComplete: profile.onboardingComplete,
+      patientBinding: binding?.status ?? null,
+      sandboxOrganisationId: sandbox?.organisationId ?? null,
       completedAt: new Date().toISOString(),
       consentRegistry: consentRegistry
         ? {

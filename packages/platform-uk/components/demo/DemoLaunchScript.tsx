@@ -1,6 +1,6 @@
 /**
  * D1-c: Controlled demo script — Capture → Draft → Approve → SHIELD → sim → export.
- * Honest banners: synthetic · HITL · liveEmis:false · no live NHS write-back claims.
+ * Honest banners: synthetic · HITL · liveEmis:false · no live health system write-back claims.
  * U4: GP hero path (<10 min) wired to dashboard review queue → Accept → Bundle export.
  * U5: Nurse 3-beat + pharmacist med-safety paths on role dashboards.
  * U6: Practice admin ops path — integrations honesty → SHIELD → users/enquiries.
@@ -36,7 +36,7 @@ const gpHeroPath = {
 const nurseHeroPath = {
   title: "Nurse 3-beat path",
   talkTrack:
-    "Sign in as nurse. Follow Observations (vitals + shared timeline via nurse-vitals spine) → Shift handover draft → GUARDIAN alerts. CANVAS / SYNTHESIS / GUARDIAN draft; nurse confirms; SHIELD audits. Synthetic panel · liveEmis:false — no EMIS write.",
+    "Sign in as nurse. Follow Observations (vitals + shared timeline via nurse-vitals spine) → Shift handover draft → GUARDIAN alerts. CANVAS / SYNTHESIS / GUARDIAN draft; nurse confirms; SHIELD audits. Synthetic panel · liveEmis:false — no EHR write.",
   beats: [
     { label: "Nurse dashboard", href: "/dashboard/nurse", note: "Hero strip" },
     { label: "Vitals + timeline", href: "/dashboard/nurse/observations", note: "Beat 1" },
@@ -64,7 +64,7 @@ const pharmacistHeroPath = {
 const adminHeroPath = {
   title: "Practice admin ops path",
   talkTrack:
-    "Sign in as practice manager. Integrations honesty (BRIDGE staging · designed for EMIS/SystmOne · liveEmis:false) → SHIELD audit → users / organisation enquiries. CONDUCTOR = queue health. Precision Health / partner readiness are scaffolding — never claim live write-back.",
+    "Sign in as practice manager. Integrations honesty (BRIDGE staging · designed for the EHR · liveEmis:false) → SHIELD audit → users / organisation enquiries. CONDUCTOR = queue health. Precision Health / partner readiness are scaffolding — never claim live write-back.",
   beats: [
     { label: "Admin dashboard", href: "/dashboard/admin", note: "Ops hero strip" },
     { label: "Integrations", href: "/dashboard/admin/integrations", note: "Beat 1 · honesty" },
@@ -78,11 +78,11 @@ const adminHeroPath = {
 };
 
 const icsHeroPath = {
-  title: "ICS population path (COMPASS)",
+  title: "Regional population path (COMPASS)",
   talkTrack:
-    "Open ICS (public demo or ics-lead sign-in). Population → COMPASS equity → forecast. Aggregate synthetic cohorts only — no patient-level spill. HORIZON / PATHWAY frame foresight scaffolding — not a live ICS feed or physiological twin. liveEmis:false.",
+    "Open the regional dashboard (public demo or ics-lead sign-in). Population → COMPASS equity → forecast. Aggregate synthetic cohorts only — no patient-level spill. HORIZON / PATHWAY frame foresight scaffolding — not a live regional feed or physiological twin. liveEmis:false.",
   beats: [
-    { label: "ICS dashboard", href: "/dashboard/ics", note: "Population hero strip" },
+    { label: "Population dashboard", href: "/dashboard/ics", note: "Population hero strip" },
     { label: "Population", href: "/dashboard/ics/population", note: "Beat 1" },
     { label: "Equity (COMPASS)", href: "/dashboard/ics/equity", note: "Beat 2" },
     { label: "Forecast", href: "/dashboard/ics/forecast", note: "Beat 3 · HORIZON" }
@@ -92,7 +92,7 @@ const icsHeroPath = {
 const hospitalHeroPath = {
   title: "Hospital command-centre path",
   talkTrack:
-    "Open Hospital Command Centre (public synthetic PAS). Wards → capacity → staffing. PATHWAY frames flow; HORIZON drafts demand foresight; HITL on recommendations. Say “not live PAS” from the page — liveEmis:false · no EPR write-back.",
+    "Open Hospital Command Centre (public synthetic hospital system). Wards → capacity → staffing. PATHWAY frames flow; HORIZON drafts demand foresight; HITL on recommendations. Say “not live hospital system” from the page — liveEmis:false · no EPR write-back.",
   beats: [
     { label: "Hospital dashboard", href: "/dashboard/hospital", note: "Command-centre strip" },
     { label: "Wards", href: "/dashboard/hospital/wards", note: "Beat 1" },
@@ -130,7 +130,7 @@ const demoStops = [
     route: "/demo/script",
     action: "State the demo boundary before any click: synthetic patients, clinician Accept mandatory, write-back simulated.",
     talkTrack:
-      "Aksh is a clinician-governed assistive layer. Agents draft; clinicians Accept/Edit/Reject; SHIELD audits. We do not claim live EMIS, IM1, or Medplum write-back today."
+      "Aksh is a clinician-governed assistive layer. Agents draft; clinicians Accept/Edit/Reject; SHIELD audits. We do not claim live EHR, IM1, or Medplum write-back today."
   },
   {
     time: "00:30",
@@ -162,23 +162,23 @@ const demoStops = [
     route: "/dashboard/admin",
     action: "After admin sign-in: Integrations honesty → SHIELD audit → users/enquiries via the ops hero strip.",
     talkTrack:
-      "Say “not live EMIS” from the page itself (liveEmis:false badges). CONDUCTOR/BRIDGE are ops framing; Precision Health stays scaffolding. Partner readiness never equals write-back."
+      "Say “not live EHR” from the page itself (liveEmis:false badges). CONDUCTOR/BRIDGE are ops framing; Precision Health stays scaffolding. Partner readiness never equals write-back."
   },
   {
     time: "01:15",
-    title: "ICS population (COMPASS)",
+    title: "Regional population (COMPASS)",
     route: "/dashboard/ics",
-    action: "Follow population → COMPASS equity → forecast on the ICS hero strip (public demo or ics-lead).",
+    action: "Follow population → COMPASS equity → forecast on the regional hero strip (public demo or ics-lead).",
     talkTrack:
       "COMPASS-led equity story on synthetic cohorts. Aggregate only — no patient-level spill. Forecast is HORIZON / PATHWAY scaffolding, not a twin. liveEmis:false."
   },
   {
     time: "01:25",
-    title: "Hospital command centre (synthetic PAS)",
+    title: "Hospital command centre (synthetic hospital system)",
     route: "/dashboard/hospital",
     action: "Follow wards → capacity → staffing via the command-centre hero strip.",
     talkTrack:
-      "Say “not live PAS” from the page. PATHWAY / HORIZON draft operational foresight; HITL on capacity. Synthetic PAS · liveEmis:false · no EPR write-back."
+      "Say “not live hospital system” from the page. PATHWAY / HORIZON draft operational foresight; HITL on capacity. Synthetic hospital system · liveEmis:false · no EPR write-back."
   },
   {
     time: "01:35",
@@ -255,7 +255,7 @@ const demoStops = [
 ];
 
 const doNotClaim = [
-  "Live EMIS / SystmOne / IM1 write-back or “connected to the GP record”",
+  "Live the EHR / IM1 write-back or “connected to the GP record”",
   "Partner Programme approved / sandbox live / certified",
   "Medplum as production FHIR store",
   "PRISM / ATLAS / JSL as live Phase-1 peer agents",
@@ -284,7 +284,7 @@ export function DemoLaunchScript() {
           </p>
           <h1>Capture → Draft → Approve → SHIELD → sim → export</h1>
           <p>
-            Guided walkthrough for akshhealth.com demos without IM1, EMIS Partner credentials, or Medplum
+            Guided walkthrough for akshhealth.com demos without IM1, EHR partner credentials, or Medplum
             OAuth. Stay inside the synthetic HITL boundary. Prefer the GP hero path when the audience is
             clinical; use nurse / pharmacist / practice-admin / ICS / hospital strips for supporting-role
             demos (ICS and hospital are public synthetic; other roles need sign-in).

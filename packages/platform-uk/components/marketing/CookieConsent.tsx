@@ -24,6 +24,9 @@ function storeConsent(choice: ConsentChoice) {
 const actionButtonBase =
   "inline-flex min-h-[44px] w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
 
+const compactButtonBase =
+  "inline-flex min-h-[44px] w-full items-center justify-center rounded-full px-2 py-2 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2";
+
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
@@ -49,12 +52,12 @@ export function CookieConsent() {
   return (
     <div
       data-cookie-consent
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 p-4 motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-300 sm:p-6"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 p-3 motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-300 sm:p-6"
       role="dialog"
       aria-labelledby="cookie-consent-title"
       aria-describedby="cookie-consent-description"
     >
-      <div className="pointer-events-auto mx-auto w-full max-w-[400px] sm:ml-auto sm:mr-6">
+      <div className="pointer-events-auto mx-auto w-full max-w-[420px] sm:ml-auto sm:mr-6">
         <div className="overflow-hidden rounded-3xl border border-[var(--mk-line)] bg-white shadow-[var(--mk-shadow-frame)]">
           {showPreferences ? (
             <div className="p-5" role="region" aria-label="Cookie preferences" id="cookie-preferences-panel">
@@ -104,7 +107,7 @@ export function CookieConsent() {
               <div className="mt-5 space-y-2.5">
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-accent text-white hover:bg-accent/90")}
+                  className={cn(actionButtonBase, "bg-secondary text-white hover:bg-secondary/90")}
                   onClick={savePreferences}
                 >
                   Save preferences
@@ -123,38 +126,34 @@ export function CookieConsent() {
             </div>
           ) : (
             <>
-              <div className="space-y-3 p-5">
+              <div className="p-4 sm:p-5">
                 <h2 id="cookie-consent-title" className="sr-only">
                   Cookies on Aksh Health
                 </h2>
-                <p className="text-sm leading-relaxed text-slate">
-                  We use essential cookies to keep you signed in and to protect the platform. We may also use optional
-                  analytics cookies in future to improve our services.
-                </p>
                 <p id="cookie-consent-description" className="text-sm leading-relaxed text-slate">
-                  For descriptions of each type of cookie, visit our{" "}
+                  We use essential cookies to keep you signed in and secure. Optional analytics stay off unless you
+                  accept them.{" "}
                   <Link href="/cookies" className="font-medium text-navy underline underline-offset-2 hover:text-emerald">
                     Cookie Policy
                   </Link>
-                  . Click &lsquo;Accept all&rsquo; to enable optional cookies, &lsquo;Reject all&rsquo; to decline
-                  them, or &lsquo;Settings&rsquo; to choose your preferences.
                 </p>
               </div>
 
-              <div className="border-t border-border-subtle" aria-hidden />
-
-              <div className="space-y-2.5 p-5" role="group" aria-label="Cookie consent actions">
+              <div className="grid grid-cols-3 gap-2 px-4 pb-4 sm:px-5 sm:pb-5" role="group" aria-label="Cookie consent actions">
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-accent text-white hover:bg-accent/90")}
-                  onClick={() => accept("all")}
+                  className={cn(
+                    compactButtonBase,
+                    "border border-border-subtle bg-white text-foreground hover:border-accent/30 hover:bg-pastel-mint/50"
+                  )}
+                  onClick={() => accept("essential")}
                 >
-                  Accept all
+                  Reject all
                 </button>
                 <button
                   type="button"
                   className={cn(
-                    actionButtonBase,
+                    compactButtonBase,
                     "border border-border-subtle bg-white text-foreground hover:border-accent/30 hover:bg-pastel-mint/50"
                   )}
                   onClick={() => setShowPreferences(true)}
@@ -165,10 +164,10 @@ export function CookieConsent() {
                 </button>
                 <button
                   type="button"
-                  className={cn(actionButtonBase, "bg-primary text-white hover:bg-primary/90")}
-                  onClick={() => accept("essential")}
+                  className={cn(compactButtonBase, "bg-secondary text-white hover:bg-secondary/90")}
+                  onClick={() => accept("all")}
                 >
-                  Reject all
+                  Accept all
                 </button>
               </div>
             </>

@@ -24,7 +24,7 @@ export default function LvLayers() {
           ))}
           <li className="lv-layer lv-layer--ehr">
             <span className="lv-layer__name">Your EHR</span>
-            <span className="lv-layer__detail">System of record. No live write until a separately governed Track B.</span>
+            <span className="lv-layer__detail">System of record. No live write until a separately governed go-live.</span>
           </li>
         </ol>
       </div>

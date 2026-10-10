@@ -29,6 +29,8 @@ export type ClinicalAccessRole =
 export const CLINICAL_RECORD_ALLOWED_ROLES = new Set<string>([
   "gp",
   "nurse",
+  // Onboarding role id is "clinical-pharmacist" (lib/onboarding/roles.ts); "pharmacist" kept for legacy sessions.
+  "clinical-pharmacist",
   "pharmacist",
   "clinical_reviewer"
 ]);

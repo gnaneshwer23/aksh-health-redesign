@@ -63,7 +63,7 @@ export function getPharmaRweSummary(): PharmaRweSummary {
     ],
     limitations: [
       "Placeholder only — no pharma contract, no secondary-use DPIA for commercial RWE.",
-      "Figures are synthetic ICS aggregates, not real-world evidence.",
+      "Figures are synthetic regional aggregates, not real-world evidence.",
       "ehrWrite: false."
     ],
     ehrWrite: false,
@@ -75,13 +75,13 @@ export function getPayerVbcMetrics(): PayerVbcMetrics {
   return {
     artifactType: "aksh-payer-vbc-placeholder",
     livePayerIntegration: false,
-    note: "Not a live payer/pharma integration — value-based care metrics from synthetic ICS aggregates.",
-    syntheticIcsLabel: "Synthetic ICS West Yorkshire rehearsal",
+    note: "Not a live payer/pharma integration — value-based care metrics from synthetic regional aggregates.",
+    syntheticIcsLabel: "Synthetic regional rehearsal",
     metrics: [
       {
         id: "avoidable-admissions",
         label: "Avoidable admissions index (synthetic)",
-        valueText: "0.82 vs ICS baseline 1.00",
+        valueText: "0.82 vs regional baseline 1.00",
         source: "synthetic_ics_aggregate"
       },
       {

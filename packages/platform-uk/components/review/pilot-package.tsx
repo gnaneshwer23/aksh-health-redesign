@@ -72,7 +72,7 @@ export function PilotPackage({
         </div>
         <h2>Pilot Package</h2>
         <p>
-          This page packages the current UK proof for pilot-style conversations: fixed demo cases, a reviewer runbook,
+          This page packages the current proof for pilot-style conversations: fixed demo cases, a reviewer runbook,
           and audience-specific walkthrough entry points.
         </p>
         <div className="hero-stats">

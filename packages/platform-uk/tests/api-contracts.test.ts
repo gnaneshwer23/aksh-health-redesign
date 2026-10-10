@@ -283,7 +283,7 @@ async function run() {
   assert.equal(ownSystemBoundary.defaultSourceOfTruth, "json_file_repository");
   assert.equal(ownSystemBoundary.currentPersistence, "data/*.json scoped stores");
   assert.equal(ownSystemBoundary.plannedProductionAdapter, "planned_database_repository");
-  assert.ok(ownSystemBoundary.blockedClaims.includes("Live NHS/EHR integration"));
+  assert.ok(ownSystemBoundary.blockedClaims.includes("Live health system/EHR integration"));
   assert.ok(ownSystemBoundary.blockedClaims.includes("Real patient data handling"));
   assert.ok(ownSystemBoundary.blockedClaims.includes("Production clinical software"));
   assert.ok(
@@ -309,7 +309,7 @@ async function run() {
     ownSystemBoundary.externalAdapters.every(
       (adapter) => adapter.enabled === false || flagGatedProductAdapterIds.has(adapter.id)
     ),
-    "Own-system boundary should keep NHS/EHR external adapters disabled by default"
+    "Own-system boundary should keep health system/EHR external adapters disabled by default"
   );
 
   const databaseBoundary = getDatabaseBoundaryPlan();
@@ -424,7 +424,7 @@ async function run() {
   assert.equal(persistedEvidence.exportedResources.resourceType, "Bundle");
   assert.equal(persistedEvidence.exportedResources.syntheticOnly, true);
   assert.equal(persistedEvidence.exportedResources.integrationMode, "synthetic_evidence");
-  assert.equal(persistedEvidence.exportedResources.summary.syntheticLabel, "Synthetic-only UK/EU proof artifact");
+  assert.equal(persistedEvidence.exportedResources.summary.syntheticLabel, "Synthetic-only proof artifact");
   assert.ok(
     persistedEvidence.exportedResources.summary.resourceValidation.length >= 2,
     "Evidence export should include per-resource validation summaries"
@@ -590,7 +590,7 @@ async function run() {
   assert.equal(roadmapEvidence.m1Checklist.items.length, 8);
   assert.equal(roadmapEvidence.budget.mismatchK, 72);
   assert.equal(roadmapEvidence.budget.groupedLineTotalK, roadmapEvidence.budget.workbookLineItemTotalK);
-  assert.ok(roadmapEvidence.doNotClaimYet.includes("Live NHS/EHR integration"));
+  assert.ok(roadmapEvidence.doNotClaimYet.includes("Live health system/EHR integration"));
   assert.ok(roadmapEvidence.nextThirtyDays.some((item) => item.phase === "1A"));
 
   const m1Pack = buildM1EvidencePackPayload(actionFollowThroughState, {
@@ -620,7 +620,7 @@ async function run() {
   assert.ok(m1Pack.handoffArtifacts.some((artifact) => artifact.route === "/api/roadmap/actions"));
   assert.ok(m1Pack.handoffArtifacts.some((artifact) => artifact.route === "/review/roadmap/report"));
   assert.ok(m1Pack.handoffArtifacts.some((artifact) => artifact.route === "/api/benchmarks/evidence"));
-  assert.ok(m1Pack.knownLimitations.includes("Live NHS/EHR integration"));
+  assert.ok(m1Pack.knownLimitations.includes("Live health system/EHR integration"));
 
   const m1ActionInboxEvidence = buildM1ActionInboxEvidencePayload(actionFollowThroughState, {
     generatedAt: "2026-04-29 21:10",
@@ -690,7 +690,7 @@ async function run() {
   assert.ok(commandCentreState.summary.notClaimableItems >= 5);
   assert.ok(commandCentreState.summary.nextBuildPriorities >= 4);
   assert.ok(commandCentreState.safeToShow.some((item) => item.route === "/review/command-centre"));
-  assert.ok(commandCentreState.guardrails.includes("Live NHS/EHR integration"));
+  assert.ok(commandCentreState.guardrails.includes("Live health system/EHR integration"));
   assert.ok(commandCentreState.nextBuildPriorities.some((item) => item.route === "/review/roadmap/follow-through"));
   assert.ok(commandCentreState.actionSignals.activeActions.length >= 1);
 

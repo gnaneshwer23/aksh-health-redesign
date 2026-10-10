@@ -144,7 +144,7 @@ export function ClinicalOrchestratePanel({
       ) {
         toast({
           title: "Honesty check failed",
-          description: "API claimed EHR write, physiological twin, auto-retrain, or live EMIS — refused.",
+          description: "API claimed EHR write, physiological twin, auto-retrain, or live EHR — refused.",
         });
         return;
       }

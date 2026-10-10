@@ -31,7 +31,7 @@ export const PLATFORM_AGENTS: {
   { label: "Predictive risk", codename: "HORIZON", role: "Risk change with its contributing factors listed", status: LIVE_REVIEWED },
   { label: "Clinical intelligence", codename: "NEXUS", role: "Correlates labs, medicines and signals into a draft picture", status: LIVE_REVIEWED },
   { label: "Care coordination", codename: "PATHWAY", role: "Referral, pathway and follow-up packages for sign-off", status: LIVE_REVIEWED },
-  { label: "Population health", codename: "COMPASS", role: "Equity and cohort briefs for ICS views", status: PARTIAL },
+  { label: "Population health", codename: "COMPASS", role: "Equity and cohort briefs for population views", status: PARTIAL },
   { label: "Interoperability", codename: "BRIDGE", role: "FHIR R4 staging after Accept; simulated EHR only", status: LIVE },
   { label: "Regulatory & audit", codename: "SHIELD", role: "Tamper-evident record of every draft and decision", status: LIVE },
   { label: "Supervisor", codename: "CONDUCTOR", role: "Runs every agent in a fixed, inspectable order", status: LIVE },
@@ -44,7 +44,7 @@ export const DIABETES_AREAS: { name: string; output: string; gate: string; statu
   {
     name: "Glucose",
     output: "Time in range, variability and pattern flags",
-    gate: "Observational; gated only when it raises a GUARDIAN alert",
+    gate: "Observational; gated only when it raises a medication-safety alert",
     status: { label: "Awaiting CGM data model", tone: "unverified" },
   },
   {
@@ -56,7 +56,7 @@ export const DIABETES_AREAS: { name: string; output: string; gate: string; statu
   {
     name: "Insulin",
     output: "Regimen summary, timing observations, hypo-risk flag",
-    gate: "Hard gate through GUARDIAN; never an executable dose",
+    gate: "Hard medication-safety gate; never an executable dose",
     status: { label: "v1 rules · explanatory", tone: "approved" },
   },
   {
@@ -105,7 +105,7 @@ export const PRODUCT_LOOP: { step: string; detail: string; agents: string }[] = 
   { step: "Detect & reason", detail: "Safety, risk, coordination and referral checks", agents: "GUARDIAN · HORIZON · NEXUS · PATHWAY" },
   { step: "Clinician decides", detail: "Accept, Edit or Reject, plus mandatory gates", agents: "Named reviewer" },
   { step: "Stage", detail: "FHIR R4 staging beside the EHR, never a live write", agents: "BRIDGE" },
-  { step: "Rehearse", detail: "Simulated EMIS / SystmOne chart, not an NHS write", agents: "Simulated EHR" },
+  { step: "Rehearse", detail: "Simulated EHR chart, never a live write", agents: "Simulated EHR" },
   { step: "Audit", detail: "Every decision hash-chained and attributable", agents: "SHIELD" },
   { step: "Learn, governed", detail: "Gated evaluation before any model change", agents: "Governed evaluation" },
 ];
@@ -113,7 +113,7 @@ export const PRODUCT_LOOP: { step: string; detail: string; agents: string }[] = 
 /** PRD §4 — vision layers, top to bottom. */
 export const PLATFORM_LAYERS: { name: string; detail: string }[] = [
   { name: "Continuous learning", detail: "Gated evaluation before any model change; no silent retraining" },
-  { name: "Clinical · Patient · Population intelligence", detail: "GP / nurse / pharmacist review · My Health coaching · ICS and COMPASS views" },
+  { name: "Clinical · Patient · Population intelligence", detail: "Physician / nurse / pharmacist review · My Health coaching · population and COMPASS views" },
   { name: "Research intelligence", detail: "Offline evaluation behind an ethics gate; not live discovery" },
   { name: "Disease digital twin", detail: "Rules and what-if scenarios; not a physiological simulation" },
   { name: "Disease intelligence", detail: "Diabetes first: 9 signals feed HORIZON and GUARDIAN" },
@@ -128,15 +128,15 @@ export const NON_OBJECTIVES: string[] = [
   "Not an EHR replacement",
   "No live write to any EHR",
   "No silent or automatic model retraining",
-  "No fake or implied certification (MHRA, DCB0129, DTAC, CIS2)",
+  "No fake or implied certification or regulatory approval",
   "No clinical output without an explanation",
   "No real patient data without an explicit governed decision",
 ];
 
 /** PRD §2.3 — mandatory human gates and who may confirm them (Volume I FLOW-JRN-2). */
 export const HUMAN_GATES: { gate: string; who: string }[] = [
-  { gate: "Red-flag escalation", who: "GP confirms" },
-  { gate: "Referral pathway", who: "GP confirms" },
-  { gate: "Medication decision", who: "Pharmacist confirms, GP co-accountable" },
+  { gate: "Red-flag escalation", who: "Responsible physician confirms" },
+  { gate: "Referral pathway", who: "Responsible physician confirms" },
+  { gate: "Medication decision", who: "Pharmacist confirms, physician co-accountable" },
   { gate: "Every other draft", who: "Accept, Edit or Reject by a named clinician; nurses raise and observe" },
 ];

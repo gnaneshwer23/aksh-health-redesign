@@ -49,7 +49,7 @@ async function run() {
   assert.equal(staging.liveEmis, false);
   assert.equal(staging.enabled, false);
   assert.equal(staging.liveWriteBack, false);
-  assert.ok(staging.notLiveBanner.includes("NOT LIVE EMIS"));
+  assert.ok(staging.notLiveBanner.includes("NOT LIVE EHR"));
   assert.equal(EMIS_NOT_LIVE_BANNER.includes("liveEmis:false"), true);
 
   const queued = queueEmisFhirStaging({
@@ -59,7 +59,7 @@ async function run() {
   });
   assert.equal(queued.liveEmis, false);
   assert.equal(queued.ehrWriteAttempted, false);
-  assert.ok(queued.note.includes("NOT LIVE EMIS") || queued.note.includes("no EMIS network"));
+  assert.ok(queued.note.includes("NOT LIVE EHR") || queued.note.includes("no EHR network"));
 
   const checklist = getEmisPartnerChecklist();
   assert.equal(checklist.liveEmis, false);
@@ -113,7 +113,7 @@ async function run() {
   const dpiaTrack = pack.tracks.find((t) => t.id === "dpia");
   assert.ok(dpiaTrack);
   assert.equal(dpiaTrack.uiStatus, "pending");
-  assert.ok(pack.notLiveBanner.includes("NOT LIVE EMIS"));
+  assert.ok(pack.notLiveBanner.includes("NOT LIVE EHR"));
   assert.ok(getLiveEmisFlipChecklist().some((i) => i.status === "blocked"));
   assert.ok(getEvidencePackLinks().some((l) => l.id === "gate-2"));
   assert.ok(getEvidencePackLinks().some((l) => l.path.includes("CLINICAL_SPINE_PHASE_F")));
@@ -190,7 +190,7 @@ async function run() {
     path.join(process.cwd(), "app/api/integrations/emis-staging/route.ts"),
     "utf8"
   );
-  assert.ok(emisStagingRoute.includes("NOT LIVE EMIS") || emisStagingRoute.includes("notLiveBanner"));
+  assert.ok(emisStagingRoute.includes("NOT LIVE EHR") || emisStagingRoute.includes("notLiveBanner"));
   assert.ok(emisStagingRoute.includes("liveEmis: false"));
 
   const phaseFDoc = fs.readFileSync(

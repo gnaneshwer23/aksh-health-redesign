@@ -35,7 +35,7 @@ export function ReportActions({
         Print / Save PDF
       </button>
       <p className="text-xs text-slate-500" style={{ width: "100%", marginTop: "0.5rem" }}>
-        Handoff only — FHIR Bundle / PDF are for demo filing stories. Not live EMIS write-back · liveEmis:false.
+        Handoff only — FHIR Bundle / PDF are for demo filing stories. Not live EHR write-back · liveEmis:false.
       </p>
     </div>
   );

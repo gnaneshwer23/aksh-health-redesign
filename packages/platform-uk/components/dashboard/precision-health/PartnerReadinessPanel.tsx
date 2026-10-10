@@ -91,7 +91,7 @@ function statusClass(status: string) {
 
 /**
  * Phase F partner / regulatory readiness — honest unsigned/pending/blocked status.
- * Never claims live EMIS, signed DPIA/CSO, or certifications.
+ * Never claims live EHR, signed DPIA/CSO, or certifications.
  */
 export function PartnerReadinessPanel() {
   const [pack, setPack] = useState<ReadinessPayload | null>(null);
@@ -207,7 +207,7 @@ export function PartnerReadinessPanel() {
       <CardHeader className="p-4 pb-2">
         <CardTitle className="text-sm">Partner / regulatory readiness (Phase F)</CardTitle>
         <p className="text-xs text-muted">
-          EMIS/SystmOne · DPIA · CSO Gate 2 · G-ML · modality credentials. liveEmis:false ·
+          the EHR · DPIA · CSO Gate 2 · G-ML · modality credentials. liveEmis:false ·
           autoRetrain:false · physiologicalTwin:false · no invented certifications. Outreach
           checklist: docs/P7_PARTNER_OUTREACH_PACK.md (paperwork ≠ live EHR).
         </p>
@@ -218,7 +218,7 @@ export function PartnerReadinessPanel() {
           data-testid="partner-not-live-banner"
         >
           {pack?.notLiveBanner ??
-            "NOT LIVE EMIS — staging / sim write-back only. liveEmis:false until partner actions complete."}
+            "NOT LIVE EHR — staging / sim write-back only. liveEmis:false until partner actions complete."}
         </div>
 
         <div

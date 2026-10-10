@@ -62,7 +62,7 @@ export function SimulatedEhrWrittenPanel({ patientId }: { patientId: string | nu
   return (
     <div className="mt-3 space-y-2" data-testid="simulated-ehr-written-panel">
       <p className="text-xs text-muted">
-        Simulated EMIS / SystmOne chart · staging rehearsal · liveEmis:false · not a live EHR write
+        Simulated the EHR chart · staging rehearsal · liveEmis:false · not a live EHR write
       </p>
       {error ? <p className="text-xs text-muted">{error}</p> : null}
       {entries.length === 0 && !error ? (
@@ -74,7 +74,7 @@ export function SimulatedEhrWrittenPanel({ patientId }: { patientId: string | nu
           className="rounded-xl border border-border-subtle/80 bg-card/40 p-3 text-xs shadow-sm"
         >
           <p className="font-medium text-foreground">
-            {entry.partner === "simulated_emis" ? "Simulated EMIS Web" : "Simulated SystmOne"} ·{" "}
+            {entry.partner === "simulated_emis" ? "Simulated EHR (projection A)" : "Simulated EHR (projection B)"} ·{" "}
             {entry.resourceType}
           </p>
           <p className="mt-1 text-muted line-clamp-2">{entry.summary}</p>

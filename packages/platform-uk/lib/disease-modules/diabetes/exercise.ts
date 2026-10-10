@@ -20,7 +20,7 @@ export function buildExerciseDiabetesCoachingDraft(
 ): DiabetesCoachingDraft {
   const patientLabel = context.patientLabel?.trim() || context.patientId;
   const suggestions = [
-    "Share NHS / practice-approved activity guidelines appropriate to the patient's current condition profile",
+    "Share health system / practice-approved activity guidelines appropriate to the patient's current condition profile",
     "Mention pre/post-exercise glucose-awareness talking points (clinician confirms individual thresholds)",
     "Do not invent live wearable step goals or CGM readings as clinical targets"
   ];

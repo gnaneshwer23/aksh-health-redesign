@@ -14,8 +14,8 @@ const FAILURES = [
 ] as const;
 
 const ANSWER = [
-  { k: "One orchestrator", v: "CONDUCTOR runs every agent in a fixed, inspectable order" },
-  { k: "One audit trail", v: "SHIELD records who drafted, who decided and what changed" },
+  { k: "One orchestrator", v: "A supervisor runs every agent in a fixed, inspectable order" },
+  { k: "One audit trail", v: "Records who drafted, who decided and what changed" },
   { k: "One consent model", v: "Identity and consent shared by every module and role" },
   { k: "One rule", v: "Nothing reaches a record or prescription without a human decision" },
 ] as const;

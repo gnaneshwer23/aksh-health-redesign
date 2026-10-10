@@ -1370,7 +1370,7 @@ export async function runMasterJourney(
       stepResult(
         41,
         "MJ-41-SIMULATED-EHR",
-        "High-fidelity synthetic P002 + HITL Accept lands on simulated EMIS/SystmOne chart",
+        "High-fidelity synthetic P002 + HITL Accept lands on simulated the EHR chart",
         "INTEGRATION",
         "SIMULATED",
         ok ? "PASS" : "FAIL",

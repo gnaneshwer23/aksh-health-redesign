@@ -949,7 +949,7 @@ export function AgentControlPanel({
         <CardContent className="p-3 space-y-2">
           <p className="text-[10px] text-muted">{AGENT_JOB_IN_LOOP.BRIDGE.job}</p>
           <p className="text-[10px] font-medium text-foreground">
-            liveEmis:false · FHIR-in-Neon / Bundle export · no live EMIS / SystmOne write-back
+            liveEmis:false · FHIR-in-Neon / Bundle export · no live the EHR write-back
           </p>
           <div className="flex flex-col gap-1.5">
             <Button variant="outline" size="sm" className="h-7 w-full text-[10px]" asChild>

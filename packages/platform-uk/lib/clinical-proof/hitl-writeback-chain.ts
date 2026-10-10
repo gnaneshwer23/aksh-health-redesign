@@ -59,7 +59,7 @@ export async function runHitlStagingSimWritebackChain(options?: {
 
   const emisStatus = getEmisIntegrationStatus();
   if (emisStatus.liveWriteBack !== false || emisStatus.enabled !== false) {
-    throw new Error("EMIS must remain disabled for clinical-proof chain");
+    throw new Error("EHR must remain disabled for clinical-proof chain");
   }
 
   const bundle = buildAcceptedFhirR4StagingBundle({
@@ -108,7 +108,7 @@ export async function runHitlStagingSimWritebackChain(options?: {
     throw new Error(`Expected sim write after Accept: ${simWrite.error}`);
   }
   if (simWrite.write.liveEmis !== false) {
-    throw new Error("Sim write claimed live EMIS");
+    throw new Error("Sim write claimed live EHR");
   }
 
   const chartEntries = await upsertSimulatedEhrCharts({
@@ -123,7 +123,7 @@ export async function runHitlStagingSimWritebackChain(options?: {
     scopeKey: "proof-chain"
   });
   if (chartEntries.length < 2) {
-    throw new Error("Expected simulated EMIS + SystmOne chart entries");
+    throw new Error("Expected simulated EHR chart entries");
   }
   if (chartEntries.some((e) => e.liveEmis !== false || e.realPatientData !== false)) {
     throw new Error("Simulated chart must stay liveEmis:false / realPatientData:false");

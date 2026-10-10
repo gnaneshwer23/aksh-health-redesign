@@ -219,7 +219,7 @@ export function runScenario(
     limitations: [
       "Synthetic rules engine — not a validated physiological digital twin.",
       "Ranking uses ORACLE risk-state / fixture signals only; no imaging, omics, or PK/PD simulation.",
-      "Benefit/risk/confidence are rehearsal scores — not calibrated NHS outcome estimates.",
+      "Benefit/risk/confidence are rehearsal scores — not calibrated health system outcome estimates.",
       "HITL required before promoting any ranked option into a care plan draft.",
       "ehrWrite: false — zero autonomous EHR / prescribe / e-Referral write."
     ],

@@ -14,7 +14,7 @@ type Role = {
 
 const ROLES: Role[] = [
   {
-    label: "GP",
+    label: "Physician (GP / family doctor)",
     band: "Care delivery",
     dashboard: "Clinician dashboard",
     description: "Authorised context, documentation and safety drafts in one review queue.",
@@ -22,7 +22,7 @@ const ROLES: Role[] = [
     publicHref: "/dashboard/gp",
   },
   {
-    label: "Nurse / Care Coordinator",
+    label: "Nurse / diabetes educator",
     band: "Care delivery",
     dashboard: "Nurse dashboard",
     description: "Vitals, handover notes and alerts, reviewed before they move on.",
@@ -43,7 +43,7 @@ const ROLES: Role[] = [
     icon: ShieldCheck,
   },
   {
-    label: "Regional / population lead",
+    label: "Population health lead",
     band: "Governance",
     dashboard: "Regional dashboard",
     description: "Population signals without patient-level data leaving the clinic.",
@@ -129,7 +129,7 @@ export default function LvRoles({ variant = "home" }: LvRolesProps) {
             </Link>
           ) : (
             <Link href="/get-started" className="lv-btn lv-btn--outline">
-              Request organisation access
+              Bring Aksh to your organisation
             </Link>
           )}
           <Link href="/demo/patel" className="lv-btn lv-btn--outline">

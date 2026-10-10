@@ -14,7 +14,7 @@ export function KnownLimitationsFooter({
       <h2>Known Limitations</h2>
       <p>
         {artifactLabel} is part of the Aksh Health UK/EU synthetic proof system. It supports internal review, advisor
-        walkthroughs, and evidence rehearsal. It is not production clinical software, live NHS/EHR integration, or
+        walkthroughs, and evidence rehearsal. It is not production clinical software, live health system/EHR integration, or
         real-patient-data handling evidence.
       </p>
       <div className="list">

@@ -99,15 +99,31 @@
   }
 
   .risk-tone-low {
-    @apply border-accent text-accent bg-accent/10;
+    @apply border-accent bg-accent/10;
+    color: #065e50;
   }
 
   .risk-tone-medium {
-    @apply border-warning text-warning bg-warning/10;
+    @apply border-warning bg-warning/10;
+    color: #8a5a00;
+  }
+
+  /* Amber and seafoam are too light for small badge text on tinted fills (WCAG AA). */
+  .dashboard-status-badge.text-warning {
+    color: #8a5a00;
+  }
+
+  .dashboard-status-badge.text-accent {
+    color: #065e50;
+  }
+
+  .dashboard-status-badge.text-danger {
+    color: #b42318;
   }
 
   .risk-tone-high {
-    @apply border-danger text-danger bg-danger/10;
+    @apply border-danger bg-danger/10;
+    color: #b42318;
   }
 
   .risk-tone-very-high {

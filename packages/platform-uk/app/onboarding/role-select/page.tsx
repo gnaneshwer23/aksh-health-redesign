@@ -62,7 +62,7 @@ function RoleSelectContent() {
     <OnboardingCard
       stepId="role-select"
       title="Choose your role"
-      description="Select how you will use Aksh Health. We will guide you through a short setup for your role, then open the matching workspace."
+      description="Setup takes about two minutes. You start in a sandbox workspace; real patient data only arrives when your organisation goes live."
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map((role) => (

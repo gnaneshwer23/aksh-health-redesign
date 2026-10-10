@@ -265,9 +265,9 @@ function generateUsers(
         providerId: `PROV-E2E-${String(10000 + seq)}`,
         practiceOds: org?.organisationCode ?? org?.odsCode ?? null,
         credentialsHint: bucket.role === "gp"
-          ? `GMC ${String(2000000 + seq).padStart(7, "0")} (synthetic)`
+          ? `professional register ${String(2000000 + seq).padStart(7, "0")} (synthetic)`
           : bucket.role === "clinical-pharmacist"
-            ? `GPhC ${String(3000000 + seq).padStart(7, "0")} (synthetic)`
+            ? `pharmacy register ${String(3000000 + seq).padStart(7, "0")} (synthetic)`
             : bucket.role === "nurse"
               ? `NMC synthetic ${seq}`
               : null,

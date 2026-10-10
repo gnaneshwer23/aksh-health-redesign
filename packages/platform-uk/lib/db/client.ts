@@ -32,6 +32,10 @@ export function getPgPool(): Pool {
         ? { ssl: { rejectUnauthorized: process.env.PGSSL_REJECT_UNAUTHORIZED === "true" } }
         : {})
     });
+    // A dropped idle connection (e.g. server-side timeout) must not crash the process; the pool replaces it.
+    pool.on("error", (error) => {
+      console.error("[db] idle client error:", error.message);
+    });
   }
   return pool;
 }

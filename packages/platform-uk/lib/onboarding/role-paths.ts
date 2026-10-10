@@ -40,7 +40,7 @@ export type RoleOnboardingPath = {
 };
 
 const LIVE_EMIS =
-  "Demo / staging only — liveEmis:false. No live EMIS or SystmOne write-back in this build.";
+  "Sandbox only — liveEmis:false. No live write-back to any EHR in this build.";
 
 export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   gp: {
@@ -83,7 +83,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "Safety checks before you prescribe",
-        body: "Interaction and allergy checks use BNF-backed rules. Flags wait for your decision — they never auto-write.",
+        body: "Interaction and allergy checks use formulary-backed rules. Flags wait for your decision — they never auto-write.",
         agents: ["GUARDIAN"],
         bullets: ["High / medium / safe interaction bands", "You Accept, Edit, or Reject every flag"],
       },
@@ -136,7 +136,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     ],
     youApprove:
       "Observation entries and handover drafts before they append to the durable audit. Clinicians still Approve EHR-bound clinical writes — liveEmis:false.",
-    honestyNote: `${LIVE_EMIS} Observations and handovers do not write to EMIS/SystmOne from this proof build.`,
+    honestyNote: `${LIVE_EMIS} Observations and handovers do not write to any EHR from this build.`,
     tutorialScreens: [
       {
         title: "Your three-step care path",
@@ -174,7 +174,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     dashboardRole: "pharmacist",
     pathPromise: "Med review → interaction checks → HITL before staging",
     agents: [
-      { name: "GUARDIAN", why: "BNF-backed interaction and allergy checks." },
+      { name: "GUARDIAN", why: "formulary-backed interaction and allergy checks." },
       { name: "SYNTHESIS", why: "Med-review documentation drafts." },
       { name: "CONDUCTOR", why: "Holds drafts until your Accept." },
       { name: "BRIDGE", why: "Stages only accepted med changes — sim." },
@@ -188,7 +188,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
         title: "Medication safety needs your decision",
         body: "Interaction checks run against current meds and allergies. Nothing stages without your decision.",
         agents: ["GUARDIAN", "SYNTHESIS"],
-        bullets: ["Review queue for polypharmacy", "Interaction checker with edit-and-stage", "BNF reference alongside"],
+        bullets: ["Review queue for polypharmacy", "Interaction checker with edit-and-stage", "formulary reference alongside"],
         honesty: LIVE_EMIS,
       },
       {
@@ -208,7 +208,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     preferenceTips: {
       bnfAlerts: (v) =>
         v === "Severe only"
-          ? "BNF alerts set to severe only — open the full checker when you need medium-risk flags."
+          ? "formulary alerts set to severe only — open the full checker when you need medium-risk flags."
           : null,
       guardianSensitivity: (v) =>
         v === "High" ? "GUARDIAN sensitivity is high — expect more interaction flags in the queue." : null,
@@ -227,7 +227,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     ],
     youApprove:
       "You do not Accept clinical SOAP or meds. You oversee connectors, audit, and that clinicians are clearing the queue.",
-    honestyNote: `${LIVE_EMIS} Partner EMIS write-back is Not enabled. Designed for EMIS/SystmOne — admin tools never bypass clinician Accept.`,
+    honestyNote: `${LIVE_EMIS} EHR write-back is not enabled. Admin tools never bypass clinician Accept.`,
     tutorialScreens: [
       {
         title: "Ops oversight, not clinical sign-off",
@@ -238,9 +238,9 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "Honesty first",
-        body: "Partner readiness shows liveEmis:false. Designed for EMIS Web / SystmOne pathways — staging/sim only, not a live EMR connection.",
+        body: "Partner readiness shows liveEmis:false. Staging and simulation only, not a live EHR connection.",
         agents: ["BRIDGE"],
-        bullets: ["EMIS write-back Not enabled", "Queue health stays visible", "Consent registry for purpose grants"],
+        bullets: ["EHR write-back not enabled", "Queue health stays visible", "Consent registry for purpose grants"],
         honesty: LIVE_EMIS,
       },
       {
@@ -273,14 +273,14 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     ],
     youApprove:
       "Aggregate planning views — not individual clinical notes. Site clinicians keep HITL on patient drafts.",
-    honestyNote: `${LIVE_EMIS} Public ICS demo uses synthetic cohorts only. No patient-level spill by default.`,
+    honestyNote: `${LIVE_EMIS} Public population demo uses sandbox cohorts only. No patient-level spill by default.`,
     tutorialScreens: [
       {
         title: "Population intelligence",
         body: "KPIs, equity flags, and benchmarking across practices — aggregate by default.",
         agents: ["COMPASS", "HORIZON"],
         bullets: ["Population health", "Equity metrics", "Practice benchmarking"],
-        honesty: "Synthetic cohorts — not a live ICS feed.",
+        honesty: "Sandbox cohorts — not a live population feed.",
       },
       {
         title: "Forecast and planning views",
@@ -290,7 +290,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "You're ready",
-        body: "ICS Dashboard opens on population → equity → forecast.",
+        body: "Population dashboard opens on population → equity → forecast.",
         bullets: ["Start population demo", "Equity beat", "liveEmis:false · no patient-level spill"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
@@ -308,25 +308,25 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   "hospital-executive": {
     role: "hospital-executive",
     dashboardRole: "hospital",
-    pathPromise: "Wards → capacity → staffing with synthetic PAS honesty",
+    pathPromise: "Wards → capacity → staffing with synthetic hospital system honesty",
     agents: [
       { name: "HORIZON", why: "Demand / surge foresight drafts." },
       { name: "PATHWAY", why: "Flow and discharge coordination drafts." },
       { name: "COMPASS", why: "Equity pressure lenses for leadership." },
       { name: "CONDUCTOR", why: "No silent auto-act on recommendations." },
       { name: "SHIELD", why: "Audit on operational reviewer actions." },
-      { name: "BRIDGE", why: "Not a live PAS/EPR write-back." },
+      { name: "BRIDGE", why: "Not a live hospital system write-back." },
     ],
     youApprove:
       "Operational recommendations (capacity / staffing). Ward clinicians still Accept clinical care drafts when in play.",
-    honestyNote: `${LIVE_EMIS} Public hospital demo uses synthetic capacity only — not a live PAS/EPR feed.`,
+    honestyNote: `${LIVE_EMIS} Public hospital demo uses synthetic capacity only — not a live hospital system feed.`,
     tutorialScreens: [
       {
         title: "Command Centre",
-        body: "ED wait, beds, and staffing in one view. Feeds are demo-synthetic — not live PAS.",
+        body: "ED wait, beds, and staffing in one view. Feeds are demo-synthetic — not live hospital system.",
         agents: ["HORIZON", "PATHWAY"],
         bullets: ["Ward status", "Capacity forecast", "Staffing alerts"],
-        honesty: "Synthetic PAS — liveEmis:false.",
+        honesty: "Sandbox hospital data — liveEmis:false.",
       },
       {
         title: "Recommendations need review",
@@ -337,7 +337,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       {
         title: "You're ready",
         body: "Hospital Command Centre opens on wards → capacity → staffing.",
-        bullets: ["Start wards demo", "Capacity recommendations need review", "Not a live PAS · liveEmis:false"],
+        bullets: ["Start wards demo", "Capacity recommendations need review", "Not a live hospital system · liveEmis:false"],
         honesty: LIVE_EMIS,
         ctaLabel: "Continue to complete",
       },
@@ -363,7 +363,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     ],
     youApprove:
       "You complete check-ins and raise concerns. Your GP / nurse / pharmacist Approve clinical drafts — you do not approve EHR writes.",
-    honestyNote: `${LIVE_EMIS} Patient companion is practice-invited. No live EHR write from the patient app.`,
+    honestyNote: `${LIVE_EMIS} Patient companion is clinic-invited. No live EHR write from the patient app.`,
     tutorialScreens: [
       {
         title: "My Health in plain English",

@@ -406,7 +406,7 @@ export const E2E_FINDINGS: E2EFinding[] = [
   {
     id: "F-P1-001",
     severity: "P1",
-    title: "No live EMIS / EPS / NHS lab connectivity (by design)",
+    title: "No live EHR / EPS / health system lab connectivity (by design)",
     detail:
       "liveEmis:false, liveNhsLab:false, livePrescribing:false throughout. Stakeholder paths are simulations only.",
     blocksInternalTesting: false,
@@ -439,7 +439,7 @@ export const E2E_FINDINGS: E2EFinding[] = [
     id: "F-P2-003",
     severity: "P2",
     title: "CIS2 / smartcard auth not simulated",
-    detail: "Role auth uses NextAuth + test headers; NHS CIS2 identity proofing is out of scope for this programme.",
+    detail: "Role auth uses NextAuth + test headers; health system CIS2 identity proofing is out of scope for this programme.",
     blocksInternalTesting: false,
   },
   {

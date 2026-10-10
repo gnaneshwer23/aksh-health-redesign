@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     grants,
     ehrWrite: false,
     hitlRequired: true,
-    note: "Purpose-bound consent registry (Phase 1). Does not replace DPIA or NHS Login."
+    note: "Purpose-bound consent registry (Phase 1). Does not replace DPIA or health system Login."
   });
 }
 

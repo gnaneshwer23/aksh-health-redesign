@@ -48,12 +48,32 @@ export function HonestyStatusBar({
       )}
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        {isPublicDemo ? (
-          <span data-testid="demo-data-banner" className="font-medium text-pastel-amber-ink">
-            Public {surface} demo · synthetic
+        {process.env.NEXT_PUBLIC_AKSH_ENVIRONMENT === "simulation" ? (
+          <span
+            data-testid="simulation-environment-badge"
+            className="rounded-full bg-[#8a5a00] px-2 py-0.5 font-semibold uppercase tracking-wide text-white"
+          >
+            Simulation environment
           </span>
+        ) : null}
+        {isPublicDemo ? (
+          <>
+            <span data-testid="demo-data-banner" className="font-medium text-pastel-amber-ink">
+              Public {surface} demo · synthetic
+            </span>
+            <Link href="/signup" className="font-semibold text-secondary underline underline-offset-2">
+              Start free
+            </Link>
+          </>
         ) : (
-          <span className="font-medium text-foreground/80">Synthetic rehearsal</span>
+          <>
+            <span data-testid="synthetic-workspace-banner" className="font-medium text-foreground/80">
+              Sandbox workspace — live patient data needs your organisation to go live
+            </span>
+            <Link href="/get-started" className="font-semibold text-secondary underline underline-offset-2">
+              Bring Aksh to your organisation
+            </Link>
+          </>
         )}
         <span aria-hidden className="text-border">
           ·
@@ -69,7 +89,7 @@ export function HonestyStatusBar({
               ·
             </span>
             <span data-testid="hospital-mock-mode-banner" className="text-pastel-amber-ink">
-              Not live PAS
+              Not live hospital system
             </span>
           </>
         ) : null}
@@ -109,13 +129,13 @@ export function HonestyStatusBar({
           </p>
           {surface.toLowerCase().includes("hospital") ? (
             <p>
-              Hospital figures are synthetic PAS rehearsal — not a live PAS / EPR feed. Accept /
+              Hospital figures are synthetic hospital system rehearsal — not a live hospital system / EPR feed. Accept /
               Dismiss on capacity recommendations log to SHIELD only.
             </p>
           ) : null}
           {surface.toLowerCase().includes("ics") ? (
             <p>
-              ICS views are aggregate planning fixtures — synthetic cohorts, no patient-level spill.
+              Regional views are aggregate planning fixtures — synthetic cohorts, no patient-level spill.
             </p>
           ) : null}
           {neo4jSource === "mock" ? (

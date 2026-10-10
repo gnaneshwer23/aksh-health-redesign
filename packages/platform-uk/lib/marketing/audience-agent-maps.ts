@@ -58,7 +58,7 @@ export const AUDIENCE_AGENT_MAPS = {
       { name: "Safety Review", why: "Safety items waiting in queue — clinicians clear them." },
     ],
     honestyNote:
-      "Clinical review stays with named clinicians. Designed for EMIS Web and SystmOne pathways.",
+      "Clinical review stays with named clinicians. Designed for the EHR pathways.",
   },
   patients: {
     sectionLabel: "Support behind your care",
@@ -93,10 +93,10 @@ export const AUDIENCE_AGENT_MAPS = {
       { name: "FHIR Exchange", why: "Exchange path for governed clinical information." },
     ],
     honestyNote:
-      "Public hospital demo uses illustrative capacity data for demonstration — not a live PAS feed.",
+      "Public hospital demo uses illustrative capacity data for demonstration — not a live hospital system feed.",
   },
   ics: {
-    sectionLabel: "Capabilities for ICS",
+    sectionLabel: "Capabilities for population health leads",
     sectionTitle: "Population insights — aggregates, not patient spill",
     sectionDescription:
       "Equity and capacity views across practices. Population users do not receive patient-level drafts by default.",
@@ -111,7 +111,7 @@ export const AUDIENCE_AGENT_MAPS = {
       { name: "FHIR Exchange", why: "Regional exchange posture for connected organisations." },
     ],
     honestyNote:
-      "Public ICS demo uses illustrative cohorts. No patient-level spill to population dashboards by default.",
+      "Public regional demo uses illustrative cohorts. No patient-level spill to population dashboards by default.",
   },
   administrators: {
     sectionLabel: "Capabilities for admins",

@@ -108,14 +108,14 @@ async function run() {
   await assertFileIncludes("lib/system-contracts.ts", "external-ehr-adapters");
   await assertFileIncludes("lib/system-contracts.ts", "aksh-uk-eu-own-system-boundary-contract");
   await assertFileIncludes("lib/system-contracts.ts", "aksh-uk-eu-database-adapter-contract");
-  await assertFileIncludes("lib/system-contracts.ts", "Live NHS/EHR integration");
+  await assertFileIncludes("lib/system-contracts.ts", "Live health system/EHR integration");
   await assertFileIncludes("lib/system-contracts.ts", "FHIR-shaped exports are internal evidence artifacts");
   await assertFileIncludes("lib/system-contracts.ts", "json_file_repository");
   await assertFileIncludes("lib/storage/get-review-case-repository-adapter.ts", "json_file_repository");
   await assertFileIncludes("lib/audit-integrity.ts", "aksh-uk-eu-audit-integrity-report");
   await assertFileIncludes("lib/permission-matrix.ts", "aksh-uk-eu-role-permission-matrix");
-  await assertFileIncludes("lib/clinical-safety-files.ts", "DCB0129-style rehearsal");
-  await assertFileIncludes("components/review/governance-pack-page.tsx", "DCB0129-Style Safety File Placeholders");
+  await assertFileIncludes("lib/clinical-safety-files.ts", "Clinical safety rehearsal");
+  await assertFileIncludes("components/review/governance-pack-page.tsx", "Clinical Safety File Placeholders");
   await assertFileIncludes("components/review/governance-pack-page.tsx", "Role And Action Permission Matrix");
   await assertFileIncludes("package.json", "\"data:seed\"");
   await assertFileIncludes("package.json", "\"data:seed:neo4j\"");
@@ -156,9 +156,9 @@ async function run() {
   await assertFileIncludes("app/dashboard/ics/page.tsx", "IcsHeroDemoPath");
   await assertFileIncludes("app/dashboard/ics/page.tsx", "no patient-level spill");
   await assertFileIncludes("components/dashboard/hospital/HospitalHeroDemoPath.tsx", "hospital-hero-demo-path");
-  await assertFileIncludes("components/dashboard/hospital/HospitalHeroDemoPath.tsx", "synthetic PAS");
+  await assertFileIncludes("components/dashboard/hospital/HospitalHeroDemoPath.tsx", "synthetic hospital system");
   await assertFileIncludes("app/dashboard/hospital/page.tsx", "HospitalHeroDemoPath");
-  await assertFileIncludes("app/dashboard/hospital/page.tsx", "Not live PAS");
+  await assertFileIncludes("app/dashboard/hospital/page.tsx", "Not live hospital system");
   await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "patient-hero-demo-path");
   await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "liveEmis:false");
   await assertFileIncludes("components/dashboard/patient/PatientHeroDemoPath.tsx", "invite-by-practice");
@@ -192,17 +192,6 @@ async function run() {
   await assertFileExcludes("components/marketing/platform-page-content.tsx", "Twelve Phase-1 directory agents");
   await assertFileIncludes("components/marketing/platform-page-content.tsx", "The Aksh Intelligence Platform");
   await assertFileIncludes("components/marketing/platform-page-content.tsx", "a named clinician decides");
-  await assertFileIncludes(
-    "components/marketing/InteroperabilityDiagram.tsx",
-    "Clinician-approved only · not a live record write"
-  );
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel checks");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Record staging");
-  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Drafts only");
-  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel drafts");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Capture");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Orchestrate");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");
   await assertFileIncludes(
     "components/marketing/lavender/LvAgents.tsx",
     "None of them decides."
@@ -416,7 +405,7 @@ async function run() {
   await assertFileIncludes("components/dashboard/Neo4jMockModeBanner.tsx", "neo4j-live-mode-banner");
   await assertFileIncludes("components/dashboard/HonestyStatusBar.tsx", "honesty-status-bar");
   await assertFileIncludes("components/dashboard/HonestyStatusBar.tsx", "liveEmis:false");
-  await assertFileIncludes("components/dashboard/HonestyStatusBar.tsx", "Not live PAS");
+  await assertFileIncludes("components/dashboard/HonestyStatusBar.tsx", "Not live hospital system");
   await assertFileIncludes("components/dashboard/AggregateAskStub.tsx", "aggregate-ask-stub");
   await assertFileIncludes("components/dashboard/AggregateAskStub.tsx", "no PHI");
   await assertFileIncludes("components/dashboard/hospital/WardPatientContext.tsx", "ops-ask-aksh-denied");
@@ -441,7 +430,7 @@ async function run() {
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Clinical intelligence");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Aksh Intelligence Platform");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Request a pilot");
+  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Start free");
   await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Not a live record");
   await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");
   await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "Every output is a draft");

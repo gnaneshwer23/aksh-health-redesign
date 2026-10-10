@@ -4,15 +4,15 @@ import { NON_OBJECTIVES } from "@/components/marketing/lavender/vision-content";
 
 const TRACKS = [
   {
-    name: "Track A",
-    title: "Synthetic clinic and pilot rehearsal",
+    name: "Sandbox",
+    title: "Clinic rehearsal on test data",
     detail: "Demo dashboards, clinician review, FHIR staging and a simulated EHR chart. No live patient data written anywhere.",
     status: { label: "Available now", tone: "approved" },
   },
   {
-    name: "Track B",
-    title: "Live NHS clinical use",
-    detail: "Real patient data and live EMIS / SystmOne write-back. Needs DPIA, clinical safety sign-off and partner approval first.",
+    name: "Live",
+    title: "Clinical use with real patients",
+    detail: "Real patient data and live EHR write-back for an organisation. Needs a privacy impact assessment, clinical safety sign-off, the applicable regulatory pathway and EHR partner approval first.",
     status: { label: "Not available by design", tone: "held" },
   },
 ] as const;
@@ -29,7 +29,7 @@ export default function LvTracks() {
             </h2>
           </div>
           <p className="lv-lede">
-            We never sell Track A as Track B, and rehearsal artefacts are never presented as approvals.{" "}
+            We never present sandbox work as live use, and rehearsal artefacts are never presented as approvals.{" "}
             <Link href="/security" className="font-medium text-[var(--lv-indigo)] underline-offset-2 hover:underline">
               Read our safety posture
             </Link>

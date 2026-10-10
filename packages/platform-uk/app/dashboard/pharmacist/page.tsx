@@ -27,7 +27,7 @@ const sections = [
   },
   {
     href: "/dashboard/pharmacist/bnf",
-    title: "BNF Reference",
+    title: "Formulary Reference",
     description: "British National Formulary search and recently viewed monographs.",
     icon: ClipboardList,
     count: null,

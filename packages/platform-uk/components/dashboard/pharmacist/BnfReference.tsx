@@ -15,11 +15,11 @@ export function BnfReference() {
 
   return (
     <section>
-      <h2 className={`text-lg font-semibold mb-3 ${PHARMACIST_ACCENT}`}>BNF Reference</h2>
+      <h2 className={`text-lg font-semibold mb-3 ${PHARMACIST_ACCENT}`}>formulary Reference</h2>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="shadow-sm border-accent/10 p-4">
-          <h3 className={`font-semibold text-sm mb-3 ${PHARMACIST_ACCENT}`}>BNF Search</h3>
-          <Input placeholder="Search BNF..." value={bnfSearch} onChange={(e) => setBnfSearch(e.target.value)} />
+          <h3 className={`font-semibold text-sm mb-3 ${PHARMACIST_ACCENT}`}>formulary Search</h3>
+          <Input placeholder="Search formulary..." value={bnfSearch} onChange={(e) => setBnfSearch(e.target.value)} />
           <div className="mt-3 space-y-2">
             {bnfEntries
               .filter((b) => !bnfSearch || b.name.toLowerCase().includes(bnfSearch.toLowerCase()))

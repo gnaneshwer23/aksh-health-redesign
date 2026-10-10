@@ -105,7 +105,7 @@ export function buildIntegrationEnvironmentContract(options?: { generatedAt?: st
   return {
     artifactType: "aksh-uk-eu-integration-environment-contract",
     generatedAt: options?.generatedAt ?? new Date().toISOString(),
-    generatedBy: options?.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: options?.generatedBy ?? "Aksh Health synthetic proof system",
     syntheticOnly: true,
     defaultIntegrationMode: "synthetic_proof",
     rehearsalModeRequiresExplicitFlags: true,

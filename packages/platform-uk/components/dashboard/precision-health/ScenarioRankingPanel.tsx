@@ -145,7 +145,7 @@ export function ScenarioRankingPanel({
             role="status"
             className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted"
           >
-            No ranking yet. This is rehearsal scoring — not physiology simulation or MHRA-cleared CDS.
+            No ranking yet. This is rehearsal scoring — not physiology simulation or medical device regulator-cleared CDS.
           </p>
         ) : (
           <div className="space-y-3" data-testid="scenario-ranking-result">
