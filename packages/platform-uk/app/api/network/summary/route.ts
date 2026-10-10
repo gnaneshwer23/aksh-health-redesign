@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { networkSummary } from "@/lib/synthetic-world/queries";
-import type { MarketCode } from "@/lib/synthetic-world/types";
+import { requestNetworkContext } from "@/lib/network/context";
+import { errorResponse } from "@/lib/network/http";
+import { networkSummary } from "@/lib/network/read";
 
 export const dynamic = "force-dynamic";
 
-const MARKETS = new Set(["GB", "IN", "US", "AE"]);
-
-/** GET /api/network/summary?market= — aggregate view of the synthetic care network (any role). */
+/** GET /api/network/summary?region= — aggregates over what the caller's organisations can see (RLS-scoped). */
 export async function GET(request: Request) {
-  const market = new URL(request.url).searchParams.get("market");
-  return NextResponse.json(networkSummary(market && MARKETS.has(market) ? (market as MarketCode) : undefined));
+  const ctx = await requestNetworkContext();
+  if (!ctx) return NextResponse.json({ error: "Sign in to see your care network" }, { status: 401 });
+  try {
+    const region = new URL(request.url).searchParams.get("region")?.slice(0, 64) || undefined;
+    return NextResponse.json(await networkSummary(ctx, region));
+  } catch (error) {
+    return errorResponse(error);
+  }
 }

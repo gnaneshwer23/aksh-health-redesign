@@ -1,3 +1,4 @@
+import { isSimulationRequest } from "@/lib/env/simulation";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 const SIGNUP_LIMIT = { limit: 5, windowMs: 60 * 60 * 1000 };
@@ -8,7 +9,7 @@ function isRateLimitDisabled() {
 }
 
 export function enforceSignupRateLimit(request: Request) {
-  if (isRateLimitDisabled()) return null;
+  if (isRateLimitDisabled() || isSimulationRequest(request)) return null;
 
   const ip = getClientIp(request);
   const result = checkRateLimit(`signup:${ip}`, SIGNUP_LIMIT.limit, SIGNUP_LIMIT.windowMs);

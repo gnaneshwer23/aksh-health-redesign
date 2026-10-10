@@ -1,22 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { listOrganisations } from "@/lib/synthetic-world/queries";
-import type { MarketCode, OrgKind } from "@/lib/synthetic-world/types";
+import { requestNetworkContext } from "@/lib/network/context";
+import { errorResponse } from "@/lib/network/http";
+import { listOrganisations } from "@/lib/network/read";
 
 export const dynamic = "force-dynamic";
 
-const MARKETS = new Set(["GB", "IN", "US", "AE"]);
-const KINDS = new Set(["primary_care_clinic", "diabetes_centre", "hospital", "community_pharmacy", "laboratory", "payer", "research_institute", "device_partner"]);
-
-/** GET /api/network/organisations — clinics, pharmacies, labs, payers and partners (synthetic). */
+/** GET /api/network/organisations?region= — the caller's organisations. */
 export async function GET(request: Request) {
-  const sp = new URL(request.url).searchParams;
-  const market = sp.get("market");
-  const kind = sp.get("kind");
-  return NextResponse.json({
-    rows: listOrganisations({
-      market: market && MARKETS.has(market) ? (market as MarketCode) : undefined,
-      kind: kind && KINDS.has(kind) ? (kind as OrgKind) : undefined,
-    }),
-  });
+  const ctx = await requestNetworkContext();
+  if (!ctx) return NextResponse.json({ error: "Sign in to see your organisations" }, { status: 401 });
+  try {
+    return NextResponse.json({ rows: await listOrganisations(ctx, { region: new URL(request.url).searchParams.get("region")?.slice(0, 64) || undefined }) });
+  } catch (error) {
+    return errorResponse(error);
+  }
 }

@@ -7,7 +7,7 @@ import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 const schema = z.object({
-  inviteCode: z.string().trim().min(1).max(20),
+  inviteCode: z.string().trim().min(1).max(32),
   dateOfBirth: z.string().trim().max(10),
 });
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ status: "rejected", reason: "unknown-code" }, { status: 400 });
   }
-  const binding = resolvePatientBinding(parsed.data);
+  const binding = await resolvePatientBinding(session.user.id, parsed.data, { consume: false });
   if (binding.status === "linked") return NextResponse.json({ status: "linked" });
   if (binding.status === "none") return NextResponse.json({ status: "none" });
   // Same message for unknown code and mismatched details so the endpoint cannot be used to probe codes.

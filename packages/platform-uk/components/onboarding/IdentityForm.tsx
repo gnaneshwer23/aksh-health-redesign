@@ -101,7 +101,7 @@ function fieldsFor(role: UserRole, market: OnboardingMarket): FieldSpec[] {
         {
           name: "inviteCode",
           label: "Clinic invite code (optional)",
-          placeholder: "e.g. AKSH-W0123",
+          placeholder: "e.g. ABCD-EFGH-JKLM-NPQR",
           hint: "From your clinic. It links your account to your care team. Without one you can still use Asha and track your own readings.",
         },
         { name: "email", label: "Email", type: "email", half: true },

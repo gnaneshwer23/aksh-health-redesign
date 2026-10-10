@@ -164,13 +164,12 @@ type LinkedRecord = {
   name: string;
   typeLabel: string;
   hba1c: { date: string; hba1cMmolMol: number; hba1cPercent: number }[];
-  hba1cUnit: "mmol/mol" | "%";
-  medications: { name: string; dose: string }[];
-  careTeam: { name: string; role: string; organisation: string | null }[];
-  clinic: string | null;
-  pharmacy: string | null;
+  unit: "mmol/mol" | "%";
+  medications: { name: string; dose: string | null }[];
+  careTeam: { careRole: string; name: string }[];
+  organisation: string | null;
   openCareGaps: string[];
-  emergencyNumber: string;
+  emergencyNumber: string | null;
 };
 
 /** Patient linked by clinic invite to a synthetic network record. */
@@ -196,7 +195,7 @@ export function LinkedNetworkPatientView() {
 
   const latest = record.hba1c[record.hba1c.length - 1];
   const latestText = latest
-    ? record.hba1cUnit === "%"
+    ? record.unit === "%"
       ? `${latest.hba1cPercent}%`
       : `${latest.hba1cMmolMol} mmol/mol`
     : "No result yet";
@@ -208,7 +207,7 @@ export function LinkedNetworkPatientView() {
           <h1 className="text-xl font-semibold text-primary">Hello, {record.name.split(" ")[0]}</h1>
           <p className="mt-1 text-sm text-muted">
             {record.typeLabel}
-            {record.clinic ? ` · ${record.clinic}` : ""} · synthetic record
+            {record.organisation ? ` · ${record.organisation}` : ""}
           </p>
         </CardContent>
       </Card>
@@ -248,14 +247,13 @@ export function LinkedNetworkPatientView() {
             <ul className="space-y-1 text-sm">
               {record.medications.map((m) => (
                 <li key={m.name}>
-                  {m.name} <span className="text-muted">· {m.dose}</span>
+                  {m.name}{m.dose ? <span className="text-muted"> · {m.dose}</span> : null}
                 </li>
               ))}
             </ul>
           ) : (
             <p className="text-sm text-muted">No regular medicines recorded.</p>
           )}
-          {record.pharmacy ? <p className="mt-2 text-xs text-muted">Pharmacy: {record.pharmacy}</p> : null}
         </CardContent>
       </Card>
       <Card className="shadow-sm">
@@ -267,8 +265,8 @@ export function LinkedNetworkPatientView() {
         <CardContent>
           <ul className="space-y-1 text-sm">
             {record.careTeam.map((t) => (
-              <li key={t.name + t.role}>
-                {t.name} <span className="text-muted">· {t.role}</span>
+              <li key={t.name + t.careRole}>
+                {t.name} <span className="text-muted">· {t.careRole}</span>
               </li>
             ))}
           </ul>
@@ -276,7 +274,7 @@ export function LinkedNetworkPatientView() {
       </Card>
       <AshaCard />
       <ReadingsCard
-        note={`Saved on this device for now; sharing readings with your care team arrives with the patient app. In an emergency call ${record.emergencyNumber}.`}
+        note={`Saved on this device for now; sharing readings with your care team arrives with the patient app.${record.emergencyNumber ? ` In an emergency call ${record.emergencyNumber}.` : " In an emergency call your local emergency number."}`}
       />
     </div>
   );

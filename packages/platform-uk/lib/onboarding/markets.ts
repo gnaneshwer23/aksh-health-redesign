@@ -35,14 +35,3 @@ export function registrationFieldFor(role: UserRole, _market?: OnboardingMarket)
     ? { label: "Professional registration or licence number", placeholder: "As issued by your regulator" }
     : null;
 }
-
-/**
- * Patient invite codes are issued by a clinic and bind a patient account to that clinic's record.
- * In the synthetic network the code for patient W0123 is AKSH-W0123.
- */
-export const INVITE_CODE_PATTERN = /^AKSH-W\d{4}$/i;
-
-export function patientIdFromInviteCode(code: string | null | undefined): string | null {
-  const trimmed = code?.trim().toUpperCase() ?? "";
-  return INVITE_CODE_PATTERN.test(trimmed) ? trimmed.slice("AKSH-".length) : null;
-}

@@ -53,7 +53,7 @@ export const patientIdentitySchema = z
     inviteCode: z
       .string()
       .trim()
-      .regex(/^[A-Za-z0-9-]{6,20}$/, "Invite codes look like AKSH-W0123")
+      .regex(/^[A-Za-z0-9-]{8,32}$/, "Invite codes look like ABCD-EFGH-JKLM-NPQR")
       .optional()
       .or(z.literal("")),
     email: z.string().email().optional().or(z.literal("")),

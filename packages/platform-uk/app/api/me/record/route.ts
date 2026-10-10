@@ -1,47 +1,24 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth";
-import { readBoundPatientIdFromPreferences } from "@/lib/auth/demo-patient-binding";
-import { findProfileByUserId } from "@/lib/auth/user-repository";
-import { getPatientDetail } from "@/lib/synthetic-world/queries";
+import { loadNetworkContext } from "@/lib/network/context";
+import { errorResponse, requireActor } from "@/lib/network/http";
+import { getOwnRecord } from "@/lib/network/read";
+
+export const dynamic = "force-dynamic";
 
 /**
- * Self-scope record for a patient account linked by clinic invite. A patient can only ever read the record
- * bound on their own profile (server-side), never one named in the request.
+ * The signed-in patient's own record. Scope comes from the server-side account link (patient_accounts) and
+ * row-level security; a patient can never name another record in the request.
  */
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const actor = await requireActor();
+  if (actor instanceof NextResponse) return actor;
+  if (actor.role !== "patient") return NextResponse.json({ error: "Patient accounts only" }, { status: 403 });
+  try {
+    const ctx = await loadNetworkContext(actor.userId, actor.role);
+    const record = await getOwnRecord(ctx);
+    return NextResponse.json(record ? { linked: true, record } : { linked: false });
+  } catch (error) {
+    return errorResponse(error);
   }
-  if (session.user.role !== "patient") {
-    return NextResponse.json({ error: "Patient accounts only" }, { status: 403 });
-  }
-  const profile = await findProfileByUserId(session.user.id);
-  const boundId = readBoundPatientIdFromPreferences(profile?.preferences);
-  if (!boundId) {
-    return NextResponse.json({ linked: false });
-  }
-  const detail = getPatientDetail(boundId);
-  if (!detail) {
-    return NextResponse.json({ linked: false });
-  }
-  return NextResponse.json({
-    linked: true,
-    record: {
-      id: detail.id,
-      name: `${detail.givenName} ${detail.familyName}`,
-      typeLabel: detail.typeLabel,
-      market: detail.market,
-      hba1c: detail.hba1c,
-      medications: detail.medications,
-      careTeam: detail.careTeamDetail.map((t) => ({ name: t.name, role: t.roleLabel, organisation: t.organisation })),
-      clinic: detail.primaryOrganisation?.name ?? null,
-      pharmacy: detail.pharmacy?.name ?? null,
-      openCareGaps: detail.openCareGaps,
-      emergencyNumber: detail.marketInfo.emergencyNumber,
-      hba1cUnit: detail.marketInfo.hba1cUnitPrimary,
-    },
-  });
 }

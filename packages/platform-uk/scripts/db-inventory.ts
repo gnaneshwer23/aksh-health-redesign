@@ -9,7 +9,7 @@ import pg from "pg";
 import { getDeploymentEnvironment } from "../lib/env/deployment";
 
 /** Domains that only ever hold test, demo or automation accounts. */
-export const TEST_ACCOUNT_DOMAINS = ["akshhealth.test", "e2e.akshhealth.com", "demo.akshhealth.com", "aksh-synthetic.example", "example.com", "mailinator.com"];
+export const TEST_ACCOUNT_DOMAINS = ["akshhealth.test", "e2e.akshhealth.com", "demo.akshhealth.com", "aksh-synthetic.example", "aksh-simulation.example", "example.com", "mailinator.com"];
 
 async function main() {
   const url = process.env.DATABASE_URL?.trim();

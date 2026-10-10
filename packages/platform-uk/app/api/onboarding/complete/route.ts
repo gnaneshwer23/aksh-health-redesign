@@ -44,10 +44,10 @@ export async function POST(request: Request) {
     resolveOrganisationOdsCode(organisation as Record<string, unknown> | undefined);
 
   // Server is authoritative for patient binding: re-check code + date of birth, never trust the client.
-  const binding = role === "patient" ? resolvePatientBinding(identity) : null;
+  const binding = role === "patient" ? await resolvePatientBinding(session.user.id, identity, { consume: true }) : null;
   const bindingPreferences =
     binding?.status === "linked"
-      ? { boundPatientId: binding.patientId, boundOrganisationId: binding.organisationId, inviteStatus: "linked" }
+      ? { boundPatientId: binding.patientId, networkPatientId: binding.patientId, boundOrganisationId: binding.organisationId, inviteStatus: "linked" }
       : binding
         ? { inviteStatus: binding.status === "none" ? "none" : "rejected" }
         : {};

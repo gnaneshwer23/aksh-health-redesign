@@ -7,6 +7,7 @@ import {
   shouldSkipEmailSend,
 } from "@/lib/auth/email-verification-repository";
 import { enforceSignupRateLimit } from "@/lib/auth/rate-limit-guards";
+import { isSimulationRequest } from "@/lib/env/simulation";
 import { signUpSchema } from "@/lib/auth/schemas";
 import { createUserWithProfile, findUserByEmail } from "@/lib/auth/user-repository";
 import { sendEmail } from "@/lib/email/send";
@@ -53,7 +54,8 @@ export async function POST(request: Request) {
       completedSteps: [],
     });
 
-    if (shouldSkipEmailSend()) {
+    // Scenario-runner accounts use reserved .example addresses: never send them email.
+    if (shouldSkipEmailSend() || isSimulationRequest(request)) {
       await markEmailVerified(user.id);
     } else {
       try {

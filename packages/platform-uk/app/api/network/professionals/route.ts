@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { listProfessionals } from "@/lib/synthetic-world/queries";
-import type { MarketCode } from "@/lib/synthetic-world/types";
+import { requestNetworkContext } from "@/lib/network/context";
+import { errorResponse } from "@/lib/network/http";
+import { listProfessionals } from "@/lib/network/read";
 
 export const dynamic = "force-dynamic";
 
-const MARKETS = new Set(["GB", "IN", "US", "AE"]);
-
-/** GET /api/network/professionals — synthetic professional directory (no patient data). */
+/** GET /api/network/professionals?role=&region= — staff of the caller's organisations. */
 export async function GET(request: Request) {
+  const ctx = await requestNetworkContext();
+  if (!ctx) return NextResponse.json({ error: "Sign in to see your organisation" }, { status: 401 });
   const sp = new URL(request.url).searchParams;
-  const market = sp.get("market");
-  return NextResponse.json({
-    rows: listProfessionals({
-      market: market && MARKETS.has(market) ? (market as MarketCode) : undefined,
-      role: sp.get("role")?.slice(0, 40) || undefined,
-      q: sp.get("q")?.slice(0, 80) || undefined,
-    }),
-  });
+  try {
+    return NextResponse.json({ rows: await listProfessionals(ctx, { role: sp.get("role")?.slice(0, 40) || undefined, region: sp.get("region")?.slice(0, 64) || undefined }) });
+  } catch (error) {
+    return errorResponse(error);
+  }
 }
