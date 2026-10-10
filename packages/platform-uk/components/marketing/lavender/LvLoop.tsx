@@ -31,6 +31,7 @@ export default function LvLoop({ flush = false }: { flush?: boolean }) {
             </li>
           ))}
         </ol>
+        <p className="lv-swipe-hint" aria-hidden>Swipe to see all nine →</p>
       </div>
     </section>
   );

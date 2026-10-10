@@ -2045,3 +2045,147 @@ body:has(.marketing-site) [data-cookie-consent] .bg-primary:hover {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ---------- Audiences ("Who it is for") ---------- */
+
+.lv-aud {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+}
+
+.lv-aud__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: var(--lv-radius-card);
+  background: #fff;
+  border: 1px solid var(--lv-line);
+  box-shadow: var(--lv-shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.lv-aud__card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(91, 91, 251, 0.35);
+}
+
+.lv-aud__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.875rem;
+  background: var(--lv-gradient);
+  color: #fff;
+}
+
+.lv-aud__who {
+  font-size: 1.1875rem;
+  line-height: 1.25;
+  color: var(--lv-ink);
+}
+
+.lv-aud__need {
+  color: var(--lv-muted);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.lv-aud__gets {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0.875rem 0 0;
+  list-style: none;
+  border-top: 1px solid var(--lv-line);
+  font-size: 0.875rem;
+  color: var(--lv-ink);
+}
+
+.lv-aud__gets li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.lv-aud__gets li::before {
+  content: "";
+  flex: none;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--lv-violet);
+  transform: translateY(-0.1rem);
+}
+
+.lv-aud__cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding-top: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--lv-indigo);
+}
+
+.lv-aud__card:hover .lv-aud__cta {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Tighter rhythm between homepage sections. */
+.lv-section {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+/* Phones: keep the hero to the essentials (the floating chips repeat what the queue card shows). */
+@media (max-width: 639px) {
+  .lv-hero .lv-float {
+    display: none;
+  }
+  .lv-hero .lv-signal__kind {
+    font-size: 0.75rem;
+  }
+}
+
+/* Phones: long card sets become a swipeable row (next card peeks) instead of a very tall stack. */
+@media (max-width: 639px) {
+  [data-section="diabetes"] .lv-cards,
+  .lv-section .lv-loop {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-inline: -1rem;
+    padding: 0.25rem 1rem 1rem;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: none;
+  }
+  [data-section="diabetes"] .lv-cards::-webkit-scrollbar,
+  .lv-section .lv-loop::-webkit-scrollbar {
+    display: none;
+  }
+  [data-section="diabetes"] .lv-cards > li,
+  .lv-section .lv-loop > li {
+    scroll-snap-align: start;
+  }
+}
+
+.lv-swipe-hint {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .lv-swipe-hint {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--lv-muted);
+  }
+}

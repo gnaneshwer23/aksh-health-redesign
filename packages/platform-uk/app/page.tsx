@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import LvAudiences from "@/components/marketing/lavender/LvAudiences";
 import LvClinicianGate from "@/components/marketing/lavender/LvClinicianGate";
 import LvCtaBand from "@/components/marketing/lavender/LvCtaBand";
 import LvHero from "@/components/marketing/lavender/LvHero";
@@ -12,10 +13,7 @@ const lazy = (loader: () => Promise<{ default: React.ComponentType }>) =>
   dynamic(loader, { loading: () => <div className="min-h-[16rem]" aria-hidden /> });
 
 const LvDiabetesModule = lazy(() => import("@/components/marketing/lavender/LvDiabetesModule"));
-const LvAgents = lazy(() => import("@/components/marketing/lavender/LvAgents"));
 const LvPatientAccess = lazy(() => import("@/components/marketing/lavender/LvPatientAccess"));
-const LvLayers = lazy(() => import("@/components/marketing/lavender/LvLayers"));
-const LvRoles = lazy(() => import("@/components/marketing/lavender/LvRoles"));
 const PatelJourneySection = lazy(() => import("@/components/marketing/PatelJourneySection"));
 const LvTracks = lazy(() => import("@/components/marketing/lavender/LvTracks"));
 const LvPilotSteps = lazy(() => import("@/components/marketing/lavender/LvPilotSteps"));
@@ -30,14 +28,12 @@ export default function HomePage() {
   return (
     <MarketingShell overLightHero>
       <LvHero />
+      <LvAudiences />
       <LvProblem />
       <LvLoop flush />
-      <LvClinicianGate />
       <LvDiabetesModule />
       <LvPatientAccess />
-      <LvAgents />
-      <LvLayers />
-      <LvRoles />
+      <LvClinicianGate />
       <PatelJourneySection />
       <LvTracks />
       <LvPilotSteps />

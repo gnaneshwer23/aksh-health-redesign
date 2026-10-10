@@ -9,13 +9,13 @@ const SOURCES = [
 const WORK = [
   { title: "Scheduling", detail: "Book, move, cancel" },
   { title: "Referral Desk", detail: "Letter to booking" },
-  { title: "Answers", detail: "Practice questions, cited" },
+  { title: "Answers", detail: "Clinic questions, cited" },
   { title: "Health updates", detail: "Readings and symptoms" },
 ] as const;
 
 const LANDS = [
-  { title: "Practice calendar", detail: "Simulated now; GP Connect later" },
-  { title: "GP review queue", detail: "Patient-reported, unverified until Accept" },
+  { title: "Clinic calendar", detail: "Simulated now; EHR calendars later" },
+  { title: "Clinician review queue", detail: "Patient-reported, unverified until Accept" },
   { title: "Staff hand-off", detail: "Emergencies, clinical questions, edge cases" },
 ] as const;
 
@@ -31,9 +31,9 @@ export default function LvPatientAccess() {
             </h2>
           </div>
           <p className="lv-lede">
-            Asha answers the practice phone and calls patients back. Bookings resolve on their own; anything clinical becomes
-            a draft for a GP; emergencies get a 999 message and go straight to a person. Synthetic practice today, with
-            simulated telephony.
+            Asha answers the clinic phone and calls patients back. Bookings resolve on their own; anything clinical becomes
+            a draft for their clinician; emergencies get the local emergency number and go straight to a person. Synthetic
+            clinic today, with simulated telephony.
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default function LvPatientAccess() {
               <strong>Baseline locked before go-live</strong> · calls answered, wait, slots filled, missed appointments rebooked
             </span>
             <span>
-              <strong>Lift measured against it</strong> · labelled unverified until checked against practice data
+              <strong>Lift measured against it</strong> · labelled unverified until checked against clinic data
             </span>
           </div>
         </div>

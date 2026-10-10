@@ -31,7 +31,7 @@ export const PLATFORM_AGENTS: {
   { label: "Predictive risk", codename: "HORIZON", role: "Risk change with its contributing factors listed", status: LIVE_REVIEWED },
   { label: "Clinical intelligence", codename: "NEXUS", role: "Correlates labs, medicines and signals into a draft picture", status: LIVE_REVIEWED },
   { label: "Care coordination", codename: "PATHWAY", role: "Referral, pathway and follow-up packages for sign-off", status: LIVE_REVIEWED },
-  { label: "Population health", codename: "COMPASS", role: "Equity and cohort briefs for ICS views", status: PARTIAL },
+  { label: "Population health", codename: "COMPASS", role: "Equity and cohort briefs for population views", status: PARTIAL },
   { label: "Interoperability", codename: "BRIDGE", role: "FHIR R4 staging after Accept; simulated EHR only", status: LIVE },
   { label: "Regulatory & audit", codename: "SHIELD", role: "Tamper-evident record of every draft and decision", status: LIVE },
   { label: "Supervisor", codename: "CONDUCTOR", role: "Runs every agent in a fixed, inspectable order", status: LIVE },
@@ -135,8 +135,8 @@ export const NON_OBJECTIVES: string[] = [
 
 /** PRD §2.3 — mandatory human gates and who may confirm them (Volume I FLOW-JRN-2). */
 export const HUMAN_GATES: { gate: string; who: string }[] = [
-  { gate: "Red-flag escalation", who: "GP confirms" },
-  { gate: "Referral pathway", who: "GP confirms" },
-  { gate: "Medication decision", who: "Pharmacist confirms, GP co-accountable" },
+  { gate: "Red-flag escalation", who: "Responsible physician confirms" },
+  { gate: "Referral pathway", who: "Responsible physician confirms" },
+  { gate: "Medication decision", who: "Pharmacist confirms, physician co-accountable" },
   { gate: "Every other draft", who: "Accept, Edit or Reject by a named clinician; nurses raise and observe" },
 ];

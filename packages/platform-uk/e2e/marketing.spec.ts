@@ -75,11 +75,24 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText(/100 patients and 100 users/i)).toHaveCount(0);
   });
 
-  test("homepage roles section highlights product-aligned role dashboards", async ({ page }) => {
+  test("homepage audience section routes every stakeholder to a working surface", async ({ page }) => {
     await page.goto("/");
 
+    const audiences = page.locator('[data-section="audiences"]');
+    await expect(audiences.getByRole("heading", { name: /One diabetes care loop\. Everyone in it/i })).toBeVisible();
+    await expect(audiences.getByRole("link", { name: /Open the clinician demo/i })).toHaveAttribute("href", "/dashboard/gp");
+    await expect(audiences.getByRole("link", { name: /Talk to Asha/i })).toHaveAttribute("href", "/asha");
+    await expect(audiences.getByRole("link", { name: /See the pharmacy step/i })).toHaveAttribute("href", "/demo/patel");
+    await expect(audiences.getByRole("link", { name: /Explore the care network/i })).toHaveAttribute(
+      "href",
+      "/dashboard/network"
+    );
+  });
+
+  test("platform roles section highlights product-aligned role dashboards", async ({ page }) => {
+    await page.goto("/platform");
+
     const roles = page.locator("section#roles");
-    await expect(roles.getByRole("heading", { name: /One coordination layer\. Different clinical realities/i })).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Care delivery" }).first()).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Governance" }).first()).toBeVisible();
     await expect(roles.getByRole("heading", { name: "Physician (GP / family doctor)", exact: true })).toBeVisible();
@@ -87,10 +100,6 @@ test.describe("Marketing smoke", () => {
     await expect(roles.getByText("Admin · Audit")).toBeVisible();
     // Only dashboards that open without sign-in get a direct link.
     await expect(roles.getByRole("link", { name: "Open synthetic demo" })).toHaveCount(2);
-    await expect(roles.getByRole("link", { name: /View roles on the platform/i })).toHaveAttribute(
-      "href",
-      "/platform#roles"
-    );
     await expect(roles.getByRole("link", { name: /Open Patel demo/i })).toHaveAttribute("href", "/demo/patel");
   });
 
@@ -110,7 +119,7 @@ test.describe("Marketing smoke", () => {
 
     const gate = page.locator("section[data-clinician-gate]");
     await expect(gate.getByText("Mandatory human gates")).toBeVisible();
-    await expect(gate.getByText("Pharmacist confirms, GP co-accountable")).toBeVisible();
+    await expect(gate.getByText("Pharmacist confirms, physician co-accountable")).toBeVisible();
   });
 
   test("homepage closing CTA band has readable contrast", async ({ page }) => {
@@ -154,7 +163,7 @@ test.describe("Marketing smoke", () => {
     await expect(hero.getByRole("link", { name: /Request a pilot/i })).toHaveAttribute("href", "/get-started");
   });
 
-  test("homepage shows the nine Aksh Diabetes areas and the twelve-agent roster honestly", async ({ page }) => {
+  test("homepage shows the nine Aksh Diabetes areas honestly", async ({ page }) => {
     await page.goto("/");
 
     const diabetes = page.locator('[data-section="diabetes"]');
@@ -162,7 +171,12 @@ test.describe("Marketing smoke", () => {
     await expect(diabetes.locator(".lv-card")).toHaveCount(9);
     await expect(diabetes.getByText("Awaiting CGM data model")).toBeVisible();
     await expect(diabetes.getByText(/never an executable dose/i).first()).toBeVisible();
+  });
 
+  test("platform shows the twelve-agent roster honestly and the layer stack", async ({ page }) => {
+    await page.goto("/platform");
+
+    await expect(page.locator('[data-section="layers"]').getByText("Your EHR")).toBeVisible();
     const agents = page.locator('[data-section="agents"]');
     await expect(agents.locator(".lv-agent")).toHaveCount(12);
     await expect(agents.getByRole("heading", { name: "Medication safety" })).toBeVisible();
@@ -180,7 +194,6 @@ test.describe("Marketing smoke", () => {
     await expect(tracks.getByText("Not available by design")).toBeVisible();
     await expect(tracks.getByText("No autonomous clinical decisions")).toBeVisible();
     await expect(tracks.getByText(/No fake or implied certification/)).toBeVisible();
-    await expect(page.locator('[data-section="layers"]').getByText("Your EHR")).toBeVisible();
     await expect(page.getByRole("heading", { name: /In production/i })).toHaveCount(0);
   });
 
