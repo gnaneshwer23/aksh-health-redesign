@@ -229,6 +229,8 @@ export type ConversationSession = {
   /** Why a hand-off is pending once identity is confirmed (e.g. a clinical question). */
   pendingHandOffReason: string | null;
   highestSafety: SafetyLevel;
+  /** Market for safety wording: the practice's until the caller is identified, then the caller's. */
+  market: "GB" | "IN" | "US" | "AE";
   intent: AccessIntent | null;
   offeredSlotIds: string[];
   pendingAppointmentType: AppointmentType | null;

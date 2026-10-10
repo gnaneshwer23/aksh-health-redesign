@@ -139,10 +139,13 @@ async function run() {
     assert.equal(denied.status, 403);
   }
 
-  for (const role of ["gp", "nurse", "pharmacist", "clinical_reviewer"]) {
+  // Real onboarding role ids (lib/onboarding/roles.ts), not just legacy strings: "clinical-pharmacist"
+  // was denied in production while this test only checked "pharmacist".
+  for (const role of ["gp", "nurse", "clinical-pharmacist", "pharmacist", "clinical_reviewer"]) {
     assert.equal(
       evaluateClinicalApiAccess({ role, requestedPatientId: "P002" }).allowed,
-      true
+      true,
+      `${role} must reach clinical record APIs`
     );
   }
 

@@ -1,4 +1,6 @@
 import { detectCheckInEscalation } from "@/lib/patient-companion/check-in";
+import { MARKET_BY_CODE } from "@/lib/synthetic-world/catalog";
+import type { MarketCode } from "@/lib/synthetic-world/types";
 
 import type { SafetyResult } from "./types";
 
@@ -57,14 +59,15 @@ const URGENT_SAME_DAY_PHRASES = [
   "lost my vision",
 ];
 
-const MESSAGES = {
-  emergency:
-    "This could be an emergency. Please call 999 now. If you can’t, ask someone near you to call. I’m also alerting the practice team.",
-  crisis:
-    "I’m really sorry you’re feeling like this. If you might act on these thoughts, please call 999 now. You can also call NHS 111 and choose the mental health option, or Samaritans free on 116 123, any time. I’m letting the practice team know.",
-  urgent:
-    "That needs to be looked at today. I’m passing this to the practice team now and someone will call you back. If things get worse before then, call NHS 111, or 999 in an emergency.",
-} as const;
+/** Fixed wording per market. Aksh is not tied to one health system, so numbers come from market config. */
+export function safetyMessages(market: MarketCode = "GB") {
+  const m = MARKET_BY_CODE[market];
+  return {
+    emergency: `This could be an emergency. Please call ${m.emergencyNumber} now. If you can’t, ask someone near you to call. I’m also alerting the practice team.`,
+    crisis: `I’m really sorry you’re feeling like this. If you might act on these thoughts, please call ${m.emergencyNumber} now.${m.urgentAdviceLine ? ` You can also call ${m.urgentAdviceLine} and choose the mental health option, or contact ${m.crisisLine}, any time.` : ` You can also contact ${m.crisisLine}, any time.`} I’m letting the practice team know.`,
+    urgent: `That needs to be looked at today. I’m passing this to the practice team now and someone will call you back. If things get worse before then, call ${m.urgentAdviceLine ?? "your local urgent care service"}, or ${m.emergencyNumber} in an emergency.`,
+  };
+}
 
 function find(text: string, phrases: string[]) {
   return phrases.find((p) => text.includes(p)) ?? null;
@@ -81,8 +84,9 @@ function extremeGlucose(text: string): { kind: "low" | "high"; value: number } |
   return null;
 }
 
-export function screenUtterance(utterance: string): SafetyResult {
+export function screenUtterance(utterance: string, market: MarketCode = "GB"): SafetyResult {
   const text = utterance.toLowerCase();
+  const MESSAGES = safetyMessages(market);
 
   const crisis = detectCheckInEscalation(text);
   if (crisis.triggered && crisis.category === "self_harm_or_crisis") {
@@ -144,4 +148,4 @@ export function screenUtterance(utterance: string): SafetyResult {
   return { level: "none", reason: null, matched: null, patientMessage: null, handOffNow: false };
 }
 
-export const SAFETY_MESSAGES = MESSAGES;
+export const SAFETY_MESSAGES = safetyMessages("GB");

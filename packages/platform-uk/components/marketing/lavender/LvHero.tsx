@@ -24,7 +24,7 @@ const ROLE_INITIALS = ["GP", "RN", "Rx", "AD"];
 const TRUST = [
   { title: "Human review", detail: "Named clinician decides" },
   { title: "Auditability", detail: "Every decision attributed" },
-  { title: "UK data posture", detail: "Organisation-level controls" },
+  { title: "Regional data residency", detail: "Data stays in your market" },
   { title: "Diabetes & primary care", detail: "Focused clinical wedge" },
 ] as const;
 

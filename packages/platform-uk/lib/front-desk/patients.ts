@@ -1,5 +1,6 @@
 import { patients } from "@/lib/mock-data/patients";
-import type { Patient } from "@/lib/mock-data/types";
+import { getSyntheticWorld } from "@/lib/synthetic-world/generate";
+import type { MarketCode } from "@/lib/synthetic-world/types";
 
 /**
  * Identity for Front Desk conversations (hazard H-ACC-3): a name AND date of birth must match
@@ -18,11 +19,25 @@ export function phoneContactAllowed(patientId: string) {
   return n % 7 !== 3;
 }
 
-export function getPatient(id: string | null): Patient | null {
-  return id ? patients.find((p) => p.id === id) ?? null : null;
+/** Who Front Desk can identify: the clinical demo cohort plus the 500-patient synthetic network. */
+export type DeskPatient = { id: string; name: string; dob: string; market: MarketCode };
+
+let index: DeskPatient[] | null = null;
+function allPatients(): DeskPatient[] {
+  if (!index) {
+    index = [
+      ...patients.map((p) => ({ id: p.id, name: p.name, dob: p.dob, market: "GB" as MarketCode })),
+      ...getSyntheticWorld().patients.map((p) => ({ id: p.id, name: `${p.title} ${p.givenName} ${p.familyName}`, dob: p.dob, market: p.market })),
+    ];
+  }
+  return index;
 }
 
-export function displayName(p: Patient) {
+export function getPatient(id: string | null): DeskPatient | null {
+  return id ? allPatients().find((p) => p.id === id) ?? null : null;
+}
+
+export function displayName(p: { name: string }) {
   return p.name.replace(/^(Mr|Mrs|Ms|Mx|Miss|Master|Dr|Baby)\s+/, "");
 }
 
@@ -44,14 +59,15 @@ export function parseDob(text: string): string | null {
 }
 
 export type IdentityResult =
-  | { kind: "matched"; patient: Patient }
+  | { kind: "matched"; patient: DeskPatient }
   | { kind: "need_more"; missing: ("name" | "dob")[] }
   | { kind: "no_match" };
 
 export function identifyPatient(text: string): IdentityResult {
   const t = text.toLowerCase();
   const dob = parseDob(t);
-  const byName = patients.filter((p) => {
+  const everyone = allPatients();
+  const byName = everyone.filter((p) => {
     const parts = displayName(p).toLowerCase().split(/\s+/);
     const first = parts[0] ?? "";
     const last = parts[parts.length - 1] ?? "";
@@ -61,7 +77,7 @@ export function identifyPatient(text: string): IdentityResult {
   if (!dob) return { kind: "need_more", missing: ["dob"] };
   if (!byName.length) {
     // DOB given but no recognisable name in this utterance.
-    return patients.some((p) => p.dob === dob) ? { kind: "need_more", missing: ["name"] } : { kind: "no_match" };
+    return everyone.some((p) => p.dob === dob) ? { kind: "need_more", missing: ["name"] } : { kind: "no_match" };
   }
   const match = byName.filter((p) => p.dob === dob);
   return match.length === 1 ? { kind: "matched", patient: match[0]! } : { kind: "no_match" };

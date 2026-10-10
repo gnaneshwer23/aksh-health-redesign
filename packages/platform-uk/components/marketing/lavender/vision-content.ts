@@ -105,7 +105,7 @@ export const PRODUCT_LOOP: { step: string; detail: string; agents: string }[] = 
   { step: "Detect & reason", detail: "Safety, risk, coordination and referral checks", agents: "GUARDIAN · HORIZON · NEXUS · PATHWAY" },
   { step: "Clinician decides", detail: "Accept, Edit or Reject, plus mandatory gates", agents: "Named reviewer" },
   { step: "Stage", detail: "FHIR R4 staging beside the EHR, never a live write", agents: "BRIDGE" },
-  { step: "Rehearse", detail: "Simulated EMIS / SystmOne chart, not an NHS write", agents: "Simulated EHR" },
+  { step: "Rehearse", detail: "Simulated EHR chart (Epic, EMIS and others), never a live write", agents: "Simulated EHR" },
   { step: "Audit", detail: "Every decision hash-chained and attributable", agents: "SHIELD" },
   { step: "Learn, governed", detail: "Gated evaluation before any model change", agents: "Governed evaluation" },
 ];

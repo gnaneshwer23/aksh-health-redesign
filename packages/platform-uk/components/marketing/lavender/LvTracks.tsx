@@ -11,8 +11,8 @@ const TRACKS = [
   },
   {
     name: "Track B",
-    title: "Live NHS clinical use",
-    detail: "Real patient data and live EMIS / SystmOne write-back. Needs DPIA, clinical safety sign-off and partner approval first.",
+    title: "Live clinical use",
+    detail: "Real patient data and live EHR write-back in a given market. Needs a privacy impact assessment, clinical safety sign-off, the market’s regulator pathway and EHR partner approval first.",
     status: { label: "Not available by design", tone: "held" },
   },
 ] as const;

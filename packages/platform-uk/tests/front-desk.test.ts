@@ -18,6 +18,7 @@ import {
   runCampaign,
 } from "../lib/front-desk/workflows";
 import { AGENT_DIRECTORY } from "../lib/agents";
+import { getSyntheticWorld } from "../lib/synthetic-world/generate";
 
 const NOW = new Date("2026-10-12T09:00:00Z"); // Monday, BST
 const fresh = () => createInitialState(NOW);
@@ -237,6 +238,26 @@ assert.equal(parseDob("22/11/1971"), "1971-11-22");
   assert.equal(urgent.status, "handed_off", "urgent referrals go to a clinician before booking");
   const unknown = intakeReferral(s, "Re: Nobody Real 01/01/1900", NOW.toISOString());
   assert.equal(unknown.status, "handed_off");
+}
+
+// --- Market-aware safety and network-wide identity (not tied to one health system) ---
+{
+  const w = getSyntheticWorld();
+  assert.match(screenUtterance("I want to end my life", "IN").patientMessage ?? "", /call 112 now.*14416/);
+  assert.match(screenUtterance("chest pain", "US").patientMessage ?? "", /call 911 now/);
+  assert.match(screenUtterance("I feel suicidal", "US").patientMessage ?? "", /988/);
+  assert.match(screenUtterance("chest pain", "AE").patientMessage ?? "", /call 998 now/);
+  assert.doesNotMatch(screenUtterance("chest pain", "US").patientMessage ?? "", /999|111/);
+
+  const indian = w.patients.find((p) => p.market === "IN")!;
+  const s = fresh();
+  let t = startConversation(s, { channel: "web_chat", direction: "inbound" }, NOW);
+  t = respond(s, t.session, "I'd like to give an update on my sugars", NOW);
+  t = respond(s, t.session, `${indian.givenName} ${indian.familyName}, ${indian.dob}`, NOW);
+  assert.equal(t.session.patientId, indian.id, "network patients can be identified");
+  assert.equal(t.session.market, "IN");
+  t = respond(s, t.session, "I have chest pain", NOW);
+  assert.match(t.reply, /call 112 now/, "safety wording follows the caller's market");
 }
 
 // --- Metrics are labelled unverified ---

@@ -5,7 +5,7 @@ const STEPS = [
   {
     label: "Step one",
     title: "Request organisation access",
-    body: "Tell us about your practice or ICS. We reply within two business days.",
+    body: "Tell us about your clinic, health system or programme. We reply within two business days.",
     icon: Send,
   },
   {

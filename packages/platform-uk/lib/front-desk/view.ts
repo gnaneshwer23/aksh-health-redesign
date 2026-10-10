@@ -1,12 +1,10 @@
-import { patients } from "@/lib/mock-data/patients";
-
-import { displayName } from "./patients";
+import { displayName, getPatient } from "./patients";
 import { FRONT_DESK_HONESTY, type FrontDeskState } from "./types";
 import { campaignTargets, computeMetrics } from "./workflows";
 
 const nameOf = (id: string | null) => {
   if (!id) return null;
-  const p = patients.find((x) => x.id === id);
+  const p = getPatient(id);
   return p ? displayName(p) : id;
 };
 

@@ -13,6 +13,8 @@ import {
 } from "./intents";
 import { answerQuestion, PRACTICE_KNOWLEDGE } from "./knowledge";
 import { displayName, getPatient, identifyPatient } from "./patients";
+import { MARKET_BY_CODE } from "@/lib/synthetic-world/catalog";
+
 import { screenUtterance } from "./safety";
 import { newId } from "./store";
 import { addWorkItem, createClinicalDraft } from "./workflows";
@@ -73,6 +75,7 @@ export function startConversation(
     unknownCount: 0,
     pendingHandOffReason: null,
     highestSafety: "none",
+    market: getPatient(input.expectedPatientId ?? null)?.market ?? "GB",
     intent: input.direction === "outbound" ? (input.campaignKind === "health_check_in" ? "health_update" : "book") : null,
     offeredSlotIds: [],
     pendingAppointmentType:
@@ -147,8 +150,8 @@ function handOff(state: FrontDeskState, session: ConversationSession, reason: st
   return say(
     session,
     kind === "prescription_request"
-      ? "I’ve passed your request to the prescriptions team. They’ll be in touch if they need anything. You can also order repeat medicines in the NHS App. Thank you for calling."
-      : "I’ve passed this to the practice team and someone will call you back on the number we hold for you. If it becomes urgent, call NHS 111, or 999 in an emergency. Thank you for calling.",
+      ? "I’ve passed your request to the prescriptions team. They’ll be in touch if they need anything. Thank you for calling."
+      : `I’ve passed this to the practice team and someone will call you back on the number we hold for you. If it becomes urgent, call ${MARKET_BY_CODE[session.market ?? "GB"].urgentAdviceLine ?? "your local urgent care service"}, or ${MARKET_BY_CODE[session.market ?? "GB"].emergencyNumber} in an emergency. Thank you for calling.`,
     at
   );
 }
@@ -255,7 +258,7 @@ export function respond(state: FrontDeskState, session: ConversationSession, utt
   }
 
   // 1. Safety first, every turn.
-  const safety = screenUtterance(text);
+  const safety = screenUtterance(text, session.market ?? "GB");
   if (SAFETY_RANK[safety.level] > SAFETY_RANK[session.highestSafety]) session.highestSafety = safety.level;
   if (safety.handOffNow) {
     const captured = captureHealthData(text);
@@ -295,6 +298,7 @@ export function respond(state: FrontDeskState, session: ConversationSession, utt
         return handOff(state, session, "Outbound call reached a different person than intended", at);
       }
       session.patientId = id.patient.id;
+      session.market = id.patient.market;
       session.identifyBuffer = "";
       if (!session.intent) {
         session.stage = "intent";
@@ -471,6 +475,7 @@ export function respond(state: FrontDeskState, session: ConversationSession, utt
     const id = identifyPatient(text);
     if (id.kind === "matched") {
       session.patientId = id.patient.id;
+      session.market = id.patient.market;
       session.identifyBuffer = "";
       if (intent === "health_update") session.captured = [];
       return startIntent(state, session, text, at);

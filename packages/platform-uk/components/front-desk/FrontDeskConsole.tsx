@@ -172,7 +172,7 @@ export function FrontDeskConsole() {
           </CardHeader>
           <CardContent>
             {items.length ? (
-              <ul className="divide-y divide-border-subtle" data-queue>
+              <ul className="m-0 list-none p-0 divide-y divide-border-subtle" data-queue>
                 {items.slice(0, 25).map((w) => (
                   <li key={w.id} className="flex flex-wrap items-start justify-between gap-2 py-2.5">
                     <div className="min-w-0">
@@ -207,7 +207,7 @@ export function FrontDeskConsole() {
                     <Badge variant={d.status === "accepted" ? "success" : d.status === "rejected" ? "danger" : "outline"}>{d.status}</Badge>
                   </div>
                 </div>
-                <ul className="mt-2 space-y-0.5 text-xs text-muted">
+                <ul className="m-0 list-none p-0 mt-2 space-y-0.5 text-xs text-muted">
                   {d.observations.map((o, i) => (
                     <li key={i}>
                       {o.display.replace(" (patient-reported)", "")}: <span className="text-foreground">{o.value}</span>
@@ -301,7 +301,7 @@ export function FrontDeskConsole() {
               </div>
               <p className="mt-2 rounded-lg bg-surface-muted px-3 py-2 text-xs text-muted">Script: “{c.script}”</p>
               {c.approvedBy ? <p className="mt-1 text-[11px] text-muted">Approved by {c.approvedBy}</p> : null}
-              <ul className="mt-2 grid gap-1 text-xs sm:grid-cols-2">
+              <ul className="m-0 list-none p-0 mt-2 grid gap-1 text-xs sm:grid-cols-2">
                 {c.targets.slice(0, 10).map((t) => (
                   <li key={t.patientId} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1 hover:bg-surface-muted">
                     <span className="truncate">
@@ -405,7 +405,7 @@ export function FrontDeskConsole() {
             <p className="text-xs text-muted">Cancellations are offered to the longest-waiting matching patient (Slot Fill).</p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ul className="space-y-1.5">
+            <ul className="m-0 list-none p-0 space-y-1.5">
               {view.calendar.map((d) => (
                 <li key={d.date} className="flex items-center gap-3 text-xs">
                   <span className="w-24 text-muted">{new Date(`${d.date}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</span>
@@ -420,7 +420,7 @@ export function FrontDeskConsole() {
             </ul>
             <div>
               <p className="mb-1 text-xs font-medium text-foreground">Waiting list ({view.waitlist.filter((w) => w.status === "waiting" || w.status === "offered").length})</p>
-              <ul className="space-y-1 text-xs text-muted">
+              <ul className="m-0 list-none p-0 space-y-1 text-xs text-muted">
                 {view.waitlist.slice(0, 8).map((w) => (
                   <li key={w.id}>
                     {w.patientName} · {w.type.replace(/_/g, " ")} · {w.status}

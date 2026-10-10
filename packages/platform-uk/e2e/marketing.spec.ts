@@ -53,7 +53,7 @@ test.describe("Marketing smoke", () => {
     await expect(trustStrip).toBeVisible();
     await expect(trustStrip.getByText("Human review").first()).toBeVisible();
     await expect(trustStrip.getByText("Auditability").first()).toBeVisible();
-    await expect(trustStrip.getByText("UK data posture").first()).toBeVisible();
+    await expect(trustStrip.getByText("Regional data residency").first()).toBeVisible();
     await expect(trustStrip.getByText("Diabetes & primary care").first()).toBeVisible();
   });
 
@@ -82,7 +82,7 @@ test.describe("Marketing smoke", () => {
     await expect(roles.getByRole("heading", { name: /One coordination layer\. Different clinical realities/i })).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Care delivery" }).first()).toBeVisible();
     await expect(roles.locator(".lv-role__band", { hasText: "Governance" }).first()).toBeVisible();
-    await expect(roles.getByRole("heading", { name: "GP", exact: true })).toBeVisible();
+    await expect(roles.getByRole("heading", { name: "Physician (GP / family doctor)", exact: true })).toBeVisible();
     await expect(roles.getByText("Clinician dashboard")).toBeVisible();
     await expect(roles.getByText("Admin · Audit")).toBeVisible();
     // Only dashboards that open without sign-in get a direct link.
@@ -269,7 +269,7 @@ test.describe("Marketing smoke", () => {
   test("security page loads with expected headings", async ({ page }) => {
     await page.goto("/security");
     await expect(page.getByRole("heading", { name: /Trust is a gate, not a slogan/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /GDPR Art\. 9 special category data/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Special category health data/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Honest limits/i })).toBeVisible();
     await expect(page.getByText(/MHRA certification, registration, or device marking/i)).toBeVisible();
   });

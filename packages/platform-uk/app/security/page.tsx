@@ -34,17 +34,17 @@ const sections = [
   {
     id: "dcb0129",
     title: "Clinical safety case (in progress)",
-    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. Optional UK NHS-ready pathways (e.g. DCB0129-style rehearsal) remain secondary scaffolding — not approvals.",
+    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. Market-specific pathways (for example UK DCB0129, US FDA software guidance, India CDSCO) remain scaffolding, not approvals.",
     bullets: [
       "Hazard log is internal — not a public certificate",
       "Production EHR write-back stays gated until organisation sign-off",
     ],
   },
   {
-    title: "GDPR Art. 9 special category data",
-    body: "Health data is treated as special category information: purpose limitation, minimisation, and tenant isolation for organisation deployments.",
+    title: "Special category health data",
+    body: "Health data is treated as the most sensitive category under GDPR Art. 9, HIPAA and India’s DPDP Act: purpose limitation, minimisation, and tenant isolation for organisation deployments.",
     bullets: [
-      "UK/EU residency framing for healthcare workloads",
+      "Regional residency by market (UK/EU, US, India, Gulf)",
       "Encryption in transit and at rest; role-based access",
     ],
   },
