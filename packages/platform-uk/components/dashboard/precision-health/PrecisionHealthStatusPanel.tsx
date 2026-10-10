@@ -48,7 +48,7 @@ type ConnectorsPayload = {
 };
 
 /**
- * Admin roll-up: connectors, consent, Neo4j/Medplum/EMIS honesty flags, twin status, doc links.
+ * Admin roll-up: connectors, consent, Neo4j/Medplum/EHR honesty flags, twin status, doc links.
  */
 export function PrecisionHealthStatusPanel() {
   const [health, setHealth] = useState<HealthPayload | null>(null);
@@ -175,7 +175,7 @@ export function PrecisionHealthStatusPanel() {
 
         {emis?.items && emis.items.length > 0 ? (
           <div>
-            <p className="text-xs font-semibold">EMIS partner checklist</p>
+            <p className="text-xs font-semibold">EHR partner checklist</p>
             <ul className="mt-1 space-y-1 text-xs text-muted">
               {emis.items.map((item) => (
                 <li key={item.id}>

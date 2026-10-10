@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * U7 — Hospital command-centre demo: wards → capacity → staffing.
- * Synthetic PAS · liveEmis:false · no live PAS/EPR.
+ * Synthetic hospital system · liveEmis:false · no live hospital system.
  */
 const BEATS = [
   {
@@ -59,7 +59,7 @@ export function HospitalHeroDemoPath({ className }: { className?: string }) {
               liveEmis:false
             </Badge>
             <Badge variant="outline" className="text-[10px]">
-              synthetic PAS
+              synthetic hospital system
             </Badge>
             <Badge variant="outline" className="text-[10px]">
               not live EPR
@@ -67,7 +67,7 @@ export function HospitalHeroDemoPath({ className }: { className?: string }) {
           </div>
           <p className="text-xs text-muted">
             Wards → capacity → staffing. PATHWAY frames flow / discharge; HORIZON drafts demand
-            foresight — recommendations stay HITL. Figures are synthetic PAS rehearsal — not a live
+            foresight — recommendations stay HITL. Figures are synthetic hospital system rehearsal — not a live
             hospital feed.
           </p>
           <ol className="flex flex-wrap items-stretch gap-2" aria-label="Demo beats">

@@ -31,7 +31,7 @@ export function SimulatedPatientsPage() {
         <h2>Richer fake patient profiles for testing the Aksh Health own-system workflow.</h2>
         <p>
           These profiles are deliberately simulated. They give the product realistic longitudinal context without using
-          real patient data or implying NHS/EHR integration.
+          real patient data or implying health system/EHR integration.
         </p>
         <div className="hero-stats">
           <div className="hero-stat">
@@ -46,7 +46,7 @@ export function SimulatedPatientsPage() {
           </div>
           <div className="hero-stat">
             <strong>Real patient data</strong>
-            <p>No real patient records, demographics, or NHS identifiers are used.</p>
+            <p>No real patient records, demographics, or health system identifiers are used.</p>
             <span className="hero-stat-value">0</span>
           </div>
         </div>

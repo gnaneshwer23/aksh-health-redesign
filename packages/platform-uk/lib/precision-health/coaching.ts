@@ -40,7 +40,7 @@ export function buildNutritionCoachingDraft(options: {
     suggestions: [
       "Offer plate-method education materials approved by the practice",
       "Encourage fluid and salt awareness talking points if HF pathway is active (clinician must confirm)",
-      "Signpost to NHS / practice-approved diet resources only"
+      "Signpost to health system / practice-approved diet resources only"
     ],
     disclaimers: [
       "NOT CLINICAL ADVICE — coaching draft only.",
@@ -110,7 +110,7 @@ export function buildExerciseCoachingDraft(options: {
       options.contextNotes?.trim() ||
       "General physical-activity talking points for wellness education — not a cardiac rehab or physio prescription.",
     suggestions: [
-      "Share NHS / practice-approved activity guidelines appropriate to age band",
+      "Share health system / practice-approved activity guidelines appropriate to age band",
       "Encourage gradual build and seated options if mobility limited (clinician confirms)",
       "Do not invent live wearable step goals as clinical targets"
     ],
@@ -146,7 +146,7 @@ export function buildMentalHealthCoachingDraft(options: {
       options.contextNotes?.trim() ||
       "General wellbeing talking points and signposting — not a psychiatric assessment or therapy plan.",
     suggestions: [
-      "Signpost to practice-approved IAPT / NHS Talking Therapies resources only",
+      "Signpost to practice-approved IAPT / health system Talking Therapies resources only",
       "Offer sleep/activity wellness crosstalk where appropriate (still coaching-only)",
       "Never claim crisis management or diagnosis from this stub"
     ],

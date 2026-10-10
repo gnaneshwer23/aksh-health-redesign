@@ -83,7 +83,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
       },
       {
         title: "Safety checks before you prescribe",
-        body: "Interaction and allergy checks use BNF-backed rules. Flags wait for your decision — they never auto-write.",
+        body: "Interaction and allergy checks use formulary-backed rules. Flags wait for your decision — they never auto-write.",
         agents: ["GUARDIAN"],
         bullets: ["High / medium / safe interaction bands", "You Accept, Edit, or Reject every flag"],
       },
@@ -174,7 +174,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     dashboardRole: "pharmacist",
     pathPromise: "Med review → interaction checks → HITL before staging",
     agents: [
-      { name: "GUARDIAN", why: "BNF-backed interaction and allergy checks." },
+      { name: "GUARDIAN", why: "formulary-backed interaction and allergy checks." },
       { name: "SYNTHESIS", why: "Med-review documentation drafts." },
       { name: "CONDUCTOR", why: "Holds drafts until your Accept." },
       { name: "BRIDGE", why: "Stages only accepted med changes — sim." },
@@ -188,7 +188,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
         title: "Medication safety needs your decision",
         body: "Interaction checks run against current meds and allergies. Nothing stages without your decision.",
         agents: ["GUARDIAN", "SYNTHESIS"],
-        bullets: ["Review queue for polypharmacy", "Interaction checker with edit-and-stage", "BNF reference alongside"],
+        bullets: ["Review queue for polypharmacy", "Interaction checker with edit-and-stage", "formulary reference alongside"],
         honesty: LIVE_EMIS,
       },
       {
@@ -208,7 +208,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     preferenceTips: {
       bnfAlerts: (v) =>
         v === "Severe only"
-          ? "BNF alerts set to severe only — open the full checker when you need medium-risk flags."
+          ? "formulary alerts set to severe only — open the full checker when you need medium-risk flags."
           : null,
       guardianSensitivity: (v) =>
         v === "High" ? "GUARDIAN sensitivity is high — expect more interaction flags in the queue." : null,
@@ -308,14 +308,14 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
   "hospital-executive": {
     role: "hospital-executive",
     dashboardRole: "hospital",
-    pathPromise: "Wards → capacity → staffing with synthetic PAS honesty",
+    pathPromise: "Wards → capacity → staffing with synthetic hospital system honesty",
     agents: [
       { name: "HORIZON", why: "Demand / surge foresight drafts." },
       { name: "PATHWAY", why: "Flow and discharge coordination drafts." },
       { name: "COMPASS", why: "Equity pressure lenses for leadership." },
       { name: "CONDUCTOR", why: "No silent auto-act on recommendations." },
       { name: "SHIELD", why: "Audit on operational reviewer actions." },
-      { name: "BRIDGE", why: "Not a live PAS/EPR write-back." },
+      { name: "BRIDGE", why: "Not a live hospital system write-back." },
     ],
     youApprove:
       "Operational recommendations (capacity / staffing). Ward clinicians still Accept clinical care drafts when in play.",
@@ -323,7 +323,7 @@ export const ROLE_ONBOARDING_PATHS: Record<UserRole, RoleOnboardingPath> = {
     tutorialScreens: [
       {
         title: "Command Centre",
-        body: "ED wait, beds, and staffing in one view. Feeds are demo-synthetic — not live PAS.",
+        body: "ED wait, beds, and staffing in one view. Feeds are demo-synthetic — not live hospital system.",
         agents: ["HORIZON", "PATHWAY"],
         bullets: ["Ward status", "Capacity forecast", "Staffing alerts"],
         honesty: "Sandbox hospital data — liveEmis:false.",

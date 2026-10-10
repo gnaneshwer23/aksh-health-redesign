@@ -128,7 +128,7 @@ export function getPermissionActions(): PermissionAction[] {
       label: "Ask Aksh named-patient chat",
       routeOrSurface: "/api/chat/patient, AskAkshDrawer / companion Ask tab",
       notes:
-        "Diabetes care-coordination chat with bounded chart context. clinical_reviewer allowed; patient scoped to bound id; operations_lead (ICS/admin/hospital) and researcher denied named PHI. liveEmis:false · HITL drafts still need Accept.",
+        "Diabetes care-coordination chat with bounded chart context. clinical_reviewer allowed; patient scoped to bound id; operations_lead (regional/admin/hospital) and researcher denied named PHI. liveEmis:false · HITL drafts still need Accept.",
       enforcedAt: "2026-08-12"
     }
   ];
@@ -231,7 +231,7 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
   return {
     artifactType: "aksh-uk-eu-role-permission-matrix",
     generatedAt: options?.generatedAt ?? formatCaseTimestamp(),
-    generatedBy: options?.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: options?.generatedBy ?? "Aksh Health synthetic proof system",
     syntheticOnly: true,
     productionRbacEnforced: false,
     roles: [
@@ -275,7 +275,7 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
     enforcementNotes: [
       "Current build uses demo auth and scoped JSON stores; this matrix documents intended boundaries rather than production RBAC enforcement.",
       "Future database adapters must preserve ownership checks and audit integrity before production RBAC claims.",
-      "No role may unlock live NHS integration, real patient data handling, or autonomous clinical decisioning in the synthetic proof build.",
+      "No role may unlock live health system integration, real patient data handling, or autonomous clinical decisioning in the synthetic proof build.",
       "patient/researcher are first-class AppRoles (B1): unrecognized session roles fail closed to \"restricted\" rather than silently becoming clinical_reviewer."
     ]
   };

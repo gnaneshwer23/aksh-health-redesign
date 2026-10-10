@@ -42,7 +42,7 @@ function run() {
     "utf8"
   );
   assert.ok(emisRoute.includes("liveWriteBack: false"));
-  assert.ok(emisRoute.includes("No EMIS write was attempted"));
+  assert.ok(emisRoute.includes("No EHR write was attempted"));
 
   console.log("HITL non-bypass / zero-autonomous-write invariants passed.");
 }

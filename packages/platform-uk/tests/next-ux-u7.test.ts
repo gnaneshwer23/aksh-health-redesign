@@ -57,7 +57,7 @@ function run() {
   const hospitalPage = read("app/dashboard/hospital/page.tsx");
   assert.ok(hospitalPage.includes("HospitalHeroDemoPath"));
   assert.ok(hospitalPage.includes("hospital-honesty-banner"));
-  assert.ok(hospitalPage.includes("Not live PAS"));
+  assert.ok(hospitalPage.includes("Not live hospital system"));
   assert.ok(hospitalPage.includes("liveEmis:false"));
   assert.ok(hospitalPage.includes("PATHWAY") || hospitalPage.includes("HORIZON"));
   assert.ok(hospitalPage.includes("WardPatientContext"));
@@ -68,10 +68,10 @@ function run() {
   assert.ok(read("app/dashboard/hospital/staffing/page.tsx").includes("HospitalHeroDemoPath"));
 
   const mockBanner = read("components/dashboard/hospital/HospitalMockModeBanner.tsx");
-  assert.ok(mockBanner.includes("Not live PAS"));
+  assert.ok(mockBanner.includes("Not live hospital system"));
   assert.ok(mockBanner.includes("liveEmis:false"));
   // Folded into HonestyStatusBar for hospital layout — component retained for contracts.
-  assert.ok(read("components/dashboard/HonestyStatusBar.tsx").includes("Not live PAS"));
+  assert.ok(read("components/dashboard/HonestyStatusBar.tsx").includes("Not live hospital system"));
   assert.ok(!read("app/dashboard/hospital/layout.tsx").includes("HospitalMockModeBanner"));
 
   // First-run aligned with hero beats
@@ -105,7 +105,7 @@ function run() {
   assert.ok(demoScript.includes("/dashboard/hospital"));
   assert.ok(demoScript.includes("liveEmis: false") || demoScript.includes("liveEmis:false"));
   assert.ok(demoScript.includes("COMPASS"));
-  assert.ok(demoScript.includes("synthetic PAS") || demoScript.includes("Not live PAS"));
+  assert.ok(demoScript.includes("synthetic PAS") || demoScript.includes("Not live hospital system"));
   assert.ok(!demoScript.includes("14 agents"));
 
   // Smoke scripts assert hero copy
@@ -119,14 +119,14 @@ function run() {
   const hospitalSmoke = read("scripts/smoke-hospital-dashboard.mjs");
   assert.ok(hospitalSmoke.includes("Command Centre Overview"));
   assert.ok(hospitalSmoke.includes("liveEmis:false"));
-  assert.ok(hospitalSmoke.includes("Not live PAS"));
+  assert.ok(hospitalSmoke.includes("Not live hospital system"));
 
   assert.ok(!icsHero.includes("liveEmis:true"));
   assert.ok(!hospitalHero.includes("liveEmis:true"));
   assert.ok(!icsPage.includes("liveEmis:true"));
   assert.ok(!hospitalPage.includes("liveEmis:true"));
 
-  console.log("U7 ICS + hospital dashboard demo polish checks passed.");
+  console.log("U7 regional + hospital dashboard demo polish checks passed.");
 }
 
 void run();

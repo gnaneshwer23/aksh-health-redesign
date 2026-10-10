@@ -96,7 +96,7 @@ function deterministicFallback(input: {
       interactions.length === 0
         ? ["Confirm medicines list is complete", "Document clinical rationale if starting a new medicine"]
         : [
-            "Review BNF advice for each flagged pair",
+            "Review formulary advice for each flagged pair",
             "Decide Accept / Edit / Reject before staging to the GP review queue",
             "Do not write back to the EHR from this rehearsal path"
           ],

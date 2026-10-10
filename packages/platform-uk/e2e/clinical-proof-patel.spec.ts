@@ -92,7 +92,7 @@ test.describe("Clinical proof — Patel golden path", () => {
     test.info().annotations.push({
       type: "BLOCKED: partner",
       description:
-        "Patel golden-path stops before live EMIS write-back. Staging scaffold only; Partner credentials + CSO sign-off required.",
+        "Patel golden-path stops before live EHR write-back. Staging scaffold only; Partner credentials + CSO sign-off required.",
     });
   });
 });

@@ -109,7 +109,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "hospital-executive",
     label: "Hospital Executive",
-    description: "Wards, capacity, and staffing — synthetic PAS, recommendations need review",
+    description: "Wards, capacity, and staffing — synthetic hospital system, recommendations need review",
     icon: "chart-bar",
     color: "#001A3D",
     steps: [...CLINICAL_ORG_STEPS],

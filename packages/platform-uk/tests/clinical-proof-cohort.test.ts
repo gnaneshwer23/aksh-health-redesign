@@ -21,7 +21,7 @@ function run() {
     );
   }
 
-  assert.ok(summary.duplicateNhsFixtures.length >= 1, "Duplicate NHS fixture required (P002/P016)");
+  assert.ok(summary.duplicateNhsFixtures.length >= 1, "Duplicate health system fixture required (P002/P016)");
   const patel = patients.find((p) => p.id === "P002");
   assert.ok(patel, "Patel golden-path patient P002 required");
   assert.ok(patel!.activeConditions.some((c) => /diabetes/i.test(c)));

@@ -82,12 +82,12 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
       highRiskSharePercent,
       signals: [
         `${icsData.guardianAlertsGenerated} GUARDIAN alerts across ${icsData.practices} practices`,
-        `${icsData.equityFlags} COMPASS flags requiring ICS-level review`,
+        `${icsData.equityFlags} COMPASS flags requiring regional-level review`,
         `Predicted daily admissions trending to ${Math.round(avgPredicted)} (14-day horizon)`,
         `${highRisk.toLocaleString()} patients in high/very-high risk tiers`
       ],
       recommendedActions: [
-        "Deploy targeted outreach to East Leeds Family Practice (lowest benchmark score)",
+        "Deploy targeted outreach to Eastside Family Practice (lowest benchmark score)",
         "Increase extended-hours capacity in IMD Q1 areas via Valley View Surgery",
         "Review admission surge plan for predicted mid-July peak"
       ]
@@ -138,7 +138,7 @@ export function PatientRiskStatePanel(props: DigitalTwinPanelProps) {
             </ul>
           </div>
           <div>
-            <p className="text-xs font-semibold mb-1">Recommended ICS actions</p>
+            <p className="text-xs font-semibold mb-1">Recommended regional actions</p>
             {riskState.recommendedActions.map((a) => (
               <div key={a} className="mb-2 rounded-sm border border-border p-2 text-xs">
                 <p>{a}</p>

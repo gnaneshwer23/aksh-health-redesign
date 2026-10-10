@@ -149,7 +149,7 @@ export async function fetchIcsPopulationFromGraph(): Promise<Neo4jIcsPopulationR
 
   const icsRecord = icsResult.records[0];
   if (!icsRecord) {
-    throw new Error("ICS organization node not found in graph");
+    throw new Error("regional organization node not found in graph");
   }
 
   const imdResult = await runQuery(

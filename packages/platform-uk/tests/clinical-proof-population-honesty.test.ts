@@ -81,7 +81,7 @@ function run() {
   assert.ok(aggregate.limitations.length > 0, "must be explicit about what this aggregate does not cover");
   assert.ok(
     aggregate.limitations.some((l) => l.includes("47,832")),
-    "must explicitly distinguish itself from the illustrative static ICS fixture"
+    "must explicitly distinguish itself from the illustrative static regional fixture"
   );
 
   // Two independent calls over the same static fixture data must agree (deterministic, no AI Gateway call).

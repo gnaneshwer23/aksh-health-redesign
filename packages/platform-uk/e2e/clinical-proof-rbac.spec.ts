@@ -30,7 +30,7 @@ test.describe("Clinical proof — RBAC", () => {
     expect(url).not.toMatch(/\/dashboard\/gp\/review-queue/);
   });
 
-  test("public allowlist includes GP, ICS, and Hospital for unauthenticated users", async ({ page }) => {
+  test("public allowlist includes GP, regional, and Hospital for unauthenticated users", async ({ page }) => {
     await page.goto("/dashboard/gp");
     await expect(page).toHaveURL(/\/dashboard\/gp/);
 

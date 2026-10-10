@@ -20,7 +20,7 @@ type AggregatesResponse = {
 };
 
 /**
- * ICS / hospital strip — same spine aggregates API as GP timeline stores.
+ * regional / hospital strip — same spine aggregates API as GP timeline stores.
  * Ops bed/PAS feeds remain mock; this is shared clinical events only.
  */
 export function SpineSharedEventsPanel({

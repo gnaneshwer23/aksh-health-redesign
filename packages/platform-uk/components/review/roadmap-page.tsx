@@ -249,7 +249,7 @@ export function RoadmapPage() {
         <div className="hero-stats">
           <div className="hero-stat">
             <strong>Roadmap items with proof coverage</strong>
-            <p>Items that are at least partially supported by the current UK/EU app.</p>
+            <p>Items that are at least partially supported by the current regional/EU app.</p>
             <span className="hero-stat-value">
               {currentProofCount}/{summary.total}
             </span>
@@ -453,7 +453,7 @@ export function RoadmapPage() {
         <div className="row">
           <div>
             <h3>M1 Execution Checklist</h3>
-            <p>Immediate blockers from the 12-month workbook: clinical safety, EMIS, regulatory, infrastructure, and validation scope.</p>
+            <p>Immediate blockers from the 12-month workbook: clinical safety, EHR, regulatory, infrastructure, and validation scope.</p>
           </div>
           <div className="pill-row">
             <span className="pill">{m1Summary.total} tasks</span>

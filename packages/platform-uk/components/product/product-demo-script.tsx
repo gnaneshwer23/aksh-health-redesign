@@ -61,7 +61,7 @@ const productQuestions = [
     answer: "No. It is a working synthetic proof platform. The limitation is production readiness, not workflow existence."
   },
   {
-    question: "Can it handle real NHS data today?",
+    question: "Can it handle real health system data today?",
     answer: "Not yet. The current build intentionally stays synthetic and own-system-first while safety, governance, and interface contracts mature."
   },
   {
@@ -83,7 +83,7 @@ const demoRules = {
   doNotUseThisPageFor: [
     "Explaining every internal dashboard in detail.",
     "Replacing the landing page as product positioning copy.",
-    "Claiming live NHS integration, production clinical deployment, or real-world evidence readiness."
+    "Claiming live health system integration, production clinical deployment, or real-world evidence readiness."
   ]
 };
 

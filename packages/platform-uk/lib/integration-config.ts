@@ -40,7 +40,7 @@ export function getIntegrationAdapterRegistry() {
       enabled: isMedplumSyncEnabled(),
       defaultMode: "integration_rehearsal",
       boundary:
-        "Rehearsal only when ENABLE_MEDPLUM_SYNC=true and an accepted case is newly frozen. OAuth via MEDPLUM_* env. Never EMIS; push refuses when flag is off. See getMedplumRehearsalStatus()."
+        "Rehearsal only when ENABLE_MEDPLUM_SYNC=true and an accepted case is newly frozen. OAuth via MEDPLUM_* env. Never EHR; push refuses when flag is off. See getMedplumRehearsalStatus()."
     },
     {
       id: "fastapi-synthesis",
@@ -56,16 +56,16 @@ export function getIntegrationAdapterRegistry() {
       status: "planned" as const,
       enabled: false,
       defaultMode: "interface_placeholder",
-      boundary: "EMIS, SystmOne, and NHS live integration remain out of scope for this proof build."
+      boundary: "EHR, EHR, and health system live integration remain out of scope for this proof build."
     },
     {
       id: "emis-fhir-staging",
-      label: "EMIS FHIR staging adapter",
+      label: "EHR FHIR staging adapter",
       status: "scaffolded" as const,
       enabled: false,
       defaultMode: "partner_track",
       boundary:
-        "Scaffold only: accepts HITL-approved FHIR R4 bundles into an internal staging queue. No live EMIS Partner API credentials or write-back."
+        "Scaffold only: accepts HITL-approved FHIR R4 bundles into an internal staging queue. No live EHR partner API credentials or write-back."
     },
     {
       id: "ehr-writeback-sim",
@@ -74,7 +74,7 @@ export function getIntegrationAdapterRegistry() {
       enabled: false,
       defaultMode: "clinical_proof_harness",
       boundary:
-        "POST /api/integrations/ehr-writeback-sim. Accepts writes only with a short-lived clinician approval token. Never calls live EMIS. Disabled as an external integration; used by clinical-proof harness only."
+        "POST /api/integrations/ehr-writeback-sim. Accepts writes only with a short-lived clinician approval token. Never calls live EHR. Disabled as an external integration; used by clinical-proof harness only."
     },
     {
       id: "llm-synthesis",
@@ -119,7 +119,7 @@ export function getIntegrationAdapterRegistry() {
       enabled: isLlmEquityEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/equity. Aggregate ICS equity brief via Neo4j/mock + AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+        "POST /api/agents/equity. Aggregate regional equity brief via Neo4j/mock + AI Gateway when configured, else deterministic fallback. Never writes to EHR."
     },
     {
       id: "diabetes-module",

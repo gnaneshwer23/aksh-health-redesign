@@ -104,7 +104,7 @@ export function PreferencesPanel({ role, onSubmit }: PreferencesPanelProps) {
     );
   } else if (role === "clinical-pharmacist") {
     fields.push(
-      { name: "bnfAlerts" as keyof FormValues, label: "BNF alerts", options: ["All", "Severe only", "Off"] },
+      { name: "bnfAlerts" as keyof FormValues, label: "Formulary alerts", options: ["All", "Severe only", "Off"] },
       { name: "medReconciliation" as keyof FormValues, label: "Medication reconciliation", options: ["Auto-flag", "Manual"] },
       { name: "guardianSensitivity" as keyof FormValues, label: "Interaction alert sensitivity", options: ["High", "Standard"] },
       { name: "interactionDisplay" as keyof FormValues, label: "Interaction display", options: ["Inline", "Separate panel"] }

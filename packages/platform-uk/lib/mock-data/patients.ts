@@ -624,12 +624,12 @@ const corePatients: Patient[] = [
     carePathways: [],
     digitalTwinPrediction: {
       admissionRisk14Days: 20,
-      deteriorationSignals: ["Duplicate NHS number vs P002"],
+      deteriorationSignals: ["Duplicate patient ID vs P002"],
       recommendedActions: ["Identity resolution required before clinical write"],
     },
     flags: [],
     clinicalProfiles: ["duplicate_identity", "t2d"],
-    qaNotes: "Shares NHS number with P002 — identity collision fixture. Must not auto-merge.",
+    qaNotes: "Shares patient ID with P002 — identity collision fixture. Must not auto-merge.",
   },
   {
     id: "P017",
@@ -650,7 +650,7 @@ const corePatients: Patient[] = [
     carePathways: ["CP001"],
     digitalTwinPrediction: {
       admissionRisk14Days: 16,
-      deteriorationSignals: ["EMIS list shows Metformin stopped; SystmOne export still active"],
+      deteriorationSignals: ["EHR list shows Metformin stopped; EHR export still active"],
       recommendedActions: ["Reconcile conflicting medication lists before acceptance"],
     },
     flags: ["GUARDIAN"],

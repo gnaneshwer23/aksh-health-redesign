@@ -133,7 +133,7 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
     });
   });
 
-  test("AKSH-E2E-0015: Accept → health-plan draft + learning; no live EMIS", async ({
+  test("AKSH-E2E-0015: Accept → health-plan draft + learning; no live EHR", async ({
     request,
     baseURL,
   }) => {

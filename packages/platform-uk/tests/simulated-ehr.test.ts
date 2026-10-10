@@ -19,7 +19,7 @@ describe("simulated EHR store", () => {
     assert.equal(honesty.partnerWrite, false);
   });
 
-  it("upserts parallel EMIS + SystmOne projections idempotently", async () => {
+  it("upserts parallel EHR projections idempotently", async () => {
     await resetSimulatedEhrForTests("unit-sim-ehr");
 
     const first = await upsertSimulatedEhrCharts({

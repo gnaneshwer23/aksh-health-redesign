@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     liveEmis: false,
     canFlipLiveEmisInCode: canFlipLiveEmisInCode(),
     banner:
-      "NOT LIVE EMIS — Partner sandbox is feature-flagged. Flag off = sim path. Flag on without creds = needs_partner."
+      "NOT LIVE EHR — Partner sandbox is feature-flagged. Flag off = sim path. Flag on without creds = needs_partner."
   });
 }
 

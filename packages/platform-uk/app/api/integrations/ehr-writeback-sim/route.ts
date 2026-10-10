@@ -89,6 +89,6 @@ export async function POST(request: Request) {
     write: result.write,
     liveEmis: false,
     liveWriteBack: false,
-    message: "Simulated write recorded. Live EMIS remains BLOCKED: partner."
+    message: "Simulated write recorded. Live EHR remains BLOCKED: partner."
   });
 }

@@ -294,7 +294,7 @@ export function deriveScenarioBenchmarkActionQueue(cases: ReviewCase[]) {
         severity: item.status === "missing" ? ("high" as const) : ("medium" as const),
         rationale:
           item.status === "missing"
-            ? "A UK clinical risk class is not represented by the synthetic proof pack."
+            ? "A regional clinical risk class is not represented by the synthetic proof pack."
             : "A scenario exists, but it is not yet benchmarked against explicit clinical expectations.",
         resolutionStatus: latestResolution?.status ?? ("open" as const),
         resolvedAt: latestResolution?.status === "resolved" ? latestResolution.updatedAt : undefined,

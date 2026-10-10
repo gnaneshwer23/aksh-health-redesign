@@ -91,7 +91,7 @@ export type PartnerReadinessPack = {
 };
 
 const NOT_LIVE_BANNER =
-  "NOT LIVE EMIS — staging / sim write-back only. liveEmis:false until partner credentials + DPIA + CSO go/no-go are real and signed out-of-band.";
+  "NOT LIVE EHR — staging / sim write-back only. liveEmis:false until partner credentials + DPIA + CSO go/no-go are real and signed out-of-band.";
 
 export function getLiveEmisFlipChecklist(): LiveEmisFlipRequirement[] {
   const sandbox = getEmisPartnerSandboxStatus();
@@ -118,7 +118,7 @@ export function getLiveEmisFlipChecklist(): LiveEmisFlipRequirement[] {
     },
     {
       id: "partner-api-credentials",
-      label: "EMIS / SystmOne Partner API credentials in secure env",
+      label: "the EHR Partner API credentials in secure env",
       owner: "Partner",
       metInCode: credentialsPresent,
       status: credentialsPresent ? "needs_cso" : "needs_partner",
@@ -225,11 +225,11 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
       path: "docs/evidence-pack/15-residual-risk.md",
       kind: "doc",
       partnerReviewReady: true,
-      note: "EMIS/SystmOne BLOCKED: partner"
+      note: "the EHR BLOCKED: partner"
     },
     {
       id: "phase2-checklist",
-      label: "Phase 2 partner checklist (EMIS + wearable DPIA)",
+      label: "Phase 2 partner checklist (EHR + wearable DPIA)",
       path: "docs/PHASE2_PARTNER_CHECKLIST.md",
       kind: "doc",
       partnerReviewReady: true,
@@ -257,7 +257,7 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
       path: "docs/PHASE3_REGULATORY_PATH.md",
       kind: "doc",
       partnerReviewReady: true,
-      note: "DTAC / DCB0129 / MHRA / DPIA templates — not certifications"
+      note: "technology assessment / clinical safety case standard / medical device regulator / DPIA templates — not certifications"
     },
     {
       id: "g-ml-sop",
@@ -285,7 +285,7 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
     },
     {
       id: "emis-checklist-api",
-      label: "EMIS partner checklist API",
+      label: "EHR partner checklist API",
       path: "GET /api/integrations/emis-partner-checklist",
       kind: "api",
       partnerReviewReady: true,
@@ -293,7 +293,7 @@ export function getEvidencePackLinks(): EvidencePackLink[] {
     },
     {
       id: "emis-partner-sandbox-api",
-      label: "EMIS Partner sandbox status (N5)",
+      label: "EHR partner sandbox status (N5)",
       path: "GET /api/integrations/emis-partner-sandbox",
       kind: "api",
       partnerReviewReady: true,
@@ -337,7 +337,7 @@ export function buildPartnerTracks(artifacts: PartnerGateArtifact[] = []): Partn
   return [
     {
       id: "emis_systmone",
-      label: "EMIS / SystmOne write-back",
+      label: "the EHR write-back",
       uiStatus: emisUiStatus,
       owner: "Partner + engineering",
       inRepoEvidence: [
@@ -349,7 +349,7 @@ export function buildPartnerTracks(artifacts: PartnerGateArtifact[] = []): Partn
         "docs/PHASE2_PARTNER_CHECKLIST.md §A"
       ],
       externalAction: "Supply Partner API credentials, FHIR write scope, UAT, signed go/no-go",
-      note: `N5 sandbox: mode=${sandbox.mode} · writePath=${sandbox.writePath} · flag=${sandbox.sandboxFlagEnabled}. Staging/sim default — never live EMIS. SystmOne shares this partner track.`
+      note: `N5 sandbox: mode=${sandbox.mode} · writePath=${sandbox.writePath} · flag=${sandbox.sandboxFlagEnabled}. Staging/sim default — never live EHR. EHR shares this partner track.`
     },
     {
       id: "dpia",
@@ -405,7 +405,7 @@ export function buildPartnerTracks(artifacts: PartnerGateArtifact[] = []): Partn
     },
     {
       id: "regulatory_path",
-      label: "DTAC / DCB0129 / MHRA path",
+      label: "technology assessment / clinical safety case standard / medical device regulator path",
       uiStatus: deriveTrackStatus(
         artifacts,
         ["DTAC", "DCB0129", "MHRA_ROUTE"],
@@ -447,7 +447,7 @@ export function buildPartnerReadinessPack(input?: {
       anyCertified: false
     },
     notLiveBanner: NOT_LIVE_BANNER,
-    note: `Phase F + N5 sandbox honesty (mode=${sandbox.mode}, writePath=${sandbox.writePath}). External: credentials, signed DPIA/CSO/DTAC/DCB0129/MHRA, live write-back. liveEmis never flips from this pack alone.`
+    note: `Phase F + N5 sandbox honesty (mode=${sandbox.mode}, writePath=${sandbox.writePath}). External: credentials, signed DPIA/CSO/technology assessment/clinical safety case standard/medical device regulator, live write-back. liveEmis never flips from this pack alone.`
   };
 }
 

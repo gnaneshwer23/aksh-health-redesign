@@ -15,7 +15,7 @@ export const auditEvents: AuditEvent[] = [
   { id: "AE012", timestamp: "2026-07-06T14:20:00Z", user: "Pharmacist Lee", agent: "GUARDIAN", action: "Medication review completed", resource: "Mr Thomas Green: polypharmacy" },
   { id: "AE013", timestamp: "2026-07-05T12:20:00Z", user: "Dr Patel", agent: "PATHWAY", action: "Generated referral package", resource: "RQ009 / Mr William Brown" },
   { id: "AE014", timestamp: "2026-07-04T16:00:00Z", user: "Mrs Emma Clarke", agent: "Patient", action: "Completed check-in", resource: "Antenatal wellbeing check" },
-  { id: "AE015", timestamp: "2026-07-03T10:30:00Z", user: "ICS Lead Thompson", agent: "COMPASS", action: "Flagged disparity", resource: "Mrs Margaret Williams: IMD Q1" },
+  { id: "AE015", timestamp: "2026-07-03T10:30:00Z", user: "Population health lead Thompson", agent: "COMPASS", action: "Flagged disparity", resource: "Mrs Margaret Williams: IMD Q1" },
   { id: "AE016", timestamp: "2026-07-02T08:00:00Z", user: "Hospital Ops", agent: "COMMAND", action: "Accepted AI recommendation", resource: "Accelerate discharge reviews: Ward 3A" },
   { id: "AE017", timestamp: "2026-07-01T15:10:00Z", user: "System", agent: "GUARDIAN", action: "Polypharmacy alert generated", resource: "RQ007 / Mr Thomas Green" },
   { id: "AE018", timestamp: "2026-06-30T17:00:00Z", user: "Dr Morgan", agent: "SYNTHESIS", action: "Rejected draft note", resource: "Reason: missing examination findings" },

@@ -59,9 +59,9 @@ export function M1EvidencePack() {
             M1 Action Report
           </a>
         </div>
-        <h1>UK/EU M1 Execution Handoff</h1>
+        <h1>regional/EU M1 Execution Handoff</h1>
         <p>
-          One pack for the immediate April blockers: clinical safety owner, EMIS pathway, regulatory support,
+          One pack for the immediate April blockers: clinical safety owner, EHR pathway, regulatory support,
           infrastructure decision, validation scope, FHIR rehearsal, hazard logging, and safety committee setup.
         </p>
       </div>
@@ -112,7 +112,7 @@ export function M1EvidencePack() {
         </div>
         <p>
           Generated at {pack.generatedAt}. Synthetic-only planning artifact; not a production clinical, NHS integration,
-          DTAC, DCB0129, or real-patient-data artifact.
+          technology assessment, clinical safety case standard, or real-patient-data artifact.
         </p>
       </section>
 

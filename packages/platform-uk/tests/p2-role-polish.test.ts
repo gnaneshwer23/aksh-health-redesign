@@ -24,7 +24,7 @@ function run() {
   assert.ok(adminPage.includes('className="sr-only"') || adminPage.includes("sr-only"));
 
   const honesty = read("components/dashboard/HonestyStatusBar.tsx");
-  assert.ok(honesty.includes("Not live PAS"));
+  assert.ok(honesty.includes("Not live hospital system"));
   assert.ok(honesty.includes("aggregate planning") || honesty.includes("ICS"));
 
   const aggregate = read("components/dashboard/AggregateAskStub.tsx");

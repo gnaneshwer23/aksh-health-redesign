@@ -20,7 +20,7 @@ const proofStats = [
   {
     value: "7",
     label: "Benchmark scenarios",
-    detail: "UK clinical workflow scenarios with expected outcomes, sign-off discipline, and pass/fail gates."
+    detail: "Clinical workflow scenarios with expected outcomes, sign-off discipline, and pass/fail gates."
   },
   {
     value: "4",
@@ -68,7 +68,7 @@ const capabilities = [
   {
     icon: "04",
     title: "Integration-Ready Architecture",
-    text: "The platform demonstrates how future NHS GP Connect and EMIS integration fits: while keeping current proof boundaries clearly visible, honest, and non-overclaiming.",
+    text: "The platform demonstrates how future health system EHR appointment API and EHR integration fits: while keeping current proof boundaries clearly visible, honest, and non-overclaiming.",
     items: [
       "FHIR R4 export shape for staging / partner integration paths",
       "Synthetic-only labels throughout all surfaces",
@@ -223,7 +223,7 @@ export function ProductLanding() {
           <h2 id="capabilities-heading">Everything the clinical workflow needs to run.</h2>
           <p>
             Four interlocking capabilities: from unstructured intake to inspectable governance
-            evidence: built to support a credible UK GP clinical AI deployment.
+            evidence: built to support a credible clinical AI deployment.
           </p>
         </div>
         <div className="product-capability-grid">

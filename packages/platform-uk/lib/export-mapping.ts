@@ -269,7 +269,7 @@ export function buildExportResources(
         {
           system: "https://akshhealth.app/tags/export-version",
           code: "uk-proof-v1",
-          display: "Aksh Health UK Proof Export v1"
+          display: "Aksh Health Proof Export v1"
         },
         {
           system: "https://akshhealth.app/tags/data-boundary",
@@ -279,7 +279,7 @@ export function buildExportResources(
         {
           system: "https://akshhealth.app/tags/integration-mode",
           code: "integration-rehearsal-ready",
-          display: "Prepared for integration rehearsal, not live NHS integration"
+          display: "Prepared for integration rehearsal, not live health system integration"
         }
       ]
     },
@@ -291,7 +291,7 @@ export function buildExportResources(
       validationIssueCount: validationIssues.length,
       blockingIssueCount,
       warningIssueCount,
-      syntheticLabel: "Synthetic-only UK/EU proof artifact",
+      syntheticLabel: "Synthetic-only proof artifact",
       integrationReadinessLabel:
         validationStatus === "valid"
           ? "Structurally ready for integration rehearsal review"

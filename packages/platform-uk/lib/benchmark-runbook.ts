@@ -9,7 +9,7 @@ export const benchmarkRunbookSteps = [
 
 export const benchmarkReadinessCriteria = [
   "All benchmarked cases have an explicit expected outcome.",
-  "Every UK clinical rule coverage target is covered by at least one benchmarked case.",
+  "Every clinical rule coverage target is covered by at least one benchmarked case.",
   "No high-severity benchmark action remains open without an owner.",
   "The exported benchmark evidence includes pass/fail totals, coverage status, failed checks, and action status.",
   "The run remains synthetic-only unless integration rehearsal flags are explicitly enabled."

@@ -198,16 +198,16 @@ const ROLE_TARGETS: { role: UserRole; count: number; prefix: string; title: stri
   { role: "nurse", count: 15, prefix: "nurse", title: "Nurse" },
   { role: "clinical-pharmacist", count: 12, prefix: "pharmacist", title: "Pharmacist" },
   { role: "practice-manager", count: 12, prefix: "admin", title: "Admin" },
-  { role: "ics-lead", count: 10, prefix: "ics", title: "ICS Lead" },
+  { role: "ics-lead", count: 10, prefix: "ics", title: "Population health lead" },
   { role: "hospital-executive", count: 10, prefix: "hospital", title: "Exec" },
   { role: "patient", count: 15, prefix: "patient", title: "Patient" },
   { role: "researcher", count: 6, prefix: "researcher", title: "Researcher" },
 ];
 
 const CREDENTIAL_HINTS: Partial<Record<UserRole, (n: number) => string>> = {
-  gp: (n) => `GMC ${String(1000000 + n).padStart(7, "0")} (synthetic)`,
+  gp: (n) => `professional register ${String(1000000 + n).padStart(7, "0")} (synthetic)`,
   nurse: (n) => `NMC ${String(10 + (n % 90)).padStart(2, "0")}A${String(1000 + n).slice(-4)}B (synthetic)`,
-  "clinical-pharmacist": (n) => `GPhC ${String(2000000 + n).padStart(7, "0")} (synthetic)`,
+  "clinical-pharmacist": (n) => `pharmacy register ${String(2000000 + n).padStart(7, "0")} (synthetic)`,
 };
 
 function padPatientId(n: number): string {

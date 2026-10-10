@@ -30,7 +30,7 @@ export function BenchmarkReport({
       <div className="report-header stack">
         <span className="hero-kicker">Clinical Benchmark Evidence</span>
         <ReportActions backHref={`/review/benchmarks${query}`} />
-        <h1>UK/EU Benchmark Evidence Report</h1>
+        <h1>regional/EU Benchmark Evidence Report</h1>
         <p>
           Timestamped synthetic validation artifact showing expected-outcome performance, clinical rule coverage, and
           benchmark action status for the current proof dataset.

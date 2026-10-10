@@ -52,7 +52,7 @@ export default function IcsOverviewPage() {
     <div className="space-y-5">
       <IcsHeroDemoPath />
       <p className="sr-only" data-testid="ics-honesty-banner">
-        Synthetic ICS cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
+        Synthetic regional cohorts · liveEmis:false · aggregate planning only — no patient-level spill.
         COMPASS leads equity; HORIZON / PATHWAY frame forecast scaffolding — not a live ICS feed or twin.
         The {data.totalPatients.toLocaleString()}-patient ICS figure is an illustrative static fixture,
         disconnected from the platform&apos;s actual ~100-patient synthetic cohort — Segment and Predict

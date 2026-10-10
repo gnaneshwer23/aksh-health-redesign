@@ -157,7 +157,7 @@ export function ProductModePage({ mode }: { mode: ProductMode }) {
           </div>
           <div className="hero-stat">
             <strong>Synthetic boundary</strong>
-            <p>Not production clinical software, live NHS integration, or real patient-data readiness.</p>
+            <p>Not production clinical software, live health system integration, or real patient-data readiness.</p>
             <span className="hero-stat-value">Visible</span>
           </div>
         </div>

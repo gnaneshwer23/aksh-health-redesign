@@ -29,7 +29,7 @@ const manualChecks = [
   "Ran npm run build in this build cycle",
   "Opened the product tour and presenter guide in demo mode",
   "Confirmed synthetic-only language is used throughout the walkthrough",
-  "Confirmed no live NHS, production clinical, or real-patient-data claim is made"
+  "Confirmed no live health system, production clinical, or real-patient-data claim is made"
 ];
 
 function tagClass(status: ReadinessStatus) {

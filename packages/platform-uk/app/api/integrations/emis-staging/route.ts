@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   void persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
-    label: "SHIELD: EMIS staging queue (no live write-back)",
+    label: "SHIELD: EHR staging queue (no live write-back)",
     detail: entry.status,
     category: "system",
     caseId: body.caseId,
@@ -63,6 +63,6 @@ export async function POST(request: Request) {
     liveEmis: false,
     banner: status.notLiveBanner,
     message:
-      "Queued internally for partner-track rehearsal. No EMIS write was attempted. NOT LIVE EMIS."
+      "Queued internally for partner-track rehearsal. No EHR write was attempted. NOT LIVE EHR."
   });
 }

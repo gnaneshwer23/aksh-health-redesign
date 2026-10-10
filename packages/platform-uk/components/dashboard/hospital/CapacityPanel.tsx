@@ -38,7 +38,7 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-sm font-semibold">Capacity & Forecast</h2>
-        <p className="text-xs text-muted">{label} · synthetic forecast (not live PAS)</p>
+        <p className="text-xs text-muted">{label} · synthetic forecast (not a live hospital system)</p>
       </div>
       <Card className="shadow-sm">
         <CardHeader>
@@ -73,7 +73,7 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
                   const outcome = await logDecision(rec.id, rec.text, "accept");
                   toast({
                     title: "Recommendation actioned",
-                    description: `${describeShieldOutcome(outcome)} · no PAS/EPR write`
+                    description: `${describeShieldOutcome(outcome)} · no hospital system write`
                   });
                 }}
                 onEdit={() => {}}
@@ -83,7 +83,7 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
                   const outcome = await logDecision(rec.id, rec.text, "reject");
                   toast({
                     title: "Recommendation dismissed",
-                    description: `${describeShieldOutcome(outcome)} · no PAS/EPR write`
+                    description: `${describeShieldOutcome(outcome)} · no hospital system write`
                   });
                 }}
               />

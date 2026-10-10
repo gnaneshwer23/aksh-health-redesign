@@ -13,9 +13,9 @@ export function AdmissionForecast() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-sm">ICS Admission Forecast (risk-state model)</CardTitle>
+        <CardTitle className="text-sm">regional Admission Forecast (risk-state model)</CardTitle>
         <p className="text-xs text-muted">
-          Predict stage — this is a demonstration curve, not a live/validated NHS forecast. It is not yet
+          Predict stage — this is a demonstration curve, not a live/validated health system forecast. It is not yet
           computed from real Segment output; a Predict pipeline replacing this curve is future work
           (Volume I FR-POP-010/012).
         </p>

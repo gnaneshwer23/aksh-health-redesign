@@ -103,7 +103,7 @@ export function VitalsForm({ onSaved }: { onSaved?: () => void }) {
       if (data.ehrWrite === true || data.liveEmis === true) {
         toast({
           title: "Honesty check failed",
-          description: "API claimed EHR/EMIS write — refused to treat as live."
+          description: "API claimed EHR write — refused to treat as live."
         });
         return;
       }

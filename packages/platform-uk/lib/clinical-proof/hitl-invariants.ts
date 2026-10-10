@@ -20,10 +20,10 @@ export const HITL_INVARIANTS = {
 export function assertEmisStagingNeverWrites() {
   const status = getEmisIntegrationStatus();
   if (status.liveWriteBack !== false) {
-    throw new Error("EMIS staging reported liveWriteBack=true — invariant broken");
+    throw new Error("EHR staging reported liveWriteBack=true — invariant broken");
   }
   if (status.enabled !== false) {
-    throw new Error("EMIS live write-back must stay disabled");
+    throw new Error("EHR live write-back must stay disabled");
   }
 
   const entry = queueEmisFhirStaging({
@@ -33,7 +33,7 @@ export function assertEmisStagingNeverWrites() {
   });
 
   if (entry.ehrWriteAttempted !== false) {
-    throw new Error("EMIS staging attempted an EHR write");
+    throw new Error("EHR staging attempted an EHR write");
   }
 
   return { status, entry };
@@ -88,7 +88,7 @@ export function assertSimulatedWriteRequiresApproval() {
     throw new Error(`Expected approved write to succeed: ${allowed.error}`);
   }
   if (allowed.write.liveEmis !== false) {
-    throw new Error("Simulated write claimed live EMIS");
+    throw new Error("Simulated write claimed live EHR");
   }
 
   const replay = attemptSimulatedEhrWrite({

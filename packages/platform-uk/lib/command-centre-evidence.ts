@@ -51,7 +51,7 @@ export function buildCommandCentreStatePayload(
   return {
     artifactType: "aksh-uk-eu-command-centre-product-state",
     generatedAt,
-    generatedBy: options?.generatedBy ?? "Aksh Health UK/EU synthetic proof system",
+    generatedBy: options?.generatedBy ?? "Aksh Health synthetic proof system",
     syntheticOnly: true,
     productionClinicalSoftware: false,
     liveNhsIntegration: false,

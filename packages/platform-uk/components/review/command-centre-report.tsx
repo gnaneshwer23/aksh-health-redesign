@@ -32,7 +32,7 @@ export function CommandCentreReport() {
       <div className="report-header stack">
         <span className="hero-kicker">Command Centre Product State</span>
         <ReportActions backHref="/review/command-centre" exportHref="/api/command-centre/state" />
-        <h1>Aksh Health UK/EU Product State Report</h1>
+        <h1>Aksh Health regional/EU Product State Report</h1>
         <p>
           One printable artifact for what is built, what remains proof-stage, what must not be claimed yet, and what the
           next build priorities are.

@@ -121,7 +121,7 @@ export function mapOnboardingConsentsToGrantInputs(options: {
       push(
         "care_delivery",
         CLINICAL_MODALITIES,
-        `${fromOnboarding} Practice DPA / DSPT controller acknowledgements.`,
+        `${fromOnboarding} Practice DPA / data security toolkit controller acknowledgements.`,
         truthy(consents, "dpa") || truthy(consents, "dspt")
       );
       push(
@@ -136,7 +136,7 @@ export function mapOnboardingConsentsToGrantInputs(options: {
       push(
         "population_analytics",
         POPULATION_MODALITIES,
-        `${fromOnboarding} ICS data-sharing / pseudonymised population analytics.`,
+        `${fromOnboarding} regional data-sharing / pseudonymised population analytics.`,
         truthy(consents, "dataSharing") || truthy(consents, "pseudonymised")
       );
       push(

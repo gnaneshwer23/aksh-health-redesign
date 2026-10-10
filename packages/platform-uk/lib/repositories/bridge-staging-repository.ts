@@ -41,7 +41,7 @@ export type BridgeStagingInput = {
 };
 
 const BRIDGE_STAGING_NOTE =
-  "BRIDGE in-app FHIR staging · preliminary/staging only · not live EMIS · Medplum not required · liveEmis:false";
+  "BRIDGE in-app FHIR staging · preliminary/staging only · not live EHR · Medplum not required · liveEmis:false";
 
 const dataDir = path.join(process.cwd(), "data");
 let schemaReady: Promise<void> | null = null;

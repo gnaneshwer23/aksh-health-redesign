@@ -16,13 +16,13 @@ export const PRACTICE_KNOWLEDGE: KnowledgeArticle[] = [
   {
     id: "kb-repeat",
     title: "Repeat prescriptions",
-    body: "Order repeat medicines through the NHS App, your online account, or your community pharmacy. Allow two working days before collecting. The practice team handles anything that isn’t on your repeat list.",
+    body: "Order repeat medicines through the patient app, your online account, or your community pharmacy. Allow two working days before collecting. The practice team handles anything that isn’t on your repeat list.",
     keywords: ["repeat", "prescription", "prescriptions", "medication", "order", "pharmacy", "refill"],
   },
   {
     id: "kb-results",
     title: "Test results",
-    body: "Your results are reviewed by a clinician first. You can see many results in the NHS App. If a clinician needs to talk to you, the practice will contact you. Results aren’t given over this line.",
+    body: "Your results are reviewed by a clinician first. You can see many results in the patient app. If a clinician needs to talk to you, the practice will contact you. Results aren’t given over this line.",
     keywords: ["result", "results", "blood", "test", "tests", "back"],
   },
   {
@@ -40,7 +40,7 @@ export const PRACTICE_KNOWLEDGE: KnowledgeArticle[] = [
   {
     id: "kb-fitnote",
     title: "Fit notes",
-    body: "You can self-certify for the first seven days off work. After that, request a fit note through the practice website or the NHS App and a clinician will review it.",
+    body: "You can self-certify for the first seven days off work. After that, request a fit note through the practice website or the patient app and a clinician will review it.",
     keywords: ["fit", "note", "sick", "work", "certificate", "off"],
   },
   {
@@ -52,7 +52,7 @@ export const PRACTICE_KNOWLEDGE: KnowledgeArticle[] = [
   {
     id: "kb-cancel",
     title: "Cancelling appointments",
-    body: "Please let us know as early as you can if you can’t make an appointment, so someone else can use it. You can cancel with me now, in the NHS App, or by text reply.",
+    body: "Please let us know as early as you can if you can’t make an appointment, so someone else can use it. You can cancel with me now, in the patient app, or by text reply.",
     keywords: ["cancel", "cancellation", "can't", "make", "miss", "missed"],
   },
   {

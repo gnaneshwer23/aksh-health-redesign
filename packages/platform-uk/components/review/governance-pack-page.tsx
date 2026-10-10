@@ -263,7 +263,7 @@ export function GovernancePackPage() {
       <section className="span-12 panel stack">
         <div className="row">
           <div>
-            <h3>DCB0129-Style Safety File Placeholders</h3>
+            <h3>Clinical Safety File Placeholders</h3>
             <p>In-app placeholders and export links only. Not signed clinical safety deliverables.</p>
           </div>
           <span className="tag danger">not signed off</span>

@@ -244,7 +244,7 @@ export async function probeEmisPartnerSandboxOAuth(
         status: response.status,
         error: errorText || `HTTP ${response.status}`,
         tokenUrlHost: status.tokenUrlHost,
-        note: "Sandbox OAuth probe failed — credentials or token URL may be wrong. Still not live EMIS."
+        note: "Sandbox OAuth probe failed — credentials or token URL may be wrong. Still not live EHR."
       };
     }
 

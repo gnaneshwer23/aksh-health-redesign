@@ -55,14 +55,14 @@ export function getOwnSystemInterfaceContracts(): OwnSystemContract[] {
       id: "fhir-shaped-export",
       label: "FHIR-shaped evidence export",
       status: "available",
-      boundary: "Internal evidence/export shape only; not live NHS/EHR writeback.",
+      boundary: "Internal evidence/export shape only; not live health system/EHR writeback.",
       evidenceRoute: "/api/evidence/registry"
     },
     {
       id: "external-ehr-adapters",
       label: "External EHR adapters",
       status: "disabled",
-      boundary: "External NHS/EHR integration is not part of the current own-system proof."
+      boundary: "External health system/EHR integration is not part of the current own-system proof."
     }
   ];
 }
@@ -221,7 +221,7 @@ export function buildDatabaseAdapterContract() {
     acceptanceCriteria: [
       "`json_file_repository` remains the default adapter until a database adapter passes parity tests.",
       "A future database adapter must satisfy the same repository operations before UI routes switch to it.",
-      "No live patient data, NHS integration, or production clinical claim is unlocked by this contract.",
+      "No live patient data, health system integration, or production clinical claim is unlocked by this contract.",
       "Demo seed/reset behavior must remain available after any storage migration."
     ]
   };
@@ -263,7 +263,7 @@ export function buildOwnSystemBoundaryContract() {
     interfaceContracts,
     externalAdapters,
     blockedClaims: [
-      "Live NHS/EHR integration",
+      "Live health system/EHR integration",
       "Real patient data handling",
       "Production clinical software",
       "Production clinical AI",

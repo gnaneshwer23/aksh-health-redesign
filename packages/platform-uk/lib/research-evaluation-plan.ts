@@ -100,14 +100,14 @@ export function getResearchEvaluationPlan(): ResearchEvaluationPlan {
       "No autonomous clinical decisioning.",
       "No production clinical AI safety claim.",
       "No live model deployment into reviewer workflow.",
-      "No NHS/EHR integration dependency."
+      "No health system/EHR integration dependency."
     ]
   };
 }
 
 export function buildResearchEvaluationArtifact(options?: { generatedAt?: string; generatedBy?: string }): ResearchEvaluationArtifact {
   const generatedAt = options?.generatedAt ?? new Date().toISOString();
-  const generatedBy = options?.generatedBy ?? "Aksh Health UK/EU Platform";
+  const generatedBy = options?.generatedBy ?? "Aksh Health Platform";
   const plan = getResearchEvaluationPlan();
   const availableTasks = plan.tasks.filter((task) => task.stage === "available_now").length;
   const plannedTasks = plan.tasks.filter((task) => task.stage === "planned").length;

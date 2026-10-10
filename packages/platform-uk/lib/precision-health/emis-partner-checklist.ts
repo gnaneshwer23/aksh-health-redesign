@@ -53,7 +53,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
     },
     {
       id: "flip-credentials",
-      label: "Partner API credentials (EMIS and/or SystmOne track)",
+      label: "Partner API credentials (EHR and/or EHR track)",
       status: credentialsPresent ? "needs_cso" : "needs_partner",
       note: "EMIS_PARTNER_* env in secure store — never commit secrets."
     },
@@ -125,7 +125,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
         id: "fhir-r4-shape",
         label: "FHIR R4–shaped staging bundle",
         status: "scaffold_ready",
-        note: "Schema CI + EMIS staging queue accept bundle summaries."
+        note: "Schema CI + EHR staging queue accept bundle summaries."
       },
       {
         id: "partner-sandbox",
@@ -140,7 +140,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       },
       {
         id: "partner-credentials",
-        label: "EMIS / SystmOne Partner API credentials",
+        label: "the EHR Partner API credentials",
         status: credentialsPresent ? "needs_cso" : "needs_partner",
         note: credentialsPresent
           ? "Env present but write-back remains disabled until CSO + partner UAT sign-off."
@@ -148,7 +148,7 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       },
       {
         id: "dpia-dpa",
-        label: "DPIA + DPA with practice / ICS",
+        label: "DPIA + DPA with clinic / regional network",
         status: "needs_partner",
         note: "See docs/PHASE2_PARTNER_CHECKLIST.md — not satisfied by code alone."
       },
@@ -166,6 +166,6 @@ export function getEmisPartnerChecklist(): EmisPartnerChecklist {
       }
     ],
     liveEmisFlipRequirements,
-    note: "Partner EMR write-back readiness scaffold (EMIS + SystmOne track). N5 sandbox is flag-gated. Never claims live EMIS write-back."
+    note: "Partner EMR write-back readiness scaffold (EHR track). N5 sandbox is flag-gated. Never claims live EHR write-back."
   };
 }

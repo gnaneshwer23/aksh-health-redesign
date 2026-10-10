@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 /** Clear public-demo honesty banner for allowlisted dashboard surfaces. */
 export function DemoDataBanner({
   className,
-  surface = "ICS"
+  surface = "Population"
 }: {
   className?: string;
   surface?: string;

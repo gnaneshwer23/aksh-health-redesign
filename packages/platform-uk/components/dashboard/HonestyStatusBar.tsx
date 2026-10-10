@@ -89,7 +89,7 @@ export function HonestyStatusBar({
               ·
             </span>
             <span data-testid="hospital-mock-mode-banner" className="text-pastel-amber-ink">
-              Not live PAS
+              Not live hospital system
             </span>
           </>
         ) : null}
@@ -129,13 +129,13 @@ export function HonestyStatusBar({
           </p>
           {surface.toLowerCase().includes("hospital") ? (
             <p>
-              Hospital figures are synthetic PAS rehearsal — not a live PAS / EPR feed. Accept /
+              Hospital figures are synthetic hospital system rehearsal — not a live hospital system / EPR feed. Accept /
               Dismiss on capacity recommendations log to SHIELD only.
             </p>
           ) : null}
           {surface.toLowerCase().includes("ics") ? (
             <p>
-              ICS views are aggregate planning fixtures — synthetic cohorts, no patient-level spill.
+              Regional views are aggregate planning fixtures — synthetic cohorts, no patient-level spill.
             </p>
           ) : null}
           {neo4jSource === "mock" ? (

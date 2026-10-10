@@ -65,7 +65,7 @@ export function ValidationStreamReadoutCard({
         </div>
         <div className="row">
           <div>
-            <strong>ICS pilot preparation</strong>
+            <strong>regional pilot preparation</strong>
             <p>Cases suitable for training flows and pre-pilot walk-throughs.</p>
           </div>
           <span className="pill">{dataCollectionAnalytics.streamCounts.ics_pilot_preparation}</span>

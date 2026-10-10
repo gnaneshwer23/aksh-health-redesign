@@ -34,7 +34,7 @@ function run() {
   const adminPage = read("app/dashboard/admin/page.tsx");
   assert.ok(adminPage.includes("AdminHeroDemoPath"));
   assert.ok(adminPage.includes("admin-honesty-banner"));
-  assert.ok(adminPage.includes("Not live EMIS"));
+  assert.ok(adminPage.includes("Not live EHR"));
   assert.ok(adminPage.includes("liveEmis:false"));
   assert.ok(adminPage.includes("admin-precision-health-scaffolding-link"));
   assert.ok(adminPage.includes("admin-ops-metrics"));
@@ -78,7 +78,7 @@ function run() {
   const adminSmoke = read("scripts/smoke-admin-dashboard.mjs");
   assert.ok(adminSmoke.includes("Practice operations overview"));
   assert.ok(adminSmoke.includes("liveEmis:false"));
-  assert.ok(adminSmoke.includes("Not live EMIS"));
+  assert.ok(adminSmoke.includes("Not live EHR"));
 
   assert.ok(!adminHero.includes("liveEmis:true"));
   assert.ok(!adminPage.includes("liveEmis:true"));

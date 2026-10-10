@@ -313,7 +313,7 @@ function run() {
   );
 
   const scenarioBenchmark = deriveScenarioBenchmark(reviewCases);
-  assert.equal(scenarioBenchmark.total, 8, "Scenario benchmark should cover the seeded UK expected-outcome cases");
+  assert.equal(scenarioBenchmark.total, 8, "Scenario benchmark should cover the seeded regional expected-outcome cases");
   assert.equal(scenarioBenchmark.failed, 0, "All seeded expected-outcome scenarios should pass the benchmark");
 
   const intakeCoverageCases = syntheticSourceProfiles.map((profile) =>
@@ -396,7 +396,7 @@ function run() {
   const governancePack = buildGovernancePack(reviewCases);
   assert.equal(governancePack.syntheticOnly, true, "Governance pack should remain a synthetic proof artifact");
   assert.equal(governancePack.productionClinicalSafetyCase, false, "Governance pack must not claim signed production safety case");
-  assert.equal(governancePack.externalNhsIntegration, false, "Governance pack should reflect own-system/no external NHS integration state");
+  assert.equal(governancePack.externalNhsIntegration, false, "Governance pack should reflect own-system/no external health system integration state");
   assert.equal(governancePack.liveModelDeployment, false, "Governance pack should block live model deployment claims");
   assert.equal(governancePack.researchEvaluation.productionClinicalAiClaim, false, "Research evaluation should not claim production clinical AI");
   assert.ok(governancePack.hazards.length >= 5, "Governance pack should include a hazard log rehearsal");
@@ -425,7 +425,7 @@ function run() {
   assert.equal(databaseBoundary.currentAdapter, "json_file_repository", "Database boundary should preserve JSON adapter as current proof source");
   assert.ok(databaseBoundary.notYet.includes("No real patient data should be stored."), "Database boundary should block real patient data");
   const ownSystemBoundary = buildOwnSystemBoundaryContract();
-  assert.equal(ownSystemBoundary.liveNhsIntegration, false, "Own-system boundary should block live NHS integration claims");
+  assert.equal(ownSystemBoundary.liveNhsIntegration, false, "Own-system boundary should block live health system integration claims");
   assert.equal(ownSystemBoundary.realPatientData, false, "Own-system boundary should block real patient data claims");
   assert.equal(ownSystemBoundary.productionDatabase, false, "Own-system boundary should block production database claims");
   assert.equal(
@@ -559,7 +559,7 @@ function run() {
   assert.equal(
     clinicalRuleCoverage.coveredTargets,
     clinicalRuleCoverage.totalTargets,
-    "Clinical rule coverage should cover every current UK target with benchmarked scenarios"
+    "Clinical rule coverage should cover every current regional target with benchmarked scenarios"
   );
   assert.ok(
     clinicalRuleCoverage.rows.some((item) => item.id === "respiratory-escalation" && item.status === "covered"),

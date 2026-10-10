@@ -181,8 +181,8 @@ const CORE_BUNDLES: Record<string, LongitudinalBundle> = {
       { name: "eGFR", value: "58", unit: "mL/min/1.73m2", recordedAt: "2026-07-08T00:00:00.000Z", source: "synthetic_lab" },
     ],
     medications: [
-      { name: "Metformin 1g BD", status: "stopped", note: "EMIS list stopped" },
-      { name: "Metformin 1g BD", status: "active", note: "SystmOne export still active — conflict" },
+      { name: "Metformin 1g BD", status: "stopped", note: "EHR list stopped" },
+      { name: "Metformin 1g BD", status: "active", note: "EHR export still active — conflict" },
       { name: "Ramipril 5mg OD", status: "active" },
     ],
     encounters: [
@@ -190,7 +190,7 @@ const CORE_BUNDLES: Record<string, LongitudinalBundle> = {
     ],
     allergies: ["None known"],
     missingInformation: ["ADHERENCE"],
-    uncertainties: ["EMIS vs SystmOne metformin status conflict — not silently merged."],
+    uncertainties: ["EHR vs EHR metformin status conflict — not silently merged."],
     draftSeed: {
       kind: "documentation",
       title: "Reconcile conflicting medication lists",

@@ -63,7 +63,7 @@ function deterministicFallback(input: {
     deepDive: rows,
     summary: top
       ? `${input.population.equityFlags} COMPASS flags across ${input.population.practices} practices. Highest: ${top.category} at ${top.practice} (${top.flagCount}).`
-      : `${input.population.equityFlags} COMPASS flags across the ICS (deterministic COMPASS).`,
+      : `${input.population.equityFlags} COMPASS flags across the region (deterministic COMPASS).`,
     priorities:
       priorities.length > 0
         ? priorities
@@ -71,7 +71,7 @@ function deterministicFallback(input: {
     recommendedActions:
       recommendedActions.length > 0
         ? recommendedActions
-        : ["Generate a board-facing equity action plan for ICS review"],
+        : ["Generate a board-facing equity action plan for regional review"],
     safetyNotes: [
       `Deterministic COMPASS fallback (LLM unavailable or disabled). Data source: ${input.dataSource}.`,
       "Aggregate / synthetic population signals only — no patient-level spill.",
@@ -126,7 +126,7 @@ export async function runEquityAgent(options?: {
     const result = await generateText({
       model: EQUITY_MODEL,
       system: EQUITY_SYSTEM,
-      prompt: `ICS: ${scoped.icsName}
+      prompt: `Region: ${scoped.icsName}
 Data source: ${dataSource}
 Total equity flags: ${scoped.equityFlags}
 Practices: ${scoped.practices}
@@ -157,7 +157,7 @@ Focus category hint: ${focus || "none"}`,
       safetyNotes: Array.isArray(parsed.safetyNotes)
         ? parsed.safetyNotes.map(String)
         : [
-            "LLM COMPASS draft — ICS lead must Accept/Edit/Reject before staging.",
+            "LLM COMPASS draft — population health lead must Accept/Edit/Reject before staging.",
             "Aggregate signals only; no patient-level identifiers."
           ],
       confidence:

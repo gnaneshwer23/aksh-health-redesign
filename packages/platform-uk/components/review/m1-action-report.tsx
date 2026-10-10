@@ -25,7 +25,7 @@ export function M1ActionReport() {
       <div className="report-header stack">
         <span className="hero-kicker">M1 Action Evidence</span>
         <ReportActions backHref="/review/roadmap/actions" exportHref="/api/roadmap/actions" />
-        <h1>UK/EU M1 Owner Action Report</h1>
+        <h1>regional/EU M1 Owner Action Report</h1>
         <p>
           Printable owner follow-up artifact for the current M1 action inbox. This is an internal synthetic-proof
           operating report, not a formal programme approval or clinical deployment record.
@@ -81,7 +81,7 @@ export function M1ActionReport() {
         </div>
         <p>
           Generated at {evidence.generatedAt}. Synthetic-only planning artifact; not production clinical software or live
-          NHS integration.
+          health system integration.
         </p>
       </section>
 

@@ -118,7 +118,7 @@ export function attemptSimulatedEhrWrite(input: {
     resourceSummary: input.resourceSummary?.trim() || approval.resourceSummary,
     caseId: approval.caseId,
     liveEmis: false,
-    note: "Simulated EHR write only — no EMIS Partner API call."
+    note: "Simulated EHR write only — no EHR partner API call."
   };
   writes.unshift(write);
   if (writes.length > 200) writes.length = 200;
@@ -136,7 +136,7 @@ export function getEhrWritebackSimStatus() {
     liveWriteBack: false,
     approvalTokensIssued: approvals.size,
     simulatedWrites: writes.length,
-    note: "Local test double proving HITL-gated write architecture. Not EMIS."
+    note: "Local test double proving HITL-gated write architecture. Not EHR."
   };
 }
 

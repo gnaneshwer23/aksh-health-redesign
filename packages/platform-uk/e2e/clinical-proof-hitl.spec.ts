@@ -29,7 +29,7 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     expect(guardian.status()).toBe(401);
   });
 
-  test("authenticated agent drafts never claim EHR write; EMIS staging is no-write", async ({
+  test("authenticated agent drafts never claim EHR write; EHR staging is no-write", async ({
     request,
     baseURL,
   }) => {
@@ -73,7 +73,7 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     };
     expect(emisBody.liveWriteBack).toBe(false);
     expect(emisBody.entry?.ehrWriteAttempted).toBe(false);
-    expect(emisBody.message).toMatch(/No EMIS write/i);
+    expect(emisBody.message).toMatch(/No (EMIS|EHR) write/i);
   });
 
   test("Accept → FHIR stage → approval token → sim write once; reject never writes; replay denied", async ({
@@ -179,7 +179,7 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     expect(shieldPosts, "no audit write should be attempted without a session").toEqual([]);
   });
 
-  test("GP review queue Accept / Edit / Reject updates UI audit trail (demo record ≠ EMIS)", async ({
+  test("GP review queue Accept / Edit / Reject updates UI audit trail (demo record ≠ EHR)", async ({
     page,
     request,
     baseURL,

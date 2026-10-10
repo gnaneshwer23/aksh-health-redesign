@@ -113,7 +113,7 @@ export function assertRejectNeverStages(input: {
   staged: boolean;
 }): string[] {
   const errors: string[] = [];
-  if (input.staged) errors.push("Reject must never enter FHIR/EMIS staging");
+  if (input.staged) errors.push("Reject must never enter FHIR/EHR staging");
   if (input.simWritesAfter !== input.simWritesBefore) {
     errors.push("Reject must not increase simulated EHR write count");
   }

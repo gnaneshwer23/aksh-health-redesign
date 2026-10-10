@@ -80,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="workspace-shell__hero">
           <div>
-            <p className="workspace-shell__eyebrow">UK/EU synthetic proof workspace</p>
+            <p className="workspace-shell__eyebrow">regional/EU synthetic proof workspace</p>
             <h1>Choose the right path before opening another screen.</h1>
             <p>
               Start from Command, then move into Team Mode for execution or Demo Mode for a clean external walkthrough.

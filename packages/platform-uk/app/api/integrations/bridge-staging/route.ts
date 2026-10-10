@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     ...status,
     liveEmis: false,
     banner:
-      "BRIDGE FHIR staging (Neon/file) · preliminary/staging only · Medplum not required · NOT live EMIS"
+      "BRIDGE FHIR staging (Neon/file) · preliminary/staging only · Medplum not required · NOT live EHR"
   });
 }
 
@@ -129,6 +129,6 @@ export async function POST(request: Request) {
     ...result,
     liveEmis: false,
     message:
-      "BRIDGE staged FHIR Bundle as preliminary. EMIS queue + sim write-back only. NOT live EMIS. Medplum not required."
+      "BRIDGE staged FHIR Bundle as preliminary. EHR queue + sim write-back only. NOT live EHR. Medplum not required."
   });
 }

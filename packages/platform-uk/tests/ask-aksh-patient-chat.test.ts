@@ -77,7 +77,7 @@ async function run() {
         requestedPatientId: "P002",
       }).allowed,
       false,
-      "ICS / admin / hospital executive (operations_lead) denied named PHI chat"
+      "regional / admin / hospital executive (operations_lead) denied named PHI chat"
     );
 
     assert.equal(
@@ -183,7 +183,7 @@ async function run() {
     );
     assert.equal(icsGet.status, 200);
     const icsBody = (await icsGet.json()) as { access?: { allowed?: boolean } };
-    assert.equal(icsBody.access?.allowed, false, "ICS GET reports access denied");
+    assert.equal(icsBody.access?.allowed, false, "regional GET reports access denied");
 
     const researcherPost = await postPatientChat(
       buildRequest("POST", {

@@ -42,7 +42,7 @@ const RESOURCE_TYPE_BY_ADAPTER_ID: Record<string, string> = {
   "medplum-sync": "FHIR Bundle (Medplum rehearsal)",
   "fastapi-synthesis": "Synthetic intake transcript",
   "ehr-connectors": "EHR resource (planned, not built)",
-  "emis-fhir-staging": "FHIR R4 Bundle (EMIS staging queue)",
+  "emis-fhir-staging": "FHIR R4 Bundle (EHR staging queue)",
   "ehr-writeback-sim": "Simulated EHR write-back payload",
   "llm-synthesis": "SOAP DocumentReference (draft)",
   "llm-guardian": "MedicationRequest safety flags",

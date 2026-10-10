@@ -77,7 +77,7 @@ export function EvidenceReadinessPage({
         </div>
         <h2>Internal Evidence Readiness Gate</h2>
         <p>
-          One operational view for deciding whether the current UK/EU synthetic proof evidence is ready, needs follow-up,
+          One operational view for deciding whether the current synthetic proof evidence is ready, needs follow-up,
           or is blocked before leadership/advisor reuse.
         </p>
         <div className="hero-stats">
