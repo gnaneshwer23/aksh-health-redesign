@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requestNetworkContext } from "@/lib/network/context";
 import { errorResponse } from "@/lib/network/http";
 import { listPatients } from "@/lib/network/read";
-import { patientLevelAccess } from "@/lib/synthetic-world/access";
+import { patientLevelAccess } from "@/lib/network/access";
 
 export const dynamic = "force-dynamic";
 

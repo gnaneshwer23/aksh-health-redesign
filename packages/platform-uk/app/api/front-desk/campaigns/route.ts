@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { withDeskDirectory } from "@/lib/front-desk/directory";
 import { mutateState } from "@/lib/front-desk/store";
 import { approveCampaign, canApproveCampaign, createCampaign, runCampaign } from "@/lib/front-desk/workflows";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
@@ -19,7 +20,7 @@ const schema = z.discriminatedUnion("action", [
  * Anyone can draft a campaign on the synthetic practice. Approval needs a signed-in GP
  * (check-ins) or GP / practice manager (admin rebooking). No call is made before approval.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   const auth = await getOptionalAuthenticatedUserScope(request);
@@ -67,4 +68,9 @@ export async function POST(request: Request) {
   const { result } = await mutateState((s) => runCampaign(s, id));
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
   return NextResponse.json({ campaign: result.campaign, telephony: "simulated" });
+}
+
+/** Patients come from this request's database directory (see lib/front-desk/directory.ts). */
+export async function POST(request: Request) {
+  return withDeskDirectory(() => handlePOST(request));
 }

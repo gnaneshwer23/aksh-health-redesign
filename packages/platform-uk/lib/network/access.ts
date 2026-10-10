@@ -5,8 +5,8 @@ import { authOptions } from "@/lib/auth";
 
 /**
  * Patient-level network data follows the same rule as clinical record APIs: admin, operations,
- * population and research roles see aggregates only. Public demo viewers (no session) see the
- * synthetic registry, consistent with the public GP demo dashboard.
+ * population and research roles see aggregates only; patients use their own record. Which rows are visible is
+ * then decided by row-level security.
  */
 export async function patientLevelAccess(): Promise<{ allowed: true } | { allowed: false; reason: string }> {
   const session = await getServerSession(authOptions).catch(() => null);

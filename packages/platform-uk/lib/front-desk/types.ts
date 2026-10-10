@@ -230,7 +230,8 @@ export type ConversationSession = {
   pendingHandOffReason: string | null;
   highestSafety: SafetyLevel;
   /** Market for safety wording: the practice's until the caller is identified, then the caller's. */
-  market: "GB" | "IN" | "US" | "AE";
+  /** Safety-message locale code (GB, IN, US, AE) or OTHER for generic wording. */
+  market: string;
   intent: AccessIntent | null;
   offeredSlotIds: string[];
   pendingAppointmentType: AppointmentType | null;

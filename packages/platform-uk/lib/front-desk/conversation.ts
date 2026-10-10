@@ -151,7 +151,7 @@ function handOff(state: FrontDeskState, session: ConversationSession, reason: st
     session,
     kind === "prescription_request"
       ? "I’ve passed your request to the prescriptions team. They’ll be in touch if they need anything. Thank you for calling."
-      : `I’ve passed this to the practice team and someone will call you back on the number we hold for you. If it becomes urgent, call ${MARKET_BY_CODE[session.market ?? "GB"].urgentAdviceLine ?? "your local urgent care service"}, or ${MARKET_BY_CODE[session.market ?? "GB"].emergencyNumber} in an emergency. Thank you for calling.`,
+      : `I’ve passed this to the practice team and someone will call you back on the number we hold for you. If it becomes urgent, call ${MARKET_BY_CODE[session.market as keyof typeof MARKET_BY_CODE]?.urgentAdviceLine ?? "your local urgent care service"}, or ${MARKET_BY_CODE[session.market as keyof typeof MARKET_BY_CODE]?.emergencyNumber ?? "your local emergency number"} in an emergency. Thank you for calling.`,
     at
   );
 }

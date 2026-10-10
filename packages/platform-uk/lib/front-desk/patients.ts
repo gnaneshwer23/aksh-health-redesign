@@ -1,6 +1,6 @@
 import { patients } from "@/lib/mock-data/patients";
-import { getSyntheticWorld } from "@/lib/synthetic-world/generate";
-import type { MarketCode } from "@/lib/synthetic-world/types";
+
+import { currentDirectory } from "./directory";
 
 /**
  * Identity for Front Desk conversations (hazard H-ACC-3): a name AND date of birth must match
@@ -19,18 +19,15 @@ export function phoneContactAllowed(patientId: string) {
   return n % 7 !== 3;
 }
 
-/** Who Front Desk can identify: the clinical demo cohort plus the 500-patient synthetic network. */
-export type DeskPatient = { id: string; name: string; dob: string; market: MarketCode };
+/**
+ * Who Front Desk can identify: the clinical demo cohort plus this request's database directory (the caller's
+ * organisations, or the public demo organisations on non-production deployments).
+ */
+export type DeskPatient = { id: string; name: string; dob: string; market: string };
 
-let index: DeskPatient[] | null = null;
+const demoCohort: DeskPatient[] = patients.map((p) => ({ id: p.id, name: p.name, dob: p.dob, market: "GB" }));
 function allPatients(): DeskPatient[] {
-  if (!index) {
-    index = [
-      ...patients.map((p) => ({ id: p.id, name: p.name, dob: p.dob, market: "GB" as MarketCode })),
-      ...getSyntheticWorld().patients.map((p) => ({ id: p.id, name: `${p.title} ${p.givenName} ${p.familyName}`, dob: p.dob, market: p.market })),
-    ];
-  }
-  return index;
+  return [...demoCohort, ...currentDirectory()];
 }
 
 export function getPatient(id: string | null): DeskPatient | null {

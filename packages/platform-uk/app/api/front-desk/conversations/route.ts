@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { withDeskDirectory } from "@/lib/front-desk/directory";
 import { respond, startConversation } from "@/lib/front-desk/conversation";
 import { signSession, verifySession } from "@/lib/front-desk/session-token";
 import { mutateState } from "@/lib/front-desk/store";
@@ -30,7 +31,7 @@ const turnSchema = z.object({
  * POST /api/front-desk/conversations — Asha conversation turns (synthetic patients only).
  * The session is returned signed; each turn must present it unchanged.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
@@ -79,4 +80,9 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ reply: result.reply, session: result.session, token: signSession(result.session) });
+}
+
+/** Patients come from this request's database directory (see lib/front-desk/directory.ts). */
+export async function POST(request: Request) {
+  return withDeskDirectory(() => handlePOST(request));
 }

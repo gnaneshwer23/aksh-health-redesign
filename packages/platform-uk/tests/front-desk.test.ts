@@ -18,7 +18,7 @@ import {
   runCampaign,
 } from "../lib/front-desk/workflows";
 import { AGENT_DIRECTORY } from "../lib/agents";
-import { getSyntheticWorld } from "../lib/synthetic-world/generate";
+import { runWithDirectory } from "../lib/front-desk/directory";
 
 const NOW = new Date("2026-10-12T09:00:00Z"); // Monday, BST
 const fresh = () => createInitialState(NOW);
@@ -242,22 +242,44 @@ assert.equal(parseDob("22/11/1971"), "1971-11-22");
 
 // --- Market-aware safety and network-wide identity (not tied to one health system) ---
 {
-  const w = getSyntheticWorld();
   assert.match(screenUtterance("I want to end my life", "IN").patientMessage ?? "", /call 112 now.*14416/);
   assert.match(screenUtterance("chest pain", "US").patientMessage ?? "", /call 911 now/);
   assert.match(screenUtterance("I feel suicidal", "US").patientMessage ?? "", /988/);
   assert.match(screenUtterance("chest pain", "AE").patientMessage ?? "", /call 998 now/);
   assert.doesNotMatch(screenUtterance("chest pain", "US").patientMessage ?? "", /999|111/);
 
-  const indian = w.patients.find((p) => p.market === "IN")!;
-  const s = fresh();
-  let t = startConversation(s, { channel: "web_chat", direction: "inbound" }, NOW);
-  t = respond(s, t.session, "I'd like to give an update on my sugars", NOW);
-  t = respond(s, t.session, `${indian.givenName} ${indian.familyName}, ${indian.dob}`, NOW);
-  assert.equal(t.session.patientId, indian.id, "network patients can be identified");
-  assert.equal(t.session.market, "IN");
-  t = respond(s, t.session, "I have chest pain", NOW);
-  assert.match(t.reply, /call 112 now/, "safety wording follows the caller's market");
+  // Database directory for this request (organisation locale decides the safety wording).
+  const directory = [
+    { id: "db-patient-1", name: "Priya Raman", dob: "1964-07-19", market: "IN" },
+    { id: "db-patient-2", name: "Lena Novak", dob: "1971-02-03", market: "OTHER" },
+  ];
+  runWithDirectory(directory, () => {
+    const s = fresh();
+    let t = startConversation(s, { channel: "web_chat", direction: "inbound" }, NOW);
+    t = respond(s, t.session, "I'd like to give an update on my sugars", NOW);
+    t = respond(s, t.session, "Priya Raman, 1964-07-19", NOW);
+    assert.equal(t.session.patientId, "db-patient-1", "database patients can be identified");
+    assert.equal(t.session.market, "IN");
+    t = respond(s, t.session, "I have chest pain", NOW);
+    assert.match(t.reply, /call 112 now/, "safety wording follows the organisation's locale");
+
+    // Unknown locale: generic wording, never another country's number.
+    const s2 = fresh();
+    let u = startConversation(s2, { channel: "web_chat", direction: "inbound" }, NOW);
+    u = respond(s2, u.session, "I'd like to give an update on my sugars", NOW);
+    u = respond(s2, u.session, "Lena Novak, 03/02/1971", NOW);
+    assert.equal(u.session.patientId, "db-patient-2");
+    u = respond(s2, u.session, "I have chest pain", NOW);
+    assert.match(u.reply, /your local emergency number/);
+    assert.doesNotMatch(u.reply, /999|112|911|998/);
+  });
+
+  // Outside a request directory, database patients are not identifiable (no cross-request leakage).
+  const s3 = fresh();
+  let v = startConversation(s3, { channel: "web_chat", direction: "inbound" }, NOW);
+  v = respond(s3, v.session, "I'd like to book", NOW);
+  v = respond(s3, v.session, "Priya Raman, 1964-07-19", NOW);
+  assert.notEqual(v.session.patientId, "db-patient-1");
 }
 
 // --- Metrics are labelled unverified ---

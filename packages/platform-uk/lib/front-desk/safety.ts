@@ -60,8 +60,16 @@ const URGENT_SAME_DAY_PHRASES = [
 ];
 
 /** Fixed wording per market. Aksh is not tied to one health system, so numbers come from market config. */
-export function safetyMessages(market: MarketCode = "GB") {
-  const m = MARKET_BY_CODE[market];
+export function safetyMessages(market: MarketCode | string = "GB") {
+  const m = MARKET_BY_CODE[market as MarketCode];
+  // Unknown locale: never guess another country's number.
+  if (!m) {
+    return {
+      emergency: "This could be an emergency. Please call your local emergency number now. If you can’t, ask someone near you to call. I’m also alerting the practice team.",
+      crisis: "I’m really sorry you’re feeling like this. If you might act on these thoughts, please call your local emergency number now, or a crisis line near you. I’m letting the practice team know.",
+      urgent: "That needs to be looked at today. I’m passing this to the practice team now and someone will call you back. If things get worse before then, call your local urgent care service, or your local emergency number in an emergency.",
+    };
+  }
   return {
     emergency: `This could be an emergency. Please call ${m.emergencyNumber} now. If you can’t, ask someone near you to call. I’m also alerting the practice team.`,
     crisis: `I’m really sorry you’re feeling like this. If you might act on these thoughts, please call ${m.emergencyNumber} now.${m.urgentAdviceLine ? ` You can also call ${m.urgentAdviceLine} and choose the mental health option, or contact ${m.crisisLine}, any time.` : ` You can also contact ${m.crisisLine}, any time.`} I’m letting the practice team know.`,
@@ -84,7 +92,7 @@ function extremeGlucose(text: string): { kind: "low" | "high"; value: number } |
   return null;
 }
 
-export function screenUtterance(utterance: string, market: MarketCode = "GB"): SafetyResult {
+export function screenUtterance(utterance: string, market: MarketCode | string = "GB"): SafetyResult {
   const text = utterance.toLowerCase();
   const MESSAGES = safetyMessages(market);
 
