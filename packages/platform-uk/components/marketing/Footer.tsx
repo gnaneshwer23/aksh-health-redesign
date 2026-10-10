@@ -80,7 +80,7 @@ export default function Footer() {
               Security &amp; clinical safety
             </Link>
           </p>
-          <p>© 2026 Aksh Health Ltd · Registered in England &amp; Wales</p>
+          <p>© 2026 Aksh Health Ltd</p>
         </div>
       </div>
     </footer>

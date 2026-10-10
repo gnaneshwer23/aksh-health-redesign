@@ -19,6 +19,7 @@ import pg from "pg";
 
 import { USERS_PROFILES_SQL } from "../lib/db/schema-sql";
 import { getSyntheticWorld, SYNTHETIC_EMAIL_DOMAIN } from "../lib/synthetic-world/generate";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 
 type Account = { email: string; role: string; fullName: string; preferences: Record<string, unknown> };
 
@@ -47,6 +48,7 @@ function buildAccounts(): Account[] {
 }
 
 async function main() {
+  assertSeedingAllowed("seed-synthetic-world");
   const apply = process.argv.includes("--apply");
   const reset = process.argv.includes("--reset");
   const accounts = buildAccounts();

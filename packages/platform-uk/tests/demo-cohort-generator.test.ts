@@ -5,7 +5,6 @@ import { describe, it } from "node:test";
 
 import {
   DEMO_COHORT_CORE_PATIENT_COUNT,
-  DEMO_COHORT_DEFAULT_PASSWORD,
   DEMO_COHORT_EMAIL_DOMAIN,
   DEMO_COHORT_EXTENDED_COUNT,
   DEMO_COHORT_PATIENT_TARGET,
@@ -90,14 +89,14 @@ describe("demo cohort generator", () => {
     assert.ok(seeds.every((s) => s.linkOutcomeSummary.includes("autoRetrain:false")));
   });
 
-  it("documents shared demo password without embedding production secrets", () => {
-    assert.ok(DEMO_COHORT_DEFAULT_PASSWORD.length >= 12);
+  it("documents the demo cohort without embedding any password", () => {
     const creds = readFileSync(
       path.join(process.cwd(), "docs/DEMO_LAUNCH_CREDENTIALS.md"),
       "utf8"
     );
     assert.match(creds, /demo\.akshhealth\.com/);
     assert.match(creds, /seed:demo-cohort/);
-    assert.match(creds, /AkshDemoCohort!2026/);
+    assert.match(creds, /DEMO_COHORT_PASSWORD/);
+    assert.doesNotMatch(creds, /AkshDemoCohort/);
   });
 });

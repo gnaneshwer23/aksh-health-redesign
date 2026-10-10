@@ -8,13 +8,14 @@ const phoneSchema = z
   .string()
   .regex(/^\+?[0-9\s()-]{7,20}$/, "Enter a valid phone number, with country code if outside your market");
 const optionalPhone = phoneSchema.optional().or(z.literal(""));
-/** Registration is recorded now and verified before any live patient data; it never blocks a synthetic workspace. */
+/** Registration is recorded now and verified before any live patient data; it never blocks the sandbox. */
 const registrationSchema = z.string().trim().max(40, "Too long").optional().or(z.literal(""));
 const fullName = z.string().min(2, "Full name is required");
 
 export const clinicianIdentitySchema = z.object({
   fullName,
   registrationNumber: registrationSchema,
+  registrationBody: z.string().trim().max(120).optional().or(z.literal("")),
   workEmail: emailSchema,
   phone: optionalPhone,
 });
@@ -75,14 +76,13 @@ export const ORG_EHR_OPTIONS = [
   "Oracle Health (Cerner)",
   "athenahealth",
   "eClinicalWorks",
-  "EMIS Web",
-  "SystmOne",
-  "Other",
+  "Other EHR",
+  "Practice management system only",
   "No EHR yet",
 ] as const;
 
 /**
- * One organisation step for every professional role. By default the account starts in the synthetic clinic;
+ * One organisation step for every professional role. By default the account starts in the sandbox clinic;
  * organisation details are only required when the person chooses to describe their own.
  */
 export const organisationSchema = z
@@ -94,7 +94,7 @@ export const organisationSchema = z
     region: z.string().optional().or(z.literal("")),
   })
   .refine((d) => d.useSynthetic || Boolean(d.organisationName && d.organisationName.length >= 2), {
-    message: "Organisation name is required, or start with the synthetic clinic",
+    message: "Organisation name is required, or start with the sandbox clinic",
     path: ["organisationName"],
   });
 

@@ -40,7 +40,7 @@ export default function HomePage() {
       <LvCtaBand
         eyebrow="Free to start"
         title="Clinical intelligence should help clinicians think, not replace them."
-        lede="Create an account and work in a synthetic clinic today. When your organisation is ready for real patients, we go live one workflow at a time."
+        lede="Create an account and work in a sandbox clinic today. When your organisation is ready for real patients, we go live one workflow at a time."
         primary={{ label: "Start free", href: "/signup" }}
         secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
       />

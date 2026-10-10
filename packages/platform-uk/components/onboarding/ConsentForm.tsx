@@ -57,7 +57,7 @@ const CONSENT_COPY: Record<
   ],
   "hospital-executive": [
     { key: "enterpriseDpa", label: "I accept the Enterprise Data Processing Agreement", required: true },
-    { key: "gdprController", label: "I confirm data-protection controller responsibilities for my market (e.g. GDPR, HIPAA, DPDP)", required: true },
+    { key: "gdprController", label: "I confirm data-protection controller responsibilities under the law that applies to my organisation", required: true },
   ],
   patient: [
     { key: "healthContact", label: "I agree to Aksh Health contacting me about my health", required: true },

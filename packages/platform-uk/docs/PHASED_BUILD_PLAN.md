@@ -54,7 +54,7 @@
 | Role smokes | `npm run smoke:all` / `smoke:gp` / `smoke:patient` / `smoke:researcher` / etc. |
 | Evidence pack regenerate | `npm run evidence:pack` |
 | Partner/honesty API spot-check | `GET /api/clinical-spine/partner-readiness` → `liveEmis:false`, `autoRetrain:false`, no `certified:true` |
-| Demo login paths | `{role}01@demo.akshhealth.com` / `AkshDemoCohort!2026` (`docs/DEMO_LAUNCH_CREDENTIALS.md`) — e.g. `gp01@…`, `patient01@…`, `researcher01@…` |
+| Demo login paths | `{role}01@demo.akshhealth.com` / the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) (`docs/DEMO_LAUNCH_CREDENTIALS.md`) — e.g. `gp01@…`, `patient01@…`, `researcher01@…` |
 
 ---
 

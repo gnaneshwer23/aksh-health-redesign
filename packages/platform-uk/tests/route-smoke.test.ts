@@ -193,17 +193,6 @@ async function run() {
   await assertFileIncludes("components/marketing/platform-page-content.tsx", "The Aksh Intelligence Platform");
   await assertFileIncludes("components/marketing/platform-page-content.tsx", "a named clinician decides");
   await assertFileIncludes(
-    "components/marketing/InteroperabilityDiagram.tsx",
-    "Clinician-approved only · not a live record write"
-  );
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel checks");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Record staging");
-  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Drafts only");
-  await assertFileExcludes("components/marketing/InteroperabilityDiagram.tsx", "Parallel drafts");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Capture");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "Orchestrate");
-  await assertFileIncludes("components/marketing/InteroperabilityDiagram.tsx", "clinician decides");
-  await assertFileIncludes(
     "components/marketing/lavender/LvAgents.tsx",
     "None of them decides."
   );

@@ -2,29 +2,28 @@ import { expect, test } from "@playwright/test";
 
 import { applyApiCookiesToPage, createFreshTestUser } from "./helpers/auth";
 
-test("self-serve: US physician signs up, picks market, skips registration, lands in synthetic workspace", async ({
+test("self-serve: physician signs up, skips registration, lands in sandbox workspace", async ({
   page,
   request,
   baseURL,
 }) => {
-  await createFreshTestUser(request, baseURL!, { role: "gp", label: "self-serve-us" });
+  await createFreshTestUser(request, baseURL!, { role: "gp", label: "self-serve" });
   await applyApiCookiesToPage(page, request);
   await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
   await page.goto("/onboarding/role-select");
 
-  await page.getByRole("radio", { name: "United States" }).click();
   await page.getByRole("button", { name: /^Physician \(GP \/ family doctor\)/ }).click();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
 
   await expect(page).toHaveURL(/\/onboarding\/identity/);
-  await expect(page.getByText("NPI number (optional)")).toBeVisible();
-  await expect(page.getByText(/GMC/)).toHaveCount(0);
+  await expect(page.getByText("Professional registration or licence number (optional)")).toBeVisible();
+  await expect(page.getByText(/GMC|NPI|NHS/)).toHaveCount(0);
   await page.getByLabel("Full name").fill("Dr Riley Example");
   await page.getByLabel("Work email").fill("riley@clinic.example");
   await page.getByRole("button", { name: "Continue", exact: true }).click();
 
   await expect(page).toHaveURL(/\/onboarding\/organisation/);
-  await expect(page.getByRole("radio", { name: /Start in the synthetic clinic/ })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("radio", { name: /Start in the sandbox clinic/ })).toHaveAttribute("aria-checked", "true");
   await page.getByRole("button", { name: "Continue", exact: true }).click();
 
   await expect(page).toHaveURL(/\/onboarding\/preferences/);

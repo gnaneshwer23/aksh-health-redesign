@@ -48,6 +48,14 @@ export function HonestyStatusBar({
       )}
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        {process.env.NEXT_PUBLIC_AKSH_ENVIRONMENT === "simulation" ? (
+          <span
+            data-testid="simulation-environment-badge"
+            className="rounded-full bg-[#8a5a00] px-2 py-0.5 font-semibold uppercase tracking-wide text-white"
+          >
+            Simulation environment
+          </span>
+        ) : null}
         {isPublicDemo ? (
           <>
             <span data-testid="demo-data-banner" className="font-medium text-pastel-amber-ink">
@@ -60,7 +68,7 @@ export function HonestyStatusBar({
         ) : (
           <>
             <span data-testid="synthetic-workspace-banner" className="font-medium text-foreground/80">
-              Synthetic workspace — live patient data needs your organisation to go live
+              Sandbox workspace — live patient data needs your organisation to go live
             </span>
             <Link href="/get-started" className="font-semibold text-secondary underline underline-offset-2">
               Bring Aksh to your organisation

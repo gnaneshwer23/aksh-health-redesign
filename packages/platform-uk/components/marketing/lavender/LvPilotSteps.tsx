@@ -5,7 +5,7 @@ const STEPS = [
   {
     label: "Step one",
     title: "Start free",
-    body: "Anyone on your team creates an account and works in a synthetic clinic straight away.",
+    body: "Anyone on your team creates an account and works in a sandbox clinic straight away.",
     icon: Send,
   },
   {
@@ -17,7 +17,7 @@ const STEPS = [
   {
     label: "Step three",
     title: "Rehearse on synthetic data",
-    body: "Run the full loop on a synthetic clinic. Live patient data waits for your DPIA and approvals.",
+    body: "Run the full loop in the sandbox. Live patient data waits for your DPIA and approvals.",
     icon: FlaskConical,
   },
   {

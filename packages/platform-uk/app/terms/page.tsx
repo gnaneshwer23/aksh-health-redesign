@@ -33,7 +33,7 @@ export default function TermsPage() {
           content: (
             <>
               <p>
-                Aksh Health provides clinical workflow software with AI-assisted features designed for UK health
+                Aksh Health provides clinical workflow software with AI-assisted features designed for health
                 and care settings. The platform supports human review of AI outputs before they are used in
                 clinical workflows.
               </p>

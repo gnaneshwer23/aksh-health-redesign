@@ -4,7 +4,7 @@ export const ORG_TYPES = [
   "Primary care / clinic network",
   "Specialist diabetes centre",
   "Hospital / health system",
-  "Integrated care / regional network",
+  "Regional or integrated care network",
   "Pharmacy group",
   "Payer / insurer",
   "Private healthcare provider",
@@ -13,20 +13,18 @@ export const ORG_TYPES = [
 
 /** Where the organisation operates. Aksh is not tied to one health system. (Name kept for API compatibility.) */
 export const ICS_REGIONS = [
-  "United Kingdom",
-  "Europe (other)",
-  "United States",
-  "Canada",
-  "India",
-  "United Arab Emirates",
-  "Middle East (other)",
-  "Asia-Pacific",
-  "Africa",
+  "Europe",
+  "North America",
   "Latin America",
+  "Middle East",
+  "Africa",
+  "South Asia",
+  "East & Southeast Asia",
+  "Oceania",
   "Other",
 ] as const;
 
-export const EHR_SYSTEMS = ["Epic", "Oracle Health (Cerner)", "athenahealth", "eClinicalWorks", "EMIS Web", "SystmOne", "Other", "No EHR yet"] as const;
+export const EHR_SYSTEMS = ["Epic", "Oracle Health (Cerner)", "athenahealth", "eClinicalWorks", "Other EHR", "Practice management system only", "No EHR yet"] as const;
 
 export const LIST_SIZES = [
   "Under 5,000",

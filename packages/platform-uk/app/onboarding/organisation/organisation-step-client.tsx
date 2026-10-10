@@ -51,7 +51,7 @@ export function OrganisationStepClient() {
     <OnboardingCard
       stepId="organisation"
       title="Your organisation"
-      description="Start in the synthetic clinic now, or tell us about your organisation for when it goes live."
+      description="Start in the sandbox clinic now, or tell us about your organisation for when it goes live."
     >
       <OrgForm role={role} onSubmit={handleSubmit} />
       <OnboardingNav

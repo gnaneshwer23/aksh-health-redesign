@@ -18,8 +18,7 @@ export const DEMO_COHORT_EXTENDED_COUNT =
 
 export const DEMO_COHORT_EMAIL_DOMAIN = "demo.akshhealth.com";
 
-/** Shared synthetic password for @demo.akshhealth.com cohort only — not a production secret. */
-export const DEMO_COHORT_DEFAULT_PASSWORD = "AkshDemoCohort!2026";
+/** The demo cohort password is never stored in source: seed/rotate scripts read DEMO_COHORT_PASSWORD. */
 
 export type DemoCohortUserSpec = {
   id: string;

@@ -201,12 +201,12 @@ test.describe("Marketing smoke", () => {
     await expect(agents.getByText("VOICE", { exact: true })).toHaveCount(0);
   });
 
-  test("homepage separates Track A from Track B and lists hard limits", async ({ page }) => {
+  test("homepage separates sandbox from live use and lists hard limits", async ({ page }) => {
     await page.goto("/");
 
     const tracks = page.locator('[data-section="tracks"]');
-    await expect(tracks.getByRole("heading", { name: /Track A/ })).toBeVisible();
-    await expect(tracks.getByRole("heading", { name: /Track B/ })).toBeVisible();
+    await expect(tracks.getByRole("heading", { name: /Sandbox/ })).toBeVisible();
+    await expect(tracks.getByRole("heading", { name: /^Live/ })).toBeVisible();
     await expect(tracks.getByText("Not available by design")).toBeVisible();
     await expect(tracks.getByText("No autonomous clinical decisions")).toBeVisible();
     await expect(tracks.getByText(/No fake or implied certification/)).toBeVisible();
@@ -268,7 +268,7 @@ test.describe("Marketing smoke", () => {
       "mailto:hello@akshhealth.com"
     );
     await expect(page.getByText(/Does Aksh Health replace my EHR/i)).toBeVisible();
-    await expect(page.getByText(/Is Aksh Health MHRA-certified/i)).toBeVisible();
+    await expect(page.getByText(/Is Aksh Health a certified medical device/i)).toBeVisible();
   });
 
   test("get-started page is organisation enquiry, distinct from signup", async ({ page }) => {
@@ -300,7 +300,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByRole("heading", { name: /Trust is a gate, not a slogan/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Special category health data/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Honest limits/i })).toBeVisible();
-    await expect(page.getByText(/MHRA certification, registration, or device marking/i)).toBeVisible();
+    await expect(page.getByText(/Medical device certification, registration, or marking by any regulator/i)).toBeVisible();
   });
 
   test("/demo redirects to flagship clinical walkthrough", async ({ page }) => {

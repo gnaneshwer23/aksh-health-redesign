@@ -76,7 +76,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
     ],
     tryIt: [
       { label: "Clinician dashboard", href: "/dashboard/gp", note: "Synthetic review queue" },
-      { label: "Care network registry", href: "/dashboard/network", note: "500 synthetic patients ranked by risk" },
+      { label: "Care network registry", href: "/dashboard/network", note: "Test patients ranked by risk" },
       { label: "Patel walkthrough", href: "/demo/patel", note: "One case, end to end" },
     ],
   },
@@ -115,7 +115,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
       "Emergency words stop the conversation and route you to help immediately.",
     ],
     tryIt: [
-      { label: "Talk to Asha", href: "/asha", note: "Voice or chat, synthetic clinic" },
+      { label: "Talk to Asha", href: "/asha", note: "Voice or chat, sandbox clinic" },
       { label: "Safety & privacy", href: "/security", note: "How data is handled per market" },
     ],
   },
@@ -183,7 +183,7 @@ export const AUDIENCE_PAGES: Record<AudienceKey, AudiencePage> = {
       { icon: LineChart, title: "Outcomes against a locked baseline", body: "No lift is claimed until it is checked against your own data." },
       { icon: ShieldCheck, title: "Governance built in", body: "Role-based access, named decisions and a tamper-evident audit trail." },
       { icon: Phone, title: "Front Desk and recall", body: "Inbound calls, recall campaigns and slot fill handled by Asha." },
-      { icon: Building2, title: "Beside your EHR", body: "Epic, Oracle Health, EMIS and others stay the system of record." },
+      { icon: Building2, title: "Beside your EHR", body: "Your existing EHR stays the system of record." },
     ],
     boundaries: [
       "Pilots start on synthetic data; live patient data waits for your approvals.",

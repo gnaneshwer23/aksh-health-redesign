@@ -18,7 +18,6 @@ import pg from "pg";
 
 import { resolveBoundPatientIdForSession } from "../lib/auth/demo-patient-binding";
 import {
-  DEMO_COHORT_DEFAULT_PASSWORD,
   DEMO_COHORT_EMAIL_DOMAIN,
   DEMO_COHORT_PATIENT_TARGET,
   DEMO_COHORT_USER_TARGET,
@@ -36,6 +35,7 @@ import {
   type LearningEvent,
 } from "../lib/clinical-proof/learning-loop";
 import { USERS_PROFILES_SQL, EMAIL_VERIFICATION_SQL, LEARNING_EVENTS_SQL } from "../lib/db/schema-sql";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 
 const { Pool } = pg;
 const root = process.cwd();
@@ -79,7 +79,11 @@ function getDatabaseUrl() {
 }
 
 function resolvePassword() {
-  return process.env.DEMO_COHORT_PASSWORD?.trim() || DEMO_COHORT_DEFAULT_PASSWORD;
+  const password = process.env.DEMO_COHORT_PASSWORD?.trim();
+  if (!password || password.length < 16) {
+    throw new Error("Set DEMO_COHORT_PASSWORD (16+ characters). It is never stored in the repository.");
+  }
+  return password;
 }
 
 async function writeArtifacts() {
@@ -116,7 +120,6 @@ async function writeArtifacts() {
         liveEmis: false,
         emailDomain: DEMO_COHORT_EMAIL_DOMAIN,
         passwordEnv: "DEMO_COHORT_PASSWORD",
-        passwordDefaultDocumentedIn: "docs/DEMO_LAUNCH_CREDENTIALS.md",
         count: users.length,
         byRole: summarizeDemoCohortUsers(users).byRole,
         users: users.map(({ id, email, role, fullName, practiceOds, credentialsHint }) => ({
@@ -370,6 +373,7 @@ function runNeo4jSeed(): Promise<void> {
 }
 
 async function run() {
+  assertSeedingAllowed("seed-demo-cohort");
   const args = parseArgs(process.argv.slice(2));
   const invariants = assertDemoCohortGeneratorInvariants();
 

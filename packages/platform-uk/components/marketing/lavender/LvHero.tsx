@@ -59,7 +59,7 @@ export default function LvHero() {
               </Link>
             </div>
             <p className="lv-hero__sub">
-              Free synthetic workspace with 500 patients. No card, no real patient data.{" "}
+              Free sandbox workspace with a full test clinic. No card, no real patient data.{" "}
               <Link href="/demo/patel" className="lv-hero__sublink lv-focus">
                 Or walk through Mr Patel’s case →
               </Link>

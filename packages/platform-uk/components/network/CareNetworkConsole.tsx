@@ -15,11 +15,11 @@ type Org = ReturnType<typeof listOrganisations>[number];
 type Tab = "overview" | "patients" | "professionals" | "organisations";
 
 const MARKET_OPTIONS = [
-  { code: "", label: "All markets" },
-  { code: "GB", label: "United Kingdom" },
-  { code: "IN", label: "India" },
-  { code: "US", label: "United States" },
-  { code: "AE", label: "UAE" },
+  { code: "", label: "All regions" },
+  { code: "GB", label: "Europe" },
+  { code: "IN", label: "South Asia" },
+  { code: "US", label: "North America" },
+  { code: "AE", label: "Middle East" },
 ];
 
 const ORG_KIND_LABEL: Record<string, string> = {

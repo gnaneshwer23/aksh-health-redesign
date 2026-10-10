@@ -7,14 +7,14 @@ import { SignUpFormSkeleton } from "@/components/auth/sign-up-form-skeleton";
 
 export const metadata: Metadata = {
   title: "Start free",
-  description: "Create a free Aksh account: a synthetic diabetes workspace with 500 patients for clinicians, pharmacists, care teams and patients. No real patient data.",
+  description: "Create a free Aksh account: a sandbox diabetes workspace with a full test clinic for clinicians, pharmacists, care teams and patients. No real patient data.",
 };
 
 export default function SignupPage() {
   return (
     <AuthCardLayout
       title="Create your account"
-      subtitle="Free synthetic workspace with 500 patients. No card, no real patient data."
+      subtitle="Free sandbox workspace with a full test clinic. No card, no real patient data."
       className="max-w-2xl"
       footer={
         <div className="space-y-3 text-center text-sm text-muted">

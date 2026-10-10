@@ -40,8 +40,8 @@ const faqs = [
     a: "No. It sits above existing EHR workflows. Production write-back stays gated behind organisation governance and clinical safety sign-off.",
   },
   {
-    q: "Is Aksh Health MHRA-certified?",
-    a: "No. We position the product as clinical decision support with human review. We do not claim MHRA certification, completed clinical safety case sign-off, or CQC readiness.",
+    q: "Is Aksh Health a certified medical device?",
+    a: "No. We position the product as clinical workflow support with human review. We do not claim medical-device certification from any regulator, a completed clinical safety case sign-off, or care-regulator readiness.",
   },
   {
     q: "What is human-in-the-loop?",

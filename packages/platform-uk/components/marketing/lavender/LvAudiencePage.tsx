@@ -118,7 +118,7 @@ export default function LvAudiencePage({ audience }: { audience: AudienceKey }) 
 
       <LvCtaBand
         eyebrow="Free to start"
-        title="Start in a synthetic clinic today. Go live on evidence."
+        title="Start in a sandbox clinic today. Go live on evidence."
         lede="Create an account in two minutes. When your organisation is ready for real patients, we go live one workflow at a time."
         primary={{ label: "Start free", href: "/signup" }}
         secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}

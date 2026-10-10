@@ -11,7 +11,6 @@ export { populationData, metricSparklines } from "./population";
 export {
   generateDemoCohortUsers,
   generateExtendedDemoPatients,
-  DEMO_COHORT_DEFAULT_PASSWORD,
   DEMO_COHORT_EMAIL_DOMAIN,
 } from "./demo-cohort-generator";
 

@@ -54,7 +54,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
     setOrganisation(
       values.useSynthetic === false
         ? values
-        : { useSynthetic: true, organisationName: "Aksh synthetic clinic" }
+        : { useSynthetic: true, organisationName: "Aksh sandbox clinic" }
     );
     onSubmit();
   }
@@ -66,8 +66,8 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
           {[
             {
               value: true,
-              title: "Start in the synthetic clinic",
-              body: "500 fictional patients, 100 professionals, 20 pharmacies. Ready now.",
+              title: "Start in the sandbox clinic",
+              body: "A full test clinic with patients, care team and pharmacy. Ready now."
             },
             {
               value: false,
@@ -118,7 +118,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
                 <FormItem>
                   <FormLabel>Organisation identifier (optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="ODS, NPI, facility or licence ID" {...field} value={String(field.value ?? "")} />
+                    <Input placeholder="Registration, facility or licence ID" {...field} value={String(field.value ?? "")} />
                   </FormControl>
                   <FormDescription>Stored as provided; not verified yet.</FormDescription>
                   <FormMessage />

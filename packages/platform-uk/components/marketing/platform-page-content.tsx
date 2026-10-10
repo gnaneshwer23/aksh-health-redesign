@@ -72,7 +72,7 @@ export function PlatformPageContent() {
 
       <LvCtaBand
         title="Ready to explore the platform?"
-        lede="Start on the synthetic clinic. Live patient data waits for your DPIA, clinical safety sign-off and partner approvals."
+        lede="Start in a sandbox clinic. Live patient data waits for your DPIA, clinical safety sign-off and partner approvals."
         primary={{ label: "Start free", href: "/signup" }}
         secondary={{ label: "Bring Aksh to your organisation", href: "/get-started" }}
       />

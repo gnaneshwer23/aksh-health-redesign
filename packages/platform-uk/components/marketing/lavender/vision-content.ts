@@ -105,7 +105,7 @@ export const PRODUCT_LOOP: { step: string; detail: string; agents: string }[] = 
   { step: "Detect & reason", detail: "Safety, risk, coordination and referral checks", agents: "GUARDIAN · HORIZON · NEXUS · PATHWAY" },
   { step: "Clinician decides", detail: "Accept, Edit or Reject, plus mandatory gates", agents: "Named reviewer" },
   { step: "Stage", detail: "FHIR R4 staging beside the EHR, never a live write", agents: "BRIDGE" },
-  { step: "Rehearse", detail: "Simulated EHR chart (Epic, EMIS and others), never a live write", agents: "Simulated EHR" },
+  { step: "Rehearse", detail: "Simulated EHR chart, never a live write", agents: "Simulated EHR" },
   { step: "Audit", detail: "Every decision hash-chained and attributable", agents: "SHIELD" },
   { step: "Learn, governed", detail: "Gated evaluation before any model change", agents: "Governed evaluation" },
 ];
@@ -113,7 +113,7 @@ export const PRODUCT_LOOP: { step: string; detail: string; agents: string }[] = 
 /** PRD §4 — vision layers, top to bottom. */
 export const PLATFORM_LAYERS: { name: string; detail: string }[] = [
   { name: "Continuous learning", detail: "Gated evaluation before any model change; no silent retraining" },
-  { name: "Clinical · Patient · Population intelligence", detail: "GP / nurse / pharmacist review · My Health coaching · ICS and COMPASS views" },
+  { name: "Clinical · Patient · Population intelligence", detail: "Physician / nurse / pharmacist review · My Health coaching · population and COMPASS views" },
   { name: "Research intelligence", detail: "Offline evaluation behind an ethics gate; not live discovery" },
   { name: "Disease digital twin", detail: "Rules and what-if scenarios; not a physiological simulation" },
   { name: "Disease intelligence", detail: "Diabetes first: 9 signals feed HORIZON and GUARDIAN" },
@@ -128,7 +128,7 @@ export const NON_OBJECTIVES: string[] = [
   "Not an EHR replacement",
   "No live write to any EHR",
   "No silent or automatic model retraining",
-  "No fake or implied certification (MHRA, DCB0129, DTAC, CIS2)",
+  "No fake or implied certification or regulatory approval",
   "No clinical output without an explanation",
   "No real patient data without an explicit governed decision",
 ];

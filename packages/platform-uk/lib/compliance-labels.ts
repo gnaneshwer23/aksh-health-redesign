@@ -1,9 +1,9 @@
 /** Healthcare compliance copy. Pathways only — never certification claims. */
 
 export const COMPLIANCE_BADGES = [
-  { id: "gdpr", label: "GDPR, HIPAA and DPDP-aware design", detail: "Data protection pathways for the UK/EU, US and India with consent and purpose limitation mapping." },
-  { id: "dspt", label: "Healthcare data security pathway", detail: "Control mapping for organisational assurance planning (including optional UK DSPT-style controls) — not a completed toolkit submission or certification." },
-  { id: "uk-residency", label: "Regional data residency", detail: "Residency by market (UK/EU, US, India, Gulf), minimisation and subject-rights workflow scaffolding." },
+  { id: "gdpr", label: "Privacy by design", detail: "Health data handled as special-category data: consent, purpose limitation and minimisation mapped to the data-protection law where you operate." },
+  { id: "dspt", label: "Healthcare data security pathway", detail: "Control mapping for organisational assurance planning — not a completed toolkit submission or certification." },
+  { id: "uk-residency", label: "Regional data residency", detail: "Data hosted in the region your organisation chooses, with minimisation and subject-rights workflows." },
   { id: "fhir", label: "FHIR R4 staging", detail: "Clinical resources staged as draft until human review completes — not live EHR sync." },
   { id: "clinical-safety", label: "Clinical safety governance", detail: "Hazard-aware workflow with human-in-the-loop gates. Not a signed clinical safety case or regulatory approval." },
   { id: "iso27001", label: "ISO 27001 pathway", detail: "Information security control mapping for enterprise readiness planning — not certification." }

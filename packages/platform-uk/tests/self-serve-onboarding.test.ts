@@ -5,11 +5,10 @@ import { resolvePatientBinding } from "../lib/onboarding/patient-binding";
 import { getIdentitySchema, getOrgSchema } from "../lib/onboarding/validation";
 import { getSyntheticWorld } from "../lib/synthetic-world/generate";
 
-// Registration label follows the market; never blocks the synthetic workspace.
-assert.equal(registrationFieldFor("gp", "GB")?.label, "GMC number");
-assert.equal(registrationFieldFor("gp", "US")?.label, "NPI number");
-assert.match(registrationFieldFor("nurse", "IN")?.label ?? "", /Nursing Council/);
-assert.equal(registrationFieldFor("patient", "GB"), null);
+// Registration is jurisdiction-neutral and optional; never names a country or a specific regulator.
+assert.equal(registrationFieldFor("gp")?.label, "Professional registration or licence number");
+assert.equal(registrationFieldFor("clinical-pharmacist")?.label, "Professional registration or licence number");
+assert.equal(registrationFieldFor("patient"), null);
 
 const clinician = getIdentitySchema("gp");
 assert.ok(clinician.safeParse({ fullName: "Dr Test", workEmail: "a@clinic.example" }).success, "registration optional");
@@ -21,7 +20,7 @@ const patient = getIdentitySchema("patient");
 assert.ok(patient.safeParse({ firstName: "A", lastName: "B", dateOfBirth: "1970-01-01", email: "p@x.example" }).success);
 assert.ok(!patient.safeParse({ firstName: "A", lastName: "B", dateOfBirth: "1970-01-01" }).success);
 
-// Organisation defaults to the synthetic clinic; a described organisation needs a name.
+// Organisation defaults to the sandbox clinic; a described organisation needs a name.
 const org = getOrgSchema("gp")!;
 assert.ok(org.safeParse({ useSynthetic: true }).success);
 assert.ok(!org.safeParse({ useSynthetic: false }).success);

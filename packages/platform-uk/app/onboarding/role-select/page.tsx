@@ -12,7 +12,6 @@ import {
   SIGNUP_ROLE_MAP,
   type UserRole,
 } from "@/lib/onboarding/roles";
-import { ONBOARDING_MARKETS } from "@/lib/onboarding/markets";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 
 function RoleSelectContent() {
@@ -23,8 +22,6 @@ function RoleSelectContent() {
   const setRole = useOnboardingStore((s) => s.setRole);
   const storedRole = useOnboardingStore((s) => s.role);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
-  const market = useOnboardingStore((s) => s.market);
-  const setMarket = useOnboardingStore((s) => s.setMarket);
 
   useEffect(() => {
     if (roleParam) {
@@ -64,34 +61,9 @@ function RoleSelectContent() {
   return (
     <OnboardingCard
       stepId="role-select"
-      title="Where you work, and your role"
-      description="Pick your market and role. Setup takes about two minutes, then you land in a synthetic workspace with 500 patients — no real patient data."
+      title="Choose your role"
+      description="Setup takes about two minutes. You start in a sandbox workspace; real patient data only arrives when your organisation goes live."
     >
-      <fieldset className="mb-6">
-        <legend className="mb-2 text-sm font-semibold text-foreground">Market</legend>
-        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Market">
-          {ONBOARDING_MARKETS.map((m) => (
-            <button
-              key={m.code}
-              type="button"
-              role="radio"
-              aria-checked={market === m.code}
-              onClick={() => setMarket(m.code)}
-              className={
-                market === m.code
-                  ? "rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white"
-                  : "rounded-full border border-border-subtle bg-white px-4 py-2 text-sm font-medium text-foreground hover:border-secondary/40"
-              }
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-muted">
-          Sets which registration number we ask for, emergency numbers and data-residency rules. You can change it later.
-        </p>
-      </fieldset>
-      <p className="mb-2 text-sm font-semibold text-foreground">Role</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map((role) => (
           <RoleTile

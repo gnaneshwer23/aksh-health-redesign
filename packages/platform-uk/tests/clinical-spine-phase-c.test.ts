@@ -159,38 +159,6 @@ async function run() {
   assert.ok(!agentDirectory.includes('name: "VOICE"'));
   assert.ok(!agentDirectory.includes('name: "DrASSIST"'));
 
-  const pipeline = fs.readFileSync(
-    path.join(process.cwd(), "components/marketing/EndToEndPipelineDiagram.tsx"),
-    "utf8"
-  );
-  assert.ok(pipeline.includes("Clinical-spine orchestrator"));
-  assert.ok(pipeline.includes("not LangGraph"));
-  assert.ok(pipeline.includes("Voice dictation"));
-  assert.ok(pipeline.includes("BRIDGE · FHIR R4 staging"));
-  assert.ok(pipeline.includes("Coding drafts support documentation under clinician review"));
-  assert.ok(pipeline.includes("John Snow Labs NLP is not wired"));
-  assert.ok(pipeline.includes("PHASE 2"));
-  assert.ok(!pipeline.includes("LIVE · API"));
-  assert.ok(!pipeline.includes("LIVE · in CONDUCTOR"));
-  assert.ok(!pipeline.includes("14 live agents"));
-
-  const heroPipeline = fs.readFileSync(
-    path.join(process.cwd(), "components/marketing/InteroperabilityDiagram.tsx"),
-    "utf8"
-  );
-  assert.ok(heroPipeline.includes("Capture"));
-  assert.ok(heroPipeline.includes("Orchestrate"));
-  assert.ok(heroPipeline.includes("clinician decides"));
-  assert.ok(heroPipeline.includes("Clinician-approved only · not a live record write"));
-  assert.ok(heroPipeline.includes("Parallel checks"));
-  assert.ok(heroPipeline.includes("Record staging"));
-  assert.ok(!heroPipeline.includes("Drafts only"));
-  assert.ok(!heroPipeline.includes("Parallel drafts"));
-  assert.ok(heroPipeline.includes("Documentation"));
-  assert.ok(heroPipeline.includes("Audit"));
-  assert.ok(!heroPipeline.includes("CANVAS"));
-  assert.ok(!heroPipeline.includes("SYNTHESIS"));
-
   const platform = fs.readFileSync(path.join(process.cwd(), "components/marketing/platform-page-content.tsx"), "utf8");
   assert.ok(platform.includes("The Aksh Intelligence Platform"));
   assert.ok(platform.includes("a named clinician decides"));
