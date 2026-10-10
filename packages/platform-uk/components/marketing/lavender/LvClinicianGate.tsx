@@ -1,11 +1,5 @@
+import { HUMAN_GATES } from "@/components/marketing/lavender/vision-content";
 import Link from "next/link";
-
-const PILLARS = [
-  { label: "Capture", detail: "Consult notes or voice become a structured draft" },
-  { label: "Review", detail: "Documentation, safety and risk wait in one queue" },
-  { label: "Govern", detail: "A named clinician accepts, edits or rejects" },
-  { label: "Integrate", detail: "Accepted outputs stage as FHIR R4 · not a live EHR write" },
-] as const;
 
 export default function LvClinicianGate() {
   return (
@@ -33,18 +27,19 @@ export default function LvClinicianGate() {
         </div>
 
         <div className="lv-gate__panel">
-          <p className="text-sm text-white/80">How it works</p>
+          <p className="text-sm text-white/80">Mandatory human gates</p>
           <ol className="grid gap-3">
-            {PILLARS.map((p, i) => (
-              <li key={p.label} className="lv-gate__step">
+            {HUMAN_GATES.map((g, i) => (
+              <li key={g.gate} className="lv-gate__step">
                 <b aria-hidden>{i + 1}</b>
                 <span>
-                  <span className="block">{p.label}</span>
-                  <small>{p.detail}</small>
+                  <span className="block">{g.gate}</span>
+                  <small>{g.who}</small>
                 </span>
               </li>
             ))}
           </ol>
+          <p className="text-xs text-white/85">Enforced on the server, not just hidden in the interface.</p>
         </div>
       </div>
     </section>

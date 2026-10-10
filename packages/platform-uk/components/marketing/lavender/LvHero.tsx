@@ -38,7 +38,7 @@ export default function LvHero() {
               <span className="lv-hero__badge-dot" aria-hidden>
                 ✦
               </span>
-              Diabetes-first · built for UK primary care
+              Aksh Intelligence Platform · first module: Aksh Diabetes
             </span>
 
             <h1 id="lv-hero-title" className="lv-hero__title">
@@ -46,8 +46,8 @@ export default function LvHero() {
             </h1>
 
             <p className="lv-hero__lede">
-              Aksh gathers labs, medicines, missed appointments and what patients report into one review queue. Each
-              signal keeps its source, and nothing reaches the record until a named clinician decides.
+              One auditable, human-in-the-loop intelligence layer beside your EHR. It turns notes, labs, medicines and
+              what patients report into explainable drafts. A named clinician decides; the platform never decides alone.
             </p>
 
             <div className="lv-hero__actions">

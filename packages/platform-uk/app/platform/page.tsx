@@ -6,7 +6,7 @@ import { PlatformPageContent } from "@/components/marketing/platform-page-conten
 export const metadata: Metadata = {
   title: "Platform ",
   description:
-    "One platform, eight roles, clinician-owned care. Designed for EMIS Web and SystmOne via FHIR standards with human-in-the-loop review.",
+    "The Aksh Intelligence Platform: one auditable, human-in-the-loop intelligence layer beside your EHR. Twelve agents under one supervisor and audit trail, eight roles, FHIR R4 staging with a simulated EHR. First module: Aksh Diabetes.",
 };
 
 export default function PlatformPage() {

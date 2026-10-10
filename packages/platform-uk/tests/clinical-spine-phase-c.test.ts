@@ -192,23 +192,24 @@ async function run() {
   assert.ok(!heroPipeline.includes("SYNTHESIS"));
 
   const platform = fs.readFileSync(path.join(process.cwd(), "components/marketing/platform-page-content.tsx"), "utf8");
-  assert.ok(platform.includes("Four steps from intake to exchange"));
-  assert.ok(platform.includes("supporting intelligence under clinician review"));
-  assert.ok(platform.includes("Named reviewer approval on every output"));
+  assert.ok(platform.includes("The Aksh Intelligence Platform"));
+  assert.ok(platform.includes("a named clinician decides"));
   assert.ok(!platform.includes("Twelve Phase-1 directory agents"));
   assert.ok(!platform.includes("Seven agents"));
   assert.ok(!platform.includes("100 patients"));
 
-  const agentGrid = fs.readFileSync(
-    path.join(process.cwd(), "components/marketing/AgentGrid.tsx"),
+  // Marketing agent roster mirrors AGENT_DIRECTORY with human labels first (N4 lock: VOICE and
+  // Dr.Assist are sub-capabilities, PRISM/ATLAS not built).
+  const visionContent = fs.readFileSync(
+    path.join(process.cwd(), "components/marketing/lavender/vision-content.ts"),
     "utf8"
   );
-  assert.ok(agentGrid.includes("Supporting intelligence. One review queue."));
-  assert.ok(agentGrid.includes("Capture → draft → approve"));
-  assert.ok(agentGrid.includes("Clinical Capture"));
-  assert.ok(agentGrid.includes("Safety Review"));
-  assert.ok(!agentGrid.includes("Twelve agents"));
-  assert.ok(!agentGrid.includes("sub-capabilities"));
+  for (const codename of ["CANVAS", "SYNTHESIS", "BRIDGE", "NEXUS", "GUARDIAN", "PRISM", "HORIZON", "PATHWAY", "COMPASS", "ATLAS", "SHIELD", "CONDUCTOR"]) {
+    assert.ok(visionContent.includes(`codename: "${codename}"`), `marketing roster missing ${codename}`);
+  }
+  assert.ok(!visionContent.includes('codename: "VOICE"'), "VOICE must stay a sub-capability");
+  assert.ok(!visionContent.includes('codename: "Dr.Assist"'), "Dr.Assist must stay a sub-capability");
+  assert.ok(!visionContent.includes("liveEmis:false"), "public copy uses plain words, not flags");
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),

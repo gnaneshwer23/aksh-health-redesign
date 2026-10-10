@@ -13,7 +13,7 @@ test.describe("Marketing smoke", () => {
     await expect(page.getByText("Synthetic patient. Not a live record.", { exact: true })).toBeVisible();
     const desktopNav = nav.locator("[data-nav-center]");
     await expect(desktopNav.getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(desktopNav.getByRole("link", { name: "How it works" })).toBeVisible();
+    await expect(desktopNav.getByRole("link", { name: "Aksh Diabetes" })).toHaveAttribute("href", "/platform#diabetes");
     await expect(desktopNav.getByRole("link", { name: "Safety & Trust" })).toBeVisible();
     await expect(desktopNav.getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "See Demo" })).toBeVisible();
@@ -39,7 +39,7 @@ test.describe("Marketing smoke", () => {
     const mobileMenu = page.getByRole("dialog");
     const mobileNav = mobileMenu.getByRole("navigation", { name: "Mobile navigation" });
     await expect(mobileNav.getByRole("link", { name: "Platform" })).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "How it works" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Aksh Diabetes" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Safety & Trust" })).toBeVisible();
     await expect(mobileNav.getByRole("link", { name: "Resources" })).toBeVisible();
     await expect(mobileMenu.getByRole("link", { name: "See Demo" })).toBeVisible();
@@ -94,14 +94,23 @@ test.describe("Marketing smoke", () => {
     await expect(roles.getByRole("link", { name: /Open Patel demo/i })).toHaveAttribute("href", "/demo/patel");
   });
 
-  test("homepage surfaces how-it-works pillars after the hero", async ({ page }) => {
+  test("homepage tells the PRD story: problem, loop, gates", async ({ page }) => {
     await page.goto("/");
 
+    await expect(page.getByText("Aksh Intelligence Platform · first module: Aksh Diabetes")).toBeVisible();
+    const problem = page.locator('[data-section="problem"]');
+    await expect(problem.getByRole("heading", { name: "Point tools that don’t compose" })).toBeVisible();
+    await expect(problem.getByRole("heading", { name: "Automation that oversteps" })).toBeVisible();
+    await expect(problem.getByText("Nothing reaches a record or prescription without a human decision")).toBeVisible();
+
+    const loop = page.locator('[data-section="loop"]');
+    await expect(loop.locator(".lv-loop__step")).toHaveCount(9);
+    await expect(loop.getByRole("heading", { name: "Clinician decides" })).toBeVisible();
+    await expect(loop.getByRole("heading", { name: "Learn, governed" })).toBeVisible();
+
     const gate = page.locator("section[data-clinician-gate]");
-    await expect(gate.getByText("How it works", { exact: true })).toBeVisible();
-    for (const pillar of ["Capture", "Review", "Govern", "Integrate"]) {
-      await expect(gate.getByText(pillar, { exact: true })).toBeVisible();
-    }
+    await expect(gate.getByText("Mandatory human gates")).toBeVisible();
+    await expect(gate.getByText("Pharmacist confirms, GP co-accountable")).toBeVisible();
   });
 
   test("homepage closing CTA band has readable contrast", async ({ page }) => {
@@ -145,26 +154,33 @@ test.describe("Marketing smoke", () => {
     await expect(hero.getByRole("link", { name: /Request a pilot/i })).toHaveAttribute("href", "/get-started");
   });
 
-  test("homepage capabilities are numbered drafts, not autonomous tools", async ({ page }) => {
+  test("homepage shows the nine Aksh Diabetes areas and the twelve-agent roster honestly", async ({ page }) => {
     await page.goto("/");
 
-    const caps = page.locator('[data-section="capabilities"]');
-    await expect(caps.getByRole("heading", { name: /Clinical capabilities you can rely on/i })).toBeVisible();
-    await expect(caps.locator(".lv-card")).toHaveCount(8);
-    await expect(caps.getByText("001")).toBeVisible();
-    await expect(caps.getByText("008")).toBeVisible();
-    await expect(caps.getByText(/none of them writes to the record/i)).toBeVisible();
+    const diabetes = page.locator('[data-section="diabetes"]');
+    await expect(diabetes.getByRole("heading", { name: /Nine intelligence areas/i })).toBeVisible();
+    await expect(diabetes.locator(".lv-card")).toHaveCount(9);
+    await expect(diabetes.getByText("Awaiting CGM data model")).toBeVisible();
+    await expect(diabetes.getByText(/never an executable dose/i).first()).toBeVisible();
+
+    const agents = page.locator('[data-section="agents"]');
+    await expect(agents.locator(".lv-agent")).toHaveCount(12);
+    await expect(agents.getByRole("heading", { name: "Medication safety" })).toBeVisible();
+    await expect(agents.getByText("GUARDIAN", { exact: true })).toBeVisible();
+    await expect(agents.getByText("Not built yet", { exact: true })).toHaveCount(2);
+    await expect(agents.getByText("VOICE", { exact: true })).toHaveCount(0);
   });
 
-  test("homepage honesty section separates live, evaluated and not claimed", async ({ page }) => {
+  test("homepage separates Track A from Track B and lists hard limits", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: /What’s live, what’s evaluated, what isn’t/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Working in this build" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Being evaluated" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "What we don’t claim" })).toBeVisible();
-    await expect(page.getByText("MHRA certification or registration")).toBeVisible();
-    await expect(page.getByText("Live EMIS or SystmOne write-back")).toBeVisible();
+    const tracks = page.locator('[data-section="tracks"]');
+    await expect(tracks.getByRole("heading", { name: /Track A/ })).toBeVisible();
+    await expect(tracks.getByRole("heading", { name: /Track B/ })).toBeVisible();
+    await expect(tracks.getByText("Not available by design")).toBeVisible();
+    await expect(tracks.getByText("No autonomous clinical decisions")).toBeVisible();
+    await expect(tracks.getByText(/No fake or implied certification/)).toBeVisible();
+    await expect(page.locator('[data-section="layers"]').getByText("Your EHR")).toBeVisible();
     await expect(page.getByRole("heading", { name: /In production/i })).toHaveCount(0);
   });
 
@@ -192,24 +208,26 @@ test.describe("Marketing smoke", () => {
     const platformLink = page.locator("nav[data-site-nav] [data-nav-center]").getByRole("link", { name: "Platform" });
     await expect(platformLink).toHaveAttribute("href", "/platform");
     await expect(platformLink).toHaveAttribute("aria-current", "page");
-    await expect(page.getByRole("heading", { name: /One platform, eight roles, clinician-owned care/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Capture → draft → approve → exchange/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /One intelligence layer\. Eight roles\. Clinician-owned decisions\./i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /From signal to governed learning/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /One platform\. Disease modules plug in\./i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /None of them decides/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Designed for every role/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Supporting intelligence\. One review queue/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Clinician approval\. Always\./i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Every output is a draft/i })).toBeVisible();
     await expect(page.locator("section#roles")).toBeVisible();
     await expect(page.getByLabel("Product trust signals").first()).toBeVisible();
   });
 
-  test("platform capability grid uses human labels", async ({ page }) => {
+  test("platform agent grid leads with human labels and plain language", async ({ page }) => {
     await page.goto("/platform");
 
-    await expect(page.getByRole("heading", { name: /Supporting intelligence\. One review queue/i })).toBeVisible();
-    await expect(page.getByText("Clinical Capture", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("Documentation", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("FHIR Exchange", { exact: true }).first()).toBeVisible();
+    const agents = page.locator('[data-section="agents"]');
+    for (const label of ["Clinical intake", "Clinical documentation", "Interoperability", "Supervisor"]) {
+      await expect(agents.getByRole("heading", { name: label, exact: true })).toBeVisible();
+    }
     await expect(page.getByText(/Phase 2/i)).toHaveCount(0);
     await expect(page.getByText(/liveEmis:false/i)).toHaveCount(0);
+    await expect(page.getByText(/autoRetrain/i)).toHaveCount(0);
   });
 
   test("contact page renders production content and common questions", async ({ page }) => {

@@ -1,7 +1,7 @@
 # Aksh Health — Vision (End-to-End) & Product Requirements Overview
 
 **Document ID:** AKSH-VISION-PRD-OVERVIEW
-**Version:** 1.2
+**Version:** 1.3
 **Date:** 2026-10-10
 **Product:** Aksh Intelligence Platform (UK/EU) · first module: Aksh Diabetes
 **Live:** https://akshhealth.com
@@ -135,23 +135,24 @@ From Volume I §1.3 (`BO-1`…`BO-9`):
 | Patient | My Health / coaching drafts — **never** self-prescribe |
 | Researcher | Ethics-gated evaluation / federated stubs — not live discovery suite |
 
-### 2.4 Platform agents (canonical 12, plus Phase 2 placeholders)
+### 2.4 Platform agents (canonical 12, from `AGENT_DIRECTORY` in `lib/agents.ts`)
 
-| Agent | Role (product) | Build honesty |
-| --- | --- | --- |
-| CANVAS | Capture / structured intake | Live Phase 1 |
-| VOICE | Dictation into capture | Live (clinician/nurse-facing) |
-| SYNTHESIS | SOAP / structured draft | Live · HITL |
-| Dr.Assist | Coding draft (SNOMED/ICD) | Live · HITL |
-| GUARDIAN | Med safety / interaction flags | Live · HITL |
-| HORIZON (ex-ORACLE) | Risk contribution | Live · HITL |
-| NEXUS | Care coordination draft | Live in CONDUCTOR |
-| PATHWAY (ex-REFERRAL) | Referral / pathway draft | Live · HITL |
-| COMPASS (ex-EQUITY) | Population equity brief | Partial |
-| BRIDGE | FHIR staging after Accept | Live · sim write only |
-| SHIELD | Audit / hash-chain | Live |
-| CONDUCTOR | Deterministic orchestration | Live |
-| PRISM / ATLAS | Imaging / research agent | **Phase 2 · `live:false` · not built** (outside the canonical 12) |
+VOICE and Dr.Assist are **sub-capabilities** of CANVAS and SYNTHESIS (N4 audit lock), not peer agents. Public pages lead with the human label; the codename is secondary (23 Jul 2026 marketing decision).
+
+| Agent | Human label | Role (product) | Build honesty |
+| --- | --- | --- | --- |
+| CANVAS | Clinical intake | Capture / structured intake; includes VOICE dictation | Live |
+| SYNTHESIS | Clinical documentation | SOAP / structured draft; includes Dr.Assist coding (SNOMED CT first) | Live · HITL |
+| GUARDIAN | Medication safety | Med safety / interaction flags | Live · HITL |
+| HORIZON (ex-ORACLE) | Predictive risk | Risk contribution with listed factors | Live · HITL |
+| NEXUS | Clinical intelligence | Correlation into a draft clinical picture | Live in CONDUCTOR |
+| PATHWAY (ex-REFERRAL) | Care coordination | Referral / pathway / follow-up package | Live · HITL |
+| COMPASS (ex-EQUITY) | Population health | Population equity brief | Partial |
+| BRIDGE | Interoperability | FHIR staging after Accept | Live · sim write only |
+| SHIELD | Regulatory & audit | Audit / hash-chain | Live |
+| CONDUCTOR | Supervisor | Deterministic orchestration | Live |
+| PRISM | Imaging intelligence | Imaging review support | **`live:false` · not built** |
+| ATLAS | Clinical research | Research / trial support | **`live:false` · not built** |
 
 ### 2.5 Core functional requirement themes
 
@@ -321,6 +322,7 @@ For the full backlog: Volume I Chapter 21.
 | Version | Date | Change |
 | --- | --- | --- |
 | 1.0 | 2026-10-09 | Initial consolidated Vision + PRD overview for independent review; points to Volume I v0.21 as full PRD; reflects Oct 2026 production GO (Track A) and staged patient-access. |
+| 1.3 | 2026-10-10 | §2.4 corrected to the code roster: PRISM/ATLAS are within the canonical 12; VOICE and Dr.Assist are sub-capabilities, not peers. Added human labels. |
 | 1.2 | 2026-10-10 | Audit findings fixed on the redesign branch: honest SHIELD outcomes on demo dashboards, SNOMED CT + WHO ICD-10 coding, P002 risk/HbA1c/laterality consistency, cohort titles and slots, REQ-021 → PASS. Patel suspected-vs-confirmed DVT narrative left open for clinical decision. |
 | 1.1 | 2026-10-10 | REQ snapshot corrected to 29 PASS of 37 (matrix summary fixed); added redesign review build and its shared-database status; replaced design-debt line with PR #3 status; added open findings from the 2026-10-09 production audit (public-demo SHIELD claim, US coding, P002 fixture inconsistencies, cohort titles); clarified SC-1/SC-3 scope. |
 
