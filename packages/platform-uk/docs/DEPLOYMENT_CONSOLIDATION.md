@@ -2,6 +2,16 @@
 
 Environment variables for production (Vercel) and local development. **Never commit real secrets** — use placeholders in docs and set values in the Vercel dashboard or `.env.local`.
 
+## Source of truth (from 2026-10-10)
+
+| What | Where | Notes |
+| --- | --- | --- |
+| Code | **github.com/gnaneshwer23/aksh-health-redesign** | All changes land here. `main` = production. `gnaneshwer23/0ne-Health` is legacy (read-only reference). |
+| Hosting | Vercel project **`aksh-health-redesign`**, root `packages/platform-uk` | Serves `akshhealth.com` and `www.akshhealth.com`. Push to `main` deploys production; other branches get preview URLs. |
+| Database | Neon project (same database as the original platform), endpoint `ep-summer-boat-…` | Production `DATABASE_URL` / `DATABASE_URL_UNPOOLED` in Vercel. Neon Vercel integration creates a preview database branch per git branch. |
+| CI | `.github/workflows/e2e.yml` | Each Playwright run creates a throwaway Neon branch (`ci/e2e-<run>`) via the Neon GitHub integration and deletes it afterwards, so tests never write to production data. `E2E_DATABASE_URL` is only a fallback. |
+| Local | `git remote` **`origin`** → aksh-health-redesign; **`legacy`** → 0ne-Health | Never push to `legacy`. |
+
 ## P0 launch checklist
 
 Before promoting to production:
@@ -9,7 +19,7 @@ Before promoting to production:
 1. Set required Vercel env vars (see tables below)
 2. Set `RESEND_API_KEY` **or** SMTP credentials for password reset, email verification, and organisation enquiry emails
 3. Set `ACCESS_REQUEST_NOTIFY_EMAIL` to your team inbox
-4. Add `E2E_DATABASE_URL` in GitHub Actions secrets for CI
+4. CI database: Neon GitHub integration (`NEON_PROJECT_ID` variable + `NEON_API_KEY` secret) creates a branch per run; `E2E_DATABASE_URL` only as fallback
 5. Run `npm run auth:schema` against production Neon (includes password reset and email verification tables)
 6. Rotate Neon database password if it was ever exposed (manual, in Neon console)
 7. Run `npm run auth:cleanup-demo` dry-run, review matches, then `--apply` if needed (manual)
