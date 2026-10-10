@@ -284,7 +284,7 @@ export function MarketingChatWidget() {
     <div
       className={cn(
         "pointer-events-none fixed right-4 z-40 flex flex-col items-end gap-3 sm:right-6",
-        cookieVisible ? "bottom-44 sm:bottom-40" : "bottom-4 sm:bottom-6"
+        cookieVisible ? "bottom-[13.5rem] sm:bottom-40" : "bottom-4 sm:bottom-6"
       )}
     >
       {open ? (
@@ -305,13 +305,14 @@ export function MarketingChatWidget() {
 
       <button
         type="button"
-        className="pointer-events-auto inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(20_32_30/0.06),0_10px_22px_-14px_rgb(20_32_30/0.28)] transition-[background-color,transform] duration-150 hover:bg-[var(--mk-accent-strong)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
+        className="pointer-events-auto inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2 rounded-full bg-[var(--mk-accent)] p-3 sm:px-5 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(20_32_30/0.06),0_10px_22px_-14px_rgb(20_32_30/0.28)] transition-[background-color,transform] duration-150 hover:bg-[var(--mk-accent-strong)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mk-accent)] focus-visible:ring-offset-2"
         aria-expanded={open}
         aria-label={open ? "Close Ask Aksh Health chat" : "Open Ask Aksh Health chat"}
         onClick={() => setOpen((value) => !value)}
       >
         {open ? <X className="h-4 w-4" aria-hidden /> : <MessageCircle className="h-4 w-4" aria-hidden />}
-        <span>{open ? "Close" : "Ask"}</span>
+        {/* Icon-only on phones so the launcher does not cover page content. */}
+        <span className="hidden sm:inline">{open ? "Close" : "Ask"}</span>
       </button>
     </div>
   );

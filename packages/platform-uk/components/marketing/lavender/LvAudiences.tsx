@@ -8,6 +8,7 @@ type Audience = {
   need: string;
   gets: string[];
   cta: { label: string; href: string };
+  more: string;
 };
 
 const AUDIENCES: Audience[] = [
@@ -17,6 +18,7 @@ const AUDIENCES: Audience[] = [
     need: "Less admin, the full diabetes picture before every review.",
     gets: ["Drafted notes and coding", "Risk with its reasons", "Accept, edit or reject"],
     cta: { label: "Open the clinician demo", href: "/dashboard/gp" },
+    more: "/for-clinicians",
   },
   {
     who: "People living with diabetes",
@@ -24,6 +26,7 @@ const AUDIENCES: Audience[] = [
     need: "Answers, bookings and check-ins without waiting on hold.",
     gets: ["Talk or type to Asha", "Readings reach your clinician", "A person for anything urgent"],
     cta: { label: "Talk to Asha", href: "/asha" },
+    more: "/for-patients",
   },
   {
     who: "Pharmacists",
@@ -31,6 +34,7 @@ const AUDIENCES: Audience[] = [
     need: "Medication risks surfaced early, decisions on record.",
     gets: ["Interaction and allergy holds", "Medication review queue", "Rationale kept for audit"],
     cta: { label: "See the pharmacy step", href: "/demo/patel" },
+    more: "/for-pharmacists",
   },
   {
     who: "Clinics, health systems & payers",
@@ -38,6 +42,7 @@ const AUDIENCES: Audience[] = [
     need: "Care gaps closed across a population, with evidence.",
     gets: ["Registry ranked by risk", "Care teams across organisations", "Outcomes against a locked baseline"],
     cta: { label: "Explore the care network", href: "/dashboard/network" },
+    more: "/for-organisations",
   },
 ];
 
@@ -73,10 +78,15 @@ export default function LvAudiences() {
                     <li key={g}>{g}</li>
                   ))}
                 </ul>
-                <Link href={a.cta.href} className="lv-aud__cta lv-focus">
-                  {a.cta.label}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden />
-                </Link>
+                <div className="lv-aud__actions">
+                  <Link href={a.cta.href} className="lv-aud__cta lv-focus">
+                    {a.cta.label}
+                    <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  </Link>
+                  <Link href={a.more} className="lv-aud__more lv-focus" aria-label={`Learn more: ${a.who}`}>
+                    Learn more
+                  </Link>
+                </div>
               </li>
             );
           })}

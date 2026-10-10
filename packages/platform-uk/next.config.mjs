@@ -71,37 +71,32 @@ const createNextConfig = (phase) => ({
         permanent: true
       },
       {
-        source: "/for-clinicians",
-        destination: "/platform",
+        source: "/for-practices",
+        destination: "/for-organisations",
         permanent: true
       },
       {
-        source: "/for-practices",
-        destination: "/platform",
+        source: "/for-pharmacies",
+        destination: "/for-pharmacists",
         permanent: true
       },
       {
         source: "/for-administrators",
-        destination: "/platform",
+        destination: "/for-organisations",
         permanent: true
       },
       {
         source: "/for-hospitals",
-        destination: "/platform",
+        destination: "/for-organisations",
         permanent: true
       },
       {
         source: "/for-ics",
-        destination: "/platform",
+        destination: "/for-organisations",
         permanent: true
       },
       {
         source: "/for-research",
-        destination: "/platform",
-        permanent: true
-      },
-      {
-        source: "/for-patients",
         destination: "/platform",
         permanent: true
       },

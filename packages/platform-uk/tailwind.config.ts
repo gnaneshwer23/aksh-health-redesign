@@ -81,7 +81,7 @@ const config: Config = {
         "border-subtle": "#EBEEF2",
         foreground: "#14201E",
         muted: {
-          DEFAULT: "#6B7A75",
+          DEFAULT: "#5B6B66",
           foreground: "#3F534D",
         },
       },

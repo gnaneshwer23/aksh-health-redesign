@@ -89,6 +89,21 @@ test.describe("Marketing smoke", () => {
     );
   });
 
+  test("audience pages render a scenario, limits and working demo links", async ({ page }) => {
+    for (const [path, heading, demo] of [
+      ["/for-clinicians", /Walk into every diabetes review/i, "/dashboard/gp"],
+      ["/for-patients", /Help between appointments/i, "/asha"],
+      ["/for-pharmacists", /See the medication risk/i, "/demo/patel"],
+      ["/for-organisations", /Close diabetes care gaps/i, "/dashboard/network"],
+    ] as const) {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+      await expect(page.getByText("Synthetic people and data. Not a live record.")).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Clear limits, enforced on the server/i })).toBeVisible();
+      await expect(page.locator('[data-section="audience-try"]').locator(`a[href="${demo}"]`).first()).toBeVisible();
+    }
+  });
+
   test("platform roles section highlights product-aligned role dashboards", async ({ page }) => {
     await page.goto("/platform");
 
@@ -312,8 +327,11 @@ test.describe("Marketing smoke", () => {
     await page.goto("/how-it-works");
     await expect(page).toHaveURL(/\/platform/);
 
-    await page.goto("/for-clinicians");
-    await expect(page).toHaveURL(/\/platform/);
+    await page.goto("/for-practices");
+    await expect(page).toHaveURL(/\/for-organisations/);
+
+    await page.goto("/for-pharmacies");
+    await expect(page).toHaveURL(/\/for-pharmacists/);
 
     await page.goto("/faq");
     await expect(page).toHaveURL(/\/contact/);

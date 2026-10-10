@@ -36,7 +36,7 @@ function IcsLayoutHeader({ children }: { children: ReactNode }) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <ConsentBanner className="flex-1" />
           <Select value={icsDateRange} onValueChange={(v) => setIcsDateRange(v as typeof icsDateRange)}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32" aria-label="Date range">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

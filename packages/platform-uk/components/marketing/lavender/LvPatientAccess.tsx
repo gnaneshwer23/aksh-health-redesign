@@ -38,6 +38,9 @@ export default function LvPatientAccess() {
         </div>
 
         <div className="lv-access" aria-label="Patient access flow">
+          <p className="lv-access__stage">
+            <b aria-hidden>1</b> Comes in
+          </p>
           <ol className="lv-access__row">
             {SOURCES.map((s) => (
               <li key={s.title} className="lv-access__card">
@@ -46,6 +49,9 @@ export default function LvPatientAccess() {
               </li>
             ))}
           </ol>
+          <p className="lv-access__stage">
+            <b aria-hidden>2</b> Asha handles it
+          </p>
           <div className="lv-access__hub">
             <span className="lv-access__title">Asha · Front Desk</span>
             <span className="lv-access__detail">Safety screen every turn → identity → intent → action or hand-off</span>
@@ -58,6 +64,9 @@ export default function LvPatientAccess() {
               </li>
             ))}
           </ol>
+          <p className="lv-access__stage">
+            <b aria-hidden>3</b> Lands with your team
+          </p>
           <ol className="lv-access__row">
             {LANDS.map((s) => (
               <li key={s.title} className="lv-access__card">

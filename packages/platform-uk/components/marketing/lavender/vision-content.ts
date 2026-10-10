@@ -44,7 +44,7 @@ export const DIABETES_AREAS: { name: string; output: string; gate: string; statu
   {
     name: "Glucose",
     output: "Time in range, variability and pattern flags",
-    gate: "Observational; gated only when it raises a GUARDIAN alert",
+    gate: "Observational; gated only when it raises a medication-safety alert",
     status: { label: "Awaiting CGM data model", tone: "unverified" },
   },
   {
@@ -56,7 +56,7 @@ export const DIABETES_AREAS: { name: string; output: string; gate: string; statu
   {
     name: "Insulin",
     output: "Regimen summary, timing observations, hypo-risk flag",
-    gate: "Hard gate through GUARDIAN; never an executable dose",
+    gate: "Hard medication-safety gate; never an executable dose",
     status: { label: "v1 rules · explanatory", tone: "approved" },
   },
   {

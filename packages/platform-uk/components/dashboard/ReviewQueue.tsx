@@ -53,7 +53,7 @@ export function ReviewQueue({
           {showAll && profile?.fullName ? (
             <p className="text-xs text-muted">{profile.fullName}&apos;s queue</p>
           ) : null}
-          {filtered.length > 0 && <Badge className="bg-danger text-white">{filtered.length} pending</Badge>}
+          {filtered.length > 0 && <Badge className="bg-[#b42318] text-white">{filtered.length} pending</Badge>}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" asChild>

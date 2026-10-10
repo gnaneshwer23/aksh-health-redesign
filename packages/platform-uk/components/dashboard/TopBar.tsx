@@ -100,12 +100,12 @@ export function TopBar({
         <div className="flex min-w-0 items-center gap-2">
           {showBrandMark || isPatientView ? (
             <>
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft lg:hidden">
+              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-secondary text-[10px] font-bold text-white shadow-soft lg:hidden">
                 A
               </span>
               {showBrandMark ? (
                 <span className="hidden items-center gap-2 sm:flex">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-secondary text-[10px] font-bold text-white shadow-soft">
                     A
                   </span>
                   <span className="font-display text-sm font-bold text-primary">Aksh</span>
@@ -113,7 +113,7 @@ export function TopBar({
               ) : null}
             </>
           ) : (
-            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-accent text-[10px] font-bold text-white shadow-soft lg:hidden">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-secondary text-[10px] font-bold text-white shadow-soft lg:hidden">
               A
             </span>
           )}
@@ -202,7 +202,7 @@ export function TopBar({
             )}
           </button>
           <div className="hidden items-center gap-2 sm:flex">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white shadow-soft">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-white shadow-soft">
               {loading ? "…" : initials}
             </span>
             <span className="max-w-[8rem] truncate text-sm font-medium">
@@ -215,7 +215,7 @@ export function TopBar({
           </div>
           <button
             type="button"
-            className="rounded-full px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:bg-pastel-mint/60 hover:text-accent"
+            className="rounded-full px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-pastel-mint/60 hover:text-secondary"
             onClick={() => signOut({ callbackUrl: "/" })}
           >
             Sign Out

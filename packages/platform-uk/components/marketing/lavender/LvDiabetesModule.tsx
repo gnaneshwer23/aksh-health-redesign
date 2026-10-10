@@ -27,13 +27,13 @@ export default function LvDiabetesModule() {
             </h2>
           </div>
           <p className="lv-lede">
-            Each area is a signal, not a separate agent. Together they feed HORIZON and GUARDIAN on the same
+            Each area is a signal, not a separate agent. Together they feed risk and medication-safety checks on the same
             orchestrator and audit trail. Rules-based on synthetic data today; insulin and GLP-1 are explanatory only,
             never an executable dose.
           </p>
         </div>
 
-        <ul className="lv-cards lv-cards--3">
+        <ul className="lv-cards lv-cards--3" tabIndex={0} aria-label="Diabetes intelligence areas">
           {DIABETES_AREAS.map((a, i) => {
             const Icon = AREA_ICONS[a.name] ?? Activity;
             return (

@@ -10,15 +10,17 @@ const footerColumns = [
       { label: "Platform", href: "/platform" },
       { label: "How it works", href: "/platform#loop" },
       { label: "Patel walkthrough", href: "/demo/patel" },
+      { label: "Safety & security", href: "/security" },
       { label: "Integrations", href: "/integrations" },
     ],
   },
   {
-    title: "Trust",
+    title: "Who it is for",
     links: [
-      { label: "Safety & security", href: "/security" },
-      { label: "Resources", href: "/resources" },
-      { label: "FAQ", href: "/faq" },
+      { label: "Physicians & nurses", href: "/for-clinicians" },
+      { label: "People with diabetes", href: "/for-patients" },
+      { label: "Pharmacists", href: "/for-pharmacists" },
+      { label: "Clinics, systems & payers", href: "/for-organisations" },
     ],
   },
   {

@@ -55,7 +55,7 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
           <Card key={rec.id} className="shadow-sm p-4">
             <div className="flex justify-between gap-2 mb-2">
               <p className="text-sm">{rec.text}</p>
-              <Badge className={cn(rec.urgency === "Urgent" ? "bg-danger" : "bg-warning")}>{rec.urgency}</Badge>
+              <Badge className={cn(rec.urgency === "Urgent" ? "bg-[#b42318]" : "bg-[#8a5a00]")}>{rec.urgency}</Badge>
             </div>
             {acceptedHospitalRecs.includes(rec.id) ? (
               <p className="text-xs text-accent">

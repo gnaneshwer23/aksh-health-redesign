@@ -80,7 +80,7 @@ export function DemoMenu({ role }: { role: DashboardRole }) {
         <Button
           variant="ghost"
           size="sm"
-          className="hidden h-8 gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted hover:text-accent sm:inline-flex"
+          className="hidden h-8 gap-1.5 rounded-full px-2.5 text-xs font-medium text-primary hover:text-secondary sm:inline-flex"
           data-testid="demo-menu-trigger"
           aria-label="Demo and help"
         >
