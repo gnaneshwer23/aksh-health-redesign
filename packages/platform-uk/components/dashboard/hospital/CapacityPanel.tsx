@@ -1,40 +1,38 @@
 "use client";
 
+import { useState } from "react";
+
 import { CapacityChart } from "@/components/dashboard/CapacityChart";
 import { HitlActions } from "@/components/dashboard/SOAPEditor";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
-import { CURRENT_GP } from "@/lib/mock-data";
+import { useReviewerIdentity } from "@/lib/hooks/use-reviewer-identity";
 import type { HospitalData } from "@/lib/mock-data/types";
+import { describeShieldOutcome, recordShieldEvent, type ShieldWriteOutcome } from "@/lib/shield-client";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
-
-async function logHospitalShield(payload: {
-  action: "accept" | "reject";
-  label: string;
-  detail: string;
-  resourceRef: string;
-}) {
-  try {
-    await fetch("/api/audit/shield", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...payload,
-        agentLabel: "HORIZON",
-        category: "reviewer_decision"
-      })
-    });
-  } catch {
-    // Local store still updates.
-  }
-}
 
 export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hospitalName?: string }) {
   const { acceptHospitalRec, acceptedHospitalRecs, dismissedHospitalRecs, dismissHospitalRec } = useDashboardStore();
   const label = hospitalName ?? data.hospitalName;
+  const reviewer = useReviewerIdentity();
+  const [outcomes, setOutcomes] = useState<Record<string, ShieldWriteOutcome>>({});
+
+  const logDecision = async (recId: string, text: string, action: "accept" | "reject") => {
+    const outcome = await recordShieldEvent(
+      {
+        action,
+        agentLabel: "HORIZON",
+        label: `SHIELD: hospital capacity recommendation ${action === "accept" ? "accepted" : "dismissed"}`,
+        detail: text,
+        resourceRef: `${label} / ${recId}`,
+      },
+      { authenticated: reviewer.authenticated }
+    );
+    setOutcomes((prev) => ({ ...prev, [recId]: outcome }));
+    return outcome;
+  };
 
   return (
     <div className="p-4 space-y-4">
@@ -61,7 +59,8 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
             </div>
             {acceptedHospitalRecs.includes(rec.id) ? (
               <p className="text-xs text-accent">
-                Logged to SHIELD · actioned by {CURRENT_GP} · no hospital system write-back
+                {outcomes[rec.id] ? describeShieldOutcome(outcomes[rec.id]) : "Recorded in this browser"} · actioned by{" "}
+                {reviewer.name} · no hospital system write-back
               </p>
             ) : dismissedHospitalRecs.includes(rec.id) ? (
               <HitlActions status="Dismissed" onAccept={() => {}} onEdit={() => {}} onReject={() => {}} />
@@ -69,32 +68,22 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
               <HitlActions
                 variant="command"
                 status="Pending"
-                onAccept={() => {
-                  acceptHospitalRec(rec.id, CURRENT_GP);
-                  void logHospitalShield({
-                    action: "accept",
-                    label: "SHIELD: hospital capacity recommendation accepted",
-                    detail: rec.text,
-                    resourceRef: `${label} / ${rec.id}`
-                  });
+                onAccept={async () => {
+                  acceptHospitalRec(rec.id, reviewer.name);
+                  const outcome = await logDecision(rec.id, rec.text, "accept");
                   toast({
                     title: "Recommendation actioned",
-                    description: "Logged to SHIELD · no PAS/EPR write"
+                    description: `${describeShieldOutcome(outcome)} · no PAS/EPR write`
                   });
                 }}
                 onEdit={() => {}}
                 onReject={() => {}}
-                onDismiss={() => {
-                  dismissHospitalRec(rec.id, CURRENT_GP);
-                  void logHospitalShield({
-                    action: "reject",
-                    label: "SHIELD: hospital capacity recommendation dismissed",
-                    detail: rec.text,
-                    resourceRef: `${label} / ${rec.id}`
-                  });
+                onDismiss={async () => {
+                  dismissHospitalRec(rec.id, reviewer.name);
+                  const outcome = await logDecision(rec.id, rec.text, "reject");
                   toast({
                     title: "Recommendation dismissed",
-                    description: "Logged to SHIELD · no PAS/EPR write"
+                    description: `${describeShieldOutcome(outcome)} · no PAS/EPR write`
                   });
                 }}
               />

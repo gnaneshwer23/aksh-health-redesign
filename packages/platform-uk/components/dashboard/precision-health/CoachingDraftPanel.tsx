@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
 import type { CoachingDraft } from "@/lib/precision-health/coaching";
+import { useReviewerIdentity } from "@/lib/hooks/use-reviewer-identity";
+import { describeShieldOutcome, recordShieldEvent, type ShieldWriteOutcome } from "@/lib/shield-client";
 
 type AgentKind = "nutrition" | "sleep" | "exercise" | "mental-health";
 
@@ -36,7 +38,8 @@ export function CoachingDraftPanel({
   const [drafts, setDrafts] = useState<Partial<Record<AgentKind, CoachingDraft>>>({});
   const [busy, setBusy] = useState<AgentKind | null>(null);
   const [escalating, setEscalating] = useState<AgentKind | null>(null);
-  const [escalated, setEscalated] = useState<Partial<Record<AgentKind, boolean>>>({});
+  const [escalated, setEscalated] = useState<Partial<Record<AgentKind, ShieldWriteOutcome>>>({});
+  const reviewer = useReviewerIdentity();
 
   const generate = async (kind: AgentKind) => {
     setBusy(kind);
@@ -76,35 +79,28 @@ export function CoachingDraftPanel({
   };
 
   const escalate = async (kind: AgentKind, draft: CoachingDraft) => {
-    try {
-      await fetch("/api/audit/shield", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "defer",
-          agentLabel: draft.agentId,
-          label: `SHIELD: ${draft.agentId} coaching escalated for clinician HITL`,
-          detail: draft.summary.slice(0, 200),
-          resourceRef: `${patientLabel ?? patientId} (${patientId})`,
-          category: "reviewer_decision",
-          payload: {
-            mode: draft.mode,
-            isClinicalAdvice: false,
-            ehrWrite: false,
-            hitlRequired: true,
-            escalated: true,
-          },
-        }),
-      });
-    } catch {
-      // Local escalate still applies.
-    }
-    setEscalated((prev) => ({ ...prev, [kind]: true }));
+    const outcome = await recordShieldEvent(
+      {
+        action: "defer",
+        agentLabel: draft.agentId,
+        label: `SHIELD: ${draft.agentId} coaching escalated for clinician HITL`,
+        detail: draft.summary.slice(0, 200),
+        resourceRef: `${patientLabel ?? patientId} (${patientId})`,
+        payload: {
+          mode: draft.mode,
+          isClinicalAdvice: false,
+          ehrWrite: false,
+          hitlRequired: true,
+          escalated: true,
+        },
+      },
+      { authenticated: reviewer.authenticated }
+    );
+    setEscalated((prev) => ({ ...prev, [kind]: outcome }));
     setEscalating(null);
     toast({
       title: "Escalated for clinician review",
-      description: "Coaching draft staged to SHIELD · still not clinical advice · no EHR write",
+      description: `${describeShieldOutcome(outcome)} · still not clinical advice · no EHR write`,
     });
   };
 
@@ -131,7 +127,7 @@ export function CoachingDraftPanel({
               draft={draft}
               busy={busy === kind}
               escalating={escalating === kind}
-              escalated={Boolean(escalated[kind])}
+              escalated={escalated[kind] ?? null}
               onGenerate={() => void generate(kind)}
               onStartEscalate={() => setEscalating(kind)}
               onCancelEscalate={() => setEscalating(null)}
@@ -161,7 +157,7 @@ function DraftBlock({
   draft: CoachingDraft | null;
   busy: boolean;
   escalating: boolean;
-  escalated: boolean;
+  escalated: ShieldWriteOutcome | null;
   onGenerate: () => void;
   onStartEscalate: () => void;
   onCancelEscalate: () => void;
@@ -201,7 +197,7 @@ function DraftBlock({
           </ul>
           {escalated ? (
             <p className="text-xs text-accent">
-              Escalated for clinician HITL · SHIELD logged · no EHR write
+              Escalated for clinician HITL · {describeShieldOutcome(escalated)} · no EHR write
             </p>
           ) : escalating ? (
             <div className="space-y-2">

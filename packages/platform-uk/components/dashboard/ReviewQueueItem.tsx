@@ -10,8 +10,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/components/ui/toaster";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CURRENT_GP } from "@/lib/mock-data";
 import type { ReviewQueueItem as ReviewQueueItemType, ReviewStatus } from "@/lib/mock-data/types";
+import { useReviewerIdentity } from "@/lib/hooks/use-reviewer-identity";
+import { describeShieldOutcome, recordShieldEvent } from "@/lib/shield-client";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,19 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(item.editedContent ?? item.content);
   const { acceptReviewItem, rejectReviewItem, editReviewItem } = useDashboardStore();
+  const reviewer = useReviewerIdentity();
+
+  const audit = (action: "accept" | "reject" | "edit", detail: string) =>
+    recordShieldEvent(
+      {
+        action,
+        label: `${action === "accept" ? "Accepted" : action === "reject" ? "Rejected" : "Edited"} ${item.agentType} draft: ${item.title}`,
+        detail,
+        agentLabel: item.agentType,
+        resourceRef: `${item.id} / ${item.patientName}`,
+      },
+      { authenticated: reviewer.authenticated }
+    );
 
   const displayContent = item.editedContent ?? item.content;
   const needsApproval = item.status === "Pending" || item.status === "Edited";
@@ -62,12 +76,13 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
           <SOAPEditor
             value={editContent}
             onChange={setEditContent}
-            onSave={() => {
-              editReviewItem(item.id, editContent, CURRENT_GP);
+            onSave={async () => {
+              editReviewItem(item.id, editContent, reviewer.name);
               setEditing(false);
+              const outcome = await audit("edit", editContent);
               toast({
                 title: "Edit saved",
-                description: `${item.patientName}: awaiting re-acceptance before record write.`,
+                description: `${item.patientName}: awaiting re-acceptance before record write · ${describeShieldOutcome(outcome)}.`,
               });
             }}
             onCancel={() => {
@@ -128,21 +143,21 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
           <HitlActions
             status={item.status}
             itemContext={item.patientName}
-            onAccept={() => {
-              acceptReviewItem(item.id, CURRENT_GP);
+            onAccept={async () => {
+              acceptReviewItem(item.id, reviewer.name);
+              const outcome = await audit("accept", displayContent);
               toast({
-                title: "Accepted · staged via BRIDGE",
-                description: `${item.patientName}: SHIELD logged · liveEmis:false · sim/staging only — open Export Bundle for FHIR handoff.`,
+                title: reviewer.authenticated ? "Accepted · staged via BRIDGE" : "Accepted in demo",
+                description: `${item.patientName}: ${describeShieldOutcome(outcome)} · liveEmis:false · sim/staging only.`,
               });
             }}
             onEdit={() => setEditing(true)}
-            onReject={(reason) => {
-              rejectReviewItem(item.id, reason, CURRENT_GP);
+            onReject={async (reason) => {
+              rejectReviewItem(item.id, reason, reviewer.name);
+              const outcome = await audit("reject", reason || "No reason given");
               toast({
                 title: "Rejected",
-                description: reason
-                  ? `${item.patientName}: ${reason}`
-                  : `${item.patientName}: output rejected.`,
+                description: `${item.patientName}: ${reason || "output rejected"} · ${describeShieldOutcome(outcome)}.`,
               });
             }}
           />

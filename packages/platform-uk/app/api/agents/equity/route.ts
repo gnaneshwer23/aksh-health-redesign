@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   const draft = await runEquityAgent({ focusCategory: body.focusCategory });
 
-  void persistShieldAuditEvent({
+  const shield = await persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
     label: `SHIELD: COMPASS draft generated (${draft.mode}/${draft.dataSource})`,
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     draft,
     hitlRequired: true,
-    ehrWrite: false
+    ehrWrite: false,
+    shieldLogged: shield.persisted
   });
 }

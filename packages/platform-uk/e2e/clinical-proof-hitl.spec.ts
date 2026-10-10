@@ -160,6 +160,25 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     expect([401, 403]).toContain(rejectWrite.status());
   });
 
+  test("public GP demo never claims a SHIELD audit or a real reviewer without a session", async ({ page }) => {
+    // SC-1 / SC-3: an unauthenticated Accept is a demo action. The UI must say so, must not
+    // send the audit write, and must not attribute the decision to a named clinician.
+    const shieldPosts: string[] = [];
+    page.on("request", (req) => {
+      if (req.url().includes("/api/audit/shield") && req.method() === "POST") shieldPosts.push(req.url());
+    });
+
+    await page.goto("/dashboard/gp");
+    const accept = page.getByRole("button", { name: /Accept AI output/i }).first();
+    await expect(accept).toBeVisible({ timeout: 20_000 });
+    await accept.click();
+
+    await expect(page.getByText(/Demo only, not audited/i).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/SHIELD logged/i)).toHaveCount(0);
+    await expect(page.getByText(/Dr Morgan/i)).toHaveCount(0);
+    expect(shieldPosts, "no audit write should be attempted without a session").toEqual([]);
+  });
+
   test("GP review queue Accept / Edit / Reject updates UI audit trail (demo record ≠ EMIS)", async ({
     page,
     request,

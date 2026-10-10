@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Asterisk } from "lucide-react";
 
 import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
 
@@ -7,14 +8,23 @@ const footerColumns = [
     title: "Platform",
     links: [
       { label: "Platform", href: "/platform" },
-      { label: "Security", href: "/security" },
-      { label: "Demo", href: "/demo/patel" },
-      { label: "Request Pilot", href: "/get-started" },
+      { label: "How it works", href: "/platform#loop" },
+      { label: "Patel walkthrough", href: "/demo/patel" },
+      { label: "Integrations", href: "/integrations" },
+    ],
+  },
+  {
+    title: "Trust",
+    links: [
+      { label: "Safety & security", href: "/security" },
+      { label: "Resources", href: "/resources" },
+      { label: "FAQ", href: "/faq" },
     ],
   },
   {
     title: "Company",
     links: [
+      { label: "Request Pilot", href: "/get-started" },
       { label: "Contact", href: "/contact" },
       { label: "Sign in", href: "/signin" },
       { label: "Create account", href: "/signup" },
@@ -32,21 +42,26 @@ const footerColumns = [
 
 export default function Footer() {
   return (
-    <footer className="owkin-footer">
-      <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <div className="mb-10 flex items-baseline gap-3">
-          <span className="text-lg font-semibold tracking-tight text-white">Aksh Health</span>
-          <span className="text-sm text-white/45">Clinical intelligence, under clinical control.</span>
-        </div>
+    <footer className="lv-footer">
+      <div className="lv-container">
+        <div className="lv-footer__grid">
+          <div className="lv-footer__brand">
+            <Link href="/" className="lv-nav__brand lv-focus">
+              <span className="lv-nav__mark" aria-hidden>
+                <Asterisk className="h-5 w-5" strokeWidth={2.5} />
+              </span>
+              <span className="text-base font-semibold tracking-tight text-white">Aksh Health</span>
+            </Link>
+            <p>Clinical intelligence, under clinical control. Diabetes-first, beside your EHR.</p>
+          </div>
 
-        <div className="grid gap-10 sm:grid-cols-3 lg:gap-16">
           {footerColumns.map((col) => (
-            <div key={col.title}>
-              <h4 className="mb-3 text-sm font-medium uppercase tracking-[0.08em] text-white/55">{col.title}</h4>
-              <ul className="list-none space-y-2.5 p-0">
+            <div key={col.title} className="lv-footer__col">
+              <h4>{col.title}</h4>
+              <ul>
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-white/75 transition-colors hover:text-white">
+                    <Link href={link.href} className="lv-focus">
                       {link.label}
                     </Link>
                   </li>
@@ -56,16 +71,14 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-white/12 pt-8">
-          <p className="max-w-3xl text-xs leading-relaxed text-white/45">
+        <div className="lv-footer__legal">
+          <p>
             {COMPLIANCE_DISCLAIMER}{" "}
             <Link href="/security" className="underline-offset-2 hover:text-white/70 hover:underline">
               Security &amp; clinical safety
             </Link>
           </p>
-          <p className="mt-4 text-sm text-white/40">
-            © 2026 Aksh Health Ltd · Registered in England &amp; Wales
-          </p>
+          <p>© 2026 Aksh Health Ltd · Registered in England &amp; Wales</p>
         </div>
       </div>
     </footer>

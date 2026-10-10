@@ -13,7 +13,7 @@ const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3000";
 const pages = [
   { path: "/", text: "Clinical intelligence" },
   { path: "/", text: "Diabetes care" },
-  { path: "/platform", text: "One platform, eight roles" },
+  { path: "/platform", text: "One intelligence layer" },
   {
     path: "/security",
     text: "Human review, audit trails, and honest compliance language for clinical deployments",
@@ -21,7 +21,7 @@ const pages = [
   { path: "/contact", text: "Talk to Aksh Health" },
   { path: "/signup", text: "Create your account" },
   { path: "/signin", text: "Sign in" },
-  { path: "/get-started", text: "Request access for your organisation" },
+  { path: "/get-started", text: "Request a pilot for your organisation" },
   { path: "/demo", text: "Mr James Patel walkthrough" },
   { path: "/demo/patel", text: "Mr James Patel walkthrough" },
 ];

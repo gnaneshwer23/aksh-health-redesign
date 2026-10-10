@@ -2,9 +2,24 @@ import { CLINICAL_AGENT_META } from "./agents";
 import type { ReviewCase, ReviewQueueItem, ServiceRequestResource } from "./types";
 
 export const PATEL_REFERRAL_TRANSCRIPT =
-  "Urgent DVT pathway: duplex ultrasound lower limb and D-dimer within 24 hours. Wells score moderate. Left calf swelling with prior DVT history.";
+  "Urgent DVT pathway: duplex ultrasound lower limb and D-dimer within 24 hours. Wells score moderate. Right calf swelling with prior DVT history.";
+
+/** Side from the case's own condition text; never assumed (Patel P002 is right, case-v-uk1 is left). */
+function limbSide(reviewCase: ReviewCase): "left" | "right" | null {
+  const text = [reviewCase.draft?.condition?.codeText, reviewCase.summary]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  const left = /\bleft\b/.test(text);
+  const right = /\bright\b/.test(text);
+  if (left === right) return null;
+  return left ? "left" : "right";
+}
 
 export function buildReferralQueueItem(reviewCase: ReviewCase): ReviewQueueItem {
+  const side = limbSide(reviewCase);
+  const limb = side ? `${side} lower limb` : "lower limb, side to confirm";
+  const calf = side ? `${side} calf` : "calf (side to confirm)";
   return {
     id: `${reviewCase.id}-queue-referral`,
     agentId: "REFERRAL",
@@ -15,9 +30,9 @@ export function buildReferralQueueItem(reviewCase: ReviewCase): ReviewQueueItem 
     content: [
       "REFERRAL AGENT: coordination draft",
       "Priority: URGENT",
-      "Requested: Duplex ultrasound (left lower limb) + D-dimer",
-      "Clinical indication: Suspected DVT: left calf swelling × 5 days, Wells moderate",
-      "Supporting codes: I82.4, E11.65",
+      `Requested: Duplex ultrasound (${limb}) + D-dimer`,
+      `Clinical indication: Suspected DVT: ${calf} swelling × 5 days, Wells moderate`,
+      "Supporting codes: SNOMED CT 128053003, 44054006 (ICD-10 I80.2, E11.9)",
       "Status: DRAFT | GP Accept required before ServiceRequest write-back"
     ].join("\n"),
     metadata: {

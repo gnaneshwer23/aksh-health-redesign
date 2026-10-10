@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./lavender.css";
 
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";

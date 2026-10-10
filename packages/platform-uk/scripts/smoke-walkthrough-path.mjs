@@ -13,12 +13,12 @@ const publicPages = [
   {
     label: "Get started",
     path: "/get-started",
-    expectedText: ["Request access for your organisation"]
+    expectedText: ["Request a pilot for your organisation"]
   },
   {
     label: "Platform roles",
     path: "/platform",
-    expectedText: ["One platform, eight roles"]
+    expectedText: ["One intelligence layer"]
   },
   {
     label: "Product tour",

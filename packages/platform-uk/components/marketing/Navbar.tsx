@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Asterisk, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
@@ -9,81 +10,64 @@ import { cn } from "@/lib/utils";
 
 const centerLinks = [
   { label: "Platform", href: "/platform" },
-  { label: "Solutions", href: "/solutions" },
+  { label: "Aksh Diabetes", href: "/platform#diabetes" },
   { label: "Safety & Trust", href: "/security" },
   { label: "Resources", href: "/resources" },
 ] as const;
 
 type NavbarProps = {
+  /** Kept for MarketingShell compatibility; the floating pill bar reads on any hero. */
   overDarkHero?: boolean;
   overLightHero?: boolean;
 };
 
-const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--owkin-accent)] focus-visible:ring-offset-2";
-
-export default function Navbar({ overDarkHero = false, overLightHero = false }: NavbarProps) {
+export default function Navbar(_props: NavbarProps) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-  }, [mobileOpen]);
-
-  const transparentOverDark = overDarkHero && !scrolled;
-  const transparentOverLight = overLightHero && !scrolled;
-  const useSolidNav = scrolled || (!overDarkHero && !overLightHero);
-
   return (
-    <nav
-      data-over-dark-hero={transparentOverDark ? "true" : "false"}
-      data-over-light-hero={transparentOverLight ? "true" : "false"}
-      data-solid-navbar={useSolidNav ? "true" : "false"}
-      className={cn(
-        "owkin-nav fixed top-0 z-50 w-full transition-colors duration-200",
-        useSolidNav ? "owkin-nav--solid" : "owkin-nav--transparent"
-      )}
-    >
-      <div className="owkin-nav__bar mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className={cn("owkin-nav__brand", focusRing)}>
-          <span className="owkin-nav__mark" aria-hidden>
-            A
+    <nav className="lv-nav" data-site-nav data-scrolled={scrolled ? "true" : "false"} aria-label="Site">
+      <div className="lv-nav__bar">
+        <Link href="/" className="lv-nav__brand lv-focus" aria-label="Aksh Health home">
+          <span className="lv-nav__mark" aria-hidden>
+            <Asterisk className="h-5 w-5" strokeWidth={2.5} />
           </span>
-          <span className="owkin-nav__wordmark">Aksh Health</span>
+          <span className="lv-nav__wordmark">Aksh Health</span>
         </Link>
 
-        <div className="owkin-nav__center hidden lg:flex" aria-label="Primary">
+        <div className="lv-nav__center hidden lg:flex" data-nav-center>
           {centerLinks.map((item) => (
-            <Link key={item.label} href={item.href} className={cn("owkin-nav__link", focusRing)}>
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={pathname === item.href ? "page" : undefined}
+              className="lv-nav__link lv-focus"
+            >
               {item.label}
             </Link>
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/demo/patel" className={cn("owkin-nav__ghost-link", focusRing)}>
+        <div className="hidden items-center gap-1 lg:flex">
+          <Link href="/demo/patel" className="lv-nav__ghost lv-focus">
             See Demo
           </Link>
-          <Link href="/get-started" className={cn("owkin-nav__pill", focusRing)}>
+          <Link href="/get-started" className="lv-btn lv-btn--ink">
             Request Pilot
           </Link>
         </div>
 
         <button
           type="button"
-          className={cn("owkin-nav__mobile-toggle lg:hidden", focusRing)}
+          className="lv-nav__toggle lv-focus lg:hidden"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-menu"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -97,10 +81,10 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
         <SheetContent
           id="mobile-nav-menu"
           side="right"
-          className="flex w-[min(100vw,22rem)] flex-col border-l border-black/5 bg-[var(--owkin-cream)] p-0"
+          className="flex w-[min(100vw,22rem)] flex-col border-l border-black/5 bg-[#f7f7fb] p-0"
         >
           <div className="border-b border-black/5 px-6 py-5">
-            <p className="text-sm font-medium text-[var(--owkin-ink)]">Menu</p>
+            <p className="text-sm font-medium text-[#0e0d1f]">Menu</p>
             <p className="text-xs text-black/50">Aksh Health</p>
           </div>
 
@@ -109,7 +93,8 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
               <SheetClose key={item.label} asChild>
                 <Link
                   href={item.href}
-                  className={cn("rounded-xl px-4 py-3 text-base font-medium text-[var(--owkin-ink)]", focusRing)}
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className="lv-focus rounded-xl px-4 py-3 text-base font-medium text-[#0e0d1f] hover:bg-[#efeff5]"
                 >
                   {item.label}
                 </Link>
@@ -119,12 +104,12 @@ export default function Navbar({ overDarkHero = false, overLightHero = false }: 
 
           <div className="mt-auto flex flex-col gap-3 border-t border-black/5 p-4">
             <SheetClose asChild>
-              <Link href="/demo/patel" className={cn("owkin-nav__ghost-link text-center", focusRing)}>
+              <Link href="/demo/patel" className="lv-btn lv-btn--outline">
                 See Demo
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/get-started" className={cn("owkin-nav__pill text-center", focusRing)}>
+              <Link href="/get-started" className="lv-btn lv-btn--ink">
                 Request Pilot
               </Link>
             </SheetClose>
