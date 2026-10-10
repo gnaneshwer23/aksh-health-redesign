@@ -29,6 +29,11 @@ test("slot fill: staff match a freed slot, draft an offer in shadow mode, and bo
   await page.getByRole("button", { name: "Draft offer" }).click();
   await expect(page.locator("[data-offer-text]")).toContainText("Hello Nadia");
   await expect(page.locator("[data-offer-text]")).not.toContainText("foot check due");
+  await page.getByRole("button", { name: "Edit wording" }).click();
+  await page.getByLabel("Offer text").fill("Hello Nadia, we have an earlier foot appointment tomorrow morning at Main site. Reply YES to take it, or STOP to stop these messages.");
+  await page.getByRole("button", { name: "Save wording" }).click();
+  await expect(page.locator("[data-offer-text]")).toContainText("earlier foot appointment tomorrow morning");
+  await expect(page.locator("[data-access-settings]")).toContainText("Most offers per patient in 30 days");
   await page.getByRole("button", { name: /Approve/ }).click();
   await expect(page.getByRole("status").filter({ hasText: "not sent shadow mode" })).toBeVisible();
   await page.getByRole("button", { name: "They accepted" }).click();

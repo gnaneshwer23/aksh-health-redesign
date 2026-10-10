@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 
-import { evaluateCandidates, renderOffer, type WaitlistFacts } from "../lib/access/eligibility";
+import { evaluateCandidates, renderOffer, resolveSettings, type WaitlistFacts } from "../lib/access/eligibility";
 
 const now = new Date("2026-10-12T09:00:00Z");
 const slot = { appointmentType: "diabetes_review", site: "Main surgery", startsAt: "2026-10-13T10:00:00Z", durationMin: 20, offerExpiresAt: "2026-10-12T18:00:00Z" };
 const base: WaitlistFacts = {
   id: "w0", patientId: "p0", appointmentType: "diabetes_review", reason: "patient_request", careGap: null,
   earliest: null, latest: null, preferredSites: [], minNoticeHours: 2, contactChannel: "sms", optedOut: false,
-  status: "waiting", addedAt: "2026-09-01T00:00:00Z", hasActiveOffer: false,
+  status: "waiting", addedAt: "2026-09-01T00:00:00Z", hasActiveOffer: false, recentOffers: 0,
 };
 const e = (over: Partial<WaitlistFacts>): WaitlistFacts => ({ ...base, ...over });
 const codes = (id: string, list: ReturnType<typeof evaluateCandidates>) => list.find((c) => c.waitlistEntryId === id)!.exclusionCodes;
@@ -46,6 +46,12 @@ assert.deepEqual(evaluateCandidates(slot, [e({ id: "a" }), e({ id: "b" })], now)
 
 // Expired offer window excludes everyone.
 assert.ok(evaluateCandidates({ ...slot, offerExpiresAt: "2026-10-12T08:00:00Z" }, [e({ id: "x" })], now)[0]!.exclusionCodes.includes("OFFER_WINDOW_CLOSED"));
+
+// Frequency cap and suppressed channels come from organisation settings.
+const capped = evaluateCandidates(slot, [e({ id: "busy", recentOffers: 3 }), e({ id: "wa", contactChannel: "whatsapp" })], now, resolveSettings({ suppressedChannels: ["whatsapp"] }));
+assert.deepEqual(codes("busy", capped), ["FREQUENCY_CAP"]);
+assert.deepEqual(codes("wa", capped), ["CHANNEL_SUPPRESSED"]);
+assert.deepEqual(resolveSettings({ reasonOrder: ["patient_request", "bogus"], maxOffersPer30Days: 99 }), { reasonOrder: ["patient_request", "overdue_care", "clinician_request"], maxOffersPer30Days: 3, suppressedChannels: [] });
 
 // Offer text uses only slot and organisation facts.
 const offer = renderOffer({ givenName: "Mira", organisationName: "Northfield Clinic", appointmentType: "diabetes_review", startsAt: slot.startsAt, site: slot.site, offerExpiresAt: slot.offerExpiresAt, timeZone: "UTC" });

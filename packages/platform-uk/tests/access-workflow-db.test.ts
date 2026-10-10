@@ -6,7 +6,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
-import { accessMetrics, addToWaitlist, applyAction, getWorkflow, ingestSlot, listQueue } from "../lib/access/service";
+import { accessMetrics, addToWaitlist, applyAction, getAccessSettings, getWorkflow, ingestSlot, listHandoffs, listQueue, sweepExpiredSlots, updateAccessSettings, updateHandoff } from "../lib/access/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { loadNetworkContext } from "../lib/network/context";
 import { acceptStaffInvite, createInvite, createOrganisation, importPatients, NetworkError } from "../lib/network/service";
@@ -112,6 +112,40 @@ async function run() {
   wf = await getWorkflow(ctx, s2.workflowId);
   assert.equal(wf!.handoffs.length, 1, "failed read-back creates a staff hand-off");
 
+  // Hand-offs are acknowledged, then closed with a disposition; they never vanish.
+  const open = (await listHandoffs(ctx)).filter((h: { workflow_id: string }) => h.workflow_id === s2.workflowId);
+  assert.equal(open.length, 1);
+  await updateHandoff(ctx, open[0].id, { action: "acknowledge" });
+  await updateHandoff(ctx, open[0].id, { action: "close", disposition: "Slot was taken; patient stays on the list", outcome: "released" });
+  await rejects(updateHandoff(ctx, open[0].id, { action: "close", disposition: "again", outcome: "released" }), 409);
+  const { rows: deeEntry } = await getPgPool().query(`SELECT status FROM aksh.waitlist_entries WHERE patient_id = $1`, [dee]);
+  assert.equal(deeEntry[0].status, "waiting", "closing the hand-off releases the patient back to the list");
+  assert.equal((await getWorkflow(ctx, s2.workflowId))!.state, "CLOSED");
+  assert.equal((await listHandoffs(ctx)).filter((h: { workflow_id: string }) => h.workflow_id === s2.workflowId).length, 0);
+
+  // Edit offer and defer are recorded; defer cannot pass the offer window.
+  const s3 = await ingestSlot(ctx, org.id, { ...slotIn, sourceRef: `s3-${tag}` });
+  await rejects(applyAction(ctx, s3.workflowId, { action: "defer", idempotencyKey: `d-bad-${tag}`, until: inHours(25) }), 400, /DEFER_OUTSIDE_WINDOW/);
+  const deferred = await applyAction(ctx, s3.workflowId, { action: "defer", idempotencyKey: `d-${tag}`, until: inHours(2) });
+  assert.equal(deferred.result_code, "DEFERRED");
+
+  // Organisation settings: only admins change them; the frequency cap applies to matching.
+  await rejects(updateAccessSettings(ctx, org.id, { maxOffersPer30Days: 1 }), 403);
+  const adminCtx2 = await loadNetworkContext(admin.userId, admin.role);
+  await updateAccessSettings(adminCtx2, org.id, { maxOffersPer30Days: 1 });
+  assert.equal((await getAccessSettings(ctx, org.id)).maxOffersPer30Days, 1);
+  await applyAction(ctx, s3.workflowId, { action: "match", idempotencyKey: `m3-${tag}` });
+  const s3wf = await getWorkflow(ctx, s3.workflowId);
+  const deeRow = s3wf!.candidates.find((c: { patient_id: string }) => c.patient_id === dee);
+  assert.ok(deeRow.exclusion_codes.includes("FREQUENCY_CAP"), "Dee already had an offer this month");
+
+  // Expiry sweep closes lapsed slots (simulated by moving the window into the past).
+  const s4 = await ingestSlot(ctx, org.id, { ...slotIn, sourceRef: `s4-${tag}` });
+  await getPgPool().query(`UPDATE aksh.access_slots SET offer_expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`, [s4.slotId]);
+  const sweep = await sweepExpiredSlots();
+  assert.ok(sweep.expired >= 1);
+  assert.equal((await getWorkflow(ctx, s4.workflowId))!.outcome, "expired");
+
   // Isolation and roles.
   const otherAdmin = await user("other", "practice-manager");
   await createOrganisation(otherAdmin, { name: `Other ${tag}`, kind: "clinic" });
@@ -121,7 +155,7 @@ async function run() {
   await rejects(applyAction({ ...ctx, role: "patient" }, s1.workflowId, { action: "match", idempotencyKey: `pt-${tag}` }), 403);
   await assert.rejects(getPgPool().query(`DELETE FROM aksh.access_actions WHERE workflow_id = $1`, [s1.workflowId]), /append-only/);
 
-  console.log("access-workflow-db: idempotency, state guards, shadow mode, read-back, decline, failed-safe hand-off, isolation — PASS");
+  console.log("access-workflow-db: idempotency, state guards, shadow mode, read-back, decline, hand-off lifecycle, edit/defer, settings + frequency cap, expiry sweep, isolation — PASS");
 }
 
 run().catch((e) => { console.error(e); process.exitCode = 1; }).finally(() => closePgPool());

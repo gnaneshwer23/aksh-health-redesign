@@ -10,7 +10,8 @@ import { getDeploymentEnvironment } from "@/lib/env/deployment";
 import { withTenant, type NetworkContext } from "@/lib/network/db";
 import { NetworkError } from "@/lib/network/service";
 
-import { evaluateCandidates, renderOffer, RULE_VERSION, TEMPLATE_VERSION, type WaitlistFacts } from "./eligibility";
+import { evaluateCandidates, renderOffer, resolveSettings, RULE_VERSION, TEMPLATE_VERSION, type WaitlistFacts } from "./eligibility";
+import { withPrivileged } from "@/lib/network/db";
 
 const STAFF_ROLES = new Set(["gp", "nurse", "clinical-pharmacist", "practice-manager"]);
 
@@ -61,6 +62,10 @@ export const actionSchema = z.discriminatedUnion("action", [
     sourceReference: z.string().min(2).max(120),
   }),
   z.object({ action: z.literal("withdraw"), idempotencyKey: z.string().min(8).max(120), reason: z.string().min(2).max(200) }),
+  // Staff may reword the drafted offer; the edit and its author are recorded.
+  z.object({ action: z.literal("edit_offer"), idempotencyKey: z.string().min(8).max(120), text: z.string().trim().min(20).max(480) }),
+  // Park the slot until later (never beyond the offer window).
+  z.object({ action: z.literal("defer"), idempotencyKey: z.string().min(8).max(120), until: isoDateTime }),
 ]);
 export type WorkflowAction = z.infer<typeof actionSchema>;
 
@@ -197,14 +202,18 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
                   to_char(w.earliest, 'YYYY-MM-DD') AS earliest, to_char(w.latest, 'YYYY-MM-DD') AS latest,
                   w.preferred_sites AS "preferredSites", w.min_notice_hours AS "minNoticeHours", w.contact_channel AS "contactChannel",
                   w.opted_out AS "optedOut", w.status, w.added_at,
-                  EXISTS (SELECT 1 FROM aksh.waitlist_entries o WHERE o.patient_id = w.patient_id AND o.status = 'offered' AND o.id <> w.id) AS "hasActiveOffer"
+                  EXISTS (SELECT 1 FROM aksh.waitlist_entries o WHERE o.patient_id = w.patient_id AND o.status = 'offered' AND o.id <> w.id) AS "hasActiveOffer",
+                  (SELECT count(*)::int FROM aksh.access_actions a WHERE a.organisation_id = w.organisation_id AND a.action_type = 'select'
+                     AND a.detail->>'patientId' = w.patient_id AND a.created_at > NOW() - INTERVAL '30 days') AS "recentOffers"
            FROM aksh.waitlist_entries w WHERE w.organisation_id = $1 AND w.appointment_type = $2 AND w.status = 'waiting'`,
           [wf.organisation_id, slot.appointment_type]
         )).rows.map((e) => ({ ...e, addedAt: e.added_at.toISOString() }));
+        const settings = resolveSettings((await client.query<{ access_settings: unknown }>(`SELECT access_settings FROM aksh.organisations WHERE id = $1`, [wf.organisation_id])).rows[0]?.access_settings);
         const results = evaluateCandidates(
           { appointmentType: slot.appointment_type, site: slot.site, startsAt: slot.starts_at.toISOString(), durationMin: slot.duration_min, offerExpiresAt: slot.offer_expires_at.toISOString() },
           entries,
-          new Date()
+          new Date(),
+          settings
         );
         // Staff outcomes for this slot stick across re-matching: someone who declined or was skipped is not re-offered it.
         const sticky = new Map(
@@ -265,7 +274,7 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         });
         await client.query(`UPDATE aksh.access_slots SET state = 'offered' WHERE id = $1`, [slot.id]);
         await client.query(`UPDATE aksh.access_workflows SET selected_candidate_id = $2, offer_text = $3, template_version = $4 WHERE id = $1`, [wf.id, cand.id, offer, TEMPLATE_VERSION]);
-        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, templateVersion: TEMPLATE_VERSION });
+        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, patientId: cand.patient_id, templateVersion: TEMPLATE_VERSION });
         return { action_type: "select", to_state: "OFFER_DRAFTED", result_code: "OFFER_DRAFTED", detail: { offer }, replay: false };
       }
       case "skip": {
@@ -334,6 +343,22 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         await record(client, ctx, wf, "confirm_booking", key, "CLOSED", "BOOKED_VERIFIED", { sourceReference: input.sourceReference });
         return { action_type: "confirm_booking", to_state: "CLOSED", result_code: "BOOKED_VERIFIED", detail: {}, replay: false };
       }
+      case "edit_offer": {
+        expectState(wf, ["OFFER_DRAFTED"], "edit the offer");
+        await client.query(`UPDATE aksh.access_workflows SET offer_text = $2, template_version = $3, offer_edited_by = $4 WHERE id = $1`, [wf.id, input.text, `${TEMPLATE_VERSION}+edited`, ctx.userId]);
+        await record(client, ctx, wf, "edit_offer", key, "OFFER_DRAFTED", "OFFER_EDITED", { length: input.text.length });
+        return { action_type: "edit_offer", to_state: "OFFER_DRAFTED", result_code: "OFFER_EDITED", detail: {}, replay: false };
+      }
+      case "defer": {
+        expectState(wf, ["SOURCE_VALIDATED", "STAFF_REVIEW"], "defer");
+        const until = new Date(input.until);
+        if (until.getTime() <= Date.now() || until.getTime() >= slot.offer_expires_at.getTime()) {
+          throw new NetworkError("DEFER_OUTSIDE_WINDOW: choose a time before the offer window closes", 400);
+        }
+        await client.query(`UPDATE aksh.access_workflows SET deferred_until = $2 WHERE id = $1`, [wf.id, until.toISOString()]);
+        await record(client, ctx, wf, "defer", key, wf.state, "DEFERRED", { until: until.toISOString() });
+        return { action_type: "defer", to_state: wf.state, result_code: "DEFERRED", detail: { until: until.toISOString() }, replay: false };
+      }
       case "withdraw": {
         expectState(wf, ["SOURCE_VALIDATED", "STAFF_REVIEW", "OFFER_DRAFTED"], "withdraw");
         if (wf.selected_candidate_id) {
@@ -352,7 +377,7 @@ export async function listQueue(ctx: NetworkContext, orgId?: string) {
   requireStaff(ctx, orgId);
   return withTenant(ctx, async (client) => {
     const { rows } = await client.query(
-      `SELECT w.id, w.state, w.outcome, w.contact_mode, w.offer_text, w.rule_version, w.updated_at, w.organisation_id,
+      `SELECT w.id, w.state, w.outcome, w.contact_mode, w.offer_text, w.rule_version, w.updated_at, w.organisation_id, w.deferred_until,
               s.appointment_type, s.site, s.starts_at, s.duration_min, s.offer_expires_at, s.state AS slot_state, s.source, s.source_ref,
               (SELECT count(*)::int FROM aksh.access_candidates c WHERE c.workflow_id = w.id AND c.rank IS NOT NULL) AS eligible
        FROM aksh.access_workflows w JOIN aksh.access_slots s ON s.id = w.slot_id
@@ -428,5 +453,145 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
       verified: false as const,
       note: "Shadow mode: no messages are sent by Aksh. Lift is only claimed against a baseline locked with the organisation before go-live.",
     };
+  });
+}
+
+export const handoffActionSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("acknowledge") }),
+  z.object({
+    action: z.literal("close"),
+    disposition: z.string().trim().min(2).max(200),
+    // What happened to the patient: back on the waiting list, or booked (confirmed by the person closing it).
+    outcome: z.enum(["released", "booked"]).default("released"),
+  }),
+]);
+
+/** A hand-off is acknowledged by a named person, then closed with a disposition. It can never disappear silently. */
+export async function updateHandoff(ctx: NetworkContext, handoffId: string, input: z.infer<typeof handoffActionSchema>) {
+  requireStaff(ctx);
+  return withTenant(ctx, async (client) => {
+    const h = (await client.query<{ id: string; organisation_id: string; acknowledged_at: Date | null; closed_at: Date | null; workflow_id: string | null }>(
+      `SELECT id, organisation_id, acknowledged_at, closed_at, workflow_id FROM aksh.handoff_tasks WHERE id = $1 FOR UPDATE`,
+      [handoffId]
+    )).rows[0];
+    if (!h) throw new NetworkError("Hand-off not found", 404);
+    if (h.closed_at) throw new NetworkError("Hand-off already closed", 409);
+    if (input.action === "acknowledge") {
+      if (!h.acknowledged_at) await client.query(`UPDATE aksh.handoff_tasks SET acknowledged_by = $2, acknowledged_at = NOW() WHERE id = $1`, [h.id, ctx.userId]);
+    } else {
+      await client.query(
+        `UPDATE aksh.handoff_tasks SET acknowledged_by = COALESCE(acknowledged_by, $2), acknowledged_at = COALESCE(acknowledged_at, NOW()), disposition = $3, closed_at = NOW() WHERE id = $1`,
+        [h.id, ctx.userId, input.disposition]
+      );
+      if (h.workflow_id) {
+        // Resolve the patient's place so nobody is left stuck as "offered" after a hand-off.
+        const wf = (await client.query<{ state: string; slot_id: string; selected_candidate_id: string | null }>(
+          `SELECT state, slot_id, selected_candidate_id FROM aksh.access_workflows WHERE id = $1 FOR UPDATE`,
+          [h.workflow_id]
+        )).rows[0]!;
+        const entryId = wf.selected_candidate_id
+          ? (await client.query<{ waitlist_entry_id: string }>(`SELECT waitlist_entry_id FROM aksh.access_candidates WHERE id = $1`, [wf.selected_candidate_id])).rows[0]?.waitlist_entry_id
+          : undefined;
+        const closesWorkflow = ["HANDOFF", "FAILED_SAFE"].includes(wf.state);
+        if (input.outcome === "booked") {
+          if (entryId) await client.query(`UPDATE aksh.waitlist_entries SET status = 'booked' WHERE id = $1`, [entryId]);
+          await client.query(`UPDATE aksh.access_slots SET state = 'booked' WHERE id = $1`, [wf.slot_id]);
+        } else {
+          if (entryId) await client.query(`UPDATE aksh.waitlist_entries SET status = 'waiting' WHERE id = $1 AND status = 'offered'`, [entryId]);
+          if (closesWorkflow) await client.query(`UPDATE aksh.access_slots SET state = 'withdrawn' WHERE id = $1 AND state <> 'booked'`, [wf.slot_id]);
+        }
+        if (closesWorkflow) {
+          await client.query(`UPDATE aksh.access_workflows SET state = 'CLOSED', outcome = $2, updated_at = NOW() WHERE id = $1`, [h.workflow_id, input.outcome === "booked" ? "booked" : "handed_off"]);
+        }
+        await client.query(
+          `INSERT INTO aksh.access_actions (organisation_id, workflow_id, action_type, idempotency_key, actor_user_id, from_state, to_state, result_code, detail, environment)
+           VALUES ($1, $2, 'handoff_closed', $3, $4, $5, $6, $7, $8::jsonb, $9)`,
+          [h.organisation_id, h.workflow_id, `handoff-close:${h.id}`, ctx.userId, wf.state, closesWorkflow ? "CLOSED" : wf.state,
+           input.outcome === "booked" ? "HANDOFF_CLOSED_BOOKED" : "HANDOFF_CLOSED_RELEASED", JSON.stringify({ disposition: input.disposition }), getDeploymentEnvironment()]
+        );
+      }
+    }
+    return { id: h.id, action: input.action };
+  });
+}
+
+export async function listHandoffs(ctx: NetworkContext, includeClosed = false) {
+  requireStaff(ctx);
+  return withTenant(ctx, async (client) =>
+    (await client.query(
+      `SELECT h.id, h.organisation_id, h.workflow_id, h.queue, h.reason, h.context, h.priority, h.due_at, h.created_at, h.acknowledged_at, h.disposition, h.closed_at,
+              (h.closed_at IS NULL AND h.due_at < NOW()) AS overdue
+       FROM aksh.handoff_tasks h WHERE ($1 OR h.closed_at IS NULL) ORDER BY h.closed_at NULLS FIRST, h.due_at`,
+      [includeClosed]
+    )).rows
+  );
+}
+
+export const accessSettingsSchema = z.object({
+  reasonOrder: z.array(z.enum(["overdue_care", "patient_request", "clinician_request"])).min(1).max(3).optional(),
+  maxOffersPer30Days: z.number().int().min(1).max(20).optional(),
+  suppressedChannels: z.array(z.enum(["sms", "phone", "email", "app", "whatsapp"])).max(5).optional(),
+});
+
+export async function getAccessSettings(ctx: NetworkContext, orgId: string) {
+  requireStaff(ctx, orgId);
+  return withTenant(ctx, async (client) =>
+    resolveSettings((await client.query<{ access_settings: unknown }>(`SELECT access_settings FROM aksh.organisations WHERE id = $1`, [orgId])).rows[0]?.access_settings)
+  );
+}
+
+/** Organisation admins own the ranking order, offer frequency cap and suppressed channels. */
+export async function updateAccessSettings(ctx: NetworkContext, orgId: string, input: z.infer<typeof accessSettingsSchema>) {
+  if (!ctx.adminOrgIds.includes(orgId)) throw new NetworkError("Only organisation admins can change slot-fill settings", 403);
+  return withTenant(ctx, async (client) => {
+    const current = resolveSettings((await client.query<{ access_settings: unknown }>(`SELECT access_settings FROM aksh.organisations WHERE id = $1`, [orgId])).rows[0]?.access_settings);
+    const next = resolveSettings({ ...current, ...input });
+    await client.query(`UPDATE aksh.organisations SET access_settings = $2::jsonb WHERE id = $1`, [orgId, JSON.stringify(next)]);
+    await client.query(
+      `INSERT INTO aksh.network_audit_events (organisation_id, actor_user_id, action, resource_type, resource_id, detail, environment) VALUES ($1, $2, 'access.settings.updated', 'organisation', $1, $3::jsonb, $4)`,
+      [orgId, ctx.userId, JSON.stringify(next), getDeploymentEnvironment()]
+    );
+    return next;
+  });
+}
+
+/**
+ * Close every workflow whose offer window has passed (cron backstop; actions also expire lazily). Runs as owner across
+ * organisations. Workflows awaiting read-back are never expired automatically: they are handed to a person instead.
+ */
+export async function sweepExpiredSlots() {
+  return withPrivileged(async (client) => {
+    const env = getDeploymentEnvironment();
+    const due = (await client.query<{ id: string; organisation_id: string; state: string; slot_id: string; selected_candidate_id: string | null }>(
+      `SELECT w.id, w.organisation_id, w.state, w.slot_id, w.selected_candidate_id FROM aksh.access_workflows w
+       JOIN aksh.access_slots s ON s.id = w.slot_id
+       WHERE s.offer_expires_at <= NOW() AND w.state NOT IN ('CLOSED', 'HANDOFF', 'FAILED_SAFE') FOR UPDATE OF w`
+    )).rows;
+    let expired = 0;
+    let handedOff = 0;
+    for (const wf of due) {
+      if (wf.state === "PENDING_VERIFICATION") {
+        await client.query(
+          `INSERT INTO aksh.handoff_tasks (organisation_id, workflow_id, reason, context, priority, due_at)
+           SELECT $1, $2, 'Offer window closed while booking awaited read-back', 'Check the schedule and confirm or release the slot', 'soon', NOW() + INTERVAL '4 hours'
+           WHERE NOT EXISTS (SELECT 1 FROM aksh.handoff_tasks WHERE workflow_id = $2 AND closed_at IS NULL)`,
+          [wf.organisation_id, wf.id]
+        );
+        handedOff += 1;
+        continue;
+      }
+      if (wf.selected_candidate_id) {
+        await client.query(`UPDATE aksh.waitlist_entries SET status = 'waiting' WHERE id IN (SELECT waitlist_entry_id FROM aksh.access_candidates WHERE id = $1) AND status = 'offered'`, [wf.selected_candidate_id]);
+      }
+      await client.query(`UPDATE aksh.access_slots SET state = 'expired' WHERE id = $1`, [wf.slot_id]);
+      await client.query(`UPDATE aksh.access_workflows SET state = 'CLOSED', outcome = 'expired', updated_at = NOW() WHERE id = $1`, [wf.id]);
+      await client.query(
+        `INSERT INTO aksh.access_actions (organisation_id, workflow_id, action_type, idempotency_key, from_state, to_state, result_code, environment)
+         VALUES ($1, $2, 'expire', $3, $4, 'CLOSED', 'SLOT_EXPIRED', $5) ON CONFLICT (idempotency_key) DO NOTHING`,
+        [wf.organisation_id, wf.id, `expire:${wf.id}`, wf.state, env]
+      );
+      expired += 1;
+    }
+    return { checked: due.length, expired, handedOff };
   });
 }

@@ -30,6 +30,14 @@ export type WaitlistFacts = {
   addedAt: string;
   /** The patient already holds another live offer (prevents offering one person several slots at once). */
   hasActiveOffer: boolean;
+  /** Offers drafted for this patient in the last 30 days (frequency cap). */
+  recentOffers: number;
+};
+
+export type AccessSettings = {
+  reasonOrder: WaitlistFacts["reason"][];
+  maxOffersPer30Days: number;
+  suppressedChannels: string[];
 };
 
 export type CandidateResult = {
@@ -51,12 +59,27 @@ const REASON_LABEL: Record<WaitlistFacts["reason"], string> = {
   clinician_request: "Clinician asked for a sooner review",
 };
 
+export const DEFAULT_SETTINGS: AccessSettings = { reasonOrder: DEFAULT_REASON_ORDER, maxOffersPer30Days: 3, suppressedChannels: [] };
+
+/** Merge an organisation's stored settings over the defaults, ignoring anything malformed. */
+export function resolveSettings(raw: unknown): AccessSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Partial<AccessSettings>;
+  const order = Array.isArray(r.reasonOrder) ? r.reasonOrder.filter((x): x is WaitlistFacts["reason"] => DEFAULT_REASON_ORDER.includes(x as WaitlistFacts["reason"])) : [];
+  return {
+    reasonOrder: [...order, ...DEFAULT_REASON_ORDER.filter((x) => !order.includes(x))],
+    maxOffersPer30Days: Number.isInteger(r.maxOffersPer30Days) && r.maxOffersPer30Days! >= 1 && r.maxOffersPer30Days! <= 20 ? r.maxOffersPer30Days! : DEFAULT_SETTINGS.maxOffersPer30Days,
+    suppressedChannels: Array.isArray(r.suppressedChannels) ? r.suppressedChannels.filter((x) => typeof x === "string").slice(0, 10) : [],
+  };
+}
+
 export function evaluateCandidates(
   slot: SlotFacts,
   entries: WaitlistFacts[],
   now: Date,
-  reasonOrder: WaitlistFacts["reason"][] = DEFAULT_REASON_ORDER
+  settings: AccessSettings | WaitlistFacts["reason"][] = DEFAULT_SETTINGS
 ): CandidateResult[] {
+  const cfg: AccessSettings = Array.isArray(settings) ? { ...DEFAULT_SETTINGS, reasonOrder: settings } : settings;
+  const reasonOrder = cfg.reasonOrder;
   const start = new Date(slot.startsAt);
   const slotDay = slot.startsAt.slice(0, 10);
   const hoursToStart = (start.getTime() - now.getTime()) / 3_600_000;
@@ -77,6 +100,8 @@ export function evaluateCandidates(
     check(!e.optedOut, "has not opted out of contact", "OPTED_OUT");
     check(!e.hasActiveOffer, "no other live offer", "ALREADY_HOLDS_OFFER");
     check(offerOpen, "offer window open", "OFFER_WINDOW_CLOSED");
+    check(e.recentOffers < cfg.maxOffersPer30Days, `fewer than ${cfg.maxOffersPer30Days} offers in 30 days`, "FREQUENCY_CAP");
+    check(!e.contactChannel || !cfg.suppressedChannels.includes(e.contactChannel), "contact channel allowed", "CHANNEL_SUPPRESSED");
     if (!e.contactChannel) {
       missing.push("contact_channel");
       excluded.push("NO_CONTACT_PREFERENCE");
