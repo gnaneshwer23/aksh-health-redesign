@@ -7,7 +7,7 @@
  * Story: each organisation's admin signs up and creates the organisation; professionals are invited and join with
  * single-use codes; clinicians import their patients with history; care teams span organisations and consent is
  * recorded before another organisation can see a record; some patients link their own accounts by invite and log a
- * reading. Every step goes through the same APIs, permissions and row-level security as real users.
+ * reading; freed slots are matched to overdue-care patients and staff work the queue. Every step goes through the same APIs, permissions and row-level security as real users.
  *
  * Re-runnable: existing accounts sign in, existing organisations and memberships are reused, imports are idempotent.
  * Accounts use the reserved aksh-simulation.example domain. The target deployment must not be production: the server
@@ -280,14 +280,86 @@ async function main() {
   }
   console.log(`  patient accounts linked ${linked}`);
 
-  // 6. One clinic and its pharmacies are visible to signed-out visitors of this simulation deployment.
+  // 6. Cancelled-slot fill: overdue-care patients join waiting lists, freed slots arrive, staff work the queue.
+  const GAP_TO_TYPE: Record<string, string> = {
+    "HbA1c due": "hba1c_check",
+    "Eye screening overdue": "eye_screening",
+    "Annual foot check due": "foot_check",
+    "Blood pressure above target": "diabetes_review",
+    "Statin not recorded": "medication_review",
+  };
+  const day = new Date().toISOString().slice(0, 10);
+  let waitlisted = 0;
+  let slots = 0;
+  let booked = 0;
+  for (const [worldOrgId, list] of byOrg) {
+    const s = clinicianFor(worldOrgId);
+    const orgId = orgDb.get(worldOrgId);
+    if (!s || !orgId) continue;
+    for (const p of list.filter((x) => patientDb.has(x.id))) {
+      const gap = p.openCareGaps.find((g) => GAP_TO_TYPE[g]);
+      if (!gap) continue;
+      const r = await s.ok("POST", `/api/orgs/${orgId}/waitlist`, {
+        patientId: patientDb.get(p.id),
+        appointmentType: GAP_TO_TYPE[gap],
+        reason: "overdue_care",
+        careGap: gap,
+        // Some patients have no usable contact preference recorded: the queue must show them as missing data.
+        contactChannel: p.contactPreference === "app" ? undefined : p.contactPreference,
+      });
+      if (!r.duplicate) waitlisted += 1;
+    }
+    // Freed slots for the appointment types this clinic's waiting list actually needs, most requested first.
+    const demand = new Map<string, number>();
+    for (const p of list) {
+      const gap = p.openCareGaps.find((g) => GAP_TO_TYPE[g]);
+      if (gap) demand.set(GAP_TO_TYPE[gap]!, (demand.get(GAP_TO_TYPE[gap]!) ?? 0) + 1);
+    }
+    const types = [...demand.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t]) => t);
+    for (let i = 0; i < types.length; i++) {
+      const startsAt = new Date(Date.now() + (26 + i * 24) * 3_600_000);
+      startsAt.setUTCMinutes(0, 0, 0);
+      const slot = await s.ok("POST", `/api/orgs/${orgId}/slots`, {
+        source: "simulation",
+        sourceRef: `sim-${worldOrgId}-${day}-${types[i]}`,
+        sourceVersion: 1,
+        appointmentType: types[i],
+        site: "Main site",
+        startsAt: startsAt.toISOString(),
+        durationMin: 20,
+        offerExpiresAt: new Date(startsAt.getTime() - 4 * 3_600_000).toISOString(),
+      });
+      if (!slot.replay) slots += 1;
+      const match = await s.ok("POST", `/api/access/workflows/${slot.workflowId}/actions`, { action: "match", idempotencyKey: `sim-match-${day}` });
+      // The first slot of each clinic is worked end to end; the rest stay in the queue for staff.
+      if (i === 0 && match.result_code === "RANKED") {
+        const wf = await s.ok("GET", `/api/access/workflows/${slot.workflowId}`);
+        const top = (wf.candidates as { id: string; rank: number | null }[]).find((c) => c.rank === 1);
+        if (top && wf.state === "STAFF_REVIEW") {
+          const steps = [
+            { action: "select", candidateId: top.id },
+            { action: "approve_contact" },
+            { action: "record_response", response: "accepted" },
+            { action: "confirm_booking", confirmed: true, sourceReference: "Simulation schedule read-back" },
+          ];
+          for (const [n, step] of steps.entries()) {
+            await s.ok("POST", `/api/access/workflows/${slot.workflowId}/actions`, { ...step, idempotencyKey: `sim-${day}-${n}` });
+          }
+          booked += 1;
+        }
+      }
+    }
+  }
+  console.log(`  slot fill: ${waitlisted} waitlisted, ${slots} new slots, ${booked} booked and verified`);
+
+  // 7. One clinic and its pharmacies are visible to signed-out visitors of this simulation deployment.
   const demoClinic = orgs.find((o) => o.kind === "primary_care_clinic");
   if (demoClinic) {
     const demoOrgIds = [orgDb.get(demoClinic.id)!, ...orgs.filter((o) => o.kind === "community_pharmacy" && o.market === demoClinic.market).slice(0, 2).map((o) => orgDb.get(o.id)!)];
     await new Session("runner").ok("POST", "/api/simulation/public-demo", { orgIds: demoOrgIds });
   }
 
-  console.log(JSON.stringify({ ok: true, organisations: orgDb.size, professionals: memberOf.size, patients: patientDb.size, careTeamLinks: teamLinks, consents, patientAccountsLinked: linked, seconds: Math.round((Date.now() - started) / 1000) }));
+  console.log(JSON.stringify({ ok: true, organisations: orgDb.size, professionals: memberOf.size, patients: patientDb.size, careTeamLinks: teamLinks, consents, patientAccountsLinked: linked, waitlisted, slots, booked, seconds: Math.round((Date.now() - started) / 1000) }));
 }
 
 main().catch((e) => {

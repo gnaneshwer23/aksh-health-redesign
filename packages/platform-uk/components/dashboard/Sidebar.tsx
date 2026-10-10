@@ -21,8 +21,7 @@ import {
   Settings,
   Shield,
   Stethoscope,
-  Users,
-} from "lucide-react";
+  Users, CalendarClock } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PRACTICE_NAME } from "@/lib/mock-data";
@@ -44,6 +43,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/review", label: "Case Review Workspace", icon: Layers },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
@@ -56,6 +56,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/nurse/handover", label: "Handover", icon: ClipboardList },
     { href: "/dashboard/nurse/alerts", label: "GUARDIAN Alerts", icon: Shield },
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
@@ -70,6 +71,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   admin: [
     { href: "/dashboard/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
+    { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
