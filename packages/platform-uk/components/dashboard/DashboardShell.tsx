@@ -10,6 +10,7 @@ import { HonestyStatusBar } from "@/components/dashboard/HonestyStatusBar";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Toaster } from "@/components/ui/toaster";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,7 @@ export function DashboardShell({
   honesty?: DashboardHonestyProps;
 }) {
   const { status } = useSession();
+  const real = useRealWorkspace();
   const { profile, loading } = useUserProfile();
   const resolvedOrganisation = organisation ?? profile?.organisation ?? null;
   const displayTitle =
@@ -71,14 +73,14 @@ export function DashboardShell({
       <div className="flex flex-1 md:overflow-hidden">
         {showSidebar ? <Sidebar role={role} /> : null}
         <main className="flex min-w-0 flex-1 flex-col md:overflow-hidden">
-          <HonestyStatusBar
+          {real ? null : <HonestyStatusBar
             surface={honesty?.surface ?? title ?? "Clinical"}
             isPublicDemo={isPublicDemo}
             neo4jSource={honesty?.neo4jSource ?? null}
             neo4jLoading={honesty?.neo4jLoading}
             showNeo4jLive={honesty?.showNeo4jLive}
-          />
-          {showFirstRun && !loading ? (
+          />}
+          {showFirstRun && !loading && !real ? (
             <div className="shrink-0 border-b border-border-subtle/70 bg-card/70 px-4 py-2 backdrop-blur-sm">
               <FirstRunGuidance role={role} />
             </div>

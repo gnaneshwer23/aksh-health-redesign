@@ -23,6 +23,7 @@ import {
   Stethoscope,
   Users, CalendarClock } from "lucide-react";
 
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PRACTICE_NAME } from "@/lib/mock-data";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
@@ -118,6 +119,15 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   patient: [],
 };
 
+/** Real workspace: only features backed by live records. CGM monitoring is for clinicians. */
+const REAL_NAV: NavItem[] = [
+  { href: "/dashboard/today", label: "Today", icon: LayoutDashboard },
+  { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
+  { href: "/dashboard/network", label: "Patients", icon: Users },
+  { href: "/dashboard/monitoring", label: "CGM monitoring", icon: Activity },
+  { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
+];
+
 const ROLE_LABELS: Record<DashboardRole, string> = {
   gp: "GP",
   nurse: "Nurse",
@@ -157,13 +167,16 @@ function isNavItemActive(pathname: string, searchParams: URLSearchParams, href: 
   return true;
 }
 
-export function Sidebar({ role }: { role: DashboardRole }) {
+export function Sidebar({ role, inSheet = false }: { role: DashboardRole; inSheet?: boolean }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
+  const storeCollapsed = useDashboardStore((s) => s.sidebarCollapsed);
+  const collapsed = !inSheet && storeCollapsed;
   const { profile, loading } = useUserProfile();
   const [platformAdmin, setPlatformAdmin] = useState(false);
-  const base = [...(NAV[role] ?? []), { href: "/dashboard/security", label: "Security", icon: Shield }];
+  const real = useRealWorkspace();
+  const nav = real ? REAL_NAV.filter((i) => i.href !== "/dashboard/monitoring" || ["gp", "nurse", "pharmacist"].includes(role)) : NAV[role] ?? [];
+  const base = [...nav, { href: "/dashboard/security", label: "Security", icon: Shield }];
   const items = platformAdmin ? [...base, { href: "/dashboard/platform", label: "Go-live reviews", icon: Shield }] : base;
   const [enquiryCount, setEnquiryCount] = useState(0);
 
@@ -179,10 +192,10 @@ export function Sidebar({ role }: { role: DashboardRole }) {
     };
   }, []);
   const userName = profile?.fullName?.trim() || "Aksh user";
-  const organisationLabel = getPersonalizedLabel(profile, PRACTICE_NAME);
+  const organisationLabel = real ? profile?.organisation?.trim() || "" : getPersonalizedLabel(profile, PRACTICE_NAME);
 
   useEffect(() => {
-    if (role !== "admin") return;
+    if (role !== "admin" || real) return;
 
     let cancelled = false;
 
@@ -201,7 +214,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
     return () => {
       cancelled = true;
     };
-  }, [role]);
+  }, [role, real]);
 
   if (role === "patient") return null;
 
@@ -209,7 +222,7 @@ export function Sidebar({ role }: { role: DashboardRole }) {
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle/60 bg-card/90 shadow-sidebar transition-all duration-200 backdrop-blur-md",
+          inSheet ? "flex h-full w-full flex-col" : "hidden lg:flex h-full shrink-0 flex-col border-r border-border-subtle/60 bg-card/90 shadow-sidebar transition-all duration-200 backdrop-blur-md",
           collapsed ? "w-16" : "w-sidebar"
         )}
         aria-label="Dashboard navigation"

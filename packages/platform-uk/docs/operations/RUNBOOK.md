@@ -56,6 +56,18 @@ invites, patient linking, readings, connectors and chat have their own limits.
 - Organisation admin: Organisation → Settings → "Download all organisation data" (`/api/orgs/:id/export`).
 - Patient: "Download a copy of my data" on their record (`/api/me/export`). Both audited; no secrets included.
 
+## Real workspace (what production shows)
+
+Production (`AKSH_ENVIRONMENT=production`) always runs the real workspace:
+- **Navigation:** Today, Fill slots (with the weekly review), Patients, CGM monitoring (clinicians only), Organisation, Security, and Go-live reviews for platform admins.
+- **Redirects:** every other dashboard, `/review`, `/cases`, `/intake` and `/workspace` redirect to Today. Patients go to their own page.
+- **Removed:** the demo menu, mock notifications, sample-data search, the status debug strip, the first-run demo tips and Asha (synthetic practice).
+- **Roles:** sign-up offers clinic staff and patients only. Population health, hospital and research roles are refused server-side.
+- **New organisations start empty.** Onboarding never seeds sample patients in production.
+
+To rehearse exactly this elsewhere, set `AKSH_REAL_WORKSPACE=true`. Build with it set, because static pages read it at build time. Then run:
+`AKSH_REAL_WORKSPACE=true CI=1 node --env-file=.env.local ./node_modules/.bin/playwright test e2e/real-workspace.spec.ts`
+
 ## Platform admins (go-live reviewers)
 
 `npm run platform-admin:production -- --email <email> [--revoke | --list]`. Requires `AKSH_ENVIRONMENT` in the env file.

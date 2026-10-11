@@ -10,8 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CgmPanel } from "@/components/cgm/CgmPanel";
 import { MyReadings } from "@/components/patient/MyReadings";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
+/** Asha runs on a synthetic practice; the real workspace does not offer it. */
 function AshaCard() {
+  const real = useRealWorkspace();
+  if (real) return null;
   return (
     <Card className="shadow-sm">
       <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -64,7 +68,7 @@ function LinkClinicForm() {
   );
 }
 
-/** Self-registered patient with no clinic link: Asha and their own readings only. */
+/** Self-registered patient with no clinic link: their own readings (and Asha outside the real workspace). */
 export function UnlinkedPatientView({ name }: { name?: string | null }) {
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">

@@ -12,12 +12,15 @@ import {
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 export function TutorialStepClient() {
   const router = useRouter();
   const role = useOnboardingStore((s) => s.role);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  // The walkthrough tours demo features; the real workspace goes straight to finishing setup.
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -25,14 +28,19 @@ export function TutorialStepClient() {
       return;
     }
     const def = getRoleDefinition(role);
+    if (real) {
+      markStepComplete(def?.steps.indexOf("tutorial") ?? 5);
+      router.replace("/onboarding/complete");
+      return;
+    }
     if (!def?.hasTutorial) {
       router.replace("/onboarding/complete");
       return;
     }
     syncStepFromId("tutorial");
-  }, [role, router, syncStepFromId]);
+  }, [role, router, syncStepFromId, real, markStepComplete]);
 
-  if (!role) return null;
+  if (!role || real) return null;
 
   const def = getRoleDefinition(role);
   if (!def?.hasTutorial) return null;

@@ -13,12 +13,14 @@ import {
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 export function OrganisationStepClient() {
   const router = useRouter();
   const role = useOnboardingStore((s) => s.role);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -51,7 +53,7 @@ export function OrganisationStepClient() {
     <OnboardingCard
       stepId="organisation"
       title="Your organisation"
-      description="Start in the sandbox clinic now, or tell us about your organisation for when it goes live."
+      description={real ? "Set up your clinic, or join the clinic that invited you." : "Start in the sandbox clinic now, or tell us about your organisation for when it goes live."}
     >
       <OrgForm role={role} onSubmit={handleSubmit} />
       <OnboardingNav

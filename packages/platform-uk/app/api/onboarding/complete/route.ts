@@ -11,6 +11,7 @@ import { provisionSandbox } from "@/lib/network/sandbox";
 import { setJoinedMemberName } from "@/lib/network/service";
 import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
+import { isRealWorkspace, REAL_ROLES } from "@/lib/env/workspace";
 
 const roleValues = ROLES.map((role) => role.id) as [string, ...string[]];
 
@@ -40,6 +41,9 @@ export async function POST(request: Request) {
   }
 
   const { role, fullName, practiceOds, preferences, identity, organisation, consents } = parsed.data;
+  if (isRealWorkspace() && !REAL_ROLES.has(role)) {
+    return NextResponse.json({ error: "This role is not available yet" }, { status: 400 });
+  }
 
   const resolvedPracticeOds =
     practiceOds?.trim() ||
@@ -90,7 +94,9 @@ export async function POST(request: Request) {
     if (role !== "patient" && organisation && !joined && session.user.email) {
       try {
         const org = organisation as Record<string, unknown>;
-        const described = org.useSynthetic === false;
+        // The real workspace never seeds sample patients: every organisation starts empty under the name given.
+        const real = isRealWorkspace();
+        const described = org.useSynthetic === false || real;
         sandbox = await provisionSandbox(
           {
             userId: session.user.id,
@@ -98,7 +104,15 @@ export async function POST(request: Request) {
             displayName: (fullName ?? (typeof identity?.fullName === "string" ? identity.fullName : null) ?? session.user.email).trim(),
             role,
           },
-          { organisationName: described && typeof org.organisationName === "string" ? org.organisationName : undefined, withSampleData: !described }
+          {
+            organisationName:
+              described && typeof org.organisationName === "string" && org.organisationName.trim().length >= 2
+                ? org.organisationName
+                : real
+                  ? "My clinic"
+                  : undefined,
+            withSampleData: !described,
+          }
         );
       } catch (provisionError) {
         console.error("[onboarding] sandbox provisioning failed", provisionError instanceof Error ? provisionError.message : provisionError);

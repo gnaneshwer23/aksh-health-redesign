@@ -28,7 +28,7 @@ const ROLE_OPTIONS: [string, string][] = [
   ["clinical-pharmacist", "Pharmacist"],
   ["practice-manager", "Manager / admin"],
 ];
-const STATUS_LABEL: Record<string, string> = { sandbox: "Sandbox", onboarding: "Onboarding", live_read_only: "Live (read only)", live: "Live", suspended: "Suspended" };
+const STATUS_LABEL: Record<string, string> = { sandbox: "Setting up", onboarding: "Go-live under review", live_read_only: "Live (read only)", live: "Live", suspended: "Suspended" };
 
 async function api<T = unknown>(url: string, init?: RequestInit): Promise<{ ok: boolean; data: T & { error?: string } }> {
   const r = await fetch(url, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) } });
@@ -55,6 +55,11 @@ export function OrganisationWorkspace() {
   const [orgs, setOrgs] = useState<Org[]>([]);
   const [orgId, setOrgId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("settings");
+  // Deep links from Today: ?org=<id>&tab=patients|go-live|staff|connections|settings (read after mount: no hydration mismatch).
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if ((["settings", "staff", "patients", "connections", "go-live"] as string[]).includes(t ?? "")) setTab(t as Tab);
+  }, []);
   const [message, setMessage] = useState<string | null>(null);
   const org = useMemo(() => orgs.find((o) => o.id === orgId) ?? null, [orgs, orgId]);
 
@@ -62,7 +67,8 @@ export function OrganisationWorkspace() {
     const r = await api<{ rows: Org[] }>("/api/orgs");
     if (r.ok) {
       setOrgs(r.data.rows);
-      setOrgId((cur) => cur ?? r.data.rows[0]?.id ?? null);
+      const wanted = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("org");
+      setOrgId((cur) => cur ?? (r.data.rows.some((o) => o.id === wanted) ? wanted : r.data.rows[0]?.id ?? null));
     }
   }, []);
   useEffect(() => void loadOrgs(), [loadOrgs]);
@@ -72,7 +78,7 @@ export function OrganisationWorkspace() {
       <div className="p-6">
         <h1 className="text-xl font-semibold text-foreground">Organisation</h1>
         <p className="mt-2 text-sm text-muted" data-no-organisation>
-          You are not part of an organisation yet. Join one with an invite code, or finish onboarding to create your own sandbox clinic.
+          You are not part of an organisation yet. Join one with an invite code from your clinic's admin.
         </p>
         <JoinWithCode onJoined={() => void loadOrgs()} />
       </div>

@@ -57,8 +57,11 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-export function CareNetworkConsole() {
-  const [tab, setTab] = useState<Tab>("overview");
+const TAB_LABEL: Record<Tab, string> = { overview: "Summary", patients: "Patients", professionals: "Care team", organisations: "Organisations" };
+
+/** `simple` (real workspace): opens on the patient list; no cross-organisation directory tab. */
+export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
+  const [tab, setTab] = useState<Tab>(simple ? "patients" : "overview");
   const [region, setRegion] = useState("");
   const [summary, setSummary] = useState<Summary | null>(null);
   const [summaryError, setSummaryError] = useState<string | null>(null);
@@ -111,7 +114,7 @@ export function CareNetworkConsole() {
     <div className="space-y-5 p-4 md:p-6" data-care-network>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Care network</h1>
+          <h1 className="text-xl font-semibold text-foreground">{simple ? "Patients" : "Care network"}</h1>
           <p className="text-sm text-muted">
             Your organisations, their patients and the care teams around them. You only see records your organisation holds or
             that a patient has consented to share with you.
@@ -136,9 +139,9 @@ export function CareNetworkConsole() {
       ) : null}
 
       <div className="flex flex-wrap gap-1" role="tablist" aria-label="Care network views">
-        {(["overview", "patients", "professionals", "organisations"] as Tab[]).map((t) => (
-          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("rounded-full px-4 py-1.5 text-sm capitalize", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
-            {t}
+        {((simple ? ["patients", "overview", "professionals"] : ["overview", "patients", "professionals", "organisations"]) as Tab[]).map((t) => (
+          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("rounded-full px-4 py-1.5 text-sm", simple ? "" : "capitalize", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
+            {simple ? TAB_LABEL[t] : t}
           </button>
         ))}
       </div>

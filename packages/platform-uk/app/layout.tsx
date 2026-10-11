@@ -7,6 +7,8 @@ import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
 import { CookieConsent } from "@/components/marketing/CookieConsent";
+import { WorkspaceModeProvider } from "@/components/workspace/WorkspaceMode";
+import { isRealWorkspace } from "@/lib/env/workspace";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
 // Body: Hanken Grotesk — warm, precise, highly legible clinical UI face.
@@ -66,8 +68,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${plexMono.variable}`}>
       <body>
         <AuthProvider>
-          {children}
-          <CookieConsent />
+          <WorkspaceModeProvider real={isRealWorkspace()}>
+            {children}
+            <CookieConsent />
+          </WorkspaceModeProvider>
         </AuthProvider>
       </body>
     </html>

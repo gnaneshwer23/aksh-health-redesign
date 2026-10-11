@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { Bell, Menu, Search } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { DemoMenu } from "@/components/dashboard/DemoMenu";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Input } from "@/components/ui/input";
@@ -57,8 +59,13 @@ export function TopBar({
   const { notificationCount, mobileSidebarOpen, setMobileSidebarOpen, toggleSidebar } =
     useDashboardStore();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const pathname = usePathname();
+  // Close the phone menu after navigating.
+  useEffect(() => setMobileSidebarOpen(false), [pathname, setMobileSidebarOpen]);
   const isPatientView = role === "patient";
-  const showSearch = !hideSearch && !isPatientView;
+  // Real workspace: no sample-data search, demo menu or mock notifications.
+  const real = useRealWorkspace();
+  const showSearch = !real && !hideSearch && !isPatientView;
   const resolvedOrganisation = organisation ?? profile?.organisation ?? null;
   const headerTitle = isPatientView ? title ?? "My Health" : title;
   const displayName = profile?.fullName?.trim() || "Aksh user";
@@ -187,8 +194,8 @@ export function TopBar({
         )}
 
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-          {!isPatientView ? <DemoMenu role={role} /> : null}
-          <button
+          {!isPatientView && !real ? <DemoMenu role={role} /> : null}
+          {real ? null : <button
             type="button"
             className="relative rounded-full p-2 transition-colors hover:bg-pastel-mint/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label={`${notificationCount} notifications`}
@@ -200,7 +207,7 @@ export function TopBar({
                 {notificationCount}
               </span>
             )}
-          </button>
+          </button>}
           <div className="hidden items-center gap-2 sm:flex">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-white shadow-soft">
               {loading ? "…" : initials}
@@ -225,11 +232,11 @@ export function TopBar({
 
       <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
         <SheetContent side="left" className="w-sidebar p-0">
-          <Sidebar role={role} />
+          <Sidebar role={role} inSheet />
         </SheetContent>
       </Sheet>
 
-      <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+      <Sheet open={!real && notificationsOpen} onOpenChange={setNotificationsOpen}>
         <SheetContent side="right" className="w-full max-w-sm">
           <h2 className="text-lg font-semibold">Notifications</h2>
           <ul className="mt-4 space-y-3">
