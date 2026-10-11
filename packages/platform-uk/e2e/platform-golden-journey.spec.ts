@@ -108,7 +108,7 @@ test.describe("Platform golden journey — AKSH-E2E-0002", () => {
 
     // 6) Review queue — human-in-the-loop surface
     await page.goto("/dashboard/gp/review-queue");
-    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue").first()).toBeVisible();
     await expect(page.getByText(new RegExp(COHORT_B_DEMO_PATIENT_LABEL, "i")).first()).toBeVisible();
 
     // Traceability artifact
