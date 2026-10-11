@@ -376,3 +376,12 @@ export async function setPublicDemo(orgIds: string[], actorUserId: string | null
     await audit(client, { actorUserId, action: "simulation.public_demo.set", resourceType: "organisation", detail: { orgIds } });
   });
 }
+
+/** Staff who joined with a code before finishing onboarding: carry the name they entered onto that membership. */
+export async function setJoinedMemberName(userId: string, organisationId: string, displayName: string) {
+  const name = displayName.trim().slice(0, 120);
+  if (name.length < 2) return;
+  await withPrivileged(async (client) => {
+    await client.query(`UPDATE aksh.memberships SET display_name = $3 WHERE user_id = $1 AND organisation_id = $2`, [userId, organisationId, name]);
+  });
+}
