@@ -74,7 +74,10 @@ export function TodayView({ name }: { name?: string | null }) {
     };
   }, []);
 
-  const greeting = name?.trim() ? `Hello, ${name.trim().split(/\s+/)[0]}` : "Today";
+  // "Dr Maya Chen" → "Hello, Dr Chen"; "Maya Chen" → "Hello, Maya".
+  const parts = name?.trim().split(/\s+/) ?? [];
+  const title = /^(dr|prof|mr|mrs|ms|mx|miss)\.?$/i.test(parts[0] ?? "") ? parts[0] : null;
+  const greeting = !parts.length ? "Today" : title && parts.length > 1 ? `Hello, ${title} ${parts[parts.length - 1]}` : `Hello, ${parts[0]}`;
   if (error) return <p className="m-6 rounded-xl border border-border-subtle bg-card p-4 text-sm" role="alert">{error}</p>;
   if (!t) return <p className="p-6 text-sm text-muted">Loading…</p>;
 
@@ -126,7 +129,7 @@ export function TodayView({ name }: { name?: string | null }) {
               <Link key={o.id} href={`/dashboard/organisation?org=${o.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border-subtle bg-card p-4 hover:border-secondary" data-today-org>
                 <span className="font-medium text-foreground">{o.name}</span>
                 <span className="text-sm text-muted">
-                  {STATUS_LABEL[o.status] ?? o.status} · {o.patients} patients · {o.waiting} waiting · {o.staff} staff
+                  {STATUS_LABEL[o.status] ?? o.status} · {o.patients} patient{o.patients === 1 ? "" : "s"} · {o.waiting} waiting · {o.staff} staff
                 </span>
               </Link>
             ))}

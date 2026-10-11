@@ -191,26 +191,32 @@ export function getStepPath(stepId: OnboardingStepId): string {
   return `/onboarding/${stepId}`;
 }
 
+/** Steps the real workspace leaves out: role preferences and the walkthrough only apply to the demo estate. */
+export const REAL_SKIPPED_STEPS: readonly OnboardingStepId[] = ["preferences", "tutorial"];
+
 export function getNextStep(
   role: UserRole | null,
-  currentStepId: OnboardingStepId
+  currentStepId: OnboardingStepId,
+  skip: readonly OnboardingStepId[] = []
 ): OnboardingStepId | null {
   const def = getRoleDefinition(role);
   if (!def) return null;
-  const index = def.steps.indexOf(currentStepId);
-  if (index < 0 || index >= def.steps.length - 1) return null;
-  return def.steps[index + 1] ?? null;
+  let index = def.steps.indexOf(currentStepId);
+  if (index < 0) return null;
+  while (++index < def.steps.length) if (!skip.includes(def.steps[index]!)) return def.steps[index]!;
+  return null;
 }
 
 export function getPreviousStep(
   role: UserRole | null,
-  currentStepId: OnboardingStepId
+  currentStepId: OnboardingStepId,
+  skip: readonly OnboardingStepId[] = []
 ): OnboardingStepId | null {
   const def = getRoleDefinition(role);
   if (!def) return null;
-  const index = def.steps.indexOf(currentStepId);
-  if (index <= 0) return null;
-  return def.steps[index - 1] ?? null;
+  let index = def.steps.indexOf(currentStepId);
+  while (--index >= 0) if (!skip.includes(def.steps[index]!)) return def.steps[index]!;
+  return null;
 }
 
 export function resolveDashboardPath(role: UserRole | null): string {

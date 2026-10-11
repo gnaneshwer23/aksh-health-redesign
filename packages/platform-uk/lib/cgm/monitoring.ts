@@ -31,11 +31,15 @@ type Agg = {
 export async function listMonitoring(ctx: NetworkContext) {
   if (!CLINICAL.has(ctx.role ?? "")) throw new NetworkError("Only clinicians use CGM monitoring", 403);
   return withTenant(ctx, async (client) => {
+    // Patients this user may see (row-level security), first: the readings scans below then use the (patient, time)
+    // index instead of checking access on every reading in the table.
+    const ids = (await client.query<{ id: string }>(`SELECT id FROM aksh.network_patients`)).rows.map((r) => r.id);
+    if (!ids.length) return [];
     // Trusted readings only (clinic uploads, device feeds, reviewed patient uploads); unreviewed patient uploads are
     // flagged for review instead of changing the worklist. Cadence comes from short gaps, so long gaps count as missing.
     const rows = (await client.query<Agg & { median_gap: string | null }>(
       `WITH latest AS (
-         SELECT patient_id, max(at) AS last_at FROM aksh.cgm_trusted_readings WHERE at > NOW() - INTERVAL '30 days' GROUP BY patient_id
+         SELECT patient_id, max(at) AS last_at FROM aksh.cgm_trusted_readings WHERE patient_id = ANY($1) AND at > NOW() - INTERVAL '30 days' GROUP BY patient_id
        ), win AS (
          SELECT r.patient_id, r.at, r.mmol, EXTRACT(EPOCH FROM r.at - lag(r.at) OVER (PARTITION BY r.patient_id ORDER BY r.at)) / 60 AS gap
          FROM latest l JOIN aksh.cgm_trusted_readings r ON r.patient_id = l.patient_id AND r.at > l.last_at - INTERVAL '14 days' AND r.at <= l.last_at
@@ -53,17 +57,19 @@ export async function listMonitoring(ctx: NetworkContext) {
        JOIN latest l ON l.patient_id = w.patient_id
        JOIN aksh.network_patients p ON p.id = w.patient_id
        LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
-       GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`
+       GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`,
+      [ids]
     )).rows;
     // Patients whose only recent CGM data is an unreviewed patient upload: listed so the upload can be found and reviewed.
     const pendingOnly = (await client.query<{ patient_id: string; name: string; record_ref: string | null; organisation: string | null; last_at: Date }>(
       `SELECT p.id AS patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation, max(u.last_at) AS last_at
        FROM aksh.cgm_uploads u JOIN aksh.network_patients p ON p.id = u.patient_id
        LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
-       WHERE u.uploader_kind = 'patient' AND u.created_at > NOW() - INTERVAL '30 days'
+       WHERE u.patient_id = ANY($1) AND u.uploader_kind = 'patient' AND u.created_at > NOW() - INTERVAL '30 days'
          AND NOT EXISTS (SELECT 1 FROM aksh.cgm_upload_reviews v WHERE v.upload_id = u.id)
          AND NOT EXISTS (SELECT 1 FROM aksh.cgm_trusted_readings t WHERE t.patient_id = u.patient_id AND t.at > NOW() - INTERVAL '30 days')
-       GROUP BY p.id, p.given_name, p.family_name, p.record_ref, o.name`
+       GROUP BY p.id, p.given_name, p.family_name, p.record_ref, o.name`,
+      [ids]
     )).rows;
     const now = Date.now();
     const pendingRows = pendingOnly.map((a) => ({

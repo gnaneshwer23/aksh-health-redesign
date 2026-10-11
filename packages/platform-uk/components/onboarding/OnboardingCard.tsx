@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import type { OnboardingStepId } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 type OnboardingCardProps = {
   stepId: OnboardingStepId;
@@ -21,6 +22,7 @@ export function OnboardingCard({
   children,
 }: OnboardingCardProps) {
   const role = useOnboardingStore((s) => s.role);
+  const real = useRealWorkspace();
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -32,14 +34,13 @@ export function OnboardingCard({
 
       <div className="onboarding-card-surface">
         <StepIndicator role={role} currentStepId={stepId} />
-        <p
-          className="mb-5 text-xs leading-relaxed text-muted"
-          data-testid="onboarding-honesty-banner"
-        >
-          Demo / staging setup — synthetic data. Drafts wait for a clinician decision.{" "}
-          <span className="font-medium text-foreground">liveEmis:false</span>
-          {" — "}no live EHR write-back in this build.
-        </p>
+        {real ? null : (
+          <p className="mb-5 text-xs leading-relaxed text-muted" data-testid="onboarding-honesty-banner">
+            Demo / staging setup — synthetic data. Drafts wait for a clinician decision.{" "}
+            <span className="font-medium text-foreground">liveEmis:false</span>
+            {" — "}no live EHR write-back in this build.
+          </p>
+        )}
         <h1 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {title}
         </h1>

@@ -25,6 +25,12 @@ type Handoff = { id: string; workflow_id: string | null; reason: string; context
 type Settings = { reasonOrder: string[]; maxOffersPer30Days: number; suppressedChannels: string[] };
 type Org = { id: string; name: string; isAdmin: boolean };
 
+/** "Diabetes review", not "diabetes review" or "diabetes_review". */
+const typeLabel = (t: string) => {
+  const l = APPOINTMENT_TYPE_LABEL[t] ?? t.replace(/_/g, " ");
+  return l.charAt(0).toUpperCase() + l.slice(1);
+};
+
 const REASON_LABEL: Record<string, string> = { overdue_care: "Overdue care", patient_request: "Patient asked", clinician_request: "Clinician asked" };
 
 type Candidate = {
@@ -70,6 +76,27 @@ const STATE_LABEL: Record<string, string> = {
   HANDOFF: "Handed off",
   FAILED_SAFE: "Needs a person",
 };
+
+/** What each step did, in words staff use. Unknown codes fall back to a readable form of the code. */
+const RESULT_MESSAGE: Record<string, string> = {
+  RANKED: "Patients ranked. Choose who to offer the slot to.",
+  NO_ELIGIBLE_CANDIDATES: "No one on the waiting list fits this slot. The reasons are listed for each patient.",
+  OFFER_DRAFTED: "Offer drafted. Check the wording, then approve contact.",
+  OFFER_EDITED: "Wording saved.",
+  NOT_SENT_SHADOW_MODE: "Approved. Not sent by Aksh (shadow mode): send it through your usual channel.",
+  STAFF_TO_SEND: "Approved. Send it through your usual channel.",
+  ACCEPTED_PENDING_VERIFICATION: "Accepted. Check your schedule to confirm the booking.",
+  DECLINED: "Declined. The patient keeps their place on the list.",
+  NO_RESPONSE: "No response recorded. The patient keeps their place on the list.",
+  BOOKED_VERIFIED: "Booked and verified. The slot is filled.",
+  READ_BACK_NOT_CONFIRMED: "Not found in your schedule. A hand-off has been created for a person to resolve.",
+  SKIPPED: "Patient skipped. The reason is recorded.",
+  HANDED_OFF: "Passed to a person. It is in the hand-off list.",
+  DEFERRED: "Deferred.",
+  WITHDRAWN: "Slot withdrawn.",
+  SLOT_EXPIRED: "The offer window has closed for this slot.",
+};
+const resultMessage = (code: string) => RESULT_MESSAGE[code] ?? code.replace(/_/g, " ").toLowerCase();
 
 const when = (iso: string) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const key = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
@@ -130,7 +157,7 @@ export function SlotFillConsole() {
     });
     const data = await r.json();
     setBusy(false);
-    setMessage(r.ok ? `${data.result_code.replace(/_/g, " ").toLowerCase()}` : data.error ?? "Action failed");
+    setMessage(r.ok ? resultMessage(data.result_code) : data.error ?? "Action failed");
     await Promise.all([open(wf.id), load()]);
   }
 
@@ -160,32 +187,14 @@ export function SlotFillConsole() {
         <p className="text-sm text-muted">
           When an appointment frees up, Aksh lists who on your waiting list fits, with the reasons, using your clinic’s rules. You decide every step.
         </p>
-        <p className="mt-2 inline-flex rounded-full bg-[#8a5a00] px-3 py-1 text-xs font-semibold text-white" data-shadow-mode>
-          Shadow mode — Aksh never sends messages or books appointments
+        <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#f0d9a8] bg-[#fdf3e1] px-3 py-1 text-xs font-medium text-[#7a4800]" data-shadow-mode>
+          <span className="h-1.5 w-1.5 rounded-full bg-[#c98a00]" aria-hidden />
+          Shadow mode: Aksh never sends messages or books appointments
         </p>
       </div>
 
       {error ? <p className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-muted" role="status">{error}</p> : null}
 
-      {metrics ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" data-access-metrics>
-          {[
-            { k: "Fill rate (30 days)", v: metrics.fillRatePct === null ? "–" : `${metrics.fillRatePct}%` },
-            { k: "Booked and verified", v: metrics.booked_verified },
-            { k: "Awaiting schedule check", v: metrics.pending_verification },
-            { k: "Expired unfilled", v: metrics.expired },
-            { k: "Open hand-offs", v: `${metrics.handoffs.open}${metrics.handoffs.overdue ? ` (${metrics.handoffs.overdue} overdue)` : ""}` },
-          ].map((x) => (
-            <div key={x.k} className="rounded-xl border border-border-subtle bg-card p-3">
-              <p className="text-xs text-muted">{x.k}</p>
-              <p className="mt-1 text-2xl font-semibold text-foreground">{x.v}</p>
-            </div>
-          ))}
-          <p className="text-xs text-muted sm:col-span-2 lg:col-span-5">{metrics.definition} {metrics.note}</p>
-        </div>
-      ) : null}
-
-      {orgs.length ? <BaselinePanel orgs={orgs} refresh={refreshCount} /> : null}
 
       {orgs.length ? (
         <details className="rounded-xl border border-border-subtle bg-card p-4" open={queue.length === 0}>
@@ -212,7 +221,7 @@ export function SlotFillConsole() {
                 <li key={q.id}>
                   <button type="button" onClick={() => void open(q.id)} className={cn("flex w-full flex-wrap items-center justify-between gap-2 py-2.5 text-left hover:bg-surface-muted", selected === q.id && "bg-surface-muted")}>
                     <span>
-                      <span className="block text-sm text-foreground">{APPOINTMENT_TYPE_LABEL[q.appointment_type] ?? q.appointment_type} · {when(q.starts_at)}</span>
+                      <span className="block text-sm text-foreground">{typeLabel(q.appointment_type)} · {when(q.starts_at)}</span>
                       <span className="block text-xs text-muted">{q.site ?? "Site not recorded"} · offer until {when(q.offer_expires_at)} · {q.eligible} eligible{q.deferred_until && new Date(q.deferred_until) > new Date() ? ` · deferred until ${when(q.deferred_until)}` : ""}</span>
                     </span>
                     <Badge variant={q.state === "FAILED_SAFE" || q.state === "HANDOFF" ? "danger" : q.state === "CLOSED" ? "outline" : "warning"}>
@@ -227,7 +236,7 @@ export function SlotFillConsole() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">{wf ? `${APPOINTMENT_TYPE_LABEL[wf.appointment_type] ?? wf.appointment_type} · ${when(wf.starts_at)}` : "Select a slot"}</CardTitle>
+            <CardTitle className="text-base">{wf ? `${typeLabel(wf.appointment_type)} · ${when(wf.starts_at)}` : "Select a slot"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm" data-slot-detail>
             {wf ? (
@@ -235,7 +244,7 @@ export function SlotFillConsole() {
                 <p className="text-xs text-muted">
                   {STATE_LABEL[wf.state] ?? wf.state} · rules {wf.rule_version} · {wf.contact_mode === "shadow" ? "shadow mode" : wf.contact_mode}
                 </p>
-                {message ? <p className="rounded-lg bg-surface-muted px-3 py-2 text-xs" role="status">{message}</p> : null}
+                {message ? <p className="rounded-lg border border-secondary/20 bg-pastel-mint px-3 py-2 text-xs text-foreground" role="status">{message}</p> : null}
 
                 {["SOURCE_VALIDATED", "STAFF_REVIEW"].includes(wf.state) ? (
                   <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "match" })}>
@@ -390,6 +399,32 @@ export function SlotFillConsole() {
           </Card>
         ) : null}
       </div>
+
+      <section className="space-y-4" aria-labelledby="results-heading" data-results>
+        <div>
+          <h2 id="results-heading" className="text-lg font-semibold text-foreground">Results</h2>
+          <p className="text-sm text-muted">Last 30 days, and against the baseline your organisation locked before go-live.</p>
+        </div>
+        {metrics ? (
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5" data-access-metrics>
+            {[
+              { k: "Fill rate (30 days)", v: metrics.fillRatePct === null ? "–" : `${metrics.fillRatePct}%` },
+              { k: "Booked and verified", v: metrics.booked_verified },
+              { k: "Awaiting schedule check", v: metrics.pending_verification },
+              { k: "Expired unfilled", v: metrics.expired },
+              { k: "Open hand-offs", v: `${metrics.handoffs.open}${metrics.handoffs.overdue ? ` (${metrics.handoffs.overdue} overdue)` : ""}` },
+            ].map((x) => (
+              <div key={x.k} className="rounded-xl border border-border-subtle bg-card p-3">
+                <p className="text-xs text-muted">{x.k}</p>
+                <p className="mt-1 text-2xl font-semibold text-foreground">{x.v}</p>
+              </div>
+            ))}
+            <p className="text-xs leading-relaxed text-muted sm:col-span-3 lg:col-span-5">{metrics.definition} {metrics.note}</p>
+          </div>
+        ) : null}
+
+        {orgs.length ? <BaselinePanel orgs={orgs} refresh={refreshCount} /> : null}
+      </section>
     </div>
   );
 }

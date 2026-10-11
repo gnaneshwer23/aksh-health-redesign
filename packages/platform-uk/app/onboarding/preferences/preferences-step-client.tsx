@@ -10,15 +10,19 @@ import {
   getNextStep,
   getPreviousStep,
   getStepPath,
+  REAL_SKIPPED_STEPS,
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 export function PreferencesStepClient() {
   const router = useRouter();
   const role = useOnboardingStore((s) => s.role);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  // Role preferences configure demo dashboards; the real workspace has none, so this step passes straight on.
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -29,10 +33,15 @@ export function PreferencesStepClient() {
       router.replace(getStepPath("consent"));
       return;
     }
+    if (real) {
+      const next = getNextStep(role, "preferences", REAL_SKIPPED_STEPS);
+      router.replace(next ? getStepPath(next) : "/onboarding/complete");
+      return;
+    }
     syncStepFromId("preferences");
-  }, [role, router, syncStepFromId]);
+  }, [role, router, syncStepFromId, real]);
 
-  if (!role || role === "patient") return null;
+  if (!role || role === "patient" || real) return null;
 
   const def = getRoleDefinition(role);
 

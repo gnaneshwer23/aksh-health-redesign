@@ -62,3 +62,39 @@ test("real workspace: public demo pages go to the home page", async ({ page }) =
     await expect(page, path).toHaveURL(/\/$/);
   }
 });
+
+test("real workspace: onboarding is role, identity, clinic, consent, then Today", async ({ page, request, baseURL }) => {
+  test.setTimeout(120_000);
+  await createFreshTestUser(request, baseURL!, { role: "gp", label: "real-onboard" });
+  await applyApiCookiesToPage(page, request);
+  await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
+  await page.goto("/onboarding/role-select");
+  await page.getByRole("button", { name: /^Physician \(GP \/ family doctor\)/ }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+
+  await expect(page).toHaveURL(/\/onboarding\/identity/);
+  await expect(page.getByText("liveEmis")).toHaveCount(0);
+  await page.getByLabel("Full name").fill("Dr Riley Example");
+  await page.getByLabel("Work email").fill("riley@clinic.example");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+
+  await expect(page).toHaveURL(/\/onboarding\/organisation/);
+  await expect(page.getByRole("radio", { name: /Start in the sandbox clinic/ })).toHaveCount(0);
+  await page.getByLabel("Clinic or organisation name").fill("Harbour Diabetes Clinic");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+
+  // Preferences and the walkthrough are demo-only: straight to consent, and the indicator shows four steps.
+  await expect(page).toHaveURL(/\/onboarding\/consent/, { timeout: 20_000 });
+  await expect(page.getByText("Step 3 of 4")).toBeVisible();
+  await expect(page.getByText(/EHR staging|consent registry/)).toHaveCount(0);
+  for (const box of await page.getByRole("checkbox").all()) {
+    if (!(await box.isChecked())) await box.check();
+  }
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+
+  await expect(page).toHaveURL(/\/onboarding\/complete/, { timeout: 20_000 });
+  await page.getByRole("button", { name: "Go to your dashboard" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/today/, { timeout: 30_000 });
+  await expect(page.locator("[data-today-org]")).toContainText("Harbour Diabetes Clinic", { timeout: 20_000 });
+  await expect(page.locator("[data-today-org]")).toContainText("0 patients");
+});

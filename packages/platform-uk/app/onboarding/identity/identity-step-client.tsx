@@ -10,15 +10,18 @@ import {
   getNextStep,
   getPreviousStep,
   getStepPath,
+  REAL_SKIPPED_STEPS,
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 export function IdentityStepClient() {
   const router = useRouter();
   const role = useOnboardingStore((s) => s.role);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -34,12 +37,12 @@ export function IdentityStepClient() {
 
   function handleSubmit() {
     markStepComplete(def?.steps.indexOf("identity") ?? 1);
-    const next = getNextStep(role, "identity");
+    const next = getNextStep(role, "identity", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(next ? getStepPath(next) : "/onboarding/complete");
   }
 
   function handleBack() {
-    const prev = getPreviousStep(role, "identity");
+    const prev = getPreviousStep(role, "identity", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(prev ? getStepPath(prev) : "/onboarding/role-select");
   }
 

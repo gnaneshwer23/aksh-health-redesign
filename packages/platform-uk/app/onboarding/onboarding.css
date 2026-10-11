@@ -33,3 +33,22 @@
     @apply border-accent/20 bg-white text-accent;
   }
 }
+
+/* Same control reset as the workspace: native buttons and the legacy global input rule (see dashboard.css). */
+:where(.onboarding-shell) button {
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.onboarding-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.onboarding-shell textarea {
+  background: #ffffff !important;
+  color: #14201e !important;
+  border: 1px solid #dfe5ea !important;
+}
+.onboarding-shell input:not([type="checkbox"]):not([type="radio"]):focus,
+.onboarding-shell textarea:focus {
+  border-color: #0a7a68 !important;
+  box-shadow: 0 0 0 3px rgb(10 122 104 / 0.14);
+  outline: none;
+}
