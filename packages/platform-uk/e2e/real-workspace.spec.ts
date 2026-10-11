@@ -55,3 +55,10 @@ test("real workspace: sign-up offers only roles with a working product", async (
   await expect(grid).not.toContainText("Researcher");
   await expect(grid).toContainText("Patient");
 });
+
+test("real workspace: public demo pages go to the home page", async ({ page }) => {
+  for (const path of ["/demo/patel", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"]) {
+    await page.goto(path);
+    await expect(page, path).toHaveURL(/\/$/);
+  }
+});

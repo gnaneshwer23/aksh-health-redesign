@@ -33,14 +33,11 @@ export function AuthCardLayout({
         )}
       >
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--mk-accent)] text-sm font-bold text-white shadow-soft">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-white shadow-soft">
             A
           </div>
           <div className="leading-tight">
             <p className="font-display text-base font-bold text-[var(--mk-ink)]">Aksh Health</p>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--mk-accent)]">
-              Clinical platform
-            </p>
           </div>
         </div>
 

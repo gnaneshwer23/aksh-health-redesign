@@ -54,7 +54,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
     label: "Physician (GP / family doctor)",
-    description: "Review clinical drafts — Accept, Edit, or Reject before anything is staged",
+    description: "Fill freed appointments, review patient readings and monitor CGM",
     icon: "stethoscope",
     color: "#003D7A",
     steps: [...CLINICAL_ORG_STEPS],
@@ -65,7 +65,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "nurse",
     label: "Nurse / Diabetes educator",
-    description: "Observations, handover drafts, and safety alerts — you confirm each step",
+    description: "Work the slot queue, review readings and follow up on CGM",
     icon: "heart-pulse",
     color: "#006B4F",
     steps: [...CLINICAL_ORG_STEPS],
@@ -76,7 +76,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "clinical-pharmacist",
     label: "Clinical Pharmacist",
-    description: "Medication review and interaction checks — HITL before any staging",
+    description: "Review readings and CGM, and help fill medication reviews",
     icon: "pill",
     color: "#6B46C1",
     steps: [...CLINICAL_ORG_STEPS],
@@ -87,7 +87,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "practice-manager",
     label: "Clinic manager / Admin",
-    description: "Integrations, audit, and enquiries — clinicians keep clinical Accept",
+    description: "Run the clinic: staff, patients, waiting list, connections and go-live",
     icon: "building",
     color: "#64748B",
     steps: [...CLINICAL_ORG_STEPS],
@@ -120,7 +120,7 @@ export const ROLES: RoleDefinition[] = [
   {
     id: "patient",
     label: "Patient",
-    description: "Asha, your readings and — with a clinic invite — your care team",
+    description: "Record and share your readings with your clinic",
     icon: "user",
     color: "#0EA5E9",
     steps: ["role-select", "identity", "consent", "tutorial", "complete"],

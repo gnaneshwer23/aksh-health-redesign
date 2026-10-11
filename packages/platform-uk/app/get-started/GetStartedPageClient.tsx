@@ -4,42 +4,19 @@ import Link from "next/link";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
-import {
-  EHR_SYSTEMS,
-  ICS_REGIONS,
-  LIST_SIZES,
-  ORG_TYPES,
-  ORGANISATION_COMMITMENTS,
-  accessRequestSchema,
-} from "@/lib/access-requests/validation";
-
-const STEPS = ["Organisation", "Technical Setup", "Commitments"] as const;
-
-// Validate each step against the same schema the API uses, so errors surface before submit.
-const STEP_SCHEMAS = [
-  accessRequestSchema.pick({
-    orgType: true,
-    orgName: true,
-    odsCode: true,
-    region: true,
-    contactName: true,
-    contactEmail: true,
-  }),
-  accessRequestSchema.pick({ ehrSystems: true, listSize: true, itContact: true }),
-  accessRequestSchema.pick({ commitments: true }),
-] as const;
+import { SiteShell } from "@/components/site/SiteShell";
+import { EHR_SYSTEMS, ICS_REGIONS, LIST_SIZES, ORG_TYPES, ORGANISATION_COMMITMENTS, accessRequestSchema } from "@/lib/access-requests/validation";
 
 const FIELD_MESSAGES: Record<string, string> = {
   orgType: "Choose an organisation type.",
   orgName: "Enter your organisation name.",
   odsCode: "Keep the organisation ID under 32 characters.",
   region: "Choose a region.",
-  contactName: "Enter a contact name.",
-  contactEmail: "Enter a valid email address.",
-  ehrSystems: "Select at least one EHR system.",
+  contactName: "Enter your name.",
+  contactEmail: "Enter a valid work email address.",
+  ehrSystems: "Select at least one system.",
   listSize: "Choose an approximate list size.",
-  itContact: "Keep the IT contact under 200 characters.",
+  itContact: "Keep this under 200 characters.",
   commitments: "Confirm at least one commitment.",
 };
 
@@ -57,391 +34,190 @@ type FormState = {
 };
 
 const NEXT_STEPS = [
-  { title: "We reply within two business days", note: "A named contact, not an autoresponder" },
-  { title: "Scoping call with your clinical and IT leads", note: "One workflow, named reviewers, governance boundaries" },
-  { title: "Rehearse in your sandbox", note: "Live patient data waits for your DPIA and approvals" },
-] as const;
+  { title: "A named person replies", note: "Not an autoresponder" },
+  { title: "A call with your clinical and operations leads", note: "Your cancellation process, waiting list and systems" },
+  { title: "Setup and go-live", note: "Your clinic, your team, the checklist, then shadow mode" },
+];
+
+const box: React.CSSProperties = { display: "grid", gap: 8, border: 0, padding: 0, margin: 0, minWidth: 0 };
+const optionStyle: React.CSSProperties = { display: "flex", gap: 10, alignItems: "flex-start", fontSize: 15, fontWeight: 400, color: "var(--s-ink-2)", padding: "10px 12px", border: "1px solid var(--s-line)", borderRadius: 10, cursor: "pointer" };
+const errStyle: React.CSSProperties = { fontSize: 13, fontWeight: 500, color: "var(--s-red)" };
 
 export default function GetStartedPageClient() {
-  const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [referenceLabel, setReferenceLabel] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<FormState>({
-    orgType: "",
-    orgName: "",
-    odsCode: "",
-    region: "",
-    contactName: "",
-    contactEmail: "",
-    ehrSystems: [],
-    listSize: "",
-    itContact: "",
-    commitments: [],
+    orgType: "", orgName: "", odsCode: "", region: "", contactName: "", contactEmail: "", ehrSystems: [], listSize: "", itContact: "", commitments: [],
   });
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => {
-      if (!current[key]) return current;
-      const next = { ...current };
+    setForm((c) => ({ ...c, [key]: value }));
+    setErrors((c) => {
+      if (!c[key]) return c;
+      const next = { ...c };
       delete next[key];
       return next;
     });
   };
+  const toggle = (key: "ehrSystems" | "commitments", value: string) =>
+    update(key, form[key].includes(value) ? form[key].filter((v) => v !== value) : [...form[key], value]);
 
-  const toggleArr = (key: "ehrSystems" | "commitments", value: string) => {
-    const arr = form[key];
-    update(key, arr.includes(value) ? arr.filter((item) => item !== value) : [...arr, value]);
-  };
+  const err = (key: keyof FormState) => (errors[key] ? <span id={`${key}-error`} style={errStyle}>{errors[key]}</span> : null);
+  const aria = (key: keyof FormState) => ({ "aria-invalid": errors[key] ? (true as const) : undefined, "aria-describedby": errors[key] ? `${key}-error` : undefined });
 
-  const validateStep = (index: number) => {
-    const result = STEP_SCHEMAS[index].safeParse(form);
-    if (result.success) {
-      setErrors({});
-      return true;
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const result = accessRequestSchema.safeParse(form);
+    if (!result.success) {
+      const next: Record<string, string> = {};
+      for (const issue of result.error.issues) next[String(issue.path[0])] = FIELD_MESSAGES[String(issue.path[0])] ?? "Check this field.";
+      setErrors(next);
+      document.getElementById(`field-${Object.keys(next)[0]}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
     }
-    const next: Record<string, string> = {};
-    for (const issue of result.error.issues) {
-      const key = String(issue.path[0]);
-      next[key] = FIELD_MESSAGES[key] ?? "Check this field.";
-    }
-    setErrors(next);
-    return false;
-  };
-
-  const goNext = () => {
-    if (validateStep(step)) setStep((current) => current + 1);
-  };
-
-  const handleSubmit = async () => {
-    if (!validateStep(step)) return;
     setSubmitting(true);
     setSubmitError(null);
-
     try {
-      const response = await fetch("/api/access-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const payload = (await response.json().catch(() => ({}))) as {
-        error?: string;
-        referenceLabel?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? "Unable to submit enquiry. Please try again.");
-      }
-
+      const response = await fetch("/api/access-requests", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string; referenceLabel?: string };
+      if (!response.ok) throw new Error(payload.error ?? "We could not send your request. Please try again.");
       setReferenceLabel(payload.referenceLabel ?? "");
       setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Unable to submit enquiry.");
+      setSubmitError(error instanceof Error ? error.message : "We could not send your request.");
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const fieldProps = (key: keyof FormState) => ({
-    "aria-invalid": errors[key] ? (true as const) : undefined,
-    "aria-describedby": errors[key] ? `${key}-error` : undefined,
-  });
-
-  const fieldError = (key: keyof FormState) =>
-    errors[key] ? (
-      <span id={`${key}-error`} className="text-xs text-[#b42318]">
-        {errors[key]}
-      </span>
-    ) : null;
+  }
 
   return (
-    <MarketingShell overLightHero>
-      <section className="lv-book" aria-labelledby="get-started-title">
-        <div className="lv-book__grid">
-          <aside className="lv-book__aside">
-            <span className="lv-hero__badge">
-              <span className="lv-hero__badge-dot" aria-hidden>
-                ✦
-              </span>
-              Organisation access
-            </span>
-            <h1 id="get-started-title" className="lv-book__title">
-              Bring Aksh to your organisation
-            </h1>
-            <p className="lv-book__lede">
-              Anyone can start free in a sandbox workspace. To use Aksh with real patients, tell us about your
-              organisation: three short steps, then a conversation with your clinical and technical leads.
-            </p>
+    <SiteShell>
+      <section className="s-page-head">
+        <div className="s-container s-page-head__inner">
+          <span className="s-eyebrow">Request access</span>
+          <h1 id="get-started-title" className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Bring Aksh to your clinic.</h1>
+          <p className="s-lede">Tell us about your organisation. It takes about two minutes.</p>
+        </div>
+      </section>
 
-            <p className="mt-8 text-sm font-medium text-white">What happens next</p>
-            <ol className="lv-timeline mt-3">
-              {NEXT_STEPS.map((item, i) => (
-                <li key={item.title}>
-                  <b aria-hidden>{i + 1}</b>
-                  <span>
-                    {item.title}
-                    <small>{item.note}</small>
-                  </span>
-                </li>
-              ))}
-            </ol>
-
-            <p className="lv-book__note">
-              Individual clinicians can{" "}
-              <Link href="/signup" className="font-medium text-white underline underline-offset-2">
-                create an account instead
-              </Link>
-              .
-            </p>
-          </aside>
-
-          <div className="lv-book__panel">
-            {submitted ? (
-              <div className="py-10 text-center" role="status">
-                <CheckCircle2 className="mx-auto h-14 w-14 text-[var(--lv-violet)]" aria-hidden />
-                <h2 className="lv-book__h mt-5">Enquiry received</h2>
-                <p className="mx-auto mt-3 max-w-sm text-[var(--lv-muted)]">
-                  Our team will respond within two business days to discuss onboarding your organisation.
-                </p>
-                {referenceLabel ? (
-                  <p className="lv-summary mx-auto mt-6 max-w-xs">
-                    <span>
-                      Reference <span className="font-mono font-semibold">{referenceLabel}</span>
+      <section className="s-section s-section--tight">
+        <div className="s-container" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 48 }}>
+          <div className="s-feature" style={{ alignItems: "start", gap: 56 }}>
+            <aside style={{ display: "grid", gap: 20, alignContent: "start" }}>
+              <h2 className="s-h3">What happens next</h2>
+              <ol style={{ display: "grid", gap: 16 }}>
+                {NEXT_STEPS.map((s, i) => (
+                  <li key={s.title} style={{ display: "grid", gridTemplateColumns: "28px 1fr", gap: 12 }}>
+                    <span className="s-rank" style={{ width: 28, height: 28 }}>{i + 1}</span>
+                    <span style={{ display: "grid", gap: 2 }}>
+                      <strong style={{ color: "var(--s-ink)" }}>{s.title}</strong>
+                      <span className="s-small">{s.note}</span>
                     </span>
-                  </p>
-                ) : null}
-                <div className="mt-8 flex flex-wrap justify-center gap-3">
-                  <Link href="/demo/patel" className="lv-btn lv-btn--violet">
-                    Walk through the Patel case
-                  </Link>
-                  <Link href="/" className="lv-btn lv-btn--outline">
-                    Back to home
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <>
-                <ol className="lv-stepper" aria-label="Progress">
-                  {STEPS.map((label, index) => (
-                    <li
-                      key={label}
-                      data-state={index < step ? "done" : index === step ? "current" : "todo"}
-                      aria-current={index === step ? "step" : undefined}
-                    >
-                      <span>
-                        {index + 1}. {label}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
+                  </li>
+                ))}
+              </ol>
+              <p className="s-small">
+                Joining a clinic that already uses Aksh? Ask its admin for an invite code and <Link href="/signup" className="s-link">create an account</Link>.
+              </p>
+            </aside>
 
-                {step === 0 && (
-                  <div className="grid gap-5">
-                    <div>
-                      <h2 className="lv-book__h">Organisation details</h2>
-                      <p className="mt-1 text-sm text-[var(--lv-muted)]">Who you are and who we should talk to.</p>
-                    </div>
-                    <label className="lv-field">
-                      <span>Organisation type *</span>
-                      <select
-                        className="lv-input"
-                        value={form.orgType}
-                        onChange={(event) => update("orgType", event.target.value)}
-                        {...fieldProps("orgType")}
-                      >
-                        <option value="">Select type</option>
-                        {ORG_TYPES.map((option) => (
-                          <option key={option}>{option}</option>
-                        ))}
-                      </select>
-                      {fieldError("orgType")}
+            <div className="s-card" style={{ padding: 32 }}>
+              {submitted ? (
+                <div role="status" style={{ display: "grid", gap: 14, justifyItems: "start", padding: "16px 0" }}>
+                  <CheckCircle2 size={40} color="#0a7a68" aria-hidden />
+                  <h2 className="s-h3" style={{ fontSize: 24 }}>Request received</h2>
+                  <p className="s-body">Thank you. A member of our team will be in touch to arrange a call.</p>
+                  {referenceLabel ? <p className="s-small">Reference <strong style={{ fontFamily: "var(--font-aksh-mono)" }}>{referenceLabel}</strong></p> : null}
+                  <div className="s-actions" style={{ marginTop: 8 }}>
+                    <Link href="/resources" className="s-btn s-btn--primary">Read the guides</Link>
+                    <Link href="/" className="s-btn s-btn--ghost">Back to home</Link>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={submit} noValidate style={{ display: "grid", gap: 22 }} aria-labelledby="get-started-title">
+                  <div className="s-grid s-grid--2" style={{ gap: 16 }}>
+                    <label className="s-field" id="field-contactName">Your name
+                      <input value={form.contactName} onChange={(e) => update("contactName", e.target.value)} autoComplete="name" {...aria("contactName")} />
+                      {err("contactName")}
                     </label>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      {(
-                        [
-                          ["Organisation name *", "orgName", "text"],
-                          ["Organisation ID (optional)", "odsCode", "text"],
-                          ["Contact name *", "contactName", "text"],
-                          ["Contact email *", "contactEmail", "email"],
-                        ] as const
-                      ).map(([label, key, type]) => (
-                        <label key={key} className="lv-field">
-                          <span>{label}</span>
-                          <input
-                            className="lv-input"
-                            type={type}
-                            autoComplete={key === "contactEmail" ? "email" : key === "contactName" ? "name" : undefined}
-                            placeholder={key === "odsCode" ? "Registration, facility or licence ID" : undefined}
-                            value={form[key]}
-                            onChange={(event) => update(key, event.target.value)}
-                            {...fieldProps(key)}
-                          />
-                          {fieldError(key)}
+                    <label className="s-field" id="field-contactEmail">Work email
+                      <input type="email" value={form.contactEmail} onChange={(e) => update("contactEmail", e.target.value)} autoComplete="email" {...aria("contactEmail")} />
+                      {err("contactEmail")}
+                    </label>
+                    <label className="s-field" id="field-orgName">Organisation name
+                      <input value={form.orgName} onChange={(e) => update("orgName", e.target.value)} autoComplete="organization" {...aria("orgName")} />
+                      {err("orgName")}
+                    </label>
+                    <label className="s-field" id="field-orgType">Organisation type
+                      <select value={form.orgType} onChange={(e) => update("orgType", e.target.value)} {...aria("orgType")}>
+                        <option value="">Choose…</option>
+                        {ORG_TYPES.map((t) => <option key={t}>{t}</option>)}
+                      </select>
+                      {err("orgType")}
+                    </label>
+                    <label className="s-field" id="field-region">Region
+                      <select value={form.region} onChange={(e) => update("region", e.target.value)} {...aria("region")}>
+                        <option value="">Choose…</option>
+                        {ICS_REGIONS.map((t) => <option key={t}>{t}</option>)}
+                      </select>
+                      {err("region")}
+                    </label>
+                    <label className="s-field" id="field-listSize">Patients registered (approximately)
+                      <select value={form.listSize} onChange={(e) => update("listSize", e.target.value)} {...aria("listSize")}>
+                        <option value="">Choose…</option>
+                        {LIST_SIZES.map((t) => <option key={t}>{t}</option>)}
+                      </select>
+                      {err("listSize")}
+                    </label>
+                    <label className="s-field" id="field-odsCode">Organisation ID <span style={{ fontWeight: 400, color: "var(--s-faint)" }}>(optional)</span>
+                      <input value={form.odsCode} onChange={(e) => update("odsCode", e.target.value)} placeholder="Registration, facility or licence ID" {...aria("odsCode")} />
+                      {err("odsCode")}
+                    </label>
+                    <label className="s-field" id="field-itContact">IT lead <span style={{ fontWeight: 400, color: "var(--s-faint)" }}>(optional)</span>
+                      <input value={form.itContact} onChange={(e) => update("itContact", e.target.value)} placeholder="Name and email" {...aria("itContact")} />
+                      {err("itContact")}
+                    </label>
+                  </div>
+
+                  <fieldset style={box} id="field-ehrSystems" {...aria("ehrSystems")}>
+                    <legend className="s-field" style={{ marginBottom: 8 }}>Records or scheduling system in use</legend>
+                    <div className="s-grid s-grid--2" style={{ gap: 8 }}>
+                      {EHR_SYSTEMS.map((s) => (
+                        <label key={s} style={optionStyle}>
+                          <input type="checkbox" checked={form.ehrSystems.includes(s)} onChange={() => toggle("ehrSystems", s)} style={{ marginTop: 4 }} />
+                          <span>{s}</span>
                         </label>
                       ))}
                     </div>
-                    <label className="lv-field">
-                      <span>Region *</span>
-                      <select
-                        className="lv-input"
-                        value={form.region}
-                        onChange={(event) => update("region", event.target.value)}
-                        {...fieldProps("region")}
-                      >
-                        <option value="">Select region</option>
-                        {ICS_REGIONS.map((option) => (
-                          <option key={option}>{option}</option>
-                        ))}
-                      </select>
-                      {fieldError("region")}
-                    </label>
+                    {err("ehrSystems")}
+                  </fieldset>
+
+                  <fieldset style={box} id="field-commitments" {...aria("commitments")}>
+                    <legend className="s-field" style={{ marginBottom: 8 }}>Before go-live, your organisation can…</legend>
+                    {ORGANISATION_COMMITMENTS.map((c) => (
+                      <label key={c} style={optionStyle}>
+                        <input type="checkbox" checked={form.commitments.includes(c)} onChange={() => toggle("commitments", c)} style={{ marginTop: 4 }} />
+                        <span>{c.replace(/^We will /, "").replace(/^./, (x) => x.toUpperCase())}</span>
+                      </label>
+                    ))}
+                    {err("commitments")}
+                  </fieldset>
+
+                  {submitError ? <p role="alert" style={errStyle}>{submitError}</p> : null}
+                  <div className="s-actions" style={{ alignItems: "center" }}>
+                    <button type="submit" className="s-btn s-btn--primary" disabled={submitting}>{submitting ? "Sending…" : "Send request"}</button>
+                    <span className="s-small">We use these details only to respond. See our <Link href="/privacy" className="s-link">privacy notice</Link>.</span>
                   </div>
-                )}
-
-                {step === 1 && (
-                  <div className="grid gap-5">
-                    <div>
-                      <h2 className="lv-book__h">Technical setup</h2>
-                      <p className="mt-1 text-sm text-[var(--lv-muted)]">
-                        Aksh sits beside your EHR. This tells us which simulated integration to rehearse.
-                      </p>
-                    </div>
-                    <fieldset className="grid gap-2" {...fieldProps("ehrSystems")}>
-                      <legend className="mb-2 text-[0.8125rem] font-medium text-[var(--lv-ink)]">
-                        Current EHR system(s) *
-                      </legend>
-                      <div className="lv-option-grid lv-option-grid--2">
-                        {EHR_SYSTEMS.map((ehr) => (
-                          <label key={ehr} className="lv-option">
-                            <input
-                              type="checkbox"
-                              checked={form.ehrSystems.includes(ehr)}
-                              onChange={() => toggleArr("ehrSystems", ehr)}
-                            />
-                            <span>{ehr}</span>
-                          </label>
-                        ))}
-                      </div>
-                      {fieldError("ehrSystems")}
-                    </fieldset>
-                    <label className="lv-field">
-                      <span>Approximate patient list size *</span>
-                      <select
-                        className="lv-input"
-                        value={form.listSize}
-                        onChange={(event) => update("listSize", event.target.value)}
-                        {...fieldProps("listSize")}
-                      >
-                        <option value="">Select size</option>
-                        {LIST_SIZES.map((option) => (
-                          <option key={option}>{option}</option>
-                        ))}
-                      </select>
-                      {fieldError("listSize")}
-                    </label>
-                    <label className="lv-field">
-                      <span>IT lead contact (optional)</span>
-                      <input
-                        className="lv-input"
-                        placeholder="Name and email"
-                        value={form.itContact}
-                        onChange={(event) => update("itContact", event.target.value)}
-                        {...fieldProps("itContact")}
-                      />
-                      {fieldError("itContact")}
-                    </label>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="grid gap-5">
-                    <div>
-                      <h2 className="lv-book__h">Commitments</h2>
-                      <p className="mt-1 text-sm text-[var(--lv-muted)]">
-                        Please confirm what your organisation can commit to.
-                      </p>
-                    </div>
-                    <fieldset className="lv-option-grid" {...fieldProps("commitments")}>
-                      <legend className="sr-only">Organisation commitments</legend>
-                      {ORGANISATION_COMMITMENTS.map((commitment) => (
-                        <label key={commitment} className="lv-option">
-                          <input
-                            type="checkbox"
-                            checked={form.commitments.includes(commitment)}
-                            onChange={() => toggleArr("commitments", commitment)}
-                          />
-                          <span>{commitment}</span>
-                        </label>
-                      ))}
-                      {fieldError("commitments")}
-                    </fieldset>
-
-                    <dl className="lv-summary" aria-label="Enquiry summary">
-                      <div>
-                        <dt>Organisation</dt>
-                        <dd>{form.orgName || "—"}</dd>
-                      </div>
-                      <div>
-                        <dt>Contact</dt>
-                        <dd>{form.contactEmail || "—"}</dd>
-                      </div>
-                      <div>
-                        <dt>EHR</dt>
-                        <dd>{form.ehrSystems.join(", ") || "—"}</dd>
-                      </div>
-                    </dl>
-                  </div>
-                )}
-
-                {submitError ? (
-                  <p id="get-started-form-error" role="alert" className="lv-error">
-                    {submitError}
-                  </p>
-                ) : null}
-
-                <div className="lv-book__nav">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setErrors({});
-                      setStep((current) => current - 1);
-                    }}
-                    disabled={submitting}
-                    className={`lv-btn lv-btn--outline ${step === 0 ? "invisible" : ""}`}
-                  >
-                    Back
-                  </button>
-                  {step < STEPS.length - 1 ? (
-                    <button type="button" onClick={goNext} className="lv-btn lv-btn--ink px-8">
-                      Continue
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={submitting}
-                      className="lv-btn lv-btn--violet px-8"
-                    >
-                      {submitting ? "Submitting…" : "Submit enquiry"}
-                    </button>
-                  )}
-                </div>
-
-                <p className="mt-6 text-center text-sm text-[var(--lv-muted)]">
-                  Already have an account?{" "}
-                  <Link href="/signin" className="font-semibold text-[var(--lv-indigo)] hover:underline">
-                    Sign in
-                  </Link>
-                </p>
-              </>
-            )}
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </section>
-    </MarketingShell>
+    </SiteShell>
   );
 }

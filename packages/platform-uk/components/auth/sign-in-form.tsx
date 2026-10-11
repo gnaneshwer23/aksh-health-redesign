@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirects";
 import { signInSchema, type SignInInput } from "@/lib/auth/schemas";
-import { PROOF_MODE_BANNER } from "@/lib/compliance-labels";
 import { authConfig, isClinicalOAuthConfigured } from "@/lib/auth/config";
 
 function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
@@ -83,12 +82,6 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
 
   return (
     <>
-      {authConfig.proofMode ? (
-        <div className="mb-4 rounded-2xl border border-accent/15 bg-pastel-mint px-4 py-3 text-sm text-foreground" role="note">
-          <strong className="text-secondary">{PROOF_MODE_BANNER.title}</strong>
-          <p className="mt-1 text-muted">{PROOF_MODE_BANNER.body}</p>
-        </div>
-      ) : null}
 
       {error ? (
         <div
@@ -110,17 +103,7 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
         >
           Sign in with clinical identity provider
         </Button>
-      ) : (
-        <Button
-          type="button"
-          variant="outline"
-          className="mb-4 w-full rounded-xl"
-          disabled
-          title="Configure CLINICAL_OAUTH_* env vars"
-        >
-          Clinical identity provider (not configured)
-        </Button>
-      )}
+      ) : null}
 
       <Form {...form}>
         <form

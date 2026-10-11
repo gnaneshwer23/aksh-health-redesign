@@ -223,7 +223,7 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
           <label className="text-sm"><span className="text-muted">Urgent advice line (optional)</span><Input value={form.urgentAdviceLine} onChange={set("urgentAdviceLine")} aria-label="Urgent advice line" inputMode="tel" /></label>
           <label className="text-sm sm:col-span-2"><span className="text-muted">Mental health crisis line (optional)</span><Input value={form.crisisLine} onChange={set("crisisLine")} aria-label="Crisis line" /></label>
           <p className="text-xs text-muted sm:col-span-2">
-            Asha uses these numbers in safety messages for your patients. Until an emergency number is set, it says “your local emergency number”.
+            These numbers appear in safety messages to your patients. Until an emergency number is set, messages say “your local emergency number”.
             Organisation ID (for other organisations recording shared care): <span className="font-mono">{org.id}</span>
           </p>
           {error ? <p className="text-sm text-red-700 sm:col-span-2" role="alert">{error}</p> : null}

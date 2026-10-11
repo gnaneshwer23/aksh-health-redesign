@@ -31,11 +31,15 @@ const createNextConfig = (phase) => ({
   },
   async redirects() {
     return [
-      {
-        source: "/product",
-        destination: "/",
-        permanent: true
-      },
+      // Public site (real product): retired pages go to their replacements.
+      { source: "/platform", destination: "/product", permanent: false },
+      { source: "/for-clinicians", destination: "/product#slot-fill", permanent: false },
+      { source: "/for-pharmacists", destination: "/product#monitoring", permanent: false },
+      { source: "/for-patients", destination: "/product#patients", permanent: false },
+      { source: "/for-organisations", destination: "/product#results", permanent: false },
+      { source: "/integrations", destination: "/resources/schedule-connector", permanent: false },
+      { source: "/faq", destination: "/resources#faq", permanent: false },
+      { source: "/walkthrough", destination: "/", permanent: false },
       {
         source: "/pilot",
         destination: "/get-started",
@@ -53,7 +57,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/dashboards",
-        destination: "/platform",
+        destination: "/product",
         permanent: true
       },
       {
@@ -73,12 +77,12 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/solutions",
-        destination: "/platform",
+        destination: "/product",
         permanent: true
       },
       {
         source: "/about",
-        destination: "/platform",
+        destination: "/product",
         permanent: false
       },
       {
@@ -88,7 +92,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/how-it-works",
-        destination: "/platform",
+        destination: "/product",
         permanent: true
       },
       {
@@ -118,32 +122,12 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/for-research",
-        destination: "/platform",
-        permanent: true
-      },
-      {
-        source: "/resources",
-        destination: "/security",
-        permanent: true
-      },
-      {
-        source: "/faq",
-        destination: "/contact",
+        destination: "/product",
         permanent: true
       },
       {
         source: "/pricing",
         destination: "/get-started",
-        permanent: true
-      },
-      {
-        source: "/integrations",
-        destination: "/platform",
-        permanent: true
-      },
-      {
-        source: "/walkthrough",
-        destination: "/demo/patel",
         permanent: true
       },
       {
