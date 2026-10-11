@@ -28,6 +28,8 @@ export {
   type DiabetesCoachingDraft
 } from "./types";
 
+import type { DiabetesReadingsSource } from "./glucose";
+
 export {
   buildGlucoseSignal,
   type GlucoseSignal,
@@ -158,7 +160,7 @@ export type DiabetesRiskContribution = {
 export function buildDiabetesRiskContribution(
   context: DiabetesPatientContext,
   input?: Partial<DiabetesFixtureBundle>,
-  readingsSource?: { glucose?: "patient_state_ingest"; hba1c?: "patient_state_ingest" }
+  readingsSource?: { glucose?: DiabetesReadingsSource; hba1c?: DiabetesReadingsSource }
 ): DiabetesRiskContribution {
   const fixture = getDiabetesFixtureBundle(context.patientId);
   const bundle: DiabetesFixtureBundle = { ...fixture, ...input };

@@ -9,7 +9,7 @@ import {
   type OrchestrationResult
 } from "@/lib/clinical-proof/agent-orchestration";
 import { buildDiabetesRiskContribution, type DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
-import { loadDiabetesPatientStateOverrides } from "@/lib/disease-modules/diabetes/ingest";
+import { loadDiabetesPatientStateOverrides, type CareNetworkDiabetesReadings } from "@/lib/disease-modules/diabetes/ingest";
 import { recordDiabetesDecisionSnapshot } from "@/lib/disease-modules/diabetes/decision-history";
 import { isDiabetesModuleEnabled } from "@/lib/integration-config";
 import { getPatientById } from "@/lib/mock-data/patients";
@@ -95,6 +95,8 @@ function applyDiabetesContributionAdditively(
 }
 
 export type ClinicalSpineOrchestrateInput = OrchestrationOptions & {
+  /** Care-network readings for a care-network patient (spine-patient.ts). Simulation and rehearsal only. */
+  careNetwork?: CareNetworkDiabetesReadings;
   /** Run synthetic_rules twin ranking after ORACLE (default true). */
   includeTwinRanking?: boolean;
   actor?: string;
@@ -132,7 +134,7 @@ export async function runClinicalSpineOrchestrate(
   // as it did pre-C6 — byte-identical, per P1-2's own regression requirement.
   const diabetesOverrides =
     diabetesModuleEnabled && diabetesFlagged
-      ? await loadDiabetesPatientStateOverrides(baseOrchestration.sharedContext.patientId)
+      ? await loadDiabetesPatientStateOverrides(baseOrchestration.sharedContext.patientId, { careNetwork: input.careNetwork })
       : null;
   const diabetes =
     diabetesModuleEnabled && diabetesFlagged

@@ -151,9 +151,12 @@ export async function loadIngestedDiabetesReadings(
 
 export type DiabetesPatientStateOverrides = {
   input: Partial<DiabetesFixtureBundle>;
-  glucoseReadingsSource?: "patient_state_ingest";
-  hba1cReadingsSource?: "patient_state_ingest";
+  glucoseReadingsSource?: "patient_state_ingest" | "care_network_cgm";
+  hba1cReadingsSource?: "patient_state_ingest" | "care_network_cgm";
 };
+
+/** Readings from the care network (trusted CGM, recorded HbA1c) for a care-network patient. */
+export type CareNetworkDiabetesReadings = { glucoseReadings: DiabetesGlucoseReading[]; hba1cReadings: DiabetesHbA1cReading[] };
 
 /**
  * Builds the `input` override + provenance flags for
@@ -165,19 +168,26 @@ export type DiabetesPatientStateOverrides = {
  */
 export async function loadDiabetesPatientStateOverrides(
   patientId: string,
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; careNetwork?: CareNetworkDiabetesReadings }
 ): Promise<DiabetesPatientStateOverrides> {
   const { glucoseReadings, hba1cReadings } = await loadIngestedDiabetesReadings(patientId, options);
   const input: Partial<DiabetesFixtureBundle> = {};
   const overrides: DiabetesPatientStateOverrides = { input };
 
+  // Patient State ingest wins when present; otherwise care-network readings, each tagged with its own source.
   if (glucoseReadings.length > 0) {
     input.glucoseReadings = glucoseReadings;
     overrides.glucoseReadingsSource = "patient_state_ingest";
+  } else if (options?.careNetwork?.glucoseReadings.length) {
+    input.glucoseReadings = options.careNetwork.glucoseReadings;
+    overrides.glucoseReadingsSource = "care_network_cgm";
   }
   if (hba1cReadings.length > 0) {
     input.hba1cReadings = hba1cReadings;
     overrides.hba1cReadingsSource = "patient_state_ingest";
+  } else if (options?.careNetwork?.hba1cReadings.length) {
+    input.hba1cReadings = options.careNetwork.hba1cReadings;
+    overrides.hba1cReadingsSource = "care_network_cgm";
   }
 
   return overrides;

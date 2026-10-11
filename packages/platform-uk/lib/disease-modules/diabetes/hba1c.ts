@@ -1,6 +1,6 @@
 import type { DiabetesHbA1cReading, DiabetesPatientContext, DiabetesSignalHonesty } from "./types";
 import { DIABETES_SIGNAL_HONESTY } from "./types";
-import type { DiabetesReadingsSource } from "./glucose";
+import { isRealReadingsSource, type DiabetesReadingsSource } from "./glucose";
 
 /**
  * HbA1c Intelligence (diabetes spec area #2).
@@ -161,7 +161,7 @@ export function buildHbA1cSignal(
     limitations: [
       "Rule-based two-point linear extrapolation only — not a regression model, not a v2 ML predictor (see docs/DISEASE_INTELLIGENCE_DIABETES_SPEC.md v2 notes).",
       "Any estimate is a non-diagnostic trend, never a clinical prediction — clinician confirms wording before it reaches a patient-facing surface.",
-      readingsSource === "patient_state_ingest"
+      isRealReadingsSource(readingsSource)
         ? "Sourced from real Patient State ingest (C6) — still not a live lab feed integration."
         : "Synthetic-fixture data only — no live lab feed."
     ],

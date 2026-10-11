@@ -49,7 +49,15 @@ export type GlucosePatternFlag =
   | "nocturnal_hypo_suspected"
   | "insufficient_data";
 
-export type DiabetesReadingsSource = "fixture" | "patient_state_ingest";
+/**
+ * "care_network_cgm": trusted CGM readings from the care network (clinic uploads, device feeds, clinician-reviewed
+ * patient uploads; `aksh.cgm_trusted_readings`). Real readings like `patient_state_ingest`, with their own provenance
+ * tag so they are never blended silently. Simulation and rehearsal only until Track B opens.
+ */
+export type DiabetesReadingsSource = "fixture" | "patient_state_ingest" | "care_network_cgm";
+
+/** Real readings (not fixtures) are eligible for derivation. */
+export const isRealReadingsSource = (s: DiabetesReadingsSource) => s === "patient_state_ingest" || s === "care_network_cgm";
 
 export type GlucoseTargetBand = {
   lowMgDl: number;
@@ -135,9 +143,9 @@ function stubSignal(
     dataCompleteness: "partial",
     readingsSource,
     limitations:
-      readingsSource === "patient_state_ingest"
+      isRealReadingsSource(readingsSource)
         ? [
-            `${readings.length} reading(s) received via real Patient State ingest (source: ${readingsSource}) — fewer than the minimum of ${MIN_READINGS_FOR_DERIVATION} required for TIR/variability/pattern derivation (docs/PHASED_BUILD_PLAN_D.md D2).`,
+            `${readings.length} reading(s) received from real data (source: ${readingsSource}) — fewer than the minimum of ${MIN_READINGS_FOR_DERIVATION} required for TIR/variability/pattern derivation (docs/PHASED_BUILD_PLAN_D.md D2).`,
             "Real derivation deferred until enough readings are on file."
           ]
         : [
@@ -185,7 +193,7 @@ export function buildGlucoseSignal(
   readingsSource: DiabetesReadingsSource = "fixture"
 ): GlucoseSignal {
   const eligibleForDerivation =
-    readingsSource === "patient_state_ingest" && readings.length >= MIN_READINGS_FOR_DERIVATION;
+    isRealReadingsSource(readingsSource) && readings.length >= MIN_READINGS_FOR_DERIVATION;
 
   if (!eligibleForDerivation) {
     return stubSignal(context, readings, readingsSource);
@@ -211,7 +219,9 @@ export function buildGlucoseSignal(
     readingsSource,
     targetBand: band,
     limitations: [
-      `Derived from ${readings.length} real Patient State-ingested reading(s) — rules-based TIR/%CV/pattern heuristics, not a CGM-grade calculation (no CGM data source exists yet, see OQ-DIAB-1).`,
+      readingsSource === "care_network_cgm"
+        ? `Derived from ${readings.length} trusted care-network CGM reading(s) (last 14 days) — rules-based TIR/%CV/pattern heuristics; the clinic's CGM monitoring view is the reference calculation.`
+        : `Derived from ${readings.length} real Patient State-ingested reading(s) — rules-based TIR/%CV/pattern heuristics, not a CGM-grade calculation (no CGM data source exists yet, see OQ-DIAB-1).`,
       PROVISIONAL_BAND_LIMITATION,
       "Pattern flags are named heuristics (fixed thresholds), not a diagnosis — clinician review required before any patient-facing use."
     ],

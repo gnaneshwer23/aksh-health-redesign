@@ -75,8 +75,8 @@ application and do not yet share data.**
 
 | # | Gap | Why it matters |
 | --- | --- | --- |
-| G1 | **Two patient models.** CONDUCTOR loads patients from `lib/mock-data/patients` (the P001–P100 demo cohort); the real workspace uses `network_patients` + observations + CGM. | The vision's core loop (signal → agents → clinician review) cannot run on the patients clinics actually load, even in simulation. |
-| G2 | **Real CGM does not feed Aksh Diabetes.** The glucose signal reads fixtures or patient-state ingest (`lib/disease-modules/diabetes/glucose.ts`; CGM modality schema is open question OQ-DIAB-1). World 2 already has that CGM model (`cgm_readings`, trusted readings, consensus metrics); nothing connects them. | Journey 4 (CGM → diabetes signal → review) stays `[FUTURE]` though both halves exist. |
+| G1 | **Two patient models.** *(Linked for synthetic validation — see plan item 1.)* CONDUCTOR loads patients from `lib/mock-data/patients` (the P001–P100 demo cohort); the real workspace uses `network_patients` + observations + CGM. | The vision's core loop (signal → agents → clinician review) cannot run on the patients clinics actually load, even in simulation. |
+| G2 | **Real CGM does not feed Aksh Diabetes.** *(Linked — see plan item 2.)* The glucose signal reads fixtures or patient-state ingest (`lib/disease-modules/diabetes/glucose.ts`; CGM modality schema is open question OQ-DIAB-1). World 2 already has that CGM model (`cgm_readings`, trusted readings, consensus metrics); nothing connects them. | Journey 4 (CGM → diabetes signal → review) stays `[FUTURE]` though both halves exist. |
 | G3 | **Two slot-fill implementations.** Front Desk's synthetic slot fill and the staged adapter (22 tests) vs the production `lib/access` workflow. | PRD PA-101/102 asks for one canonical schema and source of truth. |
 | G4 | **The clinical intelligence is invisible to buyers and investors.** Production hides World 1 (correctly); there is no governed, clearly labelled place to show it. | The site describes the platform; nobody outside can see it work. |
 | G5 | **Source-of-truth docs are stale.** Vision overview §3 still says production = "8 dashboards + Patel demo"; Built-vs-Remaining is dated July. | External readers get the old state. |
@@ -94,9 +94,14 @@ application and do not yet share data.**
 4. Run shadow mode (weeks 3–5), staff-assisted only if approved (6–8), readout (9–10) from the weekly review.
 
 ### Next — engineering, in this order
-1. **G1 one patient spine:** clinical agents read `network_patients`, observations and CGM (simulation first), behind the
-   same RLS; the demo cohort becomes seed data in that spine.
-2. **G2 CGM → Aksh Diabetes:** glucose signal from trusted CGM readings into HORIZON/GUARDIAN drafts in the review queue.
+1. **G1 one patient spine — linked (Track B, synthetic validation).** `lib/clinical-spine/spine-patient.ts` loads a
+   care-network patient under the caller's RLS (clinicians only) and makes them resolvable for CONDUCTOR;
+   `POST /api/network/patients/:id/clinical-review` runs the agents; "Run clinical review" in the patient panel.
+   Refused (`TRACK_B_NOT_OPEN`, 403) in the real workspace, and `/api/agents/*` is closed there by middleware.
+   Remaining: the demo cohort becomes seed data in the spine (retire `lib/mock-data/patients` as a source).
+2. **G2 CGM → Aksh Diabetes — linked.** Trusted CGM (14 days, `cgm_trusted_readings`, mmol/L → mg/dL) and verified
+   HbA1c (mmol/mol → %) feed the glucose and HbA1c signals as source `care_network_cgm`, which derives (fixtures never
+   do). Remaining: drafts into the review queue from this path. Test: `tests/patient-spine-db.test.ts`.
 3. **G4 clinical-proof environment:** a separately hosted, clearly labelled synthetic environment (e.g. a demo subdomain on
    the simulation database) for buyers, investors and the CSO, never mixed into production.
 4. **G3 one slot fill:** Front Desk and the staged adapter call `lib/access`; retire the duplicate.
