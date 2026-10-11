@@ -209,6 +209,8 @@ export function LinkedNetworkPatientView() {
       <MyReadings fallbackEmergency={record.emergencyNumber} />
       <p className="text-center text-xs text-muted">
         <a className="underline underline-offset-2" href="/api/me/export" data-my-export>Download a copy of my data</a>
+        {" · "}
+        <a className="underline underline-offset-2" href="/dashboard/security">Security and two-step sign-in</a>
       </p>
       <Card className="shadow-sm">
         <CardContent className="p-5">

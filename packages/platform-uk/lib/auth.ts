@@ -110,6 +110,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email", placeholder: "you.example" },
         password: { label: "Password", type: "password" },
+        otp: { label: "Authenticator or recovery code", type: "text" },
       },
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
@@ -130,6 +131,13 @@ export const authOptions: NextAuthOptions = {
         const user = await resolveCredentialsUser(credentials.email, credentials.password);
         if (!user) {
           throw new Error("Invalid email or password");
+        }
+        // Two-step sign-in: once the password is right, accounts that turned it on must give a code.
+        const { isMfaEnabled, verifySecondFactor } = await import("./auth/mfa");
+        if (await isMfaEnabled(user.id)) {
+          const otp = (credentials as { otp?: string }).otp?.trim();
+          if (!otp) throw new Error("MFA_REQUIRED");
+          if (!(await verifySecondFactor(user.id, otp))) throw new Error("MFA_INVALID");
         }
 
         return {

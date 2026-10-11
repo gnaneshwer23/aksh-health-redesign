@@ -66,3 +66,13 @@ invites, patient linking, readings, connectors and chat have their own limits.
 - Tailwind 3 build tooling (`braces`, `micromatch`, `chokidar`, `postcss-selector-parser`) and the PostCSS copy bundled
   by `next`: build time only, processing our own files; Tailwind stays on 3.4 by project rule.
 - Patched now: `next-auth` 4.24.15, `nodemailer` 10.0.6, `postcss` 8.5.28, `nanoid`, `uuid`, `source-map-js`.
+
+## Two-step sign-in (TOTP)
+
+- Users turn it on at `/dashboard/security` (authenticator app; 8 single-use recovery codes shown once).
+- **Required for go-live reviewers in production**; recommended for organisation admins.
+- Secrets are encrypted with `MFA_ENCRYPTION_KEY` (Vercel production, sensitive; set 2026-10-11). Losing or changing
+  that key makes existing secrets unreadable: every user would have to set two-step sign-in up again. Keep a copy in
+  the founder's password manager; never commit it.
+- A user who lost their phone and their recovery codes: verify identity out of band, then delete their rows from
+  `aksh.user_mfa` and `aksh.user_mfa_recovery` (owner connection) and record it in the incident notes.

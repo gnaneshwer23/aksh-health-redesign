@@ -163,7 +163,8 @@ export function Sidebar({ role }: { role: DashboardRole }) {
   const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
   const { profile, loading } = useUserProfile();
   const [platformAdmin, setPlatformAdmin] = useState(false);
-  const items = platformAdmin ? [...(NAV[role] ?? []), { href: "/dashboard/platform", label: "Go-live reviews", icon: Shield }] : NAV[role] ?? [];
+  const base = [...(NAV[role] ?? []), { href: "/dashboard/security", label: "Security", icon: Shield }];
+  const items = platformAdmin ? [...base, { href: "/dashboard/platform", label: "Go-live reviews", icon: Shield }] : base;
   const [enquiryCount, setEnquiryCount] = useState(0);
 
   // Aksh platform admins also see the go-live review queue. Everyone else gets false (or a 401) and no link.
