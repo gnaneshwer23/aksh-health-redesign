@@ -57,7 +57,9 @@ jobs:
   playwright:
     name: Playwright E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The full suite plus a production build now runs past 20 minutes (CI runners reach the London database across
+    # the Atlantic); a cancelled run is not a result.
+    timeout-minutes: 40
     needs: platform-unit-gates
     env:
       CI: true
