@@ -89,7 +89,7 @@ export async function POST(request: Request) {
   }
 
   const ip = getClientIp(request);
-  const limited = checkRateLimit(
+  const limited = await checkRateLimit(
     `whole-loop-demo:${ip}`,
     PUBLIC_DEMO_LIMIT.limit,
     PUBLIC_DEMO_LIMIT.windowMs

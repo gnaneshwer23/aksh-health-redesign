@@ -12,11 +12,11 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request) {
   // Unauthenticated callers are limited by address before any key lookup; valid keys then get their own budget.
-  const byAddress = checkRateLimit(`connector-ip:${getClientIp(request)}`, 600, 60_000);
+  const byAddress = await checkRateLimit(`connector-ip:${getClientIp(request)}`, 600, 60_000);
   if (!byAddress.success) return rateLimitResponse(byAddress, "Too many requests from this address.");
   try {
     const key = await authenticate(request.headers.get("authorization"));
-    const limited = checkRateLimit(`connector:${key.id}`, 120, 60_000);
+    const limited = await checkRateLimit(`connector:${key.id}`, 120, 60_000);
     if (!limited.success) return rateLimitResponse(limited, "Too many requests for this connection. Slow down.");
     const body = await request.json().catch(() => null);
     return NextResponse.json(await receiveSlots(key, body));

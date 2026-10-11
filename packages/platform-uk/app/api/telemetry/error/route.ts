@@ -18,7 +18,7 @@ const schema = z.object({
 
 /** POST /api/telemetry/error — browser error boundaries report crashes here. Scrubbed and rate limited per address. */
 export async function POST(request: Request) {
-  const limited = checkRateLimit(`client-error:${getClientIp(request)}`, 20, 10 * 60 * 1000);
+  const limited = await checkRateLimit(`client-error:${getClientIp(request)}`, 20, 10 * 60 * 1000);
   if (!limited.success) return new NextResponse(null, { status: 204 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid report" }, { status: 400 });

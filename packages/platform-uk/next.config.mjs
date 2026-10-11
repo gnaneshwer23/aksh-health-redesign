@@ -8,6 +8,27 @@ const createNextConfig = (phase) => ({
   experimental: {
     typedRoutes: false
   },
+  poweredByHeader: false,
+  // The app does not use next/image. Disabling the optimizer removes /_next/image, the surface of several Next 14
+  // advisories (including image-processing RCE) until the Next 15 upgrade.
+  images: { unoptimized: true },
+  async headers() {
+    // Baseline protections for every response. A script-level Content-Security-Policy needs nonces for Next's inline
+    // scripts and is a separate change; these directives are safe now.
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), geolocation=(), payment=(), usb=(), microphone=(self)" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'" }
+        ]
+      }
+    ];
+  },
   async redirects() {
     return [
       {

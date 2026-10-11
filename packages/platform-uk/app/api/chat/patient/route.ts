@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     return Response.json({ error: PATIENT_CHAT_UNAVAILABLE_MESSAGE }, { status: 503 });
   }
 
-  const rate = checkChatRateLimit(`patient-chat:${auth.context.userId}`);
+  const rate = await checkChatRateLimit(`patient-chat:${auth.context.userId}`);
   if (!rate.ok) {
     return Response.json(
       { error: "Too many Ask Aksh requests. Please wait a moment and try again." },

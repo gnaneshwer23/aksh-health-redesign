@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const actor = await requireActor();
   if (actor instanceof NextResponse) return actor;
   if (actor.role !== "patient") return NextResponse.json({ error: "Patient accounts only" }, { status: 403 });
-  const limited = checkRateLimit(`patient-link:${actor.userId}`, 5, 15 * 60 * 1000);
+  const limited = await checkRateLimit(`patient-link:${actor.userId}`, 5, 15 * 60 * 1000);
   if (!limited.success) return rateLimitResponse(limited, "Too many attempts. Try again later or ask your clinic for a new code.");
   try {
     const input = schema.parse(await request.json().catch(() => ({})));

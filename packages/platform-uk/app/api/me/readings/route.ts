@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
-    const limited = checkRateLimit(`readings:${r.actor.userId}`, 60, 60 * 60 * 1000);
+    const limited = await checkRateLimit(`readings:${r.actor.userId}`, 60, 60 * 60 * 1000);
     if (!limited.success) return rateLimitResponse(limited, "Too many readings in an hour. Try again later.");
     const input = readingInputSchema.parse(await request.json().catch(() => ({})));
     return NextResponse.json(await addReading(r.ctx, input), { status: 201 });

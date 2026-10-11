@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const limited = checkRateLimit(`onboarding-invite:${session.user.id}`, 10, 15 * 60 * 1000);
+  const limited = await checkRateLimit(`onboarding-invite:${session.user.id}`, 10, 15 * 60 * 1000);
   if (!limited.success) {
     return rateLimitResponse(limited, "Too many invite code attempts. Ask your clinic to confirm the code, then retry later.");
   }
