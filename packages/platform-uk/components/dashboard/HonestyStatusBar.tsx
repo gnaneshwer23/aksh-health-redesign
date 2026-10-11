@@ -34,15 +34,16 @@ export function HonestyStatusBar({
   const [expanded, setExpanded] = useState(false);
   const realData = REAL_DATA_SURFACES.has(surface);
   const [orgs, setOrgs] = useState<OrgStatus[] | null>(null);
+  const [orgsFailed, setOrgsFailed] = useState(false);
 
   // Only real-data screens can honestly say "live"; they ask which organisations this user belongs to.
   useEffect(() => {
     if (!realData || isPublicDemo) return;
     let cancelled = false;
     fetch("/api/orgs")
-      .then((r) => (r.ok ? r.json() : { rows: [] }))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((d: { rows?: OrgStatus[] }) => !cancelled && setOrgs(d.rows ?? []))
-      .catch(() => undefined);
+      .catch(() => !cancelled && setOrgsFailed(true));
     return () => {
       cancelled = true;
     };
@@ -88,6 +89,10 @@ export function HonestyStatusBar({
               Start free
             </Link>
           </>
+        ) : realData && (orgs === null || orgsFailed) ? (
+          <span data-testid="workspace-status-unknown" className="font-medium text-foreground/80">
+            {orgsFailed ? "Organisation status unavailable" : "Checking organisation status…"}
+          </span>
         ) : liveOrg ? (
           <>
             <span data-testid="live-workspace-banner" className="font-medium text-foreground/80">

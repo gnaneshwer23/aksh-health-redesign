@@ -10,6 +10,7 @@ import { getDeploymentEnvironment } from "@/lib/env/deployment";
 import { withTenant, type NetworkContext } from "@/lib/network/db";
 import { NetworkError } from "@/lib/network/service";
 
+import { FILL_DEFINITION, FILLED_SQL } from "./measurement";
 import { evaluateCandidates, renderOffer, resolveSettings, RULE_VERSION, TEMPLATE_VERSION, type WaitlistFacts } from "./eligibility";
 import { withPrivileged } from "@/lib/network/db";
 
@@ -18,6 +19,21 @@ const STAFF_ROLES = new Set(["gp", "nurse", "clinical-pharmacist", "practice-man
 function requireStaff(ctx: NetworkContext, orgId?: string) {
   if (!STAFF_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot work the access queue", 403);
   if (orgId && !ctx.orgIds.includes(orgId)) throw new NetworkError("Not a member of this organisation", 403);
+}
+
+/**
+ * A schedule connector (API key, role "connector") may report slots, confirm bookings it can read back, and withdraw or
+ * hand off slots that were taken in the schedule. It never matches, drafts, approves or records patient responses.
+ */
+export const CONNECTOR_ROLE = "connector";
+const CONNECTOR_ACTIONS = new Set(["confirm_booking", "withdraw", "handoff"]);
+function requireStaffOrConnector(ctx: NetworkContext, orgId?: string, action?: string) {
+  if (ctx.role === CONNECTOR_ROLE) {
+    if (action && !CONNECTOR_ACTIONS.has(action)) throw new NetworkError("A schedule connector cannot take this step", 403);
+    if (orgId && !ctx.orgIds.includes(orgId)) throw new NetworkError("Not a member of this organisation", 403);
+    return;
+  }
+  requireStaff(ctx, orgId);
 }
 
 const isoDateTime = z.string().datetime({ offset: true });
@@ -71,7 +87,8 @@ export type WorkflowAction = z.infer<typeof actionSchema>;
 
 /** Record a slot event. Idempotent on (organisation, source, sourceRef); a lower or equal version is a replay. */
 export async function ingestSlot(ctx: NetworkContext, orgId: string, input: z.infer<typeof ingestSlotSchema>) {
-  requireStaff(ctx, orgId);
+  requireStaffOrConnector(ctx, orgId);
+  if (ctx.role === CONNECTOR_ROLE && input.source !== "partner_api") throw new NetworkError("Connectors report partner_api slots only", 403);
   const starts = new Date(input.startsAt).getTime();
   const expires = new Date(input.offerExpiresAt).getTime();
   if (starts <= Date.now()) throw new NetworkError("SLOT_STALE: the slot has already started", 400);
@@ -165,7 +182,7 @@ function expectState(wf: WorkflowRow, allowed: string[], action: string) {
 
 /** Apply one staff or service step. Replaying the same idempotency key returns the original result without acting again. */
 export async function applyAction(ctx: NetworkContext, workflowId: string, input: WorkflowAction) {
-  requireStaff(ctx);
+  requireStaffOrConnector(ctx, undefined, input.action);
   const key = `${workflowId}:${input.idempotencyKey}`;
   return withTenant(ctx, async (client) => {
     const prior = await client.query<{ action_type: string; to_state: string; result_code: string; detail: Record<string, unknown> }>(
@@ -427,7 +444,7 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
     const r = (await client.query<Counts>(
       `SELECT
          count(*) FILTER (WHERE s.state <> 'withdrawn')::int AS eligible_slots,
-         count(*) FILTER (WHERE w.outcome = 'booked')::int AS booked_verified,
+         count(*) FILTER (WHERE ${FILLED_SQL})::int AS booked_verified,
          count(*) FILTER (WHERE s.state = 'pending_verification')::int AS pending_verification,
          count(*) FILTER (WHERE w.outcome = 'expired')::int AS expired,
          count(*) FILTER (WHERE w.state = 'FAILED_SAFE')::int AS failed_safe,
@@ -443,9 +460,9 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
       [orgId ?? null, windowDays]
     )).rows[0]!;
     return {
-      metricVersion: "slot-fill-v1",
+      metricVersion: "slot-fill-v1.1",
       windowDays,
-      definition: "Fill rate = slots booked and verified on read-back before the offer expired ÷ slots received (withdrawn excluded).",
+      definition: FILL_DEFINITION,
       fillRatePct: r.eligible_slots ? Math.round((r.booked_verified / r.eligible_slots) * 1000) / 10 : null,
       ...r,
       handoffs: h,

@@ -86,8 +86,10 @@ export function SlotFillConsole() {
   const [editing, setEditing] = useState<string | null>(null);
   const [orgs, setOrgs] = useState<Org[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [refreshCount, setRefreshCount] = useState(0);
 
   const load = useCallback(async () => {
+    setRefreshCount((n) => n + 1); // figures follow every action
     const [q, m, h, o] = await Promise.all([fetch("/api/access/queue"), fetch("/api/access/metrics"), fetch("/api/access/handoffs"), fetch("/api/orgs")]);
     const qd = await q.json();
     if (!q.ok) return setError(qd.error ?? "Not available");
@@ -182,6 +184,8 @@ export function SlotFillConsole() {
           <p className="text-xs text-muted sm:col-span-2 lg:col-span-5">{metrics.definition} {metrics.note}</p>
         </div>
       ) : null}
+
+      {orgs.length ? <BaselinePanel orgs={orgs} refresh={refreshCount} /> : null}
 
       {orgs.length ? (
         <details className="rounded-xl border border-border-subtle bg-card p-4" open={queue.length === 0}>
@@ -465,5 +469,99 @@ function RecordSlot({ orgs, onRecorded }: { orgs: Org[]; onRecorded: (workflowId
       <div className="flex items-end lg:col-span-3"><Button type="submit" disabled={busy}>{busy ? "Recording…" : "Record freed slot"}</Button></div>
       {error ? <p className="text-sm text-red-700 sm:col-span-2 lg:col-span-6" role="alert">{error}</p> : null}
     </form>
+  );
+}
+
+type Measurement = {
+  mode: "live_shadow" | "rehearsal";
+  period: { since: string; label: string };
+  baseline: { periodStart: string; periodEnd: string; freed: number; filled: number; ratePct: number | null; method: string } | null;
+  current: { eligible: number; booked: number; ratePct: number | null };
+  comparison: { verdict: "too_early" | "above" | "similar" | "below"; differencePts: number | null; ci95: [number, number] | null } | null;
+  weekly: { week: string; eligible: number; booked: number }[];
+  notes: string[];
+};
+
+const VERDICT: Record<string, string> = {
+  too_early: "Too few slots to compare yet",
+  above: "Higher than your baseline",
+  similar: "No clear difference from your baseline yet",
+  below: "Lower than your baseline",
+};
+
+/** Fill rate against the baseline the organisation locked at go-live. Counts are always shown next to rates. */
+function BaselinePanel({ orgs, refresh }: { orgs: Org[]; refresh: number }) {
+  const [orgId, setOrgId] = useState(orgs[0]?.id ?? "");
+  const [m, setM] = useState<Measurement | null>(null);
+  useEffect(() => setM(null), [orgId]); // never show one organisation's figures under another
+  useEffect(() => {
+    if (!orgId) return;
+    let cancelled = false;
+    void fetch(`/api/orgs/${orgId}/measurement`)
+      .then(async (r) => {
+        if (!r.ok) return;
+        const data = (await r.json()) as Measurement;
+        if (!cancelled) setM(data);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [orgId, refresh]);
+  if (!m) return null;
+  const max = Math.max(1, ...m.weekly.map((w) => w.eligible));
+  return (
+    <Card data-baseline>
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-2">
+        <CardTitle className="text-base">Against your baseline</CardTitle>
+        {orgs.length > 1 ? (
+          <select aria-label="Organisation for measurement" className="h-9 rounded-full border border-border-subtle bg-card px-3 text-sm" value={orgId} onChange={(e) => setOrgId(e.target.value)}>
+            {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+          </select>
+        ) : null}
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-border-subtle p-3">
+            <p className="text-xs text-muted">Baseline (before Aksh)</p>
+            {m.baseline ? (
+              <>
+                <p className="mt-1 text-2xl font-semibold text-foreground">{m.baseline.ratePct ?? "–"}%</p>
+                <p className="text-xs text-muted">{m.baseline.filled} of {m.baseline.freed} freed slots · {m.baseline.periodStart} to {m.baseline.periodEnd}</p>
+              </>
+            ) : <p className="mt-1 text-sm text-muted">Not locked yet. It is part of the go-live checklist.</p>}
+          </div>
+          <div className="rounded-xl border border-border-subtle p-3">
+            <p className="text-xs text-muted">{m.period.label}</p>
+            <p className="mt-1 text-2xl font-semibold text-foreground">{m.current.ratePct ?? "–"}%</p>
+            <p className="text-xs text-muted">{m.current.booked} of {m.current.eligible} slots booked and verified</p>
+          </div>
+          <div className="rounded-xl border border-border-subtle p-3" data-baseline-verdict>
+            <p className="text-xs text-muted">Difference</p>
+            {m.comparison ? (
+              <>
+                <p className="mt-1 text-base font-semibold text-foreground">{VERDICT[m.comparison.verdict]}</p>
+                {m.comparison.differencePts !== null ? (
+                  <p className="text-xs text-muted">{m.comparison.differencePts > 0 ? "+" : ""}{m.comparison.differencePts} points (95% range {m.comparison.ci95![0]} to {m.comparison.ci95![1]})</p>
+                ) : null}
+              </>
+            ) : <p className="mt-1 text-sm text-muted">Needs a locked baseline.</p>}
+          </div>
+        </div>
+        {m.weekly.length ? (
+          <div aria-label="Weekly slots received and filled" role="img" className="flex h-24 items-end gap-1">
+            {m.weekly.map((w) => (
+              <div key={w.week} className="flex flex-1 flex-col items-center gap-0.5" title={`Week of ${w.week}: ${w.booked} of ${w.eligible} filled`}>
+                <div className="relative w-full rounded-t bg-surface-muted" style={{ height: `${(w.eligible / max) * 80}px` }}>
+                  <div className="absolute bottom-0 w-full rounded-t bg-secondary" style={{ height: `${w.eligible ? (w.booked / w.eligible) * 100 : 0}%` }} />
+                </div>
+                <span className="text-[10px] text-muted">{w.week.slice(5)}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        <ul className="m-0 list-disc space-y-0.5 pl-5 text-xs text-muted">{m.notes.map((n) => <li key={n}>{n}</li>)}</ul>
+      </CardContent>
+    </Card>
   );
 }

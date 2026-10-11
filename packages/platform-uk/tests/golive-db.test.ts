@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 
 import { addToWaitlist } from "../lib/access/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 import {
   approveGoLive,
   getGoLive,
@@ -39,6 +40,7 @@ const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString
 
 async function run() {
   if (!isPostgresConfigured()) return console.log("golive-db: skipped (no DATABASE_URL)");
+  assertSeedingAllowed("golive-db"); // creates and approves test organisations: never against production
   const run = randomUUID().slice(0, 6);
 
   // A clinic whose creator is a GP (licensed: starts unverified), plus a nurse and a non-clinical manager.
@@ -58,6 +60,7 @@ async function run() {
   // Platform admin: a separate person.
   const reviewer = await makeUser("reviewer", "practice-manager");
   await getPgPool().query(`INSERT INTO aksh.platform_admins (user_id, granted_by) VALUES ($1, 'test')`, [reviewer.userId]);
+  try {
 
   // --- registration checks
   await rejects(recordRegistrationCheck(gpCtx, org.id, mid(gp), { outcome: "verified", registry: "Medical register", registrationNumber: "GP-1", checkedOn: today }), 403, /SELF_CHECK/);
@@ -141,6 +144,22 @@ async function run() {
   const actions = s.events.map((e) => e.action);
   for (const a of ["submitted", "rejected", "accepted", "requested", "returned", "approved"]) assert.ok(actions.includes(a as never), `history records ${a}`);
   await assert.rejects(getPgPool().query(`DELETE FROM aksh.golive_events WHERE organisation_id = $1`, [org.id]), /append-only/);
+  // 027: the database itself refuses tenant evidence once live.
+  await assert.rejects(
+    withTenant(gpCtx, (c) => c.query(`INSERT INTO aksh.golive_events (organisation_id, item_key, action, evidence, actor_user_id, actor_kind, environment) VALUES ($1, 'dpa', 'submitted', '{}'::jsonb, $2, 'org_admin', 'test')`, [org.id, gp.userId])),
+    /GOLIVE_CLOSED/
+  );
+  // Only an explicit purge (test-data cleanup) may remove append-only history.
+  const purge = await getPgPool().connect();
+  try {
+    await purge.query("BEGIN");
+    await purge.query("SET LOCAL aksh.purge_test_data = 'on'");
+    const removed = await purge.query(`DELETE FROM aksh.registration_checks WHERE organisation_id = $1`, [org.id]);
+    assert.ok((removed.rowCount ?? 0) > 0, "purge removes history");
+    await purge.query("ROLLBACK");
+  } finally {
+    purge.release();
+  }
 
   // Platform admin can check a registration when no one else in the organisation can.
   const solo = await makeUser("solo", "gp");
@@ -149,7 +168,10 @@ async function run() {
   await recordRegistrationCheckAsPlatform(reviewer.userId, soloOrg.id, soloMember, { outcome: "verified", registry: "Medical register", registrationNumber: "GP-9", checkedOn: today });
   assert.equal((await getPgPool().query(`SELECT registration_status FROM aksh.memberships WHERE id = $1`, [soloMember])).rows[0].registration_status, "verified");
 
-  await getPgPool().query(`DELETE FROM aksh.platform_admins WHERE user_id = ANY($1)`, [[reviewer.userId, manager.userId]]);
+  } finally {
+    // Revoke test reviewer rights even when an assertion above failed.
+    await getPgPool().query(`DELETE FROM aksh.platform_admins WHERE user_id = ANY($1)`, [[reviewer.userId, manager.userId]]);
+  }
   console.log("golive-db: registration checks, guards, checklist, review, return, approval, append-only history — PASS");
 }
 

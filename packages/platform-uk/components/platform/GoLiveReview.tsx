@@ -61,11 +61,12 @@ export function GoLiveReview() {
   }, []);
   useEffect(() => void loadQueue(), [loadQueue]);
 
-  async function act(url: string, body: unknown, ok: string) {
+  async function act(orgId: string, url: string, body: unknown, ok: string) {
     const r = await post(url, body);
-    setMessage(r.ok ? ok : r.data.error ?? "Action failed");
-    if (selected) await open(selected, true);
     await loadQueue();
+    if (latest.current !== orgId) return; // the reviewer moved on; don't steal the selection back
+    setMessage(r.ok ? ok : r.data.error ?? "Action failed");
+    await open(orgId, true);
   }
 
   if (denied) return <p className="p-6 text-sm text-muted" data-platform-denied>This page is for Aksh go-live reviewers.</p>;
@@ -116,9 +117,9 @@ export function GoLiveReview() {
                       {i.evidence ? <p className="mt-1 text-xs text-foreground">{evidenceSummary(i.key, i.evidence)}</p> : null}
                       {i.state === "submitted" ? (
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <Button size="sm" onClick={() => void act(`/api/platform/go-live/${review.org.id}/items/${i.key}`, { decision: "accepted" }, `${i.title}: accepted`)}>Accept</Button>
+                          <Button size="sm" onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/items/${i.key}`, { decision: "accepted" }, `${i.title}: accepted`)}>Accept</Button>
                           <Input className="max-w-xs" aria-label={`What needs to change: ${i.title}`} placeholder="What needs to change" value={notes[i.key] ?? ""} onChange={(e) => setNotes((n) => ({ ...n, [i.key]: e.target.value }))} />
-                          <Button size="sm" variant="outline" disabled={!notes[i.key]?.trim()} onClick={() => void act(`/api/platform/go-live/${review.org.id}/items/${i.key}`, { decision: "rejected", note: notes[i.key] }, `${i.title}: changes requested`)}>Request changes</Button>
+                          <Button size="sm" variant="outline" disabled={!notes[i.key]?.trim()} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/items/${i.key}`, { decision: "rejected", note: notes[i.key] }, `${i.title}: changes requested`)}>Request changes</Button>
                         </div>
                       ) : null}
                     </li>
@@ -148,7 +149,7 @@ export function GoLiveReview() {
                           endpoint={`/api/platform/go-live/${review.org.id}/members/${m.id}/registration`}
                           licensed={LICENSED.has(m.role)}
                           defaults={{ registry: m.registration_body, registrationNumber: m.registration_number }}
-                          onDone={(msg) => { setMessage(msg); setChecking(null); void open(review.org.id, true); }}
+                          onDone={(msg) => { if (latest.current !== review.org.id) return; setMessage(msg); setChecking(null); void open(review.org.id, true); }}
                         />
                       ) : null}
                     </li>
@@ -164,8 +165,8 @@ export function GoLiveReview() {
                   {!review.canApprove ? <p className="text-muted">Approval opens when every automatic check passes and every item is accepted.</p> : null}
                   <Input aria-label="Decision note" placeholder="Note (required to return)" value={decisionNote} onChange={(e) => setDecisionNote(e.target.value)} />
                   <div className="flex flex-wrap gap-2">
-                    <Button disabled={!review.canApprove} onClick={() => void act(`/api/platform/go-live/${review.org.id}/approve`, { note: decisionNote || undefined }, "Approved: live in shadow mode")}>Approve go-live</Button>
-                    <Button variant="outline" disabled={!decisionNote.trim()} onClick={() => void act(`/api/platform/go-live/${review.org.id}/return`, { note: decisionNote }, "Returned to the organisation")}>Return</Button>
+                    <Button disabled={!review.canApprove} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/approve`, { note: decisionNote || undefined }, "Approved: live in shadow mode")}>Approve go-live</Button>
+                    <Button variant="outline" disabled={!decisionNote.trim()} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/return`, { note: decisionNote }, "Returned to the organisation")}>Return</Button>
                   </div>
                 </CardContent>
               </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -131,12 +131,22 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
   const [members, setMembers] = useState<Member[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
 
+  const current = useRef(org.id);
   const load = useCallback(async () => {
-    const [g, m] = await Promise.all([fetch(`/api/orgs/${org.id}/go-live`), fetch(`/api/orgs/${org.id}/members`)]);
-    if (g.ok) setS(await g.json());
-    if (m.ok) setMembers((await m.json()).rows);
+    const id = org.id;
+    const [g, m] = await Promise.all([fetch(`/api/orgs/${id}/go-live`), fetch(`/api/orgs/${id}/members`)]);
+    const [gd, md] = await Promise.all([g.ok ? g.json() : null, m.ok ? m.json() : null]);
+    if (current.current !== id) return; // never render one organisation's checklist under another
+    if (gd) setS(gd);
+    if (md) setMembers(md.rows);
   }, [org.id]);
-  useEffect(() => void load(), [load]);
+  useEffect(() => {
+    current.current = org.id;
+    setS(null);
+    setMembers([]);
+    setEditing(null);
+    void load();
+  }, [org.id, load]);
 
   if (!s) return <p className="text-sm text-muted">Loading the checklist…</p>;
   const editable = org.isAdmin && (s.org.status === "sandbox" || s.org.status === "onboarding");
@@ -162,7 +172,7 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
               onClick={async () => {
                 const r = await fetch(`/api/orgs/${org.id}/go-live/request`, { method: "POST" });
                 const data = await r.json().catch(() => ({}));
-                if (r.ok) { setS(data); onMessage("Go-live review requested"); onStatusChange(); }
+                if (r.ok && data.org?.id === current.current) { setS(data); onMessage("Go-live review requested"); onStatusChange(); }
                 else onMessage(data.error ?? "Could not request review");
               }}
             >
@@ -202,7 +212,7 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
                   {i.state === "rejected" && i.note ? <p className="mt-1 text-xs text-red-700">Aksh: {i.note}</p> : null}
                   {editable && !i.locked && (s.org.status === "sandbox" || i.state === "rejected") ? (
                     editing === i.key ? (
-                      <EvidenceForm org={org} item={i} members={members} onSaved={(next) => { setS(next); setEditing(null); onMessage(`${i.title}: submitted`); }} />
+                      <EvidenceForm org={org} item={i} members={members} onSaved={(next) => { if (next.org.id !== current.current) return; setS(next); setEditing(null); onMessage(`${i.title}: submitted`); }} />
                     ) : (
                       <Button className="mt-2" size="sm" variant="outline" onClick={() => setEditing(i.key)}>{i.state === "missing" ? "Add evidence" : "Update"}</Button>
                     )
