@@ -9,11 +9,13 @@ project "Aksh Health Production" (`tiny-river-29853628`, `aws-eu-west-2` London)
 - **Point-in-time restore window: 6 hours** (Neon `history_retention_seconds = 21600` on the current plan).
   **Action for the founder:** before real patients, move production to a plan with at least 7 days (ideally 30) of
   history, or add a nightly logical backup to separate storage. A problem found after 6 hours cannot be undone today.
-- **Restore drill (done 2026-10-11, passed):**
+- **Restore drill (done twice on 2026-10-11, passed):**
   1. `npx neonctl branches create --project-id tiny-river-29853628 --name restore-drill-<date> --parent <UTC timestamp>`
   2. Connect with `npx neonctl connection-string restore-drill-<date> --project-id tiny-river-29853628` and check:
      migrations (`aksh.schema_migrations`), table count, `aksh.deployment_marker = production`, row counts.
-     Result: 33 migrations (latest `034_cgm_connector`), 43 tables, marker `production`, 0 accounts.
+     Result (drill 1, 08:23 UTC): 33 migrations (latest `034_cgm_connector`), 43 tables, marker `production`, 0 accounts.
+     Result (drill 2, restore point 10:23 UTC, after 035–037): 36 migrations (latest `037_mfa`), 48 tables, marker
+     `production`, two-step sign-in tables present. Both drill branches deleted.
   3. `npx neonctl branches delete restore-drill-<date> --project-id tiny-river-29853628`
   4. A real restore: create the branch as above, verify, then point Vercel `DATABASE_URL` at it (or restore the main
      branch from the timestamp in the Neon console). Record who, when and why in the audit log / incident notes.
