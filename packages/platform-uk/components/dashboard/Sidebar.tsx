@@ -159,8 +159,21 @@ export function Sidebar({ role }: { role: DashboardRole }) {
   const searchParams = useSearchParams();
   const collapsed = useDashboardStore((s) => s.sidebarCollapsed);
   const { profile, loading } = useUserProfile();
-  const items = NAV[role] ?? [];
+  const [platformAdmin, setPlatformAdmin] = useState(false);
+  const items = platformAdmin ? [...(NAV[role] ?? []), { href: "/dashboard/platform", label: "Go-live reviews", icon: Shield }] : NAV[role] ?? [];
   const [enquiryCount, setEnquiryCount] = useState(0);
+
+  // Aksh platform admins also see the go-live review queue. Everyone else gets false (or a 401) and no link.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/platform/me")
+      .then((r) => (r.ok ? r.json() : { platformAdmin: false }))
+      .then((d: { platformAdmin?: boolean }) => !cancelled && setPlatformAdmin(Boolean(d.platformAdmin)))
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const userName = profile?.fullName?.trim() || "Aksh user";
   const organisationLabel = getPersonalizedLabel(profile, PRACTICE_NAME);
 

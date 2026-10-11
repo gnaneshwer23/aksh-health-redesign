@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -8,13 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { APPOINTMENT_TYPE_LABEL } from "@/lib/access/eligibility";
 import { csvToPatients, PATIENT_CSV_TEMPLATE } from "@/lib/network/csv";
+
+import { GoLiveTab } from "./GoLiveTab";
+import { RegistrationCheckForm } from "./RegistrationCheckForm";
 import { cn } from "@/lib/utils";
 
 type Org = { id: string; name: string; kind: string; status: string; region: string | null; locale: Record<string, string>; isAdmin: boolean };
-type Member = { id: string; display_name: string; email: string; role: string; professional_title: string | null; is_admin: boolean; status: string; registration_status: string; caseload: number };
+type Member = { id: string; user_id: string; registration_number: string | null; registration_body: string | null; display_name: string; email: string; role: string; professional_title: string | null; is_admin: boolean; status: string; registration_status: string; caseload: number };
 type Invite = { id: string; kind: string; role: string | null; is_admin: boolean; email: string | null; patient_name: string | null; expires_at: string };
 type PatientRow = { id: string; recordRef: string | null; name: string; age: number; type: string; appLinked: boolean };
-type Tab = "settings" | "staff" | "patients";
+type Tab = "settings" | "staff" | "patients" | "go-live";
+const LICENSED = new Set(["gp", "nurse", "clinical-pharmacist"]);
 
 const ROLE_OPTIONS: [string, string][] = [
   ["gp", "Physician"],
@@ -93,7 +98,7 @@ export function OrganisationWorkspace() {
       </div>
       {message ? <p className="rounded-lg bg-surface-muted px-3 py-2 text-sm" role="status">{message}</p> : null}
       <div className="flex flex-wrap gap-1" role="tablist" aria-label="Organisation sections">
-        {(["settings", "staff", "patients"] as Tab[]).map((t) => (
+        {(["settings", "staff", "patients", "go-live"] as Tab[]).map((t) => (
           <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setMessage(null); }} className={cn("rounded-full px-4 py-1.5 text-sm capitalize", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
             {t}
           </button>
@@ -102,6 +107,7 @@ export function OrganisationWorkspace() {
       {org && tab === "settings" ? <SettingsTab org={org} onSaved={(m) => { setMessage(m); void loadOrgs(); }} /> : null}
       {org && tab === "staff" ? <StaffTab org={org} onMessage={setMessage} /> : null}
       {org && tab === "patients" ? <PatientsTab org={org} onMessage={setMessage} /> : null}
+      {org && tab === "go-live" ? <GoLiveTab org={org} onMessage={setMessage} onStatusChange={() => void loadOrgs()} /> : null}
     </div>
   );
 }
@@ -202,6 +208,10 @@ function StaffTab({ org, onMessage }: { org: Org; onMessage: (m: string | null) 
   }, [org.id]);
   useEffect(() => void load(), [load]);
 
+  const { data: session } = useSession();
+  const myUserId = (session?.user as { id?: string } | undefined)?.id;
+  const [checking, setChecking] = useState<string | null>(null);
+
   async function patchMember(id: string, body: Record<string, unknown>) {
     const r = await api(`/api/orgs/${org.id}/members/${id}`, { method: "PATCH", body: JSON.stringify(body) });
     onMessage(r.ok ? "Member updated" : r.data.error ?? "Could not update");
@@ -226,9 +236,22 @@ function StaffTab({ org, onMessage }: { org: Org; onMessage: (m: string | null) 
                     <>
                       <Button size="sm" variant="outline" onClick={() => void patchMember(m.id, { status: m.status === "active" ? "suspended" : "active" })}>{m.status === "active" ? "Suspend" : "Reactivate"}</Button>
                       <Button size="sm" variant="outline" onClick={() => void patchMember(m.id, { isAdmin: !m.is_admin })}>{m.is_admin ? "Remove admin" : "Make admin"}</Button>
+                      {m.user_id !== myUserId && m.status === "active" ? (
+                        <Button size="sm" variant="outline" onClick={() => setChecking(checking === m.id ? null : m.id)}>Check registration</Button>
+                      ) : null}
                     </>
                   ) : null}
                 </span>
+                {checking === m.id ? (
+                  <div className="w-full">
+                    <RegistrationCheckForm
+                      endpoint={`/api/orgs/${org.id}/members/${m.id}/registration`}
+                      licensed={LICENSED.has(m.role)}
+                      defaults={{ registry: m.registration_body, registrationNumber: m.registration_number }}
+                      onDone={(msg) => { onMessage(msg); setChecking(null); void load(); }}
+                    />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>

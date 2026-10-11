@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type DataSource = "neo4j" | "mock" | "demo" | null;
+
+/** Screens that read the organisation's own records. Everything else still shows sample content. */
+const REAL_DATA_SURFACES = new Set(["Organisation", "Care network", "Slot fill", "Go-live reviews"]);
+type OrgStatus = { name: string; status: string };
 
 /**
  * Single quiet honesty/status strip for dashboards.
@@ -28,6 +32,23 @@ export function HonestyStatusBar({
   showNeo4jLive?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const realData = REAL_DATA_SURFACES.has(surface);
+  const [orgs, setOrgs] = useState<OrgStatus[] | null>(null);
+
+  // Only real-data screens can honestly say "live"; they ask which organisations this user belongs to.
+  useEffect(() => {
+    if (!realData || isPublicDemo) return;
+    let cancelled = false;
+    fetch("/api/orgs")
+      .then((r) => (r.ok ? r.json() : { rows: [] }))
+      .then((d: { rows?: OrgStatus[] }) => !cancelled && setOrgs(d.rows ?? []))
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [realData, isPublicDemo]);
+  const liveOrg = orgs?.find((o) => o.status === "live_read_only" || o.status === "live");
+  const reviewOrg = orgs?.find((o) => o.status === "onboarding");
 
   const neo4jLabel =
     neo4jLoading || neo4jSource === null || neo4jSource === "demo"
@@ -63,6 +84,21 @@ export function HonestyStatusBar({
             </span>
             <Link href="/signup" className="font-semibold text-secondary underline underline-offset-2">
               Start free
+            </Link>
+          </>
+        ) : liveOrg ? (
+          <>
+            <span data-testid="live-workspace-banner" className="font-medium text-foreground/80">
+              {liveOrg.name} is live in shadow mode — real records; Aksh drafts, your staff decide and act
+            </span>
+          </>
+        ) : reviewOrg ? (
+          <>
+            <span data-testid="review-workspace-banner" className="font-medium text-foreground/80">
+              {reviewOrg.name}: go-live review in progress
+            </span>
+            <Link href="/dashboard/organisation" className="font-semibold text-secondary underline underline-offset-2">
+              See checklist
             </Link>
           </>
         ) : (

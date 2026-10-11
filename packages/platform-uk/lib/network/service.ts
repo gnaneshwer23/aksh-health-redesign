@@ -38,6 +38,9 @@ const localeSchema = z
   })
   .strict();
 
+/** Roles that hold a professional registration which must be checked before an organisation goes live. */
+export const LICENSED_ROLES = new Set(["gp", "nurse", "clinical-pharmacist"]);
+
 export const createOrganisationSchema = z.object({
   name: z.string().trim().min(2).max(160),
   kind: z.enum(ORG_KINDS),
@@ -58,8 +61,8 @@ export async function createOrganisation(
     const orgId = org.rows[0]!.id;
     await client.query(
       `INSERT INTO aksh.memberships (organisation_id, user_id, role, display_name, email, is_admin, registration_status)
-       VALUES ($1, $2, $3, $4, $5, TRUE, 'not_applicable')`,
-      [orgId, actor.userId, actor.role ?? "practice-manager", actor.displayName, actor.email]
+       VALUES ($1, $2, $3, $4, $5, TRUE, $6)`,
+      [orgId, actor.userId, actor.role ?? "practice-manager", actor.displayName, actor.email, LICENSED_ROLES.has(actor.role ?? "") ? "unverified" : "not_applicable"]
     );
     await audit(client, { organisationId: orgId, actorUserId: actor.userId, action: "organisation.created", resourceType: "organisation", resourceId: orgId, detail: { kind: input.kind } });
     return { id: orgId, status: org.rows[0]!.status };
@@ -151,7 +154,7 @@ export async function acceptStaffInvite(
     if (invite.email && invite.email !== actor.email.toLowerCase()) {
       throw new NetworkError("This invite code is not valid. Ask the organisation for a new one.", 410);
     }
-    const licensed = ["gp", "nurse", "clinical-pharmacist"].includes(invite.role ?? "");
+    const licensed = LICENSED_ROLES.has(invite.role ?? "");
     const membership = await client.query<{ id: string }>(
       `INSERT INTO aksh.memberships (organisation_id, user_id, role, professional_title, display_name, email, is_admin,
          registration_number, registration_body, registration_status, invited_by)
