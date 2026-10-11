@@ -10,6 +10,7 @@ import { agp, computeMetrics, samplingInterval } from "../lib/cgm/metrics";
 import { detectDateOrder, parseCgmExport, zonedToInstant } from "../lib/cgm/parse";
 import { commitUpload, getCgm, previewUpload } from "../lib/cgm/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { assertSeedingAllowed } from "../lib/env/deployment";
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
@@ -103,6 +104,7 @@ function pure() {
 async function db() {
   if (!isPostgresConfigured()) return console.log("cgm: pure checks PASS; DB part skipped (no DATABASE_URL)");
   assertSeedingAllowed("cgm-test");
+  await assertNotProductionDatabase(getPgPool(), "cgm-test");
   const tag = randomUUID().slice(0, 6);
   const mk = async (label: string) => {
     const id = randomUUID();

@@ -1,4 +1,4 @@
--- 032: Continuous glucose monitoring (CGM). Readings arrive as exports (Dexcom Clarity, LibreView, generic CSV) or,
+-- 033: Continuous glucose monitoring (CGM). Readings arrive as exports (Dexcom Clarity, LibreView, generic CSV) or,
 -- later, through the schedule/device connector. Metrics (time in range, GMI, CV, wear) are computed from these rows
 -- and summarised into network_observations so existing clinical views keep working.
 

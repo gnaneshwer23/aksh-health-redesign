@@ -124,9 +124,11 @@ export async function refreshSummaries(client: PoolClient, actorUserId: string |
   if (!metrics?.sufficient) return { metrics, summarised: false };
   for (const [kind, value, unit] of SUMMARY_KINDS) {
     await client.query(
-      `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, client_ref)
-       VALUES ($1, $2, $3, $4, $5, $6, FALSE, $7, $8) ON CONFLICT (patient_id, client_ref) WHERE client_ref IS NOT NULL DO NOTHING`,
-      [patientId, kind, value(metrics), unit, latest, source, actorUserId, `cgm-${batchRef}-${kind}`]
+      // Clinic uploads and device feeds are verified on entry (the clinic chose the source); a patient's own export
+      // waits for a clinician, like any patient-reported data.
+      `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, verified_by, verified_at, recorded_by, client_ref)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $7 THEN NOW() END, $8, $9) ON CONFLICT (patient_id, client_ref) WHERE client_ref IS NOT NULL DO NOTHING`,
+      [patientId, kind, value(metrics), unit, latest, source, source === "device", actorUserId, `cgm-${batchRef}-${kind}`]
     );
   }
   return { metrics, summarised: true };

@@ -12,6 +12,7 @@ import { commitUpload } from "../lib/cgm/service";
 import { observationFromFhir } from "../lib/connector/fhir";
 import { authenticate, createKey, receiveObservations } from "../lib/connector/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { assertSeedingAllowed } from "../lib/env/deployment";
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
@@ -65,6 +66,7 @@ async function run() {
   pure();
   if (!isPostgresConfigured()) return console.log("monitoring-db: pure checks PASS; DB part skipped (no DATABASE_URL)");
   assertSeedingAllowed("monitoring-db");
+  await assertNotProductionDatabase(getPgPool(), "monitoring-db");
   const tag = randomUUID().slice(0, 6);
   const mk = async (label: string) => {
     const id = randomUUID();
