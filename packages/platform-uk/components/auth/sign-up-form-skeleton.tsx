@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { RoleTileStatic } from "@/components/auth/role-tile-static";
+import { REAL_ROLES } from "@/lib/env/workspace";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 import { cn } from "@/lib/utils";
 
@@ -9,9 +10,11 @@ const inputClassName =
 
 type SignUpFormSkeletonProps = {
   initialRole?: UserRole;
+  /** Real workspace: only roles with a working product. Passed in (the browser cannot read server env). */
+  realWorkspace?: boolean;
 };
 
-export function SignUpFormSkeleton({ initialRole = "gp" }: SignUpFormSkeletonProps) {
+export function SignUpFormSkeleton({ initialRole = "gp", realWorkspace = false }: SignUpFormSkeletonProps) {
   return (
     <form className="space-y-4">
       <div className="space-y-2">
@@ -47,7 +50,7 @@ export function SignUpFormSkeleton({ initialRole = "gp" }: SignUpFormSkeletonPro
           className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4"
           data-testid="signup-role-grid"
         >
-          {ROLES.map((role) => (
+          {(realWorkspace ? ROLES.filter((r) => REAL_ROLES.has(r.id)) : ROLES).map((role) => (
             <RoleTileStatic key={role.id} role={role} selected={role.id === initialRole} />
           ))}
         </div>

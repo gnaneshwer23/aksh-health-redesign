@@ -78,8 +78,9 @@ export function OrganisationWorkspace() {
       <div className="p-6">
         <h1 className="text-xl font-semibold text-foreground">Organisation</h1>
         <p className="mt-2 text-sm text-muted" data-no-organisation>
-          You are not part of an organisation yet. Join one with an invite code from your clinic's admin.
+          You are not part of an organisation yet. Set up your clinic, or join one with an invite code from its admin.
         </p>
+        <CreateClinic onCreated={() => void loadOrgs()} />
         <JoinWithCode onJoined={() => void loadOrgs()} />
       </div>
     );
@@ -117,6 +118,36 @@ export function OrganisationWorkspace() {
       {org && tab === "connections" ? <ConnectionsTab org={org} onMessage={setMessage} /> : null}
       {org && tab === "go-live" ? <GoLiveTab org={org} onMessage={setMessage} onStatusChange={() => void loadOrgs()} /> : null}
     </div>
+  );
+}
+
+/** Set up an empty clinic; the creator becomes its admin. No sample data. */
+function CreateClinic({ onCreated }: { onCreated: () => void }) {
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <form
+      className="mt-4 flex max-w-md flex-wrap items-end gap-2"
+      data-create-clinic
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        setError(null);
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const r = await api("/api/orgs", { method: "POST", body: JSON.stringify({ name: name.trim(), kind: "clinic", locale: timezone ? { timezone } : undefined }) });
+        setBusy(false);
+        if (r.ok) onCreated();
+        else setError(r.data.error ?? "Could not set up the clinic");
+      }}
+    >
+      <label className="flex-1 text-sm">
+        <span className="text-muted">Clinic name</span>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your clinic's name" aria-label="Clinic name" />
+      </label>
+      <Button type="submit" disabled={busy || name.trim().length < 2}>{busy ? "Setting up…" : "Set up clinic"}</Button>
+      {error ? <p className="w-full text-sm text-red-700" role="alert">{error}</p> : null}
+    </form>
   );
 }
 

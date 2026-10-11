@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AuthCardLayout } from "@/components/auth/auth-card-layout";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 import { SignUpFormSkeleton } from "@/components/auth/sign-up-form-skeleton";
+import { isRealWorkspace } from "@/lib/env/workspace";
 
 export const metadata: Metadata = {
   title: "Start free",
@@ -34,7 +35,7 @@ export default function SignupPage() {
       }
     >
       <div id="signup-static-shell">
-        <SignUpFormSkeleton />
+        <SignUpFormSkeleton realWorkspace={isRealWorkspace()} />
       </div>
       <SignUpForm />
     </AuthCardLayout>

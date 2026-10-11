@@ -265,6 +265,7 @@ function SignUpFormWithSearchParams() {
 }
 
 export function SignUpForm() {
+  const real = useRealWorkspace();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -276,7 +277,7 @@ export function SignUpForm() {
   }
 
   return (
-    <Suspense fallback={<SignUpFormSkeleton />}>
+    <Suspense fallback={<SignUpFormSkeleton realWorkspace={real} />}>
       <SignUpFormWithSearchParams />
     </Suspense>
   );

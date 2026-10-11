@@ -24,6 +24,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const actor = await requireActor();
   if (actor instanceof NextResponse) return actor;
+  if (actor.role === "patient") return NextResponse.json({ error: "Patient accounts cannot create an organisation" }, { status: 403 });
   try {
     const input = createOrganisationSchema.parse(await request.json().catch(() => ({})));
     return NextResponse.json(await createOrganisation(actor, input), { status: 201 });
