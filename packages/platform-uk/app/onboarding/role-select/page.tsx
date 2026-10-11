@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { OnboardingNav } from "@/components/onboarding/OnboardingNav";
@@ -13,6 +13,8 @@ import {
   type UserRole,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
+import { REAL_ROLES } from "@/lib/env/workspace";
 
 function RoleSelectContent() {
   const router = useRouter();
@@ -22,17 +24,20 @@ function RoleSelectContent() {
   const setRole = useOnboardingStore((s) => s.setRole);
   const storedRole = useOnboardingStore((s) => s.role);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  // The real workspace offers only roles with a working product (clinic staff and patients).
+  const real = useRealWorkspace();
+  const roles = useMemo(() => (real ? ROLES.filter((r) => REAL_ROLES.has(r.id)) : ROLES), [real]);
 
   useEffect(() => {
     if (roleParam) {
       const mapped = (SIGNUP_ROLE_MAP[roleParam] ?? roleParam) as UserRole;
-      if (ROLES.some((r) => r.id === mapped)) {
+      if (roles.some((r) => r.id === mapped)) {
         setSelected(mapped);
       }
-    } else if (storedRole) {
+    } else if (storedRole && roles.some((r) => r.id === storedRole)) {
       setSelected(storedRole);
     }
-  }, [roleParam, setSelected, storedRole]);
+  }, [roleParam, setSelected, storedRole, roles]);
 
   function handleContinue() {
     if (!selected) return;
@@ -62,10 +67,10 @@ function RoleSelectContent() {
     <OnboardingCard
       stepId="role-select"
       title="Choose your role"
-      description="Setup takes about two minutes. You start in a sandbox workspace; real patient data only arrives when your organisation goes live."
+      description={real ? "Setup takes about two minutes." : "Setup takes about two minutes. You start in a sandbox workspace; real patient data only arrives when your organisation goes live."}
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {ROLES.map((role) => (
+        {roles.map((role) => (
           <RoleTile
             key={role.id}
             role={role}

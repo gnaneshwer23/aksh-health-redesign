@@ -274,6 +274,8 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         )).rows[0];
         if (!cand) throw new NetworkError("Candidate not found", 404);
         if (cand.rank === null) throw new NetworkError("EXCLUDED_CANDIDATE: this patient did not pass the eligibility rules", 409);
+        // For the weekly review: did staff take Aksh's top remaining candidate, or choose someone else?
+        const topRank = (await client.query<{ top: number | null }>(`SELECT min(rank)::int AS top FROM aksh.access_candidates WHERE workflow_id = $1`, [wf.id])).rows[0]?.top ?? null;
         const entry = await client.query(`UPDATE aksh.waitlist_entries SET status = 'offered' WHERE id = $1 AND status = 'waiting' RETURNING id`, [cand.waitlist_entry_id]);
         if (!entry.rowCount) throw new NetworkError("CANDIDATE_NO_LONGER_WAITING: re-run matching", 409);
         const facts = (await client.query<{ given_name: string; org_name: string; timezone: string | null }>(
@@ -291,7 +293,7 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         });
         await client.query(`UPDATE aksh.access_slots SET state = 'offered' WHERE id = $1`, [slot.id]);
         await client.query(`UPDATE aksh.access_workflows SET selected_candidate_id = $2, offer_text = $3, template_version = $4 WHERE id = $1`, [wf.id, cand.id, offer, TEMPLATE_VERSION]);
-        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, patientId: cand.patient_id, templateVersion: TEMPLATE_VERSION });
+        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, patientId: cand.patient_id, templateVersion: TEMPLATE_VERSION, rank: cand.rank, topRanked: cand.rank === topRank });
         return { action_type: "select", to_state: "OFFER_DRAFTED", result_code: "OFFER_DRAFTED", detail: { offer }, replay: false };
       }
       case "skip": {

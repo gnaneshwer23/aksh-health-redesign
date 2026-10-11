@@ -3,6 +3,7 @@
 import { PatientCompanion } from "@/components/dashboard/PatientCompanion";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { LinkedNetworkPatientView, UnlinkedPatientView } from "@/components/dashboard/patient/SelfServePatientViews";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 
 export default function PatientDashboardPage() {
@@ -10,7 +11,9 @@ export default function PatientDashboardPage() {
   const patientTitle = profile?.fullName?.trim() ? `${profile.fullName}'s Health` : "My Health";
   const preferences = profile?.preferences ?? {};
   // Self-serve accounts (created through sign-up) never fall back to another patient's demo chart.
-  const selfServe = preferences.workspace === "synthetic";
+  // The real workspace never shows the sample patient companion.
+  const real = useRealWorkspace();
+  const selfServe = real || preferences.workspace === "synthetic";
   const bound = typeof preferences.boundPatientId === "string" ? preferences.boundPatientId : null;
 
   return (

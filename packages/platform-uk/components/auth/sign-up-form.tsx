@@ -23,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { signUpSchema, type SignUpInput } from "@/lib/auth/schemas";
 import { ROLES, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
+import { REAL_ROLES } from "@/lib/env/workspace";
 
 function resolveInitialRole(roleParam: string | null): UserRole {
   if (!roleParam) return "gp";
@@ -31,7 +33,10 @@ function resolveInitialRole(roleParam: string | null): UserRole {
 
 function SignUpFormFields({ initialRoleParam }: { initialRoleParam: string | null }) {
   const router = useRouter();
-  const initialRole = resolveInitialRole(initialRoleParam);
+  const real = useRealWorkspace();
+  const roles = real ? ROLES.filter((r) => REAL_ROLES.has(r.id)) : ROLES;
+  const requested = resolveInitialRole(initialRoleParam);
+  const initialRole = roles.some((r) => r.id === requested) ? requested : "gp";
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -152,7 +157,7 @@ function SignUpFormFields({ initialRoleParam }: { initialRoleParam: string | nul
                     className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4"
                     data-testid="signup-role-grid"
                   >
-                    {ROLES.map((role) => (
+                    {roles.map((role) => (
                       <RoleTile
                         key={role.id}
                         role={role}

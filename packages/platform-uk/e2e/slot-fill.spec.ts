@@ -40,4 +40,18 @@ test("slot fill: staff match a freed slot, draft an offer in shadow mode, and bo
   await expect(page.getByText("Accepted is not booked.")).toBeVisible();
   await page.getByRole("button", { name: "Booking shows in our schedule" }).click();
   await expect(page.getByRole("status").filter({ hasText: "booked verified" })).toBeVisible();
+
+  // Weekly pilot review: this week shows the booking; last week (complete) can be signed off by the admin.
+  const monday = new Date();
+  monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
+  const thisWeek = monday.toISOString().slice(0, 10);
+  await page.goto(`/dashboard/access/review?org=${org.id}&week=${thisWeek}`);
+  await expect(page.locator("[data-review-title]")).toContainText("Slot Clinic", { timeout: 20_000 });
+  await expect(page.locator("[data-review-funnel]")).toContainText("Filled (booked and verified in time)1");
+  await expect(page.getByText("You can sign off once the week has ended.")).toBeVisible();
+  await page.getByRole("button", { name: "Previous week" }).click();
+  await page.getByLabel("Review summary").fill("Rehearsal week: no slots yet.");
+  await page.getByRole("button", { name: "Sign off this week" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Signed off" })).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("[data-signoff]")).toContainText("Rehearsal week: no slots yet.");
 });

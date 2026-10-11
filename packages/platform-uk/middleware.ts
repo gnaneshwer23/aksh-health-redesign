@@ -7,6 +7,7 @@ import {
   resolvePostAuthRedirect,
 } from "@/lib/auth/redirects";
 import { nextAuthSecret } from "@/lib/auth-secret";
+import { isRealWorkspace, realHomeFor, realWorkspaceRedirect } from "@/lib/env/workspace";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 const publicRoutePrefixes = [
@@ -76,16 +77,25 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthEntryPath(pathname) && isAuthenticated) {
-    const destination = resolvePostAuthRedirect({
+    let destination = resolvePostAuthRedirect({
       onboardingComplete,
       role,
       callbackUrl: request.nextUrl.searchParams.get("callbackUrl"),
     });
+    if (isRealWorkspace() && onboardingComplete) destination = realWorkspaceRedirect(destination, role) ?? destination;
     return NextResponse.redirect(new URL(destination, request.url));
   }
 
+  const real = isRealWorkspace();
+
+  if (!isAuthEntryPath(pathname) && real && isAuthenticated && onboardingComplete) {
+    const target = realWorkspaceRedirect(pathname, role);
+    if (target && target !== pathname) return NextResponse.redirect(new URL(target, request.url));
+  }
+
+  // The real workspace has no signed-out demo dashboards.
   const isPublicDemoDashboard =
-    !isAuthenticated && matchesPrefix(pathname, publicDemoDashboardPrefixes);
+    !real && !isAuthenticated && matchesPrefix(pathname, publicDemoDashboardPrefixes);
 
   if (isPublicDemoDashboard) {
     return NextResponse.next();
@@ -106,7 +116,7 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthenticated && pathname.startsWith("/onboarding") && onboardingComplete) {
     return NextResponse.redirect(
-      new URL(resolvePostAuthRedirect({ onboardingComplete: true, role }), request.url)
+      new URL(real ? realHomeFor(role) : resolvePostAuthRedirect({ onboardingComplete: true, role }), request.url)
     );
   }
 
@@ -115,7 +125,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthenticated && pathname.startsWith("/dashboard") && onboardingComplete && role) {
-    if (!isAllowedDashboardPath(pathname, role)) {
+    if (!real && !isAllowedDashboardPath(pathname, role)) {
       return NextResponse.redirect(
         new URL(resolvePostAuthRedirect({ onboardingComplete: true, role }), request.url)
       );

@@ -14,6 +14,7 @@ import { sendEmail } from "@/lib/email/send";
 import { reportError } from "@/lib/monitoring";
 import { upsertOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { getRoleDefinition, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
+import { isRealWorkspace, REAL_ROLES } from "@/lib/env/workspace";
 
 export async function POST(request: Request) {
   const rateLimited = await enforceSignupRateLimit(request);
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
 
   const { email, password, role, fullName } = parsed.data;
   const mappedRole = (SIGNUP_ROLE_MAP[role] ?? role) as UserRole;
+  if (isRealWorkspace() && !REAL_ROLES.has(mappedRole)) {
+    return NextResponse.json({ error: "This role is not available yet" }, { status: 400 });
+  }
 
   try {
     const existing = await findUserByEmail(email);

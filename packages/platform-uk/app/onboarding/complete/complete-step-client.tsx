@@ -12,6 +12,8 @@ import { resolvePostAuthRedirect } from "@/lib/auth/redirects";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { getRoleDefinition } from "@/lib/onboarding/roles";
 import { markOnboardingComplete, useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
+import { realHomeFor } from "@/lib/env/workspace";
 
 export function CompleteStepClient() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export function CompleteStepClient() {
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
   const [submitting, setSubmitting] = useState(false);
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -88,10 +91,7 @@ export function CompleteStepClient() {
       markStepComplete(def?.steps.indexOf("complete") ?? def?.steps.length ?? 0);
       markOnboardingComplete(role);
 
-      const destination = resolvePostAuthRedirect({
-        onboardingComplete: true,
-        role,
-      });
+      const destination = real ? realHomeFor(role) : resolvePostAuthRedirect({ onboardingComplete: true, role });
       window.location.assign(destination);
     } catch (error) {
       const message =
@@ -108,15 +108,19 @@ export function CompleteStepClient() {
     <OnboardingCard
       stepId="complete"
       title="You're ready"
-      description={`Welcome, ${displayName}. Your ${def?.label} workspace is set up. Capture, draft, then approve — a clinician decides what reaches the record.`}
+      description={
+        real
+          ? `Welcome, ${displayName}. Your account is set up.`
+          : `Welcome, ${displayName}. Your ${def?.label} workspace is set up. Capture, draft, then approve — a clinician decides what reaches the record.`
+      }
     >
-      <SandboxPreview />
+      {real ? null : <SandboxPreview />}
       <div className="mt-6 space-y-4">
         <Button type="button" onClick={handleComplete} disabled={submitting}>
           {submitting ? "Opening your dashboard…" : "Go to your dashboard"}
         </Button>
         <p className="text-xs text-muted">
-          This marks your profile ready and opens your role home with a short first-run tip.
+          {real ? "This finishes setup and opens Today." : "This marks your profile ready and opens your role home with a short first-run tip."}
         </p>
       </div>
     </OnboardingCard>
