@@ -46,7 +46,8 @@ async function deleteDemoUsers(pool, userIds) {
   let result;
   try {
     await client.query("BEGIN");
-    if (marker.rows[0]?.deployment !== "production") await client.query("SET LOCAL aksh.purge_test_data = 'on'");
+    // Purge only with an explicit simulation marker; anywhere else the append-only history stays (the delete fails).
+    if (marker.rows[0]?.deployment === "simulation") await client.query("SET LOCAL aksh.purge_test_data = 'on'");
     result = await client.query(`DELETE FROM aksh.users WHERE id = ANY($1::text[])`, [userIds]);
     await client.query("COMMIT");
   } catch (error) {

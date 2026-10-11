@@ -434,7 +434,7 @@ export async function getWorkflow(ctx: NetworkContext, workflowId: string) {
 }
 
 /**
- * Pilot metric (slot-fill-v1). Fill rate = slots booked and verified before expiry ÷ eligible slots received in the
+ * Pilot metric (slot-fill-v1.2, definition in measurement.ts FILLED_SQL). Fill rate over slots received in the
  * window (withdrawn slots excluded). Guardrails are reported alongside, never folded into the headline number.
  */
 export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowDays = 30) {
@@ -460,7 +460,7 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
       [orgId ?? null, windowDays]
     )).rows[0]!;
     return {
-      metricVersion: "slot-fill-v1.1",
+      metricVersion: "slot-fill-v1.2",
       windowDays,
       definition: FILL_DEFINITION,
       fillRatePct: r.eligible_slots ? Math.round((r.booked_verified / r.eligible_slots) * 1000) / 10 : null,

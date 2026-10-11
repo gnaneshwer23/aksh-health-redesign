@@ -280,7 +280,7 @@ export function CareNetworkConsole() {
                       <p className="rounded-lg bg-surface-muted px-3 py-2 text-xs">CGM: time in range {detail.cgm.timeInRangePct}%{detail.cgm.timeBelowRangePct !== null ? `, below range ${detail.cgm.timeBelowRangePct}%` : ""}</p>
                     ) : null}
                     {/* Renders nothing unless the caller may see this patient's CGM (staff of a visible organisation). */}
-                    <CgmPanel base={`/api/network/patients/${detail.id}/cgm`} audience="clinician" />
+                    <CgmPanel key={detail.id} base={`/api/network/patients/${detail.id}/cgm`} audience="clinician" />
                     <div>
                       <p className="mb-1 text-xs font-medium text-foreground">Medicines</p>
                       <ul className="m-0 list-none p-0 space-y-0.5 text-xs text-muted">{detail.medications.length ? detail.medications.map((m) => <li key={m.name}>{m.name}{m.class ? ` (${m.class})` : ""}{m.dose ? `, ${m.dose}` : ""}</li>) : <li>None recorded</li>}</ul>

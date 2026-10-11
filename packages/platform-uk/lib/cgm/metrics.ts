@@ -48,6 +48,7 @@ export function consensusFlags(m: { veryLow: number; low: number; inRange: numbe
   if (m.veryLow >= 1) flags.push("time below 3.0 mmol/L is 1% or more");
   if (m.veryLow + m.low >= 4) flags.push("time below range is 4% or more");
   if (m.inRange < 70) flags.push("time in range is under 70%");
+  if (100 - m.veryLow - m.low - m.inRange >= 25) flags.push("time above range is 25% or more");
   if (m.veryHigh >= 5) flags.push("time above 13.9 mmol/L is 5% or more");
   if (m.cvPct > 36) flags.push("glucose variability (CV) is above 36%");
   if (!m.sufficient) flags.push(`not enough data for reliable metrics (${m.days} days, ${round1(m.wearPct)}% wear; needs 14 days and 70%)`);
@@ -60,7 +61,7 @@ export function urgency(m: { veryLow: number; low: number; inRange: number; very
   if (m.veryLow + m.low >= 4) return 1;
   if (m.stale) return 2;
   if (m.veryHigh >= 5 || m.inRange < 50) return 3;
-  if (m.inRange < 70) return 4;
+  if (m.inRange < 70 || 100 - m.veryLow - m.low - m.inRange >= 25) return 4;
   if (!m.sufficient) return 5;
   return 6;
 }
@@ -85,7 +86,8 @@ export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now(
   const interval = samplingInterval(points);
   const firstT = Date.parse(points[0]!.at);
   const lastT = Date.parse(points[n - 1]!.at);
-  const days = Math.max(1, Math.round((lastT - firstT) / 86_400_000));
+  // Days actually covered (the last reading covers one interval); never rounded up, so 13.5 days is not "14".
+  const days = Math.floor(((lastT - firstT) / 60_000 + interval) / 1440);
   const expected = (windowDays * 24 * 60) / interval;
   const wear = Math.min(100, (n / expected) * 100);
   const meanMgdl = mean * 18.0182;

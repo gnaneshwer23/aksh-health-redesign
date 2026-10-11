@@ -1,6 +1,6 @@
 /**
  * Measurement against the baseline the organisation locked at go-live. Same metric definition as the pilot metric
- * (slot-fill-v1.1): see FILLED_SQL. Before go-live the period is the last 30
+ * (slot-fill-v1.2): see FILLED_SQL. Before go-live the period is the last 30
  * days and labelled rehearsal. No verdict until both sides have enough slots; the interval is shown, not hidden.
  */
 import { deriveItems, type GoLiveEvent } from "@/lib/golive/checklist";
@@ -89,7 +89,7 @@ export async function getMeasurement(ctx: NetworkContext, orgId: string) {
     )).rows;
     const rate = (n: number, d: number) => (d ? Math.round((n / d) * 1000) / 10 : null);
     return {
-      metricVersion: "slot-fill-v1.1",
+      metricVersion: "slot-fill-v1.2",
       definition: FILL_DEFINITION,
       mode: live ? ("live_shadow" as const) : ("rehearsal" as const),
       period: { since: since.toISOString(), label: live ? "Since go-live" : "Last 30 days (rehearsal, before go-live)" },

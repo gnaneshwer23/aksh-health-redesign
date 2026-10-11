@@ -8,6 +8,7 @@ import { randomUUID } from "node:crypto";
 
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
 import { withTenant } from "../lib/network/db";
@@ -48,7 +49,10 @@ async function rejects(p: Promise<unknown>, status: number) {
 
 async function run() {
   pure();
-  if (isPostgresConfigured()) await assertNotProductionDatabase(getPgPool(), "test");
+  if (isPostgresConfigured()) {
+    assertSeedingAllowed("readings-db");
+    await assertNotProductionDatabase(getPgPool(), "readings-db");
+  }
   if (!isPostgresConfigured()) return console.log("readings-db: rules PASS; DB part skipped (no DATABASE_URL)");
   const tag = randomUUID().slice(0, 6);
 

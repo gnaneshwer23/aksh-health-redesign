@@ -7,13 +7,15 @@ import { applyApiCookiesToPage, createOnboardedTestUser } from "./helpers/auth";
  * Week 9 "done when": a device feed pushes CGM readings (FHIR Observation) and the clinician's worklist puts the
  * patient with low glucose first; opening the row shows the full CGM view.
  */
+// One base time for every batch, so the fortnight is exactly 14 days however long the uploads take.
+const BASE = Date.now();
 const observation = (mrn: string, minutesAgo: number, mmol: number) => ({
   resource: {
     resourceType: "Observation",
     status: "final",
     code: { coding: [{ system: "http://loinc.org", code: "14745-4", display: "Glucose [Moles/volume] in Body fluid" }] },
     valueQuantity: { value: mmol, unit: "mmol/L", code: "mmol/L" },
-    effectiveDateTime: new Date(Date.now() - minutesAgo * 60_000).toISOString(),
+    effectiveDateTime: new Date(BASE - minutesAgo * 60_000).toISOString(),
     subject: { identifier: { value: mrn } },
   },
 });
