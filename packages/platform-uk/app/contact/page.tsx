@@ -21,12 +21,6 @@ const contacts = [
     cta: "Bring Aksh to your organisation",
   },
   {
-    title: "Product walkthrough",
-    body: "Synthetic Patel practice: consult, review queue, pharmacy, and audit.",
-    href: "/demo/patel",
-    cta: "Open walkthrough",
-  },
-  {
     title: "Security & clinical safety",
     body: "HITL gates, GDPR Art. 9 framing, and honest limits.",
     href: "/security",

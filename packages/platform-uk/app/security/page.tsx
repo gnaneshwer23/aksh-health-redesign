@@ -68,7 +68,6 @@ export default function SecurityPage() {
         title="Trust is a gate, not a slogan."
         lede="Human review, audit trails, and honest compliance language for clinical deployments — without inventing certifications."
         primary={{ label: "Request organisation access", href: "/get-started" }}
-        secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
       />
 
       <TrustStrip />
@@ -138,9 +137,8 @@ export default function SecurityPage() {
 
       <MarketingCtaBand
         title="Review the safety posture with your team"
-        lede="Walk the Patel case for human-in-the-loop in context, or request organisation access."
-        primary={{ label: "Open walkthrough", href: "/demo/patel" }}
-        secondary={{ label: "Request organisation access", href: "/get-started" }}
+        lede="Request organisation access and we will take your team through it."
+        primary={{ label: "Request organisation access", href: "/get-started" }}
       />
     </MarketingShell>
   );
