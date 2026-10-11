@@ -90,7 +90,7 @@ async function run() {
     for (const role of ["clinical_reviewer", "gp", "researcher", "operations_lead", "some-unrecognized-role"]) {
       const response = await postCheckIn(
         buildCheckInRequest({ patientId: PATIENT_A, role, boundPatientId: PATIENT_A }),
-        { params: { id: PATIENT_A } }
+        { params: Promise.resolve({ id: PATIENT_A }) }
       );
       assert.equal(
         response.status,
@@ -104,7 +104,7 @@ async function run() {
     // --- FR-CORE-005: a patient session with no bound patient id fails closed, not open ---
     const noBoundResponse = await postCheckIn(
       buildCheckInRequest({ patientId: PATIENT_A, role: "patient" }),
-      { params: { id: PATIENT_A } }
+      { params: Promise.resolve({ id: PATIENT_A }) }
     );
     assert.equal(noBoundResponse.status, 403);
     const noBoundBody = (await noBoundResponse.json()) as { error?: string; denied?: boolean };
@@ -114,7 +114,7 @@ async function run() {
     // --- FR-PER-006/FR-PER-014: patient A's session cannot write to patient B's check-in record ---
     const crossPatientResponse = await postCheckIn(
       buildCheckInRequest({ patientId: PATIENT_B, role: "patient", boundPatientId: PATIENT_A }),
-      { params: { id: PATIENT_B } }
+      { params: Promise.resolve({ id: PATIENT_B }) }
     );
     assert.equal(crossPatientResponse.status, 403);
     const crossPatientBody = (await crossPatientResponse.json()) as { error?: string; denied?: boolean };
@@ -129,7 +129,7 @@ async function run() {
         boundPatientId: PATIENT_A,
         body: { mood: "okay", symptomText: "Feeling a bit tired", medicationAdherence: "yes" }
       }),
-      { params: { id: PATIENT_A } }
+      { params: Promise.resolve({ id: PATIENT_A }) }
     );
     assert.equal(okResponse.status, 200);
     const okBody = (await okResponse.json()) as {
@@ -159,7 +159,7 @@ async function run() {
         boundPatientId: PATIENT_A,
         body: { mood: "struggling", symptomText: "I have been thinking about ending my life" }
       }),
-      { params: { id: PATIENT_A } }
+      { params: Promise.resolve({ id: PATIENT_A }) }
     );
     assert.equal(escalationResponse.status, 200);
     const escalationBody = (await escalationResponse.json()) as {

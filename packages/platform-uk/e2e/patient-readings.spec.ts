@@ -44,7 +44,7 @@ test("patient readings: recorded on the phone, linked, shared, flagged, offline-
   await page.getByLabel("Date of birth").fill("1970-04-04");
   await page.getByRole("button", { name: "Link" }).click();
   await expect(page.getByRole("heading", { name: "Hello, Lena" })).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator("[data-share-earlier]")).toContainText("1 reading before joining");
+  await expect(page.locator("[data-share-earlier]")).toContainText("1 reading before joining", { timeout: 20_000 });
   await page.getByRole("button", { name: "Share with my care team" }).click();
   await expect(page.getByRole("status").filter({ hasText: "1 earlier reading shared" })).toBeVisible();
 

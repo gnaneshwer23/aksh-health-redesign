@@ -2,11 +2,12 @@ import { BenchmarkDrilldownPage } from "@/components/review/benchmark-drilldown-
 
 export const dynamic = "force-dynamic";
 
-export default function ReviewBenchmarksPage({
-  searchParams
-}: {
-  searchParams?: { demo?: string; recording?: string; status?: string };
-}) {
+export default async function ReviewBenchmarksPage(
+  props: {
+    searchParams?: Promise<{ demo?: string; recording?: string; status?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   return (
     <BenchmarkDrilldownPage
       demoMode={searchParams?.demo === "1"}

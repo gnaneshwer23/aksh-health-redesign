@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** GET /api/access/workflows/:id — slot, ranked candidates with reasons, action history and hand-offs. */
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

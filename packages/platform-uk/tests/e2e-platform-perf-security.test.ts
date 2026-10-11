@@ -124,7 +124,7 @@ async function run() {
         headers: authHeaders("patient", { "x-bound-patient-id": "E2P001" }),
         body: JSON.stringify({ mood: "okay" }),
       }),
-      { params: { id: "E2P002" } }
+      { params: Promise.resolve({ id: "E2P002" }) }
     );
     assert.equal(crossCheckIn.status, 403, "0016: cross-patient check-in denied");
 
@@ -132,7 +132,7 @@ async function run() {
       new Request("http://localhost/api/patients/P002/state", {
         headers: authHeaders("researcher"),
       }),
-      { params: { id: "P002" } }
+      { params: Promise.resolve({ id: "P002" }) }
     );
     assert.equal(researcherState.status, 403, "0016: researcher denied patient state");
   } finally {

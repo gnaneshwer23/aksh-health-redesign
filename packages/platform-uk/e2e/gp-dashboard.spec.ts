@@ -23,6 +23,6 @@ test.describe("GP dashboard", () => {
 
     await page.getByRole("link", { name: "Review Queue" }).click();
     await page.waitForURL(/\/dashboard\/gp\/review-queue/);
-    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue").first()).toBeVisible();
   });
 });

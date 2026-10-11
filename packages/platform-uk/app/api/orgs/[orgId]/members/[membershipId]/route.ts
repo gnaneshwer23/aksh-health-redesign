@@ -6,7 +6,11 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** PATCH /api/orgs/:orgId/members/:membershipId — suspend/reactivate, role, admin (admins only). */
-export async function PATCH(request: Request, { params }: { params: { orgId: string; membershipId: string } }) {
+export async function PATCH(
+  request: Request,
+  props: { params: Promise<{ orgId: string; membershipId: string }> }
+) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

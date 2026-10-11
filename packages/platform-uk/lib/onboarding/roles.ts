@@ -59,7 +59,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#003D7A",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/gp",
-    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring"],
+    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -70,7 +70,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#006B4F",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/nurse",
-    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring"],
+    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -81,7 +81,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#6B46C1",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/pharmacist",
-    alternateDashboardPaths: ["/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring"],
+    alternateDashboardPaths: ["/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -92,7 +92,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#64748B",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/admin",
-    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform"],
+    alternateDashboardPaths: ["/dashboard/front-desk", "/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -103,7 +103,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#0D9488",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/ics",
-    alternateDashboardPaths: ["/dashboard/regional", "/dashboard/network", "/dashboard/organisation", "/dashboard/platform"],
+    alternateDashboardPaths: ["/dashboard/regional", "/dashboard/network", "/dashboard/organisation", "/dashboard/platform", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -114,7 +114,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#001A3D",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/hospital",
-    alternateDashboardPaths: ["/dashboard/platform"],
+    alternateDashboardPaths: ["/dashboard/platform", "/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -125,6 +125,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#0EA5E9",
     steps: ["role-select", "identity", "consent", "tutorial", "complete"],
     dashboardPath: "/dashboard/patient",
+    alternateDashboardPaths: ["/dashboard/security"],
     hasTutorial: true,
   },
   {
@@ -135,7 +136,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#E67E22",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/researcher",
-    alternateDashboardPaths: ["/dashboard/platform"],
+    alternateDashboardPaths: ["/dashboard/platform", "/dashboard/security"],
     hasTutorial: true,
   },
 ];

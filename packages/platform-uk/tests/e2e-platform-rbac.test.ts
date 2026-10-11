@@ -50,14 +50,14 @@ async function run() {
     // AKSH-E2E-RBAC-001 — unauthenticated patient state
     const unauthState = await getPatientState(
       new Request(`http://localhost/api/patients/${PATIENT_A}/state`),
-      { params: { id: PATIENT_A } }
+      { params: Promise.resolve({ id: PATIENT_A }) }
     );
     assert.equal(unauthState.status, 401, E2E_RBAC_NEGATIVE_CASES[0]!.testId);
 
     // GP may read patient state (authenticated)
     const gpState = await getPatientState(
       new Request(`http://localhost/api/patients/P002/state`, { headers: authHeaders("gp") }),
-      { params: { id: "P002" } }
+      { params: Promise.resolve({ id: "P002" }) }
     );
     assert.equal(gpState.status, 200, "clinical reviewer may read patient state");
 
@@ -69,7 +69,7 @@ async function run() {
           headers: authHeaders(role),
           body: JSON.stringify({ id: "case-e2e-rbac", status: "accepted" }),
         }),
-        { params: { id: "case-e2e-rbac" } }
+        { params: Promise.resolve({ id: "case-e2e-rbac" }) }
       );
       assert.equal(response.status, 403, `role ${role} must not Accept review cases`);
     }
@@ -80,7 +80,7 @@ async function run() {
         headers: authHeaders("gp"),
         body: JSON.stringify({ id: "case-e2e-rbac", status: "accepted" }),
       }),
-      { params: { id: "case-e2e-rbac" } }
+      { params: Promise.resolve({ id: "case-e2e-rbac" }) }
     );
     assert.notEqual(gpDecision.status, 403, "gp must not hit FR-PER-009 gate");
 
@@ -91,7 +91,7 @@ async function run() {
         headers: authHeaders("patient", { "x-bound-patient-id": PATIENT_A }),
         body: JSON.stringify({ mood: "okay" }),
       }),
-      { params: { id: PATIENT_B } }
+      { params: Promise.resolve({ id: PATIENT_B }) }
     );
     assert.equal(crossCheckIn.status, 403);
     const crossBody = (await crossCheckIn.json()) as { denied?: boolean };
@@ -138,7 +138,7 @@ async function run() {
     // AKSH-E2E-RBAC-007 — researcher denied patient state (Stage 5)
     const researcherState = await getPatientState(
       new Request("http://localhost/api/patients/P002/state", { headers: authHeaders("researcher") }),
-      { params: { id: "P002" } }
+      { params: Promise.resolve({ id: "P002" }) }
     );
     assert.equal(researcherState.status, 403);
 

@@ -9,11 +9,13 @@ project "Aksh Health Production" (`tiny-river-29853628`, `aws-eu-west-2` London)
 - **Point-in-time restore window: 6 hours** (Neon `history_retention_seconds = 21600` on the current plan).
   **Action for the founder:** before real patients, move production to a plan with at least 7 days (ideally 30) of
   history, or add a nightly logical backup to separate storage. A problem found after 6 hours cannot be undone today.
-- **Restore drill (done 2026-10-11, passed):**
+- **Restore drill (done twice on 2026-10-11, passed):**
   1. `npx neonctl branches create --project-id tiny-river-29853628 --name restore-drill-<date> --parent <UTC timestamp>`
   2. Connect with `npx neonctl connection-string restore-drill-<date> --project-id tiny-river-29853628` and check:
      migrations (`aksh.schema_migrations`), table count, `aksh.deployment_marker = production`, row counts.
-     Result: 33 migrations (latest `034_cgm_connector`), 43 tables, marker `production`, 0 accounts.
+     Result (drill 1, 08:23 UTC): 33 migrations (latest `034_cgm_connector`), 43 tables, marker `production`, 0 accounts.
+     Result (drill 2, restore point 10:23 UTC, after 035–037): 36 migrations (latest `037_mfa`), 48 tables, marker
+     `production`, two-step sign-in tables present. Both drill branches deleted.
   3. `npx neonctl branches delete restore-drill-<date> --project-id tiny-river-29853628`
   4. A real restore: create the branch as above, verify, then point Vercel `DATABASE_URL` at it (or restore the main
      branch from the timestamp in the Neon console). Record who, when and why in the audit log / incident notes.
@@ -66,3 +68,13 @@ invites, patient linking, readings, connectors and chat have their own limits.
 - Tailwind 3 build tooling (`braces`, `micromatch`, `chokidar`, `postcss-selector-parser`) and the PostCSS copy bundled
   by `next`: build time only, processing our own files; Tailwind stays on 3.4 by project rule.
 - Patched now: `next-auth` 4.24.15, `nodemailer` 10.0.6, `postcss` 8.5.28, `nanoid`, `uuid`, `source-map-js`.
+
+## Two-step sign-in (TOTP)
+
+- Users turn it on at `/dashboard/security` (authenticator app; 8 single-use recovery codes shown once).
+- **Required for go-live reviewers in production**; recommended for organisation admins.
+- Secrets are encrypted with `MFA_ENCRYPTION_KEY` (Vercel production, sensitive; set 2026-10-11). Losing or changing
+  that key makes existing secrets unreadable: every user would have to set two-step sign-in up again. Keep a copy in
+  the founder's password manager; never commit it.
+- A user who lost their phone and their recovery codes: verify identity out of band, then delete their rows from
+  `aksh.user_mfa` and `aksh.user_mfa_recovery` (owner connection) and record it in the incident notes.

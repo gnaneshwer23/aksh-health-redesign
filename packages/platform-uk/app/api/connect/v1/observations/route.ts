@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { authenticate, receiveObservations } from "@/lib/connector/service";
+import { BodyTooLargeError, readJsonLimited } from "@/lib/http/body";
 import { errorResponse } from "@/lib/network/http";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -19,9 +20,10 @@ export async function POST(request: Request) {
     const key = await authenticate(request.headers.get("authorization"));
     const limited = await checkRateLimit(`connector:${key.id}`, 120, 60_000);
     if (!limited.success) return rateLimitResponse(limited, "Too many requests for this connection. Slow down.");
-    const body = await request.json().catch(() => null);
+    const body = await readJsonLimited(request, 8 * 1024 * 1024);
     return NextResponse.json(await receiveObservations(key, body));
   } catch (error) {
+    if (error instanceof BodyTooLargeError) return NextResponse.json({ error: "Request too large (8 MB). Send fewer observations per request." }, { status: 413 });
     return errorResponse(error, "/api/connect/v1/observations");
   }
 }

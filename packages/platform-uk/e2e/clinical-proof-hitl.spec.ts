@@ -187,7 +187,7 @@ test.describe("Clinical proof — HITL non-bypass", () => {
     await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "hitl-ui" });
     await applyApiCookiesToPage(page, request);
     await page.goto("/dashboard/gp/review-queue");
-    await expect(page.getByTestId("gp-review-queue")).toBeVisible();
+    await expect(page.getByTestId("gp-review-queue").first()).toBeVisible();
 
     const pendingCard = page.locator("[data-review-item], article, .rounded-lg").filter({
       has: page.getByRole("button", { name: /Accept AI output/i }),

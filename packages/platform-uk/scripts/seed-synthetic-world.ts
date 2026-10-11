@@ -20,6 +20,7 @@ import pg from "pg";
 import { USERS_PROFILES_SQL } from "../lib/db/schema-sql";
 import { getSyntheticWorld, SYNTHETIC_EMAIL_DOMAIN } from "../lib/synthetic-world/generate";
 import { assertSeedingAllowed } from "../lib/env/deployment";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 
 type Account = { email: string; role: string; fullName: string; preferences: Record<string, unknown> };
 
@@ -66,6 +67,8 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is required for --apply.");
 
   const pool = new pg.Pool({ connectionString: url, max: 3 });
+
+  await assertNotProductionDatabase(pool, "seed-synthetic-world"); // the database itself must say simulation
   try {
     await pool.query(USERS_PROFILES_SQL);
     if (reset) {

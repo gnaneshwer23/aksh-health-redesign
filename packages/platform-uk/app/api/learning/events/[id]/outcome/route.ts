@@ -15,7 +15,7 @@ const OUTCOMES: LearningOutcomeKind[] = [
   "unknown"
 ];
 
-type RouteContext = { params: { id: string } };
+type RouteContext = { params: Promise<{ id: string }> };
 
 /**
  * Append-only eventual outcome link for an existing learning event.
@@ -25,7 +25,7 @@ export async function POST(request: Request, context: RouteContext) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
 
-  const sourceEventId = context.params.id?.trim();
+  const sourceEventId = (await context.params).id?.trim();
   if (!sourceEventId) {
     return NextResponse.json({ error: "Learning event id is required." }, { status: 400 });
   }

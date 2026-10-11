@@ -25,6 +25,8 @@ import { authConfig, isClinicalOAuthConfigured } from "@/lib/auth/config";
 
 function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
   const [error, setError] = useState("");
+  const [needCode, setNeedCode] = useState(false);
+  const [code, setCode] = useState("");
   const oauthReady = isClinicalOAuthConfigured();
 
   useEffect(() => {
@@ -44,10 +46,18 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
     const result = await signIn("credentials", {
       email: values.email,
       password: values.password,
+      ...(needCode ? { otp: code } : {}),
       redirect: false,
     });
 
     if (result?.error) {
+      if (result.error === "MFA_REQUIRED") {
+        setNeedCode(true);
+        setError("");
+        return;
+      }
+      if (result.error === "MFA_INVALID") return setError("That code didn't work. Use the current code from your authenticator app, or a recovery code.");
+      if (/Too many sign-in attempts/.test(result.error)) return setError(result.error);
       setError("Invalid email or password. Please try again.");
       return;
     }
@@ -179,6 +189,23 @@ function SignInFormFields({ callbackUrl }: { callbackUrl: string | null }) {
             .
           </p>
 
+          {needCode ? (
+            <div className="space-y-1" data-mfa-step>
+              <label className="text-sm font-medium text-foreground" htmlFor="signin-otp">Code from your authenticator app</label>
+              <Input
+                id="signin-otp"
+                data-testid="signin-otp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                autoFocus
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="6-digit code, or a recovery code"
+                className="rounded-xl"
+              />
+              <p className="text-xs text-muted">Two-step sign-in is on for this account.</p>
+            </div>
+          ) : null}
           <Button
             data-testid="signin-submit"
             type="submit"

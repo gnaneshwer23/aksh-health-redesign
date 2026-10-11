@@ -4,11 +4,12 @@ export const dynamic = "force-dynamic";
 
 const allowedFilters: DossierFilterId[] = ["strong", "incomplete", "near-promotion", "remediation"];
 
-export default function ReviewDossiersPage({
-  searchParams
-}: {
-  searchParams?: { filter?: string; demo?: string; recording?: string };
-}) {
+export default async function ReviewDossiersPage(
+  props: {
+    searchParams?: Promise<{ filter?: string; demo?: string; recording?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const requestedFilter = searchParams?.filter;
   const initialFilter: DossierFilterId =
     requestedFilter && allowedFilters.includes(requestedFilter as DossierFilterId)

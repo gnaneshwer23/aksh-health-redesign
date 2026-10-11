@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** POST /api/access/handoffs/:id — acknowledge, or close with a disposition. */
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

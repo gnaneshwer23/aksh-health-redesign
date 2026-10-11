@@ -52,6 +52,7 @@ function parseTimestamp(raw: string, order: DateOrder): Local | null {
   const t = raw.trim();
   let m = t.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/);
   if (m) {
+    if (m[7] && m[7] !== "Z" && (Number(m[7].slice(1, 3)) > 14 || Number(m[7].slice(-2)) > 59)) return null; // +99:99 is not an offset
     const off = m[7] ? (m[7] === "Z" ? 0 : (m[7][0] === "-" ? -1 : 1) * (Number(m[7].slice(1, 3)) * 60 + Number(m[7].slice(-2)))) : undefined;
     return { y: +m[1]!, mo: +m[2]!, d: +m[3]!, h: +m[4]!, mi: +m[5]!, s: +(m[6] ?? 0), offsetMin: off };
   }
@@ -93,7 +94,8 @@ export function zonedToInstant(l: Local, timeZone: string): Date | null {
   let guess = asUtc - offsetAt(asUtc);
   guess = asUtc - offsetAt(guess);
   // When clocks go back, one wall-clock hour happens twice: refuse to guess which (the caller reports the row).
-  for (const shift of [-3_600_000, 3_600_000]) {
+  // (Some zones shift by 30 minutes, e.g. Lord Howe Island; check both sizes of change.)
+  for (const shift of [-3_600_000, -1_800_000, 1_800_000, 3_600_000]) {
     const other = guess + shift;
     if (asUtc - offsetAt(other) === other) return null;
   }

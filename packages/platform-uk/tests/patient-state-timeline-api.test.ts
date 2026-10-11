@@ -38,7 +38,7 @@ async function testExistingFieldsUnchangedPlusNewFactsField() {
 
   const patientId = "P002";
   const response = await getPatientState(buildRouteRequest(`/api/patients/${patientId}/state`), {
-    params: { id: patientId }
+    params: Promise.resolve({ id: patientId })
   });
   assert.equal(response.status, 200);
   const body = (await response.json()) as Record<string, any>;
@@ -82,7 +82,7 @@ async function testFactsIncludeCurrentAndSupersededWithoutDropping() {
   });
 
   const response = await getPatientState(buildRouteRequest(`/api/patients/${patientId}/state`), {
-    params: { id: patientId }
+    params: Promise.resolve({ id: patientId })
   });
   const body = (await response.json()) as Record<string, any>;
 
@@ -103,7 +103,7 @@ async function testUnknownPatientReturnsHonestEmptyFacts() {
 
   const response = await getPatientState(
     buildRouteRequest("/api/patients/unknown-patient-does-not-exist/state"),
-    { params: { id: "unknown-patient-does-not-exist" } }
+    { params: Promise.resolve({ id: "unknown-patient-does-not-exist" }) }
   );
   assert.equal(response.status, 200);
   const body = (await response.json()) as Record<string, any>;

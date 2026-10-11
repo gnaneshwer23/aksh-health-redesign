@@ -8,7 +8,8 @@ import { patientLevelAccess } from "@/lib/network/access";
 export const dynamic = "force-dynamic";
 
 /** GET /api/network/patients/:id — one record, only if row-level security lets the caller see it. */
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const access = await patientLevelAccess();
   if (!access.allowed) return NextResponse.json({ error: access.reason }, { status: 403 });
   const ctx = await requestNetworkContext();

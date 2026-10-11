@@ -450,7 +450,7 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
          count(*) FILTER (WHERE w.state = 'FAILED_SAFE')::int AS failed_safe,
          count(*) FILTER (WHERE w.state NOT IN ('CLOSED', 'FAILED_SAFE', 'HANDOFF'))::int AS open_workflows
        FROM aksh.access_slots s JOIN aksh.access_workflows w ON w.slot_id = s.id
-       WHERE s.received_at > NOW() - make_interval(days => $2) AND ($1::text IS NULL OR s.organisation_id = $1)`,
+       WHERE s.received_at > NOW() - make_interval(days => $2) AND ($1::text IS NULL OR s.organisation_id = $1) AND s.source <> 'simulation'`,
       [orgId ?? null, windowDays]
     )).rows[0]!;
     const h = (await client.query<{ total: number; open: number; overdue: number }>(

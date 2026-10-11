@@ -15,6 +15,8 @@ declare module "next-auth" {
       image?: string | null;
       /** Bound patient id for patient-role self-scope (FR-CORE-005). */
       boundPatientId?: string | null;
+      /** This session passed a second factor at sign-in (set only by the credentials provider). */
+      mfaVerified?: boolean;
     };
     role?: UserRole;
     onboardingComplete?: boolean;
@@ -34,6 +36,7 @@ declare module "next-auth" {
     name?: string | null;
     organisation?: string | null;
     boundPatientId?: string | null;
+    mfaVerified?: boolean;
   }
 }
 
@@ -47,5 +50,6 @@ declare module "next-auth/jwt" {
     organisation?: string | null;
     /** Bound patient id for patient-role self-scope (FR-CORE-005). */
     boundPatientId?: string | null;
+    mfaVerified?: boolean;
   }
 }

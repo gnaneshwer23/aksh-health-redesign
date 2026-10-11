@@ -4,7 +4,8 @@ import { readReviewCaseById } from "../../../../../lib/review-case-repository";
 import { requireAuthenticatedUserScope } from "../../../../../lib/user-scope";
 import { buildEvidencePayload } from "../../../../../lib/workflow";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 

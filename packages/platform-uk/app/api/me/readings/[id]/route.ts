@@ -8,7 +8,8 @@ import { markEnteredInError } from "@/lib/readings/service";
 export const dynamic = "force-dynamic";
 
 /** PATCH /api/me/readings/:id { status: "entered_in_error" } — the patient withdraws an unchecked reading. */
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

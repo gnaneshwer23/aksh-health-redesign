@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** GET — schedule connections (keys are never returned, only their prefix). */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
@@ -17,7 +18,8 @@ export async function GET(_request: Request, { params }: { params: { orgId: stri
 }
 
 /** POST — create a connection; the API key is in this response only. Admins only. */
-export async function POST(request: Request, { params }: { params: { orgId: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

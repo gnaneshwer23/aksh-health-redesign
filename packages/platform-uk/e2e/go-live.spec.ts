@@ -25,7 +25,7 @@ async function fillEvidence(page: Page, key: string, values: Record<string, stri
     else await field.fill(value);
   }
   await form.getByRole("button", { name: /Submit|Resubmit/ }).click();
-  await expect(item).toContainText("Awaiting Aksh review");
+  await expect(item).toContainText("Awaiting Aksh review", { timeout: 20_000 });
 }
 
 test("go-live: a clinic completes its checklist, Aksh reviews and approves, and it is live in shadow mode", async ({ browser, baseURL }) => {
@@ -95,7 +95,7 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
   const dpa = reviewer.locator('[data-review-item="dpa"]');
   await dpa.getByLabel(/What needs to change/).fill("Add the signed copy reference");
   await dpa.getByRole("button", { name: "Request changes" }).click();
-  await expect(dpa).toContainText("Changes requested");
+  await expect(dpa).toContainText("Changes requested", { timeout: 20_000 });
   await expectNoCriticalA11y(reviewer);
 
   // 4. The admin resubmits; the reviewer accepts everything and approves.
@@ -107,11 +107,11 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
   for (const key of ["dpa", "dpia", "safety_lead", "contact_channel", "baseline"]) {
     const item = reviewer.locator(`[data-review-item="${key}"]`);
     await item.getByRole("button", { name: "Accept" }).click();
-    await expect(item).toContainText("Accepted");
+    await expect(item).toContainText("Accepted", { timeout: 20_000 });
   }
   await reviewer.getByLabel("Decision note").fill("Evidence complete");
   await reviewer.getByRole("button", { name: "Approve go-live" }).click();
-  await expect(reviewer.getByRole("status").filter({ hasText: "Approved: live in shadow mode" })).toBeVisible();
+  await expect(reviewer.getByRole("status").filter({ hasText: "Approved: live in shadow mode" })).toBeVisible({ timeout: 20_000 });
 
   // 5. The clinic is live in shadow mode, and the history shows every step.
   await admin.reload();

@@ -4,11 +4,12 @@ export const dynamic = "force-dynamic";
 
 const allowedFilters: MeetingPacketFilterId[] = ["strong", "incomplete", "near-promotion", "remediation"];
 
-export default function ReviewMeetingPacketPage({
-  searchParams
-}: {
-  searchParams?: { filter?: string; demo?: string; recording?: string };
-}) {
+export default async function ReviewMeetingPacketPage(
+  props: {
+    searchParams?: Promise<{ filter?: string; demo?: string; recording?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const requestedFilter = searchParams?.filter;
   const initialFilter: MeetingPacketFilterId =
     requestedFilter && allowedFilters.includes(requestedFilter as MeetingPacketFilterId)

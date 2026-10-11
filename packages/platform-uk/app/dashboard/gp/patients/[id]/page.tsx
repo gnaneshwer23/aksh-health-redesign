@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 
 import { CarePathwayTracker } from "@/components/dashboard/CarePathwayTracker";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -24,7 +24,8 @@ import { Button } from "@/components/ui/button";
 import { getPatientById, getPathwaysForPatient } from "@/lib/mock-data";
 import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
 
-export default function GpPatientDetailPage({ params }: { params: { id: string } }) {
+export default function GpPatientDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
   const [twinSeed, setTwinSeed] = useState<TwinSimulationResult | null>(null);
   const patient = getPatientById(params.id);

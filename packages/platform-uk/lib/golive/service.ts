@@ -6,6 +6,7 @@
 import type { PoolClient } from "pg";
 import { z } from "zod";
 
+import { isMfaEnabled } from "@/lib/auth/mfa";
 import { getDeploymentEnvironment } from "@/lib/env/deployment";
 import { audit, withPrivileged, type NetworkContext } from "@/lib/network/db";
 import { LICENSED_ROLES, NetworkError } from "@/lib/network/service";
@@ -20,6 +21,10 @@ export async function isPlatformAdmin(userId: string): Promise<boolean> {
 
 export async function requirePlatformAdmin(userId: string, orgId?: string) {
   if (!(await isPlatformAdmin(userId))) throw new NetworkError("Not found", 404);
+  // Go-live decisions in production need two-step sign-in (the session itself then implies a second factor).
+  if (getDeploymentEnvironment() === "production" && !(await isMfaEnabled(userId))) {
+    throw new NetworkError("MFA_REQUIRED: turn on two-step sign-in (Security) before reviewing go-live", 403);
+  }
   if (orgId) {
     const member = await withPrivileged(async (c) => (await c.query(`SELECT 1 FROM aksh.memberships WHERE organisation_id = $1 AND user_id = $2`, [orgId, userId])).rowCount);
     if (member) throw new NetworkError("CONFLICT_OF_INTEREST: you are a member of this organisation; another Aksh admin must review it", 403);

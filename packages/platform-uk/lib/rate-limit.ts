@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
 
 import { getPgPool, isPostgresConfigured } from "./db/client";
 
@@ -31,7 +31,7 @@ export async function checkRateLimit(key: string, limit: number, windowMs: numbe
       `INSERT INTO aksh.rate_limits (key_hash, window_start, count) VALUES ($1, $2, 1)
        ON CONFLICT (key_hash, window_start) DO UPDATE SET count = aksh.rate_limits.count + 1
        RETURNING count`,
-      [createHash("sha256").update(key).digest("hex"), new Date(windowStart)]
+      [hashKey(key), new Date(windowStart)]
     );
     const count = r.rows[0]!.count;
     if (count > limit) {
@@ -41,6 +41,14 @@ export async function checkRateLimit(key: string, limit: number, windowMs: numbe
   } catch {
     return checkMemoryRateLimit(key, limit, windowMs);
   }
+}
+
+/**
+ * Keys contain addresses and emails: a keyed HMAC (server secret) so a copy of the table cannot be reversed by hashing
+ * guesses.
+ */
+export function hashKey(key: string) {
+  return createHmac("sha256", process.env.RATE_LIMIT_SECRET?.trim() || process.env.NEXTAUTH_SECRET || "local-development").update(key).digest("hex");
 }
 
 /** Per-instance fallback (and the previous behaviour). */

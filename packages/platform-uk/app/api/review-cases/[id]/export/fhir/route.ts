@@ -10,7 +10,8 @@ import { resolveAcceptStagingBundle } from "@/lib/bridge-staging";
  * Download clinician-accepted FHIR Bundle handoff (application/fhir+json).
  * Manual filing / demo handoff only — NOT network write-back · liveEmis:false.
  */
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
 

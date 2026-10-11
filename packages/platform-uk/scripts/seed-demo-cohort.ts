@@ -36,6 +36,7 @@ import {
 } from "../lib/clinical-proof/learning-loop";
 import { USERS_PROFILES_SQL, EMAIL_VERIFICATION_SQL, LEARNING_EVENTS_SQL } from "../lib/db/schema-sql";
 import { assertSeedingAllowed } from "../lib/env/deployment";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 
 const { Pool } = pg;
 const root = process.cwd();
@@ -408,6 +409,7 @@ async function run() {
 
   const password = resolvePassword();
   const pool = new Pool({ connectionString: getDatabaseUrl(), max: 3 });
+  await assertNotProductionDatabase(pool, "seed-demo-cohort"); // the database itself must say simulation
 
   try {
     await ensureAuthSchema(pool);

@@ -99,7 +99,7 @@ async function testStateRouteRbac() {
   try {
     const researcher = await getPatientState(
       new Request("http://localhost/api/patients/P002/state", { headers: authHeaders("researcher") }),
-      { params: { id: "P002" } }
+      { params: Promise.resolve({ id: "P002" }) }
     );
     assert.equal(researcher.status, 403);
 
@@ -107,13 +107,13 @@ async function testStateRouteRbac() {
       new Request("http://localhost/api/patients/P003/state", {
         headers: authHeaders("patient", { "x-bound-patient-id": "P002" }),
       }),
-      { params: { id: "P003" } }
+      { params: Promise.resolve({ id: "P003" }) }
     );
     assert.equal(crossPatient.status, 403);
 
     const gp = await getPatientState(
       new Request("http://localhost/api/patients/P002/state", { headers: authHeaders("gp") }),
-      { params: { id: "P002" } }
+      { params: Promise.resolve({ id: "P002" }) }
     );
     assert.equal(gp.status, 200);
 

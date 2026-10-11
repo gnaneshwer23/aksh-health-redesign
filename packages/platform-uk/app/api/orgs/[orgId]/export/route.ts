@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /** GET /api/orgs/:orgId/export — the organisation's complete data as JSON (admins only; audited). */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

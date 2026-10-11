@@ -12,7 +12,8 @@ import { pushToMedplum } from "@/lib/medplum-client";
 import type { ReviewCase } from "@/lib/types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 
@@ -27,7 +28,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
   return NextResponse.json({ reviewCase, evidence: buildEvidencePayload(reviewCase) });
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 

@@ -6,7 +6,8 @@ import { addPatientRecord, patientRecordSchema } from "@/lib/network/service";
 export const dynamic = "force-dynamic";
 
 /** POST /api/network/patients/:id/records — add an observation, medicine, care-team member or consent record. */
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

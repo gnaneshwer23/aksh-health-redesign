@@ -1,15 +1,18 @@
 type ErrorContext = Record<string, unknown>;
 
+import { scrub } from "./observability/errors";
+
+/** Scrubbed like aksh.error_events: no emails, numbers, dates, identifiers or SQL key values reach the logs. */
 function serializeError(error: unknown) {
   if (error instanceof Error) {
     return {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
+      name: scrub(error.name, 80),
+      message: scrub(error.message, 500),
+      stack: error.stack ? scrub(error.stack, 2000) : undefined,
     };
   }
 
-  return { message: String(error) };
+  return { message: scrub(String(error), 500) };
 }
 
 /**
@@ -23,7 +26,8 @@ export function reportError(error: unknown, context: ErrorContext = {}) {
     timestamp: new Date().toISOString(),
     sentryEnabled: Boolean(process.env.SENTRY_DSN?.trim()),
     error: serializeError(error),
-    ...context,
+    // Context keys are kept; string values are scrubbed (they may carry user input).
+    ...Object.fromEntries(Object.entries(context).map(([k, v]) => [k, typeof v === "string" ? scrub(v, 300) : v])),
   };
 
   console.error(JSON.stringify(payload));

@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** POST /api/orgs/:orgId/go-live/request — ask Aksh to review; only when every check passes. */
-export async function POST(_request: Request, { params }: { params: { orgId: string } }) {
+export async function POST(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

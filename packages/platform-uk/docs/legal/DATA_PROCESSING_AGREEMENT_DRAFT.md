@@ -92,18 +92,19 @@ Liability follows the main services agreement. Governing law and courts: **[juri
 | **Special category data** | Health data: diabetes type, observations (HbA1c, glucose, blood pressure, weight, kidney and lipid results, continuous-glucose summaries), medicines, care team, consent decisions, appointment offers and responses, patient-entered readings |
 | **Processing operations** | Storage; display to authorised staff; matching waiting-list patients to freed slots under the Controller's rules (staff decide every step); drafting offer wording for staff to send; recording patient readings; schedule read-back of bookings; audit |
 | **AI processing** | Text typed into the chat assistants is sent to the AI sub-processor in Schedule 3 to generate a reply. The named-patient chat also sends a bounded chart summary of the patient being discussed; today that chat runs only on the synthetic demonstration cohort, never on the Controller's patient records. Before any of the Controller's records are used in an AI prompt, the parties update this agreement and the privacy impact assessment. Not used to train models **[confirm against the OpenAI addendum]**. |
-| **Not done** | Aksh does not send appointment offers or other outreach to patients, book appointments, or make treatment decisions. It sends account emails (verification, password reset, invitations) to the people who use it. |
+| **Not done** | Aksh does not send appointment offers or other outreach to patients, book appointments, or make treatment decisions. It sends account emails (address verification and password reset) to the people who use it; invite codes are created by the Controller's staff and shared by them. |
 | **Duration** | For the term of the Services, then clause 10 |
 
 ## Schedule 2 — Security measures
 
 - Encryption in transit (TLS) and at rest (database provider).
-- Database row-level security for clinical and patient-record reads and writes: scoped to the user's organisations and linked patient; access fails closed. Listed service operations (sign-up and sign-in, invites and linking, organisation creation, go-live review, connector key checks, measurement summaries, error logging) run with owner rights behind application checks.
+- Database row-level security for clinical and patient-record reads and writes: scoped to the user's organisations and linked patient; access fails closed. Listed service operations (sign-up and sign-in, two-step sign-in set-up, recovery and removal, invites and linking, organisation creation, go-live review, connector key checks, measurement summaries, rate limiting, retention, error logging) run with owner rights behind application checks.
 - Append-only records for consent, audit, go-live evidence, registration checks and connector messages.
 - Passwords hashed; sessions expire after 24 hours; invite codes and API keys stored as hashes only; keys revocable.
 - Separate production and test environments; test-data tooling refuses to run against production.
 - Error monitoring stored in the Processor's own database: text fields are scrubbed of emails, numbers, dates,
-  identifiers and database key values; the signed-in user's internal account ID is kept with browser error reports.
+  identifiers and database key values; the signed-in user's internal account ID is kept with browser error reports and
+  may appear in server logs (hosting provider, short retention) alongside the scrubbed error text.
 - Staff access by role; organisation admins manage staff; professional registrations checked against official registers.
 - Go-live only after evidence review by an Aksh reviewer who is not a member of the organisation.
 

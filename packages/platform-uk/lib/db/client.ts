@@ -28,6 +28,8 @@ export function getPgPool(): Pool {
       connectionString,
       max: 5,
       idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
+      keepAlive: true,
       ...(shouldUseSsl(connectionString)
         ? { ssl: { rejectUnauthorized: process.env.PGSSL_REJECT_UNAUTHORIZED === "true" } }
         : {})
@@ -35,6 +37,14 @@ export function getPgPool(): Pool {
     // A dropped idle connection (e.g. server-side timeout) must not crash the process; the pool replaces it.
     pool.on("error", (error) => {
       console.error("[db] idle client error:", error.message);
+    });
+    // A connection dropped while a request holds it ("Connection terminated unexpectedly") emits 'error' on that
+    // client; without a listener Node treats it as an uncaught exception and the server crashes. The in-flight query
+    // still rejects, so the request fails cleanly and the pool discards the client.
+    pool.on("connect", (client) => {
+      client.on("error", (error) => {
+        console.error("[db] client error:", error.message);
+      });
     });
   }
   return pool;

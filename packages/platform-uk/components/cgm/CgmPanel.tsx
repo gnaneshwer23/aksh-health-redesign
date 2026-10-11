@@ -118,11 +118,16 @@ function Upload({ base, onDone }: { base: string; onDone: (msg: string) => void 
   async function check(text: string, dateOrder?: string) {
     setBusy(true);
     setError(null);
-    const r = await fetch(`${base}/preview`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv: text, dateOrder }) });
-    const d = await r.json().catch(() => ({}));
-    setBusy(false);
-    if (r.ok) setPreview(d);
-    else setError(d.error ?? "Could not read the file");
+    try {
+      const r = await fetch(`${base}/preview`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv: text, dateOrder }) });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) setPreview(d);
+      else setError(d.error ?? "Could not read the file");
+    } catch {
+      setError("We couldn't reach Aksh. Check your connection and try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -138,6 +143,7 @@ function Upload({ base, onDone }: { base: string; onDone: (msg: string) => void 
             const f = e.target.files?.[0];
             if (!f) return;
             const text = await f.text();
+            setPreview(null); // a new file never inherits the previous file's preview
             setCsv(text);
             setFilename(f.name);
             setOrder(undefined);
@@ -171,7 +177,13 @@ function Upload({ base, onDone }: { base: string; onDone: (msg: string) => void 
                 disabled={busy}
                 onClick={async () => {
                   setBusy(true);
-                  const r = await fetch(base, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv, dateOrder: order, filename }) });
+                  let r: Response;
+                  try {
+                    r = await fetch(base, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv, dateOrder: order, filename }) });
+                  } catch {
+                    setBusy(false);
+                    return setError("We couldn't reach Aksh. Nothing was saved; try again.");
+                  }
                   const d = await r.json().catch(() => ({}));
                   setBusy(false);
                   if (!r.ok) return setError(d.error ?? "Could not save");

@@ -5,10 +5,11 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 
 export const dynamic = "force-dynamic";
 
-type P = { params: { orgId: string; keyId: string } };
+type P = { params: Promise<{ orgId: string; keyId: string }> };
 
 /** PATCH — appointment type mapping, offer window and site. */
-export async function PATCH(request: Request, { params }: P) {
+export async function PATCH(request: Request, props: P) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
@@ -22,7 +23,8 @@ export async function PATCH(request: Request, { params }: P) {
 }
 
 /** DELETE — revoke the key immediately. */
-export async function DELETE(_request: Request, { params }: P) {
+export async function DELETE(_request: Request, props: P) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

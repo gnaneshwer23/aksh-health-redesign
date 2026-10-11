@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 
 type LegacySignInPageProps = {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default function LegacySignInPage({ searchParams }: LegacySignInPageProps) {
+export default async function LegacySignInPage(props: LegacySignInPageProps) {
+  const searchParams = await props.searchParams;
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(searchParams)) {
     if (typeof value === "string") {

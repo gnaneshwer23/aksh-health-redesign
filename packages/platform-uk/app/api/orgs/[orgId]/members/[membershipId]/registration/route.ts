@@ -5,10 +5,11 @@ import { listRegistrationChecks, recordRegistrationCheck, registrationCheckSchem
 
 export const dynamic = "force-dynamic";
 
-type P = { params: { orgId: string; membershipId: string } };
+type P = { params: Promise<{ orgId: string; membershipId: string }> };
 
 /** GET — registration check history for a member. */
-export async function GET(_request: Request, { params }: P) {
+export async function GET(_request: Request, props: P) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
@@ -19,7 +20,8 @@ export async function GET(_request: Request, { params }: P) {
 }
 
 /** POST — record a check against the official register. Admins only; never your own. */
-export async function POST(request: Request, { params }: P) {
+export async function POST(request: Request, props: P) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

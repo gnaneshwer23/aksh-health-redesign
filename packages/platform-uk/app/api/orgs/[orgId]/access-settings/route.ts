@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** GET /api/orgs/:orgId/access-settings — ranking order, offer cap and suppressed channels. */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {
@@ -17,7 +18,8 @@ export async function GET(_request: Request, { params }: { params: { orgId: stri
 }
 
 /** PUT /api/orgs/:orgId/access-settings — organisation admins only; audited. */
-export async function PUT(request: Request, { params }: { params: { orgId: string } }) {
+export async function PUT(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {
