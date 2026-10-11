@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { SiteShell } from "@/components/site/SiteShell";
 
 const demoStops = [
   {
@@ -89,7 +89,7 @@ const demoRules = {
 
 export function ProductDemoScript() {
   return (
-    <MarketingShell>
+    <SiteShell>
     <main className="product-page product-page--demo">
       <div className="product-sky" aria-hidden="true" />
 
@@ -180,6 +180,6 @@ export function ProductDemoScript() {
         </aside>
       </section>
     </main>
-    </MarketingShell>
+    </SiteShell>
   );
 }

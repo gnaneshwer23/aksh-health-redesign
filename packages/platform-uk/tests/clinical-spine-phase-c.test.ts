@@ -159,25 +159,10 @@ async function run() {
   assert.ok(!agentDirectory.includes('name: "VOICE"'));
   assert.ok(!agentDirectory.includes('name: "DrASSIST"'));
 
-  const platform = fs.readFileSync(path.join(process.cwd(), "components/marketing/platform-page-content.tsx"), "utf8");
-  assert.ok(platform.includes("The Aksh Intelligence Platform"));
-  assert.ok(platform.includes("a named clinician decides"));
-  assert.ok(!platform.includes("Twelve Phase-1 directory agents"));
-  assert.ok(!platform.includes("Seven agents"));
-  assert.ok(!platform.includes("100 patients"));
-
-  // Marketing agent roster mirrors AGENT_DIRECTORY with human labels first (N4 lock: VOICE and
-  // Dr.Assist are sub-capabilities, PRISM/ATLAS not built).
-  const visionContent = fs.readFileSync(
-    path.join(process.cwd(), "components/marketing/lavender/vision-content.ts"),
-    "utf8"
-  );
-  for (const codename of ["CANVAS", "SYNTHESIS", "BRIDGE", "NEXUS", "GUARDIAN", "PRISM", "HORIZON", "PATHWAY", "COMPASS", "ATLAS", "SHIELD", "CONDUCTOR"]) {
-    assert.ok(visionContent.includes(`codename: "${codename}"`), `marketing roster missing ${codename}`);
-  }
-  assert.ok(!visionContent.includes('codename: "VOICE"'), "VOICE must stay a sub-capability");
-  assert.ok(!visionContent.includes('codename: "Dr.Assist"'), "Dr.Assist must stay a sub-capability");
-  assert.ok(!visionContent.includes("liveEmis:false"), "public copy uses plain words, not flags");
+  // Public site (app/page.tsx, components/site): the real product only; no agent roster or demo claims.
+  const home = fs.readFileSync(path.join(process.cwd(), "app/page.tsx"), "utf8");
+  assert.ok(!home.includes("100 patients"));
+  assert.ok(!home.includes("liveEmis:false"), "public copy uses plain words, not flags");
 
   const oracleUi = fs.readFileSync(
     path.join(process.cwd(), "components/dashboard/OracleRiskPanel.tsx"),
