@@ -66,10 +66,10 @@ type FactRow = {
 };
 
 /**
- * Readings that count clinically: not entered in error, and patient-reported values only once a clinician verified
- * them. Unverified patient readings are shown separately (review list), never folded into risk or care gaps.
+ * Readings that count clinically: not entered in error, and patient-reported or device values only once verified
+ * (device data from staff imports and device feeds is verified on entry; a patient's own export is not). Unverified patient readings are shown separately (review list), never folded into risk or care gaps.
  */
-const COUNTS = `x.status = 'final' AND (x.source <> 'patient_reported' OR x.verified)`;
+const COUNTS = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified)`;
 const latestOf = (kind: string) =>
   `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC LIMIT 1)`;
 

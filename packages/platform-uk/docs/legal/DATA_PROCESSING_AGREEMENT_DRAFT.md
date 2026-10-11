@@ -91,7 +91,8 @@ Liability follows the main services agreement. Governing law and courts: **[juri
 | **Personal data** | Identity (name, date of birth, record number), contact details and preferred channel; staff work email, role, professional registration number and check results |
 | **Special category data** | Health data: diabetes type, observations (HbA1c, glucose, blood pressure, weight, kidney and lipid results, continuous-glucose summaries), medicines, care team, consent decisions, appointment offers and responses, patient-entered readings |
 | **Processing operations** | Storage; display to authorised staff; matching waiting-list patients to freed slots under the Controller's rules (staff decide every step); drafting offer wording for staff to send; recording patient readings; schedule read-back of bookings; audit |
-| **Not done** | Aksh does not contact patients, book appointments or make treatment decisions. Patient records are not sent to AI models; free text typed into chat assistants is sent to the AI sub-processor in Schedule 3 to generate a reply and is not used to train models **[confirm against the OpenAI addendum]**. |
+| **AI processing** | Text typed into the chat assistants is sent to the AI sub-processor in Schedule 3 to generate a reply. The named-patient chat also sends a bounded chart summary of the patient being discussed; today that chat runs only on the synthetic demonstration cohort, never on the Controller's patient records. Before any of the Controller's records are used in an AI prompt, the parties update this agreement and the privacy impact assessment. Not used to train models **[confirm against the OpenAI addendum]**. |
+| **Not done** | Aksh does not contact patients, book appointments or make treatment decisions. |
 | **Duration** | For the term of the Services, then clause 10 |
 
 ## Schedule 2 — Security measures

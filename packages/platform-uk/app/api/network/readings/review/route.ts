@@ -10,8 +10,11 @@ export async function GET(request: Request) {
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
-    const patient = new URL(request.url).searchParams.get("patient")?.slice(0, 64) || undefined;
-    return NextResponse.json({ rows: await listReadingsToReview(r.ctx, patient) });
+    const params = new URL(request.url).searchParams;
+    const patient = params.get("patient")?.slice(0, 64) || undefined;
+    const offset = Number(params.get("offset") ?? 0) || 0;
+    const rows = await listReadingsToReview(r.ctx, patient, offset);
+    return NextResponse.json({ rows, nextOffset: rows.length === 200 ? offset + 200 : null });
   } catch (error) {
     return errorResponse(error, "/api/network/readings/review");
   }

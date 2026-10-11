@@ -27,6 +27,10 @@ export type ReadingRow = {
   state: "on_device_account" | "sent" | "checked" | "entered_in_error";
 };
 
+async function orgOf(client: import("pg").PoolClient, patientId: string) {
+  return (await client.query<{ o: string }>(`SELECT organisation_id AS o FROM aksh.network_patients WHERE id = $1`, [patientId])).rows[0]?.o ?? null;
+}
+
 function requirePatient(ctx: NetworkContext) {
   if (ctx.role !== "patient") throw new NetworkError("Patient accounts only", 403);
 }
@@ -58,7 +62,7 @@ export async function addReading(ctx: NetworkContext, input: ReadingInput) {
         );
         if (!res.rowCount) replay = true;
       }
-      if (!replay) await audit(client, { actorUserId: ctx.userId, action: "reading.recorded", resourceType: "patient", resourceId: patientId, detail: { kind: input.kind, flag: rows[0]!.flag } });
+      if (!replay) await audit(client, { organisationId: await orgOf(client, patientId), actorUserId: ctx.userId, action: "reading.recorded", resourceType: "patient", resourceId: patientId, detail: { kind: input.kind, flag: rows[0]!.flag } });
     } else {
       for (const r of rows) {
         const res = await client.query(
@@ -86,7 +90,8 @@ export async function listOwnReadings(ctx: NetworkContext) {
   return withTenant(ctx, async (client) => {
     const personal = (await client.query<ReadingRow>(
       `SELECT id, kind, value::float, unit, original_value::float AS "originalValue", original_unit AS "originalUnit", context, flag,
-              observed_at AS "observedAt", status, client_ref AS "clientRef", 'on_device_account' AS state
+              observed_at AS "observedAt", status, client_ref AS "clientRef",
+              CASE WHEN status = 'entered_in_error' THEN 'entered_in_error' ELSE 'on_device_account' END AS state
        FROM aksh.personal_readings WHERE user_id = $1 AND shared_at IS NULL AND observed_at > NOW() - INTERVAL '90 days' ORDER BY observed_at DESC LIMIT 200`,
       [ctx.userId]
     )).rows;
@@ -107,11 +112,14 @@ export async function listOwnReadings(ctx: NetworkContext) {
         )).rows[0]
       : undefined;
     return {
+      // Lets the device keep its offline queue per account, so a shared phone never sends one person's readings as another's.
+      account: ctx.userId,
       linked: Boolean(patientId),
       glucoseUnit: (unit?.g as "mmol/L" | "mg/dL" | null) ?? null,
       emergencyNumber: unit?.e ?? null,
       readings: patientId ? record : personal,
-      unsharedPersonal: patientId ? personal.filter((r) => r.status === "final").length : 0,
+      // Only readings from the last 30 days can be shared: older ones would fall outside the clinicians' review window.
+      unsharedPersonal: patientId ? personal.filter((r) => r.status === "final" && Date.parse(r.observedAt) > Date.now() - 30 * 86_400_000).length : 0,
     };
   });
 }
@@ -130,7 +138,7 @@ export async function markEnteredInError(ctx: NetworkContext, id: string) {
       `UPDATE aksh.${table} SET status = 'entered_in_error' WHERE ${own} AND status = 'final' AND (id = $1 OR ($3::text IS NOT NULL AND client_ref IN ($3 || '-sys', $3 || '-dia')))`,
       [id, patientId ?? ctx.userId, row.client_ref !== base ? base : null]
     );
-    if (patientId) await audit(client, { actorUserId: ctx.userId, action: "reading.entered_in_error", resourceType: "observation", resourceId: id });
+    if (patientId) await audit(client, { organisationId: await orgOf(client, patientId), actorUserId: ctx.userId, action: "reading.entered_in_error", resourceType: "observation", resourceId: id });
     return { id, status: "entered_in_error" };
   });
 }
@@ -144,7 +152,7 @@ export async function shareEarlierReadings(ctx: NetworkContext) {
     const moved = await client.query(
       `WITH src AS (
          SELECT id, kind, value, unit, original_value, original_unit, context, flag, observed_at, client_ref
-         FROM aksh.personal_readings WHERE user_id = $2 AND shared_at IS NULL AND status = 'final'
+         FROM aksh.personal_readings WHERE user_id = $2 AND shared_at IS NULL AND status = 'final' AND observed_at > NOW() - INTERVAL '30 days'
        ), ins AS (
          INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, client_ref, original_value, original_unit, context, flag)
          SELECT $1, kind, value, unit, observed_at, 'patient_reported', FALSE, $2, 'p-' || client_ref, original_value, original_unit, context, flag FROM src
@@ -155,7 +163,7 @@ export async function shareEarlierReadings(ctx: NetworkContext) {
        RETURNING (SELECT count(*) FROM ins)::int AS inserted`,
       [patientId, ctx.userId]
     );
-    await audit(client, { actorUserId: ctx.userId, action: "reading.shared_earlier", resourceType: "patient", resourceId: patientId, detail: { count: moved.rowCount } });
+    await audit(client, { organisationId: await orgOf(client, patientId), actorUserId: ctx.userId, action: "reading.shared_earlier", resourceType: "patient", resourceId: patientId, detail: { count: moved.rowCount } });
     return { shared: moved.rowCount ?? 0 };
   });
 }
@@ -163,7 +171,7 @@ export async function shareEarlierReadings(ctx: NetworkContext) {
 // ---------------------------------------------------------------- clinicians
 
 /** Unverified patient and device readings for patients the clinician can see; flagged first, newest first. */
-export async function listReadingsToReview(ctx: NetworkContext, patientId?: string) {
+export async function listReadingsToReview(ctx: NetworkContext, patientId?: string, offset = 0) {
   if (!CLINICAL_ROLES.has(ctx.role ?? "")) throw new NetworkError("Only clinicians review readings", 403);
   return withTenant(ctx, async (client) =>
     (await client.query(
@@ -175,8 +183,8 @@ export async function listReadingsToReview(ctx: NetworkContext, patientId?: stri
        JOIN aksh.organisations o ON o.id = p.organisation_id
        WHERE x.source IN ('patient_reported', 'device') AND NOT x.verified AND x.status = 'final'
          AND x.observed_at > NOW() - INTERVAL '30 days' AND ($1::text IS NULL OR x.patient_id = $1)
-       ORDER BY (x.flag IS NOT NULL) DESC, x.observed_at DESC LIMIT 300`,
-      [patientId ?? null]
+       ORDER BY (x.flag IS NOT NULL) DESC, x.observed_at DESC, x.id LIMIT 200 OFFSET $2`,
+      [patientId ?? null, Math.max(0, Math.min(offset, 100_000))]
     )).rows
   );
 }
@@ -192,7 +200,7 @@ export async function verifyReadings(ctx: NetworkContext, ids: string[]) {
       [ids, ctx.userId]
     );
     for (const pid of new Set(r.rows.map((x) => x.patient_id))) {
-      await audit(client, { actorUserId: ctx.userId, action: "reading.verified", resourceType: "patient", resourceId: pid, detail: { count: r.rows.filter((x) => x.patient_id === pid).length } });
+      await audit(client, { organisationId: await orgOf(client, pid), actorUserId: ctx.userId, action: "reading.verified", resourceType: "patient", resourceId: pid, detail: { count: r.rows.filter((x) => x.patient_id === pid).length } });
     }
     return { verified: r.rowCount ?? 0 };
   });

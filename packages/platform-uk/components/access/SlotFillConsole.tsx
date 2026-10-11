@@ -515,7 +515,7 @@ function BaselinePanel({ orgs, refresh }: { orgs: Org[]; refresh: number }) {
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-2">
         <CardTitle className="text-base">Against your baseline</CardTitle>
         {orgs.length > 1 ? (
-          <select aria-label="Organisation for measurement" className="h-9 rounded-full border border-border-subtle bg-card px-3 text-sm" value={orgId} onChange={(e) => setOrgId(e.target.value)}>
+          <select aria-label="Organisation for measurement" className="h-9 rounded-full border border-border-subtle bg-card px-3 text-sm" value={orgId} onChange={(e) => { setM(null); setOrgId(e.target.value); }}>
             {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
           </select>
         ) : null}

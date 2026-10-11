@@ -104,8 +104,11 @@ export function ConnectionsTab({ org, onMessage }: { org: Org; onMessage: (m: st
                 className="flex flex-wrap items-end gap-2"
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  const r = await fetch(`/api/orgs/${org.id}/connections`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
+                  const forOrg = org.id;
+                  const r = await fetch(`/api/orgs/${forOrg}/connections`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
                   const data = await r.json().catch(() => ({}));
+                  // A one-time key belongs to the organisation it was created for; never show it under another.
+                  if (current.current !== forOrg) return;
                   if (r.ok) { setNewKey(data.key); onMessage("Connection created"); await load(); }
                   else onMessage(data.error ?? "Could not create the connection");
                 }}

@@ -186,12 +186,16 @@ export async function acceptStaffInvite(
  * someone else's record. `consume: false` only checks (used during onboarding before the final step).
  */
 export async function acceptPatientInvite(
-  actor: { userId: string },
+  actor: { userId: string; email?: string | null },
   input: { code: string; dateOfBirth: string },
   options: { consume: boolean } = { consume: true }
 ) {
   return withPrivileged(async (client) => {
     const invite = await loadUsableInvite(client, input.code, "patient");
+    // An invite locked to an email can only be redeemed by that account (same rule as staff invites).
+    if (invite.email && invite.email !== (actor.email ?? "").trim().toLowerCase()) {
+      throw new NetworkError("This invite code is not valid. Ask the organisation for a new one.", 410);
+    }
     const { rows } = await client.query<{ dob: string }>(
       `SELECT to_char(date_of_birth, 'YYYY-MM-DD') AS dob FROM aksh.network_patients WHERE id = $1`,
       [invite.patient_id]
@@ -273,7 +277,7 @@ export async function importPatients(ctx: NetworkContext, orgId: string, input: 
           await client.query(
             `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [id, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic", ctx.userId]
+            [id, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId]
           );
         }
         for (const m of p.medications ?? []) {
@@ -332,7 +336,7 @@ export async function addPatientRecord(ctx: NetworkContext, patientId: string, i
       const r = await client.query<{ id: string }>(
         `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-        [patientId, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic", ctx.userId]
+        [patientId, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId]
       );
       id = r.rows[0]!.id;
     } else if (input.type === "medication") {

@@ -22,10 +22,11 @@ type Row = {
   clientRef: string | null;
   state: "on_device_account" | "sent" | "checked" | "entered_in_error";
 };
-type Listing = { linked: boolean; glucoseUnit: "mmol/L" | "mg/dL" | null; emergencyNumber: string | null; readings: Row[]; unsharedPersonal: number };
+type Listing = { account: string; linked: boolean; glucoseUnit: "mmol/L" | "mg/dL" | null; emergencyNumber: string | null; readings: Row[]; unsharedPersonal: number };
 type Notice = { severity: "urgent" | "warning"; text: string };
 
-const OUTBOX = "aksh_readings_outbox_v1";
+/** Per-account queue: a shared phone never sends one person's queued readings into another person's record. */
+const outboxKey = (account: string) => `aksh_readings_outbox_v2:${account}`;
 const LEGACY = "aksh_self_readings_v1";
 const STATE_LABEL: Record<Row["state"], string> = {
   on_device_account: "On your account",
@@ -45,40 +46,50 @@ function readStore<T>(key: string): T[] {
     return [];
   }
 }
-function writeStore(key: string, value: unknown[] | null) {
+function writeStore(key: string, value: unknown[] | null): boolean {
   try {
     if (value && value.length) window.localStorage.setItem(key, JSON.stringify(value));
     else window.localStorage.removeItem(key);
+    return true;
   } catch {
-    // Storage unavailable: nothing queued; the reading was either sent or the error shown.
+    return false; // storage blocked or full: callers must say so
   }
 }
 
 async function send(body: Record<string, unknown>) {
   const r = await fetch("/api/me/readings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const data = await r.json().catch(() => ({}));
-  return { ok: r.ok, status: r.status, data };
+  return { ok: r.ok, status: r.status, data, retryAfter: r.headers.get("Retry-After") };
 }
 
-/** Send anything saved while offline. clientRef makes each retry safe: the server ignores duplicates. */
-async function flushOutbox() {
-  const queued = readStore<Record<string, unknown>>(OUTBOX);
-  if (!queued.length) return { sent: 0, rejected: 0 };
+/**
+ * Send this account's readings saved while offline. clientRef makes each retry safe. Stops at a rate limit and says when
+ * to try again; refused readings (e.g. older than 30 days) are counted so the patient is told.
+ */
+async function flushOutbox(account: string) {
+  const key = outboxKey(account);
+  const queued = readStore<Record<string, unknown>>(key);
+  const result = { sent: 0, rejected: 0, retryAfterMs: 0 };
+  if (!queued.length) return result;
   const left: Record<string, unknown>[] = [];
-  let sent = 0;
-  let rejected = 0;
-  for (const body of queued) {
+  for (let i = 0; i < queued.length; i++) {
+    const body = queued[i]!;
     try {
       const r = await send(body);
-      if (r.ok) sent++;
-      else if (r.status >= 500 || r.status === 429 || r.status === 401) left.push(body); // try again later
-      else rejected++; // the server refused it (e.g. older than 30 days): tell the patient, don't retry forever
+      if (r.ok) result.sent++;
+      else if (r.status === 429) {
+        left.push(...queued.slice(i));
+        const after = Number(r.retryAfter ?? 60);
+        result.retryAfterMs = (Number.isFinite(after) && after > 0 ? after : 60) * 1000;
+        break;
+      } else if (r.status >= 500 || r.status === 401) left.push(body);
+      else result.rejected++;
     } catch {
       left.push(body);
     }
   }
-  writeStore(OUTBOX, left);
-  return { sent, rejected };
+  writeStore(key, left);
+  return result;
 }
 
 function display(r: Row, glucoseUnit: string | null) {
@@ -122,20 +133,45 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
     if (r.ok) setList(await r.json());
   }, []);
 
+  const report = useCallback((r: { sent: number; rejected: number; retryAfterMs: number }) => {
+    const parts = [
+      r.sent ? `${r.sent} reading${r.sent === 1 ? "" : "s"} saved while offline ${r.sent === 1 ? "was" : "were"} sent.` : "",
+      r.rejected ? `${r.rejected} could not be added (for example, older than 30 days); tell your care team if they matter.` : "",
+      r.retryAfterMs ? "Some readings are still waiting; Aksh will try again shortly." : "",
+    ].filter(Boolean);
+    if (parts.length) setMessage(parts.join(" "));
+  }, []);
+
+  const flush = useCallback(
+    async (account: string) => {
+      const r = await flushOutbox(account);
+      report(r);
+      if (r.sent || r.rejected) await load();
+      if (r.retryAfterMs) window.setTimeout(() => void flush(account), r.retryAfterMs);
+    },
+    [load, report]
+  );
+
   useEffect(() => {
-    void flushOutbox().then(({ sent, rejected }) => {
-      const parts = [
-        sent ? `${sent} reading${sent === 1 ? "" : "s"} saved while offline ${sent === 1 ? "was" : "were"} sent.` : "",
-        rejected ? `${rejected} could not be added (for example, older than 30 days); tell your care team if they matter.` : "",
-      ].filter(Boolean);
-      if (parts.length) setMessage(parts.join(" "));
-      void load();
-    });
+    try {
+      window.localStorage.removeItem("aksh_readings_outbox_v1"); // pre-release queue had no owner: never send it
+    } catch {
+      // ignore
+    }
     setLegacy(readStore(LEGACY).length);
-    const online = () => void flushOutbox().then(() => load());
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!list?.account) return;
+    const account = list.account;
+    void flush(account);
+    const online = () => void flush(account);
     window.addEventListener("online", online);
     return () => window.removeEventListener("online", online);
-  }, [load]);
+    // Only when the signed-in account changes, not on every reload of the list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list?.account]);
 
   const glucoseUnit = (f.unit || list?.glucoseUnit || "mmol/L") as "mmol/L" | "mg/dL";
   const weightUnit = (f.unit || "kg") as "kg" | "lb";
@@ -161,8 +197,13 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
         await load();
       } else setMessage(r.data.error ?? "That reading could not be saved.");
     } catch {
-      writeStore(OUTBOX, [...readStore(OUTBOX), body]);
-      setMessage("You seem to be offline. The reading is saved on this phone and will be sent when you are back online.");
+      const account = list?.account;
+      const queued = account ? writeStore(outboxKey(account), [...readStore(outboxKey(account)), body]) : false;
+      setMessage(
+        queued
+          ? "You seem to be offline. The reading is saved on this phone and will be sent when you are back online."
+          : "You seem to be offline and this phone could not keep the reading. Please write it down and add it when you are back online."
+      );
     } finally {
       setBusy(false);
     }
@@ -171,6 +212,7 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
   async function importLegacy() {
     const old = readStore<{ at: string; kind: Kind; value: string }>(LEGACY);
     let added = 0;
+    const keep: typeof old = [];
     for (const r of old) {
       const ref = `legacy-${Date.parse(r.at)}-${r.kind}`;
       const body =
@@ -182,10 +224,17 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
           : { kind: r.kind, value: Number(r.value), unit: r.kind === "glucose" ? "mmol/L" : "kg", observedAt: r.at, clientRef: ref };
       const res = await send(body).catch(() => null);
       if (res?.ok) added++;
+      else if (!res || res.status >= 500 || res.status === 429 || res.status === 401) keep.push(r); // try again later
     }
-    writeStore(LEGACY, null);
-    setLegacy(0);
-    setMessage(`${added} of ${old.length} earlier readings added to your account${added < old.length ? " (older than 30 days or unreadable ones were skipped)" : ""}.`);
+    // Keep only readings that failed for a temporary reason; saved and refused ones are done.
+    writeStore(LEGACY, keep);
+    setLegacy(keep.length);
+    const skipped = old.length - added - keep.length;
+    setMessage(
+      `${added} of ${old.length} earlier readings added to your account.` +
+        (skipped ? ` ${skipped} were older than 30 days or unreadable.` : "") +
+        (keep.length ? ` ${keep.length} could not be sent just now; try again later.` : "")
+    );
     await load();
   }
 

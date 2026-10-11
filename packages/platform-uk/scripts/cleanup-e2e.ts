@@ -14,6 +14,7 @@ import path from "node:path";
 import pg from "pg";
 
 import { E2E_EMAIL_DOMAIN, E2E_SOURCE } from "../lib/e2e/types";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { assertSeedingAllowed } from "../lib/env/deployment";
 
 const DEMO_COHORT_EMAIL_DOMAIN = "demo.akshhealth.com"; // safety reference — never deleted
@@ -65,6 +66,7 @@ async function resolveBatchId(args: ReturnType<typeof parseArgs>): Promise<strin
 
 async function cleanupBatch(pool: pg.Pool, batchId: string) {
   assertSeedingAllowed("cleanup-e2e"); // before any delete: never in production
+  await assertNotProductionDatabase(pool, "cleanup-e2e");
   const facts = await pool.query(
     `DELETE FROM aksh.patient_state_facts WHERE source_system = $1 AND source_reference LIKE $2`,
     [E2E_SOURCE, `${batchId}:%`]

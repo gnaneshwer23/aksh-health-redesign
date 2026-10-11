@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 
 import { addToWaitlist } from "../lib/access/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { assertSeedingAllowed } from "../lib/env/deployment";
 import {
   approveGoLive,
@@ -39,6 +40,7 @@ const today = new Date().toISOString().slice(0, 10);
 const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
 
 async function run() {
+  if (isPostgresConfigured()) await assertNotProductionDatabase(getPgPool(), "test");
   if (!isPostgresConfigured()) return console.log("golive-db: skipped (no DATABASE_URL)");
   assertSeedingAllowed("golive-db"); // creates and approves test organisations: never against production
   const run = randomUUID().slice(0, 6);

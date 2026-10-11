@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
 import { withTenant } from "../lib/network/db";
@@ -47,6 +48,7 @@ async function rejects(p: Promise<unknown>, status: number) {
 
 async function run() {
   pure();
+  if (isPostgresConfigured()) await assertNotProductionDatabase(getPgPool(), "test");
   if (!isPostgresConfigured()) return console.log("readings-db: rules PASS; DB part skipped (no DATABASE_URL)");
   const tag = randomUUID().slice(0, 6);
 
@@ -54,6 +56,7 @@ async function run() {
   const gp = { userId: gpId, email: `gp-${tag}@akshhealth.test`, displayName: "Dr Test", role: "gp" };
   const org = await createOrganisation(gp, { name: `Readings Clinic ${tag}`, kind: "clinic" });
   let gpCtx = await loadNetworkContext(gpId, "gp");
+  const gpCtx0 = () => gpCtx;
   await updateOrganisation(gpCtx, org.id, { locale: { emergencyNumber: "112", glucoseUnit: "mmol/L" } });
   const managerId = await makeUser("mgr");
   await acceptStaffInvite({ userId: managerId, email: `mgr-${tag}@akshhealth.test`, displayName: "Manager", role: "practice-manager" }, { code: (await createInvite(gpCtx, org.id, { kind: "staff", role: "practice-manager" })).code });
@@ -100,7 +103,13 @@ async function run() {
   await assert.rejects(withTenant(pctx, (c) => c.query(`INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by) VALUES ($1, 'hba1c', 40, 'mmol/mol', NOW(), 'lab', TRUE, $2)`, [patient!.id, patientUser])), /PATIENT_SOURCE|UNVERIFIED_ONLY/);
   await assert.rejects(withTenant(pctx, (c) => c.query(`UPDATE aksh.network_observations SET verified = TRUE, verified_by = $2, verified_at = NOW() WHERE patient_id = $1`, [patient!.id, patientUser])), /SELF_VERIFY/);
   await assert.rejects(withTenant(pctx, (c) => c.query(`UPDATE aksh.network_observations SET value = 5 WHERE patient_id = $1`, [patient!.id])), /permission denied/);
-  await assert.rejects(withTenant(pctx, (c) => c.query(`SELECT 1 FROM aksh.personal_readings WHERE user_id <> $1`, [patientUser])).then((r) => assert.equal(r.rowCount, 0)).then(() => { throw new Error("no rows: ok"); }), /no rows: ok/);
+  // Personal readings are private to their owner: another user's row exists but is invisible from this session.
+  const stranger = await makeUser("stranger");
+  await addReading(await loadNetworkContext(stranger, "patient"), { kind: "glucose", value: 5.5, unit: "mmol/L", observedAt: now(), clientRef: ref() });
+  assert.equal((await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.personal_readings WHERE user_id = $1`, [stranger])).rows[0].n, 1);
+  assert.equal((await withTenant(pctx, (c) => c.query(`SELECT 1 FROM aksh.personal_readings WHERE user_id = $1`, [stranger]))).rowCount, 0);
+  // Verification is final in every field, and staff cannot withdraw a patient's reading.
+  await assert.rejects(withTenant(gpCtx0(), (c) => c.query(`UPDATE aksh.network_observations SET status = 'entered_in_error' WHERE patient_id = $1 AND source = 'patient_reported'`, [patient!.id])), /STATUS_OWNER/);
 
   // Unverified readings do not change the clinical summary.
   gpCtx = await loadNetworkContext(gpId, "gp");
@@ -117,6 +126,7 @@ async function run() {
   detail = await getPatientDetail(gpCtx, patient!.id);
   assert.equal(detail!.vitals.systolic, 190, "verified reading now counts");
   await assert.rejects(withTenant(gpCtx, (c) => c.query(`UPDATE aksh.network_observations SET verified = FALSE WHERE id = $1`, [bpIds[0]])), /VERIFIED_FINAL/);
+  await assert.rejects(withTenant(gpCtx, (c) => c.query(`UPDATE aksh.network_observations SET verified_at = NOW() - INTERVAL '1 day' WHERE id = $1`, [bpIds[0]])), /VERIFIED_FINAL/);
   await rejects(markEnteredInError(pctx, bpIds[0]!), 404);
   assert.ok((await listOwnReadings(pctx)).readings.some((r) => r.state === "checked"));
 

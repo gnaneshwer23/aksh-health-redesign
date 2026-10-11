@@ -88,7 +88,7 @@ export async function provisionSandbox(actor: { userId: string; email: string; d
     );
     await client.query(
       `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by)
-       SELECT p.id, x.kind, x.value, x.unit, x.observed_at, x.source, x.source IN ('lab', 'clinic'), $2
+       SELECT p.id, x.kind, x.value, x.unit, x.observed_at, x.source, x.source IN ('lab', 'clinic', 'device'), $2
        FROM jsonb_to_recordset($3::jsonb) AS x(record_ref text, kind text, value numeric, unit text, observed_at timestamptz, source text)
        JOIN aksh.network_patients p ON p.organisation_id = $1 AND p.record_ref = x.record_ref`,
       [org.id, actor.userId, JSON.stringify(observations)]

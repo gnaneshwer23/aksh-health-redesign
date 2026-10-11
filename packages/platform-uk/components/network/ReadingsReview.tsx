@@ -49,16 +49,36 @@ function toLines(rows: Row[]): Line[] {
 /** Clinicians: patient-reported readings not yet checked. Checking is final and makes them count clinically. */
 export function ReadingsReview() {
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [nextOffset, setNextOffset] = useState<number | null>(null);
+  const [failed, setFailed] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    const r = await fetch("/api/network/readings/review");
-    setRows(r.ok ? (await r.json()).rows : null);
+  const load = useCallback(async (offset = 0) => {
+    try {
+      const r = await fetch(`/api/network/readings/review?offset=${offset}`);
+      if (r.status === 401 || r.status === 403) return setRows(null); // not a clinician: stay hidden
+      if (!r.ok) throw new Error(String(r.status));
+      const d = (await r.json()) as { rows: Row[]; nextOffset: number | null };
+      setFailed(false);
+      setRows((prev) => (offset && prev ? [...prev, ...d.rows] : d.rows));
+      setNextOffset(d.nextOffset);
+    } catch {
+      setFailed(true);
+    }
   }, []);
   useEffect(() => void load(), [load]);
 
-  if (!rows) return null; // not a clinician, or nothing to show
+  if (failed && !rows) {
+    return (
+      <Card className="mx-4 mt-4 md:mx-6" data-readings-review>
+        <CardContent className="flex flex-wrap items-center gap-2 p-4 text-sm" role="alert">
+          Patient readings to check could not be loaded. <Button size="sm" variant="outline" onClick={() => void load()}>Try again</Button>
+        </CardContent>
+      </Card>
+    );
+  }
+  if (!rows) return null;
   const lines = toLines(rows);
   const toggle = (ids: string[]) =>
     setSelected((s) => {
@@ -103,6 +123,8 @@ export function ReadingsReview() {
             ))}
           </ul>
         )}
+        {nextOffset !== null ? <Button size="sm" variant="outline" onClick={() => void load(nextOffset)}>Load more</Button> : null}
+        {failed ? <p className="text-xs text-red-700" role="alert">Could not load more. Try again.</p> : null}
       </CardContent>
     </Card>
   );

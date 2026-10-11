@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { mergeProfilePreferences } from "@/lib/auth/user-repository";
+import { withPrivileged } from "@/lib/network/db";
 import { errorResponse, requireActor } from "@/lib/network/http";
 import { acceptPatientInvite } from "@/lib/network/service";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
@@ -22,9 +23,18 @@ export async function POST(request: Request) {
   if (!limited.success) return rateLimitResponse(limited, "Too many attempts. Try again later or ask your clinic for a new code.");
   try {
     const input = schema.parse(await request.json().catch(() => ({})));
-    const linked = await acceptPatientInvite({ userId: actor.userId }, input);
+    // A retry after a half-finished link (record linked, profile not yet updated) completes it instead of failing.
+    const existing = await withPrivileged(async (c) =>
+      (await c.query<{ patient_id: string; organisation_id: string }>(
+        `SELECT a.patient_id, p.organisation_id FROM aksh.patient_accounts a JOIN aksh.network_patients p ON p.id = a.patient_id WHERE a.user_id = $1`,
+        [actor.userId]
+      )).rows[0]
+    );
+    const linked = existing
+      ? { patientId: existing.patient_id, organisationId: existing.organisation_id }
+      : await acceptPatientInvite({ userId: actor.userId, email: actor.email }, input);
     await mergeProfilePreferences(actor.userId, { boundPatientId: linked.patientId, networkPatientId: linked.patientId, boundOrganisationId: linked.organisationId, inviteStatus: "linked" });
-    return NextResponse.json({ linked: true });
+    return NextResponse.json({ linked: true, patientId: linked.patientId });
   } catch (error) {
     return errorResponse(error, "/api/me/link");
   }
