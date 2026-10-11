@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
-import TrustStrip from "@/components/marketing/TrustStrip";
+import { SiteShell } from "@/components/site/SiteShell";
 import { GOLDEN_SCENARIO_PATEL_DEMO_ID } from "@/lib/agents";
 
 const DEMO_STEPS = [
@@ -102,7 +101,7 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
   }
 
   return (
-    <MarketingShell overDarkHero>
+    <SiteShell>
       <section className="relative overflow-hidden bg-medicom-navy pb-8 pt-24 text-white">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:48px_48px] opacity-50" />
         <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -127,7 +126,6 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
             </span>
           </div>
         </div>
-        <TrustStrip variant="hero" />
       </section>
 
       <section className="bg-white py-12">
@@ -213,6 +211,6 @@ export function OverviewDemoLauncher({ initialStep = 0 }: OverviewDemoLauncherPr
           </div>
         </div>
       </section>
-    </MarketingShell>
+    </SiteShell>
   );
 }

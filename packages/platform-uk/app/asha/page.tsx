@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { SiteShell } from "@/components/site/SiteShell";
 import { AshaConversation } from "@/components/front-desk/AshaConversation";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AshaPage() {
   return (
-    <MarketingShell overLightHero showChatWidget={false}>
+    <SiteShell>
       <section className="lv-book" aria-labelledby="asha-title">
         <div className="lv-container">
           <p className="lv-eyebrow">Patient support · synthetic demo</p>
@@ -28,6 +28,6 @@ export default function AshaPage() {
           </div>
         </div>
       </section>
-    </MarketingShell>
+    </SiteShell>
   );
 }

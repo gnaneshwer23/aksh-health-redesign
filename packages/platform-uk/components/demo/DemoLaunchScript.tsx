@@ -10,7 +10,7 @@
 
 import Link from "next/link";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { SiteShell } from "@/components/site/SiteShell";
 
 const honestyFlags = [
   "synthetic: true",
@@ -273,7 +273,7 @@ const okToClaim = [
 
 export function DemoLaunchScript() {
   return (
-    <MarketingShell>
+    <SiteShell>
       <main className="product-page product-page--demo" data-testid="demo-launch-script">
         <div className="product-sky" aria-hidden="true" />
 
@@ -515,6 +515,6 @@ export function DemoLaunchScript() {
           </aside>
         </section>
       </main>
-    </MarketingShell>
+    </SiteShell>
   );
 }

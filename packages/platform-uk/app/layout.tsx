@@ -1,12 +1,11 @@
 import "./globals.css";
-import "./lavender.css";
 
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
-import { CookieConsent } from "@/components/marketing/CookieConsent";
+import { CookieConsent } from "@/components/site/CookieConsent";
 import { WorkspaceModeProvider } from "@/components/workspace/WorkspaceMode";
 import { isRealWorkspace } from "@/lib/env/workspace";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";

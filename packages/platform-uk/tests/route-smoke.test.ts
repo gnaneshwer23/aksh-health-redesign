@@ -95,7 +95,6 @@ async function run() {
   await assertFileIncludes("components/review/governance-pack-page.tsx", "ML / Research Evaluation Boundary");
   await assertFileIncludes("components/review/governance-pack-page.tsx", "Export Research JSON");
   await assertFileIncludes("components/review/governance-pack-page.tsx", "Export Database JSON");
-  await assertFileIncludes("components/product/product-landing.tsx", "56");
   await assertFileIncludes("package.json", "\"smoke:walkthrough\"");
   await assertFileIncludes("next.config.mjs", ".next-build-active");
   await assertFileIncludes("scripts/smoke-walkthrough-path.mjs", "/review/demo-readiness?demo=1");
@@ -188,14 +187,6 @@ async function run() {
   await assertFileExcludes("lib/agents.ts", 'name: "VOICE"');
   await assertFileExcludes("lib/agents.ts", 'name: "DrASSIST"');
   await assertFileExcludes("lib/agents.ts", "14 live agents");
-  await assertFileExcludes("components/marketing/platform-page-content.tsx", "Seven agents");
-  await assertFileExcludes("components/marketing/platform-page-content.tsx", "Twelve Phase-1 directory agents");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "The Aksh Intelligence Platform");
-  await assertFileIncludes("components/marketing/platform-page-content.tsx", "a named clinician decides");
-  await assertFileIncludes(
-    "components/marketing/lavender/LvAgents.tsx",
-    "None of them decides."
-  );
   await assertFileIncludes("components/gp/voice-mic-panel.tsx", "feeds CANVAS");
   await assertFileExcludes("components/gp/voice-mic-panel.tsx", "feeds VOICE agent");
   await assertFileIncludes("app/api/agents/equity/route.ts", "runEquityAgent");
@@ -429,15 +420,11 @@ async function run() {
   await assertFileIncludes("lib/onboarding/roles.ts", "hasTutorial: true");
   await assertFileIncludes("components/onboarding/OnboardingCard.tsx", "onboarding-honesty-banner");
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Clinical intelligence");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Aksh Intelligence Platform");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Start free");
-  await assertFileIncludes("components/marketing/lavender/LvHero.tsx", "Not a live record");
-  await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");
-  await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "Every output is a draft");
-  await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "named clinician decides");
   await assertFileIncludes("app/security/page.tsx", "Row-level security");
-  await assertFileExcludes("components/marketing/lavender/LvHero.tsx", "100 patients");
+  // The public site is the real product: no demo hero, no sandbox offer.
+  await assertFileIncludes("app/page.tsx", "Every cancelled appointment");
+  await assertFileExcludes("app/page.tsx", "Start free");
+  await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "You approve:");
   await assertFileIncludes("components/onboarding/ConsentForm.tsx", "precision-health-consent-note");
