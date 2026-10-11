@@ -28,6 +28,7 @@ const ROLE_OPTIONS: [string, string][] = [
   ["clinical-pharmacist", "Pharmacist"],
   ["practice-manager", "Manager / admin"],
 ];
+const TAB_LABEL: Record<Tab, string> = { settings: "Settings", staff: "Staff", patients: "Patients", connections: "Connections", "go-live": "Go-live" };
 const STATUS_LABEL: Record<string, string> = { sandbox: "Setting up", onboarding: "Go-live under review", live_read_only: "Live (read only)", live: "Live", suspended: "Suspended" };
 
 async function api<T = unknown>(url: string, init?: RequestInit): Promise<{ ok: boolean; data: T & { error?: string } }> {
@@ -107,8 +108,8 @@ export function OrganisationWorkspace() {
       {message ? <p className="rounded-lg bg-surface-muted px-3 py-2 text-sm" role="status">{message}</p> : null}
       <div className="flex flex-wrap gap-1" role="tablist" aria-label="Organisation sections">
         {(["settings", "staff", "patients", "connections", "go-live"] as Tab[]).map((t) => (
-          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setMessage(null); }} className={cn("rounded-full px-4 py-1.5 text-sm capitalize", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
-            {t}
+          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setMessage(null); }} className={cn("rounded-full px-4 py-1.5 text-sm", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
+            {TAB_LABEL[t]}
           </button>
         ))}
       </div>
@@ -223,7 +224,7 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
           <label className="text-sm"><span className="text-muted">Urgent advice line (optional)</span><Input value={form.urgentAdviceLine} onChange={set("urgentAdviceLine")} aria-label="Urgent advice line" inputMode="tel" /></label>
           <label className="text-sm sm:col-span-2"><span className="text-muted">Mental health crisis line (optional)</span><Input value={form.crisisLine} onChange={set("crisisLine")} aria-label="Crisis line" /></label>
           <p className="text-xs text-muted sm:col-span-2">
-            Asha uses these numbers in safety messages for your patients. Until an emergency number is set, it says “your local emergency number”.
+            These numbers appear in safety messages to your patients. Until an emergency number is set, messages say “your local emergency number”.
             Organisation ID (for other organisations recording shared care): <span className="font-mono">{org.id}</span>
           </p>
           {error ? <p className="text-sm text-red-700 sm:col-span-2" role="alert">{error}</p> : null}

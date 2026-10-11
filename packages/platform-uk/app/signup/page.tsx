@@ -15,7 +15,7 @@ export default function SignupPage() {
   return (
     <AuthCardLayout
       title="Create your account"
-      subtitle="Free sandbox workspace with a full test clinic. No card, no real patient data."
+      subtitle={isRealWorkspace() ? "Join your clinic with an invite code, or set up your clinic." : "Free sandbox workspace with a full test clinic. No card, no real patient data."}
       className="max-w-2xl"
       footer={
         <div className="space-y-3 text-center text-sm text-muted">
@@ -26,9 +26,9 @@ export default function SignupPage() {
             </Link>
           </p>
           <p>
-            Ready for real patients?{" "}
+            New to Aksh as an organisation?{" "}
             <Link href="/get-started" className="font-semibold text-secondary hover:underline">
-              Bring Aksh to your organisation
+              Request access
             </Link>
           </p>
         </div>

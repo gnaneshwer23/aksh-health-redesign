@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "How Aksh Health uses cookies and similar technologies on our website and clinical platform, and how you can manage your preferences.",
 };
 
-const CONTACT_EMAIL = "legal@akshhealth.com";
+const CONTACT_EMAIL = "gnaneshwer.jadav@gmail.com";
 
 export default function CookiesPage() {
   return (

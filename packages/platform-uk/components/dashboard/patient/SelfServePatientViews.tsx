@@ -203,6 +203,9 @@ export function LinkedNetworkPatientView() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {record.careTeam.length === 0 ? (
+            <p className="text-sm text-muted">Your clinic has not added named people to your care team yet.</p>
+          ) : null}
           <ul className="space-y-1 text-sm">
             {record.careTeam.map((t) => (
               <li key={t.name + t.careRole}>

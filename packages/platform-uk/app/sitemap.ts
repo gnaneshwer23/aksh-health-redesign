@@ -2,23 +2,21 @@ import type { MetadataRoute } from "next";
 
 const SITE_URL = "https://akshhealth.com";
 
+import { GUIDES } from "@/components/site/guides";
+
 const PUBLIC_PATHS = [
   "/",
-  "/platform",
-  "/for-clinicians",
-  "/for-patients",
-  "/for-pharmacists",
-  "/for-organisations",
+  "/product",
   "/security",
+  "/resources",
+  ...GUIDES.map((g) => `/resources/${g.slug}`),
+  "/contact",
+  "/get-started",
+  "/signin",
   "/privacy",
   "/terms",
   "/cookies",
-  "/contact",
-  "/get-started",
-  "/signup",
-  "/signin",
-  "/demo/patel",
-] as const;
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

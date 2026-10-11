@@ -192,7 +192,24 @@ export function Sidebar({ role, inSheet = false }: { role: DashboardRole; inShee
     };
   }, []);
   const userName = profile?.fullName?.trim() || "Aksh user";
-  const organisationLabel = real ? profile?.organisation?.trim() || "" : getPersonalizedLabel(profile, PRACTICE_NAME);
+  // Real workspace: the organisation this person works in, from their memberships (profile text can be stale).
+  const [orgName, setOrgName] = useState<string | null>(null);
+  useEffect(() => {
+    if (!real || role === "patient") return;
+    let cancelled = false;
+    fetch("/api/orgs")
+      .then((r) => (r.ok ? r.json() : { rows: [] }))
+      .then((d: { rows?: { name: string }[] }) => {
+        if (cancelled) return;
+        const rows = d.rows ?? [];
+        setOrgName(rows.length > 1 ? `${rows[0]!.name} +${rows.length - 1}` : rows[0]?.name ?? null);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [real, role]);
+  const organisationLabel = real ? orgName ?? profile?.organisation?.trim() ?? "" : getPersonalizedLabel(profile, PRACTICE_NAME);
 
   useEffect(() => {
     if (role !== "admin" || real) return;

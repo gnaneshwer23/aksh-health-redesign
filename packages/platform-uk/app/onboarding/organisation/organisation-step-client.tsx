@@ -10,6 +10,7 @@ import {
   getNextStep,
   getPreviousStep,
   getStepPath,
+  REAL_SKIPPED_STEPS,
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
@@ -40,12 +41,12 @@ export function OrganisationStepClient() {
 
   function handleSubmit() {
     markStepComplete(def?.steps.indexOf("organisation") ?? 2);
-    const next = getNextStep(role, "organisation");
+    const next = getNextStep(role, "organisation", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(next ? getStepPath(next) : "/onboarding/complete");
   }
 
   function handleBack() {
-    const prev = getPreviousStep(role, "organisation");
+    const prev = getPreviousStep(role, "organisation", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(prev ? getStepPath(prev) : "/onboarding/role-select");
   }
 

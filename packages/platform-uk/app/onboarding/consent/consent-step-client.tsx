@@ -10,15 +10,18 @@ import {
   getNextStep,
   getPreviousStep,
   getStepPath,
+  REAL_SKIPPED_STEPS,
   getRoleDefinition,
 } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 export function ConsentStepClient() {
   const router = useRouter();
   const role = useOnboardingStore((s) => s.role);
   const markStepComplete = useOnboardingStore((s) => s.markStepComplete);
   const syncStepFromId = useOnboardingStore((s) => s.syncStepFromId);
+  const real = useRealWorkspace();
 
   useEffect(() => {
     if (!role) {
@@ -34,12 +37,12 @@ export function ConsentStepClient() {
 
   function handleSubmit() {
     markStepComplete(def?.steps.indexOf("consent") ?? 4);
-    const next = getNextStep(role, "consent");
+    const next = getNextStep(role, "consent", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(next ? getStepPath(next) : "/onboarding/complete");
   }
 
   function handleBack() {
-    const prev = getPreviousStep(role, "consent");
+    const prev = getPreviousStep(role, "consent", real ? REAL_SKIPPED_STEPS : undefined);
     router.push(prev ? getStepPath(prev) : "/onboarding/role-select");
   }
 

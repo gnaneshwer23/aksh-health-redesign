@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { PROOF_MODE_BANNER } from "@/lib/compliance-labels";
-import { authConfig } from "@/lib/auth/config";
 import { cn } from "@/lib/utils";
 
 const inputClassName =
@@ -10,24 +8,7 @@ const inputClassName =
 export function SignInFormSkeleton() {
   return (
     <>
-      {authConfig.proofMode ? (
-        <div
-          className="mb-4 rounded-xl border border-navy/10 bg-navy-light px-4 py-3 text-sm text-slate"
-          role="note"
-        >
-          <strong className="text-primary">{PROOF_MODE_BANNER.title}</strong>
-          <p className="mt-1 text-muted">{PROOF_MODE_BANNER.body}</p>
-        </div>
-      ) : null}
 
-      <button
-        type="button"
-        disabled
-        className="mb-4 inline-flex h-10 w-full items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground opacity-50"
-        title="Configure CLINICAL_OAUTH_* env vars"
-      >
-        Clinical identity provider (not configured)
-      </button>
 
       <form className="space-y-4">
         <div className="space-y-2">

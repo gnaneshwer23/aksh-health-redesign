@@ -80,6 +80,8 @@ export function ReadingsReview() {
   }
   if (!rows) return null;
   const lines = toLines(rows);
+  // Nothing waiting: no card (Today shows the count). It appears as soon as a patient shares a reading.
+  if (!lines.length) return null;
   const toggle = (ids: string[]) =>
     setSelected((s) => {
       const n = new Set(s);

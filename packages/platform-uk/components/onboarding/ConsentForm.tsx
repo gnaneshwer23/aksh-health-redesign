@@ -16,6 +16,7 @@ import {
 import type { UserRole } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 import { getConsentSchema } from "@/lib/onboarding/validation";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { cn } from "@/lib/utils";
 
 type ConsentFormProps = {
@@ -71,12 +72,28 @@ const CONSENT_COPY: Record<
   ],
 };
 
+/** Real workspace: acknowledgements about the product people actually use (no AI drafting, no EHR staging). */
+const REAL_CONSENT_STAFF = [
+  { key: "authorised", label: "I am authorised to use Aksh for my organisation's patients", required: true },
+  { key: "dataProtection", label: "I will handle patient information under my organisation's data protection and confidentiality policies", required: true },
+  { key: "staffDecide", label: "I understand Aksh ranks and drafts, and that staff decide and make every patient contact", required: true },
+];
+const REAL_CONSENT_PATIENT = [
+  { key: "healthData", label: "I agree to Aksh storing the readings and details I add to my account", required: true },
+  { key: "notEmergency", label: "I understand my care team checks what I share, but not around the clock: in an emergency I will call the emergency number", required: true },
+  { key: "clinicContact", label: "My clinic may contact me about my care and appointments", required: false },
+];
+const realSchema = (items: { key: string; required: boolean }[]) =>
+  z.object(Object.fromEntries(items.map((i) => [i.key, i.required ? z.literal(true, { message: "Required" }) : z.boolean().optional()])));
+
 export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
   const consents = useOnboardingStore((s) => s.consents);
   const setConsents = useOnboardingStore((s) => s.setConsents);
   const organisation = useOnboardingStore((s) => s.organisation);
 
-  const schema = getConsentSchema(role);
+  const real = useRealWorkspace();
+  const items = real ? (role === "patient" ? REAL_CONSENT_PATIENT : REAL_CONSENT_STAFF) : CONSENT_COPY[role];
+  const schema = real ? realSchema(items) : getConsentSchema(role);
   type FormValues = Record<string, boolean | undefined>;
   const form = useForm<FormValues>({
     resolver: zodResolver(schema) as never,
@@ -102,7 +119,7 @@ export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
           isPatient && "text-base"
         )}
       >
-        {CONSENT_COPY[role].map((item) => {
+        {items.map((item) => {
           const label =
             item.key === "dataSharing" && organisation.practicesInScope
               ? `I accept data sharing terms across ${organisation.practicesInScope} clinics in my regional boundary`
@@ -138,7 +155,7 @@ export function ConsentForm({ role, onSubmit }: ConsentFormProps) {
             Data sharing covers {String(practiceCount)} clinics in your regional boundary.
           </p>
         ) : null}
-        {(role === "gp" ||
+        {!real && (role === "gp" ||
           role === "practice-manager" ||
           role === "patient" ||
           role === "ics-lead" ||

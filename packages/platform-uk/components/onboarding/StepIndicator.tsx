@@ -1,9 +1,11 @@
 "use client";
 
 import { Progress } from "@/components/ui/progress";
+import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import {
   getRoleDefinition,
   ONBOARDING_STEP_LABELS,
+  REAL_SKIPPED_STEPS,
   type OnboardingStepId,
   type UserRole,
 } from "@/lib/onboarding/roles";
@@ -16,9 +18,12 @@ type StepIndicatorProps = {
 
 export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
   const def = getRoleDefinition(role);
-  const steps = def?.steps.filter((s) => s !== "role-select") ?? [];
-  const currentIndex = def?.steps.indexOf(currentStepId) ?? 0;
-  const progressSteps = def?.steps.length ? def.steps.length - 1 : 1;
+  const real = useRealWorkspace();
+  // Real workspace: steps it skips are not shown or counted.
+  const all = (def?.steps ?? []).filter((s) => !real || !REAL_SKIPPED_STEPS.includes(s));
+  const steps = all.filter((s) => s !== "role-select");
+  const currentIndex = Math.max(0, all.indexOf(currentStepId));
+  const progressSteps = all.length ? all.length - 1 : 1;
   const progressValue = Math.max(0, Math.min(100, (currentIndex / progressSteps) * 100));
 
   return (
@@ -32,7 +37,7 @@ export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
       <Progress value={progressValue} className="h-2 overflow-hidden rounded-full bg-[#eef1f4]" />
       <ol className="flex flex-wrap gap-2 text-xs" aria-label="Onboarding steps">
         {steps.map((stepId, index) => {
-          const absoluteIndex = def?.steps.indexOf(stepId) ?? index;
+          const absoluteIndex = all.indexOf(stepId) ?? index;
           const isComplete = absoluteIndex < currentIndex;
           const isActive = stepId === currentStepId;
           return (

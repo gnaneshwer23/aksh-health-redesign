@@ -26,6 +26,9 @@ const PATIENT_PATHS = ["/dashboard/patient", "/dashboard/security"];
 /** Signed-in legacy surfaces outside /dashboard that only ever showed synthetic data. */
 const LEGACY_SESSION_PREFIXES = ["/cases", "/review", "/intake", "/workspace"];
 
+/** Public demo surfaces (synthetic practice, walkthroughs). The real workspace has none. */
+const PUBLIC_DEMO_PREFIXES = ["/demo", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"];
+
 const under = (pathname: string, prefixes: string[]) => prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 /**
@@ -43,4 +46,9 @@ export function realWorkspaceRedirect(pathname: string, role: string | null): st
 
 export function realHomeFor(role: string | null): string {
   return role === "patient" ? REAL_PATIENT_HOME : REAL_HOME;
+}
+
+/** For any visitor in the real workspace: demo pages go to the home page. */
+export function isPublicDemoPath(pathname: string): boolean {
+  return under(pathname, PUBLIC_DEMO_PREFIXES);
 }

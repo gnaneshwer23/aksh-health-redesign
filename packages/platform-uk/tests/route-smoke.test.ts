@@ -20,7 +20,7 @@ async function run() {
   const criticalRoutes = [
     ["app/page.tsx", "HomePage"],
     ["app/onboarding/page.tsx", "OnboardingPage"],
-    ["app/platform/page.tsx", "PlatformPage"],
+    ["app/product/page.tsx", "ProductPage"],
     ["app/review/page.tsx", "ReviewPageClient"],
     ["app/review/command-centre/page.tsx", "CommandCentre"],
     ["app/review/demo-readiness/page.tsx", "DemoReadinessChecklist"],
@@ -372,9 +372,10 @@ async function run() {
   await assertFileIncludes("app/dashboard/hospital/page.tsx", "DigitalTwinPanel");
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/precision-health");
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/researcher#federated");
-  await assertFileIncludes("app/security/page.tsx", "precision-health");
-  await assertFileIncludes("app/security/page.tsx", "not a live digital twin claim");
-  await assertFileIncludes("app/security/page.tsx", "validated physiological digital twin");
+  // Security page: honest posture, no certification or digital-twin claims.
+  await assertFileIncludes("app/security/page.tsx", "We do\n            not claim certifications we do not hold");
+  await assertFileIncludes("app/security/page.tsx", "No AI on patient data");
+  await assertFileExcludes("app/security/page.tsx", "digital twin");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-progress.json");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "precision-health-scaffold-snapshot.json");
   await assertFileIncludes("scripts/evidence-precision-health-summary.ts", "physiologicalTwin");
@@ -435,7 +436,7 @@ async function run() {
   await assertFileIncludes("components/marketing/TrustStrip.tsx", "Human review");
   await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "Every output is a draft");
   await assertFileIncludes("components/marketing/lavender/LvClinicianGate.tsx", "named clinician decides");
-  await assertFileIncludes("app/security/page.tsx", "Trust is a gate");
+  await assertFileIncludes("app/security/page.tsx", "Row-level security");
   await assertFileExcludes("components/marketing/lavender/LvHero.tsx", "100 patients");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "You approve:");

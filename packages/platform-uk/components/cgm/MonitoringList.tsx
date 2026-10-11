@@ -66,6 +66,7 @@ export function MonitoringList() {
         </p>
       </div>
       {error ? <p className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-muted" role="status">{error}</p> : null}
+      {!rows && !error ? <p className="text-sm text-muted" role="status">Loading…</p> : null}
       {rows ? (
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">{rows.length} patients</CardTitle></CardHeader>

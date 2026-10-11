@@ -130,3 +130,48 @@
     @apply border-[#8B3A3A] text-[#8B3A3A] bg-[#8B3A3A]/10;
   }
 }
+
+/*
+ * Base controls for the workspace. Tailwind preflight is off (legacy pages), so native buttons keep the browser's
+ * grey face and a legacy global rule paints every input dark-glass with !important. Reset both here:
+ * - buttons: zero-specificity, so any utility class (bg-primary, …) still wins;
+ * - inputs: must be !important to beat the legacy rule; colour comes from the workspace tokens.
+ */
+:where(.dashboard-root) button {
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+:where(.dashboard-root) button:disabled {
+  cursor: not-allowed;
+}
+.dashboard-root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.dashboard-root textarea {
+  background: #ffffff !important;
+  color: #14201e !important;
+  border: 1px solid #dfe5ea !important;
+}
+.dashboard-root input:not([type="checkbox"]):not([type="radio"]):focus,
+.dashboard-root textarea:focus {
+  border-color: #0a7a68 !important;
+  box-shadow: 0 0 0 3px rgb(10 122 104 / 0.14);
+  outline: none;
+}
+.dashboard-root input::placeholder,
+.dashboard-root textarea::placeholder {
+  color: #8a9894;
+}
+.dashboard-root input:disabled,
+.dashboard-root textarea:disabled {
+  background: #f3f5f7 !important;
+  color: #5b6b66 !important;
+}
+:where(.dashboard-root) select {
+  background-color: #ffffff;
+  color: #14201e;
+  border: 1px solid #dfe5ea;
+}
+.dashboard-root input[type="checkbox"],
+.dashboard-root input[type="radio"] {
+  accent-color: #0b4a42;
+}

@@ -138,7 +138,7 @@ function Upload({ base, onDone }: { base: string; onDone: (msg: string) => void 
           type="file"
           accept=".csv,text/csv"
           aria-label="CGM export file"
-          className="mt-1 block text-sm"
+          className="mt-2 block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-solid file:border-border file:bg-card file:px-4 file:py-1.5 file:text-sm file:font-medium file:text-foreground hover:file:border-secondary"
           onChange={async (e) => {
             const f = e.target.files?.[0];
             if (!f) return;

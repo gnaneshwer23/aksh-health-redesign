@@ -35,11 +35,11 @@ test("slot fill: staff match a freed slot, draft an offer in shadow mode, and bo
   await expect(page.locator("[data-offer-text]")).toContainText("earlier foot appointment tomorrow morning");
   await expect(page.locator("[data-access-settings]")).toContainText("Most offers per patient in 30 days");
   await page.getByRole("button", { name: /Approve/ }).click();
-  await expect(page.getByRole("status").filter({ hasText: "not sent shadow mode" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Not sent by Aksh (shadow mode)" })).toBeVisible();
   await page.getByRole("button", { name: "They accepted" }).click();
   await expect(page.getByText("Accepted is not booked.")).toBeVisible();
   await page.getByRole("button", { name: "Booking shows in our schedule" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "booked verified" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Booked and verified" })).toBeVisible();
 
   // Weekly pilot review: this week shows the booking; last week (complete) can be signed off by the admin.
   const monday = new Date();

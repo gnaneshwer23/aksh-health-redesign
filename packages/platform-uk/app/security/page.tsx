@@ -1,147 +1,142 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { MarketingCtaBand } from "@/components/marketing/MarketingCtaBand";
-import { container } from "@/components/marketing/marketing-ui";
-import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
-import { MarketingShell } from "@/components/marketing/MarketingShell";
-import TrustStrip from "@/components/marketing/TrustStrip";
-import { COMPLIANCE_DISCLAIMER } from "@/lib/compliance-labels";
+import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
-  title: "Clinical safety & security ",
+  title: "Security",
   description:
-    "Human-in-the-loop review, immutable audit trails, GDPR Art. 9 handling, and honest clinical-safety positioning — without certification claims.",
+    "How Aksh protects clinical data: isolation by organisation, two-step sign-in, append-only audit, encryption, backups, data export and a governed go-live.",
 };
 
-const sections = [
+const SECTIONS: { id: string; title: string; intro: string; points: { t: string; b: string }[] }[] = [
   {
-    title: "Human-in-the-loop on every clinical output",
-    body: "Supporting intelligence drafts. A named reviewer must Accept, Edit, or Reject before anything can affect a care record.",
-    bullets: [
-      "Draft-only until a named clinician decides",
-      "No autonomous diagnosis, prescribing, or treatment",
+    id: "access",
+    title: "Access control",
+    intro: "Who can see what is decided in the database, not only in the interface.",
+    points: [
+      { t: "Row-level security", b: "Every query from the application runs as a restricted database role scoped to the signed-in user’s organisations. A clinic cannot read another clinic’s patients, even through a faulty screen." },
+      { t: "Patients see only themselves", b: "A patient account is bound to one record, confirmed with an invite code and date of birth. Sharing with other organisations needs the patient’s recorded consent." },
+      { t: "Roles", b: "Clinical worklists are limited to clinicians. Organisation settings, invites and go-live are limited to organisation admins. Aksh reviewers act only on go-live." },
+      { t: "Registration checks", b: "A clinician’s professional registration is checked and recorded before their organisation can go live." },
     ],
   },
   {
-    title: "Immutable audit trail",
-    body: "Who drafted, who reviewed, and what they decided — recorded so governance teams can reconstruct the path.",
-    bullets: [
-      "Capability, timestamp, and reviewer on every decision",
-      "Zero auto-writes: drafts never self-commit",
+    id: "authentication",
+    title: "Authentication",
+    intro: "Accounts are protected against guessing and stolen passwords.",
+    points: [
+      { t: "Two-step sign-in", b: "Time-based codes from an authenticator app, each usable once, with single-use recovery codes. Secrets are encrypted at rest. Required for Aksh reviewers." },
+      { t: "Passwords", b: "Stored only as salted hashes. Never logged, never shown, never sent by email." },
+      { t: "Rate limits", b: "Sign-in, sign-up and password reset are limited per address and per network, backed by the database so limits hold across servers." },
+      { t: "Sessions", b: "Signed, HTTP-only cookies over TLS. Privileged pages refuse sessions that did not pass two-step sign-in." },
     ],
   },
   {
-    id: "dcb0129",
-    title: "Clinical safety case (in progress)",
-    body: "Workflow design follows hazard-aware clinical safety practice. A signed-off safety case is not complete for this build. The clinical-risk and medical-device pathways required where each organisation operates remain scaffolding, not approvals.",
-    bullets: [
-      "Hazard log is internal — not a public certificate",
-      "Production EHR write-back stays gated until organisation sign-off",
+    id: "audit",
+    title: "Audit and integrity",
+    intro: "The record of what happened cannot be rewritten.",
+    points: [
+      { t: "Append-only history", b: "Slot actions, consent decisions, go-live evidence, registration checks, CGM uploads and weekly sign-offs are append-only: the database rejects edits and deletions." },
+      { t: "Attribution", b: "Every action records who took it, in which organisation and environment, and when." },
+      { t: "Honest measurement", b: "Results use one published definition and a baseline locked before go-live. A booking counts only after it is read back from your schedule." },
     ],
   },
   {
-    title: "Special category health data",
-    body: "Health data is treated as the most sensitive category of personal data: purpose limitation, minimisation, and tenant isolation for every organisation deployment.",
-    bullets: [
-      "Data hosted in the region each organisation chooses",
-      "Encryption in transit and at rest; role-based access",
+    id: "data",
+    title: "Data protection",
+    intro: "You stay in control of the data you bring.",
+    points: [
+      { t: "Encryption", b: "TLS for all traffic with HSTS. Data encrypted at rest by the database service. Two-step secrets additionally encrypted by Aksh." },
+      { t: "No AI on patient data", b: "The product does not send patient data to any AI model. Ranking and metrics are deterministic rules you can read." },
+      { t: "Export", b: "Organisation admins export everything their organisation holds as one machine-readable file; patients download their own record. Exports are audited." },
+      { t: "Retention", b: "Operational error logs are kept for 90 days and are scrubbed of personal details; rate-limit counters for 24 hours." },
+      { t: "Separate environments", b: "Production holds real organisations only. Testing runs on a separate database with synthetic data; tooling refuses to write test data to production." },
     ],
   },
-] as const;
-
-const notClaimed = [
-  "Medical device certification, registration, or marking by any regulator",
-  "Completed clinical safety case sign-off",
-  "An approved health-system procurement or technology assessment outcome",
-  "Care-regulator readiness or inspection evidence",
-  "Live production write-back to any EHR in this public build",
-  "Autonomous diagnosis, prescribing, or treatment decisions",
-  "A validated physiological digital twin — precision-health is scaffolding, not a live digital twin claim",
-] as const;
+  {
+    id: "operations",
+    title: "Operations",
+    intro: "Run like a clinical service.",
+    points: [
+      { t: "Backups and restore", b: "Point-in-time recovery on the production database, with restore drills run and recorded." },
+      { t: "Monitoring", b: "Server errors are recorded and alert the operations team. Scheduled jobs expire stale offers and apply retention daily." },
+      { t: "Secure defaults", b: "Strict transport security, no framing, no content sniffing, and a restrictive permissions policy on every response." },
+      { t: "Dependencies", b: "Pinned versions, reviewed advisories, and automated tests on every change." },
+    ],
+  },
+  {
+    id: "clinical-safety",
+    title: "Clinical safety",
+    intro: "Aksh supports staff. It does not act on patients.",
+    points: [
+      { t: "People decide", b: "Aksh ranks and drafts. It never contacts patients, books appointments, diagnoses or recommends treatment." },
+      { t: "Go-live governance", b: "Live use needs a data processing agreement, a privacy impact assessment with acceptable residual risk, a named clinical safety lead, an agreed contact channel and a locked baseline, each reviewed by Aksh." },
+      { t: "Shadow mode", b: "Organisations start in shadow mode: staff make every contact through their own channels, and Aksh keeps the record." },
+      { t: "Missing data is shown", b: "Patients who cannot be offered a slot are listed with the reason, and incomplete CGM data is labelled, never silently dropped." },
+    ],
+  },
+];
 
 export default function SecurityPage() {
   return (
-    <MarketingShell editorial>
-      <MarketingPageHero
-        eyebrow="Clinical safety & security"
-        title="Trust is a gate, not a slogan."
-        lede="Human review, audit trails, and honest compliance language for clinical deployments — without inventing certifications."
-        primary={{ label: "Request organisation access", href: "/get-started" }}
-        secondary={{ label: "Open walkthrough", href: "/demo/patel" }}
-      />
-
-      <TrustStrip />
-
-      <section className="py-14 md:py-16">
-        <div className={container}>
-          <div className="mb-10 max-w-2xl">
-            <p className="owkin-roles__eyebrow mb-3">How we govern clinical outputs</p>
-            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-[var(--mk-ink)] md:text-4xl">
-              Safety controls that stay visible
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--mk-muted)]">
-              {COMPLIANCE_DISCLAIMER} This page describes design posture — not regulatory approval.
-            </p>
-          </div>
-
-          <ol className="aksh-security-list">
-            {sections.map((section, index) => (
-              <li
-                key={section.title}
-                id={"id" in section ? section.id : undefined}
-                className="aksh-security-list__item scroll-mt-24"
-              >
-                <span className="aksh-security-list__index" aria-hidden>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{section.title}</h3>
-                  <p>{section.body}</p>
-                  <ul>
-                    {section.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section id="dtac" className="scroll-mt-24 border-y border-[var(--mk-line)] py-14 md:py-16">
-        <div className={container}>
-          <div className="mb-8 max-w-2xl">
-            <p className="owkin-roles__eyebrow mb-3">What we do not claim</p>
-            <h2 className="font-[family-name:var(--font-marketing-display)] text-3xl font-semibold tracking-tight text-[var(--mk-ink)] md:text-4xl">
-              Honest limits
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--mk-muted)]">
-              If a badge or sentence would overstate status, we leave it out.
-            </p>
-          </div>
-          <ul className="aksh-limits-list">
-            {notClaimed.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[var(--mk-muted)]" id="precision-health">
-            Precision-health work in this product is phased scaffolding — not a live digital twin claim, and not a
-            validated physiological digital twin.{" "}
-            <Link href="/platform" className="font-medium text-[var(--mk-accent-strong)] underline-offset-4 hover:underline">
-              Platform overview
-            </Link>
+    <SiteShell>
+      <section className="s-page-head">
+        <div className="s-container s-page-head__inner">
+          <span className="s-eyebrow">Security</span>
+          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Security your governance team can check.</h1>
+          <p className="s-lede">
+            How Aksh protects clinical data, who can see it, and what has to be true before an organisation goes live. We do
+            not claim certifications we do not hold.
           </p>
         </div>
       </section>
 
-      <MarketingCtaBand
-        title="Review the safety posture with your team"
-        lede="Walk the Patel case for human-in-the-loop in context, or request organisation access."
-        primary={{ label: "Open walkthrough", href: "/demo/patel" }}
-        secondary={{ label: "Request organisation access", href: "/get-started" }}
-      />
-    </MarketingShell>
+      <section className="s-section s-section--tight">
+        <div className="s-container s-doc">
+          <nav className="s-doc__nav" aria-label="Sections">
+            <span className="s-doc__nav-title">On this page</span>
+            {SECTIONS.map((s) => <a key={s.id} href={`#${s.id}`}>{s.title}</a>)}
+          </nav>
+          <div style={{ display: "grid", gap: 72 }}>
+            {SECTIONS.map((s) => (
+              <section key={s.id} id={s.id} style={{ scrollMarginTop: 96, display: "grid", gap: 24 }}>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <h2 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 32px)" }}>{s.title}</h2>
+                  <p className="s-body">{s.intro}</p>
+                </div>
+                <div className="s-grid s-grid--2">
+                  {s.points.map((p) => (
+                    <div key={p.t} className="s-card" style={{ padding: 24 }}>
+                      <h3 className="s-h3" style={{ fontSize: 17 }}>{p.t}</h3>
+                      <p className="s-small">{p.b}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+            <div className="s-note">
+              Reporting a vulnerability or need our security documentation for a procurement review? Email{" "}
+              <a className="s-link" href="mailto:gnaneshwer.jadav@gmail.com">gnaneshwer.jadav@gmail.com</a>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section s-section--tight">
+        <div className="s-container">
+          <div className="s-cta">
+            <div>
+              <h2 className="s-h2">Questions from your data protection lead?</h2>
+              <p>We will share our data processing agreement and help with your privacy impact assessment.</p>
+            </div>
+            <div className="s-actions">
+              <Link href="/contact" className="s-btn s-btn--light">Contact us</Link>
+              <Link href="/resources/going-live" className="s-btn s-btn--outline-light">Going-live guide</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </SiteShell>
   );
 }

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { SiteShell } from "@/components/site/SiteShell";
 
 export type LegalSection = {
   id?: string;
@@ -17,26 +17,33 @@ export type LegalPageLayoutProps = {
 
 export function LegalPageLayout({ title, description, lastUpdated, sections }: LegalPageLayoutProps) {
   return (
-    <MarketingShell editorial>
-      <section className="owkin-page-hero border-b border-navy/[0.06] py-16">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <p className="owkin-roles__eyebrow">Legal</p>
-          <h1 className="owkin-page-hero__title">{title}</h1>
-          <p className="owkin-page-hero__lede">{description}</p>
-          <p className="mt-3 text-sm text-slate/60">Last updated: {lastUpdated}</p>
-
-          <div className="mt-12 space-y-10">
-            {sections.map((section) => (
-              <article key={section.id ?? section.title} id={section.id}>
-                <h2 className="font-[family-name:var(--font-marketing-display)] text-xl font-semibold tracking-tight text-navy-dark">
-                  {section.title}
-                </h2>
-                <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate/75">{section.content}</div>
-              </article>
+    <SiteShell>
+      <section className="s-page-head">
+        <div className="s-container s-page-head__inner">
+          <span className="s-eyebrow">Legal</span>
+          <h1 className="s-h1" style={{ fontSize: "clamp(34px, 4.2vw, 48px)" }}>{title}</h1>
+          <p className="s-lede">{description}</p>
+          <p className="s-small">Last updated: {lastUpdated}</p>
+        </div>
+      </section>
+      <section className="s-section s-section--tight">
+        <div className="s-container s-doc">
+          <nav className="s-doc__nav" aria-label="Sections">
+            <span className="s-doc__nav-title">Contents</span>
+            {sections.map((s, i) => (
+              <a key={s.id ?? s.title} href={`#${s.id ?? `section-${i + 1}`}`}>{s.title}</a>
+            ))}
+          </nav>
+          <div className="s-prose">
+            {sections.map((section, i) => (
+              <section key={section.id ?? section.title} id={section.id ?? `section-${i + 1}`} style={{ scrollMarginTop: 96 }}>
+                <h2>{section.title}</h2>
+                <div style={{ display: "grid", gap: 14, marginTop: 14 }}>{section.content}</div>
+              </section>
             ))}
           </div>
         </div>
       </section>
-    </MarketingShell>
+    </SiteShell>
   );
 }
