@@ -147,6 +147,7 @@ export function ConnectionsTab({ org, onMessage }: { org: Org; onMessage: (m: st
           <CardContent className="space-y-2 text-xs text-muted">
             <p>Send FHIR R4 resources (single or in a Bundle) or plain JSON, with <code>Authorization: Bearer &lt;key&gt;</code>.</p>
             <p><code className="text-foreground">POST {origin}/api/connect/v1/slots</code> — <code>Slot</code> with <code>status</code> free (offerable) or busy (taken). <code>id</code> and <code>meta.versionId</code> make retries safe.</p>
+            <p><code className="text-foreground">POST {origin}/api/connect/v1/observations</code> — CGM or meter glucose as FHIR <code>Observation</code> (final; glucose code; <code>valueQuantity</code> in mmol/L or mg/dL; <code>effectiveDateTime</code> with an offset; the patient&apos;s record number as <code>subject.identifier.value</code>). Up to 5000 per Bundle; repeats are skipped.</p>
             <p><code className="text-foreground">POST {origin}/api/connect/v1/appointments</code> — <code>Appointment</code> (booked, arrived, fulfilled) referencing the <code>Slot</code>, with the patient&apos;s record number as <code>participant.actor.identifier.value</code>.</p>
             <pre className="overflow-x-auto rounded-lg bg-surface-muted p-2 text-[11px] text-foreground">{`curl -X POST ${origin}/api/connect/v1/slots \\
   -H "Authorization: Bearer $AKSH_KEY" -H "Content-Type: application/json" \\

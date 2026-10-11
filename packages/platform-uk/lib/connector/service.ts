@@ -15,8 +15,11 @@ import { applyAction, CONNECTOR_ROLE, ingestSlot } from "@/lib/access/service";
 import { audit, withPrivileged, withTenant, type NetworkContext } from "@/lib/network/db";
 import { NetworkError } from "@/lib/network/service";
 
+import { refreshSummaries } from "@/lib/cgm/service";
+
 import {
   appointmentFromFhir,
+  observationFromFhir,
   appointmentFromJson,
   BOOKED_STATUSES,
   resourcesOf,
@@ -123,7 +126,7 @@ function connectorContext(key: ConnectorKey): NetworkContext {
 
 type ItemResult = { ref: string | null; result: string; message?: string; workflowId?: string };
 
-async function logEvent(key: ConnectorKey, kind: "slot" | "appointment", format: "fhir" | "json", item: ItemResult) {
+async function logEvent(key: ConnectorKey, kind: "slot" | "appointment" | "observation", format: "fhir" | "json", item: ItemResult) {
   await withPrivileged((client) =>
     client.query(
       `INSERT INTO aksh.connector_events (organisation_id, key_id, kind, format, external_ref, result_code, detail, workflow_id) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
@@ -248,4 +251,67 @@ export async function receiveAppointments(key: ConnectorKey, body: unknown) {
     results.push(item);
   }
   return { results };
+}
+
+/**
+ * Glucose readings from a device or aggregator (FHIR Observation, single or Bundle). Matched to patients by the clinic's
+ * record number; stored as device data (duplicates by patient and time are skipped); CGM summaries refreshed once per
+ * patient per request. Logged per patient with counts, not per reading.
+ */
+export async function receiveObservations(key: ConnectorKey, body: unknown) {
+  const resources = resourcesOf(body, "Observation");
+  if (!resources) throw new NetworkError("Send a FHIR Observation or a Bundle of Observations", 400);
+  if (resources.length > 5000) throw new NetworkError("At most 5000 observations per request", 413);
+  const facts = resources.map(observationFromFhir);
+  const counts: Record<string, number> = {};
+  const byRef = new Map<string, { at: string; mmol: number }[]>();
+  for (const f of facts) {
+    if (!f.ok) {
+      counts[f.code] = (counts[f.code] ?? 0) + 1;
+      continue;
+    }
+    const ref = f.patientIdentifiers[0]!;
+    byRef.set(ref, [...(byRef.get(ref) ?? []), { at: f.at, mmol: f.mmol }]);
+  }
+  const ctx = connectorContext(key);
+  const patients: { ref: string; result: string; accepted?: number; duplicate?: number }[] = [];
+  if (byRef.size) {
+    await withTenant(ctx, async (client) => {
+      const found = new Map(
+        (await client.query<{ id: string; record_ref: string }>(
+          `SELECT id, record_ref FROM aksh.network_patients WHERE organisation_id = $1 AND record_ref = ANY($2)`,
+          [key.organisationId, [...byRef.keys()]]
+        )).rows.map((r) => [r.record_ref, r.id])
+      );
+      for (const [ref, rows] of byRef) {
+        const patientId = found.get(ref);
+        if (!patientId) {
+          patients.push({ ref, result: "UNKNOWN_PATIENT" });
+          counts.UNKNOWN_PATIENT = (counts.UNKNOWN_PATIENT ?? 0) + rows.length;
+          continue;
+        }
+        rows.sort((a, b) => a.at.localeCompare(b.at));
+        const upload = (await client.query<{ id: string }>(
+          `INSERT INTO aksh.cgm_uploads (patient_id, uploaded_by, uploader_kind, format, timezone, rows_read, rows_accepted, rows_duplicate, rows_rejected, first_at, last_at)
+           VALUES ($1, $2, 'connector', 'fhir_observation', 'UTC', $3, 0, 0, 0, $4, $5) RETURNING id`,
+          [patientId, ctx.userId, rows.length, rows[0]!.at, rows[rows.length - 1]!.at]
+        )).rows[0]!.id;
+        const r = await client.query(
+          `INSERT INTO aksh.cgm_readings (patient_id, at, mmol, upload_id)
+           SELECT $1, x.at, x.mmol, $2 FROM jsonb_to_recordset($3::jsonb) AS x(at timestamptz, mmol numeric)
+           ON CONFLICT (patient_id, at) DO NOTHING`,
+          [patientId, upload, JSON.stringify(rows)]
+        );
+        const accepted = r.rowCount ?? 0;
+        counts.ACCEPTED = (counts.ACCEPTED ?? 0) + accepted;
+        counts.DUPLICATE = (counts.DUPLICATE ?? 0) + rows.length - accepted;
+        if (accepted) await refreshSummaries(client, null, patientId, "device", upload); // attributed via the upload row and connector log
+        patients.push({ ref, result: "ACCEPTED", accepted, duplicate: rows.length - accepted });
+      }
+    });
+  }
+  for (const p of patients) await logEvent(key, "observation", "fhir", { ref: p.ref, result: p.result, message: p.accepted !== undefined ? `${p.accepted} stored, ${p.duplicate} already stored` : undefined });
+  const rejected = Object.entries(counts).filter(([k]) => !["ACCEPTED", "DUPLICATE"].includes(k));
+  if (rejected.length) await logEvent(key, "observation", "fhir", { ref: null, result: "REJECTED_ITEMS", message: rejected.map(([k, n]) => `${n} ${k}`).join(", ") });
+  return { counts, patients };
 }

@@ -111,24 +111,25 @@ export async function commitUpload(ctx: NetworkContext, patientId: string, text:
     // The upload row is append-only; record the counts in the audit trail instead of updating it.
     await audit(client, { actorUserId: ctx.userId, action: "cgm.uploaded", resourceType: "patient", resourceId: patientId, detail: { uploadId: upload, format: parsed.format, accepted: inserted, duplicate: parsed.rows.length - inserted, rejected: parsed.rejected.length, by: who.kind } });
 
-    // Summaries from the most recent 14 days of stored data.
-    const latest = (await client.query<{ at: Date }>(`SELECT max(at) AS at FROM aksh.cgm_readings WHERE patient_id = $1`, [patientId])).rows[0]!.at;
-    const points = await loadPoints(client, patientId, new Date(latest.getTime() - 14 * 86_400_000), latest);
-    const metrics = computeMetrics(points, 14, latest.getTime() + 1);
-    let summarised = false;
-    if (metrics?.sufficient) {
-      const source = who.kind === "patient" ? "patient_reported" : "device";
-      for (const [kind, value, unit] of SUMMARY_KINDS) {
-        await client.query(
-          `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, client_ref)
-           VALUES ($1, $2, $3, $4, $5, $6, FALSE, $7, $8) ON CONFLICT (patient_id, client_ref) WHERE client_ref IS NOT NULL DO NOTHING`,
-          [patientId, kind, value(metrics), unit, latest, source, ctx.userId, `cgm-${upload}-${kind}`]
-        );
-      }
-      summarised = true;
-    }
+    const { metrics, summarised } = await refreshSummaries(client, ctx.userId, patientId, who.kind === "patient" ? "patient_reported" : "device", upload);
     return { uploadId: upload, accepted: inserted, duplicate: parsed.rows.length - inserted, rejected: parsed.rejected.length, metrics, summarised };
   });
+}
+
+/** Recompute the latest-14-day metrics and, when the data are sufficient, write the summary observations once per batch. */
+export async function refreshSummaries(client: PoolClient, actorUserId: string | null, patientId: string, source: "patient_reported" | "device", batchRef: string) {
+  const latest = (await client.query<{ at: Date }>(`SELECT max(at) AS at FROM aksh.cgm_readings WHERE patient_id = $1`, [patientId])).rows[0]!.at;
+  const points = await loadPoints(client, patientId, new Date(latest.getTime() - 14 * 86_400_000), latest);
+  const metrics = computeMetrics(points, 14, latest.getTime() + 1);
+  if (!metrics?.sufficient) return { metrics, summarised: false };
+  for (const [kind, value, unit] of SUMMARY_KINDS) {
+    await client.query(
+      `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, client_ref)
+       VALUES ($1, $2, $3, $4, $5, $6, FALSE, $7, $8) ON CONFLICT (patient_id, client_ref) WHERE client_ref IS NOT NULL DO NOTHING`,
+      [patientId, kind, value(metrics), unit, latest, source, actorUserId, `cgm-${batchRef}-${kind}`]
+    );
+  }
+  return { metrics, summarised: true };
 }
 
 async function loadPoints(client: PoolClient, patientId: string, from: Date, to: Date): Promise<CgmPoint[]> {

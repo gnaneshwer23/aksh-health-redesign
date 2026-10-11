@@ -42,6 +42,29 @@ export function samplingInterval(points: CgmPoint[]): number {
   return median <= 7 ? 5 : median <= 20 ? 15 : Math.round(median);
 }
 
+/** Flags against the general adult consensus targets, worst first. Shared by the patient view and monitoring. */
+export function consensusFlags(m: { veryLow: number; low: number; inRange: number; veryHigh: number; cvPct: number; days: number; wearPct: number; sufficient: boolean }) {
+  const flags: string[] = [];
+  if (m.veryLow >= 1) flags.push("time below 3.0 mmol/L is 1% or more");
+  if (m.veryLow + m.low >= 4) flags.push("time below range is 4% or more");
+  if (m.inRange < 70) flags.push("time in range is under 70%");
+  if (m.veryHigh >= 5) flags.push("time above 13.9 mmol/L is 5% or more");
+  if (m.cvPct > 36) flags.push("glucose variability (CV) is above 36%");
+  if (!m.sufficient) flags.push(`not enough data for reliable metrics (${m.days} days, ${round1(m.wearPct)}% wear; needs 14 days and 70%)`);
+  return flags;
+}
+
+/** Ranking for monitoring: lower is more urgent. Hypoglycaemia first, then hyperglycaemia, then data quality. */
+export function urgency(m: { veryLow: number; low: number; inRange: number; veryHigh: number; sufficient: boolean; stale: boolean }) {
+  if (m.veryLow >= 1) return 0;
+  if (m.veryLow + m.low >= 4) return 1;
+  if (m.stale) return 2;
+  if (m.veryHigh >= 5 || m.inRange < 50) return 3;
+  if (m.inRange < 70) return 4;
+  if (!m.sufficient) return 5;
+  return 6;
+}
+
 export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now()): CgmMetrics | null {
   const from = now - windowDays * 86_400_000;
   const points = all.filter((p) => {
@@ -68,14 +91,8 @@ export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now(
   const meanMgdl = mean * 18.0182;
   const gmiPct = 3.31 + 0.02392 * meanMgdl;
   const gmiMmolMol = 12.71 + 4.70587 * mean;
-  const flags: string[] = [];
-  if (veryLow >= 1) flags.push("time below 3.0 mmol/L is 1% or more");
-  if (veryLow + low >= 4) flags.push("time below range is 4% or more");
-  if (inRange < 70) flags.push("time in range is under 70%");
-  if (veryHigh >= 5) flags.push("time above 13.9 mmol/L is 5% or more");
-  if ((sd / mean) * 100 > 36) flags.push("glucose variability (CV) is above 36%");
   const sufficient = days >= 14 && wear >= 70;
-  if (!sufficient) flags.push(`not enough data for reliable metrics (${days} days, ${round1(wear)}% wear; needs 14 days and 70%)`);
+  const flags = consensusFlags({ veryLow, low, inRange, veryHigh, cvPct: (sd / mean) * 100, days, wearPct: wear, sufficient });
   return {
     from: points[0]!.at,
     to: points[n - 1]!.at,

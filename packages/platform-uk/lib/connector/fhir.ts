@@ -20,7 +20,7 @@ const asArray = (v: unknown): Json[] => (Array.isArray(v) ? (v as Json[]) : []);
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 
 /** Unpack a Bundle (searchset, transaction, collection) or a single resource of the wanted type. */
-export function resourcesOf(body: unknown, type: "Slot" | "Appointment"): Json[] | null {
+export function resourcesOf(body: unknown, type: "Slot" | "Appointment" | "Observation"): Json[] | null {
   if (!body || typeof body !== "object") return null;
   const b = body as Json;
   if (b.resourceType === type) return [b];
@@ -158,3 +158,41 @@ export function appointmentFromJson(r: Json): AppointmentFact {
 
 /** FHIR statuses that mean the patient holds the appointment. */
 export const BOOKED_STATUSES = new Set(["booked", "arrived", "fulfilled", "checked-in"]);
+
+// ---------------------------------------------------------------- device observations (CGM)
+
+export type ObservationFact =
+  | { ok: true; ref: string; at: string; mmol: number; patientIdentifiers: string[] }
+  | { ok: false; ref: string | null; code: string; message: string };
+
+/** LOINC codes for glucose concentration (blood, serum/plasma, capillary, interstitial/body fluid). */
+const GLUCOSE_LOINC = new Set(["15074-8", "2339-0", "2345-7", "14743-9", "14745-4", "41653-7", "41652-9", "2340-8", "2341-6"]);
+const FINAL = new Set(["final", "amended", "corrected"]);
+
+function isGlucose(code: Json | undefined) {
+  if (!code) return false;
+  if (typeof code.text === "string" && /glucose/i.test(code.text)) return true;
+  return asArray(code.coding).some((c) => GLUCOSE_LOINC.has(String(c.code ?? "")) || /glucose/i.test(String(c.display ?? "")));
+}
+
+/** A FHIR Observation carrying one glucose reading for a patient identified by the clinic's record number. */
+export function observationFromFhir(r: Json): ObservationFact {
+  if (!r || typeof r !== "object") return { ok: false, ref: null, code: "INVALID_ITEM", message: "Each entry must be an Observation resource" };
+  const ref = str(r.id) ?? null;
+  const status = str(r.status);
+  if (!status || !FINAL.has(status)) return { ok: false, ref, code: "IGNORED_STATUS", message: "Only final, amended or corrected observations are stored" };
+  if (!isGlucose(r.code as Json | undefined)) return { ok: false, ref, code: "NOT_GLUCOSE", message: "Observation.code must be a glucose concentration" };
+  const q = r.valueQuantity as Json | undefined;
+  const unit = String(q?.code ?? q?.unit ?? "").replace(/\s/g, "");
+  const value = typeof q?.value === "number" ? q.value : NaN;
+  const mmol = /^mmol\/l$/i.test(unit) ? value : /^mg\/dl$/i.test(unit) ? value / 18.0182 : NaN;
+  if (!Number.isFinite(mmol)) return { ok: false, ref, code: "INVALID_VALUE", message: "valueQuantity must be a number in mmol/L or mg/dL" };
+  if (!(mmol >= 1 && mmol <= 40)) return { ok: false, ref, code: "OUT_OF_RANGE", message: "Glucose outside 1–40 mmol/L" };
+  const t = instant(r.effectiveDateTime ?? r.effectiveInstant);
+  if (Number.isNaN(t)) return { ok: false, ref, code: "INVALID_TIME", message: "effectiveDateTime must include an offset (Z or +hh:mm)" };
+  if (t > Date.now() + 5 * 60_000) return { ok: false, ref, code: "FUTURE_TIME", message: "Observation time is in the future" };
+  const subject = r.subject as Json | undefined;
+  const ids = [str((subject?.identifier as Json | undefined)?.value)].filter((x): x is string => Boolean(x));
+  if (!ids.length) return { ok: false, ref, code: "NO_PATIENT_IDENTIFIER", message: "Observation.subject.identifier.value must be the patient's record number" };
+  return { ok: true, ref: ref ?? `t${t}`, at: new Date(t).toISOString(), mmol: Math.round(mmol * 10) / 10, patientIdentifiers: ids };
+}
