@@ -32,8 +32,8 @@ export async function requirePlatformAdmin(userId: string, orgId?: string) {
 }
 
 async function loadOrg(client: PoolClient, orgId: string) {
-  const r = await client.query<{ id: string; name: string; status: string; locale: Record<string, string>; public_demo: boolean; verified_at: string | null }>(
-    `SELECT id, name, status, locale, public_demo, verified_at FROM aksh.organisations WHERE id = $1`,
+  const r = await client.query<{ id: string; name: string; status: string; locale: Record<string, string>; public_demo: boolean; verified_at: string | null; pilot_stage: string }>(
+    `SELECT id, name, status, locale, public_demo, verified_at, pilot_stage FROM aksh.organisations WHERE id = $1`,
     [orgId]
   );
   if (!r.rows[0]) throw new NetworkError("Organisation not found", 404);
@@ -90,7 +90,7 @@ async function snapshot(client: PoolClient, orgId: string) {
   const events = await loadEvents(client, orgId);
   const items = deriveItems(events);
   const autos = await autoChecks(client, orgId, org.locale ?? {}, org.public_demo);
-  return { org: { id: org.id, name: org.name, status: org.status, verifiedAt: org.verified_at }, items, autos, events, ...readiness(items, autos) };
+  return { org: { id: org.id, name: org.name, status: org.status, verifiedAt: org.verified_at, pilotStage: org.pilot_stage }, items, autos, events, ...readiness(items, autos) };
 }
 
 /** The organisation's checklist, for any member. Evidence is visible to members; the history shows who did what. */
@@ -165,14 +165,14 @@ export async function listReviewQueue(userId: string) {
          SELECT DISTINCT ON (organisation_id, item_key) organisation_id, item_key, action
          FROM aksh.golive_events WHERE item_key IS NOT NULL ORDER BY organisation_id, item_key, id DESC
        )
-       SELECT o.id, o.name, o.status, o.created_at,
+       SELECT o.id, o.name, o.status, o.pilot_stage, o.created_at,
               (SELECT count(*)::int FROM latest l WHERE l.organisation_id = o.id AND l.action = 'submitted') AS awaiting,
               (SELECT count(*)::int FROM latest l WHERE l.organisation_id = o.id AND l.action = 'accepted') AS accepted,
               (SELECT max(created_at) FROM aksh.golive_events e WHERE e.organisation_id = o.id) AS last_activity,
               EXISTS (SELECT 1 FROM aksh.memberships m WHERE m.organisation_id = o.id AND m.user_id = $1) AS is_member
        FROM aksh.organisations o
-       WHERE o.status = 'onboarding' OR EXISTS (SELECT 1 FROM latest l WHERE l.organisation_id = o.id AND l.action = 'submitted')
-       ORDER BY (o.status = 'onboarding') DESC, last_activity DESC NULLS LAST LIMIT 200`,
+       WHERE o.status IN ('onboarding', 'live_read_only', 'live') OR EXISTS (SELECT 1 FROM latest l WHERE l.organisation_id = o.id AND l.action = 'submitted')
+       ORDER BY (o.status = 'onboarding') DESC, (o.status IN ('live_read_only', 'live')) ASC, last_activity DESC NULLS LAST LIMIT 200`,
       [userId]
     )).rows
   );
@@ -246,5 +246,29 @@ export async function returnGoLive(userId: string, orgId: string, note?: string)
     await client.query(`UPDATE aksh.organisations SET status = 'sandbox' WHERE id = $1`, [orgId]);
     await audit(client, { organisationId: orgId, actorUserId: userId, action: "golive.returned", resourceType: "organisation", resourceId: orgId });
     return snapshot(client, orgId);
+  });
+}
+
+/**
+ * PRD v1.1 §10.3: move a live organisation between pilot stages. Shadow → staff-assisted is a deliberate permission
+ * increase an Aksh reviewer makes with a written reason (the provider's approval); it applies to slots received from
+ * then on. Recorded append-only.
+ */
+export const pilotStageSchema = z.object({ stage: z.enum(["shadow", "staff_assisted"]), note: z.string().trim().min(3).max(2000) });
+
+export async function setPilotStage(userId: string, orgId: string, input: z.infer<typeof pilotStageSchema>) {
+  await requirePlatformAdmin(userId, orgId);
+  return withPrivileged(async (client) => {
+    const org = (await client.query<{ status: string; pilot_stage: string }>(`SELECT status, pilot_stage FROM aksh.organisations WHERE id = $1 FOR UPDATE`, [orgId])).rows[0];
+    if (!org) throw new NetworkError("Organisation not found", 404);
+    if (org.status !== "live_read_only" && org.status !== "live") throw new NetworkError("STAGE_NOT_LIVE: an organisation changes pilot stage only after go-live", 409);
+    if (org.pilot_stage === input.stage) throw new NetworkError(`STAGE_UNCHANGED: already ${input.stage.replace("_", "-")}`, 409);
+    await client.query(
+      `INSERT INTO aksh.pilot_stage_events (organisation_id, from_stage, to_stage, note, actor_user_id, environment) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [orgId, org.pilot_stage, input.stage, input.note, userId, getDeploymentEnvironment()]
+    );
+    await client.query(`UPDATE aksh.organisations SET pilot_stage = $2 WHERE id = $1`, [orgId, input.stage]);
+    await audit(client, { organisationId: orgId, actorUserId: userId, action: "pilot.stage_changed", resourceType: "organisation", resourceId: orgId, detail: { from: org.pilot_stage, to: input.stage } });
+    return { organisationId: orgId, stage: input.stage, previous: org.pilot_stage };
   });
 }

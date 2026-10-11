@@ -12,6 +12,7 @@ import { csvToPatients, PATIENT_CSV_TEMPLATE } from "@/lib/network/csv";
 
 import { ConnectionsTab } from "./ConnectionsTab";
 import { GoLiveTab } from "./GoLiveTab";
+import { OfferWordingTab } from "./OfferWordingTab";
 import { RegistrationCheckForm } from "./RegistrationCheckForm";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ type Org = { id: string; name: string; kind: string; status: string; region: str
 type Member = { id: string; user_id: string; registration_number: string | null; registration_body: string | null; display_name: string; email: string; role: string; professional_title: string | null; is_admin: boolean; status: string; registration_status: string; caseload: number };
 type Invite = { id: string; kind: string; role: string | null; is_admin: boolean; email: string | null; patient_name: string | null; expires_at: string };
 type PatientRow = { id: string; recordRef: string | null; name: string; age: number; type: string; appLinked: boolean };
-type Tab = "settings" | "staff" | "patients" | "connections" | "go-live";
+type Tab = "settings" | "staff" | "patients" | "wording" | "connections" | "go-live";
 const LICENSED = new Set(["gp", "nurse", "clinical-pharmacist"]);
 
 const ROLE_OPTIONS: [string, string][] = [
@@ -28,7 +29,7 @@ const ROLE_OPTIONS: [string, string][] = [
   ["clinical-pharmacist", "Pharmacist"],
   ["practice-manager", "Manager / admin"],
 ];
-const TAB_LABEL: Record<Tab, string> = { settings: "Settings", staff: "Staff", patients: "Patients", connections: "Connections", "go-live": "Go-live" };
+const TAB_LABEL: Record<Tab, string> = { settings: "Settings", staff: "Staff", patients: "Patients", wording: "Offer wording", connections: "Connections", "go-live": "Go-live" };
 const STATUS_LABEL: Record<string, string> = { sandbox: "Setting up", onboarding: "Go-live under review", live_read_only: "Live (read only)", live: "Live", suspended: "Suspended" };
 
 async function api<T = unknown>(url: string, init?: RequestInit): Promise<{ ok: boolean; data: T & { error?: string } }> {
@@ -59,7 +60,7 @@ export function OrganisationWorkspace() {
   // Deep links from Today: ?org=<id>&tab=patients|go-live|staff|connections|settings (read after mount: no hydration mismatch).
   useEffect(() => {
     const t = new URLSearchParams(window.location.search).get("tab");
-    if ((["settings", "staff", "patients", "connections", "go-live"] as string[]).includes(t ?? "")) setTab(t as Tab);
+    if ((["settings", "staff", "patients", "wording", "connections", "go-live"] as string[]).includes(t ?? "")) setTab(t as Tab);
   }, []);
   const [message, setMessage] = useState<string | null>(null);
   const org = useMemo(() => orgs.find((o) => o.id === orgId) ?? null, [orgs, orgId]);
@@ -107,7 +108,7 @@ export function OrganisationWorkspace() {
       </div>
       {message ? <p className="rounded-lg bg-surface-muted px-3 py-2 text-sm" role="status">{message}</p> : null}
       <div className="flex flex-wrap gap-1" role="tablist" aria-label="Organisation sections">
-        {(["settings", "staff", "patients", "connections", "go-live"] as Tab[]).map((t) => (
+        {(["settings", "staff", "patients", "wording", "connections", "go-live"] as Tab[]).map((t) => (
           <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setMessage(null); }} className={cn("rounded-full px-4 py-1.5 text-sm", tab === t ? "bg-foreground text-background" : "bg-surface-muted text-foreground")}>
             {TAB_LABEL[t]}
           </button>
@@ -117,6 +118,7 @@ export function OrganisationWorkspace() {
       {org && tab === "staff" ? <StaffTab org={org} onMessage={setMessage} /> : null}
       {org && tab === "patients" ? <PatientsTab org={org} onMessage={setMessage} /> : null}
       {org && tab === "connections" ? <ConnectionsTab org={org} onMessage={setMessage} /> : null}
+      {org && tab === "wording" ? <OfferWordingTab org={org} onMessage={setMessage} /> : null}
       {org && tab === "go-live" ? <GoLiveTab org={org} onMessage={setMessage} onStatusChange={() => void loadOrgs()} /> : null}
     </div>
   );

@@ -112,6 +112,7 @@ export function WeeklyReview({ initialOrgId, initialWeek }: { initialOrgId?: str
             <Button size="sm" variant="outline" onClick={() => setWeek(shiftWeek(rep.week.start, -1))}>Previous week</Button>
             <Button size="sm" variant="outline" disabled={!rep.week.complete} onClick={() => setWeek(shiftWeek(rep.week.start, 1))}>Next week</Button>
             <Button size="sm" variant="outline" onClick={() => window.print()}>Print</Button>
+            <a className="text-sm font-medium text-secondary underline-offset-2 hover:underline" href={`/dashboard/access/pilot-report?org=${orgId}`}>Pilot readout</a>
           </>
         ) : null}
       </div>
@@ -231,11 +232,13 @@ export function WeeklyReview({ initialOrgId, initialWeek }: { initialOrgId?: str
                   { k: "Slots confirmed as booked more than once", v: rep.guardrails.duplicateBookings },
                   { k: "Hand-offs acknowledged", v: rep.guardrails.handoffsAcknowledged },
                   { k: "Patients who asked to stop contact this week", v: rep.guardrails.optOutsRecorded },
+                  { k: "Complaints recorded", v: rep.guardrails.complaints },
+                  { k: "Staff minutes logged", v: rep.guardrails.staffMinutes },
                   { k: "Candidates not offered: opted out of contact", v: rep.guardrails.optedOutCandidates },
                 ]} />
                 <p className="text-xs text-muted">
                   Booking issues per 100 checks: {dash(rep.guardrails.bookingIssuesPer100)} · Hand-offs acknowledged on time: {dash(rep.guardrails.handoffsAcknowledgedOnTimePct, "%")} · Median time to acknowledge: {minutes(rep.guardrails.medianMinutesToAcknowledge)}.
-                  Complaints and staff handling time are recorded in your own processes during the pilot.
+                  Staff minutes per slot: {dash(rep.guardrails.staffMinutesPerSlot)} over {rep.guardrails.slotsTimed} timed slot{rep.guardrails.slotsTimed === 1 ? "" : "s"}{rep.guardrails.baselineStaffMinutesPerSlot !== null ? ` (baseline ${rep.guardrails.baselineStaffMinutesPerSlot})` : ""}.
                 </p>
               </CardContent>
             </Card>

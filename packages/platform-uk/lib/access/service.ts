@@ -11,7 +11,8 @@ import { withTenant, type NetworkContext } from "@/lib/network/db";
 import { NetworkError } from "@/lib/network/service";
 
 import { FILL_DEFINITION, FILLED_SQL } from "./measurement";
-import { evaluateCandidates, renderOffer, resolveSettings, RULE_VERSION, TEMPLATE_VERSION, type WaitlistFacts } from "./eligibility";
+import { evaluateCandidates, resolveSettings, RULE_VERSION, type WaitlistFacts } from "./eligibility";
+import { activeTemplate, renderTemplate } from "./templates";
 import { withPrivileged } from "@/lib/network/db";
 
 const STAFF_ROLES = new Set(["gp", "nurse", "clinical-pharmacist", "practice-manager"]);
@@ -82,6 +83,9 @@ export const actionSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("edit_offer"), idempotencyKey: z.string().min(8).max(120), text: z.string().trim().min(20).max(480) }),
   // Park the slot until later (never beyond the offer window).
   z.object({ action: z.literal("defer"), idempotencyKey: z.string().min(8).max(120), until: isoDateTime }),
+  // §10.2 guardrails: a complaint about how a slot was handled (creates a hand-off), and staff time spent on a slot.
+  z.object({ action: z.literal("complaint"), idempotencyKey: z.string().min(8).max(120), note: z.string().trim().min(3).max(500) }),
+  z.object({ action: z.literal("log_time"), idempotencyKey: z.string().min(8).max(120), minutes: z.number().int().min(1).max(240) }),
 ]);
 export type WorkflowAction = z.infer<typeof actionSchema>;
 
@@ -119,9 +123,11 @@ export async function ingestSlot(ctx: NetworkContext, orgId: string, input: z.in
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
       [orgId, input.source, input.sourceRef, input.sourceVersion, input.appointmentType, input.clinicianMembershipId ?? null, input.site ?? null, input.startsAt, input.durationMin, input.offerExpiresAt]
     );
+    // §10.3 pilot stage: shadow mode unless an Aksh reviewer moved the organisation to staff-assisted.
+    const stage = (await client.query<{ pilot_stage: string }>(`SELECT pilot_stage FROM aksh.organisations WHERE id = $1`, [orgId])).rows[0]?.pilot_stage;
     const wf = await client.query<{ id: string }>(
-      `INSERT INTO aksh.access_workflows (organisation_id, slot_id, state, rule_version, environment) VALUES ($1, $2, 'SOURCE_VALIDATED', $3, $4) RETURNING id`,
-      [orgId, slot.rows[0]!.id, RULE_VERSION, env]
+      `INSERT INTO aksh.access_workflows (organisation_id, slot_id, state, rule_version, environment, contact_mode) VALUES ($1, $2, 'SOURCE_VALIDATED', $3, $4, $5) RETURNING id`,
+      [orgId, slot.rows[0]!.id, RULE_VERSION, env, stage === "staff_assisted" ? "staff_executed" : "shadow"]
     );
     await client.query(
       `INSERT INTO aksh.access_actions (organisation_id, workflow_id, action_type, idempotency_key, actor_user_id, from_state, to_state, result_code, detail, environment)
@@ -284,7 +290,8 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
           `SELECT p.given_name, o.name AS org_name, o.locale->>'timezone' AS timezone FROM aksh.network_patients p JOIN aksh.organisations o ON o.id = $2 WHERE p.id = $1`,
           [cand.patient_id, wf.organisation_id]
         )).rows[0]!;
-        const offer = renderOffer({
+        const template = await activeTemplate(client, wf.organisation_id);
+        const offer = renderTemplate(template.body, {
           givenName: facts.given_name,
           organisationName: facts.org_name,
           appointmentType: slot.appointment_type,
@@ -294,8 +301,8 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
           timeZone: facts.timezone ?? undefined,
         });
         await client.query(`UPDATE aksh.access_slots SET state = 'offered' WHERE id = $1`, [slot.id]);
-        await client.query(`UPDATE aksh.access_workflows SET selected_candidate_id = $2, offer_text = $3, template_version = $4 WHERE id = $1`, [wf.id, cand.id, offer, TEMPLATE_VERSION]);
-        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, patientId: cand.patient_id, templateVersion: TEMPLATE_VERSION, rank: cand.rank, topRanked: cand.rank === topRank });
+        await client.query(`UPDATE aksh.access_workflows SET selected_candidate_id = $2, offer_text = $3, template_version = $4 WHERE id = $1`, [wf.id, cand.id, offer, template.version]);
+        await record(client, ctx, wf, "select", key, "OFFER_DRAFTED", "OFFER_DRAFTED", { candidateId: cand.id, patientId: cand.patient_id, templateVersion: template.version, rank: cand.rank, topRanked: cand.rank === topRank });
         return { action_type: "select", to_state: "OFFER_DRAFTED", result_code: "OFFER_DRAFTED", detail: { offer }, replay: false };
       }
       case "skip": {
@@ -389,7 +396,8 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
       }
       case "edit_offer": {
         expectState(wf, ["OFFER_DRAFTED"], "edit the offer");
-        await client.query(`UPDATE aksh.access_workflows SET offer_text = $2, template_version = $3, offer_edited_by = $4 WHERE id = $1`, [wf.id, input.text, `${TEMPLATE_VERSION}+edited`, ctx.userId]);
+        const base = (await client.query<{ template_version: string | null }>(`SELECT template_version FROM aksh.access_workflows WHERE id = $1`, [wf.id])).rows[0]?.template_version ?? "offer-template-v1";
+        await client.query(`UPDATE aksh.access_workflows SET offer_text = $2, template_version = $3, offer_edited_by = $4 WHERE id = $1`, [wf.id, input.text, `${base.replace(/\+edited$/, "")}+edited`, ctx.userId]);
         await record(client, ctx, wf, "edit_offer", key, "OFFER_DRAFTED", "OFFER_EDITED", { length: input.text.length });
         return { action_type: "edit_offer", to_state: "OFFER_DRAFTED", result_code: "OFFER_EDITED", detail: {}, replay: false };
       }
@@ -402,6 +410,19 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         await client.query(`UPDATE aksh.access_workflows SET deferred_until = $2 WHERE id = $1`, [wf.id, until.toISOString()]);
         await record(client, ctx, wf, "defer", key, wf.state, "DEFERRED", { until: until.toISOString() });
         return { action_type: "defer", to_state: wf.state, result_code: "DEFERRED", detail: { until: until.toISOString() }, replay: false };
+      }
+      case "complaint": {
+        // Any state: a complaint is recorded against the slot and a person follows it up.
+        await client.query(
+          `INSERT INTO aksh.handoff_tasks (organisation_id, workflow_id, queue, reason, context, priority, due_at) VALUES ($1, $2, 'reception', 'Complaint raised', $3, 'soon', NOW() + INTERVAL '1 day')`,
+          [wf.organisation_id, wf.id, `Slot ${slot.appointment_type} at ${slot.starts_at.toISOString()} · ${input.note}`]
+        );
+        await record(client, ctx, wf, "complaint", key, wf.state, "COMPLAINT_RECORDED", { note: input.note });
+        return { action_type: "complaint", to_state: wf.state, result_code: "COMPLAINT_RECORDED", detail: {}, replay: false };
+      }
+      case "log_time": {
+        await record(client, ctx, wf, "log_time", key, wf.state, "TIME_LOGGED", { minutes: input.minutes });
+        return { action_type: "log_time", to_state: wf.state, result_code: "TIME_LOGGED", detail: { minutes: input.minutes }, replay: false };
       }
       case "withdraw": {
         expectState(wf, ["SOURCE_VALIDATED", "STAFF_REVIEW", "OFFER_DRAFTED"], "withdraw");
