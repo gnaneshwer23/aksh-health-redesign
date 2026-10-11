@@ -55,7 +55,7 @@ test("schedule connector: slots arrive from the schedule and a read-back booking
 
   // 3. Staff work it: it is already in the queue.
   await page.goto("/dashboard/access");
-  await expect(page.locator("[data-baseline]")).toContainText("Last 30 days (rehearsal");
+  await expect(page.locator("[data-baseline]")).toContainText("Last 30 days (rehearsal", { timeout: 20_000 }); // loads after the queue
   await page.locator("[data-slot-queue] button", { hasText: "North wing" }).first().click();
   await page.getByRole("button", { name: "Find patients for this slot" }).click();
   await expect(page.locator("[data-candidates]")).toContainText("Mira Example");

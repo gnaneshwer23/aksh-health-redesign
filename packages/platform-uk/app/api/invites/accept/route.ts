@@ -18,7 +18,7 @@ const schema = z.object({
 export async function POST(request: Request) {
   const actor = await requireActor();
   if (actor instanceof NextResponse) return actor;
-  const limited = checkRateLimit(`invite-accept:${actor.userId}`, 10, 15 * 60 * 1000);
+  const limited = await checkRateLimit(`invite-accept:${actor.userId}`, 10, 15 * 60 * 1000);
   if (!limited.success) return rateLimitResponse(limited, "Too many invite attempts. Try again later.");
   try {
     return NextResponse.json(await acceptStaffInvite(actor, schema.parse(await request.json().catch(() => ({})))));

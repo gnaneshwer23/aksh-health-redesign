@@ -19,7 +19,8 @@ async function run() {
   delete process.env.RESEND_API_KEY;
   delete process.env.SMTP_HOST;
   process.env.OPS_ALERT_EMAIL = "ops@akshhealth.test";
-  const route = `/test/${randomUUID().slice(0, 8)}`;
+  // Letters only: a run of digits in the route would (correctly) be scrubbed to [number] before storage.
+  const route = `/test/${randomUUID().slice(0, 8).replace(/\d/g, (d) => "abcdefghij"[Number(d)]!)}`;
   await recordError({ source: "server", route, name: "TestError", message: "boom 1" });
   await recordError({ source: "server", route, name: "TestError", message: "boom 2" });
   const rows = (await getPgPool().query(`SELECT alerted, environment FROM aksh.error_events WHERE route = $1 ORDER BY id`, [route])).rows;

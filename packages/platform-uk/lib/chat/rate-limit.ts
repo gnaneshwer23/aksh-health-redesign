@@ -1,30 +1,9 @@
-/**
- * Lightweight in-memory rate limit for the public marketing chat API.
- * Best-effort on serverless (per-instance); still reduces casual abuse.
- */
+import { checkRateLimit } from "../rate-limit";
 
-type Bucket = { count: number; resetAt: number };
-
-const buckets = new Map<string, Bucket>();
-
-const WINDOW_MS = 60_000;
-const MAX_REQUESTS = 12;
-
-export function checkChatRateLimit(key: string): { ok: true } | { ok: false; retryAfterSec: number } {
-  const now = Date.now();
-  const existing = buckets.get(key);
-
-  if (!existing || now >= existing.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return { ok: true };
-  }
-
-  if (existing.count >= MAX_REQUESTS) {
-    return { ok: false, retryAfterSec: Math.max(1, Math.ceil((existing.resetAt - now) / 1000)) };
-  }
-
-  existing.count += 1;
-  return { ok: true };
+/** Public chat: 12 requests a minute per address, counted across all server instances. */
+export async function checkChatRateLimit(key: string): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  const r = await checkRateLimit(`chat:${key}`, 12, 60_000);
+  return r.success ? { ok: true } : { ok: false, retryAfterSec: r.retryAfterSeconds ?? 60 };
 }
 
 export function clientKeyFromRequest(req: Request): string {

@@ -14,7 +14,7 @@ const GENERIC_MESSAGE =
   "If an account exists for that email address, we have sent password reset instructions.";
 
 export async function POST(request: Request) {
-  const rateLimited = enforceForgotPasswordRateLimit(request);
+  const rateLimited = await enforceForgotPasswordRateLimit(request);
   if (rateLimited) return rateLimited;
 
   const body = await request.json().catch(() => ({}));

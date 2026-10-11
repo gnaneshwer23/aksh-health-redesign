@@ -7,6 +7,7 @@ import { nextAuthSecret } from "./auth-secret";
 import type { UserRole } from "./onboarding/roles";
 import type { IdentityData, OrganisationData } from "./onboarding/validation";
 import { resolveOrganisationName } from "./profile/personalization";
+import { checkRateLimit } from "./rate-limit";
 
 type ClinicalOAuthProfile = {
   sub?: string;
@@ -110,9 +111,20 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "you.example" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
+        }
+        // Brute-force protection, shared across server instances: per account and per network address.
+        const headers = (req?.headers ?? {}) as Record<string, string | undefined>;
+        const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || headers["x-real-ip"]?.trim() || "unknown";
+        const email = credentials.email.trim().toLowerCase();
+        const [byAccount, byAddress] = await Promise.all([
+          checkRateLimit(`signin:email:${email}`, 10, 15 * 60 * 1000),
+          checkRateLimit(`signin:ip:${ip}`, 50, 15 * 60 * 1000),
+        ]);
+        if (!byAccount.success || !byAddress.success) {
+          throw new Error("Too many sign-in attempts. Wait 15 minutes and try again, or reset your password.");
         }
 
         const user = await resolveCredentialsUser(credentials.email, credentials.password);

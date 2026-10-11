@@ -16,21 +16,21 @@ export const readingInputSchema = z.discriminatedUnion("kind", [
     unit: z.enum(["mmol/L", "mg/dL"]),
     context: z.enum(["fasting", "before_meal", "after_meal", "bedtime", "other"]).optional(),
     observedAt: z.string().datetime({ offset: true }),
-    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/),
+    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/).refine((r) => !/-(sys|dia)$/.test(r), "clientRef must not end in -sys or -dia (reserved for blood pressure halves)"),
   }),
   z.object({
     kind: z.literal("bp"),
     systolic: z.number().int(),
     diastolic: z.number().int(),
     observedAt: z.string().datetime({ offset: true }),
-    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/),
+    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/).refine((r) => !/-(sys|dia)$/.test(r), "clientRef must not end in -sys or -dia (reserved for blood pressure halves)"),
   }),
   z.object({
     kind: z.literal("weight"),
     value: z.number().finite(),
     unit: z.enum(["kg", "lb"]),
     observedAt: z.string().datetime({ offset: true }),
-    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/),
+    clientRef: z.string().regex(/^[A-Za-z0-9-]{8,64}$/).refine((r) => !/-(sys|dia)$/.test(r), "clientRef must not end in -sys or -dia (reserved for blood pressure halves)"),
   }),
 ]);
 export type ReadingInput = z.infer<typeof readingInputSchema>;

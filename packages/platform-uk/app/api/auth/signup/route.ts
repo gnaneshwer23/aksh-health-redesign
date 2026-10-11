@@ -16,7 +16,7 @@ import { upsertOnboardingProgress } from "@/lib/onboarding/onboarding-progress-r
 import { getRoleDefinition, SIGNUP_ROLE_MAP, type UserRole } from "@/lib/onboarding/roles";
 
 export async function POST(request: Request) {
-  const rateLimited = enforceSignupRateLimit(request);
+  const rateLimited = await enforceSignupRateLimit(request);
   if (rateLimited) return rateLimited;
 
   const body = await request.json().catch(() => ({}));

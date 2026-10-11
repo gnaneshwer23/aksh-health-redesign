@@ -50,7 +50,7 @@ export async function addReading(ctx: NetworkContext, input: ReadingInput) {
     let replay = false;
     if (patientId) {
       emergencyNumber = (await client.query<{ n: string | null }>(
-        `SELECT o.locale->>'emergencyNumber' AS n FROM aksh.network_patients p JOIN aksh.organisations o ON o.id = p.organisation_id WHERE p.id = $1`,
+        `SELECT o.locale->>'emergencyNumber' AS n FROM aksh.network_patients p LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE WHERE p.id = $1`,
         [patientId]
       )).rows[0]?.n ?? null;
       for (const r of rows) {
@@ -107,7 +107,7 @@ export async function listOwnReadings(ctx: NetworkContext) {
       : [];
     const unit = patientId
       ? (await client.query<{ g: string | null; e: string | null }>(
-          `SELECT o.locale->>'glucoseUnit' AS g, o.locale->>'emergencyNumber' AS e FROM aksh.network_patients p JOIN aksh.organisations o ON o.id = p.organisation_id WHERE p.id = $1`,
+          `SELECT o.locale->>'glucoseUnit' AS g, o.locale->>'emergencyNumber' AS e FROM aksh.network_patients p LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE WHERE p.id = $1`,
           [patientId]
         )).rows[0]
       : undefined;
@@ -134,11 +134,11 @@ export async function markEnteredInError(ctx: NetworkContext, id: string) {
     const row = (await client.query<{ client_ref: string | null }>(`SELECT client_ref FROM aksh.${table} WHERE id = $1 AND ${own}`, [id, patientId ?? ctx.userId])).rows[0];
     if (!row) throw new NetworkError("Reading not found, or already checked by your care team", 404);
     const base = row.client_ref?.replace(/-(sys|dia)$/, "");
-    await client.query(
+    const changed = await client.query(
       `UPDATE aksh.${table} SET status = 'entered_in_error' WHERE ${own} AND status = 'final' AND (id = $1 OR ($3::text IS NOT NULL AND client_ref IN ($3 || '-sys', $3 || '-dia')))`,
       [id, patientId ?? ctx.userId, row.client_ref !== base ? base : null]
     );
-    if (patientId) await audit(client, { organisationId: await orgOf(client, patientId), actorUserId: ctx.userId, action: "reading.entered_in_error", resourceType: "observation", resourceId: id });
+    if (patientId && changed.rowCount) await audit(client, { organisationId: await orgOf(client, patientId), actorUserId: ctx.userId, action: "reading.entered_in_error", resourceType: "observation", resourceId: id });
     return { id, status: "entered_in_error" };
   });
 }
@@ -173,20 +173,40 @@ export async function shareEarlierReadings(ctx: NetworkContext) {
 /** Unverified patient and device readings for patients the clinician can see; flagged first, newest first. */
 export async function listReadingsToReview(ctx: NetworkContext, patientId?: string, offset = 0) {
   if (!CLINICAL_ROLES.has(ctx.role ?? "")) throw new NetworkError("Only clinicians review readings", 403);
-  return withTenant(ctx, async (client) =>
-    (await client.query(
+  return withTenant(ctx, async (client) => {
+    const rows = (await client.query(
       `SELECT x.id, x.patient_id AS "patientId", p.given_name || ' ' || p.family_name AS "patientName", p.record_ref AS "recordRef",
               x.kind, x.value::float, x.unit, x.original_value::float AS "originalValue", x.original_unit AS "originalUnit",
               x.context, x.flag, x.observed_at AS "observedAt", x.client_ref AS "clientRef", x.source, o.locale->>'glucoseUnit' AS "glucoseUnit"
        FROM aksh.network_observations x
        JOIN aksh.network_patients p ON p.id = x.patient_id
-       JOIN aksh.organisations o ON o.id = p.organisation_id
+       LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE -- cross-organisation care-team patients stay listed
        WHERE x.source IN ('patient_reported', 'device') AND NOT x.verified AND x.status = 'final'
+         AND x.kind IN ('glucose', 'systolic_bp', 'diastolic_bp', 'weight') -- CGM summaries are checked on the CGM view
          AND x.observed_at > NOW() - INTERVAL '30 days' AND ($1::text IS NULL OR x.patient_id = $1)
        ORDER BY (x.flag IS NOT NULL) DESC, x.observed_at DESC, x.id LIMIT 200 OFFSET $2`,
       [patientId ?? null, Math.max(0, Math.min(offset, 100_000))]
-    )).rows
-  );
+    )).rows;
+    // A blood pressure is two rows; if a page boundary split a pair, fetch the missing half so it shows (and is checked) whole.
+    const refs = new Set(rows.map((r: { clientRef: string | null }) => r.clientRef));
+    const missing = rows
+      .filter((r: { kind: string; clientRef: string | null }) => (r.kind === "systolic_bp" || r.kind === "diastolic_bp") && r.clientRef)
+      .map((r: { patientId: string; clientRef: string }) => ({ patientId: r.patientId, ref: r.clientRef.endsWith("-sys") ? r.clientRef.replace(/-sys$/, "-dia") : r.clientRef.replace(/-dia$/, "-sys") }))
+      .filter((m: { ref: string }) => !refs.has(m.ref));
+    if (missing.length) {
+      const extra = (await client.query(
+        `SELECT x.id, x.patient_id AS "patientId", p.given_name || ' ' || p.family_name AS "patientName", p.record_ref AS "recordRef",
+                x.kind, x.value::float, x.unit, x.original_value::float AS "originalValue", x.original_unit AS "originalUnit",
+                x.context, x.flag, x.observed_at AS "observedAt", x.client_ref AS "clientRef", x.source, o.locale->>'glucoseUnit' AS "glucoseUnit"
+         FROM aksh.network_observations x JOIN aksh.network_patients p ON p.id = x.patient_id
+         LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
+         WHERE x.patient_id = ANY($1) AND x.client_ref = ANY($2) AND NOT x.verified AND x.status = 'final'`,
+        [missing.map((m: { patientId: string }) => m.patientId), missing.map((m: { ref: string }) => m.ref)]
+      )).rows;
+      rows.push(...extra);
+    }
+    return rows;
+  });
 }
 
 /** Verify readings (the clinician has looked at them). Verified readings then count in clinical summaries. */

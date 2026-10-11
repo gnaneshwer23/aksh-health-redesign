@@ -190,7 +190,14 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
             Organisation ID (for other organisations recording shared care): <span className="font-mono">{org.id}</span>
           </p>
           {error ? <p className="text-sm text-red-700 sm:col-span-2" role="alert">{error}</p> : null}
-          <div className="sm:col-span-2"><Button type="submit" disabled={!org.isAdmin}>Save settings</Button></div>
+          <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
+            <Button type="submit" disabled={!org.isAdmin}>Save settings</Button>
+            {org.isAdmin ? (
+              <a className="text-sm text-secondary underline underline-offset-2" href={`/api/orgs/${org.id}/export`} data-org-export>
+                Download all organisation data (JSON)
+              </a>
+            ) : null}
+          </div>
         </form>
       </CardContent>
     </Card>

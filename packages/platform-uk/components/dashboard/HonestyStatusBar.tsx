@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 type DataSource = "neo4j" | "mock" | "demo" | null;
 
 /** Screens that read the organisation's own records. Everything else still shows sample content. */
-const REAL_DATA_SURFACES = new Set(["Organisation", "Care network", "Slot fill", "Go-live reviews"]);
+const REAL_DATA_SURFACES = new Set(["Organisation", "Care network", "Slot fill", "Go-live reviews", "CGM monitoring"]);
 type OrgStatus = { name: string; status: string };
 
 /**

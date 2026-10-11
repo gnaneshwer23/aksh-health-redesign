@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     return Response.json({ error: CHAT_UNAVAILABLE_MESSAGE }, { status: 503 });
   }
 
-  const rate = checkChatRateLimit(clientKeyFromRequest(req));
+  const rate = await checkChatRateLimit(clientKeyFromRequest(req));
   if (!rate.ok) {
     return Response.json(
       { error: "Too many chat requests. Please wait a moment and try again." },

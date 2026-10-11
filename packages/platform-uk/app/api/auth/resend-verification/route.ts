@@ -17,7 +17,7 @@ const GENERIC_MESSAGE = "If your account needs verification, we have sent a new 
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
-  const rate = checkRateLimit(`resend-verification:${ip}`, RATE_LIMIT.limit, RATE_LIMIT.windowMs);
+  const rate = await checkRateLimit(`resend-verification:${ip}`, RATE_LIMIT.limit, RATE_LIMIT.windowMs);
 
   if (!rate.success) {
     return rateLimitResponse(

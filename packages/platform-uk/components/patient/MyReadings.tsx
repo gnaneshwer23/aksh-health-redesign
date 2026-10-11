@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Activity } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -66,29 +66,34 @@ async function send(body: Record<string, unknown>) {
  * Send this account's readings saved while offline. clientRef makes each retry safe. Stops at a rate limit and says when
  * to try again; refused readings (e.g. older than 30 days) are counted so the patient is told.
  */
-async function flushOutbox(account: string) {
+async function flushOutbox(account: string, stillActive: () => boolean) {
   const key = outboxKey(account);
   const queued = readStore<Record<string, unknown>>(key);
   const result = { sent: 0, rejected: 0, retryAfterMs: 0 };
   if (!queued.length) return result;
-  const left: Record<string, unknown>[] = [];
-  for (let i = 0; i < queued.length; i++) {
-    const body = queued[i]!;
+  const done = new Set<unknown>(); // clientRefs sent or refused: remove only these from storage
+  for (const body of queued) {
+    if (!stillActive()) break; // never post one account's queue under another session
     try {
       const r = await send(body);
-      if (r.ok) result.sent++;
-      else if (r.status === 429) {
-        left.push(...queued.slice(i));
+      if (r.ok) {
+        result.sent++;
+        done.add(body.clientRef);
+      } else if (r.status === 429) {
         const after = Number(r.retryAfter ?? 60);
         result.retryAfterMs = (Number.isFinite(after) && after > 0 ? after : 60) * 1000;
         break;
-      } else if (r.status >= 500 || r.status === 401) left.push(body);
-      else result.rejected++;
+      } else if (r.status >= 400 && r.status < 500 && r.status !== 401) {
+        result.rejected++;
+        done.add(body.clientRef);
+      }
     } catch {
-      left.push(body);
+      // offline again: keep the rest
+      break;
     }
   }
-  writeStore(key, left);
+  // Reconcile with what is stored now (a reading may have been queued while we were sending).
+  writeStore(key, readStore<Record<string, unknown>>(key).filter((b) => !done.has(b.clientRef)));
   return result;
 }
 
@@ -142,12 +147,15 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
     if (parts.length) setMessage(parts.join(" "));
   }, []);
 
+  const activeAccount = useRef<string | null>(null);
+  const retryTimer = useRef<number | null>(null);
   const flush = useCallback(
     async (account: string) => {
-      const r = await flushOutbox(account);
+      const r = await flushOutbox(account, () => activeAccount.current === account);
+      if (activeAccount.current !== account) return;
       report(r);
       if (r.sent || r.rejected) await load();
-      if (r.retryAfterMs) window.setTimeout(() => void flush(account), r.retryAfterMs);
+      if (r.retryAfterMs) retryTimer.current = window.setTimeout(() => void flush(account), r.retryAfterMs);
     },
     [load, report]
   );
@@ -165,10 +173,16 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
   useEffect(() => {
     if (!list?.account) return;
     const account = list.account;
+    activeAccount.current = account;
     void flush(account);
     const online = () => void flush(account);
     window.addEventListener("online", online);
-    return () => window.removeEventListener("online", online);
+    return () => {
+      // A different account (or leaving the page) cancels this account's pending retry.
+      activeAccount.current = null;
+      if (retryTimer.current) window.clearTimeout(retryTimer.current);
+      window.removeEventListener("online", online);
+    };
     // Only when the signed-in account changes, not on every reload of the list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list?.account]);
