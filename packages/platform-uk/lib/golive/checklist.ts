@@ -62,6 +62,8 @@ export const EVIDENCE_ITEMS = {
         freedSlots: z.number().int().min(0).max(100_000),
         filledSlots: z.number().int().min(0).max(100_000),
         method: z.string().trim().min(3).max(300),
+        // Optional (PRD §10.2): sampled staff minutes spent per freed slot before Aksh, for net staff time.
+        staffMinutesPerSlot: z.number().min(0).max(600).optional(),
       })
       .refine((b) => daysBetween(b.periodStart, b.periodEnd) >= 27, { message: "Use a period of at least four weeks", path: ["periodEnd"] })
       .refine((b) => b.filledSlots <= b.freedSlots, { message: "Filled cannot exceed freed", path: ["filledSlots"] }),

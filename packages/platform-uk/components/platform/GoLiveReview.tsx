@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type QueueRow = { id: string; name: string; status: string; awaiting: number; accepted: number; last_activity: string | null; is_member: boolean };
+type QueueRow = { id: string; name: string; status: string; pilot_stage?: string; awaiting: number; accepted: number; last_activity: string | null; is_member: boolean };
 type ReviewMember = { id: string; display_name: string; role: string; is_admin: boolean; registration_status: string; registration_number: string | null; registration_body: string | null; last_check: { outcome: string; registry: string | null; registration_number: string | null; checked_on: string; evidence_ref: string | null; checked_by_kind: string } | null };
 type Review = GoLiveSnapshot & { members: ReviewMember[] };
 
@@ -91,7 +91,7 @@ export function GoLiveReview() {
                       <span className="block text-sm text-foreground">{q.name}</span>
                       <span className="block text-xs text-muted">{q.awaiting} awaiting · {q.accepted} accepted{q.is_member ? " · you are a member (another reviewer must decide)" : ""}</span>
                     </span>
-                    <Badge variant={q.status === "onboarding" ? "warning" : "outline"}>{q.status === "onboarding" ? "Review requested" : "Evidence in progress"}</Badge>
+                    <Badge variant={q.status === "onboarding" ? "warning" : "outline"}>{q.status === "onboarding" ? "Review requested" : q.status === "live_read_only" || q.status === "live" ? (q.pilot_stage === "staff_assisted" ? "Live · staff-assisted" : "Live · shadow") : "Evidence in progress"}</Badge>
                   </button>
                 </li>
               ))}
@@ -167,6 +167,23 @@ export function GoLiveReview() {
                   <div className="flex flex-wrap gap-2">
                     <Button disabled={!review.canApprove} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/approve`, { note: decisionNote || undefined }, "Approved: live in shadow mode")}>Approve go-live</Button>
                     <Button variant="outline" disabled={!decisionNote.trim()} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/return`, { note: decisionNote }, "Returned to the organisation")}>Return</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {review.org.status === "live_read_only" || review.org.status === "live" ? (
+              <Card data-pilot-stage>
+                <CardHeader className="pb-2"><CardTitle className="text-base">Pilot stage</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p>Now: <strong>{review.org.pilotStage === "staff_assisted" ? "Staff-assisted" : "Shadow mode"}</strong>. Applies to slots received after a change. Record the provider’s approval in the note.</p>
+                  <Input aria-label="Stage change note" placeholder="Who approved it, and for which weeks" value={decisionNote} onChange={(e) => setDecisionNote(e.target.value)} />
+                  <div className="flex flex-wrap gap-2">
+                    {review.org.pilotStage === "staff_assisted" ? (
+                      <Button variant="outline" disabled={decisionNote.trim().length < 3} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/stage`, { stage: "shadow", note: decisionNote }, "Back to shadow mode")}>Return to shadow mode</Button>
+                    ) : (
+                      <Button disabled={decisionNote.trim().length < 3} onClick={() => void act(review.org.id, `/api/platform/go-live/${review.org.id}/stage`, { stage: "staff_assisted", note: decisionNote }, "Moved to staff-assisted")}>Move to staff-assisted</Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

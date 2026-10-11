@@ -90,6 +90,8 @@ const RESULT_MESSAGE: Record<string, string> = {
   NO_RESPONSE: "No response recorded. The patient keeps their place on the list.",
   UNREACHABLE: "Recorded as unreachable. The patient keeps their place on the list.",
   OPTED_OUT: "Recorded: no more offers to this patient. They keep their places on the waiting list.",
+  COMPLAINT_RECORDED: "Complaint recorded. A person will follow it up from the hand-off list.",
+  TIME_LOGGED: "Time logged.",
   ESCALATED: "Passed to a person: something in the contact needs a staff decision. It is in the hand-off list.",
   BOOKED_VERIFIED: "Booked and verified. The slot is filled.",
   READ_BACK_NOT_CONFIRMED: "Not found in your schedule. A hand-off has been created for a person to resolve.",
@@ -333,6 +335,7 @@ export function SlotFillConsole() {
                   <p className="text-xs text-red-700">Hand-off: {wf.handoffs.map((h) => `${h.reason} (${h.priority}, due ${when(h.due_at)})`).join("; ")}</p>
                 ) : null}
 
+                <SlotNotes busy={busy} onAct={(b) => void act(b)} />
                 <details className="text-xs text-muted">
                   <summary className="cursor-pointer">History ({wf.actions.length})</summary>
                   <ol className="mt-2 space-y-1 pl-4">
@@ -604,8 +607,36 @@ function BaselinePanel({ orgs, refresh }: { orgs: Org[]; refresh: number }) {
         <ul className="m-0 list-disc space-y-0.5 pl-5 text-xs text-muted">{m.notes.map((n) => <li key={n}>{n}</li>)}</ul>
         <a className="inline-block text-sm font-medium text-secondary underline-offset-2 hover:underline" href={`/dashboard/access/review?org=${encodeURIComponent(orgId)}`} data-weekly-review-link>
           Weekly review and sign-off
+        </a>{" "}
+        <a className="inline-block text-sm font-medium text-secondary underline-offset-2 hover:underline" href={`/dashboard/access/pilot-report?org=${encodeURIComponent(orgId)}`} data-pilot-readout-link>
+          Pilot readout
         </a>
       </CardContent>
     </Card>
+  );
+}
+
+/** PRD §10.2 guardrails: staff time spent on this slot, and complaints about how it was handled. */
+function SlotNotes({ busy, onAct }: { busy: boolean; onAct: (body: Record<string, unknown>) => void }) {
+  const [minutes, setMinutes] = useState("");
+  const [note, setNote] = useState("");
+  return (
+    <details className="rounded-xl border border-border-subtle p-3 text-sm" data-slot-notes>
+      <summary className="cursor-pointer text-xs font-medium text-muted">Log time or record a complaint</summary>
+      <div className="mt-3 grid gap-3">
+        <form className="flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); const m = Number(minutes); if (m >= 1 && m <= 240) { onAct({ action: "log_time", minutes: m }); setMinutes(""); } }}>
+          <label className="text-xs text-muted">Minutes spent on this slot
+            <input id="slot-minutes" type="number" min={1} max={240} value={minutes} onChange={(e) => setMinutes(e.target.value)} className="mt-1 block h-9 w-28 rounded-xl px-2 text-sm" aria-label="Minutes spent on this slot" />
+          </label>
+          <Button size="sm" variant="outline" type="submit" disabled={busy || !(Number(minutes) >= 1 && Number(minutes) <= 240)}>Log time</Button>
+        </form>
+        <form className="grid gap-2" onSubmit={(e) => { e.preventDefault(); if (note.trim().length >= 3) { onAct({ action: "complaint", note: note.trim() }); setNote(""); } }}>
+          <label className="text-xs text-muted">Complaint about how this slot was handled
+            <textarea id="slot-complaint" value={note} onChange={(e) => setNote(e.target.value)} rows={2} maxLength={500} className="mt-1 block w-full rounded-xl p-2 text-sm" aria-label="Complaint" />
+          </label>
+          <Button size="sm" variant="outline" type="submit" disabled={busy || note.trim().length < 3} className="justify-self-start">Record complaint</Button>
+        </form>
+      </div>
+    </details>
   );
 }

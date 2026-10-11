@@ -119,6 +119,18 @@ test("organisation: a clinic signs up, invites staff, imports patients and reach
   await expect(admin.getByRole("status").filter({ hasText: "Added to the waiting list" })).toBeVisible();
   await expectNoCriticalA11y(admin);
 
+  // 6b. PRD PA-108: the admin approves the clinic's own offer wording (checked live, versioned).
+  await admin.getByRole("tab", { name: "Offer wording" }).click();
+  const wording = admin.getByLabel("Offer wording");
+  await expect(wording).toBeVisible({ timeout: 20_000 });
+  await wording.fill("Hi {givenName}, your diabetes team has a {appointmentType}.");
+  await expect(admin.locator("[data-wording-problems]")).toContainText("{when}", { timeout: 20_000 });
+  await wording.fill("Hi {givenName}, {organisationName} can offer you a {appointmentType} on {when}{site}. Reply YES by {replyBy}. Reply STOP to opt out.");
+  await expect(admin.locator("[data-wording-preview]")).toContainText("Hi Sam", { timeout: 20_000 });
+  await admin.getByRole("button", { name: "Approve wording" }).click();
+  await expect(admin.getByRole("status").filter({ hasText: "Wording approved as version 1" })).toBeVisible({ timeout: 20_000 });
+  await expect(admin.locator("[data-wording-versions]")).toContainText("Version 1 · in use");
+
   // 7. The nurse records a freed slot and works it to a drafted offer (shadow mode).
   await nurse.goto("/dashboard/access");
   const form = nurse.locator("[data-record-slot]");
@@ -132,7 +144,12 @@ test("organisation: a clinic signs up, invites staff, imports patients and reach
   await nurse.getByRole("button", { name: "Find patients for this slot" }).click();
   await expect(nurse.locator("[data-candidates]")).toContainText("Nadia Example");
   await nurse.getByRole("button", { name: "Draft offer" }).click();
-  await expect(nurse.locator("[data-offer-text]")).toContainText(`Hello Nadia, ${clinic}`);
+  await expect(nurse.locator("[data-offer-text]")).toContainText(`Hi Nadia, ${clinic} can offer you a foot check`, { timeout: 20_000 });
+  // §10.2: staff time against the slot.
+  await nurse.locator("[data-slot-notes] summary").click();
+  await nurse.getByLabel("Minutes spent on this slot").fill("5");
+  await nurse.getByRole("button", { name: "Log time" }).click();
+  await expect(nurse.getByRole("status").filter({ hasText: "Time logged" })).toBeVisible({ timeout: 20_000 });
 
   await adminCtx.close();
   await nurseCtx.close();

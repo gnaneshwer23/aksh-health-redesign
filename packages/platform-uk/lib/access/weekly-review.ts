@@ -42,6 +42,12 @@ export type WeeklyReview = {
     medianMinutesToAcknowledge: number | null;
     optedOutCandidates: number;
     optOutsRecorded: number;
+    complaints: number;
+    /** Staff time logged against this week's slots; per slot over the slots that have time logged. */
+    staffMinutes: number;
+    slotsTimed: number;
+    staffMinutesPerSlot: number | null;
+    baselineStaffMinutesPerSlot: number | null;
   };
   staff: { selections: number; tookTopRanked: number; choseOther: number; notRecorded: number; skips: number; skipReasons: { reason: string; count: number }[]; offersEdited: number; deferrals: number };
   timeliness: { medianMinutesToOffer: number | null; medianMinutesToVerifiedBooking: number | null; medianHoursBookedBeforeStart: number | null };
@@ -85,6 +91,7 @@ export function reviewPrompts(r: Pick<WeeklyReview, "funnel" | "fill" | "staff" 
   const p: string[] = [];
   const f = r.funnel;
   const g = r.guardrails;
+  if (g?.complaints) p.push(`${g.complaints} complaint${g.complaints === 1 ? " was" : "s were"} recorded. Review each one with the hand-off that followed it.`);
   if (g?.duplicateBookings) p.push(`${g.duplicateBookings} slot${g.duplicateBookings === 1 ? " was" : "s were"} confirmed as booked more than once. Investigate before the next week.`);
   if (f.failedSafe) p.push(`${f.failedSafe} booking${f.failedSafe === 1 ? " was" : "s were"} not found on read-back. Check each hand-off was resolved and the patient told.`);
   if (r.handoffs.openOverdue) p.push(`${r.handoffs.openOverdue} hand-off${r.handoffs.openOverdue === 1 ? " is" : "s are"} open past the due time.`);
@@ -161,6 +168,9 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
               count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'NO_RESPONSE')::int AS no_response,
               count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'UNREACHABLE')::int AS unreachable,
               count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'OPTED_OUT')::int AS opt_outs,
+              count(*) FILTER (WHERE action_type = 'complaint')::int AS complaints,
+              coalesce(sum((detail->>'minutes')::int) FILTER (WHERE action_type = 'log_time'), 0)::int AS staff_minutes,
+              count(DISTINCT workflow_id) FILTER (WHERE action_type = 'log_time')::int AS slots_timed,
               count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'ESCALATED')::int AS escalated,
               count(*) FILTER (WHERE action_type = 'confirm_booking')::int AS booking_checks,
               count(*) FILTER (WHERE action_type = 'confirm_booking' AND result_code = 'READ_BACK_NOT_CONFIRMED')::int AS booking_issues,
@@ -246,7 +256,7 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
       [orgId]
     )).rows;
     const baseline = deriveItems(events).find((i) => i.key === "baseline");
-    const ev = baseline?.state === "accepted" ? (baseline.evidence as { freedSlots: number; filledSlots: number }) : null;
+    const ev = baseline?.state === "accepted" ? (baseline.evidence as { freedSlots: number; filledSlots: number; staffMinutesPerSlot?: number }) : null;
 
     const live = Boolean(org.verified_at) && (org.status === "live_read_only" || org.status === "live") && org.verified_at! < range.to_at;
     const [lo, hi] = f.eligible ? wilson(f.filled!, f.eligible) : [0, 0];
@@ -278,6 +288,11 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
         medianMinutesToAcknowledge: h.ack_minutes ?? null, // null when nothing was acknowledged
         optedOutCandidates: integrity.opted_out,
         optOutsRecorded: acts.opt_outs!,
+        complaints: acts.complaints!,
+        staffMinutes: acts.staff_minutes!,
+        slotsTimed: acts.slots_timed!,
+        staffMinutesPerSlot: acts.slots_timed ? Math.round((acts.staff_minutes! / acts.slots_timed) * 10) / 10 : null,
+        baselineStaffMinutesPerSlot: ev?.staffMinutesPerSlot ?? null,
       },
       staff: {
         selections: acts.selections!, tookTopRanked: acts.top!, choseOther: acts.other!, notRecorded: acts.selections! - acts.top! - acts.other!,

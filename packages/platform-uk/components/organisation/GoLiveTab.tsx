@@ -11,7 +11,7 @@ type Org = { id: string; name: string; status: string; isAdmin: boolean };
 type Item = { key: string; title: string; help: string; state: "missing" | "submitted" | "accepted" | "rejected"; evidence: Record<string, unknown> | null; note: string | null; at: string | null; locked: boolean };
 type Auto = { key: string; title: string; ok: boolean; detail: string };
 type Event = { id: number; item_key: string | null; action: string; note: string | null; actor_kind: string; created_at: string };
-export type GoLiveSnapshot = { org: { id: string; name: string; status: string; verifiedAt: string | null }; items: Item[]; autos: Auto[]; events: Event[]; canRequest: boolean; canApprove: boolean; blockers: string[] };
+export type GoLiveSnapshot = { org: { id: string; name: string; status: string; verifiedAt: string | null; pilotStage?: string }; items: Item[]; autos: Auto[]; events: Event[]; canRequest: boolean; canApprove: boolean; blockers: string[] };
 type Member = { id: string; display_name: string; role: string; status: string; registration_status: string };
 
 type Field = { name: string; label: string; type?: "date" | "number" | "select" | "member"; options?: [string, string][]; optional?: boolean };
@@ -42,6 +42,7 @@ const FIELDS: Record<string, Field[]> = {
     { name: "freedSlots", label: "Freed slots in the period", type: "number" },
     { name: "filledSlots", label: "Of those, filled", type: "number" },
     { name: "method", label: "How you filled them before Aksh" },
+    { name: "staffMinutesPerSlot", label: "Staff minutes per freed slot, sampled (optional)", type: "number", optional: true },
   ],
 };
 
@@ -227,6 +228,8 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
         </Card>
       </div>
 
+      <CapabilityRegister orgId={org.id} />
+
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-base">History</CardTitle></CardHeader>
         <CardContent>
@@ -243,5 +246,61 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+type Register = {
+  workflow: { mode: string; contactExecutedBy: string; ruleVersion: string; templateVersion: string; metricVersion: string };
+  stageHistory: { stage: string; note: string; at: string }[];
+  connectors: { active: number; environment: string; capabilities: Record<string, boolean> };
+  honesty: Record<string, boolean>;
+};
+const MODE_LABEL: Record<string, string> = { rehearsal: "Rehearsal (before go-live)", shadow: "Shadow mode", staff_assisted: "Staff-assisted" };
+const HONESTY_LABEL: Record<string, string> = {
+  liveEmis: "Writes to your records system",
+  ehrWrite: "Writes to any EHR",
+  messagesSentByAksh: "Aksh sends messages to patients",
+  bookingConfirmedOnlyByReadBack: "A booking counts only after read-back",
+  hitlRequired: "A person decides every step",
+  aiOnPatientData: "Patient data sent to an AI model",
+  autoRetrain: "Automatic model retraining",
+  physiologicalTwin: "Physiological digital twin",
+  PRISM_ATLAS_live: "Imaging or research agents live",
+};
+
+/** PRD v1.1 PA-10 / §8.1: what is switched on for this organisation, read from configuration. */
+function CapabilityRegister({ orgId }: { orgId: string }) {
+  const [r, setR] = useState<Register | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void fetch(`/api/orgs/${orgId}/capabilities`).then(async (res) => { if (res.ok && !cancelled) setR(await res.json()); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [orgId]);
+  if (!r) return null;
+  const caps = Object.entries(r.connectors.capabilities);
+  return (
+    <Card data-capability-register>
+      <CardHeader className="pb-2"><CardTitle className="text-base">Capability register</CardTitle></CardHeader>
+      <CardContent className="grid gap-4 text-sm md:grid-cols-3">
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted">Workflow</p>
+          <p className="text-foreground">{MODE_LABEL[r.workflow.mode] ?? r.workflow.mode} · contact by {r.workflow.contactExecutedBy}</p>
+          <p className="text-xs text-muted">Rules {r.workflow.ruleVersion} · wording {r.workflow.templateVersion} · metric {r.workflow.metricVersion}</p>
+          {r.stageHistory[0] ? <p className="text-xs text-muted">Last stage change: {r.stageHistory[0].stage.replace("_", "-")} · {new Date(r.stageHistory[0].at).toLocaleDateString()} · “{r.stageHistory[0].note}”</p> : null}
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted">Connections ({r.connectors.active} active · {r.connectors.environment})</p>
+          <ul className="flex flex-wrap gap-1">
+            {caps.map(([k, on]) => <li key={k}><Badge variant={on ? "default" : "outline"}>{k}{on ? "" : " · off"}</Badge></li>)}
+          </ul>
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-muted">Honesty fields</p>
+          <ul className="space-y-0.5 text-xs">
+            {Object.entries(r.honesty).map(([k, v]) => <li key={k} className="flex justify-between gap-2"><span className="text-muted">{HONESTY_LABEL[k] ?? k}</span><span className="font-medium text-foreground">{v ? "Yes" : "No"}</span></li>)}
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

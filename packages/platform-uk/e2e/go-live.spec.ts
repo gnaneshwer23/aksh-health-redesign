@@ -123,6 +123,20 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
     await expect(admin.locator("[data-go-live-history]")).toContainText(step);
   }
   await expect(admin.locator('[data-evidence-item="baseline"]')).toContainText("Accepted · locked");
+  await expect(admin.locator("[data-capability-register]")).toContainText("Shadow mode", { timeout: 20_000 });
+
+  // 6. PRD §10.3: only the reviewer moves the live clinic to staff-assisted, with the provider's approval recorded.
+  await reviewer.reload();
+  await reviewer.locator("[data-review-queue] button", { hasText: clinic }).click();
+  const stage = reviewer.locator("[data-pilot-stage]");
+  await expect(stage).toContainText("Shadow mode", { timeout: 20_000 });
+  await reviewer.getByLabel("Stage change note").fill("Provider approved staff-assisted test, weeks 6-8");
+  await stage.getByRole("button", { name: "Move to staff-assisted" }).click();
+  await expect(reviewer.getByRole("status").filter({ hasText: "Moved to staff-assisted" })).toBeVisible({ timeout: 20_000 });
+  await admin.reload();
+  await admin.getByRole("tab", { name: "go-live" }).click();
+  await expect(admin.locator("[data-capability-register]")).toContainText("Staff-assisted", { timeout: 20_000 });
+  await expect(admin.locator("[data-capability-register]")).toContainText("Provider approved staff-assisted test");
 
   } finally {
     // Never leave a test account with reviewer rights, whatever happened above.
