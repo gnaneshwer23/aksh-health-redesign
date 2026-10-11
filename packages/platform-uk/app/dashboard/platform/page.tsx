@@ -6,7 +6,16 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { GoLiveReview } from "@/components/platform/GoLiveReview";
 import type { DashboardRole } from "@/lib/zustand/dashboardStore";
 
-const ROLE_FOR_SHELL: Record<string, DashboardRole> = { gp: "gp", nurse: "nurse", "clinical-pharmacist": "pharmacist", "practice-manager": "admin", "ics-lead": "ics" };
+const ROLE_FOR_SHELL: Record<string, DashboardRole> = {
+  gp: "gp",
+  nurse: "nurse",
+  "clinical-pharmacist": "pharmacist",
+  "practice-manager": "admin",
+  "ics-lead": "ics",
+  "hospital-executive": "hospital",
+  researcher: "researcher",
+  patient: "patient",
+};
 
 export default function PlatformReviewPage() {
   const { data: session } = useSession();

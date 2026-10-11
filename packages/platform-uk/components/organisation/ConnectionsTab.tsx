@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,15 +62,25 @@ export function ConnectionsTab({ org, onMessage }: { org: Org; onMessage: (m: st
   const [editing, setEditing] = useState<string | null>(null);
   const [origin, setOrigin] = useState("https://www.akshhealth.com");
 
+  const current = useRef(org.id);
   const load = useCallback(async () => {
-    const [k, e] = await Promise.all([fetch(`/api/orgs/${org.id}/connections`), fetch(`/api/orgs/${org.id}/connections/events`)]);
-    if (k.ok) setKeys((await k.json()).rows);
-    if (e.ok) setEvents((await e.json()).rows);
+    const id = org.id;
+    const [k, e] = await Promise.all([fetch(`/api/orgs/${id}/connections`), fetch(`/api/orgs/${id}/connections/events`)]);
+    const [kd, ed] = await Promise.all([k.ok ? k.json() : null, e.ok ? e.json() : null]);
+    if (current.current !== id) return; // the user switched organisation meanwhile
+    if (kd) setKeys(kd.rows);
+    if (ed) setEvents(ed.rows);
   }, [org.id]);
   useEffect(() => {
+    current.current = org.id;
+    // A key shown once for one organisation must never appear under another.
+    setNewKey(null);
+    setEditing(null);
+    setKeys([]);
+    setEvents([]);
     setOrigin(window.location.origin);
     void load();
-  }, [load]);
+  }, [org.id, load]);
 
   return (
     <div className="space-y-5" data-connections>

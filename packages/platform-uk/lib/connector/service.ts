@@ -136,8 +136,8 @@ const codeOf = (e: unknown) => (e instanceof NetworkError ? (e.message.match(/^(
 
 async function findWorkflow(key: ConnectorKey, ref: string) {
   return withPrivileged(async (client) =>
-    (await client.query<{ workflow_id: string; state: string; selected_candidate_id: string | null }>(
-      `SELECT w.id AS workflow_id, w.state, w.selected_candidate_id FROM aksh.access_slots s JOIN aksh.access_workflows w ON w.slot_id = s.id
+    (await client.query<{ workflow_id: string; state: string; selected_candidate_id: string | null; source_version: number }>(
+      `SELECT w.id AS workflow_id, w.state, w.selected_candidate_id, s.source_version FROM aksh.access_slots s JOIN aksh.access_workflows w ON w.slot_id = s.id
        WHERE s.organisation_id = $1 AND s.source = 'partner_api' AND s.source_ref = $2`,
       [key.organisationId, ref]
     )).rows[0]
@@ -167,6 +167,8 @@ async function handleSlot(key: ConnectorKey, fact: SlotFact): Promise<ItemResult
   // No longer free in the schedule.
   const wf = await findWorkflow(key, fact.ref);
   if (!wf) return { ref: fact.ref, result: "UNKNOWN_SLOT_IGNORED" };
+  // Messages can arrive out of order: a busy notice only applies if it is newer than the version we hold.
+  if (fact.version <= wf.source_version) return { ref: fact.ref, result: "STALE_VERSION_IGNORED", message: `Version ${fact.version} is not newer than ${wf.source_version}`, workflowId: wf.workflow_id };
   const idem = `connector:${fact.ref}:${fact.status}:v${fact.version}`;
   try {
     if (["SOURCE_VALIDATED", "ELIGIBILITY_CHECKED", "STAFF_REVIEW", "OFFER_DRAFTED"].includes(wf.state)) {
@@ -187,10 +189,15 @@ async function handleAppointment(key: ConnectorKey, fact: AppointmentFact): Prom
   if (!fact.ok) return { ref: fact.ref, result: fact.code, message: fact.message };
   if (!BOOKED_STATUSES.has(fact.status)) return { ref: fact.ref, result: "IGNORED_STATUS" };
   if (!fact.slotRefs.length) return { ref: fact.ref, result: "NO_SLOT_REFERENCE", message: "Appointment.slot must reference the Slot reported earlier" };
+  // An appointment can span several slots: act on the one awaiting read-back, whichever position it is in.
+  let fallback: ItemResult | null = null;
   for (const slotRef of fact.slotRefs) {
     const wf = await findWorkflow(key, slotRef);
     if (!wf) continue;
-    if (wf.state !== "PENDING_VERIFICATION") return { ref: fact.ref, result: wf.state === "CLOSED" ? "ALREADY_CLOSED" : "NOT_AWAITING_VERIFICATION", workflowId: wf.workflow_id };
+    if (wf.state !== "PENDING_VERIFICATION") {
+      fallback ??= { ref: fact.ref, result: wf.state === "CLOSED" ? "ALREADY_CLOSED" : "NOT_AWAITING_VERIFICATION", workflowId: wf.workflow_id };
+      continue;
+    }
     if (!fact.patientIdentifiers.length) return { ref: fact.ref, result: "NO_PATIENT_IDENTIFIER", message: "Include the patient's record number as participant.actor.identifier", workflowId: wf.workflow_id };
     const selected = await withPrivileged(async (client) =>
       (await client.query<{ record_ref: string | null }>(
@@ -207,7 +214,7 @@ async function handleAppointment(key: ConnectorKey, fact: AppointmentFact): Prom
     });
     return { ref: fact.ref, result: samePatient ? (r.replay ? "REPLAY" : "BOOKED_VERIFIED") : "BOOKED_FOR_ANOTHER_PATIENT", workflowId: wf.workflow_id };
   }
-  return { ref: fact.ref, result: "UNKNOWN_SLOT_IGNORED" };
+  return fallback ?? { ref: fact.ref, result: "UNKNOWN_SLOT_IGNORED" };
 }
 
 function collect<T>(body: unknown, fhirType: "Slot" | "Appointment", listKey: "slots" | "appointments", fromFhir: (r: Record<string, unknown>) => T, fromJson: (r: Record<string, unknown>) => T) {

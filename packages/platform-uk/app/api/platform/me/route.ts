@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 
 /** GET /api/platform/me — whether the signed-in user is an Aksh platform admin (drives the review link). */
 export async function GET() {
-  const actor = await requireActor();
-  if (actor instanceof NextResponse) return actor;
   try {
+    const actor = await requireActor();
+    if (actor instanceof NextResponse) return actor;
     return NextResponse.json({ platformAdmin: await isPlatformAdmin(actor.userId) });
   } catch (error) {
     return errorResponse(error, "/api/platform/me");

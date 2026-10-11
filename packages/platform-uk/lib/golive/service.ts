@@ -96,7 +96,7 @@ export async function getGoLive(ctx: NetworkContext, orgId: string) {
 
 export async function submitEvidence(ctx: NetworkContext, orgId: string, key: string, raw: unknown) {
   if (!ctx.adminOrgIds.includes(orgId)) throw new NetworkError("Only organisation admins can submit go-live evidence", 403);
-  if (!(key in EVIDENCE_ITEMS)) throw new NetworkError("Unknown checklist item", 404);
+  if (!Object.prototype.hasOwnProperty.call(EVIDENCE_ITEMS, key)) throw new NetworkError("Unknown checklist item", 404);
   const itemKey = key as EvidenceKey;
   const parsed = EVIDENCE_ITEMS[itemKey].schema.safeParse(raw);
   if (!parsed.success) throw new NetworkError(parsed.error.issues.map((i) => i.message).join("; "), 400);
@@ -192,7 +192,7 @@ export const reviewItemSchema = z.object({ decision: z.enum(["accepted", "reject
 
 export async function reviewItem(userId: string, orgId: string, key: string, input: z.infer<typeof reviewItemSchema>) {
   await requirePlatformAdmin(userId, orgId);
-  if (!(key in EVIDENCE_ITEMS)) throw new NetworkError("Unknown checklist item", 404);
+  if (!Object.prototype.hasOwnProperty.call(EVIDENCE_ITEMS, key)) throw new NetworkError("Unknown checklist item", 404);
   if (input.decision === "rejected" && !input.note) throw new NetworkError("Say what needs to change", 400);
   return withPrivileged(async (client) => {
     await client.query(`SELECT 1 FROM aksh.organisations WHERE id = $1 FOR UPDATE`, [orgId]);

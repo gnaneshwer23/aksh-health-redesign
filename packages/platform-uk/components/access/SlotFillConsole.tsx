@@ -86,8 +86,10 @@ export function SlotFillConsole() {
   const [editing, setEditing] = useState<string | null>(null);
   const [orgs, setOrgs] = useState<Org[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [refreshCount, setRefreshCount] = useState(0);
 
   const load = useCallback(async () => {
+    setRefreshCount((n) => n + 1); // figures follow every action
     const [q, m, h, o] = await Promise.all([fetch("/api/access/queue"), fetch("/api/access/metrics"), fetch("/api/access/handoffs"), fetch("/api/orgs")]);
     const qd = await q.json();
     if (!q.ok) return setError(qd.error ?? "Not available");
@@ -183,7 +185,7 @@ export function SlotFillConsole() {
         </div>
       ) : null}
 
-      {orgs.length ? <BaselinePanel orgs={orgs} /> : null}
+      {orgs.length ? <BaselinePanel orgs={orgs} refresh={refreshCount} /> : null}
 
       {orgs.length ? (
         <details className="rounded-xl border border-border-subtle bg-card p-4" open={queue.length === 0}>
@@ -488,17 +490,24 @@ const VERDICT: Record<string, string> = {
 };
 
 /** Fill rate against the baseline the organisation locked at go-live. Counts are always shown next to rates. */
-function BaselinePanel({ orgs }: { orgs: Org[] }) {
+function BaselinePanel({ orgs, refresh }: { orgs: Org[]; refresh: number }) {
   const [orgId, setOrgId] = useState(orgs[0]?.id ?? "");
   const [m, setM] = useState<Measurement | null>(null);
+  useEffect(() => setM(null), [orgId]); // never show one organisation's figures under another
   useEffect(() => {
     if (!orgId) return;
     let cancelled = false;
-    void fetch(`/api/orgs/${orgId}/measurement`).then(async (r) => r.ok && !cancelled && setM(await r.json()));
+    void fetch(`/api/orgs/${orgId}/measurement`)
+      .then(async (r) => {
+        if (!r.ok) return;
+        const data = (await r.json()) as Measurement;
+        if (!cancelled) setM(data);
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, [orgId]);
+  }, [orgId, refresh]);
   if (!m) return null;
   const max = Math.max(1, ...m.weekly.map((w) => w.eligible));
   return (

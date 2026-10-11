@@ -64,13 +64,13 @@ async function resolveBatchId(args: ReturnType<typeof parseArgs>): Promise<strin
 }
 
 async function cleanupBatch(pool: pg.Pool, batchId: string) {
+  assertSeedingAllowed("cleanup-e2e"); // before any delete: never in production
   const facts = await pool.query(
     `DELETE FROM aksh.patient_state_facts WHERE source_system = $1 AND source_reference LIKE $2`,
     [E2E_SOURCE, `${batchId}:%`]
   );
   // Test accounts may carry append-only history (registration checks, go-live events); the purge flag lets the
-  // cascade remove it, in this transaction only. Never in production.
-  assertSeedingAllowed("cleanup-e2e");
+  // cascade remove it, in this transaction only.
   const client = await pool.connect();
   let users: pg.QueryResult;
   try {
