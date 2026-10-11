@@ -60,7 +60,7 @@ function codingCandidates(concepts: unknown): string[] {
 }
 
 /** Instants must carry an offset (Z or ±hh:mm): a bare local time means different moments on different servers. */
-const WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+const WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-](0\d|1[0-4]):[0-5]\d)$/;
 /** Parse an instant only if it is a real calendar date and time (Date.parse would turn 30 February into 2 March). */
 const instant = (v: unknown) => {
   if (typeof v !== "string" || !WITH_OFFSET.test(v)) return NaN;
@@ -196,6 +196,8 @@ export function observationFromFhir(r: Json): ObservationFact {
   if (!status || !FINAL.has(status)) return { ok: false, ref, code: "IGNORED_STATUS", message: "Only final, amended or corrected observations are stored" };
   if (!isGlucose(r.code as Json | undefined)) return { ok: false, ref, code: "NOT_GLUCOSE", message: "Observation.code must be a glucose concentration" };
   const q = r.valueQuantity as Json | undefined;
+  // "<3.0" is a bound, not a reading: storing it as 3.0 would hide a very low value.
+  if (q && q.comparator !== undefined) return { ok: false, ref, code: "INEXACT_VALUE", message: "valueQuantity.comparator (<, >, <=, >=) marks a bound, not a reading" };
   const unit = String(q?.code ?? q?.unit ?? "").replace(/\s/g, "");
   const value = typeof q?.value === "number" ? q.value : NaN;
   const mmol = /^mmol\/l$/i.test(unit) ? value : /^mg\/dl$/i.test(unit) ? value / 18.0182 : NaN;

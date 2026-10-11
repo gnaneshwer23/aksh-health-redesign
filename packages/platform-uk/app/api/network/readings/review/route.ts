@@ -15,7 +15,8 @@ export async function GET(request: Request) {
     const raw = params.get("offset") ?? "0";
     const offset = /^\d{1,6}$/.test(raw) ? Number(raw) : 0; // non-negative integer only
     const rows = await listReadingsToReview(r.ctx, patient, offset);
-    return NextResponse.json({ rows, nextOffset: rows.length === 200 ? offset + 200 : null });
+    // Paging counts the page itself, not the blood-pressure halves added to complete pairs.
+    return NextResponse.json({ rows, nextOffset: rows.primaryCount === 200 ? offset + 200 : null });
   } catch (error) {
     return errorResponse(error, "/api/network/readings/review");
   }

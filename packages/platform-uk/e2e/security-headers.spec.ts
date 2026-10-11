@@ -10,6 +10,12 @@ test("security: baseline headers on pages and APIs; image optimizer disabled", a
     expect(h["content-security-policy"]).toContain("frame-ancestors 'none'");
     expect(h["x-powered-by"]).toBeUndefined();
   }
+  // The setting itself (the app serves no optimizable image to probe with), then the endpoint never serves an image.
+  // @ts-expect-error plain ESM config without type declarations
+  const config = (await import("../next.config.mjs")).default("phase-production-build") as { images?: { unoptimized?: boolean } };
+  expect(config.images?.unoptimized).toBe(true);
   const image = await request.get("/_next/image?url=%2Ffavicon.ico&w=64&q=75");
   expect(image.status()).toBeGreaterThanOrEqual(400);
+  expect(image.status()).toBeLessThan(500);
+  expect(image.headers()["content-type"] ?? "").not.toMatch(/^image\//);
 });

@@ -4,6 +4,7 @@ import { exportOwnData } from "@/lib/export/service";
 import { errorResponse, requireContext } from "@/lib/network/http";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /** GET /api/me/export — the signed-in patient's own data as JSON (audited). */
 export async function GET() {

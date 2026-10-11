@@ -121,7 +121,8 @@ export const authOptions: NextAuthOptions = {
         const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim() || headers["x-real-ip"]?.trim() || "unknown";
         const email = credentials.email.trim().toLowerCase();
         const [byAccount, byAddress] = await Promise.all([
-          checkRateLimit(`signin:email:${email}`, 10, 15 * 60 * 1000),
+          // Per account *from this address*: someone elsewhere cannot lock a person out by failing on their email.
+          checkRateLimit(`signin:email:${email}:${ip}`, 10, 15 * 60 * 1000),
           checkRateLimit(`signin:ip:${ip}`, 50, 15 * 60 * 1000),
         ]);
         if (!byAccount.success || !byAddress.success) {
@@ -134,10 +135,12 @@ export const authOptions: NextAuthOptions = {
         }
         // Two-step sign-in: once the password is right, accounts that turned it on must give a code.
         const { isMfaEnabled, verifySecondFactor } = await import("./auth/mfa");
+        let mfaVerified = false;
         if (await isMfaEnabled(user.id)) {
           const otp = (credentials as { otp?: string }).otp?.trim();
           if (!otp) throw new Error("MFA_REQUIRED");
           if (!(await verifySecondFactor(user.id, otp))) throw new Error("MFA_INVALID");
+          mfaVerified = true;
         }
 
         return {
@@ -147,6 +150,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           onboardingComplete: user.onboardingComplete,
           isEmailVerified: user.isEmailVerified ?? false,
+          mfaVerified,
         };
       },
     }),
@@ -165,6 +169,8 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.onboardingComplete = user.onboardingComplete ?? false;
         token.isEmailVerified = user.isEmailVerified ?? false;
+        // Only a sign-in sets this; session.update() from the browser can never turn it on.
+        token.mfaVerified = user.mfaVerified === true;
 
         const enriched = await enrichTokenFromProfile(
           user.id,
@@ -242,6 +248,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as UserRole;
         session.user.onboardingComplete = Boolean(token.onboardingComplete);
         session.user.isEmailVerified = Boolean(token.isEmailVerified);
+        session.user.mfaVerified = token.mfaVerified === true;
         session.user.name = (token.name as string | null | undefined) ?? session.user.name;
         session.user.organisation = (token.organisation as string | null | undefined) ?? null;
         session.user.boundPatientId =

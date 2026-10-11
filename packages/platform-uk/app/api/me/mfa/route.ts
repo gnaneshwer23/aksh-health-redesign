@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { confirmEnrolment, disableMfa, mfaStatus, startEnrolment } from "@/lib/auth/mfa";
-import { audit, withPrivileged } from "@/lib/network/db";
 import { errorResponse, requireActor } from "@/lib/network/http";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -43,9 +42,7 @@ export async function POST(request: Request) {
       input.action === "start" ? await startEnrolment(actor.userId, actor.email)
       : input.action === "confirm" ? await confirmEnrolment(actor.userId, input.code)
       : (await disableMfa(actor.userId, input.code), { disabled: true });
-    if (input.action !== "start") {
-      await withPrivileged((c) => audit(c, { actorUserId: actor.userId, action: input.action === "confirm" ? "mfa.enabled" : "mfa.disabled", resourceType: "user", resourceId: actor.userId }));
-    }
+    // Audit rows are written in the same transaction as each change (lib/auth/mfa.ts).
     return NextResponse.json(result);
   } catch (error) {
     const known = error instanceof Error ? MESSAGES[error.message] : undefined;

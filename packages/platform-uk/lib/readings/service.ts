@@ -188,6 +188,7 @@ export async function listReadingsToReview(ctx: NetworkContext, patientId?: stri
       [patientId ?? null, Math.max(0, Math.min(offset, 100_000))]
     )).rows;
     // A blood pressure is two rows; if a page boundary split a pair, fetch the missing half so it shows (and is checked) whole.
+    const primaryCount = rows.length;
     const refs = new Set(rows.map((r: { clientRef: string | null }) => r.clientRef));
     const missing = rows
       .filter((r: { kind: string; clientRef: string | null }) => (r.kind === "systolic_bp" || r.kind === "diastolic_bp") && r.clientRef)
@@ -205,7 +206,7 @@ export async function listReadingsToReview(ctx: NetworkContext, patientId?: stri
       )).rows;
       rows.push(...extra);
     }
-    return rows;
+    return Object.assign(rows, { primaryCount });
   });
 }
 

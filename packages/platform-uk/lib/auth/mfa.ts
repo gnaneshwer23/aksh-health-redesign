@@ -52,10 +52,16 @@ export async function isMfaEnabled(userId: string) {
 export async function startEnrolment(userId: string, account: string) {
   if (await isMfaEnabled(userId)) throw new Error("ALREADY_ENABLED");
   const secret = generateSecret();
-  await getPgPool().query(
-    `INSERT INTO aksh.user_mfa (user_id, secret_enc) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET secret_enc = EXCLUDED.secret_enc, enabled_at = NULL, last_used_step = NULL`,
-    [userId, encryptSecret(secret)]
-  );
+  await inTransaction(async (client) => {
+    // Never replaces an active secret (only a pending one).
+    const r = await client.query(
+      `INSERT INTO aksh.user_mfa (user_id, secret_enc) VALUES ($1, $2)
+       ON CONFLICT (user_id) DO UPDATE SET secret_enc = EXCLUDED.secret_enc, last_used_step = NULL WHERE aksh.user_mfa.enabled_at IS NULL`,
+      [userId, encryptSecret(secret)]
+    );
+    if (r.rowCount !== 1) throw new Error("ALREADY_ENABLED");
+    await auditMfa(client, userId, "mfa.enrolment_started");
+  });
   return { secret, uri: otpauthUri(secret, account) };
 }
 
@@ -65,13 +71,17 @@ export async function confirmEnrolment(userId: string, code: string) {
   if (!row || row.enabled_at) throw new Error("NO_PENDING_ENROLMENT");
   const step = verifyTotp(decryptSecret(row.secret_enc), code);
   if (step === null) throw new Error("INVALID_CODE");
-  const codes = Array.from({ length: 8 }, () => randomBytes(5).toString("hex").toUpperCase().replace(/(.{5})(.{5})/, "$1-$2"));
+  // 80 bits per code (hashes are cheap to guess against at lower entropy), grouped for reading.
+  const codes = Array.from({ length: 8 }, () => randomBytes(10).toString("hex").toUpperCase().match(/.{5}/g)!.join("-"));
   const client = await getPgPool().connect();
   try {
     await client.query("BEGIN");
-    await client.query(`UPDATE aksh.user_mfa SET enabled_at = NOW(), last_used_step = $2 WHERE user_id = $1`, [userId, step]);
+    // Only the first of two concurrent confirmations wins; the other changes nothing.
+    const enabled = await client.query(`UPDATE aksh.user_mfa SET enabled_at = NOW(), last_used_step = $2 WHERE user_id = $1 AND enabled_at IS NULL`, [userId, step]);
+    if (enabled.rowCount !== 1) throw new Error("NO_PENDING_ENROLMENT");
     await client.query(`DELETE FROM aksh.user_mfa_recovery WHERE user_id = $1`, [userId]);
     for (const c of codes) await client.query(`INSERT INTO aksh.user_mfa_recovery (user_id, code_hash) VALUES ($1, $2)`, [userId, hashCode(c)]);
+    await auditMfa(client, userId, "mfa.enabled");
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK").catch(() => undefined);
@@ -113,8 +123,34 @@ export async function verifySecondFactor(userId: string, code: string): Promise<
 /** Turn off two-step sign-in (requires a current code or a recovery code). */
 export async function disableMfa(userId: string, code: string) {
   if (!(await verifySecondFactor(userId, code))) throw new Error("INVALID_CODE");
-  await getPgPool().query(`DELETE FROM aksh.user_mfa WHERE user_id = $1`, [userId]);
-  await getPgPool().query(`DELETE FROM aksh.user_mfa_recovery WHERE user_id = $1`, [userId]);
+  await inTransaction(async (client) => {
+    await client.query(`DELETE FROM aksh.user_mfa WHERE user_id = $1`, [userId]);
+    await client.query(`DELETE FROM aksh.user_mfa_recovery WHERE user_id = $1`, [userId]);
+    await auditMfa(client, userId, "mfa.disabled");
+  });
+}
+
+/** MFA changes and their audit record commit together. */
+async function inTransaction<T>(fn: (client: import("pg").PoolClient) => Promise<T>) {
+  const client = await getPgPool().connect();
+  try {
+    await client.query("BEGIN");
+    const out = await fn(client);
+    await client.query("COMMIT");
+    return out;
+  } catch (e) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw e;
+  } finally {
+    client.release();
+  }
+}
+
+async function auditMfa(client: import("pg").PoolClient, userId: string, action: string) {
+  await client.query(
+    `INSERT INTO aksh.network_audit_events (actor_user_id, action, resource_type, resource_id, detail, environment) VALUES ($1, $2, 'user', $1, '{}'::jsonb, $3)`,
+    [userId, action, getDeploymentEnvironment()]
+  );
 }
 
 export const currentStep = () => stepAt(Date.now());

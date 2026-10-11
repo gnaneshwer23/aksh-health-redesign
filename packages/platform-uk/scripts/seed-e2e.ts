@@ -29,6 +29,7 @@ import {
   USERS_PROFILES_SQL,
 } from "../lib/db/schema-sql";
 import { assertSeedingAllowed } from "../lib/env/deployment";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 
 const { Pool } = pg;
 const root = process.cwd();
@@ -254,6 +255,8 @@ async function run() {
   }
 
   const pool = new Pool({ connectionString: getDatabaseUrl(), max: 3 });
+
+  await assertNotProductionDatabase(pool, "seed-e2e"); // the database itself must say simulation
   const password = resolveE2EPassword();
 
   try {

@@ -29,7 +29,7 @@ export async function exportOrganisation(ctx: NetworkContext, orgId: string) {
       members: await rows(client, `SELECT id, user_id, display_name, email, role, professional_title, is_admin, status, registration_number, registration_body, registration_status, created_at FROM aksh.memberships WHERE organisation_id = $1 ORDER BY created_at`, [orgId]),
       registrationChecks: await rows(client, `SELECT id, membership_id, outcome, registry, registration_number, checked_on, evidence_ref, note, checked_by, checked_by_kind, created_at FROM aksh.registration_checks WHERE organisation_id = $1 ORDER BY id`, [orgId]),
       invites: await rows(client, `SELECT id, kind, role, is_admin, email, patient_id, expires_at, used_at, revoked_at, created_at FROM aksh.invites WHERE organisation_id = $1 ORDER BY created_at`, [orgId]),
-      patients: await rows(client, `SELECT id, record_ref, given_name, family_name, to_char(date_of_birth, 'YYYY-MM-DD') AS date_of_birth, sex, diabetes_type, diagnosed_on, contact, created_at FROM aksh.network_patients WHERE organisation_id = $1 ORDER BY family_name, given_name`, [orgId]),
+      patients: await rows(client, `SELECT id, record_ref, given_name, family_name, to_char(date_of_birth, 'YYYY-MM-DD') AS date_of_birth, sex, diabetes_type, diagnosed_on, conditions, foot_risk, last_eye_screening, next_appointment, contact, created_at FROM aksh.network_patients WHERE organisation_id = $1 ORDER BY family_name, given_name`, [orgId]),
       observations: await rows(client, `SELECT id, patient_id, kind, value, unit, observed_at, source, verified, verified_by, verified_at, status, context, flag, original_value, original_unit, recorded_at FROM aksh.network_observations WHERE patient_id IN (${patientsOf}) ORDER BY patient_id, observed_at`, [orgId]),
       medications: await rows(client, `SELECT id, patient_id, name, drug_class, dose, started_on, ended_on FROM aksh.network_medications WHERE patient_id IN (${patientsOf}) ORDER BY patient_id, name`, [orgId]),
       careTeams: await rows(client, `SELECT id, patient_id, membership_id, care_role, added_at, ended_at FROM aksh.care_team_members WHERE patient_id IN (${patientsOf}) ORDER BY patient_id`, [orgId]),
@@ -43,7 +43,7 @@ export async function exportOrganisation(ctx: NetworkContext, orgId: string) {
       goLive: await rows(client, `SELECT id, item_key, action, evidence, note, actor_user_id, actor_kind, created_at FROM aksh.golive_events WHERE organisation_id = $1 ORDER BY id`, [orgId]),
       connections: await rows(client, `SELECT id, name, key_prefix, config, created_by, created_at, last_used_at, revoked_at FROM aksh.connector_keys WHERE organisation_id = $1`, [orgId]),
       connectorMessages: await rows(client, `SELECT id, key_id, kind, format, external_ref, result_code, detail, workflow_id, received_at FROM aksh.connector_events WHERE organisation_id = $1 ORDER BY id`, [orgId]),
-      cgmUploads: await rows(client, `SELECT id, patient_id, uploaded_by, uploader_kind, format, filename, timezone, rows_read, first_at, last_at, created_at FROM aksh.cgm_uploads WHERE patient_id IN (${patientsOf}) ORDER BY created_at`, [orgId]),
+      cgmUploads: await rows(client, `SELECT u.id, u.patient_id, u.uploaded_by, u.uploader_kind, u.format, u.filename, u.timezone, u.rows_read, u.first_at, u.last_at, u.created_at, v.reviewed_by, v.reviewed_at FROM aksh.cgm_uploads u LEFT JOIN aksh.cgm_upload_reviews v ON v.upload_id = u.id WHERE u.patient_id IN (${patientsOf}) ORDER BY u.created_at`, [orgId]),
       cgmReadings: await rows(client, `SELECT patient_id, at, mmol, censored, upload_id FROM aksh.cgm_readings WHERE patient_id IN (${patientsOf}) ORDER BY patient_id, at`, [orgId]),
       auditTrail: await rows(client, `SELECT id, actor_user_id, action, resource_type, resource_id, detail, environment, occurred_at FROM aksh.network_audit_events WHERE organisation_id = $1 ORDER BY id`, [orgId]),
     };
@@ -63,6 +63,10 @@ export async function exportOwnData(ctx: NetworkContext, email: string) {
       exportedAt: new Date().toISOString(),
       account: { id: ctx.userId, email },
       record,
+      // The stored record as held (date of birth, contact details), not only the display summary above.
+      storedRecord: patientId
+        ? (await rows(client, `SELECT record_ref, given_name, family_name, to_char(date_of_birth, 'YYYY-MM-DD') AS date_of_birth, sex, diabetes_type, diagnosed_on, conditions, contact FROM aksh.network_patients WHERE id = $1`, [patientId]))[0] ?? null
+        : null,
       readings: patientId
         ? await rows(client, `SELECT id, kind, value, unit, original_value, original_unit, context, flag, observed_at, source, verified, status, recorded_at FROM aksh.network_observations WHERE patient_id = $1 ORDER BY observed_at`, [patientId])
         : [],

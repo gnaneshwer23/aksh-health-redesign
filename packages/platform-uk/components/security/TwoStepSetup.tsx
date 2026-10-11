@@ -20,6 +20,7 @@ export function TwoStepSetup() {
   const [codes, setCodes] = useState<string[] | null>(null);
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/me/mfa");
@@ -63,7 +64,9 @@ export function TwoStepSetup() {
               <a className="text-xs text-secondary underline" href={setup.uri}>Open in authenticator app</a>
               <form className="flex flex-wrap items-end gap-2" onSubmit={async (e) => {
                 e.preventDefault();
-                const r = await post({ action: "confirm", code });
+                if (busy) return;
+                setBusy(true);
+                const r = await post({ action: "confirm", code }).finally(() => setBusy(false));
                 if (r.ok) {
                   setCodes(r.data.recoveryCodes);
                   setSetup(null);
@@ -73,7 +76,7 @@ export function TwoStepSetup() {
                 await load();
               }}>
                 <label><span className="block text-xs text-muted">2. Enter the 6-digit code it shows</span><Input inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value)} aria-label="Authenticator code" className="w-40" /></label>
-                <Button type="submit" size="sm">Turn on</Button>
+                <Button type="submit" size="sm" disabled={busy}>{busy ? "Checking…" : "Turn on"}</Button>
               </form>
             </div>
           ) : status ? (

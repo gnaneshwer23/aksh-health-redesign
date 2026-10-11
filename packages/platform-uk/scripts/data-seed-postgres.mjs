@@ -27,6 +27,12 @@ async function run() {
   const seedRaw = await readFile(seedFile, "utf8");
   const seedCases = JSON.parse(seedRaw);
   const pool = new Pool({ connectionString: getDatabaseUrl(), max: 3 });
+  // Refuse unless the database itself is marked simulation (see scripts/db-mark-deployment.ts).
+  const marker = await pool.query("SELECT deployment FROM aksh.deployment_marker WHERE singleton").catch(() => ({ rows: [] }));
+  if (marker.rows[0]?.deployment !== "simulation") {
+    await pool.end();
+    throw new Error("data-seed-postgres refuses to run: this database is not marked simulation.");
+  }
 
   try {
     await ensureSchema(pool);

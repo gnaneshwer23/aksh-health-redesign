@@ -42,12 +42,15 @@ async function deleteDemoUsers(pool, userIds) {
   // Demo accounts may carry append-only history; the purge flag lets the cascade remove it in this transaction only,
   // and never on a database marked production.
   const marker = await pool.query(`SELECT deployment FROM aksh.deployment_marker WHERE singleton`).catch(() => ({ rows: [] }));
+  // Deleting accounts only ever happens on a database explicitly marked simulation.
+  if (marker.rows[0]?.deployment !== "simulation") {
+    throw new Error("cleanup-demo-users refuses to delete: this database is not marked simulation.");
+  }
   const client = await pool.connect();
   let result;
   try {
     await client.query("BEGIN");
-    // Purge only with an explicit simulation marker; anywhere else the append-only history stays (the delete fails).
-    if (marker.rows[0]?.deployment === "simulation") await client.query("SET LOCAL aksh.purge_test_data = 'on'");
+    await client.query("SET LOCAL aksh.purge_test_data = 'on'");
     result = await client.query(`DELETE FROM aksh.users WHERE id = ANY($1::text[])`, [userIds]);
     await client.query("COMMIT");
   } catch (error) {

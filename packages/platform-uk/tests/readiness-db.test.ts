@@ -12,7 +12,7 @@ import { exportOrganisation, exportOwnData } from "../lib/export/service";
 import { createKey } from "../lib/connector/service";
 import { loadNetworkContext } from "../lib/network/context";
 import { acceptPatientInvite, acceptStaffInvite, createInvite, createOrganisation, importPatients, NetworkError } from "../lib/network/service";
-import { checkRateLimit } from "../lib/rate-limit";
+import { checkRateLimit, hashKey } from "../lib/rate-limit";
 import { addReading } from "../lib/readings/service";
 import { runRetention } from "../lib/retention/service";
 
@@ -28,8 +28,8 @@ async function run() {
   const results = await Promise.all(Array.from({ length: 7 }, () => checkRateLimit(key, 5, 60_000)));
   assert.equal(results.filter((r) => r.success).length, 5, "exactly the limit succeeds under concurrency");
   assert.ok(results.filter((r) => !r.success).every((r) => (r.retryAfterSeconds ?? 0) >= 1));
-  const stored = await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.rate_limits WHERE key_hash = encode(sha256($1::bytea), 'hex')`, [key]);
-  assert.equal(stored.rows[0].n, 1, "one window row, key stored hashed");
+  const stored = await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.rate_limits WHERE key_hash = $1`, [hashKey(key)]);
+  assert.equal(stored.rows[0].n, 1, "one window row, key stored as a keyed hash");
   assert.equal((await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.rate_limits WHERE key_hash = $1`, [key])).rows[0].n, 0, "raw key never stored");
 
   // Retention: old error events and expired windows go; recent ones stay.
@@ -39,10 +39,12 @@ async function run() {
      ('local', 'server', 'new-${tag}', '/retention', 'E', 'new', NOW() - INTERVAL '2 days')`
   );
   await getPgPool().query(`INSERT INTO aksh.rate_limits (key_hash, window_start, count) VALUES ($1, NOW() - INTERVAL '3 days', 9)`, [`old-${tag}`]);
+  const oldWindow = `old-${tag}`;
   const retention = await runRetention();
   assert.ok(retention.errorEvents >= 1 && retention.rateLimitWindows >= 1);
   const left = (await getPgPool().query(`SELECT fingerprint FROM aksh.error_events WHERE fingerprint IN ($1, $2)`, [`old-${tag}`, `new-${tag}`])).rows.map((r) => r.fingerprint);
   assert.deepEqual(left, [`new-${tag}`]);
+  assert.equal((await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.rate_limits WHERE key_hash = $1`, [oldWindow])).rows[0].n, 0, "this test's expired window was deleted");
 
   // Exports.
   const mk = async (label: string) => {

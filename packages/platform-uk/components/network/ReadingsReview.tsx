@@ -101,10 +101,14 @@ export function ReadingsReview() {
             let verified = 0;
             let failure: string | null = null;
             for (let i = 0; i < ids.length && !failure; i += 200) {
-              const r = await fetch("/api/network/readings/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids.slice(i, i + 200) }) });
-              const d = await r.json().catch(() => ({}));
-              if (r.ok) verified += d.verified ?? 0;
-              else failure = d.error ?? "Could not mark as checked";
+              try {
+                const r = await fetch("/api/network/readings/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids: ids.slice(i, i + 200) }) });
+                const d = await r.json().catch(() => ({}));
+                if (r.ok) verified += d.verified ?? 0;
+                else failure = d.error ?? "Could not mark as checked";
+              } catch {
+                failure = "connection lost";
+              }
             }
             setMessage(failure ? `${verified} marked as checked; then: ${failure}` : `${verified} reading${verified === 1 ? "" : "s"} marked as checked`);
             setSelected(new Set());

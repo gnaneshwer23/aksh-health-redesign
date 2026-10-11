@@ -34,7 +34,10 @@ test("mfa: set up two-step sign-in, then sign in with password and code", async 
   await signin.getByTestId("signin-password").fill(account.password);
   await signin.getByTestId("signin-submit").click();
   await expect(signin.locator("[data-mfa-step]")).toBeVisible({ timeout: 20_000 });
-  await signin.getByTestId("signin-otp").fill("000000");
+  // A code guaranteed to differ from every code in the accepted window (previous, current and next step).
+  const valid = new Set([code(-1), code(0), code(1)]);
+  const wrong = ["000000", "111111", "222222", "333333"].find((c) => !valid.has(c))!;
+  await signin.getByTestId("signin-otp").fill(wrong);
   await signin.getByTestId("signin-submit").click();
   await expect(signin.locator("#signin-form-error")).toContainText("That code didn't work");
   // The set-up code's 30-second step is spent (codes are single use): wait for the next step.

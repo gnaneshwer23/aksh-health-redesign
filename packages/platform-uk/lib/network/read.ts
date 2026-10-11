@@ -71,7 +71,7 @@ type FactRow = {
  */
 const COUNTS = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified)`;
 const latestOf = (kind: string) =>
-  `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC LIMIT 1)`;
+  `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC, recorded_at DESC LIMIT 1)`;
 
 /** One row of derived facts per visible patient. `kind` values are fixed literals above, never user input. */
 async function loadFacts(client: PoolClient, where = "TRUE", params: unknown[] = []): Promise<FactRow[]> {

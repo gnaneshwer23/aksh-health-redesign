@@ -55,9 +55,34 @@ export async function listMonitoring(ctx: NetworkContext) {
        LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
        GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`
     )).rows;
+    // Patients whose only recent CGM data is an unreviewed patient upload: listed so the upload can be found and reviewed.
+    const pendingOnly = (await client.query<{ patient_id: string; name: string; record_ref: string | null; organisation: string | null; last_at: Date }>(
+      `SELECT p.id AS patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation, max(u.last_at) AS last_at
+       FROM aksh.cgm_uploads u JOIN aksh.network_patients p ON p.id = u.patient_id
+       LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
+       WHERE u.uploader_kind = 'patient' AND u.created_at > NOW() - INTERVAL '30 days'
+         AND NOT EXISTS (SELECT 1 FROM aksh.cgm_upload_reviews v WHERE v.upload_id = u.id)
+         AND NOT EXISTS (SELECT 1 FROM aksh.cgm_trusted_readings t WHERE t.patient_id = u.patient_id AND t.at > NOW() - INTERVAL '30 days')
+       GROUP BY p.id, p.given_name, p.family_name, p.record_ref, o.name`
+    )).rows;
     const now = Date.now();
-    return rows
-      .map((a) => {
+    const pendingRows = pendingOnly.map((a) => ({
+      patientId: a.patient_id,
+      name: a.name,
+      recordRef: a.record_ref,
+      organisation: a.organisation ?? "Shared with you",
+      lastAt: a.last_at.toISOString(),
+      stale: false,
+      pct: { veryLow: 0, low: 0, inRange: 0, veryHigh: 0 },
+      meanMmol: 0,
+      cvPct: 0,
+      wearPct: 0,
+      sufficient: false,
+      uncheckedSummary: true,
+      flags: ["patient upload waiting for review: open the row to review it"],
+      urgency: 5,
+    }));
+    return [...rows.map((a) => {
         const pct = (k: number) => (k / a.n) * 100;
         const veryLow = pct(a.very_low);
         const low = pct(a.low);
@@ -92,6 +117,6 @@ export async function listMonitoring(ctx: NetworkContext) {
           urgency: urgency({ veryLow, low, inRange, veryHigh, sufficient, stale }),
         };
       })
-      .sort((x, y) => x.urgency - y.urgency || x.pct.inRange - y.pct.inRange || x.name.localeCompare(y.name));
+      , ...pendingRows].sort((x, y) => x.urgency - y.urgency || x.pct.inRange - y.pct.inRange || x.name.localeCompare(y.name));
   });
 }
