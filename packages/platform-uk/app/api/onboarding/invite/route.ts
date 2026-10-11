@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ status: "rejected", reason: "unknown-code" }, { status: 400 });
   }
-  const binding = await resolvePatientBinding(session.user.id, parsed.data, { consume: false });
+  const binding = await resolvePatientBinding(session.user.id, session.user.email, parsed.data, { consume: false });
   if (binding.status === "linked") return NextResponse.json({ status: "linked" });
   if (binding.status === "none") return NextResponse.json({ status: "none" });
   // Same message for unknown code and mismatched details so the endpoint cannot be used to probe codes.

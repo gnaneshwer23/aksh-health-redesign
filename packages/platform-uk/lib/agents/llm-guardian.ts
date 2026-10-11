@@ -4,6 +4,7 @@ import { getMockGuardianResponse, getMockPatientResponse } from "@/lib/neo4j/moc
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchGuardianFromGraph, fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { GuardianSeverity, Neo4jGuardianInteraction } from "@/lib/neo4j/types";
+import { aiConfigured, languageModel } from "../ai/model";
 
 export const GUARDIAN_MODEL = "openai/gpt-5.4-mini";
 
@@ -18,7 +19,7 @@ Rules:
 export function isLlmGuardianConfigured() {
   if (process.env.ENABLE_LLM_GUARDIAN === "false") return false;
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 export type GuardianDraft = {
@@ -199,7 +200,7 @@ export async function runGuardianAgent(options: {
             .join("\n");
 
     const result = await generateText({
-      model: GUARDIAN_MODEL,
+      model: languageModel(GUARDIAN_MODEL),
       system: GUARDIAN_SYSTEM,
       prompt: `Patient: ${context.patientLabel} (${patientId})
 Proposed drug: ${proposedDrug ?? "none (review current regimen)"}

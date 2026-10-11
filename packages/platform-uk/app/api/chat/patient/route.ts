@@ -24,13 +24,14 @@ import { checkChatRateLimit } from "@/lib/chat/rate-limit";
 import { detectCheckInEscalation } from "@/lib/patient-companion/check-in";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { aiConfigured, languageModel } from "@/lib/ai/model";
 
 export const maxDuration = 30;
 
 const MAX_MESSAGES = 24;
 
 function isChatConfigured(): boolean {
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 function parseAudience(raw: unknown): PatientChatAudience {
@@ -225,7 +226,7 @@ export async function POST(request: Request) {
 
   try {
     const result = streamText({
-      model: PATIENT_CHAT_MODEL,
+      model: languageModel(PATIENT_CHAT_MODEL),
       instructions: buildPatientChatSystemPrompt({
         audience,
         context,

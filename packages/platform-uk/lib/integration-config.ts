@@ -1,4 +1,5 @@
 import type { ReviewCase } from "./types";
+import { aiConfigured, aiProvider } from "./ai/model";
 
 export function isFastApiSynthesisEnabled() {
   return process.env.ENABLE_FASTAPI_SYNTHESIS === "true";
@@ -78,48 +79,48 @@ export function getIntegrationAdapterRegistry() {
     },
     {
       id: "llm-synthesis",
-      label: "LLM SYNTHESIS (AI Gateway)",
+      label: `LLM SYNTHESIS (${aiProviderLabel()})`,
       status: isLlmSynthesisEnabled() ? ("enabled" as const) : ("available" as const),
       enabled: isLlmSynthesisEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/synthesis. Uses AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+        "POST /api/agents/synthesis. Uses the configured AI provider (OpenAI direct or Vercel AI Gateway), else deterministic fallback. Never writes to EHR."
     },
     {
       id: "llm-guardian",
-      label: "LLM GUARDIAN (AI Gateway)",
+      label: `LLM GUARDIAN (${aiProviderLabel()})`,
       status: isLlmGuardianEnabled() ? ("enabled" as const) : ("available" as const),
       enabled: isLlmGuardianEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/guardian. Neo4j/mock interactions + AI Gateway narrative when configured, else deterministic fallback. Never writes to EHR."
+        "POST /api/agents/guardian. Neo4j/mock interactions + AI narrative (OpenAI direct or Vercel AI Gateway) when configured, else deterministic fallback. Never writes to EHR."
     },
     {
       id: "llm-oracle",
-      label: "LLM ORACLE (AI Gateway)",
+      label: `LLM ORACLE (${aiProviderLabel()})`,
       status: isLlmOracleEnabled() ? ("enabled" as const) : ("available" as const),
       enabled: isLlmOracleEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/oracle. Neo4j/mock risk context + AI Gateway narrative when configured, else deterministic fallback. Never writes to EHR."
+        "POST /api/agents/oracle. Neo4j/mock risk context + AI narrative (OpenAI direct or Vercel AI Gateway) when configured, else deterministic fallback. Never writes to EHR."
     },
     {
       id: "llm-dr-assist",
-      label: "LLM Dr.Assist (AI Gateway)",
+      label: `LLM Dr.Assist (${aiProviderLabel()})`,
       status: isLlmDrAssistEnabled() ? ("enabled" as const) : ("available" as const),
       enabled: isLlmDrAssistEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/dr-assist. Neo4j/mock conditions + AI Gateway coding suggestions when configured, else deterministic SNOMED/ICD-10 fallback. Never writes to EHR."
+        "POST /api/agents/dr-assist. Neo4j/mock conditions + AI coding suggestions (OpenAI direct or Vercel AI Gateway) when configured, else deterministic SNOMED/ICD-10 fallback. Never writes to EHR."
     },
     {
       id: "llm-equity",
-      label: "LLM EQUITY (AI Gateway)",
+      label: `LLM EQUITY (${aiProviderLabel()})`,
       status: isLlmEquityEnabled() ? ("enabled" as const) : ("available" as const),
       enabled: isLlmEquityEnabled(),
       defaultMode: "hitl_draft_only",
       boundary:
-        "POST /api/agents/equity. Aggregate regional equity brief via Neo4j/mock + AI Gateway when configured, else deterministic fallback. Never writes to EHR."
+        "POST /api/agents/equity. Aggregate regional equity brief via Neo4j/mock + the configured AI provider (OpenAI direct or Vercel AI Gateway), else deterministic fallback. Never writes to EHR."
     },
     {
       id: "diabetes-module",
@@ -151,9 +152,15 @@ export function getIntegrationAdapterRegistry() {
   ];
 }
 
+/** Which AI provider the registry should name: the one lib/ai/model.ts will actually call. */
+function aiProviderLabel() {
+  const p = aiProvider();
+  return p === "openai" ? "OpenAI" : p === "gateway" ? "AI Gateway" : "AI not configured";
+}
+
 function isLlmSynthesisEnabled() {
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 function isLlmGuardianEnabled() {

@@ -5,6 +5,7 @@ import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
 import type { OracleRisk } from "@/lib/mock-data/types";
+import { aiConfigured, languageModel } from "../ai/model";
 
 export const ORACLE_MODEL = "openai/gpt-5.4-mini";
 
@@ -20,7 +21,7 @@ Rules:
 export function isLlmOracleConfigured() {
   if (process.env.ENABLE_LLM_ORACLE === "false") return false;
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 export type OracleDraft = {
@@ -146,7 +147,7 @@ export async function runOracleAgent(options: { patientId: string }): Promise<Or
 
   try {
     const result = await generateText({
-      model: ORACLE_MODEL,
+      model: languageModel(ORACLE_MODEL),
       system: ORACLE_SYSTEM,
       prompt: `Patient: ${patient.name} (${patientId})
 Data source: ${dataSource}

@@ -1,38 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Activity, HeartHandshake, Link2, MessageCircle } from "lucide-react";
+import { HeartHandshake, Link2, MessageCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-type Reading = { at: string; kind: "glucose" | "bp" | "weight"; value: string };
-
-const READINGS_KEY = "aksh_self_readings_v1";
-const KIND_LABEL: Record<Reading["kind"], string> = {
-  glucose: "Glucose (mmol/L)",
-  bp: "Blood pressure",
-  weight: "Weight (kg)",
-};
-
-function loadReadings(): Reading[] {
-  try {
-    const raw = window.localStorage.getItem(READINGS_KEY);
-    return raw ? (JSON.parse(raw) as Reading[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveReadings(readings: Reading[]) {
-  try {
-    window.localStorage.setItem(READINGS_KEY, JSON.stringify(readings.slice(0, 50)));
-  } catch {
-    // Storage unavailable (private mode): the reading still shows for this visit.
-  }
-}
+import { MyReadings } from "@/components/patient/MyReadings";
 
 function AshaCard() {
   return (
@@ -55,80 +31,35 @@ function AshaCard() {
   );
 }
 
-function ReadingsCard({ note }: { note: string }) {
-  const [readings, setReadings] = useState<Reading[]>([]);
-  const [kind, setKind] = useState<Reading["kind"]>("glucose");
-  const [value, setValue] = useState("");
-
-  useEffect(() => setReadings(loadReadings()), []);
-
-  function add() {
-    const v = value.trim();
-    if (!v) return;
-    const next = [{ at: new Date().toISOString(), kind, value: v }, ...readings];
-    setReadings(next);
-    saveReadings(next);
-    setValue("");
-  }
-
+function LinkClinicForm() {
+  const { update: updateSession } = useSession();
+  const [code, setCode] = useState("");
+  const [dob, setDob] = useState("");
+  const [error, setError] = useState<string | null>(null);
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Activity className="h-4 w-4 text-secondary" aria-hidden /> My readings
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <form
-          className="flex flex-wrap gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            add();
-          }}
-        >
-          <label className="sr-only" htmlFor="reading-kind">
-            Reading type
-          </label>
-          <select
-            id="reading-kind"
-            className="h-10 rounded-md border border-border-subtle bg-white px-3 text-sm"
-            value={kind}
-            onChange={(e) => setKind(e.target.value as Reading["kind"])}
-          >
-            {(Object.keys(KIND_LABEL) as Reading["kind"][]).map((k) => (
-              <option key={k} value={k}>
-                {KIND_LABEL[k]}
-              </option>
-            ))}
-          </select>
-          <Input
-            aria-label="Reading value"
-            className="h-10 w-36"
-            placeholder={kind === "bp" ? "e.g. 128/82" : "Value"}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <Button type="submit" variant="outline" className="h-10">
-            Add
-          </Button>
-        </form>
-        {readings.length ? (
-          <ul className="divide-y divide-border-subtle text-sm" aria-label="Recent readings">
-            {readings.slice(0, 8).map((r) => (
-              <li key={r.at} className="flex justify-between py-1.5">
-                <span>
-                  {KIND_LABEL[r.kind]}: <strong>{r.value}</strong>
-                </span>
-                <span className="text-muted">{new Date(r.at).toLocaleString()}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted">No readings yet.</p>
-        )}
-        <p className="text-xs text-muted">{note}</p>
-      </CardContent>
-    </Card>
+    <form
+      className="mt-3 flex flex-wrap items-end gap-2"
+      data-link-clinic
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setError(null);
+        try {
+          const r = await fetch("/api/me/link", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, dateOfBirth: dob }) });
+          const d = await r.json().catch(() => ({}));
+          if (!r.ok) return setError(d.error ?? "That code did not work. Check it, and your date of birth, with your clinic.");
+          // Refresh the session's binding so patient-scoped features see the link straight away.
+          await updateSession({ boundPatientId: d.patientId }).catch(() => undefined);
+          window.location.reload();
+        } catch {
+          setError("We couldn't reach Aksh. Check your connection and try again.");
+        }
+      }}
+    >
+      <label className="text-sm"><span className="block text-xs text-muted">Invite code</span><Input className="h-10 w-48" value={code} onChange={(e) => setCode(e.target.value)} aria-label="Clinic invite code" required /></label>
+      <label className="text-sm"><span className="block text-xs text-muted">Date of birth</span><Input className="h-10" type="date" value={dob} onChange={(e) => setDob(e.target.value)} aria-label="Date of birth" required /></label>
+      <Button type="submit" variant="outline" className="h-10">Link</Button>
+      {error ? <p className="w-full text-sm text-red-700" role="alert">{error}</p> : null}
+    </form>
   );
 }
 
@@ -143,7 +74,7 @@ export function UnlinkedPatientView({ name }: { name?: string | null }) {
         </CardContent>
       </Card>
       <AshaCard />
-      <ReadingsCard note="Saved on this device only. Nothing is shared with a clinician until your clinic links your account." />
+      <MyReadings />
       <Card className="shadow-sm">
         <CardContent className="flex items-start gap-3 p-5">
           <Link2 className="mt-0.5 h-5 w-5 shrink-0 text-secondary" aria-hidden />
@@ -153,6 +84,7 @@ export function UnlinkedPatientView({ name }: { name?: string | null }) {
               Ask your clinic for an Aksh invite code. Once linked you will see your results, medicines and care team,
               and your readings reach the people who look after you.
             </p>
+            <LinkClinicForm />
           </div>
         </CardContent>
       </Card>
@@ -273,9 +205,7 @@ export function LinkedNetworkPatientView() {
         </CardContent>
       </Card>
       <AshaCard />
-      <ReadingsCard
-        note={`Saved on this device for now; sharing readings with your care team arrives with the patient app.${record.emergencyNumber ? ` In an emergency call ${record.emergencyNumber}.` : " In an emergency call your local emergency number."}`}
-      />
+      <MyReadings fallbackEmergency={record.emergencyNumber} />
     </div>
   );
 }

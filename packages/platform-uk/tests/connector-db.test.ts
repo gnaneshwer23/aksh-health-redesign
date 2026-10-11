@@ -11,23 +11,24 @@ import { addToWaitlist, applyAction, getWorkflow } from "../lib/access/service";
 import { appointmentFromFhir, slotFromFhir, slotFromJson } from "../lib/connector/fhir";
 import { authenticate, createKey, listEvents, receiveAppointments, receiveSlots, revokeKey } from "../lib/connector/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
+import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { loadNetworkContext } from "../lib/network/context";
 import { createOrganisation, importPatients, NetworkError } from "../lib/network/service";
 
 const inHours = (h: number) => new Date(Date.now() + h * 3_600_000).toISOString();
 
 function pure() {
-  const free = slotFromFhir({ resourceType: "Slot", id: "s-1", status: "free", start: inHours(30), end: inHours(30.5), serviceType: [{ text: "Foot check" }] }, {});
+  const free = slotFromFhir({ resourceType: "Slot", id: "s-1", meta: { versionId: "1" }, status: "free", start: inHours(30), end: inHours(30.5), serviceType: [{ text: "Foot check" }] }, {});
   assert.ok(free.ok && free.free && free.appointmentType === "foot_check" && free.durationMin === 30);
   const start = inHours(30);
   const mapped = slotFromFhir({ resourceType: "Slot", id: "s-2", meta: { versionId: "3" }, status: "free", start, end: inHours(30.25), appointmentType: { coding: [{ code: "FC01" }] } }, { typeMap: { FC01: "hba1c_check" }, offerCloseHours: 6 });
   assert.ok(mapped.ok && mapped.free && mapped.appointmentType === "hba1c_check" && mapped.version === 3);
   assert.equal(Date.parse(start) - Date.parse((mapped as { offerExpiresAt: string }).offerExpiresAt), 6 * 3_600_000);
-  const unknown = slotFromFhir({ resourceType: "Slot", id: "s-3", status: "free", start: inHours(30), end: inHours(31), serviceType: [{ text: "Dental" }] }, {});
+  const unknown = slotFromFhir({ resourceType: "Slot", id: "s-3", meta: { versionId: "1" }, status: "free", start: inHours(30), end: inHours(31), serviceType: [{ text: "Dental" }] }, {});
   assert.ok(!unknown.ok && unknown.code === "UNKNOWN_APPOINTMENT_TYPE");
-  const past = slotFromFhir({ resourceType: "Slot", id: "s-4", status: "free", start: inHours(-1), end: inHours(-0.5), serviceType: [{ text: "foot check" }] }, {});
+  const past = slotFromFhir({ resourceType: "Slot", id: "s-4", meta: { versionId: "1" }, status: "free", start: inHours(-1), end: inHours(-0.5), serviceType: [{ text: "foot check" }] }, {});
   assert.ok(!past.ok && past.code === "SLOT_STALE");
-  const soon = slotFromJson({ id: "j-1", status: "free", appointmentType: "foot_check", start: inHours(1), durationMin: 20 }, { offerCloseHours: 2 });
+  const soon = slotFromJson({ id: "j-1", version: 1, status: "free", appointmentType: "foot_check", start: inHours(1), durationMin: 20 }, { offerCloseHours: 2 });
   assert.ok(!soon.ok && soon.code === "OFFER_WINDOW_CLOSED");
   const busy = slotFromFhir({ resourceType: "Slot", id: "s-5", meta: { versionId: "2" }, status: "busy" }, {});
   assert.ok(busy.ok && !busy.free && busy.status === "busy");
@@ -48,15 +49,23 @@ function pure() {
   const extreme = compareRates({ filled: 0, freed: 20 }, { booked: 20, eligible: 20 });
   assert.ok(extreme.ci95![0] < extreme.ci95![1] && extreme.ci95![1] <= 100, "the interval keeps its width at 0% and 100%");
   // Offset-free times, unknown statuses and opaque versions are rejected rather than guessed.
-  const noOffset = slotFromFhir({ resourceType: "Slot", id: "n-1", status: "free", start: "2030-01-01T09:00:00", end: "2030-01-01T09:20:00", serviceType: [{ text: "foot check" }] }, {});
+  const noOffset = slotFromFhir({ resourceType: "Slot", id: "n-1", meta: { versionId: "1" }, status: "free", start: "2030-01-01T09:00:00", end: "2030-01-01T09:20:00", serviceType: [{ text: "foot check" }] }, {});
   assert.ok(!noOffset.ok && noOffset.code === "INVALID_START");
-  const typo = slotFromFhir({ resourceType: "Slot", id: "t-1", status: "bussy" }, {});
+  const typo = slotFromFhir({ resourceType: "Slot", id: "t-1", meta: { versionId: "2" }, status: "bussy" }, {});
   assert.ok(!typo.ok && typo.code === "INVALID_STATUS");
   const opaque = slotFromFhir({ resourceType: "Slot", id: "o-1", meta: { versionId: "1.2" }, status: "busy" }, {});
   assert.ok(!opaque.ok && opaque.code === "INVALID_VERSION");
   const byTime = slotFromFhir({ resourceType: "Slot", id: "o-2", meta: { versionId: "W/abc", lastUpdated: "2026-10-11T08:00:00Z" }, status: "busy" }, {});
   assert.ok(byTime.ok && byTime.version === Math.floor(Date.parse("2026-10-11T08:00:00Z") / 1000));
-  assert.equal(slotFromJson({ id: "j-2", appointmentType: "foot_check", start: inHours(30), durationMin: 20 }, {}).ok, false, "JSON status is required");
+  assert.equal(slotFromJson({ id: "j-2", version: 1, appointmentType: "foot_check", start: inHours(30), durationMin: 20 }, {}).ok, false, "JSON status is required");
+  const noVersion = slotFromFhir({ resourceType: "Slot", id: "v-1", status: "busy" }, {});
+  assert.ok(!noVersion.ok && noVersion.code === "MISSING_VERSION", "a version is required so later updates are recognised");
+  const feb30 = slotFromFhir({ resourceType: "Slot", id: "d-1", meta: { versionId: "1" }, status: "free", start: "2030-02-30T09:00:00Z", end: "2030-02-30T09:20:00Z", serviceType: [{ text: "foot check" }] }, {});
+  assert.ok(!feb30.ok && feb30.code === "INVALID_START", "30 February is rejected, not moved to March");
+  const halfMinute = slotFromJson({ id: "j-3", version: 1, status: "free", appointmentType: "foot_check", start: inHours(30), durationMin: 20.5 }, {});
+  assert.ok(!halfMinute.ok && halfMinute.code === "INVALID_DURATION");
+  const inherited = slotFromFhir({ resourceType: "Slot", id: "i-1", meta: { versionId: "1" }, status: "free", start: inHours(30), end: inHours(30.5), appointmentType: { coding: [null as never, { code: "constructor" }] } }, {});
+  assert.ok(!inherited.ok && inherited.code === "UNKNOWN_APPOINTMENT_TYPE", "inherited object keys are not appointment types");
   assert.equal(slotFromJson(null as never, {}).ok, false);
 }
 
@@ -66,6 +75,7 @@ async function rejects(p: Promise<unknown>, status: number) {
 
 async function run() {
   pure();
+  if (isPostgresConfigured()) await assertNotProductionDatabase(getPgPool(), "test");
   if (!isPostgresConfigured()) return console.log("connector-db: pure checks PASS; DB part skipped (no DATABASE_URL)");
   const tag = randomUUID().slice(0, 6);
   const id = randomUUID();
@@ -85,7 +95,7 @@ async function run() {
   const key = await authenticate(`Bearer ${created.key}`);
   await rejects(authenticate("Bearer aksh_wrong"), 401);
 
-  const slot = (sid: string, h: number, extra: Record<string, unknown> = {}) => ({ resource: { resourceType: "Slot", id: sid, status: "free", start: inHours(h), end: inHours(h + 0.5), appointmentType: { coding: [{ code: "FC01" }] }, ...extra } });
+  const slot = (sid: string, h: number, extra: Record<string, unknown> = {}) => ({ resource: { resourceType: "Slot", id: sid, meta: { versionId: "1" }, status: "free", start: inHours(h), end: inHours(h + 0.5), appointmentType: { coding: [{ code: "FC01" }] }, ...extra } });
   const [sa, sb, sc, sx, sd] = [`a-${tag}`, `b-${tag}`, `c-${tag}`, `x-${tag}`, `d-${tag}`];
   const first = await receiveSlots(key, { resourceType: "Bundle", type: "collection", entry: [slot(sa, 30), slot(sb, 31), slot(sc, 32), slot(sx, 33, { appointmentType: { text: "Dental" } }), null as never, slot(sd, 34)] });
   assert.deepEqual(first.results.map((r) => r.result), ["ACCEPTED", "ACCEPTED", "ACCEPTED", "UNKNOWN_APPOINTMENT_TYPE", "INVALID_ITEM", "ACCEPTED"]);

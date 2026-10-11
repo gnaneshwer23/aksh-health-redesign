@@ -39,7 +39,22 @@ async function findDemoUsers(pool) {
 async function deleteDemoUsers(pool, userIds) {
   if (userIds.length === 0) return 0;
 
-  const result = await pool.query(`DELETE FROM aksh.users WHERE id = ANY($1::text[])`, [userIds]);
+  // Demo accounts may carry append-only history; the purge flag lets the cascade remove it in this transaction only,
+  // and never on a database marked production.
+  const marker = await pool.query(`SELECT deployment FROM aksh.deployment_marker WHERE singleton`).catch(() => ({ rows: [] }));
+  const client = await pool.connect();
+  let result;
+  try {
+    await client.query("BEGIN");
+    if (marker.rows[0]?.deployment !== "production") await client.query("SET LOCAL aksh.purge_test_data = 'on'");
+    result = await client.query(`DELETE FROM aksh.users WHERE id = ANY($1::text[])`, [userIds]);
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
   return result.rowCount ?? 0;
 }
 
