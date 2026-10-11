@@ -8,6 +8,7 @@ import type { PoolClient } from "pg";
 import { z } from "zod";
 
 import { getDeploymentEnvironment } from "@/lib/env/deployment";
+import { isoDate, notFuture } from "@/lib/golive/checklist";
 
 import { audit, withPrivileged, withTenant, type NetworkContext } from "./db";
 import { LICENSED_ROLES, NetworkError } from "./service";
@@ -17,12 +18,13 @@ export const registrationCheckSchema = z
     outcome: z.enum(["verified", "rejected", "not_applicable"]),
     registry: z.string().trim().min(2).max(160).optional(),
     registrationNumber: z.string().trim().min(2).max(40).optional(),
-    checkedOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((d) => d <= new Date().toISOString().slice(0, 10), "Cannot be in the future"),
+    checkedOn: isoDate.refine(notFuture, "Cannot be in the future"),
     evidenceRef: z.string().trim().max(300).optional(),
     note: z.string().trim().max(500).optional(),
   })
   .refine((c) => c.outcome !== "verified" || (c.registry && c.registrationNumber), { message: "A verified check needs the register and the registration number", path: ["registry"] })
-  .refine((c) => c.outcome !== "rejected" || Boolean(c.note), { message: "Say what did not match", path: ["note"] });
+  .refine((c) => c.outcome !== "rejected" || Boolean(c.note), { message: "Say what did not match", path: ["note"] })
+  .transform((c) => (c.outcome === "not_applicable" ? { ...c, registry: undefined, registrationNumber: undefined } : c));
 
 export type RegistrationCheckInput = z.infer<typeof registrationCheckSchema>;
 

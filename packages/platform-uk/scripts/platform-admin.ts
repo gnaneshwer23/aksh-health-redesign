@@ -19,6 +19,8 @@ function arg(name: string) {
 async function main() {
   const url = process.env.DATABASE_URL?.trim();
   if (!url) throw new Error("DATABASE_URL is required.");
+  // Privilege changes must say where they happened: no silent "local" fallback.
+  if (!process.env.AKSH_ENVIRONMENT?.trim()) throw new Error("Set AKSH_ENVIRONMENT (production or simulation) in the env file you pass.");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const env = getDeploymentEnvironment();
   try {
@@ -33,16 +35,27 @@ async function main() {
     const user = (await pool.query<{ id: string }>(`SELECT id FROM aksh.users WHERE lower(email) = $1`, [email])).rows[0];
     if (!user) throw new Error(`No account for ${email}. They must sign up first.`);
     const by = `script:${os.userInfo().username}`;
-    if (process.argv.includes("--revoke")) {
-      await pool.query(`DELETE FROM aksh.platform_admins WHERE user_id = $1`, [user.id]);
-    } else {
-      await pool.query(`INSERT INTO aksh.platform_admins (user_id, granted_by, note) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET note = EXCLUDED.note`, [user.id, by, arg("note") ?? null]);
-    }
     const action = process.argv.includes("--revoke") ? "platform_admin.revoked" : "platform_admin.granted";
-    await pool.query(
-      `INSERT INTO aksh.network_audit_events (actor_user_id, action, resource_type, resource_id, detail, environment) VALUES (NULL, $1, 'user', $2, $3::jsonb, $4)`,
-      [action, user.id, JSON.stringify({ by }), env]
-    );
+    // The change and its audit record commit together or not at all.
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      if (action === "platform_admin.revoked") {
+        await client.query(`DELETE FROM aksh.platform_admins WHERE user_id = $1`, [user.id]);
+      } else {
+        await client.query(`INSERT INTO aksh.platform_admins (user_id, granted_by, note) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET note = EXCLUDED.note`, [user.id, by, arg("note") ?? null]);
+      }
+      await client.query(
+        `INSERT INTO aksh.network_audit_events (actor_user_id, action, resource_type, resource_id, detail, environment) VALUES (NULL, $1, 'user', $2, $3::jsonb, $4)`,
+        [action, user.id, JSON.stringify({ by }), env]
+      );
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => undefined);
+      throw error;
+    } finally {
+      client.release();
+    }
     console.log(`${env}: ${action} for ${email}`);
   } finally {
     await pool.end();

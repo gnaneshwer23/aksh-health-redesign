@@ -75,7 +75,7 @@ export function evidenceSummary(key: string, ev: Record<string, unknown> | null)
 function EvidenceForm({ org, item, members, onSaved }: { org: Org; item: Item; members: Member[]; onSaved: (s: GoLiveSnapshot) => void }) {
   const fields = FIELDS[item.key] ?? [];
   const [values, setValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(fields.map((f) => [f.name, item.evidence?.[f.name] !== undefined ? String(item.evidence[f.name]) : f.type === "select" ? f.options![0]![0] : ""]))
+    Object.fromEntries(fields.map((f) => [f.name, item.evidence?.[f.name] !== undefined ? String(item.evidence[f.name]) : ""]))
   );
   const [error, setError] = useState<string | null>(null);
   const field = "mt-1 h-10 w-full rounded-xl border border-border bg-card px-2 text-sm";
@@ -99,11 +99,12 @@ function EvidenceForm({ org, item, members, onSaved }: { org: Org; item: Item; m
         <label key={f.name} className={f.name === "method" || f.name === "optOutWording" || f.name === "summary" ? "sm:col-span-2" : undefined}>
           <span className="text-muted">{f.label}</span>
           {f.type === "select" ? (
-            <select className={field} aria-label={f.label} value={values[f.name]} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}>
+            <select className={field} aria-label={f.label} required value={values[f.name]} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}>
+              <option value="" disabled>Choose</option>
               {f.options!.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </select>
           ) : f.type === "member" ? (
-            <select className={field} aria-label={f.label} value={values[f.name]} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}>
+            <select className={field} aria-label={f.label} required value={values[f.name]} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}>
               <option value="">Choose a clinician with a checked registration</option>
               {members.filter((m) => m.status === "active" && LICENSED.has(m.role) && m.registration_status === "verified").map((m) => <option key={m.id} value={m.id}>{m.display_name}</option>)}
             </select>
@@ -199,7 +200,7 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
                   <p className="mt-0.5 text-xs text-muted">{i.help}</p>
                   {i.evidence ? <p className="mt-1 text-xs text-foreground">{evidenceSummary(i.key, i.evidence)}</p> : null}
                   {i.state === "rejected" && i.note ? <p className="mt-1 text-xs text-red-700">Aksh: {i.note}</p> : null}
-                  {editable && !i.locked ? (
+                  {editable && !i.locked && (s.org.status === "sandbox" || i.state === "rejected") ? (
                     editing === i.key ? (
                       <EvidenceForm org={org} item={i} members={members} onSaved={(next) => { setS(next); setEditing(null); onMessage(`${i.title}: submitted`); }} />
                     ) : (
