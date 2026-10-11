@@ -6,18 +6,20 @@ test.describe("Public site", () => {
     await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
   });
 
-  test("home leads with the product and the primary action", async ({ page }) => {
+  test("home leads with the vision and shows what is live", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Every cancelled appointment");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Clinical intelligence, under clinical control.");
+    await expect(page.getByText("Aksh Intelligence Platform · first module: Aksh Diabetes")).toBeVisible();
+    await expect(page.locator("#available-now")).toContainText("Cancelled-slot fill");
     const nav = page.locator("[data-site-nav]");
-    for (const label of ["Product", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of ["Platform", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/get-started");
     await expect(nav.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
     await expect(page.getByText("Illustrative example").first()).toBeVisible();
   });
 
   test("no demo, walkthrough, sandbox or chat widget anywhere on the public pages", async ({ page }) => {
-    for (const path of ["/", "/product", "/security", "/resources", "/contact", "/get-started"]) {
+    for (const path of ["/", "/platform", "/product", "/security", "/resources", "/contact", "/get-started"]) {
       await page.goto(path);
       const text = (await page.locator("body").innerText()).toLowerCase();
       for (const banned of ["walkthrough", "patel", "sandbox", "try without an account", "demo"]) {
@@ -32,11 +34,19 @@ test.describe("Public site", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    for (const label of ["Product", "Security", "Resources", "Contact", "Request access", "Sign in"]) {
+    for (const label of ["Platform", "Available now", "Security", "Resources", "Contact", "Request access", "Sign in"]) {
       await expect(page.locator(".s-nav__panel").getByRole("link", { name: label, exact: true })).toBeVisible();
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, "no horizontal scroll at phone width").toBeLessThanOrEqual(0);
+  });
+
+  test("platform page: layers, twelve agents with honest status, loop, diabetes, gates", async ({ page }) => {
+    await page.goto("/platform");
+    for (const id of ["layers", "agents", "loop", "diabetes", "gates"]) await expect(page.locator(`#${id}`)).toBeVisible();
+    await expect(page.locator("[data-agents] .s-card")).toHaveCount(12);
+    await expect(page.locator("[data-agents]")).toContainText("Planned");
+    await expect(page.locator("[data-agents]")).toContainText("In production");
   });
 
   test("product page sections are reachable by anchor", async ({ page }) => {
@@ -91,13 +101,12 @@ test.describe("Public site", () => {
 
   test("retired pages redirect to their replacements", async ({ page }) => {
     for (const [from, to] of [
-      ["/platform", "/product"],
-      ["/for-clinicians", "/product"],
+      ["/for-clinicians", "/platform"],
       ["/for-patients", "/product"],
-      ["/for-organisations", "/product"],
+      ["/for-organisations", "/platform"],
       ["/integrations", "/resources/schedule-connector"],
       ["/faq", "/resources"],
-      ["/about", "/product"],
+      ["/about", "/platform"],
       ["/careers", "/contact"],
     ]) {
       await page.goto(from);
@@ -129,7 +138,7 @@ test.describe("Public site", () => {
 
   test("sitemap lists the public pages and guides", async ({ request }) => {
     const xml = await (await request.get("/sitemap.xml")).text();
-    for (const p of ["/product", "/security", "/resources", "/resources/schedule-connector"]) expect(xml).toContain(p);
+    for (const p of ["/platform", "/product", "/security", "/resources", "/resources/schedule-connector"]) expect(xml).toContain(p);
     expect(xml).not.toContain("/demo/");
   });
 });

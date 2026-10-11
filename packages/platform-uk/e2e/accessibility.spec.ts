@@ -10,7 +10,7 @@ test.describe("Accessibility (axe-core)", () => {
   test("homepage has no critical axe violations", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { level: 1, name: /Every cancelled appointment/i })
+      page.getByRole("heading", { level: 1, name: /Clinical intelligence, under clinical control/i })
     ).toBeVisible();
 
     const results = await new AxeBuilder({ page })

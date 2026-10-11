@@ -6,9 +6,9 @@ import { CgmMock, PatientMock, ReviewMock, SlotFillMock, WorkflowMock } from "@/
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
-  title: "Product",
+  title: "Available now",
   description:
-    "Cancelled-slot fill, diabetes monitoring, a patient app and measured results: what Aksh does, for whom, and how it connects to your systems.",
+    "The Aksh workflows in production with clinics today: cancelled-slot fill, CGM monitoring, the patient app and measured results.",
 };
 
 function Checks({ items }: { items: string[] }) {
@@ -26,11 +26,12 @@ export default function ProductPage() {
     <SiteShell>
       <section className="s-page-head">
         <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">Product</span>
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>The operations layer for diabetes care.</h1>
+          <span className="s-eyebrow">Available now</span>
+          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>The first workflows of the platform, live with clinics.</h1>
           <p className="s-lede">
-            Four parts that work together: fill freed appointments, watch glucose between visits, give patients a way to
-            share, and measure the result. Each one keeps a person in charge of every decision.
+            The <a href="/platform" className="s-link">Aksh Intelligence Platform</a> reaches production one governed workflow
+            at a time. These run today with real organisations: fill freed appointments, watch glucose between visits, give
+            patients a way to share, and measure the result. A person stays in charge of every decision.
           </p>
           <nav className="s-actions" aria-label="On this page">
             <a href="#slot-fill" className="s-btn s-btn--ghost s-btn--sm">Slot fill</a>

@@ -14,7 +14,7 @@ const GROUP_LABEL: Record<string, string> = { Start: "Get started", Workflows: "
 const FAQ = [
   { q: "Does Aksh contact patients or book appointments?", a: "No. Aksh ranks patients and drafts the offer. Your staff approve it and send it through your own channel, and a booking counts only when your schedule shows it." },
   { q: "Does Aksh replace our records or scheduling system?", a: "No. It works beside them. It can read freed slots and bookings from your scheduling system and glucose data from devices; it writes nothing back." },
-  { q: "Is patient data sent to an AI model?", a: "No. Ranking, eligibility and glucose metrics are deterministic rules, and the product does not send patient data to any AI model." },
+  { q: "Is patient data sent to an AI model?", a: "Not in the workflows in production today: ranking, eligibility and glucose metrics are deterministic rules. The platform’s AI capabilities are validated on synthetic data and reach real patients only through a governed go-live with your organisation." },
   { q: "What does go-live involve?", a: "A data processing agreement, a privacy impact assessment, a named clinical safety lead, an agreed patient contact channel and a locked baseline, each reviewed by Aksh before approval." },
   { q: "How do patients join?", a: "Your clinic gives a patient an invite code. They create an account, link it with the code and their date of birth, and choose what to share." },
   { q: "Can we get our data out?", a: "Yes. Organisation admins can export everything the organisation holds at any time, and patients can download their own record." },

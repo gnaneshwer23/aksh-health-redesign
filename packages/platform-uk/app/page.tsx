@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Activity, CalendarClock, Check, ClipboardCheck, FileDown, KeyRound, LineChart, Lock, ScrollText, ShieldCheck, Smartphone, UserCheck } from "lucide-react";
+import { Activity, CalendarClock, Check, Layers, LineChart, ShieldAlert, Smartphone } from "lucide-react";
 
-import { CgmMock, PatientMock, ReviewMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { ReviewQueueMock, SlotFillMock } from "@/components/site/Mockups";
 import { SiteShell } from "@/components/site/SiteShell";
+import { DIABETES_AREAS, HUMAN_GATES, NON_OBJECTIVES, PLATFORM_LAYERS, PRODUCT_LOOP, STATUS_LABEL } from "@/components/site/vision";
 
 export const metadata: Metadata = {
-  title: "Aksh Health | Diabetes care operations for clinics",
+  title: "Aksh Health | Clinical intelligence, under clinical control",
   description:
-    "Aksh fills cancelled diabetes appointments with the patients who need them most, monitors glucose between visits, and measures the change against your own baseline. Your staff stay in control of every contact.",
+    "The Aksh Intelligence Platform: one auditable, human-in-the-loop clinical intelligence layer beside your EHR. First module: Aksh Diabetes. A named clinician decides; the platform never decides alone.",
 };
 
-function Checks({ items }: { items: string[] }) {
-  return (
-    <ul className="s-check">
-      {items.map((i) => (
-        <li key={i}><Check aria-hidden />{i}</li>
-      ))}
-    </ul>
-  );
+function Status({ s }: { s: keyof typeof STATUS_LABEL }) {
+  return <span className={`s-status s-status--${s}`}>{STATUS_LABEL[s]}</span>;
 }
 
 export default function HomePage() {
@@ -27,109 +22,82 @@ export default function HomePage() {
       <section className="s-hero">
         <div className="s-container s-hero__grid">
           <div className="s-hero__copy">
-            <span className="s-eyebrow">Diabetes care operations</span>
-            <h1 className="s-h1">Every cancelled appointment, offered to the patient who needs it most.</h1>
+            <span className="s-eyebrow">Aksh Intelligence Platform · first module: Aksh Diabetes</span>
+            <h1 className="s-h1">Clinical intelligence, under clinical control.</h1>
             <p className="s-lede">
-              Aksh matches freed diabetes appointments to your waiting list by clinical need, drafts the offer, and follows
-              the booking until it shows in your schedule. Your staff decide and make every contact.
+              One auditable, human-in-the-loop intelligence layer beside your EHR. It turns notes, labs, medicines and what
+              patients report into explainable drafts. A named clinician decides; the platform never decides alone.
             </p>
             <div className="s-actions">
               <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/product" className="s-btn s-btn--ghost">See the product</Link>
+              <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
             </div>
-            <p className="s-hero__note">Starts in shadow mode: Aksh never messages patients or books on its own.</p>
+            <p className="s-hero__note">In production today: cancelled-slot fill, CGM monitoring and the patient app.</p>
           </div>
-          <SlotFillMock />
+          <ReviewQueueMock />
         </div>
       </section>
 
       <div className="s-container">
         <div className="s-facts">
-          <div className="s-fact"><b>Staff decide</b><span>Every offer is approved and sent by your team</span></div>
-          <div className="s-fact"><b>Verified bookings</b><span>Counted only when your schedule shows them</span></div>
-          <div className="s-fact"><b>Your own baseline</b><span>Results measured against your numbers before Aksh</span></div>
-          <div className="s-fact"><b>Organisation-isolated</b><span>Each clinic sees only its own records</span></div>
+          <div className="s-fact"><b>Human review</b><span>A named clinician decides every clinical step</span></div>
+          <div className="s-fact"><b>Auditability</b><span>Every draft and decision attributed</span></div>
+          <div className="s-fact"><b>One consent model</b><span>Shared by every module and role</span></div>
+          <div className="s-fact"><b>Diabetes first</b><span>A focused clinical wedge, built to extend</span></div>
         </div>
       </div>
 
       <section className="s-section">
         <div className="s-container">
           <div className="s-head">
-            <span className="s-eyebrow">The product</span>
-            <h2 className="s-h2">One workspace for the work between appointments.</h2>
-            <p className="s-lede">Built for diabetes teams: clinicians, nurses, pharmacists and practice managers, with an app for patients.</p>
+            <span className="s-eyebrow">The problem</span>
+            <h2 className="s-h2">Clinical AI fails in two predictable ways.</h2>
+            <p className="s-lede">Aksh is built as one auditable intelligence layer beside the EHR, so every capability shares the same safety, audit and consent boundary.</p>
           </div>
-
-          <div className="s-feature">
-            <div className="s-feature__copy">
-              <span className="s-icon"><CalendarClock /></span>
-              <h3 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 34px)" }}>Fill cancelled slots, fairly and fast.</h3>
-              <p className="s-body">
-                When an appointment frees up, Aksh checks your waiting list against the slot and your rules, then ranks who
-                fits, with the reasons on screen. Patients without a contact preference, inside their notice period or
-                already holding an offer are listed, not silently dropped.
-              </p>
-              <Checks items={["Ranking order and offer limits set by your clinic", "Offer text from an approved template, no clinical detail", "A booking counts only after read-back from your schedule"]} />
-              <Link href="/product#slot-fill" className="s-link">How slot fill works →</Link>
+          <div className="s-grid s-grid--3">
+            <div className="s-card">
+              <span className="s-icon"><Layers /></span>
+              <h3 className="s-h3">Point tools that don’t compose</h3>
+              <p className="s-small">Separate risk, coding and coaching apps, each with its own trust and safety boundary. The clinician becomes the integration layer.</p>
             </div>
-            <WorkflowMock />
-          </div>
-
-          <div className="s-feature s-feature--flip">
-            <div className="s-feature__copy">
-              <span className="s-icon"><Activity /></span>
-              <h3 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 34px)" }}>See who needs attention between visits.</h3>
-              <p className="s-body">
-                CGM data and patient-shared readings in one worklist, ranked by urgency: low glucose first, then high
-                glucose, then gaps in data. Metrics follow the international consensus on time in range.
-              </p>
-              <Checks items={["Time in range, below and above range, GMI and variability", "Patient uploads count only after a clinician reviews them", "Dexcom Clarity, LibreView and generic exports, or a device feed"]} />
-              <Link href="/product#monitoring" className="s-link">How monitoring works →</Link>
+            <div className="s-card">
+              <span className="s-icon"><ShieldAlert /></span>
+              <h3 className="s-h3">Automation that oversteps</h3>
+              <p className="s-small">Auto-writes to the record, auto-dosing, diagnostic claims, with nobody accountable in the loop.</p>
             </div>
-            <CgmMock />
-          </div>
-
-          <div className="s-feature">
-            <div className="s-feature__copy">
-              <span className="s-icon"><LineChart /></span>
-              <h3 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 34px)" }}>Know what changed, with the numbers to prove it.</h3>
-              <p className="s-body">
-                Before go-live you lock a baseline: how many freed slots you filled before Aksh. Every week after, the review
-                shows your fill rate with its counts and range, what staff decided, and what needs a conversation.
-              </p>
-              <Checks items={["One published definition of a filled slot", "Weekly sign-off, frozen and auditable", "No comparison claimed until there are enough slots"]} />
-              <Link href="/product#results" className="s-link">How results are measured →</Link>
+            <div className="s-card" style={{ background: "var(--s-brand)", borderColor: "var(--s-brand)" }}>
+              <h3 className="s-h3" style={{ color: "#fff" }}>Aksh’s answer</h3>
+              <ul className="s-check" style={{ color: "#fff" }}>
+                {[
+                  ["One orchestrator", "a supervisor runs every agent in a fixed, inspectable order"],
+                  ["One audit trail", "who drafted, who decided, what changed"],
+                  ["One consent model", "shared by every module and role"],
+                  ["One rule", "nothing reaches a record or prescription without a human decision"],
+                ].map(([k, v]) => (
+                  <li key={k} style={{ color: "rgb(255 255 255 / 0.9)" }}><Check aria-hidden style={{ color: "#9fe3d5" }} /><span><strong style={{ color: "#fff" }}>{k}:</strong> {v}</span></li>
+                ))}
+              </ul>
             </div>
-            <ReviewMock />
-          </div>
-
-          <div className="s-feature s-feature--flip">
-            <div className="s-feature__copy">
-              <span className="s-icon"><Smartphone /></span>
-              <h3 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 34px)" }}>An app your patients can actually use.</h3>
-              <p className="s-body">
-                Patients link to your clinic with a code you give them, record glucose, blood pressure and weight, upload CGM
-                exports, and choose what to share. They can download everything you hold about them.
-              </p>
-              <Checks items={["Readings reach the care team, flagged for review", "Sharing is the patient’s decision, recorded", "Two-step sign-in available to every account"]} />
-              <Link href="/product#patients" className="s-link">About the patient app →</Link>
-            </div>
-            <PatientMock />
           </div>
         </div>
       </section>
 
       <section className="s-section s-section--soft">
-        <div className="s-container">
-          <div className="s-head">
-            <span className="s-eyebrow">How it works</span>
-            <h2 className="s-h2">From a freed slot to a verified booking.</h2>
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
+            <span className="s-eyebrow">The Aksh Intelligence Platform</span>
+            <h2 className="s-h2">One platform. Disease modules plug in.</h2>
+            <p className="s-body">
+              Diabetes is the first module proving the pattern, not a lock-in. Clinician, patient and population views read
+              the same signal, and the whole stack sits beside the EHR, which stays the system of record.
+            </p>
+            <Link href="/platform" className="s-link">See the platform →</Link>
           </div>
-          <ol className="s-steps">
-            <li className="s-step"><span className="s-step__n">01</span><h3 className="s-h3">A slot frees up</h3><p className="s-small">Your scheduling system reports it through the connector, or staff record it in seconds.</p></li>
-            <li className="s-step"><span className="s-step__n">02</span><h3 className="s-h3">Aksh ranks who fits</h3><p className="s-small">Eligibility and ranking follow your rules. Every candidate shows the reasons.</p></li>
-            <li className="s-step"><span className="s-step__n">03</span><h3 className="s-h3">Your team makes contact</h3><p className="s-small">Staff approve the drafted offer and send it through your usual channel.</p></li>
-            <li className="s-step"><span className="s-step__n">04</span><h3 className="s-h3">The booking is checked</h3><p className="s-small">It counts as filled only when your schedule shows it. If not, a person follows up.</p></li>
+          <ol className="s-layers" aria-label="Platform layers, top to bottom">
+            {PLATFORM_LAYERS.map((l) => (
+              <li key={l.name} className="s-layer"><b>{l.name}</b><span>{l.detail}</span></li>
+            ))}
+            <li className="s-layer s-layer--ehr"><b>Your EHR</b><span>System of record. Aksh writes nothing without a separately governed go-live.</span></li>
           </ol>
         </div>
       </section>
@@ -137,43 +105,126 @@ export default function HomePage() {
       <section className="s-section">
         <div className="s-container">
           <div className="s-head">
-            <span className="s-eyebrow">Security and governance</span>
-            <h2 className="s-h2">Built for clinical data from the first line.</h2>
-            <p className="s-lede">The controls your data protection and clinical safety leads will ask about are part of the product, not a roadmap.</p>
+            <span className="s-eyebrow">End-to-end loop</span>
+            <h2 className="s-h2">From signal to governed learning.</h2>
+            <p className="s-lede">Every step has a defined boundary. The clinician decision sits in the middle, and nothing after it bypasses governance.</p>
           </div>
-          <div className="s-grid s-grid--3">
-            {[
-              { icon: Lock, title: "Isolated by organisation", body: "Database row-level security means each clinic sees only its own patients. Patients see only their own record." },
-              { icon: KeyRound, title: "Two-step sign-in", body: "Authenticator-app codes for every account, with single-use recovery codes. Required for Aksh reviewers." },
-              { icon: ScrollText, title: "Append-only audit", body: "Every slot action, consent decision and go-live step is recorded with who did it and when. History is never edited." },
-              { icon: ClipboardCheck, title: "Go-live checklist", body: "Data processing agreement, privacy impact assessment, a named clinical safety lead and a locked baseline before live use." },
-              { icon: UserCheck, title: "People decide", body: "Aksh drafts and ranks. It never contacts patients, books appointments or makes clinical decisions on its own." },
-              { icon: FileDown, title: "Your data, exportable", body: "Organisations export everything they hold; patients download their own record, at any time." },
-            ].map(({ icon: Icon, title, body }) => (
-              <div key={title} className="s-card">
-                <span className="s-icon"><Icon /></span>
-                <h3 className="s-h3">{title}</h3>
-                <p className="s-small">{body}</p>
-              </div>
+          <ol className="s-loop">
+            {PRODUCT_LOOP.map((s) => (
+              <li key={s.step} className={s.step === "Clinician decides" ? "s-loop--decide" : undefined}>
+                <h3 className="s-h3" style={{ fontSize: 17 }}>{s.step}</h3>
+                <p className="s-small">{s.detail}</p>
+              </li>
             ))}
-          </div>
-          <div style={{ marginTop: 32 }}>
-            <Link href="/security" className="s-link">Read about security <ShieldCheck size={16} aria-hidden /></Link>
-          </div>
+          </ol>
         </div>
       </section>
 
       <section className="s-section s-section--soft">
         <div className="s-container">
           <div className="s-head">
-            <span className="s-eyebrow">Getting started</span>
-            <h2 className="s-h2">Live in weeks, one workflow at a time.</h2>
+            <span className="s-eyebrow">First module · Aksh Diabetes</span>
+            <h2 className="s-h2">Nine intelligence areas, one review queue.</h2>
+            <p className="s-lede">Each area is a signal, not a separate tool. Together they feed risk and medication-safety checks on the same orchestrator and audit trail.</p>
+            <div className="s-legend"><Status s="production" /><Status s="synthetic" /></div>
+          </div>
+          <div className="s-areas">
+            {DIABETES_AREAS.map((a) => (
+              <div key={a.name} className="s-area">
+                <div className="s-row"><h3 className="s-h3" style={{ fontSize: 18 }}>{a.name}</h3><Status s={a.status} /></div>
+                <p className="s-small">{a.output}</p>
+                <p className="s-area__gate">{a.gate}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section" id="available-now">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Available now</span>
+            <h2 className="s-h2">The first workflows, live with clinics.</h2>
+            <p className="s-lede">The platform reaches production one governed workflow at a time. These run today with real organisations, in shadow mode first.</p>
+          </div>
+          <div className="s-feature">
+            <div className="s-feature__copy">
+              <div className="s-grid s-grid--2" style={{ gap: 14 }}>
+                {[
+                  { icon: CalendarClock, t: "Cancelled-slot fill", b: "Freed appointments offered to the patients who need them most, with the reasons. Staff decide every contact." },
+                  { icon: Activity, t: "CGM monitoring", b: "Time in range and consensus targets as a worklist, low glucose first." },
+                  { icon: Smartphone, t: "Patient app", b: "Readings and CGM uploads shared with the care team, on the patient’s terms." },
+                  { icon: LineChart, t: "Measured results", b: "Weekly review against a baseline locked before go-live." },
+                ].map(({ icon: Icon, t, b }) => (
+                  <div key={t} className="s-card" style={{ padding: 20 }}>
+                    <span className="s-icon"><Icon /></span>
+                    <h3 className="s-h3" style={{ fontSize: 17 }}>{t}</h3>
+                    <p className="s-small">{b}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/product" className="s-link">What’s available now →</Link>
+            </div>
+            <div style={{ display: "grid", gap: 16 }}>
+              <SlotFillMock />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section s-dark">
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
+            <span className="s-eyebrow">Clinician control</span>
+            <h2 className="s-h2">Every output is a draft until a named clinician decides.</h2>
+            <ul className="s-check">
+              <li><Check aria-hidden />Accept, edit or reject before anything can affect the record.</li>
+              <li><Check aria-hidden />Every decision is attributed to a named reviewer and audited.</li>
+              <li><Check aria-hidden />Missing data, like an overdue eye-screening date, is listed rather than guessed.</li>
+              <li><Check aria-hidden />No autonomous diagnosis, prescribing or treatment.</li>
+            </ul>
+            <Link href="/security" className="s-btn s-btn--light" style={{ justifySelf: "start" }}>Security and clinical safety</Link>
+          </div>
+          <div style={{ display: "grid", gap: 12 }}>
+            <p className="s-small">Mandatory human gates</p>
+            <ol className="s-gates">
+              {HUMAN_GATES.map((g, i) => (
+                <li key={g.gate} className="s-gate"><b>{i + 1}</b><span><strong>{g.gate}</strong>{g.who}</span></li>
+              ))}
+            </ol>
+            <p className="s-small">Enforced on the server, not just hidden in the interface.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section">
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
+            <span className="s-eyebrow">Built with ambition, communicated with precision</span>
+            <h2 className="s-h2">What Aksh will not do.</h2>
+            <p className="s-body">
+              We say what is in production, what is validated only on synthetic data, and what is planned. Hard limits are
+              part of the design, not a disclaimer.
+            </p>
+            <div className="s-legend"><Status s="production" /><Status s="synthetic" /><Status s="planned" /></div>
+          </div>
+          <ul className="s-limits">
+            {NON_OBJECTIVES.map((n) => <li key={n}>{n}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section className="s-section s-section--soft">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Start with a controlled use case</span>
+            <h2 className="s-h2">From first conversation to live clinic, one step at a time.</h2>
           </div>
           <ol className="s-steps">
-            <li className="s-step"><span className="s-step__n">Week 1</span><h3 className="s-h3">Set up</h3><p className="s-small">Create your clinic, invite your team and check clinician registrations.</p></li>
-            <li className="s-step"><span className="s-step__n">Week 1–2</span><h3 className="s-h3">Load your list</h3><p className="s-small">Import patients from a spreadsheet and build the waiting list.</p></li>
-            <li className="s-step"><span className="s-step__n">Week 2–4</span><h3 className="s-h3">Complete go-live</h3><p className="s-small">Agreements, privacy assessment, safety lead, contact channel and baseline.</p></li>
-            <li className="s-step"><span className="s-step__n">Then</span><h3 className="s-h3">Run in shadow mode</h3><p className="s-small">Your team works the queue; you review results every week.</p></li>
+            <li className="s-step"><span className="s-step__n">01</span><h3 className="s-h3">Scope one workflow</h3><p className="s-small">Pick the diabetes workflow to start with, name the reviewers and set the governance boundaries.</p></li>
+            <li className="s-step"><span className="s-step__n">02</span><h3 className="s-h3">Set up your clinic</h3><p className="s-small">Invite your team, check registrations, load patients and the waiting list.</p></li>
+            <li className="s-step"><span className="s-step__n">03</span><h3 className="s-h3">Complete go-live</h3><p className="s-small">Data processing agreement, privacy assessment, clinical safety lead and a locked baseline.</p></li>
+            <li className="s-step"><span className="s-step__n">04</span><h3 className="s-h3">Widen on evidence</h3><p className="s-small">Start in shadow mode; add workflows only when the evidence supports it.</p></li>
           </ol>
         </div>
       </section>
@@ -182,12 +233,12 @@ export default function HomePage() {
         <div className="s-container">
           <div className="s-cta">
             <div>
-              <h2 className="s-h2">Bring Aksh to your clinic.</h2>
-              <p>Tell us about your diabetes service and how cancellations work today. We will set up a call with the right person.</p>
+              <h2 className="s-h2">Clinical intelligence should help clinicians think, not replace them.</h2>
+              <p>Tell us about your organisation. We go live one governed workflow at a time.</p>
             </div>
             <div className="s-actions">
               <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
-              <Link href="/contact" className="s-btn s-btn--outline-light">Contact us</Link>
+              <Link href="/platform" className="s-btn s-btn--outline-light">Explore the platform</Link>
             </div>
           </div>
         </div>
