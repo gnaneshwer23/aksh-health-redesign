@@ -27,7 +27,7 @@ function pure() {
   assert.ok(!unknown.ok && unknown.code === "UNKNOWN_APPOINTMENT_TYPE");
   const past = slotFromFhir({ resourceType: "Slot", id: "s-4", status: "free", start: inHours(-1), end: inHours(-0.5), serviceType: [{ text: "foot check" }] }, {});
   assert.ok(!past.ok && past.code === "SLOT_STALE");
-  const soon = slotFromJson({ id: "j-1", appointmentType: "foot_check", start: inHours(1), durationMin: 20 }, { offerCloseHours: 2 });
+  const soon = slotFromJson({ id: "j-1", status: "free", appointmentType: "foot_check", start: inHours(1), durationMin: 20 }, { offerCloseHours: 2 });
   assert.ok(!soon.ok && soon.code === "OFFER_WINDOW_CLOSED");
   const busy = slotFromFhir({ resourceType: "Slot", id: "s-5", meta: { versionId: "2" }, status: "busy" }, {});
   assert.ok(busy.ok && !busy.free && busy.status === "busy");
@@ -45,6 +45,19 @@ function pure() {
   assert.equal(up.verdict, "above");
   assert.equal(up.differencePts, 40);
   assert.equal(compareRates({ filled: 30, freed: 100 }, { booked: 32, eligible: 100 }).verdict, "similar");
+  const extreme = compareRates({ filled: 0, freed: 20 }, { booked: 20, eligible: 20 });
+  assert.ok(extreme.ci95![0] < extreme.ci95![1] && extreme.ci95![1] <= 100, "the interval keeps its width at 0% and 100%");
+  // Offset-free times, unknown statuses and opaque versions are rejected rather than guessed.
+  const noOffset = slotFromFhir({ resourceType: "Slot", id: "n-1", status: "free", start: "2030-01-01T09:00:00", end: "2030-01-01T09:20:00", serviceType: [{ text: "foot check" }] }, {});
+  assert.ok(!noOffset.ok && noOffset.code === "INVALID_START");
+  const typo = slotFromFhir({ resourceType: "Slot", id: "t-1", status: "bussy" }, {});
+  assert.ok(!typo.ok && typo.code === "INVALID_STATUS");
+  const opaque = slotFromFhir({ resourceType: "Slot", id: "o-1", meta: { versionId: "1.2" }, status: "busy" }, {});
+  assert.ok(!opaque.ok && opaque.code === "INVALID_VERSION");
+  const byTime = slotFromFhir({ resourceType: "Slot", id: "o-2", meta: { versionId: "W/abc", lastUpdated: "2026-10-11T08:00:00Z" }, status: "busy" }, {});
+  assert.ok(byTime.ok && byTime.version === Math.floor(Date.parse("2026-10-11T08:00:00Z") / 1000));
+  assert.equal(slotFromJson({ id: "j-2", appointmentType: "foot_check", start: inHours(30), durationMin: 20 }, {}).ok, false, "JSON status is required");
+  assert.equal(slotFromJson(null as never, {}).ok, false);
 }
 
 async function rejects(p: Promise<unknown>, status: number) {
@@ -63,6 +76,7 @@ async function run() {
   const imported = (await importPatients(ctx, org.id, { patients: [
     { recordRef: `MRN-A-${tag}`, givenName: "Ana", familyName: "One", dateOfBirth: "1960-01-01" },
     { recordRef: `MRN-B-${tag}`, givenName: "Ben", familyName: "Two", dateOfBirth: "1961-01-01" },
+    { recordRef: `MRN-C-${tag}`, givenName: "Cleo", familyName: "Three", dateOfBirth: "1962-01-01" },
   ] } as never)) as unknown as { id: string; recordRef: string }[];
   for (const p of imported) await addToWaitlist(ctx, org.id, { patientId: p.id, appointmentType: "foot_check", reason: "overdue_care", contactChannel: "sms" } as never);
 
@@ -72,11 +86,13 @@ async function run() {
   await rejects(authenticate("Bearer aksh_wrong"), 401);
 
   const slot = (sid: string, h: number, extra: Record<string, unknown> = {}) => ({ resource: { resourceType: "Slot", id: sid, status: "free", start: inHours(h), end: inHours(h + 0.5), appointmentType: { coding: [{ code: "FC01" }] }, ...extra } });
-  const [sa, sb, sc, sx] = [`a-${tag}`, `b-${tag}`, `c-${tag}`, `x-${tag}`];
-  const first = await receiveSlots(key, { resourceType: "Bundle", type: "collection", entry: [slot(sa, 30), slot(sb, 31), slot(sc, 32), slot(sx, 33, { appointmentType: { text: "Dental" } })] });
-  assert.deepEqual(first.results.map((r) => r.result), ["ACCEPTED", "ACCEPTED", "ACCEPTED", "UNKNOWN_APPOINTMENT_TYPE"]);
+  const [sa, sb, sc, sx, sd] = [`a-${tag}`, `b-${tag}`, `c-${tag}`, `x-${tag}`, `d-${tag}`];
+  const first = await receiveSlots(key, { resourceType: "Bundle", type: "collection", entry: [slot(sa, 30), slot(sb, 31), slot(sc, 32), slot(sx, 33, { appointmentType: { text: "Dental" } }), null as never, slot(sd, 34)] });
+  assert.deepEqual(first.results.map((r) => r.result), ["ACCEPTED", "ACCEPTED", "ACCEPTED", "UNKNOWN_APPOINTMENT_TYPE", "INVALID_ITEM", "ACCEPTED"]);
   assert.equal((await receiveSlots(key, slot(sa, 30).resource)).results[0]!.result, "REPLAY");
 
+  // An out-of-order (older) busy message is ignored.
+  assert.equal((await receiveSlots(key, { resourceType: "Slot", id: sc, meta: { versionId: "1" }, status: "busy" })).results[0]!.result, "STALE_VERSION_IGNORED");
   // Slot C is taken in the schedule before anyone is offered it: withdrawn automatically.
   const busy = await receiveSlots(key, { resourceType: "Slot", id: sc, meta: { versionId: "2" }, status: "busy" });
   assert.equal(busy.results[0]!.result, "WITHDRAWN");
@@ -94,6 +110,18 @@ async function run() {
   const wfB = first.results[1]!.workflowId!;
   await prepare(wfA, imported[0]!.id);
   await prepare(wfB, imported[1]!.id);
+
+  // Slot D: an offer is approved, then the schedule shows it taken -> a person is asked to look (urgent hand-off).
+  const wfD = first.results[5]!.workflowId!;
+  await applyAction(ctx, wfD, { action: "match", idempotencyKey: `m-${wfD}` });
+  const wd = await getWorkflow(ctx, wfD);
+  const cd = wd!.candidates.find((c: { rank: number | null; patient_id: string }) => c.rank !== null && c.patient_id === imported[2]!.id);
+  await applyAction(ctx, wfD, { action: "select", idempotencyKey: `s-${wfD}`, candidateId: cd.id });
+  await applyAction(ctx, wfD, { action: "approve_contact", idempotencyKey: `ap-${wfD}` });
+  assert.equal((await receiveSlots(key, { resourceType: "Slot", id: sd, meta: { versionId: "2" }, status: "busy" })).results[0]!.result, "HANDED_OFF");
+  const handedOff = await getWorkflow(ctx, wfD);
+  assert.equal(handedOff!.state, "HANDOFF");
+  assert.ok(handedOff!.handoffs.some((h: { reason: string }) => /taken in the schedule/.test(h.reason)));
 
   // A connector can never take staff decisions.
   const connectorCtx = { userId: `connector-${key.id}`, role: "connector", orgIds: [org.id], adminOrgIds: [], patientIds: [], publicDemo: false };

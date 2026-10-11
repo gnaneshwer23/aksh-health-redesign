@@ -10,6 +10,7 @@ import { getDeploymentEnvironment } from "@/lib/env/deployment";
 import { withTenant, type NetworkContext } from "@/lib/network/db";
 import { NetworkError } from "@/lib/network/service";
 
+import { FILL_DEFINITION, FILLED_SQL } from "./measurement";
 import { evaluateCandidates, renderOffer, resolveSettings, RULE_VERSION, TEMPLATE_VERSION, type WaitlistFacts } from "./eligibility";
 import { withPrivileged } from "@/lib/network/db";
 
@@ -443,7 +444,7 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
     const r = (await client.query<Counts>(
       `SELECT
          count(*) FILTER (WHERE s.state <> 'withdrawn')::int AS eligible_slots,
-         count(*) FILTER (WHERE w.outcome = 'booked')::int AS booked_verified,
+         count(*) FILTER (WHERE ${FILLED_SQL})::int AS booked_verified,
          count(*) FILTER (WHERE s.state = 'pending_verification')::int AS pending_verification,
          count(*) FILTER (WHERE w.outcome = 'expired')::int AS expired,
          count(*) FILTER (WHERE w.state = 'FAILED_SAFE')::int AS failed_safe,
@@ -459,9 +460,9 @@ export async function accessMetrics(ctx: NetworkContext, orgId?: string, windowD
       [orgId ?? null, windowDays]
     )).rows[0]!;
     return {
-      metricVersion: "slot-fill-v1",
+      metricVersion: "slot-fill-v1.1",
       windowDays,
-      definition: "Fill rate = slots booked and verified on read-back before the offer expired ÷ slots received (withdrawn excluded).",
+      definition: FILL_DEFINITION,
       fillRatePct: r.eligible_slots ? Math.round((r.booked_verified / r.eligible_slots) * 1000) / 10 : null,
       ...r,
       handoffs: h,

@@ -9,7 +9,7 @@ import os from "node:os";
 
 import pg from "pg";
 
-import { getDeploymentEnvironment } from "../lib/env/deployment";
+import { DEPLOYMENT_ENVIRONMENTS, getDeploymentEnvironment } from "../lib/env/deployment";
 
 function arg(name: string) {
   const i = process.argv.indexOf(`--${name}`);
@@ -20,7 +20,10 @@ async function main() {
   const url = process.env.DATABASE_URL?.trim();
   if (!url) throw new Error("DATABASE_URL is required.");
   // Privilege changes must say where they happened: no silent "local" fallback.
-  if (!process.env.AKSH_ENVIRONMENT?.trim()) throw new Error("Set AKSH_ENVIRONMENT (production or simulation) in the env file you pass.");
+  const declared = process.env.AKSH_ENVIRONMENT?.trim().toLowerCase();
+  if (!declared || !(DEPLOYMENT_ENVIRONMENTS as readonly string[]).includes(declared)) {
+    throw new Error(`Set AKSH_ENVIRONMENT to one of ${DEPLOYMENT_ENVIRONMENTS.join(", ")} in the env file you pass (got "${declared ?? ""}").`);
+  }
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const env = getDeploymentEnvironment();
   try {

@@ -8,7 +8,10 @@ import { z } from "zod";
 export const isoDate = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a date")
-  .refine((d) => new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d, "Not a real date");
+  .refine((d) => {
+    const t = Date.parse(`${d}T00:00:00Z`);
+    return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
+  }, "Not a real date");
 /** Date-only values come from the user's own calendar: allow "today" anywhere on Earth (up to UTC+14). */
 export const notFuture = (d: string) => d <= new Date(Date.now() + 14 * 3_600_000).toISOString().slice(0, 10);
 const daysBetween = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / 86_400_000);

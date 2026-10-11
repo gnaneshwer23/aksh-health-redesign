@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 
 /** POST /api/platform/go-live/:orgId/return — return to the organisation with a reason. */
 export async function POST(request: Request, { params }: { params: { orgId: string } }) {
-  const actor = await requireActor();
-  if (actor instanceof NextResponse) return actor;
   try {
+    const actor = await requireActor();
+    if (actor instanceof NextResponse) return actor;
     const { note } = decisionSchema.parse(await request.json().catch(() => ({})));
     return NextResponse.json(await returnGoLive(actor.userId, params.orgId, note));
   } catch (error) {
