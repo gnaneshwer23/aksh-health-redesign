@@ -63,20 +63,22 @@ async function send(body: Record<string, unknown>) {
 /** Send anything saved while offline. clientRef makes each retry safe: the server ignores duplicates. */
 async function flushOutbox() {
   const queued = readStore<Record<string, unknown>>(OUTBOX);
-  if (!queued.length) return 0;
+  if (!queued.length) return { sent: 0, rejected: 0 };
   const left: Record<string, unknown>[] = [];
   let sent = 0;
+  let rejected = 0;
   for (const body of queued) {
     try {
       const r = await send(body);
       if (r.ok) sent++;
-      else if (r.status >= 500 || r.status === 429) left.push(body); // try again later; 4xx (invalid) is dropped
+      else if (r.status >= 500 || r.status === 429 || r.status === 401) left.push(body); // try again later
+      else rejected++; // the server refused it (e.g. older than 30 days): tell the patient, don't retry forever
     } catch {
       left.push(body);
     }
   }
   writeStore(OUTBOX, left);
-  return sent;
+  return { sent, rejected };
 }
 
 function display(r: Row, glucoseUnit: string | null) {
@@ -121,8 +123,12 @@ export function MyReadings({ fallbackEmergency }: { fallbackEmergency?: string |
   }, []);
 
   useEffect(() => {
-    void flushOutbox().then((n) => {
-      if (n) setMessage(`${n} reading${n === 1 ? "" : "s"} saved while offline ${n === 1 ? "was" : "were"} sent.`);
+    void flushOutbox().then(({ sent, rejected }) => {
+      const parts = [
+        sent ? `${sent} reading${sent === 1 ? "" : "s"} saved while offline ${sent === 1 ? "was" : "were"} sent.` : "",
+        rejected ? `${rejected} could not be added (for example, older than 30 days); tell your care team if they matter.` : "",
+      ].filter(Boolean);
+      if (parts.length) setMessage(parts.join(" "));
       void load();
     });
     setLegacy(readStore(LEGACY).length);

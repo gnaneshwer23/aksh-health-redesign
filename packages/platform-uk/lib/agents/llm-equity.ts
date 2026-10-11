@@ -4,6 +4,7 @@ import { isNeo4jConfigured } from "@/lib/neo4j";
 import { getMockIcsPopulationResponse } from "@/lib/neo4j/mock-fallback";
 import { fetchIcsPopulationFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jIcsPopulationResponse } from "@/lib/neo4j/types";
+import { aiConfigured, languageModel } from "../ai/model";
 
 export const EQUITY_MODEL = "openai/gpt-5.4-mini";
 
@@ -19,7 +20,7 @@ Rules:
 export function isLlmEquityConfigured() {
   if (process.env.ENABLE_LLM_EQUITY === "false") return false;
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 export type EquityDraft = {
@@ -124,7 +125,7 @@ export async function runEquityAgent(options?: {
 
   try {
     const result = await generateText({
-      model: EQUITY_MODEL,
+      model: languageModel(EQUITY_MODEL),
       system: EQUITY_SYSTEM,
       prompt: `Region: ${scoped.icsName}
 Data source: ${dataSource}

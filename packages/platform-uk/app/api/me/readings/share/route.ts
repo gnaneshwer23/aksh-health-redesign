@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 
 /** POST /api/me/readings/share — after linking, share readings recorded before joining with the care team. */
 export async function POST() {
-  const r = await requireContext();
-  if (r instanceof NextResponse) return r;
   try {
+    const r = await requireContext();
+    if (r instanceof NextResponse) return r;
     return NextResponse.json(await shareEarlierReadings(r.ctx));
   } catch (error) {
     return errorResponse(error, "/api/me/readings/share");

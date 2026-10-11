@@ -12,6 +12,7 @@ import {
   CHAT_UNAVAILABLE_MESSAGE,
 } from "@/lib/chat/knowledge";
 import { checkChatRateLimit, clientKeyFromRequest } from "@/lib/chat/rate-limit";
+import { aiConfigured, languageModel } from "@/lib/ai/model";
 
 export const maxDuration = 30;
 
@@ -19,9 +20,7 @@ const MAX_MESSAGES = 24;
 
 function isChatConfigured(): boolean {
   return (
-    Boolean(process.env.AI_GATEWAY_API_KEY) ||
-    Boolean(process.env.VERCEL_OIDC_TOKEN) ||
-    process.env.VERCEL === "1"
+    aiConfigured()
   );
 }
 
@@ -73,7 +72,7 @@ export async function POST(req: Request) {
 
   try {
     const result = streamText({
-      model: CHAT_MODEL,
+      model: languageModel(CHAT_MODEL),
       instructions: CHAT_SYSTEM_PROMPT,
       messages: await convertToModelMessages(messages),
       maxOutputTokens: 700,

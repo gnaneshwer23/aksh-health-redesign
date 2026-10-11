@@ -1,4 +1,5 @@
 import type { ReviewCase } from "./types";
+import { aiConfigured } from "./ai/model";
 
 export function isFastApiSynthesisEnabled() {
   return process.env.ENABLE_FASTAPI_SYNTHESIS === "true";
@@ -153,7 +154,7 @@ export function getIntegrationAdapterRegistry() {
 
 function isLlmSynthesisEnabled() {
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 function isLlmGuardianEnabled() {

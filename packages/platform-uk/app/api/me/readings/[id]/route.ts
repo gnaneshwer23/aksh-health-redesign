@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 
 /** PATCH /api/me/readings/:id { status: "entered_in_error" } — the patient withdraws an unchecked reading. */
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const r = await requireContext();
-  if (r instanceof NextResponse) return r;
   try {
+    const r = await requireContext();
+    if (r instanceof NextResponse) return r;
     z.object({ status: z.literal("entered_in_error") }).parse(await request.json().catch(() => ({})));
     return NextResponse.json(await markEnteredInError(r.ctx, params.id));
   } catch (error) {

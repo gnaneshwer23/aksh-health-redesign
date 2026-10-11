@@ -4,6 +4,7 @@ import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
+import { aiConfigured, languageModel } from "../ai/model";
 
 export const NEXUS_MODEL = "openai/gpt-5.4-mini";
 
@@ -19,7 +20,7 @@ Rules:
 export function isLlmNexusConfigured() {
   if (process.env.ENABLE_LLM_NEXUS === "false") return false;
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 export type NexusCorrelation = {
@@ -158,7 +159,7 @@ export async function runNexusAgent(options: { patientId: string }): Promise<Nex
 
   try {
     const result = await generateText({
-      model: NEXUS_MODEL,
+      model: languageModel(NEXUS_MODEL),
       system: NEXUS_SYSTEM,
       prompt: `Patient: ${patient.name} (${patientId})
 Data source: ${dataSource}

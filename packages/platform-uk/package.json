@@ -105,6 +105,7 @@
     "test:care-network-db": "npx tsx --env-file-if-exists=.env.local tests/care-network-db.test.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "4.0.15",
     "@ai-sdk/react": "^4.0.33",
     "@deepgram/sdk": "^5.5.0",
     "@hookform/resolvers": "^5.4.0",

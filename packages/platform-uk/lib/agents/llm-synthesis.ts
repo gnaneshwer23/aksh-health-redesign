@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 
 import { buildInputSummary, extractPatientLabel } from "@/lib/intake-generation";
+import { aiConfigured, languageModel } from "../ai/model";
 
 export const SYNTHESIS_MODEL = "openai/gpt-5.4-mini";
 
@@ -14,7 +15,7 @@ Rules:
 
 export function isLlmSynthesisConfigured() {
   if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return Boolean(process.env.AI_GATEWAY_API_KEY) || process.env.VERCEL === "1";
+  return aiConfigured();
 }
 
 export type SynthesisDraft = {
@@ -76,7 +77,7 @@ export async function runSynthesisAgent(options: {
 
   try {
     const result = await generateText({
-      model: SYNTHESIS_MODEL,
+      model: languageModel(SYNTHESIS_MODEL),
       system: SYNTHESIS_SYSTEM,
       prompt: `Patient label: ${patientLabel}\n\nTranscript:\n${transcript}`,
       temperature: 0.2,

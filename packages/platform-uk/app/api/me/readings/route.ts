@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 
 /** GET /api/me/readings — the patient's own readings and where they are (on their account, sent, checked). */
 export async function GET() {
-  const r = await requireContext();
-  if (r instanceof NextResponse) return r;
   try {
+    const r = await requireContext();
+    if (r instanceof NextResponse) return r;
     return NextResponse.json(await listOwnReadings(r.ctx));
   } catch (error) {
     return errorResponse(error, "/api/me/readings");
@@ -20,11 +20,11 @@ export async function GET() {
 
 /** POST /api/me/readings — record a reading. Idempotent on clientRef (safe to retry after going offline). */
 export async function POST(request: Request) {
-  const r = await requireContext();
-  if (r instanceof NextResponse) return r;
-  const limited = checkRateLimit(`readings:${r.actor.userId}`, 60, 60 * 60 * 1000);
-  if (!limited.success) return rateLimitResponse(limited, "Too many readings in an hour. Try again later.");
   try {
+    const r = await requireContext();
+    if (r instanceof NextResponse) return r;
+    const limited = checkRateLimit(`readings:${r.actor.userId}`, 60, 60 * 60 * 1000);
+    if (!limited.success) return rateLimitResponse(limited, "Too many readings in an hour. Try again later.");
     const input = readingInputSchema.parse(await request.json().catch(() => ({})));
     return NextResponse.json(await addReading(r.ctx, input), { status: 201 });
   } catch (error) {
