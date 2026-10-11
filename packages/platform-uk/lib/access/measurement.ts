@@ -39,14 +39,17 @@ export function compareRates(baseline: { filled: number; freed: number }, curren
 }
 
 /**
- * A slot counts as filled when the patient accepted before the offer expired and the booking was then verified on
- * read-back (which may happen after expiry, before the slot starts). Shared by both metrics.
+ * A slot counts as filled when the patient accepted before the offer expired and the booking was verified on read-back
+ * before the slot started. Outcomes set any other way (for example while resolving a hand-off) do not count.
  */
 export const FILLED_SQL = `w.outcome = 'booked' AND EXISTS (
   SELECT 1 FROM aksh.access_actions ra WHERE ra.workflow_id = w.id AND ra.action_type = 'record_response'
-    AND ra.result_code = 'ACCEPTED_PENDING_VERIFICATION' AND ra.created_at <= s.offer_expires_at)`;
+    AND ra.result_code = 'ACCEPTED_PENDING_VERIFICATION' AND ra.created_at <= s.offer_expires_at)
+  AND EXISTS (
+  SELECT 1 FROM aksh.access_actions va WHERE va.workflow_id = w.id AND va.action_type = 'confirm_booking'
+    AND va.result_code = 'BOOKED_VERIFIED' AND va.created_at <= s.starts_at)`;
 export const FILL_DEFINITION =
-  "Fill rate = slots where the patient accepted before the offer expired and the booking was verified on read-back ÷ slots received (withdrawn excluded).";
+  "Fill rate = slots where the patient accepted before the offer expired and the booking was verified on read-back before the slot started ÷ slots received (withdrawn excluded).";
 
 export async function getMeasurement(ctx: NetworkContext, orgId: string) {
   if (!ctx.orgIds.includes(orgId)) throw new NetworkError("Not a member of this organisation", 403);

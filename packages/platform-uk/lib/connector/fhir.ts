@@ -16,6 +16,7 @@ export type AppointmentFact =
   | { ok: false; ref: string | null; code: string; message: string };
 
 type Json = Record<string, unknown>;
+const own = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 const asArray = (v: unknown): Json[] => (Array.isArray(v) ? (v as Json[]) : []);
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 
@@ -30,13 +31,14 @@ export function resourcesOf(body: unknown, type: "Slot" | "Appointment" | "Obser
 
 /** Resolve their appointment code/text to our type: explicit mapping first, then our own codes or labels. */
 export function resolveType(candidates: string[], config: ConnectorConfig): string | null {
+  const map = config.typeMap ?? {};
   for (const c of candidates) {
-    const mapped = config.typeMap?.[c] ?? config.typeMap?.[c.toLowerCase()];
-    if (mapped && mapped in APPOINTMENT_TYPE_LABEL) return mapped;
+    const mapped = own(map, c) ? map[c] : own(map, c.toLowerCase()) ? map[c.toLowerCase()] : undefined;
+    if (mapped && own(APPOINTMENT_TYPE_LABEL, mapped)) return mapped;
   }
   for (const c of candidates) {
     const k = c.toLowerCase().replace(/[\s-]+/g, "_");
-    if (k in APPOINTMENT_TYPE_LABEL) return k;
+    if (own(APPOINTMENT_TYPE_LABEL, k)) return k;
     const byLabel = Object.entries(APPOINTMENT_TYPE_LABEL).find(([, label]) => label.toLowerCase() === c.toLowerCase());
     if (byLabel) return byLabel[0];
   }
@@ -46,7 +48,9 @@ export function resolveType(candidates: string[], config: ConnectorConfig): stri
 function codingCandidates(concepts: unknown): string[] {
   const out: string[] = [];
   for (const cc of Array.isArray(concepts) ? (concepts as Json[]) : concepts ? [concepts as Json] : []) {
+    if (!cc || typeof cc !== "object") continue;
     for (const c of asArray(cc.coding)) {
+      if (!c || typeof c !== "object") continue;
       if (str(c.code)) out.push(str(c.code)!);
       if (str(c.display)) out.push(str(c.display)!);
     }
@@ -57,7 +61,14 @@ function codingCandidates(concepts: unknown): string[] {
 
 /** Instants must carry an offset (Z or ±hh:mm): a bare local time means different moments on different servers. */
 const WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
-const instant = (v: unknown) => (typeof v === "string" && WITH_OFFSET.test(v) ? Date.parse(v) : NaN);
+/** Parse an instant only if it is a real calendar date and time (Date.parse would turn 30 February into 2 March). */
+const instant = (v: unknown) => {
+  if (typeof v !== "string" || !WITH_OFFSET.test(v)) return NaN;
+  const [y, mo, d, h, mi] = [v.slice(0, 4), v.slice(5, 7), v.slice(8, 10), v.slice(11, 13), v.slice(14, 16)].map(Number) as [number, number, number, number, number];
+  const probe = new Date(Date.UTC(y, mo - 1, d));
+  if (probe.getUTCFullYear() !== y || probe.getUTCMonth() !== mo - 1 || probe.getUTCDate() !== d || h > 23 || mi > 59) return NaN;
+  return Date.parse(v);
+};
 
 export const FHIR_SLOT_STATUSES = new Set(["free", "busy", "busy-unavailable", "busy-tentative", "entered-in-error"]);
 
@@ -67,7 +78,8 @@ export const FHIR_SLOT_STATUSES = new Set(["free", "busy", "busy-unavailable", "
  */
 export function slotVersion(meta: Json | undefined): number | null {
   const v = meta?.versionId;
-  if (v === undefined) return meta?.lastUpdated === undefined ? 1 : lastUpdatedVersion(meta.lastUpdated);
+  // A version is required: without one, a later "busy" update could never be told apart from the first report.
+  if (v === undefined) return meta?.lastUpdated === undefined ? null : lastUpdatedVersion(meta.lastUpdated);
   if (typeof v === "string" && /^\d{1,9}$/.test(v) && Number(v) >= 1) return Number(v);
   if (typeof v === "number" && Number.isInteger(v) && v >= 1 && v < 1e9) return v;
   return meta?.lastUpdated === undefined ? null : lastUpdatedVersion(meta.lastUpdated);
@@ -83,7 +95,7 @@ function slotTimes(ref: string, start: unknown, end: unknown, durationMin: unkno
   if (end !== undefined && Number.isNaN(instant(end))) return { error: { ok: false as const, ref, code: "INVALID_END", message: "end must be an ISO date-time with an offset (Z or +hh:mm)" } };
   const e = end !== undefined ? instant(end) : NaN;
   const minutes = typeof durationMin === "number" ? durationMin : Number.isNaN(e) ? NaN : Math.round((e - s) / 60_000);
-  if (!(minutes >= 5 && minutes <= 240)) return { error: { ok: false as const, ref, code: "INVALID_DURATION", message: "Slot must last 5–240 minutes" } };
+  if (!Number.isInteger(minutes) || !(minutes >= 5 && minutes <= 240)) return { error: { ok: false as const, ref, code: "INVALID_DURATION", message: "Slot must last a whole number of minutes, 5–240" } };
   if (s <= now) return { error: { ok: false as const, ref, code: "SLOT_STALE", message: "The slot has already started" } };
   const closeHours = Math.min(Math.max(config.offerCloseHours ?? 2, 0), 72);
   const expires = s - closeHours * 3_600_000;
@@ -97,7 +109,7 @@ export function slotFromFhir(r: Json, config: ConnectorConfig, now = Date.now())
   if (!ref) return { ok: false, ref: null, code: "MISSING_ID", message: "Slot.id is required" };
   if (!/^[A-Za-z0-9\-.]{1,64}$/.test(ref)) return { ok: false, ref, code: "INVALID_ID", message: "Slot.id must be a FHIR id" };
   const version = slotVersion(r.meta as Json | undefined);
-  if (version === null) return { ok: false, ref, code: "INVALID_VERSION", message: "meta.versionId must be an integer, or send meta.lastUpdated" };
+  if (version === null) return { ok: false, ref, code: (r.meta as Json | undefined)?.versionId === undefined && (r.meta as Json | undefined)?.lastUpdated === undefined ? "MISSING_VERSION" : "INVALID_VERSION", message: "Send meta.versionId (an integer that increases with each change) or meta.lastUpdated" };
   const status = str(r.status);
   if (!status) return { ok: false, ref, code: "MISSING_STATUS", message: "Slot.status is required" };
   if (!FHIR_SLOT_STATUSES.has(status)) return { ok: false, ref, code: "INVALID_STATUS", message: `Unknown Slot.status "${status.slice(0, 40)}"` };
@@ -114,7 +126,8 @@ export function slotFromJson(r: Json, config: ConnectorConfig, now = Date.now())
   if (!r || typeof r !== "object" || Array.isArray(r)) return { ok: false, ref: null, code: "INVALID_ITEM", message: "Each slot must be an object" };
   const ref = str(r.id);
   if (!ref || !/^[A-Za-z0-9\-._]{1,64}$/.test(ref)) return { ok: false, ref: ref ?? null, code: "INVALID_ID", message: "id is required (letters, digits, - . _)" };
-  const version = r.version === undefined ? 1 : r.version;
+  if (r.version === undefined) return { ok: false, ref, code: "MISSING_VERSION", message: "version is required: an integer that increases with each change to the slot" };
+  const version = r.version;
   if (!(typeof version === "number" && Number.isInteger(version) && version >= 1 && version < 1e9)) return { ok: false, ref, code: "INVALID_VERSION", message: "version must be a positive integer" };
   const status = str(r.status);
   if (status !== "free" && status !== "busy") return { ok: false, ref, code: status ? "INVALID_STATUS" : "MISSING_STATUS", message: 'status must be "free" or "busy"' };

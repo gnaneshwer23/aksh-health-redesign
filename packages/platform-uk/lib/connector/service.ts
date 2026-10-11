@@ -72,7 +72,8 @@ export async function listKeys(ctx: NetworkContext, orgId: string) {
 export async function updateKeyConfig(ctx: NetworkContext, orgId: string, keyId: string, config: z.infer<typeof connectorConfigSchema>) {
   requireAdmin(ctx, orgId);
   return withTenant(ctx, async (client) => {
-    const r = await client.query(`UPDATE aksh.connector_keys SET config = $3::jsonb WHERE id = $1 AND organisation_id = $2 AND revoked_at IS NULL RETURNING id, config`, [keyId, orgId, JSON.stringify(config)]);
+    // Merge: settings left out of the request are kept (send typeMap: {} to clear the mapping).
+    const r = await client.query(`UPDATE aksh.connector_keys SET config = config || $3::jsonb WHERE id = $1 AND organisation_id = $2 AND revoked_at IS NULL RETURNING id, config`, [keyId, orgId, JSON.stringify(config)]);
     if (!r.rows[0]) throw new NetworkError("Connection not found", 404);
     await audit(client, { organisationId: orgId, actorUserId: ctx.userId, action: "connector.key.updated", resourceType: "connector_key", resourceId: keyId });
     return r.rows[0];
@@ -209,13 +210,18 @@ async function handleAppointment(key: ConnectorKey, fact: AppointmentFact): Prom
       )).rows[0]
     );
     const samePatient = Boolean(selected?.record_ref) && fact.patientIdentifiers.includes(selected!.record_ref!);
-    const r = await applyAction(connectorContext(key), wf.workflow_id, {
-      action: "confirm_booking",
-      idempotencyKey: `connector:appointment:${fact.ref}:${slotRef}`,
-      confirmed: samePatient,
-      sourceReference: `Appointment/${fact.ref}`.slice(0, 120),
-    });
-    return { ref: fact.ref, result: samePatient ? (r.replay ? "REPLAY" : "BOOKED_VERIFIED") : "BOOKED_FOR_ANOTHER_PATIENT", workflowId: wf.workflow_id };
+    try {
+      const r = await applyAction(connectorContext(key), wf.workflow_id, {
+        action: "confirm_booking",
+        idempotencyKey: `connector:appointment:${fact.ref}:${slotRef}`,
+        confirmed: samePatient,
+        sourceReference: `Appointment/${fact.ref}`.slice(0, 120),
+      });
+      return { ref: fact.ref, result: samePatient ? (r.replay ? "REPLAY" : "BOOKED_VERIFIED") : "BOOKED_FOR_ANOTHER_PATIENT", workflowId: wf.workflow_id };
+    } catch (e) {
+      // A concurrent read-back may have closed it first: report this item, keep the batch going.
+      return { ref: fact.ref, result: codeOf(e), message: e instanceof Error ? e.message : undefined, workflowId: wf.workflow_id };
+    }
   }
   return fallback ?? { ref: fact.ref, result: "UNKNOWN_SLOT_IGNORED" };
 }

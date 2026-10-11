@@ -11,6 +11,7 @@ export type PatientBinding =
  */
 export async function resolvePatientBinding(
   userId: string,
+  email: string | null | undefined,
   identity: Record<string, unknown> | undefined,
   options: { consume: boolean }
 ): Promise<PatientBinding> {
@@ -18,7 +19,7 @@ export async function resolvePatientBinding(
   if (!code) return { status: "none" };
   const dateOfBirth = typeof identity?.dateOfBirth === "string" ? identity.dateOfBirth : "";
   try {
-    const linked = await acceptPatientInvite({ userId }, { code, dateOfBirth }, options);
+    const linked = await acceptPatientInvite({ userId, email }, { code, dateOfBirth }, options);
     return { status: "linked", patientId: linked.patientId, organisationId: linked.organisationId };
   } catch (error) {
     if (error instanceof NetworkError) return { status: "rejected" };

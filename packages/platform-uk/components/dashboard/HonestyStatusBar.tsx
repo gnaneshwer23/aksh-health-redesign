@@ -42,7 +42,11 @@ export function HonestyStatusBar({
     let cancelled = false;
     fetch("/api/orgs")
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((d: { rows?: OrgStatus[] }) => !cancelled && setOrgs(d.rows ?? []))
+      .then((d: { rows?: OrgStatus[] }) => {
+        if (cancelled) return;
+        setOrgsFailed(false);
+        setOrgs(d.rows ?? []);
+      })
       .catch(() => !cancelled && setOrgsFailed(true));
     return () => {
       cancelled = true;

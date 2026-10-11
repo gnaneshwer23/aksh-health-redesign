@@ -148,7 +148,8 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
     void load();
   }, [org.id, load]);
 
-  if (!s) return <p className="text-sm text-muted">Loading the checklist…</p>;
+  // Never show (or let anyone edit) one organisation's checklist under another's name.
+  if (!s || s.org.id !== org.id) return <p className="text-sm text-muted">Loading the checklist…</p>;
   const editable = org.isAdmin && (s.org.status === "sandbox" || s.org.status === "onboarding");
   const live = s.org.status === "live_read_only" || s.org.status === "live";
 
@@ -172,8 +173,10 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
               onClick={async () => {
                 const r = await fetch(`/api/orgs/${org.id}/go-live/request`, { method: "POST" });
                 const data = await r.json().catch(() => ({}));
-                if (r.ok && data.org?.id === current.current) { setS(data); onMessage("Go-live review requested"); onStatusChange(); }
-                else onMessage(data.error ?? "Could not request review");
+                if (r.ok) {
+                  onStatusChange(); // the request succeeded even if the user has since switched organisation
+                  if (data.org?.id === current.current) { setS(data); onMessage("Go-live review requested"); }
+                } else if (current.current === org.id) onMessage(data.error ?? "Could not request review");
               }}
             >
               Request go-live review

@@ -27,8 +27,10 @@ on the clauses marked **[JURISDICTION]**.
   care team, consent decisions, waiting-list entries, slot offers and responses.
 - **Patient-entered readings:** recorded by the patient; stored as patient-reported and unverified until a clinician
   checks them; never used in risk or care-gap calculations before that.
-- **Operational records:** audit events, go-live evidence, connector messages, error events (scrubbed of emails, numbers,
-  dates, identifiers and database key values before storage).
+- **Operational records:** audit events, go-live evidence, connector messages, error events. In error events the
+  text fields (message, stack, route) are scrubbed of emails, numbers, dates, identifiers and database key values; the
+  signed-in user's internal account ID is kept with browser error reports so a fault can be traced, and errors are
+  emailed to the founder's alert address.
 
 ## Where it is processed (sub-processors)
 
@@ -37,7 +39,7 @@ on the clauses marked **[JURISDICTION]**.
 | Neon (on AWS) | Production database | eu-west-2 (London) | Yes |
 | Vercel | Application hosting and serverless functions | `lhr1` (London), set in `vercel.json` (decided 2026-10-11; previously `iad1`, Washington DC) | Yes, in transit and in memory during requests |
 | Resend | Transactional email (invites, notifications, error alerts) | See Resend's data processing terms | Email addresses; error alerts contain scrubbed text only |
-| OpenAI (API, Aksh's own key; Vercel AI Gateway only if no key is set) | Website chat assistant (`/api/chat`), demo patient chat (`/api/chat/patient`), optional clinical drafting agents (off unless enabled) | OpenAI API region (USA by default; check OpenAI's data residency options) | Visitors and users may type health information; the demo chat's record context is synthetic only. Kept by founder decision 2026-10-11, see question 5. |
+| OpenAI (API, Aksh's own key; Vercel AI Gateway only if no key is set) | Website chat assistant (`/api/chat`), demo patient chat (`/api/chat/patient`), optional clinical drafting agents (off unless enabled) | OpenAI API region (USA by default; check OpenAI's data residency options) | Visitors and users may type health information. The named-patient demo chat also sends that (synthetic) patient's chart summary with the question. No organisation's patient record is sent today. Kept by founder decision 2026-10-11, see question 5. |
 
 Not used in production today (no credentials set): Medplum, Neo4j, Deepgram (speech), EMIS partner sandbox, Fitbit,
 FastAPI synthesis service, Sentry.
@@ -45,8 +47,11 @@ FastAPI synthesis service, Sentry.
 ## Security measures in place (for the agreement's security schedule)
 
 - Encryption in transit (TLS) to the application and to the database; encryption at rest by the database provider.
-- Row-level security in the database: every request runs as a restricted role scoped to the user's organisations and
-  linked patient record; policies fail closed.
+- Row-level security in the database: clinical and patient-record reads and writes run as a restricted role scoped to
+  the user's organisations and linked patient record; policies fail closed. Some service operations run with the
+  database owner's rights behind application checks: sign-up and sign-in, accepting invites and linking accounts,
+  creating organisations and sandboxes, go-live review and platform administration, connector key checks and
+  read-back matching, measurement summaries, and error logging. These are listed for the reviewer, not hidden.
 - Append-only records for consent, audit, go-live evidence, registration checks and connector messages (enforced by
   database triggers).
 - Passwords hashed (bcrypt); sessions expire after 24 hours; invite codes and connector API keys stored only as hashes.

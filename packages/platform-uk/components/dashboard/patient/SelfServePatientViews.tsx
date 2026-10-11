@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { HeartHandshake, Link2, MessageCircle } from "lucide-react";
 
@@ -32,6 +33,7 @@ function AshaCard() {
 }
 
 function LinkClinicForm() {
+  const { update: updateSession } = useSession();
   const [code, setCode] = useState("");
   const [dob, setDob] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,10 +44,16 @@ function LinkClinicForm() {
       onSubmit={async (e) => {
         e.preventDefault();
         setError(null);
-        const r = await fetch("/api/me/link", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, dateOfBirth: dob }) });
-        const d = await r.json().catch(() => ({}));
-        if (r.ok) window.location.reload();
-        else setError(d.error ?? "That code did not work. Check it, and your date of birth, with your clinic.");
+        try {
+          const r = await fetch("/api/me/link", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, dateOfBirth: dob }) });
+          const d = await r.json().catch(() => ({}));
+          if (!r.ok) return setError(d.error ?? "That code did not work. Check it, and your date of birth, with your clinic.");
+          // Refresh the session's binding so patient-scoped features see the link straight away.
+          await updateSession({ boundPatientId: d.patientId }).catch(() => undefined);
+          window.location.reload();
+        } catch {
+          setError("We couldn't reach Aksh. Check your connection and try again.");
+        }
       }}
     >
       <label className="text-sm"><span className="block text-xs text-muted">Invite code</span><Input className="h-10 w-48" value={code} onChange={(e) => setCode(e.target.value)} aria-label="Clinic invite code" required /></label>
