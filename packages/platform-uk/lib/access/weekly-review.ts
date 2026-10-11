@@ -30,7 +30,19 @@ export type WeeklyReview = {
     failedSafe: number; handedOff: number; stillOpen: number;
   };
   fill: { ratePct: number | null; ci95: [number, number] | null; baselinePct: number | null; previousWeekPct: number | null };
-  responses: { declined: number; noResponse: number };
+  responses: { declined: number; noResponse: number; unreachable: number; escalated: number };
+  /** PRD v1.1 §10.2 guardrails. A rate is null when there is nothing to divide by. */
+  guardrails: {
+    bookingChecks: number;
+    bookingIssues: number;
+    bookingIssuesPer100: number | null;
+    duplicateBookings: number;
+    handoffsAcknowledged: number;
+    handoffsAcknowledgedOnTimePct: number | null;
+    medianMinutesToAcknowledge: number | null;
+    optedOutCandidates: number;
+    optOutsRecorded: number;
+  };
   staff: { selections: number; tookTopRanked: number; choseOther: number; notRecorded: number; skips: number; skipReasons: { reason: string; count: number }[]; offersEdited: number; deferrals: number };
   timeliness: { medianMinutesToOffer: number | null; medianMinutesToVerifiedBooking: number | null; medianHoursBookedBeforeStart: number | null };
   handoffs: { created: number; urgent: number; soon: number; routine: number; closed: number; openOverdue: number; acknowledgedLate: number };
@@ -69,15 +81,18 @@ export function parseWeekStart(value: string | null | undefined, now: Date, time
 }
 
 /** Points the review meeting should discuss, most important first. Pure, for testing. */
-export function reviewPrompts(r: Pick<WeeklyReview, "funnel" | "fill" | "staff" | "handoffs" | "connector" | "dataGaps" | "week">): string[] {
+export function reviewPrompts(r: Pick<WeeklyReview, "funnel" | "fill" | "staff" | "handoffs" | "connector" | "dataGaps" | "week"> & Partial<Pick<WeeklyReview, "guardrails">>): string[] {
   const p: string[] = [];
   const f = r.funnel;
+  const g = r.guardrails;
+  if (g?.duplicateBookings) p.push(`${g.duplicateBookings} slot${g.duplicateBookings === 1 ? " was" : "s were"} confirmed as booked more than once. Investigate before the next week.`);
   if (f.failedSafe) p.push(`${f.failedSafe} booking${f.failedSafe === 1 ? " was" : "s were"} not found on read-back. Check each hand-off was resolved and the patient told.`);
   if (r.handoffs.openOverdue) p.push(`${r.handoffs.openOverdue} hand-off${r.handoffs.openOverdue === 1 ? " is" : "s are"} open past the due time.`);
   if (f.bookedOutsideMetric) p.push(`${f.bookedOutsideMetric} booking${f.bookedOutsideMetric === 1 ? "" : "s"} did not meet the fill definition (accepted after the offer expired, or verified after the slot started). Not counted.`);
   if (f.eligible === 0) p.push("No slots were received this week. Check the schedule connection or that staff are adding cancelled slots.");
   else if (f.noCandidates / f.eligible >= 0.25) p.push(`${f.noCandidates} of ${f.eligible} slots had no eligible patient. Review the waiting list for this appointment mix.`);
   if (f.expired) p.push(`${f.expired} slot${f.expired === 1 ? "" : "s"} expired before anyone was booked.`);
+  if (g && g.handoffsAcknowledgedOnTimePct !== null && g.handoffsAcknowledgedOnTimePct < 80) p.push(`Only ${g.handoffsAcknowledgedOnTimePct}% of hand-offs were acknowledged before their due time.`);
   if (r.staff.choseOther) p.push(`Staff chose someone other than the top-ranked patient ${r.staff.choseOther} time${r.staff.choseOther === 1 ? "" : "s"}. Talk through why: it is how the ranking gets better.`);
   if (r.staff.skips) p.push(`${r.staff.skips} candidate${r.staff.skips === 1 ? " was" : "s were"} skipped by staff. The reasons are listed below.`);
   const gap = r.dataGaps.missingFields[0];
@@ -144,6 +159,11 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
     const acts = (await client.query<Record<string, number>>(
       `SELECT count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'DECLINED')::int AS declined,
               count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'NO_RESPONSE')::int AS no_response,
+              count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'UNREACHABLE')::int AS unreachable,
+              count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'OPTED_OUT')::int AS opt_outs,
+              count(*) FILTER (WHERE action_type = 'record_response' AND result_code = 'ESCALATED')::int AS escalated,
+              count(*) FILTER (WHERE action_type = 'confirm_booking')::int AS booking_checks,
+              count(*) FILTER (WHERE action_type = 'confirm_booking' AND result_code = 'READ_BACK_NOT_CONFIRMED')::int AS booking_issues,
               count(*) FILTER (WHERE action_type = 'select')::int AS selections,
               count(*) FILTER (WHERE action_type = 'select' AND detail->>'topRanked' = 'true')::int AS top,
               count(*) FILTER (WHERE action_type = 'select' AND detail->>'topRanked' = 'false')::int AS other,
@@ -180,9 +200,21 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
               count(*) FILTER (WHERE priority = 'routine')::int AS routine,
               count(*) FILTER (WHERE closed_at IS NOT NULL)::int AS closed,
               count(*) FILTER (WHERE closed_at IS NULL AND due_at < $4)::int AS open_overdue,
-              count(*) FILTER (WHERE acknowledged_at > due_at)::int AS ack_late
+              count(*) FILTER (WHERE acknowledged_at > due_at)::int AS ack_late,
+              count(*) FILTER (WHERE acknowledged_at IS NOT NULL)::int AS acked,
+              count(*) FILTER (WHERE acknowledged_at IS NOT NULL AND acknowledged_at <= due_at)::int AS acked_on_time,
+              round(percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch FROM acknowledged_at - created_at) / 60) FILTER (WHERE acknowledged_at IS NOT NULL)::numeric)::float AS ack_minutes
        FROM aksh.handoff_tasks WHERE organisation_id = $1 AND created_at >= $2 AND created_at < $3`,
       [...P, now]
+    )).rows[0]!;
+
+    const integrity = (await client.query<{ duplicates: number; opted_out: number }>(
+      `SELECT (SELECT count(*)::int FROM (SELECT workflow_id FROM aksh.access_actions
+                 WHERE workflow_id IN (${workflowsInWeek}) AND action_type = 'confirm_booking' AND result_code = 'BOOKED_VERIFIED'
+                 GROUP BY workflow_id HAVING count(*) > 1) d) AS duplicates,
+              (SELECT count(DISTINCT c.waitlist_entry_id)::int FROM aksh.access_candidates c
+                 WHERE c.workflow_id IN (${workflowsInWeek}) AND 'OPTED_OUT' = ANY (c.exclusion_codes)) AS opted_out`,
+      P
     )).rows[0]!;
 
     const connector = (await client.query<{ result: string; count: number }>(
@@ -235,7 +267,18 @@ export async function getWeeklyReview(ctx: NetworkContext, orgId: string, week?:
         baselinePct: ev ? pct(ev.filledSlots, ev.freedSlots) : null,
         previousWeekPct: pct(prev.filled, prev.eligible),
       },
-      responses: { declined: acts.declined!, noResponse: acts.no_response! },
+      responses: { declined: acts.declined!, noResponse: acts.no_response!, unreachable: acts.unreachable!, escalated: acts.escalated! },
+      guardrails: {
+        bookingChecks: acts.booking_checks!,
+        bookingIssues: acts.booking_issues!,
+        bookingIssuesPer100: acts.booking_checks ? Math.round((acts.booking_issues! / acts.booking_checks) * 1000) / 10 : null,
+        duplicateBookings: integrity.duplicates,
+        handoffsAcknowledged: h.acked!,
+        handoffsAcknowledgedOnTimePct: h.acked ? Math.round((h.acked_on_time! / h.acked) * 1000) / 10 : null,
+        medianMinutesToAcknowledge: h.ack_minutes ?? null, // null when nothing was acknowledged
+        optedOutCandidates: integrity.opted_out,
+        optOutsRecorded: acts.opt_outs!,
+      },
       staff: {
         selections: acts.selections!, tookTopRanked: acts.top!, choseOther: acts.other!, notRecorded: acts.selections! - acts.top! - acts.other!,
         skips: acts.skips!, skipReasons, offersEdited: acts.edited!, deferrals: acts.deferrals!,

@@ -11,6 +11,11 @@ test.describe("Public site", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Clinical intelligence, under clinical control.");
     await expect(page.getByText("Aksh Intelligence Platform · first module: Aksh Diabetes")).toBeVisible();
     await expect(page.locator("#available-now")).toContainText("Cancelled-slot fill");
+    // PRD v1.1: two pillars on shared foundations, every item with its status.
+    const pillars = page.locator("[data-pillars]");
+    await expect(pillars).toContainText("Patient Access & Operations");
+    await expect(pillars).toContainText("Clinical Intelligence & Care Coordination");
+    await expect(pillars).toContainText("Platform foundations");
     const nav = page.locator("[data-site-nav]");
     for (const label of ["Platform", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/get-started");

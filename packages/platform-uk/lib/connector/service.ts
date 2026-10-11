@@ -6,6 +6,7 @@
  *   the patient staff selected; any other patient means the slot went elsewhere, and a person resolves it.
  * Every message is logged per item with a result code the sending system can act on.
  */
+import { getDeploymentEnvironment } from "@/lib/env/deployment";
 import { createHash, randomBytes } from "node:crypto";
 
 import { z } from "zod";
@@ -58,6 +59,17 @@ export async function createKey(ctx: NetworkContext, orgId: string, input: z.inf
   });
 }
 
+/**
+ * What a connection can do, declared explicitly (default deny). Aksh connections only receive facts from your
+ * systems (slots, bookings read back, device readings); nothing is booked, cancelled or written back.
+ */
+export const CONNECTOR_CAPABILITIES = { read: true, search: false, offer: false, book: false, amend: false, cancel: false, stage: false, write: false } as const;
+
+/** The connection's environment, from the deployment (never inferred from URLs). */
+export function adapterEnvironment(env: Record<string, string | undefined> = process.env): "production-read-only" | "sandbox" {
+  return getDeploymentEnvironment(env) === "production" ? "production-read-only" : "sandbox";
+}
+
 export async function listKeys(ctx: NetworkContext, orgId: string) {
   if (!ctx.orgIds.includes(orgId)) throw new NetworkError("Not a member of this organisation", 403);
   return withTenant(ctx, async (client) =>
@@ -65,7 +77,7 @@ export async function listKeys(ctx: NetworkContext, orgId: string) {
       `SELECT id, name, key_prefix AS "keyPrefix", config, created_at AS "createdAt", last_used_at AS "lastUsedAt", revoked_at AS "revokedAt"
        FROM aksh.connector_keys WHERE organisation_id = $1 ORDER BY revoked_at NULLS FIRST, created_at DESC`,
       [orgId]
-    )).rows
+    )).rows.map((r) => ({ ...r, environment: adapterEnvironment(), capabilities: CONNECTOR_CAPABILITIES }))
   );
 }
 
@@ -163,7 +175,7 @@ async function handleSlot(key: ConnectorKey, fact: SlotFact): Promise<ItemResult
         durationMin: fact.durationMin,
         offerExpiresAt: fact.offerExpiresAt,
       });
-      return { ref: fact.ref, result: r.replay ? "REPLAY" : "updated" in r && r.updated ? "UPDATED" : "ACCEPTED", workflowId: r.workflowId };
+      return { ref: fact.ref, result: "stale" in r && r.stale ? "STALE_VERSION_IGNORED" : r.replay ? "REPLAY" : "updated" in r && r.updated ? "UPDATED" : "ACCEPTED", workflowId: r.workflowId };
     } catch (e) {
       return { ref: fact.ref, result: codeOf(e), message: e instanceof Error ? e.message : undefined };
     }

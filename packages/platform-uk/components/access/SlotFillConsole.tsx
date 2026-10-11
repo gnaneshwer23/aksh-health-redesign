@@ -88,6 +88,9 @@ const RESULT_MESSAGE: Record<string, string> = {
   ACCEPTED_PENDING_VERIFICATION: "Accepted. Check your schedule to confirm the booking.",
   DECLINED: "Declined. The patient keeps their place on the list.",
   NO_RESPONSE: "No response recorded. The patient keeps their place on the list.",
+  UNREACHABLE: "Recorded as unreachable. The patient keeps their place on the list.",
+  OPTED_OUT: "Recorded: no more offers to this patient. They keep their places on the waiting list.",
+  ESCALATED: "Passed to a person: something in the contact needs a staff decision. It is in the hand-off list.",
   BOOKED_VERIFIED: "Booked and verified. The slot is filled.",
   READ_BACK_NOT_CONFIRMED: "Not found in your schedule. A hand-off has been created for a person to resolve.",
   SKIPPED: "Patient skipped. The reason is recorded.",
@@ -307,6 +310,9 @@ export function SlotFillConsole() {
                       <Button size="sm" disabled={busy} onClick={() => void act({ action: "record_response", response: "accepted" })}>They accepted</Button>
                       <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "record_response", response: "declined" })}>Declined</Button>
                       <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "record_response", response: "no_response" })}>No reply</Button>
+                      <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "record_response", response: "unreachable" })}>Couldn’t reach them</Button>
+                      <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "record_response", response: "escalated" })}>Needs a person</Button>
+                      <Button size="sm" variant="outline" disabled={busy} onClick={() => void act({ action: "record_response", response: "opted_out" })}>Asked to stop</Button>
                     </>
                   ) : null}
                   {wf.state === "PENDING_VERIFICATION" ? (

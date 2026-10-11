@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Pillars } from "@/components/site/Pillars";
 import { SiteShell } from "@/components/site/SiteShell";
 import { DIABETES_AREAS, HUMAN_GATES, PLATFORM_AGENTS, PLATFORM_LAYERS, PRODUCT_LOOP, STATUS_LABEL, type Status } from "@/components/site/vision";
 
@@ -20,10 +21,12 @@ export default function PlatformPage() {
           <span className="s-eyebrow">The Aksh Intelligence Platform</span>
           <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>One intelligence layer beside the EHR.</h1>
           <p className="s-lede">
-            Twelve agents under one supervisor, one audit trail and one consent model, with disease modules on top. Aksh
-            drafts and explains; a named clinician decides. Diabetes is the first module.
+            Patient access and clinical workflows connected through auditable AI orchestration: twelve agents under one
+            supervisor, one audit trail and one consent model, with disease modules on top. Aksh drafts and explains; a
+            named clinician decides. Diabetes is the first module.
           </p>
           <nav className="s-actions" aria-label="On this page">
+            <a href="#pillars" className="s-btn s-btn--ghost s-btn--sm">Pillars</a>
             <a href="#layers" className="s-btn s-btn--ghost s-btn--sm">Layers</a>
             <a href="#agents" className="s-btn s-btn--ghost s-btn--sm">Agents</a>
             <a href="#loop" className="s-btn s-btn--ghost s-btn--sm">The loop</a>
@@ -33,7 +36,18 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section" id="layers" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section" id="pillars" style={{ scrollMarginTop: 80 }}>
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Architecture</span>
+            <h2 className="s-h2">Patient access and clinical intelligence, one foundation.</h2>
+            <p className="s-lede">Two pillars share identity, consent, audit and integration. Administrative automation and clinical intelligence keep separate workflows and permissions.</p>
+          </div>
+          <Pillars />
+        </div>
+      </section>
+
+      <section className="s-section s-section--soft" id="layers" style={{ scrollMarginTop: 80 }}>
         <div className="s-container s-feature" style={{ alignItems: "start" }}>
           <div className="s-feature__copy">
             <span className="s-eyebrow">Architecture</span>
@@ -52,7 +66,7 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="agents" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section" id="agents" style={{ scrollMarginTop: 80 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">Platform agents</span>
@@ -72,7 +86,7 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section" id="loop" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section s-section--soft" id="loop" style={{ scrollMarginTop: 80 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">End-to-end loop</span>
@@ -89,7 +103,7 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section" id="diabetes" style={{ scrollMarginTop: 80 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">First module · Aksh Diabetes</span>

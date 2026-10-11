@@ -83,3 +83,47 @@ export const NON_OBJECTIVES: string[] = [
   "No clinical output without an explanation",
   "No real patient data without an explicit governed decision",
 ];
+
+/** Commercial Execution PRD v1.1: two pillars on shared foundations. */
+export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: string; items: { name: string; detail: string; status: Status }[] }[] = [
+  {
+    key: "access",
+    title: "Patient Access & Operations",
+    subtitle: "Access, scheduling and care navigation, staff-supervised",
+    items: [
+      { name: "Cancellation-slot fill", detail: "Freed slots matched to the waiting list; staff contact; booking verified on read-back", status: "production" },
+      { name: "Staff hand-off", detail: "Named queue, reason, due time; nothing disappears silently", status: "production" },
+      { name: "Outbound campaigns", detail: "Missed, lapsed and recall outreach under approved templates", status: "planned" },
+      { name: "Patient-access agent", detail: "Routine questions, scheduling and referral intake, with hand-off", status: "synthetic" },
+    ],
+  },
+  {
+    key: "clinical",
+    title: "Clinical Intelligence & Care Coordination",
+    subtitle: "Multi-agent clinical workflow with human oversight",
+    items: [
+      { name: "CGM and readings monitoring", detail: "Consensus metrics as a clinician worklist", status: "production" },
+      { name: "Capture, documentation and coding", detail: "CANVAS · VOICE · SYNTHESIS · Dr.Assist drafts", status: "synthetic" },
+      { name: "Safety, risk and coordination", detail: "GUARDIAN · HORIZON · NEXUS · PATHWAY drafts", status: "synthetic" },
+      { name: "Clinician review and approval", detail: "Accept · edit · reject, under one supervisor (CONDUCTOR)", status: "synthetic" },
+    ],
+  },
+];
+
+export const FOUNDATIONS: { name: string; detail: string; status: Status }[] = [
+  { name: "Identity and access", detail: "Roles, two-step sign-in, organisation isolation", status: "production" },
+  { name: "Data and integration", detail: "FHIR R4 connections, read only", status: "production" },
+  { name: "Knowledge layer", detail: "Guidelines, ontologies, graph", status: "synthetic" },
+  { name: "Observability and security", detail: "Monitoring, append-only audit", status: "production" },
+  { name: "Continuous learning", detail: "Governed evaluation; no automatic retraining", status: "synthetic" },
+];
+
+/** What the platform is for. Aims, measured against a locked baseline before any claim is made. */
+export const OUTCOMES: { name: string; detail: string }[] = [
+  { name: "Improved access", detail: "Fewer missed appointments" },
+  { name: "Efficient operations", detail: "Cancellations filled, less admin" },
+  { name: "Safer decisions", detail: "Medication safety, risk aware" },
+  { name: "Better coordination", detail: "Referrals, follow-up, handover" },
+  { name: "Population insight", detail: "Equity and demand planning" },
+  { name: "Measurable value", detail: "Baseline and verified lift" },
+];

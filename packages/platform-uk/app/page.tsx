@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Activity, CalendarClock, Check, Layers, LineChart, ShieldAlert, Smartphone } from "lucide-react";
 
 import { ReviewQueueMock, SlotFillMock } from "@/components/site/Mockups";
+import { Pillars } from "@/components/site/Pillars";
 import { SiteShell } from "@/components/site/SiteShell";
-import { DIABETES_AREAS, HUMAN_GATES, NON_OBJECTIVES, PLATFORM_LAYERS, PRODUCT_LOOP, STATUS_LABEL } from "@/components/site/vision";
+import { DIABETES_AREAS, HUMAN_GATES, NON_OBJECTIVES, PRODUCT_LOOP, STATUS_LABEL } from "@/components/site/vision";
 
 export const metadata: Metadata = {
   title: "Aksh Health | Clinical intelligence, under clinical control",
   description:
-    "The Aksh Intelligence Platform: one auditable, human-in-the-loop clinical intelligence layer beside your EHR. First module: Aksh Diabetes. A named clinician decides; the platform never decides alone.",
+    "Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded administrative automation and clinician-reviewed clinical intelligence. First module: Aksh Diabetes.",
 };
 
 function Status({ s }: { s: keyof typeof STATUS_LABEL }) {
@@ -19,22 +20,27 @@ function Status({ s }: { s: keyof typeof STATUS_LABEL }) {
 export default function HomePage() {
   return (
     <SiteShell>
-      <section className="s-hero">
-        <div className="s-container s-hero__grid">
-          <div className="s-hero__copy">
-            <span className="s-eyebrow">Aksh Intelligence Platform · first module: Aksh Diabetes</span>
-            <h1 className="s-h1">Clinical intelligence, under clinical control.</h1>
-            <p className="s-lede">
-              One auditable, human-in-the-loop intelligence layer beside your EHR. It turns notes, labs, medicines and what
-              patients report into explainable drafts. A named clinician decides; the platform never decides alone.
-            </p>
-            <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
+      <section className="s-hero-panel">
+        <div className="s-container">
+          <div className="s-hero-panel__card">
+            <div className="s-hero-panel__grid">
+              <div className="s-hero__copy">
+                <span className="s-pill-frost"><i aria-hidden>✦</i>Aksh Intelligence Platform · first module: Aksh Diabetes</span>
+                <h1 className="s-h1">Clinical intelligence, under clinical control.</h1>
+                <p className="s-lede">
+                  Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded
+                  administrative automation and clinician-reviewed clinical intelligence. A named clinician decides; the
+                  platform never decides alone.
+                </p>
+                <div className="s-actions">
+                  <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
+                  <Link href="/platform" className="s-btn s-btn--outline-light">Explore the platform</Link>
+                </div>
+                <p className="s-hero-panel__note">In production today: cancelled-slot fill, CGM monitoring and the patient app.</p>
+              </div>
+              <ReviewQueueMock />
             </div>
-            <p className="s-hero__note">In production today: cancelled-slot fill, CGM monitoring and the patient app.</p>
           </div>
-          <ReviewQueueMock />
         </div>
       </section>
 
@@ -82,23 +88,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft">
-        <div className="s-container s-feature" style={{ alignItems: "start" }}>
-          <div className="s-feature__copy">
+      <section className="s-section s-section--soft" id="platform">
+        <div className="s-container">
+          <div className="s-head">
             <span className="s-eyebrow">The Aksh Intelligence Platform</span>
-            <h2 className="s-h2">One platform. Disease modules plug in.</h2>
-            <p className="s-body">
-              Diabetes is the first module proving the pattern, not a lock-in. Clinician, patient and population views read
-              the same signal, and the whole stack sits beside the EHR, which stays the system of record.
+            <h2 className="s-h2">Two pillars on one safe foundation.</h2>
+            <p className="s-lede">
+              Patient access and clinical intelligence share identity, consent, audit and integration, so every capability
+              inherits the same safety boundary. Each item shows where it is today.
             </p>
-            <Link href="/platform" className="s-link">See the platform →</Link>
           </div>
-          <ol className="s-layers" aria-label="Platform layers, top to bottom">
-            {PLATFORM_LAYERS.map((l) => (
-              <li key={l.name} className="s-layer"><b>{l.name}</b><span>{l.detail}</span></li>
-            ))}
-            <li className="s-layer s-layer--ehr"><b>Your EHR</b><span>System of record. Aksh writes nothing without a separately governed go-live.</span></li>
-          </ol>
+          <Pillars />
+          <div style={{ marginTop: 24 }}><Link href="/platform" className="s-link">See the full platform →</Link></div>
         </div>
       </section>
 

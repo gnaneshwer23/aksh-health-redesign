@@ -10,7 +10,8 @@ import { APPOINTMENT_TYPE_LABEL } from "@/lib/access/eligibility";
 
 type Org = { id: string; isAdmin: boolean };
 type Config = { typeMap?: Record<string, string>; offerCloseHours?: number; site?: string };
-type Key = { id: string; name: string; keyPrefix: string; config: Config; createdAt: string; lastUsedAt: string | null; revokedAt: string | null };
+type Key = { id: string; name: string; keyPrefix: string; config: Config; createdAt: string; lastUsedAt: string | null; revokedAt: string | null; environment?: string; capabilities?: Record<string, boolean> };
+const ENV_LABEL: Record<string, string> = { "production-read-only": "Production · read only", sandbox: "Sandbox · read only" };
 type Event = { id: number; kind: string; format: string; externalRef: string | null; resultCode: string; detail: { message?: string }; receivedAt: string; keyName: string };
 
 const GOOD = new Set(["ACCEPTED", "UPDATED", "REPLAY", "WITHDRAWN", "BOOKED_VERIFIED", "ALREADY_CLOSED", "IGNORED_STATUS", "NO_ACTION", "AWAITING_BOOKING_READ_BACK"]);
@@ -124,6 +125,11 @@ export function ConnectionsTab({ org, onMessage }: { org: Org; onMessage: (m: st
                     <span>
                       <span className="block text-foreground">{k.name} <span className="font-mono text-xs text-muted">{k.keyPrefix}…</span></span>
                       <span className="block text-xs text-muted">Created {when(k.createdAt)} · last used {when(k.lastUsedAt)}{k.revokedAt ? ` · revoked ${when(k.revokedAt)}` : ""}</span>
+                      <span className="mt-1 flex flex-wrap gap-1" data-connection-capabilities>
+                        <Badge variant="outline">{ENV_LABEL[k.environment ?? ""] ?? k.environment ?? "Read only"}</Badge>
+                        <Badge variant="outline">Receives slots, bookings and readings</Badge>
+                        <Badge variant="outline">Never books, cancels or writes back</Badge>
+                      </span>
                     </span>
                     <span className="flex gap-1">
                       {k.revokedAt ? <Badge variant="outline">Revoked</Badge> : org.isAdmin ? (
