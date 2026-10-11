@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Building2, Mail, ShieldCheck } from "lucide-react";
+import { Building2, Mail } from "lucide-react";
 
 import { SiteShell } from "@/components/site/SiteShell";
 
@@ -11,8 +11,7 @@ export const metadata: Metadata = {
 
 const ROUTES = [
   { icon: Building2, title: "Bring Aksh to your clinic", body: "Tell us about your diabetes service and how cancellations work today. We will arrange a call with the right person.", href: "/get-started", cta: "Request access" },
-  { icon: ShieldCheck, title: "Security and data protection", body: "Data processing agreement, privacy impact assessment support, or a vulnerability report.", href: "mailto:security@akshhealth.com", cta: "security@akshhealth.com" },
-  { icon: Mail, title: "Everything else", body: "Partnerships, press and general questions. Existing customers can also reach support here.", href: "mailto:hello@akshhealth.com", cta: "hello@akshhealth.com" },
+  { icon: Mail, title: "Email us", body: "Security and data protection questions, a vulnerability report, partnerships or anything else.", href: "mailto:gnaneshwer.jadav@gmail.com", cta: "gnaneshwer.jadav@gmail.com" },
 ];
 
 export default function ContactPage() {
@@ -27,7 +26,7 @@ export default function ContactPage() {
       </section>
       <section className="s-section s-section--tight">
         <div className="s-container">
-          <div className="s-grid s-grid--3">
+          <div className="s-grid s-grid--2">
             {ROUTES.map(({ icon: Icon, title, body, href, cta }) => (
               <div key={title} className="s-card">
                 <span className="s-icon"><Icon /></span>

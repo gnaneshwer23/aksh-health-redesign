@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const COMPANY = "Aksh Health Ltd";
-const CONTACT_EMAIL = "legal@akshhealth.com";
+const CONTACT_EMAIL = "gnaneshwer.jadav@gmail.com";
 
 export default function TermsPage() {
   return (

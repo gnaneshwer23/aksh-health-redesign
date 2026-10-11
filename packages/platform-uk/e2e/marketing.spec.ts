@@ -73,11 +73,11 @@ test.describe("Public site", () => {
     await expect(page.getByText("Confirm at least one commitment.")).toBeVisible();
   });
 
-  test("contact page offers the three routes", async ({ page }) => {
+  test("contact page offers request access and email", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.locator("main").getByRole("link", { name: "Request access →" })).toHaveAttribute("href", "/get-started");
-    await expect(page.getByRole("link", { name: "security@akshhealth.com" })).toHaveAttribute("href", "mailto:security@akshhealth.com");
-    await expect(page.getByRole("link", { name: "hello@akshhealth.com" })).toHaveAttribute("href", "mailto:hello@akshhealth.com");
+    await expect(page.getByRole("link", { name: "gnaneshwer.jadav@gmail.com" })).toHaveAttribute("href", "mailto:gnaneshwer.jadav@gmail.com");
+    await expect(page.locator("body")).not.toContainText("@akshhealth.com");
   });
 
   test("every footer link resolves", async ({ page }) => {

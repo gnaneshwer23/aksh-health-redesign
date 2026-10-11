@@ -117,7 +117,7 @@ export default function SecurityPage() {
             ))}
             <div className="s-note">
               Reporting a vulnerability or need our security documentation for a procurement review? Email{" "}
-              <a className="s-link" href="mailto:security@akshhealth.com">security@akshhealth.com</a>.
+              <a className="s-link" href="mailto:gnaneshwer.jadav@gmail.com">gnaneshwer.jadav@gmail.com</a>.
             </div>
           </div>
         </div>
