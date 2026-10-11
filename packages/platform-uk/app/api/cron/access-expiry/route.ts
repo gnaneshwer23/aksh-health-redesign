@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { sweepExpiredSlots } from "@/lib/access/service";
+import { reportError } from "@/lib/observability/errors";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
   try {
     return NextResponse.json(await sweepExpiredSlots());
   } catch (error) {
-    console.error("[cron/access-expiry]", error instanceof Error ? error.message : error);
+    await reportError(error, { source: "cron", route: "/api/cron/access-expiry" });
     return NextResponse.json({ error: "Sweep failed" }, { status: 500 });
   }
 }

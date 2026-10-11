@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { isPostgresConfigured } from "@/lib/db/client";
+import { reportError } from "@/lib/observability/errors";
 
 import { loadNetworkContext } from "./context";
 import { NetworkError } from "./service";
@@ -25,9 +26,10 @@ export async function requireContext() {
   return { actor, ctx: await loadNetworkContext(actor.userId, actor.role) };
 }
 
-export function errorResponse(error: unknown) {
+/** Expected failures map to their status; anything else is a fault, recorded (scrubbed) and alerted before the 500. */
+export async function errorResponse(error: unknown, route?: string) {
   if (error instanceof NetworkError) return NextResponse.json({ error: error.message }, { status: error.status });
   if (error instanceof ZodError) return NextResponse.json({ error: "Invalid request", details: error.flatten() }, { status: 400 });
-  console.error("[network]", error instanceof Error ? error.message : error);
+  await reportError(error, { source: "server", route });
   return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
 }
