@@ -6,7 +6,11 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** PUT /api/orgs/:orgId/go-live/items/:key — submit (or resubmit) evidence for one checklist item. Admins only. */
-export async function PUT(request: Request, { params }: { params: { orgId: string; key: string } }) {
+export async function PUT(
+  request: Request,
+  props: { params: Promise<{ orgId: string; key: string }> }
+) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

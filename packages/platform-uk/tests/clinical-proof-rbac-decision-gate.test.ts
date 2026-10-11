@@ -41,7 +41,7 @@ async function run() {
   try {
     for (const role of ["patient", "researcher", "operations_lead", "some-unrecognized-role"]) {
       const response = await putReviewCase(buildDecisionRequest(role), {
-        params: { id: "case-does-not-matter" }
+        params: Promise.resolve({ id: "case-does-not-matter" })
       });
       assert.equal(
         response.status,
@@ -55,7 +55,7 @@ async function run() {
     // Sanity: a clinical_reviewer session hits the (unrelated) 404 case-lookup path, not the
     // 403 role gate — proves the gate is role-specific, not a blanket failure for every role.
     const clinicalResponse = await putReviewCase(buildDecisionRequest("gp"), {
-      params: { id: "case-does-not-matter" }
+      params: Promise.resolve({ id: "case-does-not-matter" })
     });
     assert.notEqual(
       clinicalResponse.status,

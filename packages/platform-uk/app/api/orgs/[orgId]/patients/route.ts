@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
  * POST /api/orgs/:orgId/patients — import up to 100 patients with history (idempotent on recordRef).
  * ?dryRun=1 validates up to 500 rows and reports per-row errors without writing.
  */
-export async function POST(request: Request, { params }: { params: { orgId: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {
@@ -26,7 +27,8 @@ export async function POST(request: Request, { params }: { params: { orgId: stri
 }
 
 /** GET /api/orgs/:orgId/patients?q= — operational list (identity and record number only) for any member. */
-export async function GET(request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

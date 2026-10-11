@@ -7,7 +7,7 @@ import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
 
-type RouteContext = { params: { id: string } };
+type RouteContext = { params: Promise<{ id: string }> };
 
 const VALID_CONTEXTS = new Set(["fasting", "post_prandial", "bedtime", "unspecified"]);
 
@@ -27,7 +27,7 @@ export async function POST(request: Request, context: RouteContext) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
 
-  const patientId = context.params.id?.trim();
+  const patientId = (await context.params).id?.trim();
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }

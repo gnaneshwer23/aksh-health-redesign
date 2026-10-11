@@ -7,7 +7,11 @@ import { recordRegistrationCheckAsPlatform, registrationCheckSchema } from "@/li
 export const dynamic = "force-dynamic";
 
 /** POST — an Aksh admin records a registration check (e.g. the organisation's only admin is the clinician). */
-export async function POST(request: Request, { params }: { params: { orgId: string; membershipId: string } }) {
+export async function POST(
+  request: Request,
+  props: { params: Promise<{ orgId: string; membershipId: string }> }
+) {
+  const params = await props.params;
   try {
     const actor = await requireActor();
     if (actor instanceof NextResponse) return actor;

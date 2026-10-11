@@ -6,7 +6,11 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** DELETE /api/orgs/:orgId/invites/:inviteId — revoke an unused invite. */
-export async function DELETE(_request: Request, { params }: { params: { orgId: string; inviteId: string } }) {
+export async function DELETE(
+  _request: Request,
+  props: { params: Promise<{ orgId: string; inviteId: string }> }
+) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

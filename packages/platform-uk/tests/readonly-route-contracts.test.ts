@@ -119,7 +119,7 @@ async function run() {
 
     const caseExport = await assertJsonAttachment(
       await getCaseEvidenceExport(buildRouteRequest(`/api/review-cases/${acceptedCase.id}/export`), {
-        params: { id: acceptedCase.id }
+        params: Promise.resolve({ id: acceptedCase.id })
       }),
       `${acceptedCase.id}-evidence.json`
     );
@@ -131,7 +131,7 @@ async function run() {
 
     const caseDossier = await assertJsonAttachment(
       await getCaseDossierExport(buildRouteRequest(`/api/review-cases/${acceptedCase.id}/dossier`), {
-        params: { id: acceptedCase.id }
+        params: Promise.resolve({ id: acceptedCase.id })
       }),
       `${acceptedCase.id}-validation-dossier.json`
     );
@@ -144,7 +144,7 @@ async function run() {
     assert.equal(caseDossier.reviewDecision.lastDecision, "accept");
 
     const missingCase = await getCaseEvidenceExport(buildRouteRequest("/api/review-cases/missing-case/export"), {
-      params: { id: "missing-case" }
+      params: Promise.resolve({ id: "missing-case" })
     });
     assert.equal(missingCase.status, 404, "Case export route should return 404 for missing persisted cases");
 

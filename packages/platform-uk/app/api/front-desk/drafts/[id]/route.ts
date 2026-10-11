@@ -14,7 +14,8 @@ const schema = z.object({ decision: z.enum(["accept", "reject"]), reason: z.stri
  * POST /api/front-desk/drafts/[id] — GP decision on patient-reported data (EC-CLIN-3).
  * Accept stages FHIR (BRIDGE rehearsal, liveEmis:false). Every decision is SHIELD-audited.
  */
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await getOptionalAuthenticatedUserScope(request);
   if (!auth) return NextResponse.json({ error: "Sign in as a GP to accept or reject patient-reported data." }, { status: 401 });
   const parsed = schema.safeParse(await request.json().catch(() => null));

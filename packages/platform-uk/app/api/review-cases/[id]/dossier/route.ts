@@ -5,7 +5,8 @@ import { readFeedbackEntriesForCase } from "../../../../../lib/feedback-reposito
 import { readReviewCaseById, readReviewCases } from "../../../../../lib/review-case-repository";
 import { requireAuthenticatedUserScope } from "../../../../../lib/user-scope";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
 

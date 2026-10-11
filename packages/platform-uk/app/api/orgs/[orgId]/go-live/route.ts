@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** GET /api/orgs/:orgId/go-live — checklist, automatic checks, readiness and history. */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

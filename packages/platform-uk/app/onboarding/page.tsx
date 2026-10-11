@@ -9,10 +9,11 @@ export const metadata: Metadata = {
 };
 
 type OnboardingPageProps = {
-  searchParams: { role?: string };
+  searchParams: Promise<{ role?: string }>;
 };
 
-export default function OnboardingPage({ searchParams }: OnboardingPageProps) {
+export default async function OnboardingPage(props: OnboardingPageProps) {
+  const searchParams = await props.searchParams;
   const mappedRole = searchParams.role
     ? SIGNUP_ROLE_MAP[searchParams.role] ?? searchParams.role
     : null;

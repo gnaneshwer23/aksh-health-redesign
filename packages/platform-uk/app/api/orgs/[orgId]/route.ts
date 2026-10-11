@@ -6,7 +6,8 @@ import { errorResponse, requireContext } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** GET /api/orgs/:orgId — organisation details for members. */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {
@@ -17,7 +18,8 @@ export async function GET(_request: Request, { params }: { params: { orgId: stri
 }
 
 /** PATCH /api/orgs/:orgId — name, region and locale (admins only; audited). */
-export async function PATCH(request: Request, { params }: { params: { orgId: string } }) {
+export async function PATCH(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

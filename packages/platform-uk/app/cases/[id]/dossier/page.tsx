@@ -12,13 +12,14 @@ function buildCaseQuery(demoMode: boolean, recordingMode: boolean) {
   return `${demoMode || recordingMode ? "?" : ""}${demoMode ? "demo=1" : ""}${demoMode && recordingMode ? "&" : ""}${recordingMode ? "recording=1" : ""}`;
 }
 
-export default async function CaseValidationDossierPage({
-  params,
-  searchParams
-}: {
-  params: { id: string };
-  searchParams?: { demo?: string; recording?: string };
-}) {
+export default async function CaseValidationDossierPage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams?: Promise<{ demo?: string; recording?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const scopeKey = await readUserScopeFromServerContext();
   const reviewCase = await readReviewCaseById(params.id, scopeKey);
   const allCases = await readReviewCases(scopeKey);

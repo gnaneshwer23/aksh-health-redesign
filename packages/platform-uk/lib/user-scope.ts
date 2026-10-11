@@ -89,13 +89,13 @@ export function applyUserScopeCookie(response: NextResponse, scopeKey: string) {
   });
 }
 
-export function readUserScopeFromServerCookies() {
-  const store = cookies();
+export async function readUserScopeFromServerCookies() {
+  const store = await cookies();
   return sanitizeScopeKey(store.get(userScopeCookieName)?.value) ?? "shared";
 }
 
 export async function readUserScopeFromServerContext() {
-  const store = cookies();
+  const store = await cookies();
   const cookieScope = sanitizeScopeKey(store.get(userScopeCookieName)?.value);
 
   if (cookieScope) {

@@ -6,7 +6,11 @@ import { errorResponse, requireActor } from "@/lib/network/http";
 export const dynamic = "force-dynamic";
 
 /** POST /api/platform/go-live/:orgId/items/:key — accept or reject submitted evidence. */
-export async function POST(request: Request, { params }: { params: { orgId: string; key: string } }) {
+export async function POST(
+  request: Request,
+  props: { params: Promise<{ orgId: string; key: string }> }
+) {
+  const params = await props.params;
   try {
     const actor = await requireActor();
     if (actor instanceof NextResponse) return actor;

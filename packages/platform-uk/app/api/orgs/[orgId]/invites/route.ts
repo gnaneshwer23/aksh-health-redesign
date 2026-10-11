@@ -7,7 +7,8 @@ import { createInvite, createInviteSchema } from "@/lib/network/service";
 export const dynamic = "force-dynamic";
 
 /** POST /api/orgs/:orgId/invites — single-use staff or patient invite. The code is returned once. */
-export async function POST(request: Request, { params }: { params: { orgId: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {
@@ -19,7 +20,8 @@ export async function POST(request: Request, { params }: { params: { orgId: stri
 }
 
 /** GET /api/orgs/:orgId/invites — pending invites (metadata only; codes are shown once at creation). */
-export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const r = await requireContext();
   if (r instanceof NextResponse) return r;
   try {

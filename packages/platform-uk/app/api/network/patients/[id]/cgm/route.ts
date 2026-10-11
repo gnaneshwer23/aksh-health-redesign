@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /** GET /api/network/patients/:id/cgm — latest 14 days: metrics, AGP, uploads. */
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;
@@ -20,7 +21,8 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 }
 
 /** POST — store a CGM export for this patient (re-parsed on the server; duplicates skipped). */
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const r = await requireContext();
     if (r instanceof NextResponse) return r;

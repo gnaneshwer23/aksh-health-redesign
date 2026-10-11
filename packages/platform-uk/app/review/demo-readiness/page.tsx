@@ -2,10 +2,11 @@ import { DemoReadinessChecklist } from "@/components/review/demo-readiness-check
 
 export const dynamic = "force-dynamic";
 
-export default function DemoReadinessPage({
-  searchParams
-}: {
-  searchParams?: { demo?: string; recording?: string };
-}) {
+export default async function DemoReadinessPage(
+  props: {
+    searchParams?: Promise<{ demo?: string; recording?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   return <DemoReadinessChecklist demoMode={searchParams?.demo === "1"} recordingMode={searchParams?.recording === "1"} />;
 }
