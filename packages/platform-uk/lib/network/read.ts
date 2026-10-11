@@ -90,7 +90,8 @@ async function loadFacts(client: PoolClient, where = "TRUE", params: unknown[] =
             EXISTS (SELECT 1 FROM aksh.network_medications m WHERE m.patient_id = p.id AND m.ended_on IS NULL AND m.drug_class ILIKE 'statin%') AS on_statin,
             EXISTS (SELECT 1 FROM aksh.patient_accounts a WHERE a.patient_id = p.id) AS app_user
      FROM aksh.network_patients p
-     LEFT JOIN aksh.organisations o ON o.id = p.organisation_id
+     -- Only the fields the caller may see: members see their organisation; a patient sees name and public locale.
+     LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
      WHERE ${where}`,
     params
   );

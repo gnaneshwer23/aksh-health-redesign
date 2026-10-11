@@ -31,23 +31,29 @@ type Agg = {
 export async function listMonitoring(ctx: NetworkContext) {
   if (!CLINICAL.has(ctx.role ?? "")) throw new NetworkError("Only clinicians use CGM monitoring", 403);
   return withTenant(ctx, async (client) => {
-    const rows = (await client.query<Agg>(
+    // Trusted readings only (clinic uploads, device feeds, reviewed patient uploads); unreviewed patient uploads are
+    // flagged for review instead of changing the worklist. Cadence comes from short gaps, so long gaps count as missing.
+    const rows = (await client.query<Agg & { median_gap: string | null }>(
       `WITH latest AS (
-         SELECT patient_id, max(at) AS last_at FROM aksh.cgm_readings WHERE at > NOW() - INTERVAL '30 days' GROUP BY patient_id
+         SELECT patient_id, max(at) AS last_at FROM aksh.cgm_trusted_readings WHERE at > NOW() - INTERVAL '30 days' GROUP BY patient_id
+       ), win AS (
+         SELECT r.patient_id, r.at, r.mmol, EXTRACT(EPOCH FROM r.at - lag(r.at) OVER (PARTITION BY r.patient_id ORDER BY r.at)) / 60 AS gap
+         FROM latest l JOIN aksh.cgm_trusted_readings r ON r.patient_id = l.patient_id AND r.at > l.last_at - INTERVAL '14 days' AND r.at <= l.last_at
        )
-       SELECT r.patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation,
-              count(*)::int AS n, min(r.at) AS first_at, l.last_at, avg(r.mmol) AS mean, stddev_samp(r.mmol) AS sd,
-              count(*) FILTER (WHERE r.mmol < 3.0)::int AS very_low,
-              count(*) FILTER (WHERE r.mmol >= 3.0 AND r.mmol < 3.9)::int AS low,
-              count(*) FILTER (WHERE r.mmol >= 3.9 AND r.mmol <= 10.0)::int AS in_range,
-              count(*) FILTER (WHERE r.mmol > 13.9)::int AS very_high,
-              (SELECT count(*)::int FROM aksh.network_observations x WHERE x.patient_id = r.patient_id AND x.kind LIKE 'cgm\\_%'
-                 AND x.source = 'patient_reported' AND NOT x.verified AND x.status = 'final') AS unchecked
-       FROM latest l
-       JOIN aksh.cgm_readings r ON r.patient_id = l.patient_id AND r.at > l.last_at - INTERVAL '14 days' AND r.at <= l.last_at
-       JOIN aksh.network_patients p ON p.id = r.patient_id
-       JOIN aksh.organisations o ON o.id = p.organisation_id
-       GROUP BY r.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`
+       SELECT w.patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation,
+              count(*)::int AS n, min(w.at) AS first_at, l.last_at, avg(w.mmol) AS mean, stddev_samp(w.mmol) AS sd,
+              percentile_cont(0.5) WITHIN GROUP (ORDER BY w.gap) FILTER (WHERE w.gap > 0 AND w.gap <= 20) AS median_gap,
+              count(*) FILTER (WHERE w.mmol < 3.0)::int AS very_low,
+              count(*) FILTER (WHERE w.mmol >= 3.0 AND w.mmol < 3.9)::int AS low,
+              count(*) FILTER (WHERE w.mmol >= 3.9 AND w.mmol <= 10.0)::int AS in_range,
+              count(*) FILTER (WHERE w.mmol > 13.9)::int AS very_high,
+              (SELECT count(*)::int FROM aksh.cgm_uploads u WHERE u.patient_id = w.patient_id AND u.uploader_kind = 'patient'
+                 AND NOT EXISTS (SELECT 1 FROM aksh.cgm_upload_reviews v WHERE v.upload_id = u.id)) AS unchecked
+       FROM win w
+       JOIN latest l ON l.patient_id = w.patient_id
+       JOIN aksh.network_patients p ON p.id = w.patient_id
+       LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
+       GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`
     )).rows;
     const now = Date.now();
     return rows
@@ -58,10 +64,10 @@ export async function listMonitoring(ctx: NetworkContext) {
         const inRange = pct(a.in_range);
         const veryHigh = pct(a.very_high);
         const span = (a.last_at.getTime() - a.first_at.getTime()) / 60_000;
-        const gap = a.n > 1 ? span / (a.n - 1) : 5;
-        const interval = gap <= 7 ? 5 : gap <= 20 ? 15 : Math.round(gap);
+        // Supported sensor cadences only (5 or 15 minutes); sparse data shows up as low wear, not a slow sensor.
+        const interval = a.median_gap !== null && Number(a.median_gap) > 7 ? 15 : 5;
         const wearPct = Math.min(100, (a.n / ((14 * 24 * 60) / interval)) * 100);
-        const days = Math.max(1, Math.round(span / 1440));
+        const days = Math.floor((span + interval) / 1440);
         const sufficient = days >= 14 && wearPct >= 70;
         const mean = Number(a.mean);
         const cvPct = a.sd ? (Number(a.sd) / mean) * 100 : 0;
@@ -73,7 +79,7 @@ export async function listMonitoring(ctx: NetworkContext) {
           patientId: a.patient_id,
           name: a.name,
           recordRef: a.record_ref,
-          organisation: a.organisation,
+          organisation: a.organisation ?? "Shared with you",
           lastAt: a.last_at.toISOString(),
           stale,
           pct: { veryLow: round1(veryLow), low: round1(low), inRange: round1(inRange), veryHigh: round1(veryHigh) },

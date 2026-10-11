@@ -21,7 +21,8 @@ export const cgmUploadSchema = z.object({
   filename: z.string().max(120).optional(),
 });
 
-const STAFF_ROLES = new Set(["gp", "nurse", "clinical-pharmacist", "practice-manager"]);
+// Individual CGM data is clinical: clinicians only (practice managers work the operational screens, not glucose traces).
+const STAFF_ROLES = new Set(["gp", "nurse", "clinical-pharmacist"]);
 const MAX_BYTES = 6 * 1024 * 1024;
 const BATCH = 5000;
 
@@ -29,7 +30,7 @@ type Who = { kind: "patient" | "staff"; patientId: string };
 
 async function resolve(ctx: NetworkContext, client: PoolClient, patientId: string): Promise<Who & { timeZone: string | null; glucoseUnit: string }> {
   const row = (await client.query<{ tz: string | null; unit: string | null }>(
-    `SELECT o.locale->>'timezone' AS tz, o.locale->>'glucoseUnit' AS unit FROM aksh.network_patients p JOIN aksh.organisations o ON o.id = p.organisation_id WHERE p.id = $1`,
+    `SELECT o.locale->>'timezone' AS tz, o.locale->>'glucoseUnit' AS unit FROM aksh.network_patients p LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE WHERE p.id = $1`,
     [patientId]
   )).rows[0];
   if (!row) throw new NetworkError("Patient not found", 404);
@@ -37,7 +38,7 @@ async function resolve(ctx: NetworkContext, client: PoolClient, patientId: strin
     if (!ctx.patientIds.includes(patientId)) throw new NetworkError("Patient not found", 404);
     return { kind: "patient", patientId, timeZone: row.tz, glucoseUnit: row.unit ?? "mmol/L" };
   }
-  if (!STAFF_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot manage CGM data", 403);
+  if (!STAFF_ROLES.has(ctx.role ?? "")) throw new NetworkError("Only clinicians can see or upload individual CGM data", 403);
   return { kind: "staff", patientId, timeZone: row.tz, glucoseUnit: row.unit ?? "mmol/L" };
 }
 
@@ -61,7 +62,7 @@ function summarise(parsed: ReturnType<typeof parseCgmExport>) {
 }
 
 export async function previewUpload(ctx: NetworkContext, patientId: string, text: string, dateOrder?: DateOrder) {
-  if (text.length > MAX_BYTES) throw new NetworkError("File too large (6 MB). Export a shorter period.", 413);
+  if (Buffer.byteLength(text, "utf8") > MAX_BYTES) throw new NetworkError("File too large (6 MB). Export a shorter period.", 413);
   return withTenant(ctx, async (client) => {
     const who = await resolve(ctx, client, patientId);
     if (!who.timeZone) throw new NetworkError("The clinic has not set its time zone (Organisation → Settings); CGM times can't be read without it.", 409);
@@ -87,7 +88,7 @@ const SUMMARY_KINDS: [string, (m: CgmMetrics) => number, string][] = [
 ];
 
 export async function commitUpload(ctx: NetworkContext, patientId: string, text: string, dateOrder: DateOrder | undefined, filename?: string) {
-  if (text.length > MAX_BYTES) throw new NetworkError("File too large (6 MB). Export a shorter period.", 413);
+  if (Buffer.byteLength(text, "utf8") > MAX_BYTES) throw new NetworkError("File too large (6 MB). Export a shorter period.", 413);
   return withTenant(ctx, async (client) => {
     const who = await resolve(ctx, client, patientId);
     if (!who.timeZone) throw new NetworkError("The clinic has not set its time zone (Organisation → Settings).", 409);
@@ -118,8 +119,12 @@ export async function commitUpload(ctx: NetworkContext, patientId: string, text:
 
 /** Recompute the latest-14-day metrics and, when the data are sufficient, write the summary observations once per batch. */
 export async function refreshSummaries(client: PoolClient, actorUserId: string | null, patientId: string, source: "patient_reported" | "device", batchRef: string) {
-  const latest = (await client.query<{ at: Date }>(`SELECT max(at) AS at FROM aksh.cgm_readings WHERE patient_id = $1`, [patientId])).rows[0]!.at;
-  const points = await loadPoints(client, patientId, new Date(latest.getTime() - 14 * 86_400_000), latest);
+  // Verified (device) summaries use only trusted readings: clinic uploads, device feeds, and patient uploads a clinician
+  // reviewed. A patient's own summary uses everything they sent and stays unverified.
+  const table = source === "device" ? "aksh.cgm_trusted_readings" : "aksh.cgm_readings";
+  const latest = (await client.query<{ at: Date | null }>(`SELECT max(at) AS at FROM ${table} WHERE patient_id = $1`, [patientId])).rows[0]!.at;
+  if (!latest) return { metrics: null, summarised: false };
+  const points = await loadPoints(client, patientId, new Date(latest.getTime() - 14 * 86_400_000), latest, table);
   const metrics = computeMetrics(points, 14, latest.getTime() + 1);
   if (!metrics?.sufficient) return { metrics, summarised: false };
   for (const [kind, value, unit] of SUMMARY_KINDS) {
@@ -134,9 +139,10 @@ export async function refreshSummaries(client: PoolClient, actorUserId: string |
   return { metrics, summarised: true };
 }
 
-async function loadPoints(client: PoolClient, patientId: string, from: Date, to: Date): Promise<CgmPoint[]> {
+async function loadPoints(client: PoolClient, patientId: string, from: Date, to: Date, table = "aksh.cgm_readings"): Promise<CgmPoint[]> {
+  // `table` is one of two fixed names, never input.
   return (await client.query<{ at: Date; mmol: string }>(
-    `SELECT at, mmol FROM aksh.cgm_readings WHERE patient_id = $1 AND at > $2 AND at <= $3 ORDER BY at`,
+    `SELECT at, mmol FROM ${table === "aksh.cgm_trusted_readings" ? "aksh.cgm_trusted_readings" : "aksh.cgm_readings"} WHERE patient_id = $1 AND at > $2 AND at <= $3 ORDER BY at`,
     [patientId, from, to]
   )).rows.map((r) => ({ at: r.at.toISOString(), mmol: Number(r.mmol) }));
 }
@@ -151,14 +157,15 @@ export async function getCgm(ctx: NetworkContext, patientId: string) {
        FROM aksh.cgm_uploads WHERE patient_id = $1 ORDER BY created_at DESC LIMIT 20`,
       [patientId]
     )).rows;
-    // Summaries from a patient's own export count clinically only after a clinician checks them.
-    const unchecked = who.kind === "staff"
-      ? (await client.query<{ id: string }>(
-          `SELECT id FROM aksh.network_observations WHERE patient_id = $1 AND kind LIKE 'cgm\_%' AND source = 'patient_reported' AND NOT verified AND status = 'final'`,
+    // A patient's own uploads count clinically only after a clinician reviews them.
+    const pendingPatientUploads = who.kind === "staff"
+      ? (await client.query<{ n: number }>(
+          `SELECT count(*)::int AS n FROM aksh.cgm_uploads u WHERE u.patient_id = $1 AND u.uploader_kind = 'patient'
+             AND NOT EXISTS (SELECT 1 FROM aksh.cgm_upload_reviews v WHERE v.upload_id = u.id)`,
           [patientId]
-        )).rows.map((r) => r.id)
-      : [];
-    if (!latest) return { patientId, timeZone: who.timeZone, glucoseUnit: who.glucoseUnit, latest: null, metrics: null, agp: [], uploads, stale: false, uncheckedSummaryIds: unchecked };
+        )).rows[0]!.n
+      : 0;
+    if (!latest) return { patientId, timeZone: who.timeZone, glucoseUnit: who.glucoseUnit, latest: null, metrics: null, agp: [], uploads, stale: false, pendingPatientUploads };
     const points = await loadPoints(client, patientId, new Date(latest.getTime() - 14 * 86_400_000), latest);
     return {
       patientId,
@@ -170,7 +177,33 @@ export async function getCgm(ctx: NetworkContext, patientId: string) {
       metrics: computeMetrics(points, 14, latest.getTime() + 1),
       agp: agp(points, who.timeZone ?? "UTC"),
       uploads,
-      uncheckedSummaryIds: unchecked,
+      pendingPatientUploads,
     };
+  });
+}
+
+/**
+ * A clinician reviews a patient's own CGM uploads: records the review (append-only), marks the patient's summary
+ * observations checked, and recomputes the verified summary now that the readings are trusted.
+ */
+export async function reviewPatientUploads(ctx: NetworkContext, patientId: string) {
+  return withTenant(ctx, async (client) => {
+    const who = await resolve(ctx, client, patientId);
+    if (who.kind !== "staff") throw new NetworkError("Only clinicians review CGM uploads", 403);
+    const reviewed = await client.query(
+      `INSERT INTO aksh.cgm_upload_reviews (upload_id, reviewed_by)
+       SELECT u.id, $2 FROM aksh.cgm_uploads u WHERE u.patient_id = $1 AND u.uploader_kind = 'patient'
+         AND NOT EXISTS (SELECT 1 FROM aksh.cgm_upload_reviews v WHERE v.upload_id = u.id)
+       RETURNING upload_id`,
+      [patientId, ctx.userId]
+    );
+    const verified = await client.query(
+      `UPDATE aksh.network_observations SET verified = TRUE, verified_by = $2, verified_at = NOW()
+       WHERE patient_id = $1 AND kind LIKE 'cgm\\_%' AND source = 'patient_reported' AND NOT verified AND status = 'final'`,
+      [patientId, ctx.userId]
+    );
+    const summary = reviewed.rowCount ? await refreshSummaries(client, ctx.userId, patientId, "device", `review-${Date.now()}`) : { summarised: false };
+    await audit(client, { actorUserId: ctx.userId, action: "cgm.reviewed", resourceType: "patient", resourceId: patientId, detail: { uploads: reviewed.rowCount, summaries: verified.rowCount } });
+    return { uploadsReviewed: reviewed.rowCount ?? 0, summariesChecked: verified.rowCount ?? 0, summarised: summary.summarised };
   });
 }

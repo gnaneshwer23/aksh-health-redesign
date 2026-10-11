@@ -92,6 +92,13 @@ export function zonedToInstant(l: Local, timeZone: string): Date | null {
   };
   let guess = asUtc - offsetAt(asUtc);
   guess = asUtc - offsetAt(guess);
+  // When clocks go back, one wall-clock hour happens twice: refuse to guess which (the caller reports the row).
+  for (const shift of [-3_600_000, 3_600_000]) {
+    const other = guess + shift;
+    if (asUtc - offsetAt(other) === other) return null;
+  }
+  // When clocks go forward, an hour never happens: the round trip does not land on the same wall time.
+  if (asUtc - offsetAt(guess) !== guess) return null;
   return new Date(guess);
 }
 
@@ -132,7 +139,8 @@ export function parseCgmExport(text: string, timeZone: string, chosenOrder?: Dat
     if (format === "libreview" && (r[recordType] ?? "").trim() !== "0") return; // 0 = historic; scans would double count
     const rawValue = (r[glucose] ?? "").trim();
     if (!rawValue) return;
-    const rowUnit = unit ?? (unitCol >= 0 ? unitFrom(norm(r[unitCol] ?? "")) : null);
+    // A unit in the glucose header applies to the whole file; otherwise each row's own unit column decides.
+    const rowUnit = headerUnit ?? (unitCol >= 0 ? unitFrom(norm(r[unitCol] ?? "")) : null);
     if (!rowUnit) {
       rejected.push({ line, reason: "No unit (mmol/L or mg/dL) in the header or a unit column" });
       return;
@@ -141,7 +149,7 @@ export function parseCgmExport(text: string, timeZone: string, chosenOrder?: Dat
     const local = parseTimestamp(r[ts] ?? "", dateOrder);
     const instant = local ? zonedToInstant(local, timeZone) : null;
     if (!instant) {
-      rejected.push({ line, reason: `Unreadable time "${(r[ts] ?? "").slice(0, 30)}"` });
+      rejected.push({ line, reason: local ? `Time "${(r[ts] ?? "").slice(0, 30)}" is not a real date, or falls in a clock-change hour` : `Unreadable time "${(r[ts] ?? "").slice(0, 30)}"` });
       return;
     }
     let mmol: number;

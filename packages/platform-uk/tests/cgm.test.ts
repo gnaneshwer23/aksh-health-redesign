@@ -8,14 +8,14 @@ import { randomUUID } from "node:crypto";
 
 import { agp, computeMetrics, samplingInterval } from "../lib/cgm/metrics";
 import { detectDateOrder, parseCgmExport, zonedToInstant } from "../lib/cgm/parse";
-import { commitUpload, getCgm, previewUpload } from "../lib/cgm/service";
+import { commitUpload, getCgm, previewUpload, reviewPatientUploads } from "../lib/cgm/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { assertSeedingAllowed } from "../lib/env/deployment";
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
 import { getPatientDetail } from "../lib/network/read";
-import { acceptPatientInvite, createInvite, createOrganisation, importPatients } from "../lib/network/service";
+import { acceptPatientInvite, acceptStaffInvite, createInvite, createOrganisation, importPatients } from "../lib/network/service";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -28,8 +28,8 @@ function dexcomFixture(days = 14) {
   ];
   // mg/dL cycle of 20 values: 1 very low (50), 1 low (65), 14 in range (120), 3 high (200), 1 very high (300)
   const cycle = [50, 65, ...Array(14).fill(120), 200, 200, 200, 300];
-  const end = new Date();
-  end.setUTCHours(0, 0, 0, 0);
+  // A fixed summer fortnight: no clock change inside it, whatever day the test runs.
+  const end = new Date(Date.UTC(2026, 5, 15));
   const start = new Date(end.getTime() - days * 86_400_000);
   let i = 0;
   for (let t = start.getTime(); t < end.getTime(); t += 5 * 60_000, i++) {
@@ -50,6 +50,11 @@ function pure() {
   assert.equal(zonedToInstant({ y: 2026, mo: 7, d: 15, h: 9, mi: 0, s: 0 }, "Europe/London")!.toISOString(), "2026-07-15T08:00:00.000Z");
   assert.equal(zonedToInstant({ y: 2026, mo: 7, d: 15, h: 9, mi: 0, s: 0 }, "Asia/Kolkata")!.toISOString(), "2026-07-15T03:30:00.000Z");
   assert.equal(zonedToInstant({ y: 2026, mo: 4, d: 31, h: 9, mi: 0, s: 0 }, "UTC"), null, "31 April is not a date");
+  assert.equal(zonedToInstant({ y: 2026, mo: 10, d: 25, h: 1, mi: 30, s: 0 }, "Europe/London"), null, "01:30 happens twice when clocks go back");
+  assert.equal(zonedToInstant({ y: 2026, mo: 3, d: 29, h: 1, mi: 30, s: 0 }, "Europe/London"), null, "01:30 never happens when clocks go forward");
+  assert.equal(zonedToInstant({ y: 2026, mo: 10, d: 25, h: 3, mi: 0, s: 0 }, "Europe/London")!.toISOString(), "2026-10-25T03:00:00.000Z");
+  const mixed = parseCgmExport("timestamp,glucose,unit\n2026-10-10T08:00:00Z,6.0,mmol/L\n2026-10-10T08:05:00Z,108,mg/dL", "UTC");
+  assert.deepEqual(mixed.rows.map((r) => r.mmol), [6, 6], "each row's unit column is read for that row");
   assert.equal(detectDateOrder(["13-10-2026 08:00", "01-10-2026 08:15"]), "dmy");
   assert.equal(detectDateOrder(["10/13/2026 8:00 AM"]), "mdy");
   assert.equal(detectDateOrder(["01-02-2026 08:00"]), "ambiguous");
@@ -150,7 +155,17 @@ async function db() {
   assert.ok(own.summarised);
   assert.equal((await getPatientDetail(staff, p2!.id))!.cgm, null, "patient-uploaded summary waits for a clinician");
   const staffView = await getCgm(staff, p2!.id);
-  assert.equal(staffView.uncheckedSummaryIds.length, 9);
+  assert.equal(staffView.pendingPatientUploads, 1);
+  // Practice managers do not see individual CGM data.
+  const mgrId = await mk("mgr");
+  await acceptStaffInvite({ userId: mgrId, email: `cm-${tag}@akshhealth.test`, displayName: "Manager", role: "practice-manager" }, { code: (await createInvite(staff, org.id, { kind: "staff", role: "practice-manager" })).code });
+  await assert.rejects(getCgm(await loadNetworkContext(mgrId, "practice-manager"), p2!.id), /Only clinicians/);
+  // The clinician reviews the patient's upload: now it counts, as verified data.
+  const review = await reviewPatientUploads(staff, p2!.id);
+  assert.equal(review.uploadsReviewed, 1);
+  assert.equal(review.summariesChecked, 9);
+  assert.ok((await getPatientDetail(staff, p2!.id))!.cgm, "reviewed patient upload now feeds the record");
+  assert.equal((await getCgm(staff, p2!.id)).pendingPatientUploads, 0);
   console.log("cgm: parsing, time zones, ambiguity, metrics, AGP, preview, idempotent upload, clinic vs patient provenance — PASS");
 }
 

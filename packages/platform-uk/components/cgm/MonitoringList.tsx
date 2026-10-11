@@ -47,11 +47,13 @@ export function MonitoringList() {
   const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
-    void fetch("/api/network/cgm/monitoring").then(async (r) => {
-      const d = await r.json().catch(() => ({}));
-      if (r.ok) setRows(d.rows);
-      else setError(d.error ?? "CGM monitoring is not available");
-    });
+    void fetch("/api/network/cgm/monitoring")
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (r.ok) setRows(d.rows);
+        else setError(d.error ?? "CGM monitoring is not available");
+      })
+      .catch(() => setError("We couldn't load CGM monitoring. Check your connection and reload."));
   }, []);
 
   return (
@@ -81,13 +83,13 @@ export function MonitoringList() {
                       {r.flags.length ? <span className="block text-xs text-red-800">{r.flags.join("; ")}</span> : null}
                     </span>
                     <span className="flex items-center gap-1">
-                      {r.uncheckedSummary ? <Badge variant="outline">Patient upload to check</Badge> : null}
+                      {r.uncheckedSummary ? <Badge variant="outline">Patient upload to review</Badge> : null}
                       <Badge variant={URGENCY[r.urgency]!.variant}>{URGENCY[r.urgency]!.label}</Badge>
                     </span>
                   </button>
                   {open === r.patientId ? (
                     <div className="pb-4">
-                      <CgmPanel base={`/api/network/patients/${r.patientId}/cgm`} audience="clinician" />
+                      <CgmPanel key={r.patientId} base={`/api/network/patients/${r.patientId}/cgm`} audience="clinician" />
                     </div>
                   ) : null}
                 </li>

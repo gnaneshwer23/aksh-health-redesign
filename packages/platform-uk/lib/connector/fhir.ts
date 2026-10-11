@@ -121,7 +121,7 @@ export function slotFromFhir(r: Json, config: ConnectorConfig, now = Date.now())
   return { ok: true, ref, version, free: true, appointmentType: type, ...t, site: config.site };
 }
 
-/** Plain JSON: { id, version?, status: "free"|"busy" (required), appointmentType, start, durationMin|end, site? }. */
+/** Plain JSON: { id, version (required, increases with each change), status: "free"|"busy" (required), appointmentType, start, durationMin|end, site? }. */
 export function slotFromJson(r: Json, config: ConnectorConfig, now = Date.now()): SlotFact {
   if (!r || typeof r !== "object" || Array.isArray(r)) return { ok: false, ref: null, code: "INVALID_ITEM", message: "Each slot must be an object" };
   const ref = str(r.id);
@@ -185,7 +185,7 @@ const FINAL = new Set(["final", "amended", "corrected"]);
 function isGlucose(code: Json | undefined) {
   if (!code) return false;
   if (typeof code.text === "string" && /glucose/i.test(code.text)) return true;
-  return asArray(code.coding).some((c) => GLUCOSE_LOINC.has(String(c.code ?? "")) || /glucose/i.test(String(c.display ?? "")));
+  return asArray(code.coding).some((c) => c && typeof c === "object" && (GLUCOSE_LOINC.has(String(c.code ?? "")) || /glucose/i.test(String(c.display ?? ""))));
 }
 
 /** A FHIR Observation carrying one glucose reading for a patient identified by the clinic's record number. */

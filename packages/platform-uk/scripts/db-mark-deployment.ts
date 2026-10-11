@@ -14,6 +14,11 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is required.");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
+    const current = (await pool.query<{ deployment: string }>("SELECT deployment FROM aksh.deployment_marker WHERE singleton")).rows[0]?.deployment;
+    // Downgrading production would let test tooling write to it: refuse unless explicitly forced.
+    if (current === "production" && value !== "production" && !process.argv.includes("--force")) {
+      throw new Error("This database is marked production. Re-marking it needs --force (and a very good reason).");
+    }
     await pool.query(
       `INSERT INTO aksh.deployment_marker (singleton, deployment) VALUES (TRUE, $1)
        ON CONFLICT (singleton) DO UPDATE SET deployment = EXCLUDED.deployment, marked_at = NOW()`,

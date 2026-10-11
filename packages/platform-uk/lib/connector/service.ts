@@ -277,7 +277,9 @@ export async function receiveObservations(key: ConnectorKey, body: unknown) {
       continue;
     }
     const ref = f.patientIdentifiers[0]!;
-    byRef.set(ref, [...(byRef.get(ref) ?? []), { at: f.at, mmol: f.mmol }]);
+    const list = byRef.get(ref);
+    if (list) list.push({ at: f.at, mmol: f.mmol });
+    else byRef.set(ref, [{ at: f.at, mmol: f.mmol }]);
   }
   const ctx = connectorContext(key);
   const patients: { ref: string; result: string; accepted?: number; duplicate?: number }[] = [];

@@ -12,7 +12,8 @@ export async function GET(request: Request) {
     if (r instanceof NextResponse) return r;
     const params = new URL(request.url).searchParams;
     const patient = params.get("patient")?.slice(0, 64) || undefined;
-    const offset = Number(params.get("offset") ?? 0) || 0;
+    const raw = params.get("offset") ?? "0";
+    const offset = /^\d{1,6}$/.test(raw) ? Number(raw) : 0; // non-negative integer only
     const rows = await listReadingsToReview(r.ctx, patient, offset);
     return NextResponse.json({ rows, nextOffset: rows.length === 200 ? offset + 200 : null });
   } catch (error) {

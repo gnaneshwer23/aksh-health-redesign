@@ -28,7 +28,7 @@ type View = {
   metrics: Metrics | null;
   agp: Hour[];
   uploads: { id: string; uploaderKind: string; format: string; filename: string | null; createdAt: string; firstAt: string; lastAt: string }[];
-  uncheckedSummaryIds?: string[];
+  pendingPatientUploads?: number;
 };
 type Preview = {
   ok: boolean;
@@ -241,14 +241,14 @@ export function CgmPanel({ base, audience }: { base: string; audience: "clinicia
       ) : (
         <p className="text-xs text-muted">No CGM data yet.</p>
       )}
-      {audience === "clinician" && view.uncheckedSummaryIds?.length ? (
+      {audience === "clinician" && view.pendingPatientUploads ? (
         <div className="flex flex-wrap items-center gap-2 rounded-lg bg-surface-muted p-2 text-xs" data-cgm-unchecked>
-          <span>Uploaded by the patient: the summary counts in the record once you check it.</span>
+          <span>{view.pendingPatientUploads} upload{view.pendingPatientUploads === 1 ? "" : "s"} by the patient: not used in the record or the worklist until you review {view.pendingPatientUploads === 1 ? "it" : "them"}.</span>
           <Button size="sm" variant="outline" onClick={async () => {
-            const r = await fetch("/api/network/readings/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids: view.uncheckedSummaryIds }) });
-            setMessage(r.ok ? "CGM summary marked as checked" : "Could not mark as checked");
+            const r = await fetch(`${base}/review`, { method: "POST" });
+            setMessage(r.ok ? "Patient's CGM data reviewed; it now counts" : "Could not record the review");
             await load();
-          }}>Mark CGM summary as checked</Button>
+          }}>Mark patient&apos;s CGM data as reviewed</Button>
         </div>
       ) : null}
       <Upload base={base} onDone={(msg) => { setMessage(msg); void load(); }} />
