@@ -561,6 +561,9 @@ function BaselinePanel({ orgs, refresh }: { orgs: Org[]; refresh: number }) {
           </div>
         ) : null}
         <ul className="m-0 list-disc space-y-0.5 pl-5 text-xs text-muted">{m.notes.map((n) => <li key={n}>{n}</li>)}</ul>
+        <a className="inline-block text-sm font-medium text-secondary underline-offset-2 hover:underline" href={`/dashboard/access/review?org=${encodeURIComponent(orgId)}`} data-weekly-review-link>
+          Weekly review and sign-off
+        </a>
       </CardContent>
     </Card>
   );
