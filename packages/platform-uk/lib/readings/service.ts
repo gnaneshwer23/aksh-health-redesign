@@ -174,6 +174,7 @@ export async function listReadingsToReview(ctx: NetworkContext, patientId?: stri
        JOIN aksh.network_patients p ON p.id = x.patient_id
        JOIN aksh.organisations o ON o.id = p.organisation_id
        WHERE x.source IN ('patient_reported', 'device') AND NOT x.verified AND x.status = 'final'
+         AND x.kind IN ('glucose', 'systolic_bp', 'diastolic_bp', 'weight') -- CGM summaries are checked on the CGM view
          AND x.observed_at > NOW() - INTERVAL '30 days' AND ($1::text IS NULL OR x.patient_id = $1)
        ORDER BY (x.flag IS NOT NULL) DESC, x.observed_at DESC LIMIT 300`,
       [patientId ?? null]

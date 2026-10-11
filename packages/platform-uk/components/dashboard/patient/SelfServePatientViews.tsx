@@ -7,6 +7,7 @@ import { HeartHandshake, Link2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { CgmPanel } from "@/components/cgm/CgmPanel";
 import { MyReadings } from "@/components/patient/MyReadings";
 
 function AshaCard() {
@@ -198,6 +199,11 @@ export function LinkedNetworkPatientView() {
       </Card>
       <AshaCard />
       <MyReadings fallbackEmergency={record.emergencyNumber} />
+      <Card className="shadow-sm">
+        <CardContent className="p-5">
+          <CgmPanel base="/api/me/cgm" audience="patient" />
+        </CardContent>
+      </Card>
     </div>
   );
 }
