@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { authenticate, receiveSlots } from "@/lib/connector/service";
+import { authenticate, receiveSlots, adapterEnvironment, CONNECTOR_CAPABILITIES } from "@/lib/connector/service";
 import { errorResponse } from "@/lib/network/http";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const limited = await checkRateLimit(`connector:${key.id}`, 120, 60_000);
     if (!limited.success) return rateLimitResponse(limited, "Too many requests for this connection. Slow down.");
     const body = await request.json().catch(() => null);
-    return NextResponse.json(await receiveSlots(key, body));
+    return NextResponse.json({ adapterEnvironment: adapterEnvironment(), capabilities: CONNECTOR_CAPABILITIES, ...(await receiveSlots(key, body)) });
   } catch (error) {
     return errorResponse(error, "/api/connect/v1/slots");
   }

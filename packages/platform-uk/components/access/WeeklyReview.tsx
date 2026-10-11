@@ -173,7 +173,7 @@ export function WeeklyReview({ initialOrgId, initialWeek }: { initialOrgId?: str
                   { k: "Not found on read-back", v: f.failedSafe },
                   { k: "Passed to a person (hand-off)", v: f.handedOff },
                 ]} />
-                <p className="mt-2 text-xs text-muted">Responses: {rep.responses.declined} declined, {rep.responses.noResponse} no response.</p>
+                <p className="mt-2 text-xs text-muted">Responses: {rep.responses.declined} declined, {rep.responses.noResponse} no response, {rep.responses.unreachable} unreachable, {rep.responses.escalated} escalated to a person.</p>
               </CardContent>
             </Card>
 
@@ -219,6 +219,24 @@ export function WeeklyReview({ initialOrgId, initialWeek }: { initialOrgId?: str
                   { k: "Open and overdue now", v: rep.handoffs.openOverdue },
                   { k: "Acknowledged after the due time", v: rep.handoffs.acknowledgedLate },
                 ]} />
+              </CardContent>
+            </Card>
+
+            <Card data-review-guardrails>
+              <CardHeader className="pb-2"><CardTitle className="text-base">Guardrails</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                <Rows empty="" rows={[
+                  { k: "Booking checks against the schedule", v: rep.guardrails.bookingChecks },
+                  { k: "Not found on read-back", v: rep.guardrails.bookingIssues },
+                  { k: "Slots confirmed as booked more than once", v: rep.guardrails.duplicateBookings },
+                  { k: "Hand-offs acknowledged", v: rep.guardrails.handoffsAcknowledged },
+                  { k: "Patients who asked to stop contact this week", v: rep.guardrails.optOutsRecorded },
+                  { k: "Candidates not offered: opted out of contact", v: rep.guardrails.optedOutCandidates },
+                ]} />
+                <p className="text-xs text-muted">
+                  Booking issues per 100 checks: {dash(rep.guardrails.bookingIssuesPer100)} · Hand-offs acknowledged on time: {dash(rep.guardrails.handoffsAcknowledgedOnTimePct, "%")} · Median time to acknowledge: {minutes(rep.guardrails.medianMinutesToAcknowledge)}.
+                  Complaints and staff handling time are recorded in your own processes during the pilot.
+                </p>
               </CardContent>
             </Card>
 

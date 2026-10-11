@@ -298,3 +298,40 @@
 .s-limits li { display: flex; gap: 10px; font-size: 15px; color: var(--s-ink-2); }
 .s-limits li::before { content: "×"; color: var(--s-red); font-weight: 700; }
 @media (max-width: 640px) { .s-limits { grid-template-columns: 1fr; } }
+
+/* Hero panel (spruce gradient, white type, frosted pill, floating product card) */
+.s-hero-panel { padding: 24px 0 72px; }
+.s-hero-panel__card { position: relative; overflow: hidden; border-radius: 32px; padding: 64px 56px; color: #fff;
+  background: radial-gradient(ellipse 70% 90% at 95% 10%, rgb(94 212 184 / 0.45), transparent 60%),
+              linear-gradient(135deg, #073b35 0%, #0b4a42 38%, #0a7a68 78%, #14907b 100%); }
+.s-hero-panel__card::after { content: ""; position: absolute; inset: auto -120px -160px auto; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgb(255 255 255 / 0.12), transparent 70%); pointer-events: none; }
+.s-hero-panel__grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); gap: 56px; align-items: center; }
+.s-hero-panel .s-h1 { color: #fff; }
+.s-hero-panel .s-lede { color: rgb(255 255 255 / 0.82); }
+.s-pill-frost { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 999px; background: rgb(255 255 255 / 0.12); border: 1px solid rgb(255 255 255 / 0.24); backdrop-filter: blur(6px); font-size: 13px; font-weight: 500; color: #fff; justify-self: start; }
+.s-pill-frost i { width: 22px; height: 22px; border-radius: 50%; background: #fff; color: var(--s-brand); display: grid; place-items: center; font-style: normal; font-size: 12px; }
+.s-hero-panel__note { font-size: 14px; color: rgb(255 255 255 / 0.7); }
+.s-hero-panel .s-frame { box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.45); border-color: rgb(255 255 255 / 0.4); }
+@media (max-width: 980px) { .s-hero-panel__grid { grid-template-columns: 1fr; gap: 40px; } .s-hero-panel__card { padding: 44px 28px; border-radius: 24px; } }
+@media (max-width: 640px) { .s-hero-panel { padding: 12px 0 48px; } .s-hero-panel__card { padding: 32px 20px; border-radius: 20px; } }
+
+/* Two pillars + foundations + outcomes */
+.s-pillars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.s-pillar { border-radius: 22px; padding: 28px; display: grid; gap: 16px; align-content: start; border: 1px solid var(--s-line); background: #fff; }
+.s-pillar--access { background: linear-gradient(180deg, #eef8f4, #fff 60%); border-color: #cfe8df; }
+.s-pillar--clinical { background: linear-gradient(180deg, #eef2fb, #fff 60%); border-color: #d6def2; }
+.s-pillar__head { display: grid; gap: 4px; }
+.s-pillar__items { display: grid; gap: 8px; }
+.s-pillar__item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #fff; border: 1px solid var(--s-line); }
+.s-pillar__item b { font-weight: 600; font-size: 15px; color: var(--s-ink); display: block; }
+.s-pillar__item small { font-size: 13px; color: var(--s-muted); }
+.s-foundations { margin-top: 20px; border-radius: 22px; padding: 24px 28px; background: #f6f4fc; border: 1px solid #e4def5; display: grid; gap: 14px; }
+.s-foundations__grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.s-foundations__grid > div { padding: 14px; border-radius: 12px; background: #fff; border: 1px solid #e9e4f7; display: grid; gap: 6px; align-content: start; }
+.s-outcomes { margin-top: 20px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.s-outcomes > div { padding: 14px; border-radius: 12px; border: 1px solid var(--s-line); background: var(--s-soft); display: grid; gap: 4px; }
+.s-outcomes b { font-size: 14px; color: var(--s-ink); }
+.s-outcomes span { font-size: 12.5px; color: var(--s-muted); }
+@media (max-width: 1100px) { .s-foundations__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .s-outcomes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 860px) { .s-pillars { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .s-foundations__grid, .s-outcomes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .s-pillar__item { flex-direction: column; align-items: flex-start; } }

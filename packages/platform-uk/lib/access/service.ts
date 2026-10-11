@@ -69,7 +69,7 @@ export const actionSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("skip"), idempotencyKey: z.string().min(8).max(120), candidateId: z.string().min(1).max(64), reason: z.string().min(2).max(200) }),
   z.object({ action: z.literal("handoff"), idempotencyKey: z.string().min(8).max(120), reason: z.string().min(2).max(200), priority: z.enum(["routine", "soon", "urgent"]).optional() }),
   z.object({ action: z.literal("approve_contact"), idempotencyKey: z.string().min(8).max(120) }),
-  z.object({ action: z.literal("record_response"), idempotencyKey: z.string().min(8).max(120), response: z.enum(["accepted", "declined", "no_response"]) }),
+  z.object({ action: z.literal("record_response"), idempotencyKey: z.string().min(8).max(120), response: z.enum(["accepted", "declined", "no_response", "unreachable", "escalated", "opted_out"]) }),
   z.object({
     action: z.literal("confirm_booking"),
     idempotencyKey: z.string().min(8).max(120),
@@ -93,6 +93,7 @@ export async function ingestSlot(ctx: NetworkContext, orgId: string, input: z.in
   const expires = new Date(input.offerExpiresAt).getTime();
   if (starts <= Date.now()) throw new NetworkError("SLOT_STALE: the slot has already started", 400);
   if (expires > starts) throw new NetworkError("OFFER_AFTER_START: offers must expire before the slot starts", 400);
+  if (expires <= Date.now()) throw new NetworkError("OFFER_WINDOW_CLOSED: the time to offer this slot has already passed", 400);
 
   return withTenant(ctx, async (client) => {
     const existing = await client.query<{ id: string; source_version: number; state: string }>(
@@ -103,7 +104,8 @@ export async function ingestSlot(ctx: NetworkContext, orgId: string, input: z.in
     if (existing.rows[0]) {
       const slot = existing.rows[0];
       const wf = await client.query<{ id: string; state: string }>(`SELECT id, state FROM aksh.access_workflows WHERE slot_id = $1`, [slot.id]);
-      if (input.sourceVersion <= slot.source_version) return { slotId: slot.id, workflowId: wf.rows[0]!.id, replay: true };
+      // Same version: a replay. Older version: arrived out of order; ignored, and said so.
+      if (input.sourceVersion <= slot.source_version) return { slotId: slot.id, workflowId: wf.rows[0]!.id, replay: true, stale: input.sourceVersion < slot.source_version };
       // Newer version of the same slot (time or type changed): only accepted while nobody holds an offer for it.
       if (slot.state !== "available") throw new NetworkError("SLOT_CHANGED_AFTER_OFFER: hand off to staff", 409);
       await client.query(
@@ -235,7 +237,7 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
         // Staff outcomes for this slot stick across re-matching: someone who declined or was skipped is not re-offered it.
         const sticky = new Map(
           (await client.query<{ waitlist_entry_id: string; codes: string[] }>(
-            `SELECT waitlist_entry_id, ARRAY(SELECT unnest(exclusion_codes) INTERSECT SELECT unnest(ARRAY['DECLINED', 'NO_RESPONSE', 'STAFF_SKIPPED'])) AS codes
+            `SELECT waitlist_entry_id, ARRAY(SELECT unnest(exclusion_codes) INTERSECT SELECT unnest(ARRAY['DECLINED', 'NO_RESPONSE', 'UNREACHABLE', 'STAFF_SKIPPED'])) AS codes
              FROM aksh.access_candidates WHERE workflow_id = $1`,
             [wf.id]
           )).rows.filter((r) => r.codes.length).map((r) => [r.waitlist_entry_id, r.codes])
@@ -333,16 +335,39 @@ export async function applyAction(ctx: NetworkContext, workflowId: string, input
           await record(client, ctx, wf, "record_response", key, "PENDING_VERIFICATION", "ACCEPTED_PENDING_VERIFICATION");
           return { action_type: "record_response", to_state: "PENDING_VERIFICATION", result_code: "ACCEPTED_PENDING_VERIFICATION", detail: {}, replay: false };
         }
-        // Declined or no response: the patient keeps their place; the slot goes back to review for the next candidate.
+        if (input.response === "escalated") {
+          // Something in the contact needs a person (a question, a concern, a complaint): hand the slot off; the
+          // patient's place is decided when the hand-off is closed.
+          await client.query(
+            `INSERT INTO aksh.handoff_tasks (organisation_id, workflow_id, reason, context, priority, due_at) VALUES ($1, $2, 'Escalated during contact', $3, 'soon', NOW() + INTERVAL '4 hours')`,
+            [wf.organisation_id, wf.id, `Slot ${slot.appointment_type} at ${slot.starts_at.toISOString()} · escalated by staff after contacting the patient`]
+          );
+          await client.query(`UPDATE aksh.access_workflows SET outcome = 'handed_off' WHERE id = $1`, [wf.id]);
+          await record(client, ctx, wf, "record_response", key, "HANDOFF", "ESCALATED");
+          return { action_type: "record_response", to_state: "HANDOFF", result_code: "ESCALATED", detail: {}, replay: false };
+        }
+        if (input.response === "opted_out") {
+          // The patient asked not to be contacted (for example replied STOP): every waiting-list entry they have with
+          // this organisation stops receiving offers. They keep their places; only contact stops.
+          await client.query(
+            `UPDATE aksh.waitlist_entries SET opted_out = TRUE
+             WHERE organisation_id = $1 AND patient_id = (SELECT patient_id FROM aksh.access_candidates WHERE id = $2)`,
+            [wf.organisation_id, cand.id]
+          );
+        }
+        // Declined, no response, unreachable or opted out: the patient keeps their place; the slot goes back to review
+        // for the next candidate, and this patient is not offered the same slot again.
+        const code =
+          input.response === "declined" ? "DECLINED" : input.response === "unreachable" ? "UNREACHABLE" : input.response === "opted_out" ? "OPTED_OUT" : "NO_RESPONSE";
         await client.query(`UPDATE aksh.waitlist_entries SET status = 'waiting' WHERE id = $1`, [cand.waitlist_entry_id]);
         await client.query(
           `UPDATE aksh.access_candidates SET rank = NULL, exclusion_codes = array_append(exclusion_codes, $2) WHERE id = $1`,
-          [cand.id, input.response === "declined" ? "DECLINED" : "NO_RESPONSE"]
+          [cand.id, code]
         );
         await client.query(`UPDATE aksh.access_slots SET state = 'available' WHERE id = $1`, [slot.id]);
         await client.query(`UPDATE aksh.access_workflows SET selected_candidate_id = NULL, offer_text = NULL WHERE id = $1`, [wf.id]);
-        await record(client, ctx, wf, "record_response", key, "STAFF_REVIEW", input.response === "declined" ? "DECLINED" : "NO_RESPONSE");
-        return { action_type: "record_response", to_state: "STAFF_REVIEW", result_code: input.response.toUpperCase(), detail: {}, replay: false };
+        await record(client, ctx, wf, "record_response", key, "STAFF_REVIEW", code);
+        return { action_type: "record_response", to_state: "STAFF_REVIEW", result_code: code, detail: {}, replay: false };
       }
       case "confirm_booking": {
         expectState(wf, ["PENDING_VERIFICATION"], "confirm a booking");
