@@ -237,3 +237,12 @@ export async function ensureAuthSchema() {
     await pool.query(sql);
   }
 }
+
+/** Merge keys into a profile's preferences (top level only), e.g. a patient link made after onboarding. */
+export async function mergeProfilePreferences(userId: string, patch: Record<string, unknown>) {
+  if (!isPostgresConfigured()) throw new Error("Database is not configured");
+  await getPgPool().query(
+    `UPDATE aksh.profiles SET preferences = COALESCE(preferences, '{}'::jsonb) || $2::jsonb, updated_at = NOW() WHERE user_id = $1`,
+    [userId, JSON.stringify(patch)]
+  );
+}

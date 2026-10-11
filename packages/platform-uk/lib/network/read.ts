@@ -65,8 +65,13 @@ type FactRow = {
   app_user: boolean;
 };
 
+/**
+ * Readings that count clinically: not entered in error, and patient-reported values only once a clinician verified
+ * them. Unverified patient readings are shown separately (review list), never folded into risk or care gaps.
+ */
+const COUNTS = `x.status = 'final' AND (x.source <> 'patient_reported' OR x.verified)`;
 const latestOf = (kind: string) =>
-  `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' ORDER BY observed_at DESC LIMIT 1)`;
+  `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC LIMIT 1)`;
 
 /** One row of derived facts per visible patient. `kind` values are fixed literals above, never user input. */
 async function loadFacts(client: PoolClient, where = "TRUE", params: unknown[] = []): Promise<FactRow[]> {
@@ -76,12 +81,12 @@ async function loadFacts(client: PoolClient, where = "TRUE", params: unknown[] =
             to_char(p.last_eye_screening, 'YYYY-MM-DD') AS last_eye_screening, p.next_appointment::text, p.contact,
             o.name AS org_name, o.kind AS org_kind, o.region, o.locale,
             (SELECT json_agg(json_build_object('value', value::float, 'observedAt', observed_at) ORDER BY observed_at)
-               FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = 'hba1c') AS hba1c,
+               FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = 'hba1c' AND ${COUNTS}) AS hba1c,
             ${latestOf("egfr")} AS egfr, ${latestOf("acr")} AS acr, ${latestOf("systolic_bp")} AS sbp,
             ${latestOf("diastolic_bp")} AS dbp, ${latestOf("bmi")} AS bmi, ${latestOf("ldl")} AS ldl,
             ${latestOf("cgm_time_in_range")} AS tir, ${latestOf("cgm_time_below_range")} AS tbr,
             (SELECT count(*)::int FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = 'hypo_event'
-               AND x.observed_at > NOW() - INTERVAL '90 days') AS hypos90,
+               AND x.observed_at > NOW() - INTERVAL '90 days' AND ${COUNTS}) AS hypos90,
             EXISTS (SELECT 1 FROM aksh.network_medications m WHERE m.patient_id = p.id AND m.ended_on IS NULL AND m.drug_class ILIKE 'statin%') AS on_statin,
             EXISTS (SELECT 1 FROM aksh.patient_accounts a WHERE a.patient_id = p.id) AS app_user
      FROM aksh.network_patients p

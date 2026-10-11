@@ -21,8 +21,9 @@ test.describe("Patient dashboard (self-serve)", () => {
     await expect(page.getByText("Your account is not linked to a clinic yet.")).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole("link", { name: "Open Asha" })).toHaveAttribute("href", "/asha");
     await page.getByLabel("Reading value").fill("6.4");
-    await page.getByRole("button", { name: "Add" }).click();
-    await expect(page.getByRole("list", { name: "Recent readings" })).toContainText("6.4");
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByRole("list", { name: "Recent readings" })).toContainText("6.4 mmol/L");
+    await expect(page.getByRole("list", { name: "Recent readings" })).toContainText("On your account");
     await expect(page.getByText(/James Patel/)).toHaveCount(0);
 
     const record = await request.get("/api/me/record");
