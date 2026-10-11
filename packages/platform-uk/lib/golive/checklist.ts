@@ -4,8 +4,13 @@
  */
 import { z } from "zod";
 
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a date");
-const notFuture = (d: string) => d <= new Date().toISOString().slice(0, 10);
+/** A real calendar date (2000-02-31 is rejected), as YYYY-MM-DD. */
+export const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a date")
+  .refine((d) => new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d, "Not a real date");
+/** Date-only values come from the user's own calendar: allow "today" anywhere on Earth (up to UTC+14). */
+export const notFuture = (d: string) => d <= new Date(Date.now() + 14 * 3_600_000).toISOString().slice(0, 10);
 const daysBetween = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / 86_400_000);
 
 export const EVIDENCE_ITEMS = {

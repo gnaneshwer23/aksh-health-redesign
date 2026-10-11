@@ -20,7 +20,7 @@ import {
 import { updateOrganisation } from "../lib/network/admin";
 import { loadNetworkContext } from "../lib/network/context";
 import { withTenant } from "../lib/network/db";
-import { recordRegistrationCheck, recordRegistrationCheckAsPlatform } from "../lib/network/registration";
+import { recordRegistrationCheck, recordRegistrationCheckAsPlatform, registrationCheckSchema } from "../lib/network/registration";
 import { acceptStaffInvite, createInvite, createOrganisation, importPatients, NetworkError } from "../lib/network/service";
 
 async function makeUser(label: string, role: string) {
@@ -114,6 +114,11 @@ async function run() {
   await rejects(listReviewQueue(gp.userId), 404, /Not found/);
   const queue = await listReviewQueue(reviewer.userId);
   assert.ok(queue.some((q) => q.id === org.id && q.status === "onboarding"));
+  await rejects(submitEvidence(gpCtx, org.id, "contact_channel", evidence.contact_channel), 409, /UNDER_REVIEW/);
+  await rejects(submitEvidence(gpCtx, org.id, "dpa", { ...(evidence.dpa as object), signedOn: "2026-02-31" }), 400, /real date/);
+  assert.equal(registrationCheckSchema.safeParse({ outcome: "verified", registry: "Nursing register", registrationNumber: "RN-2", checkedOn: "2026-02-30" }).success, false, "impossible dates are rejected");
+  const na = registrationCheckSchema.parse({ outcome: "not_applicable", registry: "left over", registrationNumber: "XX-1", checkedOn: today });
+  assert.equal(na.registry, undefined, "not applicable carries no register details");
   // A platform admin who is a member cannot review their own organisation.
   await getPgPool().query(`INSERT INTO aksh.platform_admins (user_id, granted_by) VALUES ($1, 'test')`, [manager.userId]);
   await rejects(getReview(manager.userId, org.id), 403, /CONFLICT_OF_INTEREST/);

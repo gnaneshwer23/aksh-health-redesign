@@ -5,7 +5,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const today = () => new Date().toISOString().slice(0, 10);
+/** The checker's own calendar date (not UTC). */
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
 /**
  * Record what the official register showed for this person. Used by organisation admins (Staff tab) and Aksh admins
@@ -23,7 +27,7 @@ export function RegistrationCheckForm({
   onDone: (message: string) => void;
 }) {
   const [f, setF] = useState({
-    outcome: licensed ? "verified" : "not_applicable",
+    outcome: "",
     registry: defaults?.registry ?? "",
     registrationNumber: defaults?.registrationNumber ?? "",
     checkedOn: today(),
@@ -40,7 +44,9 @@ export function RegistrationCheckForm({
       onSubmit={async (e) => {
         e.preventDefault();
         setError(null);
-        const body = Object.fromEntries(Object.entries(f).filter(([, v]) => v !== ""));
+        // A "not applicable" record carries no register details, even if the fields were filled before switching.
+        const drop = f.outcome === "not_applicable" ? new Set(["registry", "registrationNumber"]) : new Set<string>();
+        const body = Object.fromEntries(Object.entries(f).filter(([k, v]) => v !== "" && !drop.has(k)));
         const r = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
         const data = await r.json().catch(() => ({}));
         if (r.ok) onDone(f.outcome === "verified" ? "Registration recorded as checked" : f.outcome === "rejected" ? "Registration recorded as not matching" : "Recorded: no registration needed");
@@ -49,13 +55,14 @@ export function RegistrationCheckForm({
     >
       <label className="sm:col-span-2">
         <span className="text-muted">What did the register show?</span>
-        <select className={field} value={f.outcome} onChange={set("outcome")} aria-label="Check outcome">
+        <select className={field} value={f.outcome} onChange={set("outcome")} aria-label="Check outcome" required>
+          <option value="" disabled>Choose what you found</option>
           <option value="verified">Registered and in good standing</option>
           <option value="rejected">Not found or does not match</option>
           {licensed ? null : <option value="not_applicable">No registration needed for this role</option>}
         </select>
       </label>
-      {f.outcome !== "not_applicable" ? (
+      {f.outcome === "verified" || f.outcome === "rejected" ? (
         <>
           <label><span className="text-muted">Register checked</span><Input value={f.registry} onChange={set("registry")} aria-label="Register checked" placeholder="e.g. national medical register" /></label>
           <label><span className="text-muted">Registration number</span><Input value={f.registrationNumber} onChange={set("registrationNumber")} aria-label="Registration number" /></label>
@@ -64,7 +71,7 @@ export function RegistrationCheckForm({
       <label><span className="text-muted">Checked on</span><Input type="date" value={f.checkedOn} onChange={set("checkedOn")} aria-label="Checked on" max={today()} /></label>
       <label><span className="text-muted">Reference (link or search reference, optional)</span><Input value={f.evidenceRef} onChange={set("evidenceRef")} aria-label="Check reference" /></label>
       <label className="sm:col-span-2"><span className="text-muted">Note{f.outcome === "rejected" ? "" : " (optional)"}</span><Input value={f.note} onChange={set("note")} aria-label="Check note" /></label>
-      <div className="sm:col-span-2"><Button type="submit" size="sm">Record check</Button></div>
+      <div className="sm:col-span-2"><Button type="submit" size="sm" disabled={!f.outcome}>Record check</Button></div>
       {error ? <p className="text-sm text-red-700 sm:col-span-2" role="alert">{error}</p> : null}
     </form>
   );

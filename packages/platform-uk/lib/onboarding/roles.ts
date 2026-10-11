@@ -114,6 +114,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#001A3D",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/hospital",
+    alternateDashboardPaths: ["/dashboard/platform"],
     hasTutorial: true,
   },
   {
@@ -134,6 +135,7 @@ export const ROLES: RoleDefinition[] = [
     color: "#E67E22",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/researcher",
+    alternateDashboardPaths: ["/dashboard/platform"],
     hasTutorial: true,
   },
 ];

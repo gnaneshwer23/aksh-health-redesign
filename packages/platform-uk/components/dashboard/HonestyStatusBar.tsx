@@ -47,8 +47,10 @@ export function HonestyStatusBar({
       cancelled = true;
     };
   }, [realData, isPublicDemo]);
-  const liveOrg = orgs?.find((o) => o.status === "live_read_only" || o.status === "live");
-  const reviewOrg = orgs?.find((o) => o.status === "onboarding");
+  // Only speak for an organisation when the user belongs to exactly one; with several, the Organisation page shows each.
+  const only = orgs?.length === 1 ? orgs[0] : undefined;
+  const liveOrg = only && (only.status === "live_read_only" || only.status === "live") ? only : undefined;
+  const reviewOrg = only?.status === "onboarding" ? only : undefined;
 
   const neo4jLabel =
     neo4jLoading || neo4jSource === null || neo4jSource === "demo"
@@ -89,7 +91,9 @@ export function HonestyStatusBar({
         ) : liveOrg ? (
           <>
             <span data-testid="live-workspace-banner" className="font-medium text-foreground/80">
-              {liveOrg.name} is live in shadow mode — real records; Aksh drafts, your staff decide and act
+              {liveOrg.status === "live"
+                ? `${liveOrg.name} is live — real records`
+                : `${liveOrg.name} is live in shadow mode — real records; Aksh drafts, your staff decide and act`}
             </span>
           </>
         ) : reviewOrg ? (

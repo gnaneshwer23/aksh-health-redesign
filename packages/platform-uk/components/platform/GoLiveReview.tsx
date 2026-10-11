@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ACTION_LABEL, STATE_BADGE, evidenceSummary, type GoLiveSnapshot } from "@/components/organisation/GoLiveTab";
 import { RegistrationCheckForm } from "@/components/organisation/RegistrationCheckForm";
@@ -37,11 +37,22 @@ export function GoLiveReview() {
     if (!r.ok) return setDenied(true);
     setQueue((await r.json()).rows);
   }, []);
+  const latest = useRef<string | null>(null);
   const open = useCallback(async (id: string, keepMessage = false) => {
+    const switching = latest.current !== id;
+    latest.current = id;
     setSelected(id);
+    if (switching) {
+      // Never show one organisation's controls, or carry its notes, while another is selected.
+      setReview(null);
+      setNotes({});
+      setDecisionNote("");
+      setChecking(null);
+    }
     if (!keepMessage) setMessage(null);
     const r = await fetch(`/api/platform/go-live/${id}`);
     const data = await r.json().catch(() => ({}));
+    if (latest.current !== id) return; // a newer selection won
     if (r.ok) setReview(data);
     else {
       setReview(null);

@@ -7,7 +7,7 @@ import type { PoolClient } from "pg";
 import { z } from "zod";
 
 import { getDeploymentEnvironment } from "@/lib/env/deployment";
-import { audit, withPrivileged, withTenant, type NetworkContext } from "@/lib/network/db";
+import { audit, withPrivileged, type NetworkContext } from "@/lib/network/db";
 import { LICENSED_ROLES, NetworkError } from "@/lib/network/service";
 
 import { AUTO_ITEMS, EVIDENCE_ITEMS, deriveItems, readiness, type AutoCheck, type EvidenceKey, type GoLiveEvent } from "./checklist";
@@ -102,11 +102,16 @@ export async function submitEvidence(ctx: NetworkContext, orgId: string, key: st
   if (!parsed.success) throw new NetworkError(parsed.error.issues.map((i) => i.message).join("; "), 400);
   let evidence: Record<string, unknown> = parsed.data;
 
-  const current = await withPrivileged(async (client) => {
+  // Checks and insert in one transaction under the organisation lock: a review or approval cannot slip in between.
+  return withPrivileged(async (client) => {
+    await client.query(`SELECT 1 FROM aksh.organisations WHERE id = $1 FOR UPDATE`, [orgId]);
     const org = await loadOrg(client, orgId);
     if (!EDITABLE_STATUSES.has(org.status)) throw new NetworkError("This organisation is live. Contact Aksh to change go-live evidence.", 409);
     const item = deriveItems(await loadEvents(client, orgId)).find((i) => i.key === itemKey)!;
     if (item.locked) throw new NetworkError("BASELINE_LOCKED: the accepted baseline cannot be changed", 409);
+    if (org.status === "onboarding" && item.state !== "rejected") {
+      throw new NetworkError("UNDER_REVIEW: while Aksh reviews, only items returned for changes can be updated", 409);
+    }
     if (itemKey === "safety_lead") {
       const m = (await client.query<{ display_name: string; role: string; status: string; registration_status: string; registration_number: string | null; registration_body: string | null }>(
         `SELECT display_name, role, status, registration_status, registration_number, registration_body FROM aksh.memberships WHERE id = $1 AND organisation_id = $2`,
@@ -117,18 +122,14 @@ export async function submitEvidence(ctx: NetworkContext, orgId: string, key: st
       if (m.registration_status !== "verified") throw new NetworkError("Check this clinician's registration first (Staff tab)", 400);
       evidence = { ...evidence, displayName: m.display_name, role: m.role, registry: m.registration_body, registrationNumber: m.registration_number };
     }
-    return item;
-  });
-
-  await withTenant(ctx, async (client) => {
     await client.query(
       `INSERT INTO aksh.golive_events (organisation_id, item_key, action, evidence, actor_user_id, actor_kind, environment)
        VALUES ($1, $2, 'submitted', $3::jsonb, $4, 'org_admin', $5)`,
       [orgId, itemKey, JSON.stringify(evidence), ctx.userId, getDeploymentEnvironment()]
     );
-    await audit(client, { organisationId: orgId, actorUserId: ctx.userId, action: "golive.evidence.submitted", resourceType: "golive_item", resourceId: itemKey, detail: { previous: current.state } });
+    await audit(client, { organisationId: orgId, actorUserId: ctx.userId, action: "golive.evidence.submitted", resourceType: "golive_item", resourceId: itemKey, detail: { previous: item.state } });
+    return snapshot(client, orgId);
   });
-  return getGoLive(ctx, orgId);
 }
 
 export async function requestReview(ctx: NetworkContext, orgId: string) {

@@ -59,6 +59,7 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
   const nurseRow = admin.locator("[data-members] li", { hasText: "Nurse / educator" });
   await nurseRow.getByRole("button", { name: "Check registration" }).click();
   const check = nurseRow.locator("[data-registration-check]");
+  await check.getByLabel("Check outcome").selectOption("verified");
   await check.getByLabel("Register checked").fill("National nursing register");
   await check.getByLabel("Registration number").fill(`RN-${stamp}`);
   await check.getByLabel("Check reference").fill("Register search, screenshot on file");
@@ -84,6 +85,7 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
   const reviewerAccount = await createOnboardedTestUser(reviewerCtx.request, baseURL!, { role: "practice-manager", label: "golive-reviewer" });
   const db = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
   await db.query(`INSERT INTO aksh.platform_admins (user_id, granted_by) SELECT id, 'e2e' FROM aksh.users WHERE email = $1`, [reviewerAccount.email]);
+  try {
   const reviewer = await reviewerCtx.newPage();
   await applyApiCookiesToPage(reviewer, reviewerCtx.request);
   await reviewer.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
@@ -122,8 +124,11 @@ test("go-live: a clinic completes its checklist, Aksh reviews and approves, and 
   }
   await expect(admin.locator('[data-evidence-item="baseline"]')).toContainText("Accepted · locked");
 
-  await db.query(`DELETE FROM aksh.platform_admins WHERE granted_by = 'e2e'`);
-  await db.end();
-  await adminCtx.close();
-  await reviewerCtx.close();
+  } finally {
+    // Never leave a test account with reviewer rights, whatever happened above.
+    await db.query(`DELETE FROM aksh.platform_admins WHERE user_id = (SELECT id FROM aksh.users WHERE email = $1)`, [reviewerAccount.email]);
+    await db.end();
+    await adminCtx.close();
+    await reviewerCtx.close();
+  }
 });
