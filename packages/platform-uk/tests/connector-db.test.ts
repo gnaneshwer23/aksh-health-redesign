@@ -19,9 +19,10 @@ const inHours = (h: number) => new Date(Date.now() + h * 3_600_000).toISOString(
 function pure() {
   const free = slotFromFhir({ resourceType: "Slot", id: "s-1", status: "free", start: inHours(30), end: inHours(30.5), serviceType: [{ text: "Foot check" }] }, {});
   assert.ok(free.ok && free.free && free.appointmentType === "foot_check" && free.durationMin === 30);
-  const mapped = slotFromFhir({ resourceType: "Slot", id: "s-2", meta: { versionId: "3" }, status: "free", start: inHours(30), end: inHours(30.25), appointmentType: { coding: [{ code: "FC01" }] } }, { typeMap: { FC01: "hba1c_check" }, offerCloseHours: 6 });
+  const start = inHours(30);
+  const mapped = slotFromFhir({ resourceType: "Slot", id: "s-2", meta: { versionId: "3" }, status: "free", start, end: inHours(30.25), appointmentType: { coding: [{ code: "FC01" }] } }, { typeMap: { FC01: "hba1c_check" }, offerCloseHours: 6 });
   assert.ok(mapped.ok && mapped.free && mapped.appointmentType === "hba1c_check" && mapped.version === 3);
-  assert.equal(Date.parse(inHours(30)) - Date.parse((mapped as { offerExpiresAt: string }).offerExpiresAt), 6 * 3_600_000);
+  assert.equal(Date.parse(start) - Date.parse((mapped as { offerExpiresAt: string }).offerExpiresAt), 6 * 3_600_000);
   const unknown = slotFromFhir({ resourceType: "Slot", id: "s-3", status: "free", start: inHours(30), end: inHours(31), serviceType: [{ text: "Dental" }] }, {});
   assert.ok(!unknown.ok && unknown.code === "UNKNOWN_APPOINTMENT_TYPE");
   const past = slotFromFhir({ resourceType: "Slot", id: "s-4", status: "free", start: inHours(-1), end: inHours(-0.5), serviceType: [{ text: "foot check" }] }, {});

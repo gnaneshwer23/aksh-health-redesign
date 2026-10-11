@@ -141,6 +141,22 @@ async function run() {
   const actions = s.events.map((e) => e.action);
   for (const a of ["submitted", "rejected", "accepted", "requested", "returned", "approved"]) assert.ok(actions.includes(a as never), `history records ${a}`);
   await assert.rejects(getPgPool().query(`DELETE FROM aksh.golive_events WHERE organisation_id = $1`, [org.id]), /append-only/);
+  // 027: the database itself refuses tenant evidence once live.
+  await assert.rejects(
+    withTenant(gpCtx, (c) => c.query(`INSERT INTO aksh.golive_events (organisation_id, item_key, action, evidence, actor_user_id, actor_kind, environment) VALUES ($1, 'dpa', 'submitted', '{}'::jsonb, $2, 'org_admin', 'test')`, [org.id, gp.userId])),
+    /GOLIVE_CLOSED/
+  );
+  // Only an explicit purge (test-data cleanup) may remove append-only history.
+  const purge = await getPgPool().connect();
+  try {
+    await purge.query("BEGIN");
+    await purge.query("SET LOCAL aksh.purge_test_data = 'on'");
+    const removed = await purge.query(`DELETE FROM aksh.registration_checks WHERE organisation_id = $1`, [org.id]);
+    assert.ok((removed.rowCount ?? 0) > 0, "purge removes history");
+    await purge.query("ROLLBACK");
+  } finally {
+    purge.release();
+  }
 
   // Platform admin can check a registration when no one else in the organisation can.
   const solo = await makeUser("solo", "gp");

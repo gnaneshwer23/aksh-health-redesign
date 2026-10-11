@@ -14,6 +14,7 @@ import path from "node:path";
 import pg from "pg";
 
 import { E2E_EMAIL_DOMAIN, E2E_SOURCE } from "../lib/e2e/types";
+import { assertSeedingAllowed } from "../lib/env/deployment";
 
 const DEMO_COHORT_EMAIL_DOMAIN = "demo.akshhealth.com"; // safety reference — never deleted
 
@@ -67,12 +68,27 @@ async function cleanupBatch(pool: pg.Pool, batchId: string) {
     `DELETE FROM aksh.patient_state_facts WHERE source_system = $1 AND source_reference LIKE $2`,
     [E2E_SOURCE, `${batchId}:%`]
   );
-  const users = await pool.query(
-    `DELETE FROM aksh.users
-     WHERE email ILIKE $1
-       AND (preferences->>'e2eBatch' = $2 OR id LIKE 'usr_e2e_%')`,
-    [`%@${E2E_EMAIL_DOMAIN}`, batchId]
-  );
+  // Test accounts may carry append-only history (registration checks, go-live events); the purge flag lets the
+  // cascade remove it, in this transaction only. Never in production.
+  assertSeedingAllowed("cleanup-e2e");
+  const client = await pool.connect();
+  let users: pg.QueryResult;
+  try {
+    await client.query("BEGIN");
+    await client.query("SET LOCAL aksh.purge_test_data = 'on'");
+    users = await client.query(
+      `DELETE FROM aksh.users
+       WHERE email ILIKE $1
+         AND (preferences->>'e2eBatch' = $2 OR id LIKE 'usr_e2e_%')`,
+      [`%@${E2E_EMAIL_DOMAIN}`, batchId]
+    );
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
   await pool.query(
     `UPDATE aksh.e2e_batches SET cleaned_up_at = NOW() WHERE batch_id = $1`,
     [batchId]
