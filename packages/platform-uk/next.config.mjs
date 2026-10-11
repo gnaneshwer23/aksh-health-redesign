@@ -32,11 +32,10 @@ const createNextConfig = (phase) => ({
   async redirects() {
     return [
       // Public site (real product): retired pages go to their replacements.
-      { source: "/platform", destination: "/product", permanent: false },
-      { source: "/for-clinicians", destination: "/product#slot-fill", permanent: false },
-      { source: "/for-pharmacists", destination: "/product#monitoring", permanent: false },
+      { source: "/for-clinicians", destination: "/platform", permanent: false },
+      { source: "/for-pharmacists", destination: "/platform#diabetes", permanent: false },
       { source: "/for-patients", destination: "/product#patients", permanent: false },
-      { source: "/for-organisations", destination: "/product#results", permanent: false },
+      { source: "/for-organisations", destination: "/platform", permanent: false },
       { source: "/integrations", destination: "/resources/schedule-connector", permanent: false },
       { source: "/faq", destination: "/resources#faq", permanent: false },
       { source: "/walkthrough", destination: "/", permanent: false },
@@ -57,7 +56,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/dashboards",
-        destination: "/product",
+        destination: "/platform",
         permanent: true
       },
       {
@@ -77,12 +76,12 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/solutions",
-        destination: "/product",
+        destination: "/platform",
         permanent: true
       },
       {
         source: "/about",
-        destination: "/product",
+        destination: "/platform",
         permanent: false
       },
       {
@@ -92,7 +91,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/how-it-works",
-        destination: "/product",
+        destination: "/platform",
         permanent: true
       },
       {
@@ -122,7 +121,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/for-research",
-        destination: "/product",
+        destination: "/platform",
         permanent: true
       },
       {

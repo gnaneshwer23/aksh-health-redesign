@@ -2,12 +2,12 @@ import Link from "next/link";
 
 const COLUMNS = [
   {
-    title: "Product",
+    title: "Platform",
     links: [
-      { label: "Overview", href: "/product" },
+      { label: "The platform", href: "/platform" },
+      { label: "Aksh Diabetes", href: "/platform#diabetes" },
+      { label: "Available now", href: "/product" },
       { label: "Cancelled-slot fill", href: "/product#slot-fill" },
-      { label: "Diabetes monitoring", href: "/product#monitoring" },
-      { label: "Patient app", href: "/product#patients" },
       { label: "Measured results", href: "/product#results" },
     ],
   },
@@ -44,8 +44,8 @@ export function SiteFooter() {
               Aksh Health
             </Link>
             <p className="s-small" style={{ maxWidth: 320 }}>
-              Diabetes care operations for clinics: fill cancelled appointments, monitor glucose between visits, and measure
-              what changed.
+              Clinical intelligence, under clinical control. One auditable intelligence layer beside the EHR; first module:
+              Aksh Diabetes.
             </p>
           </div>
           {COLUMNS.map((c) => (

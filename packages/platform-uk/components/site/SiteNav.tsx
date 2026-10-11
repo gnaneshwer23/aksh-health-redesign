@@ -6,7 +6,8 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const SITE_LINKS = [
-  { label: "Product", href: "/product" },
+  { label: "Platform", href: "/platform" },
+  { label: "Available now", href: "/product" },
   { label: "Security", href: "/security" },
   { label: "Resources", href: "/resources" },
   { label: "Contact", href: "/contact" },

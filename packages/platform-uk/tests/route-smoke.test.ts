@@ -20,6 +20,7 @@ async function run() {
   const criticalRoutes = [
     ["app/page.tsx", "HomePage"],
     ["app/onboarding/page.tsx", "OnboardingPage"],
+    ["app/platform/page.tsx", "PlatformPage"],
     ["app/product/page.tsx", "ProductPage"],
     ["app/review/page.tsx", "ReviewPageClient"],
     ["app/review/command-centre/page.tsx", "CommandCentre"],
@@ -365,7 +366,7 @@ async function run() {
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/researcher#federated");
   // Security page: honest posture, no certification or digital-twin claims.
   await assertFileIncludes("app/security/page.tsx", "We do\n            not claim certifications we do not hold");
-  await assertFileIncludes("app/security/page.tsx", "No AI on patient data");
+  await assertFileIncludes("app/security/page.tsx", "AI under governance");
   await assertFileExcludes("app/security/page.tsx", "digital twin");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-progress.json");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "precision-health-scaffold-snapshot.json");
@@ -422,7 +423,7 @@ async function run() {
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("app/security/page.tsx", "Row-level security");
   // The public site is the real product: no demo hero, no sandbox offer.
-  await assertFileIncludes("app/page.tsx", "Every cancelled appointment");
+  await assertFileIncludes("app/page.tsx", "Clinical intelligence, under clinical control.");
   await assertFileExcludes("app/page.tsx", "Start free");
   await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");

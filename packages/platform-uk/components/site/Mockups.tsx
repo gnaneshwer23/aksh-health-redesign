@@ -172,3 +172,41 @@ export function WorkflowMock() {
     </Frame>
   );
 }
+
+/** The platform's core idea: every output is a draft in one review queue until a named clinician decides. */
+export function ReviewQueueMock() {
+  const items = [
+    { t: "HbA1c 68 mmol/mol", d: "Lab result · trend rising over 9 months", s: "Needs review", tone: "amber" as const },
+    { t: "Interaction: anticoagulant with aspirin", d: "Medication safety · held for pharmacist", s: "Held", tone: "red" as const },
+    { t: "HbA1c “about 60”", d: "Patient-reported · not yet verified", s: "Unverified", tone: "grey" as const },
+    { t: "Medication review booked", d: "Approved by named clinician · audited", s: "Approved", tone: "mint" as const },
+  ];
+  return (
+    <Frame title="Review queue">
+      <div className="s-row">
+        <div>
+          <div className="s-ui-strong">Diabetes review · patient record</div>
+          <div className="s-ui-muted">4 drafts · nothing reaches the record without a decision</div>
+        </div>
+        <span className="s-pill s-pill--mint">Named reviewer</span>
+      </div>
+      {items.map((i) => (
+        <div key={i.t} className="s-card-ui">
+          <div className="s-row">
+            <span className="s-ui-strong">{i.t}</span>
+            <span className={`s-pill s-pill--${i.tone}`}>{i.s}</span>
+          </div>
+          <span className="s-ui-muted">{i.d}</span>
+        </div>
+      ))}
+      <div className="s-row">
+        <span className="s-ui-muted">Clinician decides</span>
+        <div className="s-ui-btns">
+          <span className="s-ui-btn">Reject</span>
+          <span className="s-ui-btn">Edit</span>
+          <span className="s-ui-btn s-ui-btn--primary">Accept</span>
+        </div>
+      </div>
+    </Frame>
+  );
+}

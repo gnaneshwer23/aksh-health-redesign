@@ -48,7 +48,7 @@ const SECTIONS: { id: string; title: string; intro: string; points: { t: string;
     intro: "You stay in control of the data you bring.",
     points: [
       { t: "Encryption", b: "TLS for all traffic with HSTS. Data encrypted at rest by the database service. Two-step secrets additionally encrypted by Aksh." },
-      { t: "No AI on patient data", b: "The product does not send patient data to any AI model. Ranking and metrics are deterministic rules you can read." },
+      { t: "AI under governance", b: "In production today, no patient data is sent to an AI model: ranking and metrics are deterministic rules you can read. AI capabilities are validated on synthetic data and reach real patients only through a governed go-live." },
       { t: "Export", b: "Organisation admins export everything their organisation holds as one machine-readable file; patients download their own record. Exports are audited." },
       { t: "Retention", b: "Operational error logs are kept for 90 days and are scrubbed of personal details; rate-limit counters for 24 hours." },
       { t: "Separate environments", b: "Production holds real organisations only. Testing runs on a separate database with synthetic data; tooling refuses to write test data to production." },
