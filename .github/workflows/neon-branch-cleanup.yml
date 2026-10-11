@@ -1,0 +1,47 @@
+name: Neon branch cleanup
+
+# Keeps the simulation project under its branch limit (CI fails with 422 when it is reached):
+# - ci/e2e-* branches older than 2 hours (left behind by cancelled or killed runs)
+# - preview/<branch> branches whose pull request is closed or merged
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  cleanup:
+    if: ${{ vars.NEON_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      CLOSED_BRANCH: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Delete stale CI and closed-PR preview branches
+        run: |
+          set -euo pipefail
+          branches=$(curl -sf -H "Authorization: Bearer $NEON_API_KEY" "https://console.neon.tech/api/v2/projects/$PROJECT_ID/branches")
+          open_heads=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 --json headRefName -q '.[].headRefName')
+          cutoff=$(date -u -d '2 hours ago' +%s)
+          echo "$branches" | jq -c '.branches[] | select(.default != true) | {id, name, created_at}' | while read -r b; do
+            id=$(echo "$b" | jq -r .id); name=$(echo "$b" | jq -r .name); created=$(date -u -d "$(echo "$b" | jq -r .created_at)" +%s)
+            delete=false
+            if [[ "$name" == ci/e2e-* && "$created" -lt "$cutoff" ]]; then delete=true; fi
+            if [[ "$name" == preview/* ]]; then
+              head="${name#preview/}"
+              if [[ -n "${CLOSED_BRANCH:-}" && "$head" == "$CLOSED_BRANCH" ]]; then delete=true; fi
+              if ! grep -qxF "$head" <<< "$open_heads"; then delete=true; fi
+            fi
+            if [[ "$delete" == true ]]; then
+              echo "Deleting $name ($id)"
+              curl -sf -X DELETE -H "Authorization: Bearer $NEON_API_KEY" "https://console.neon.tech/api/v2/projects/$PROJECT_ID/branches/$id" > /dev/null || echo "  could not delete $name"
+            fi
+          done

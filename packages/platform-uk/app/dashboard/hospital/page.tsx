@@ -40,11 +40,8 @@ const sections = [
 
 const DEMO_PATIENT_ID = "P001";
 
-export default function HospitalOverviewPage({
-  hospitalName = hospitalData.hospitalName,
-}: {
-  hospitalName?: string;
-}) {
+export default function HospitalOverviewPage() {
+  const hospitalName = hospitalData.hospitalName;
   const searchParams = useSearchParams();
   const panel = searchParams.get("panel");
   const showRiskState = panel === "digital-twin";

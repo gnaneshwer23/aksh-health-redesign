@@ -312,6 +312,10 @@ export async function addPatientRecord(ctx: NetworkContext, patientId: string, i
   if (input.type === "medication" && isPatientSelf) throw new NetworkError("Medicines are recorded by the care team", 403);
   if ((input.type === "care_team") && !PATIENT_ADMIN_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot change care teams", 403);
   if (input.type === "consent" && !isPatientSelf && !PATIENT_ADMIN_ROLES.has(ctx.role ?? "")) throw new NetworkError("Your role cannot record consent", 403);
+  if (input.type === "consent") {
+    const exists = await withPrivileged(async (client) => (await client.query(`SELECT 1 FROM aksh.organisations WHERE id = $1`, [input.granteeOrganisationId])).rowCount);
+    if (!exists) throw new NetworkError("No organisation with that ID. Ask them for the ID shown in their settings.", 404);
+  }
   // Resolve cross-organisation members before opening the tenant transaction: never hold two pool connections at once.
   if (input.type === "care_team" && !(await withPrivilegedLookup(input.membershipId))) throw new NetworkError("Care team member not found", 404);
 
@@ -370,5 +374,14 @@ export async function setPublicDemo(orgIds: string[], actorUserId: string | null
   return withPrivileged(async (client) => {
     await client.query(`UPDATE aksh.organisations SET public_demo = (id = ANY($1::text[]))`, [orgIds]);
     await audit(client, { actorUserId, action: "simulation.public_demo.set", resourceType: "organisation", detail: { orgIds } });
+  });
+}
+
+/** Staff who joined with a code before finishing onboarding: carry the name they entered onto that membership. */
+export async function setJoinedMemberName(userId: string, organisationId: string, displayName: string) {
+  const name = displayName.trim().slice(0, 120);
+  if (name.length < 2) return;
+  await withPrivileged(async (client) => {
+    await client.query(`UPDATE aksh.memberships SET display_name = $3 WHERE user_id = $1 AND organisation_id = $2`, [userId, organisationId, name]);
   });
 }

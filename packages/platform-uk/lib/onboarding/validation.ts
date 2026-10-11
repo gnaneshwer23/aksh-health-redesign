@@ -92,10 +92,17 @@ export const organisationSchema = z
     organisationId: z.string().trim().max(40).optional().or(z.literal("")),
     ehrSystem: z.enum(ORG_EHR_OPTIONS).optional(),
     region: z.string().optional().or(z.literal("")),
+    /** Joining an existing organisation with a staff invite code (accepted before this step is submitted). */
+    join: z.boolean().optional(),
+    joinedOrganisationId: z.string().optional(),
   })
-  .refine((d) => d.useSynthetic || Boolean(d.organisationName && d.organisationName.length >= 2), {
+  .refine((d) => d.join || d.useSynthetic || Boolean(d.organisationName && d.organisationName.length >= 2), {
     message: "Organisation name is required, or start with the sandbox clinic",
     path: ["organisationName"],
+  })
+  .refine((d) => !d.join || Boolean(d.joinedOrganisationId), {
+    message: "Enter your invite code and press Join",
+    path: ["inviteCode"],
   });
 
 export const gpOrgSchema = organisationSchema;

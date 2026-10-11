@@ -183,6 +183,21 @@ export function SlotFillConsole() {
         </div>
       ) : null}
 
+      {orgs.length ? (
+        <details className="rounded-xl border border-border-subtle bg-card p-4" open={queue.length === 0}>
+          <summary className="cursor-pointer text-sm font-semibold text-foreground">Record a freed slot</summary>
+          <div className="mt-3">
+            <RecordSlot
+              orgs={orgs}
+              onRecorded={(id) => {
+                setMessage("Slot recorded. Review who fits below.");
+                void load().then(() => (id ? open(id) : undefined));
+              }}
+            />
+          </div>
+        </details>
+      ) : null}
+
       <div className="grid gap-5 xl:grid-cols-[1fr_1.3fr]">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Slots ({open_.length} open)</CardTitle></CardHeader>
@@ -372,5 +387,83 @@ export function SlotFillConsole() {
         ) : null}
       </div>
     </div>
+  );
+}
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const localInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+/**
+ * Record a freed slot by hand, for clinics without a schedule connector. The slot enters the same validated workflow as
+ * an imported one; the offer window closes before the slot starts.
+ */
+function RecordSlot({ orgs, onRecorded }: { orgs: Org[]; onRecorded: (workflowId: string) => void }) {
+  const tomorrow = new Date(Date.now() + 24 * 3600_000);
+  tomorrow.setHours(10, 0, 0, 0);
+  const [orgId, setOrgId] = useState(orgs[0]?.id ?? "");
+  const [type, setType] = useState("diabetes_review");
+  const [startsAt, setStartsAt] = useState(localInput(tomorrow));
+  const [duration, setDuration] = useState(20);
+  const [site, setSite] = useState("");
+  const [closeHours, setCloseHours] = useState(2);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  if (!orgs.length) return null;
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    const start = new Date(startsAt);
+    const expires = new Date(start.getTime() - closeHours * 3600_000);
+    if (Number.isNaN(start.getTime()) || start <= new Date()) return setError("Pick a time in the future.");
+    if (expires <= new Date()) return setError("The offer window would already be closed. Close offers fewer hours before the start.");
+    setBusy(true);
+    const r = await fetch(`/api/orgs/${orgId || orgs[0]!.id}/slots`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source: "manual",
+        sourceRef: `manual-${key()}`,
+        appointmentType: type,
+        site: site.trim() || undefined,
+        startsAt: start.toISOString(),
+        durationMin: duration,
+        offerExpiresAt: expires.toISOString(),
+      }),
+    });
+    const data = await r.json().catch(() => ({}));
+    setBusy(false);
+    if (r.ok) onRecorded(data.workflowId);
+    else setError(data.error ?? "Could not record the slot");
+  }
+
+  const field = "h-9 w-full rounded-lg border border-border-subtle bg-card px-2 text-sm";
+  return (
+    <form onSubmit={(e) => void submit(e)} className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-6" data-record-slot>
+      {orgs.length > 1 ? (
+        <label className="lg:col-span-2"><span className="text-muted">Organisation</span>
+          <select className={field} value={orgId} onChange={(e) => setOrgId(e.target.value)}>{orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}</select>
+        </label>
+      ) : null}
+      <label className="lg:col-span-2"><span className="text-muted">Appointment type</span>
+        <select className={field} value={type} onChange={(e) => setType(e.target.value)} aria-label="Appointment type">
+          {Object.entries(APPOINTMENT_TYPE_LABEL).map(([k, v]) => <option key={k} value={k}>{v[0]!.toUpperCase() + v.slice(1)}</option>)}
+        </select>
+      </label>
+      <label className="lg:col-span-2"><span className="text-muted">Starts</span>
+        <input type="datetime-local" className={field} value={startsAt} onChange={(e) => setStartsAt(e.target.value)} aria-label="Starts" required />
+      </label>
+      <label><span className="text-muted">Minutes</span>
+        <input type="number" min={5} max={240} className={field} value={duration} onChange={(e) => setDuration(Number(e.target.value))} aria-label="Minutes" />
+      </label>
+      <label><span className="text-muted">Close offers (hours before)</span>
+        <input type="number" min={0} max={72} className={field} value={closeHours} onChange={(e) => setCloseHours(Number(e.target.value))} aria-label="Close offers hours before" />
+      </label>
+      <label className="lg:col-span-3"><span className="text-muted">Site (optional)</span>
+        <input className={field} value={site} onChange={(e) => setSite(e.target.value)} maxLength={80} aria-label="Site" />
+      </label>
+      <div className="flex items-end lg:col-span-3"><Button type="submit" disabled={busy}>{busy ? "Recording…" : "Record freed slot"}</Button></div>
+      {error ? <p className="text-sm text-red-700 sm:col-span-2 lg:col-span-6" role="alert">{error}</p> : null}
+    </form>
   );
 }

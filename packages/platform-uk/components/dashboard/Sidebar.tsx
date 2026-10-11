@@ -45,6 +45,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
+    { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
     { href: "/review", label: "Case Review Workspace", icon: Layers },
     { href: "/dashboard/gp/care-pathways", label: "Care Pathways", icon: Activity },
     { href: "/dashboard/gp/reports", label: "Reports", icon: BarChart3 },
@@ -58,6 +59,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
+    { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
     { href: "/dashboard/nurse?section=settings", label: "Settings", icon: Settings },
   ],
   pharmacist: [
@@ -66,6 +68,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/pharmacist/interactions", label: "Interactions", icon: Shield },
     { href: "/dashboard/pharmacist/bnf", label: "Formulary Reference", icon: ClipboardList },
     { href: "/dashboard/network", label: "Care network", icon: Network },
+    { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
     { href: "/dashboard/pharmacist?section=settings", label: "Settings", icon: Settings },
   ],
   admin: [
@@ -73,6 +76,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
+    { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
     { href: "/dashboard/admin/users", label: "User Management", icon: Users },
     { href: "/dashboard/admin/integrations", label: "Integrations", icon: Activity },
     { href: "/dashboard/admin/precision-health", label: "System spine", icon: Heart },
@@ -89,6 +93,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/ics/benchmarking", label: "Benchmarking", icon: Activity },
     { href: "/dashboard/ics/forecast", label: "Risk state", icon: Heart },
     { href: "/dashboard/network", label: "Care network", icon: Network },
+    { href: "/dashboard/organisation", label: "Organisation", icon: Building2 },
     { href: "/dashboard/ics?section=settings", label: "Settings", icon: Settings },
   ],
   hospital: [

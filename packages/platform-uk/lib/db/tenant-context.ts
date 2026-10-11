@@ -11,7 +11,10 @@ export type TenantContext = {
 const DEFAULT_PRACTICE_ID = "practice-demo";
 
 export function resolvePracticeId(request?: Request | NextRequest, auth?: AuthenticatedUserScope | null) {
-  const headerPractice = request?.headers.get("x-practice-id")?.trim();
+  // The tenant is never chosen by the client. The x-practice-id header is honoured only in E2E test mode outside
+  // production, where tests use it to prove cross-practice isolation.
+  const testMode = process.env.E2E_TEST_MODE === "true" && process.env.AKSH_ENVIRONMENT !== "production";
+  const headerPractice = testMode ? request?.headers.get("x-practice-id")?.trim() : undefined;
   if (headerPractice) {
     return headerPractice;
   }

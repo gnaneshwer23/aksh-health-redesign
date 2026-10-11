@@ -1,0 +1,17 @@
+import { NextResponse } from "next/server";
+
+import { listMembers } from "@/lib/network/admin";
+import { errorResponse, requireContext } from "@/lib/network/http";
+
+export const dynamic = "force-dynamic";
+
+/** GET /api/orgs/:orgId/members — staff with role, status and registration status. */
+export async function GET(_request: Request, { params }: { params: { orgId: string } }) {
+  const r = await requireContext();
+  if (r instanceof NextResponse) return r;
+  try {
+    return NextResponse.json({ rows: await listMembers(r.ctx, params.orgId) });
+  } catch (error) {
+    return errorResponse(error);
+  }
+}

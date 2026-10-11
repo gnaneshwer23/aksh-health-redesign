@@ -8,6 +8,7 @@ import { syncOnboardingConsentsToRegistry } from "@/lib/onboarding/consent-regis
 import { clearOnboardingProgress } from "@/lib/onboarding/onboarding-progress-repository";
 import { resolveOrganisationOdsCode } from "@/lib/onboarding/organisation-ods";
 import { provisionSandbox } from "@/lib/network/sandbox";
+import { setJoinedMemberName } from "@/lib/network/service";
 import { resolvePatientBinding } from "@/lib/onboarding/patient-binding";
 import { ROLES, type UserRole } from "@/lib/onboarding/roles";
 
@@ -76,7 +77,17 @@ export async function POST(request: Request) {
     // Professionals who completed the organisation step get their own sandbox organisation (admin), with sample
     // data when they chose the sandbox clinic. Failure must not block dashboard access.
     let sandbox: { organisationId: string; created: boolean } | null = null;
-    if (role !== "patient" && organisation && session.user.email) {
+    // Staff who joined an existing organisation with an invite code are already members: no sandbox.
+    const joined = typeof (organisation as Record<string, unknown> | undefined)?.joinedOrganisationId === "string";
+    if (joined) {
+      const name = fullName ?? (typeof identity?.fullName === "string" ? identity.fullName : null);
+      if (name) {
+        await setJoinedMemberName(session.user.id, String((organisation as Record<string, unknown>).joinedOrganisationId), name).catch((e) =>
+          console.error("[onboarding] member name update failed", e instanceof Error ? e.message : e)
+        );
+      }
+    }
+    if (role !== "patient" && organisation && !joined && session.user.email) {
       try {
         const org = organisation as Record<string, unknown>;
         const described = org.useSynthetic === false;
