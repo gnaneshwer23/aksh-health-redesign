@@ -104,6 +104,21 @@ const RESULT_MESSAGE: Record<string, string> = {
 const resultMessage = (code: string) => RESULT_MESSAGE[code] ?? code.replace(/_/g, " ").toLowerCase();
 
 const when = (iso: string) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+/** A step that could not be persisted (and so audited): PRD §5.3/§5.4 degraded state. Server sends "NOT_RECORDED: <route>". */
+const notRecorded = (status: number, error: unknown) => (status === 503 && typeof error === "string" && error.startsWith("NOT_RECORDED:") ? error.slice(13).trim() : null);
+
+function DegradedBanner({ text, onDismiss }: { text: string; onDismiss: () => void }) {
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-[#e8b4ac] bg-[#fdecea] p-4 text-sm text-[#7a1f12]" role="alert" data-degraded>
+      <div>
+        <p className="m-0 font-semibold">Not recorded: Aksh cannot write its audit trail right now</p>
+        <p className="m-0 mt-1">{text}</p>
+      </div>
+      <button type="button" onClick={onDismiss} className="rounded-full border border-[#e8b4ac] bg-white px-3 py-1 text-xs">Dismiss</button>
+    </div>
+  );
+}
+
 const key = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
 
 export function SlotFillConsole() {
@@ -119,6 +134,7 @@ export function SlotFillConsole() {
   const [orgs, setOrgs] = useState<Org[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [refreshCount, setRefreshCount] = useState(0);
+  const [degraded, setDegraded] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setRefreshCount((n) => n + 1); // figures follow every action
@@ -160,9 +176,11 @@ export function SlotFillConsole() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idempotencyKey: key(), ...body }),
     });
-    const data = await r.json();
+    const data = await r.json().catch(() => ({}));
     setBusy(false);
-    setMessage(r.ok ? resultMessage(data.result_code) : data.error ?? "Action failed");
+    const down = notRecorded(r.status, data.error);
+    if (down) setDegraded(down);
+    setMessage(r.ok ? resultMessage(data.result_code) : down ? null : data.error ?? "Action failed");
     await Promise.all([open(wf.id), load()]);
   }
 
@@ -170,7 +188,10 @@ export function SlotFillConsole() {
     setBusy(true);
     const r = await fetch(`/api/access/handoffs/${id}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     setBusy(false);
-    setMessage(r.ok ? "Hand-off updated" : (await r.json()).error ?? "Could not update hand-off");
+    const data = r.ok ? null : await r.json().catch(() => ({}));
+    const down = data ? notRecorded(r.status, data.error) : null;
+    if (down) setDegraded(down);
+    setMessage(r.ok ? "Hand-off updated" : down ? null : data?.error ?? "Could not update hand-off");
     await load();
     if (wf) await open(wf.id);
   }
@@ -199,6 +220,7 @@ export function SlotFillConsole() {
       </div>
 
       {error ? <p className="rounded-xl border border-border-subtle bg-card p-4 text-sm text-muted" role="status">{error}</p> : null}
+      {degraded ? <DegradedBanner text={degraded} onDismiss={() => setDegraded(null)} /> : null}
 
 
       {orgs.length ? (
@@ -207,6 +229,7 @@ export function SlotFillConsole() {
           <div className="mt-3">
             <RecordSlot
               orgs={orgs}
+              onDegraded={setDegraded}
               onRecorded={(id) => {
                 setMessage("Slot recorded. Review who fits below.");
                 void load().then(() => (id ? open(id) : undefined));
@@ -445,7 +468,7 @@ const localInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${p
  * Record a freed slot by hand, for clinics without a schedule connector. The slot enters the same validated workflow as
  * an imported one; the offer window closes before the slot starts.
  */
-function RecordSlot({ orgs, onRecorded }: { orgs: Org[]; onRecorded: (workflowId: string) => void }) {
+function RecordSlot({ orgs, onRecorded, onDegraded }: { orgs: Org[]; onRecorded: (workflowId: string) => void; onDegraded: (text: string) => void }) {
   const tomorrow = new Date(Date.now() + 24 * 3600_000);
   tomorrow.setHours(10, 0, 0, 0);
   const [orgId, setOrgId] = useState(orgs[0]?.id ?? "");
@@ -481,7 +504,9 @@ function RecordSlot({ orgs, onRecorded }: { orgs: Org[]; onRecorded: (workflowId
     });
     const data = await r.json().catch(() => ({}));
     setBusy(false);
+    const down = notRecorded(r.status, data.error);
     if (r.ok) onRecorded(data.workflowId);
+    else if (down) onDegraded(down);
     else setError(data.error ?? "Could not record the slot");
   }
 

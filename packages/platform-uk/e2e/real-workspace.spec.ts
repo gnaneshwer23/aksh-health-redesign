@@ -64,11 +64,12 @@ test("real workspace: public demo pages go to the home page", async ({ page }) =
 });
 
 test("real workspace: the clinical agents and the Track B link are closed", async ({ request }) => {
-  for (const path of ["/api/agents/orchestrate", "/api/agents/horizon"]) {
+  for (const path of ["/api/agents/orchestrate", "/api/agents/horizon", "/api/front-desk/conversations", "/api/clinical-spine/orchestrate", "/api/precision-health/status"]) {
     const r = await request.post(path, { data: { patientId: "P001" } });
     expect(r.status(), path).toBe(403);
     expect((await r.json()).error).toMatch(/TRACK_B_NOT_OPEN/);
   }
+  for (const path of ["/api/front-desk/state", "/api/patients/P001"]) expect((await request.get(path)).status(), path).toBe(403);
   const review = await request.post("/api/network/patients/any/clinical-review");
   expect(review.status()).toBe(403);
 });

@@ -1,5 +1,10 @@
 # Built vs Remaining — Aksh Health (platform-uk)
 
+> **Historical (July 2026).** Superseded for current state by
+> [`AKSH_PLATFORM_STATE_AND_PLAN_20261011.md`](./AKSH_PLATFORM_STATE_AND_PLAN_20261011.md) and §3 of
+> [`AKSH_VISION_PRD_OVERVIEW.md`](./AKSH_VISION_PRD_OVERVIEW.md) (updated 2026-10-12). Production no longer runs the
+> eight demo dashboards or the Patel demo; it is the real workspace only. Kept for audit history.
+
 **Date:** 2026-07-27 (BST)  
 **Live:** https://akshhealth.com  
 **Repo:** `gnaneshwer23/0ne-Health` · package `packages/platform-uk`  

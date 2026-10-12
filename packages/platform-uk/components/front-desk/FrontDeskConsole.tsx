@@ -88,7 +88,7 @@ export function FrontDeskConsole() {
   const metricRows: { label: string; key: keyof typeof m.current; unit: string; better: "up" | "down" }[] = [
     { label: "Calls answered", key: "callsAnsweredPct", unit: "%", better: "up" },
     { label: "Average wait", key: "avgWaitSeconds", unit: "s", better: "down" },
-    { label: "Slots filled (14 days)", key: "slotsFilledPct", unit: "%", better: "up" },
+    { label: "Calendar booked (14 days)", key: "slotsFilledPct", unit: "%", better: "up" },
     { label: "Missed appointments rebooked", key: "missedRebookedPct", unit: "%", better: "up" },
     { label: "Handed to staff", key: "handOffPct", unit: "%", better: "down" },
   ];

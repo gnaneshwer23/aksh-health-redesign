@@ -12,6 +12,7 @@ import { NetworkError } from "@/lib/network/service";
 
 import { FILL_DEFINITION, FILLED_SQL } from "./measurement";
 import { evaluateCandidates, resolveSettings, RULE_VERSION, type WaitlistFacts } from "./eligibility";
+import { persisted } from "./degraded";
 import { activeTemplate, renderTemplate } from "./templates";
 import { withPrivileged } from "@/lib/network/db";
 
@@ -90,7 +91,7 @@ export const actionSchema = z.discriminatedUnion("action", [
 export type WorkflowAction = z.infer<typeof actionSchema>;
 
 /** Record a slot event. Idempotent on (organisation, source, sourceRef); a lower or equal version is a replay. */
-export async function ingestSlot(ctx: NetworkContext, orgId: string, input: z.infer<typeof ingestSlotSchema>) {
+async function ingestSlotTx(ctx: NetworkContext, orgId: string, input: z.infer<typeof ingestSlotSchema>) {
   requireStaffOrConnector(ctx, orgId);
   if (ctx.role === CONNECTOR_ROLE && input.source !== "partner_api") throw new NetworkError("Connectors report partner_api slots only", 403);
   const starts = new Date(input.startsAt).getTime();
@@ -189,7 +190,7 @@ function expectState(wf: WorkflowRow, allowed: string[], action: string) {
 }
 
 /** Apply one staff or service step. Replaying the same idempotency key returns the original result without acting again. */
-export async function applyAction(ctx: NetworkContext, workflowId: string, input: WorkflowAction) {
+async function applyActionTx(ctx: NetworkContext, workflowId: string, input: WorkflowAction) {
   requireStaffOrConnector(ctx, undefined, input.action);
   const key = `${workflowId}:${input.idempotencyKey}`;
   return withTenant(ctx, async (client) => {
@@ -532,7 +533,7 @@ export const handoffActionSchema = z.discriminatedUnion("action", [
 ]);
 
 /** A hand-off is acknowledged by a named person, then closed with a disposition. It can never disappear silently. */
-export async function updateHandoff(ctx: NetworkContext, handoffId: string, input: z.infer<typeof handoffActionSchema>) {
+async function updateHandoffTx(ctx: NetworkContext, handoffId: string, input: z.infer<typeof handoffActionSchema>) {
   requireStaff(ctx);
   return withTenant(ctx, async (client) => {
     const h = (await client.query<{ id: string; organisation_id: string; acknowledged_at: Date | null; closed_at: Date | null; workflow_id: string | null }>(
@@ -660,3 +661,10 @@ export async function sweepExpiredSlots() {
     return { checked: due.length, expired, handedOff };
   });
 }
+
+// Public entry points: a failure to persist (and so to audit) is a visible NOT_RECORDED, never a silent drop.
+export const ingestSlot = (...a: Parameters<typeof ingestSlotTx>) => persisted("slot", () => ingestSlotTx(...a));
+/** Steps that create a hand-off (escalation, complaint) fail with the hand-off route. */
+export const applyAction = (...a: Parameters<typeof applyActionTx>) =>
+  persisted(a[2].action === "complaint" || (a[2].action === "record_response" && a[2].response === "escalated") ? "handoff" : "action", () => applyActionTx(...a));
+export const updateHandoff = (...a: Parameters<typeof updateHandoffTx>) => persisted("handoff", () => updateHandoffTx(...a));

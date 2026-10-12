@@ -121,8 +121,9 @@ export function moveSlot(state: FrontDeskState, fromSlotId: string, toSlotId: st
 }
 
 /**
- * Slot Fill: offer a freed slot to the longest-waiting matching patient. Offering an admin
- * appointment needs no clinical approval; the patient still confirms before it is booked.
+ * Demo only: offer a freed slot in the synthetic Front Desk calendar to the longest-waiting matching patient. This is
+ * not the product's slot fill. The canonical workflow, metric (slot-fill-v1.2) and audit trail are `lib/access`; Front
+ * Desk APIs are closed in the real workspace, so this never runs on a clinic's calendar (platform map G3).
  */
 export function offerFreedSlot(state: FrontDeskState, slot: Slot): WaitlistEntry | null {
   const candidate = state.waitlist

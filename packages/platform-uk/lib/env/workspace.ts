@@ -54,11 +54,26 @@ export function isPublicDemoPath(pathname: string): boolean {
 }
 
 /**
- * The clinical-proof agent APIs (CONDUCTOR, HORIZON, GUARDIAN ...) run on the synthetic cohort or, via the patient
- * spine, on synthetic care-network patients. Track B is not open in the real workspace, so they are closed there.
+ * APIs behind the synthetic estate, closed in the real workspace:
+ * - clinical-proof agents and spine (CONDUCTOR, HORIZON, GUARDIAN, precision health, graph, research, learning) run on
+ *   the synthetic cohort; Track B is not open in the real workspace;
+ * - the mock patient record API (`/api/patients`; real records are `/api/network/patients`);
+ * - Front Desk / Asha, the synthetic receptionist with its own in-memory calendar. Slot fill has one implementation,
+ *   `lib/access` (platform map G3), and no other path may book or offer slots in the real workspace.
+ * None of these is called by a real-workspace page.
  */
-const SYNTHETIC_AGENT_API_PREFIXES = ["/api/agents"];
+const SYNTHETIC_API_PREFIXES = [
+  "/api/agents",
+  "/api/clinical-spine",
+  "/api/precision-health",
+  "/api/patients",
+  "/api/front-desk",
+  "/api/neo4j",
+  "/api/graphrag",
+  "/api/research",
+  "/api/learning",
+];
 export function isClosedInRealWorkspace(pathname: string): boolean {
-  return under(pathname, SYNTHETIC_AGENT_API_PREFIXES);
+  return under(pathname, SYNTHETIC_API_PREFIXES);
 }
-export const TRACK_B_NOT_OPEN = "TRACK_B_NOT_OPEN: clinical agents are not available in this workspace until a governed go-live opens Track B";
+export const TRACK_B_NOT_OPEN = "TRACK_B_NOT_OPEN: clinical agents and synthetic services are not available in this workspace until a governed go-live opens Track B";

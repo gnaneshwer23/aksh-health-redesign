@@ -77,11 +77,11 @@ application and do not yet share data.**
 | --- | --- | --- |
 | G1 | **Two patient models.** *(Linked for synthetic validation — see plan item 1.)* CONDUCTOR loads patients from `lib/mock-data/patients` (the P001–P100 demo cohort); the real workspace uses `network_patients` + observations + CGM. | The vision's core loop (signal → agents → clinician review) cannot run on the patients clinics actually load, even in simulation. |
 | G2 | **Real CGM does not feed Aksh Diabetes.** *(Linked — see plan item 2.)* The glucose signal reads fixtures or patient-state ingest (`lib/disease-modules/diabetes/glucose.ts`; CGM modality schema is open question OQ-DIAB-1). World 2 already has that CGM model (`cgm_readings`, trusted readings, consensus metrics); nothing connects them. | Journey 4 (CGM → diabetes signal → review) stays `[FUTURE]` though both halves exist. |
-| G3 | **Two slot-fill implementations.** Front Desk's synthetic slot fill and the staged adapter (22 tests) vs the production `lib/access` workflow. | PRD PA-101/102 asks for one canonical schema and source of truth. |
+| G3 | **Two slot-fill implementations.** *(Closed 2026-10-12: `lib/access` is the only slot fill in the real workspace; Front Desk is demo-only and its APIs are closed in production; the staged patient-access adapter is outreach, not slot fill.)* Front Desk's synthetic slot fill and the staged adapter (22 tests) vs the production `lib/access` workflow. | PRD PA-101/102 asks for one canonical schema and source of truth. |
 | G4 | **The clinical intelligence is invisible to buyers and investors.** Production hides World 1 (correctly); there is no governed, clearly labelled place to show it. | The site describes the platform; nobody outside can see it work. |
-| G5 | **Source-of-truth docs are stale.** Vision overview §3 still says production = "8 dashboards + Patel demo"; Built-vs-Remaining is dated July. | External readers get the old state. |
+| G5 | **Source-of-truth docs are stale.** *(Closed 2026-10-12: overview §3 rewritten; Built-vs-Remaining marked historical.)* Vision overview §3 still says production = "8 dashboards + Patel demo"; Built-vs-Remaining is dated July. | External readers get the old state. |
 | G6 | **Positioning conflict.** 10 Oct audit: not an NHS product, any market. PRD v1.1: UK-first. | Resolved for the public site (country-neutral, founder 2026-10-11); pilot materials may stay UK-specific. |
-| G7 | **PRD items not yet in code:** complaint and staff-time capture (§10.2); SHIELD-style degraded state for access audit failures; offer template governance (preview/diff/versions, PA-108); contact adapter behind a default-off flag (PA-109). | Needed before a staff-assisted stage. |
+| G7 | *(2026-10-12: complaint/staff time, template governance and the access degraded state are built and tested. PA-109 automated contact adapter deliberately deferred: no sender exists while the stage promise is "Aksh never sends messages"; staff-assisted contact needs none.)* **PRD items not yet in code:** complaint and staff-time capture (§10.2); SHIELD-style degraded state for access audit failures; offer template governance (preview/diff/versions, PA-108); contact adapter behind a default-off flag (PA-109). | Needed before a staff-assisted stage. |
 
 ---
 
@@ -104,9 +104,9 @@ application and do not yet share data.**
    do). Remaining: drafts into the review queue from this path. Test: `tests/patient-spine-db.test.ts`.
 3. **G4 clinical-proof environment:** a separately hosted, clearly labelled synthetic environment (e.g. a demo subdomain on
    the simulation database) for buyers, investors and the CSO, never mixed into production.
-4. **G3 one slot fill:** Front Desk and the staged adapter call `lib/access`; retire the duplicate.
-5. **G7 PRD items:** complaint and staff-time capture, access audit degraded state, template governance.
-6. **G5 docs:** update the vision overview §3 and Built-vs-Remaining to this map.
+4. **G3 one slot fill — done.** Real workspace has one slot fill (`lib/access`); synthetic APIs closed there.
+5. **G7 PRD items — done** except PA-109 (deferred by design, see G7).
+6. **G5 docs — done.**
 
 ### Later — Blueprint layers D–H
 Patient intelligence beyond readings, population and equity on real organisations, twin, research gate, governed
