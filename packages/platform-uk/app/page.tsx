@@ -43,7 +43,7 @@ export default function HomePage() {
               <ReviewQueueMock />
             </div>
           </div>
-          <div className="s-metrics" style={{ marginTop: 64 }}>
+          <div className="s-metrics" style={{ marginTop: 48 }}>
             <div><b>12 agents</b><span>under one supervisor, in a fixed, inspectable order</span></div>
             <div><b>1 audit trail</b><span>who drafted, who decided, what changed</span></div>
             <div><b>0 autonomous decisions</b><span>nothing reaches a record without a named clinician</span></div>

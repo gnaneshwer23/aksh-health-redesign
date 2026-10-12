@@ -34,7 +34,7 @@ export function StepIndicator({ role, currentStepId }: StepIndicatorProps) {
         </span>
         <span className="font-medium text-foreground">{ONBOARDING_STEP_LABELS[currentStepId]}</span>
       </div>
-      <Progress value={progressValue} className="h-2 overflow-hidden rounded-full bg-[#eef1f4]" />
+      <Progress value={progressValue} className="h-2 overflow-hidden rounded-full bg-[#eae9e0]" />
       <ol className="flex flex-wrap gap-2 text-xs" aria-label="Onboarding steps">
         {steps.map((stepId, index) => {
           const absoluteIndex = all.indexOf(stepId) ?? index;

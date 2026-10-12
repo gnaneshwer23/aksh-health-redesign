@@ -5,11 +5,8 @@
 @layer base {
   .onboarding-shell {
     @apply min-h-screen bg-background font-sans text-foreground antialiased;
-    background-color: #f7f8fa;
-    background-image:
-      radial-gradient(ellipse 70% 45% at 15% 0%, rgb(0 168 142 / 0.07), transparent 55%),
-      radial-gradient(ellipse 55% 40% at 95% 100%, rgb(232 243 254 / 0.55), transparent 50%),
-      linear-gradient(180deg, #fbfcfd 0%, #f7f8fa 100%);
+    background-color: #f2f1ea;
+    background-image: none;
   }
 }
 
@@ -43,12 +40,12 @@
 .onboarding-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
 .onboarding-shell textarea {
   background: #ffffff !important;
-  color: #14201e !important;
-  border: 1px solid #dfe5ea !important;
+  color: #121715 !important;
+  border: 1px solid #e3e1d6 !important;
 }
 .onboarding-shell input:not([type="checkbox"]):not([type="radio"]):focus,
 .onboarding-shell textarea:focus {
-  border-color: #0a7a68 !important;
+  border-color: #1e4d52 !important;
   box-shadow: 0 0 0 3px rgb(10 122 104 / 0.14);
   outline: none;
 }

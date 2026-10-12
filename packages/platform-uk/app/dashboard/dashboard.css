@@ -9,59 +9,60 @@
 }
 
 @layer components {
-  /* Nightingale soft-medical mist — cool white workspace with seafoam wash */
+  /* "Clinic light" workspace (shared with the public site): warm greige canvas, white cards, teal ink, lime highlight. */
   .dashboard-surface {
     @apply bg-background;
-    background-color: #f7f8fa;
-    background-image:
-      radial-gradient(circle at 88% 0%, rgb(0 168 142 / 0.05), transparent 42%),
-      radial-gradient(circle at 8% 100%, rgb(232 243 254 / 0.45), transparent 40%),
-      linear-gradient(180deg, #fbfcfd 0%, #f7f8fa 55%, #f2f4f7 100%);
+    background-color: #f2f1ea;
   }
 
   /* Soft modular cards: Nightingale 24–32px radius, whisper elevation */
   .dashboard-card {
     @apply rounded-frame border border-border-subtle/90 bg-card transition-shadow duration-200;
     box-shadow:
-      0 1px 2px rgb(20 32 30 / 0.03),
-      0 14px 40px -24px rgb(20 32 30 / 0.14);
+      0 1px 2px rgb(18 23 21 / 0.03),
+      0 14px 40px -28px rgb(18 23 21 / 0.16);
   }
 
   .dashboard-card:hover {
     box-shadow:
-      0 2px 6px rgb(20 32 30 / 0.04),
-      0 22px 48px -22px rgb(20 32 30 / 0.18);
+      0 2px 6px rgb(18 23 21 / 0.04),
+      0 22px 48px -26px rgb(18 23 21 / 0.2);
   }
 
   .dashboard-metric-card {
     @apply dashboard-card overflow-hidden;
-    background-image: linear-gradient(165deg, rgb(255 255 255 / 1) 0%, rgb(247 248 250 / 0.96) 100%);
+    background-image: none;
   }
 
   .dashboard-metric-card--accent {
-    background-image: linear-gradient(165deg, rgb(230 247 243 / 0.95) 0%, rgb(255 255 255 / 1) 100%);
+    background-image: none;
+    background-color: #dcef55;
+    border-color: #dcef55;
   }
 
   .dashboard-metric-card--warn {
-    background-image: linear-gradient(165deg, rgb(255 246 229 / 0.95) 0%, rgb(255 255 255 / 1) 100%);
+    background-image: none;
+    background-color: #fbf0d9;
   }
 
   .dashboard-metric-card--danger {
-    background-image: linear-gradient(165deg, rgb(252 232 232 / 0.95) 0%, rgb(255 255 255 / 1) 100%);
+    background-image: none;
+    background-color: #fbe9e6;
   }
 
   .dashboard-nav-item {
     @apply flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-150;
   }
 
-  /* Active: soft Nightingale teal wash */
+  /* Active: black pill, white label, lime icon (like a selected date). */
   .dashboard-nav-item--active {
-    @apply bg-accent/10 text-primary shadow-sm;
-    box-shadow: 0 1px 2px rgb(0 168 142 / 0.08), inset 0 0 0 1px rgb(0 168 142 / 0.22);
+    background-color: #121715;
+    color: #ffffff;
+    box-shadow: none;
   }
 
   .dashboard-nav-item--inactive {
-    @apply text-foreground hover:bg-white/80;
+    @apply text-foreground hover:bg-white;
   }
 
   .dashboard-patient-row {
@@ -69,8 +70,9 @@
   }
 
   .dashboard-patient-row--selected {
-    @apply border-accent/15 bg-white shadow-sm;
-    box-shadow: 0 1px 2px rgb(20 32 30 / 0.04), 0 10px 24px -14px rgb(20 32 30 / 0.14);
+    @apply bg-white shadow-sm;
+    border-color: #121715;
+    box-shadow: 0 0 0 3px rgb(220 239 85 / 0.6);
   }
 
   .dashboard-status-badge {
@@ -100,7 +102,7 @@
 
   .risk-tone-low {
     @apply border-accent bg-accent/10;
-    color: #065e50;
+    color: #1e4d52;
   }
 
   .risk-tone-medium {
@@ -114,7 +116,7 @@
   }
 
   .dashboard-status-badge.text-accent {
-    color: #065e50;
+    color: #1e4d52;
   }
 
   .dashboard-status-badge.text-danger {
@@ -148,30 +150,30 @@
 .dashboard-root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
 .dashboard-root textarea {
   background: #ffffff !important;
-  color: #14201e !important;
-  border: 1px solid #dfe5ea !important;
+  color: #121715 !important;
+  border: 1px solid #e3e1d6 !important;
 }
 .dashboard-root input:not([type="checkbox"]):not([type="radio"]):focus,
 .dashboard-root textarea:focus {
-  border-color: #0a7a68 !important;
-  box-shadow: 0 0 0 3px rgb(10 122 104 / 0.14);
+  border-color: #1e4d52 !important;
+  box-shadow: 0 0 0 3px rgb(220 239 85 / 0.6);
   outline: none;
 }
 .dashboard-root input::placeholder,
 .dashboard-root textarea::placeholder {
-  color: #8a9894;
+  color: #666b62;
 }
 .dashboard-root input:disabled,
 .dashboard-root textarea:disabled {
-  background: #f3f5f7 !important;
-  color: #5b6b66 !important;
+  background: #f7f6f0 !important;
+  color: #62685f !important;
 }
 :where(.dashboard-root) select {
   background-color: #ffffff;
-  color: #14201e;
-  border: 1px solid #dfe5ea;
+  color: #121715;
+  border: 1px solid #e3e1d6;
 }
 .dashboard-root input[type="checkbox"],
 .dashboard-root input[type="radio"] {
-  accent-color: #0b4a42;
+  accent-color: #1e4d52;
 }
