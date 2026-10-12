@@ -23,7 +23,8 @@ function pure() {
   assert.equal(hba1cPercent(53), 7.0);
   assert.equal(hba1cPercent(48), 6.5);
   assert.ok(isClosedInRealWorkspace("/api/agents/orchestrate") && isClosedInRealWorkspace("/api/agents/horizon"));
-  assert.ok(!isClosedInRealWorkspace("/api/network/patients") && !isClosedInRealWorkspace("/api/agentsx"));
+  assert.ok(isClosedInRealWorkspace("/api/front-desk/state") && isClosedInRealWorkspace("/api/patients/P001"), "one slot fill: Front Desk closed in the real workspace");
+  assert.ok(!isClosedInRealWorkspace("/api/network/patients") && !isClosedInRealWorkspace("/api/access/queue") && !isClosedInRealWorkspace("/api/agentsx"));
 
   const p001 = getPatientById("P001")!;
   registerSpinePatient({ ...p001, id: "spine-test-1", name: "Spine Test" });

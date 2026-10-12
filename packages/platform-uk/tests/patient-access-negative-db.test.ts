@@ -156,7 +156,35 @@ async function run() {
   assert.equal(rep.responses.unreachable, 1);
   assert.equal(rep.responses.escalated, 1);
 
-  console.log("patient-access-negative-db: PRD v1.1 §14 cases (duplicate, expired, constraints, retry, multiple offers, opt-out, unreachable, escalation, read-back failure, role, out-of-order, stale, identity, adapter honesty, denominator, guardrails) — PASS");
+  // 18. Audit persistence failure and 19. hand-off queue down: nothing changes, the answer is a visible NOT_RECORDED
+  // with the alternate route, and a retry after recovery works. Faults are injected with triggers scoped to this
+  // test's organisation and removed afterwards.
+  const s4 = await slot("degraded", 50, 44);
+  const fn = `aksh.test_fault_${tag}`;
+  await getPgPool().query(`CREATE FUNCTION ${fn}() RETURNS trigger LANGUAGE plpgsql AS $f$ BEGIN RAISE EXCEPTION 'injected persistence fault'; END $f$`);
+  try {
+    await getPgPool().query(`CREATE TRIGGER test_fault_${tag} BEFORE INSERT ON aksh.access_actions FOR EACH ROW WHEN (NEW.organisation_id = '${org.id}' AND NEW.idempotency_key LIKE '%:af-%') EXECUTE FUNCTION ${fn}()`);
+    const before = (await getWorkflow(ctx, s4.workflowId))!.state;
+    await rejects(applyAction(ctx, s4.workflowId, { action: "match", idempotencyKey: `af-${tag}-1` }), 503, /^NOT_RECORDED: This step was not recorded and nothing changed/);
+    assert.equal((await getWorkflow(ctx, s4.workflowId))!.state, before, "audit failure leaves the slot unchanged");
+    await getPgPool().query(`DROP TRIGGER test_fault_${tag} ON aksh.access_actions`);
+
+    await getPgPool().query(`CREATE TRIGGER test_fault_h_${tag} BEFORE INSERT ON aksh.handoff_tasks FOR EACH ROW WHEN (NEW.organisation_id = '${org.id}') EXECUTE FUNCTION ${fn}()`);
+    await rejects(applyAction(ctx, s4.workflowId, { action: "complaint", idempotencyKey: `hd-${tag}`, note: "Unhappy about the call" }), 503, /^NOT_RECORDED: The hand-off could not be recorded\. Pass it to the duty team directly/);
+    const noAction = await getPgPool().query(`SELECT count(*)::int AS n FROM aksh.access_actions WHERE idempotency_key = $1`, [`${s4.workflowId}:hd-${tag}`]);
+    assert.equal(noAction.rows[0].n, 0, "no complaint is half-recorded without its hand-off");
+    await getPgPool().query(`DROP TRIGGER test_fault_h_${tag} ON aksh.handoff_tasks`);
+  } finally {
+    await getPgPool().query(`DROP TRIGGER IF EXISTS test_fault_${tag} ON aksh.access_actions`);
+    await getPgPool().query(`DROP TRIGGER IF EXISTS test_fault_h_${tag} ON aksh.handoff_tasks`);
+    await getPgPool().query(`DROP FUNCTION IF EXISTS ${fn}()`);
+  }
+  const retried = await applyAction(ctx, s4.workflowId, { action: "match", idempotencyKey: `af-${tag}-1` });
+  assert.ok(!("replay" in retried && retried.replay), "the failed attempt left no idempotency record, so the retry runs");
+  await applyAction(ctx, s4.workflowId, { action: "complaint", idempotencyKey: `hd-${tag}`, note: "Unhappy about the call" });
+  assert.ok((await listHandoffs(ctx)).some((h: { workflow_id: string; reason: string }) => h.workflow_id === s4.workflowId && h.reason === "Complaint raised"));
+
+  console.log("patient-access-negative-db: PRD v1.1 §14 cases (duplicate, expired, constraints, retry, multiple offers, opt-out, unreachable, escalation, read-back failure, role, out-of-order, stale, identity, adapter honesty, denominator, guardrails, audit persistence failure, hand-off queue down) — PASS");
 }
 
 run().catch((e) => { console.error(e); process.exitCode = 1; }).finally(() => closePgPool());

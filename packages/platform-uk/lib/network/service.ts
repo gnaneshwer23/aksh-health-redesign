@@ -13,7 +13,7 @@ import { audit, withPrivileged, withTenant, type NetworkContext } from "./db";
 export class NetworkError extends Error {
   constructor(
     message: string,
-    readonly status: 400 | 401 | 403 | 404 | 409 | 410 | 413 = 400
+    readonly status: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 503 = 400
   ) {
     super(message);
   }

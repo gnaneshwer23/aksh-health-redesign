@@ -219,19 +219,24 @@ Performance smoke SLOs exist (`CP-PERF-001`). WCAG 2.1 AA is the named a11y targ
 
 ## 3. Current delivery state (honest · Oct 2026)
 
-### 3.1 Production (akshhealth.com)
+### 3.1 Production (akshhealth.com) — updated 2026-10-12
+
+Production is the **real workspace only**: no sample patients, demo menus or synthetic dashboards. Source of truth for
+what is built and what is missing: [`AKSH_PLATFORM_STATE_AND_PLAN_20261011.md`](./AKSH_PLATFORM_STATE_AND_PLAN_20261011.md).
 
 | Area | State |
 | --- | --- |
-| Marketing + 8 dashboards + Patel demo | Live |
-| Postgres (Neon) | Live |
-| Neo4j / GraphRAG | Often **mock** (Aura paused; `required:false`) |
-| HITL → FHIR stage → sim write | Proven · `liveEmis:false` |
-| Ask Aksh (marketing) | Live with AI Gateway (not a record write) |
-| Internal testing launch | **GO** (audits 2026-10-05) |
-| Live PHI / live EMR | **NO-GO** |
+| Public site | Live: vision, two pillars (Patient Access available now; clinical intelligence in validation), country-neutral |
+| Patient Access (Track A) | Live in **shadow mode**: cancellation-slot fill, staff decide every step, Aksh never sends messages or books; read-back confirms bookings |
+| Pilot controls | Go-live review, pilot stages (shadow → staff-assisted, Aksh reviewer only), approved offer wording, weekly review and sign-off, pilot readout, capability register |
+| Degraded state | A step that cannot be persisted with its audit row returns `NOT_RECORDED` with the alternate route; nothing changes |
+| Care network + CGM monitoring | Live under row-level security; clinician-only worklists |
+| Clinical agents (Track B) | **Closed** in production: `/api/agents`, `/api/clinical-spine`, `/api/precision-health`, `/api/patients`, `/api/front-desk` and related synthetic APIs return 403 `TRACK_B_NOT_OPEN` |
+| Postgres | Neon production project (separate from the simulation project) |
+| Live PHI to AI / live EMR write | **NO-GO** |
 
-**Redesign review build:** https://aksh-health-redesign.vercel.app (private repo `aksh-health-redesign`, PR #3 on `0ne-Health`). Not production. It is connected to the **same Neon database** as akshhealth.com, so actions taken there (pilot requests, review decisions, SHIELD events) land in the shared synthetic dataset. Track A only.
+Simulation (separate database) keeps the full synthetic estate: the 100-patient cohort, legacy role dashboards,
+Front Desk / Asha, and the Track B link (care-network patient → CONDUCTOR + Aksh Diabetes with trusted CGM).
 
 ### 3.2 Engineering phases
 
@@ -240,7 +245,10 @@ Performance smoke SLOs exist (`CP-PERF-001`). WCAG 2.1 AA is the named a11y targ
 | P0–P6 | Baseline → durability → NEXUS → UI honesty → secrets → regression | Recorded **PASS** |
 | P7 | Partner / live EHR | **Open / external** |
 | Clinical spine A–F | CONDUCTOR path | In `test:clinical-proof` |
-| Patient-access adapter | Staged · disabled · 22 tests | Code + docs; not a live vendor |
+| PRD v1.1 Track A | Patient Access end to end (§10, §14 negative cases incl. audit failure and hand-off queue down) | In `test:clinical-proof` |
+| Track B link (G1/G2) | One patient spine; care-network CGM into Aksh Diabetes; simulation only | `tests/patient-spine-db.test.ts` |
+| One slot fill (G3) | `lib/access` is the only slot fill in the real workspace; Front Desk's calendar offer is demo-only and closed in production | Middleware + real-workspace e2e |
+| Patient-access outreach adapter | Staged · disabled · 22 tests (outreach proposals, not slot fill) | Code + docs; not a live vendor |
 
 ### 3.3 Traceability snapshot (REQ matrix · 37 requirements)
 
@@ -259,8 +267,7 @@ Performance smoke SLOs exist (`CP-PERF-001`). WCAG 2.1 AA is the named a11y targ
 - Unified clinician workspace (Timeline → Evidence → Agents → Approvals → Twin → Research in one place) is still **multiple surfaces**.
 - Research “Owkin suite” (literature, trial matching, scientific writer, etc.) largely **unbuilt** — evaluation + ethics gate are the real pieces.
 - Population ICS numbers include **illustrative fixtures** vs 100-patient synthetic cohort.
-- Diabetes CGM modality / full v1 wiring still incomplete relative to Volume I Chapter 8 ambition.
-- Marketing visual refresh is **built but not on production**: lavender redesign in PR #3 (stacked on draft PR #2) and the review build above. akshhealth.com still runs the previous design.
+- Diabetes: care-network CGM now feeds Aksh Diabetes in simulation (Track B link); drafts from that path into the review queue, and any production use, remain open.
 
 **Found in the 2026-10-09 independent production audit — fixed 2026-10-10 (redesign branch / PR #3, not yet on akshhealth.com):**
 
