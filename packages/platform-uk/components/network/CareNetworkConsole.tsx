@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { CgmPanel } from "@/components/cgm/CgmPanel";
+import { ClinicalReviewPanel } from "@/components/network/ClinicalReviewPanel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { getPatientDetail, listOrganisations, listPatients, listProfessionals, networkSummary } from "@/lib/network/read";
@@ -284,6 +285,7 @@ export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
                     ) : null}
                     {/* Renders nothing unless the caller may see this patient's CGM (staff of a visible organisation). */}
                     <CgmPanel key={detail.id} base={`/api/network/patients/${detail.id}/cgm`} audience="clinician" />
+                    <ClinicalReviewPanel key={`review-${detail.id}`} patientId={detail.id} />
                     <div>
                       <p className="mb-1 text-xs font-medium text-foreground">Medicines</p>
                       <ul className="m-0 list-none p-0 space-y-0.5 text-xs text-muted">{detail.medications.length ? detail.medications.map((m) => <li key={m.name}>{m.name}{m.class ? ` (${m.class})` : ""}{m.dose ? `, ${m.dose}` : ""}</li>) : <li>None recorded</li>}</ul>

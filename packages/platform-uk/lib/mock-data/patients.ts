@@ -903,8 +903,20 @@ export const patients: Patient[] = [...corePatients, ...generateExtendedDemoPati
   oracleRisk: riskBandForScore(p.oracleScore),
 }));
 
+/**
+ * Care-network patients made resolvable for the clinical-proof agents (lib/clinical-spine/spine-patient.ts). Filled only
+ * outside the real workspace; bounded so a long-running process does not grow without limit.
+ */
+const spineOverlay = new Map<string, Patient>();
+const SPINE_OVERLAY_MAX = 500;
+export function registerSpinePatient(patient: Patient) {
+  spineOverlay.delete(patient.id);
+  spineOverlay.set(patient.id, patient);
+  if (spineOverlay.size > SPINE_OVERLAY_MAX) spineOverlay.delete(spineOverlay.keys().next().value!);
+}
+
 export function getPatientById(id: string): Patient | undefined {
-  return patients.find((p) => p.id === id);
+  return spineOverlay.get(id) ?? patients.find((p) => p.id === id);
 }
 
 export function searchPatients(query: string): Patient[] {

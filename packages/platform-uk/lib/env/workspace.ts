@@ -52,3 +52,13 @@ export function realHomeFor(role: string | null): string {
 export function isPublicDemoPath(pathname: string): boolean {
   return under(pathname, PUBLIC_DEMO_PREFIXES);
 }
+
+/**
+ * The clinical-proof agent APIs (CONDUCTOR, HORIZON, GUARDIAN ...) run on the synthetic cohort or, via the patient
+ * spine, on synthetic care-network patients. Track B is not open in the real workspace, so they are closed there.
+ */
+const SYNTHETIC_AGENT_API_PREFIXES = ["/api/agents"];
+export function isClosedInRealWorkspace(pathname: string): boolean {
+  return under(pathname, SYNTHETIC_AGENT_API_PREFIXES);
+}
+export const TRACK_B_NOT_OPEN = "TRACK_B_NOT_OPEN: clinical agents are not available in this workspace until a governed go-live opens Track B";

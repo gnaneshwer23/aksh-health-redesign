@@ -7,7 +7,7 @@ import {
   resolvePostAuthRedirect,
 } from "@/lib/auth/redirects";
 import { nextAuthSecret } from "@/lib/auth-secret";
-import { isPublicDemoPath, isRealWorkspace, realHomeFor, realWorkspaceRedirect } from "@/lib/env/workspace";
+import { isClosedInRealWorkspace, isPublicDemoPath, isRealWorkspace, realHomeFor, realWorkspaceRedirect, TRACK_B_NOT_OPEN } from "@/lib/env/workspace";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 const publicRoutePrefixes = [
@@ -89,6 +89,7 @@ export async function middleware(request: NextRequest) {
   const real = isRealWorkspace();
 
   if (real && isPublicDemoPath(pathname)) return NextResponse.redirect(new URL("/", request.url));
+  if (real && isClosedInRealWorkspace(pathname)) return NextResponse.json({ error: TRACK_B_NOT_OPEN }, { status: 403 });
 
   if (!isAuthEntryPath(pathname) && real && isAuthenticated && onboardingComplete) {
     const target = realWorkspaceRedirect(pathname, role);
