@@ -423,7 +423,8 @@ async function run() {
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("app/security/page.tsx", "Row-level security");
   // The public site is the real product: no demo hero, no sandbox offer.
-  await assertFileIncludes("app/page.tsx", "Clinical intelligence, under clinical control.");
+  // Headline is split for the gradient accent: "Clinical intelligence, <span>under clinical control.</span>".
+  await assertFileIncludes("app/page.tsx", "Clinical intelligence, <span className=\"s-grad\">under clinical control.</span>");
   await assertFileExcludes("app/page.tsx", "Start free");
   await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
