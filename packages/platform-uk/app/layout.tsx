@@ -1,3 +1,5 @@
+import { ProofBanner } from "@/components/site/ProofBanner";
+import { isProofEnvironment } from "@/lib/env/proof";
 import "./globals.css";
 
 import type { Metadata } from "next";
@@ -56,10 +58,8 @@ export const metadata: Metadata = {
     title: SEO_DEFAULTS.title,
     description: SEO_DEFAULTS.description,
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  // The clinical-proof environment is never indexed.
+  robots: isProofEnvironment() ? { index: false, follow: false } : { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -67,7 +67,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${plexMono.variable}`}>
       <body>
         <AuthProvider>
-          <WorkspaceModeProvider real={isRealWorkspace()}>
+          <WorkspaceModeProvider real={isRealWorkspace()} proof={isProofEnvironment()}>
+            {isProofEnvironment() ? <ProofBanner /> : null}
             {children}
             <CookieConsent />
           </WorkspaceModeProvider>
