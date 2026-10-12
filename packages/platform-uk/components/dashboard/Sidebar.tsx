@@ -306,7 +306,7 @@ export function Sidebar({ role, inSheet = false }: { role: DashboardRole; inShee
                 <span
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
-                    active ? "bg-secondary text-white shadow-soft" : "bg-transparent text-steel"
+                    active ? "bg-lime text-navy" : "bg-transparent text-steel"
                   )}
                 >
                   <Icon className="h-[18px] w-[18px]" />

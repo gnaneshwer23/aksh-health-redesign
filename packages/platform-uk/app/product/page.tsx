@@ -215,8 +215,8 @@ export default function ProductPage() {
               <p>We will walk through your cancellation process and what go-live would involve for your clinic.</p>
             </div>
             <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
-              <Link href="/resources" className="s-btn s-btn--outline-light">Read the guides</Link>
+              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
+              <Link href="/resources" className="s-btn s-btn--ghost">Read the guides</Link>
             </div>
           </div>
         </div>

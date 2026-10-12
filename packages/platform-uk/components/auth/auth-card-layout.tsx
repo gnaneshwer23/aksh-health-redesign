@@ -17,23 +17,16 @@ export function AuthCardLayout({
   className?: string;
 }) {
   return (
-    <div className="marketing-site marketing-site--editorial relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
+    <div className="marketing-site marketing-site--editorial auth-canvas relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
+      {/* Same warm canvas as the public site and the workspace: greige ground, a sage and a lime disc. */}
+      <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full" style={{ background: "#e7eadb" }} />
+      <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 h-[260px] w-[260px] rounded-full" style={{ background: "#dcef55" }} />
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,168,142,0.10), transparent 55%), radial-gradient(ellipse 60% 45% at 90% 85%, rgba(232,243,254,0.9), transparent 50%), #F7F8FA",
-        }}
-      />
-      <div
-        className={cn(
-          "relative w-full max-w-md rounded-[2rem] border border-[var(--mk-line)] bg-white/95 p-6 shadow-[var(--mk-shadow-frame)] backdrop-blur-sm sm:p-8",
-          className
-        )}
+        className={cn("auth-canvas__card relative w-full max-w-md rounded-[2rem] border p-6 sm:p-8", className)}
+        style={{ borderColor: "#e3e1d6", boxShadow: "0 1px 2px rgba(18,23,21,0.05), 0 40px 80px -40px rgba(18,23,21,0.28)" }}
       >
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-sm font-bold text-white shadow-soft">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-bold" style={{ background: "#121715", color: "#dcef55" }}>
             A
           </div>
           <div className="leading-tight">

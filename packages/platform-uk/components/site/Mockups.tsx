@@ -88,8 +88,8 @@ export function CgmMock() {
           <div className="s-bar" aria-hidden>
             <span style={{ width: `${r.vlow}%`, background: "#8f1d14" }} />
             <span style={{ width: `${r.low}%`, background: "#e5484d" }} />
-            <span style={{ width: `${r.tir}%`, background: "#0a7a68" }} />
-            <span style={{ width: `${100 - r.tir - r.low - r.vlow}%`, background: "#e5a43b" }} />
+            <span style={{ width: `${r.tir}%`, background: "#1e4d52" }} />
+            <span style={{ width: `${100 - r.tir - r.low - r.vlow}%`, background: "#c3cc6a" }} />
           </div>
           <span className={`s-pill s-pill--${r.tone}`} style={{ justifySelf: "start" }}>{r.flag}</span>
         </div>
@@ -111,7 +111,7 @@ export function ReviewMock() {
         <span className="s-ui-muted">Fill rate by week</span>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 72 }} aria-hidden>
           {weeks.map((w, i) => (
-            <span key={i} style={{ flex: 1, height: `${w * 1.3}px`, borderRadius: 6, background: i === weeks.length - 1 ? "#0b4a42" : "#cfe5de" }} />
+            <span key={i} style={{ flex: 1, height: `${w * 1.3}px`, borderRadius: 6, background: i === weeks.length - 1 ? "#1e4d52" : "#dcef55" }} />
           ))}
         </div>
       </div>
@@ -156,8 +156,8 @@ export function WorkflowMock() {
       <ol style={{ display: "grid", gap: 0 }}>
         {steps.map((s, i) => (
           <li key={s.t} style={{ display: "grid", gridTemplateColumns: "24px 1fr", gap: 12, paddingBottom: i === steps.length - 1 ? 0 : 14, position: "relative" }}>
-            <span aria-hidden style={{ width: 22, height: 22, borderRadius: "50%", background: s.strong ? "#0b4a42" : "#e8f3ef", color: s.strong ? "#fff" : "#0a7a68", display: "grid", placeItems: "center", fontSize: 12, fontWeight: 700, zIndex: 1 }}>✓</span>
-            {i < steps.length - 1 ? <span aria-hidden style={{ position: "absolute", left: 10, top: 22, bottom: 0, width: 2, background: "#e3e8e6" }} /> : null}
+            <span aria-hidden style={{ width: 22, height: 22, borderRadius: "50%", background: s.strong ? "#121715" : "#dcef55", color: s.strong ? "#dcef55" : "#121715", display: "grid", placeItems: "center", fontSize: 12, fontWeight: 700, zIndex: 1 }}>✓</span>
+            {i < steps.length - 1 ? <span aria-hidden style={{ position: "absolute", left: 10, top: 22, bottom: 0, width: 2, background: "#e3e1d6" }} /> : null}
             <span style={{ display: "grid", gap: 2 }}>
               <span className="s-ui-strong">{s.t}</span>
               <span className="s-ui-muted">{s.d}</span>

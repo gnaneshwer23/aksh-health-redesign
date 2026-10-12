@@ -10759,3 +10759,13 @@ input:focus, textarea:focus {
   margin: 0;
   font-size: 0.82rem;
 }
+
+/* Auth pages share the public site's warm canvas (components/auth/auth-card-layout.tsx); beats the legacy
+   .marketing-site / --editorial surface and its transparent .bg-white, which are !important. */
+.marketing-site.auth-canvas,
+.marketing-site--editorial.auth-canvas {
+  background: #f2f1ea !important;
+}
+.marketing-site.auth-canvas .auth-canvas__card {
+  background: #ffffff !important;
+}

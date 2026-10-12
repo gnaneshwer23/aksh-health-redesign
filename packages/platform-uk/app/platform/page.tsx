@@ -145,8 +145,8 @@ export default function PlatformPage() {
               <p>The platform reaches production a workflow at a time. See what clinics run today, or talk to us about yours.</p>
             </div>
             <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
-              <Link href="/product" className="s-btn s-btn--outline-light">Available now</Link>
+              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
+              <Link href="/product" className="s-btn s-btn--ghost">Available now</Link>
             </div>
           </div>
         </div>
