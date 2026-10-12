@@ -26,7 +26,7 @@ import {
 import { ICS_REGIONS } from "@/lib/access-requests/validation";
 import type { UserRole } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
-import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
+import { useProofEnvironment, useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 import { ORG_EHR_OPTIONS, getOrgSchema } from "@/lib/onboarding/validation";
 
 type OrgFormProps = {
@@ -46,6 +46,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
   const schema = getOrgSchema(role);
   // Real workspace: no sandbox clinic with sample patients; set up your own (empty) clinic or join one.
   const real = useRealWorkspace();
+  const proof = useProofEnvironment();
 
   type FormValues = Record<string, unknown>;
   const form = useForm<FormValues>({
@@ -91,7 +92,7 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
   return (
     <Form {...form}>
       <form id="org-form" onSubmit={form.handleSubmit(submit)} className="space-y-5 animate-in fade-in duration-200">
-        <div className={real ? "grid gap-3 sm:grid-cols-2" : "grid gap-3 sm:grid-cols-3"} role="radiogroup" aria-label="Workspace">
+        <div className={real || proof ? "grid gap-3 sm:grid-cols-2" : "grid gap-3 sm:grid-cols-3"} role="radiogroup" aria-label="Workspace">
           {(real
             ? [
                 { value: "describe" as const, title: "Set up my clinic", body: "Your clinic's own workspace. Add staff and patients yourself." },
@@ -103,11 +104,16 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
               title: "Start in the sandbox clinic",
               body: "A full test clinic with patients, care team and pharmacy. Ready now."
             },
-            {
-              value: "describe" as const,
-              title: "Describe my organisation",
-              body: "Your own workspace, empty. Add staff and patients yourself.",
-            },
+            // The clinical-proof environment holds the synthetic sandbox clinic only.
+            ...(proof
+              ? []
+              : [
+                  {
+                    value: "describe" as const,
+                    title: "Describe my organisation",
+                    body: "Your own workspace, empty. Add staff and patients yourself.",
+                  },
+                ]),
             {
               value: "join" as const,
               title: "I have an invite code",

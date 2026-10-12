@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth/redirects";
 import { nextAuthSecret } from "@/lib/auth-secret";
 import { isClosedInRealWorkspace, isPublicDemoPath, isRealWorkspace, realHomeFor, realWorkspaceRedirect, TRACK_B_NOT_OPEN } from "@/lib/env/workspace";
+import { isProofEnvironment, proofRedirect } from "@/lib/env/proof";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 const publicRoutePrefixes = [
@@ -19,6 +20,7 @@ const publicRoutePrefixes = [
   "/auth/error",
   "/api/auth",
   "/demo",
+  "/proof",
   "/get-started",
   "/api/access-requests",
   "/platform",
@@ -60,6 +62,15 @@ function isAuthEntryPath(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
+  if (!isProofEnvironment()) return route(request);
+  // Clinical-proof environment: its own landing page, nothing that invites real details, never indexed.
+  const target = proofRedirect(request.nextUrl.pathname);
+  const response = target ? NextResponse.redirect(new URL(target, request.url)) : await route(request);
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return response;
+}
+
+async function route(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = await getToken({
     req: request,

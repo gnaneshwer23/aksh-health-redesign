@@ -1,3 +1,4 @@
+import { isProofEnvironment } from "@/lib/env/proof";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
@@ -96,7 +97,8 @@ export async function POST(request: Request) {
         const org = organisation as Record<string, unknown>;
         // The real workspace never seeds sample patients: every organisation starts empty under the name given.
         const real = isRealWorkspace();
-        const described = org.useSynthetic === false || real;
+        // The clinical-proof environment only ever holds the synthetic sandbox clinic: no real organisation or patient.
+        const described = !isProofEnvironment() && (org.useSynthetic === false || real);
         sandbox = await provisionSandbox(
           {
             userId: session.user.id,
