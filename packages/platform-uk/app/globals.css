@@ -10759,3 +10759,13 @@ input:focus, textarea:focus {
   margin: 0;
   font-size: 0.82rem;
 }
+
+/* Auth pages share the public site's night backdrop (components/auth/auth-card-layout.tsx); beats the legacy
+   .marketing-site / --editorial surface, which is !important. */
+.marketing-site.auth-night,
+.marketing-site--editorial.auth-night {
+  background: #050d0c !important;
+}
+.marketing-site.auth-night .auth-night__card {
+  background: #ffffff !important;
+}

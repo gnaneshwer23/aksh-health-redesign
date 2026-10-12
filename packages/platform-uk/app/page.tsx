@@ -21,25 +21,32 @@ export default function HomePage() {
   return (
     <SiteShell>
       <section className="s-hero-panel">
-        <div className="s-container">
-          <div className="s-hero-panel__card">
-            <div className="s-hero-panel__grid">
-              <div className="s-hero__copy">
-                <span className="s-pill-frost"><i aria-hidden>✦</i>Aksh Intelligence Platform · first module: Aksh Diabetes</span>
-                <h1 className="s-h1">Clinical intelligence, under clinical control.</h1>
-                <p className="s-lede">
-                  Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded
-                  administrative automation and clinician-reviewed clinical intelligence. A named clinician decides; the
-                  platform never decides alone.
-                </p>
-                <div className="s-actions">
-                  <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
-                  <Link href="/platform" className="s-btn s-btn--outline-light">Explore the platform</Link>
-                </div>
-                <p className="s-hero-panel__note">In production today: cancelled-slot fill, CGM monitoring and the patient app.</p>
+        <div className="s-container s-hero-panel__card">
+          <div className="s-hero-panel__grid">
+            <div className="s-hero__copy s-reveal">
+              <span className="s-pill-frost"><i>Platform</i>Aksh Intelligence Platform · first module: Aksh Diabetes</span>
+              <h1 className="s-h1">Clinical intelligence, <span className="s-grad">under clinical control.</span></h1>
+              <p className="s-lede">
+                Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded
+                administrative automation and clinician-reviewed clinical intelligence. A named clinician decides; the
+                platform never decides alone.
+              </p>
+              <div className="s-actions">
+                <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
+                <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
               </div>
+              <p className="s-hero-panel__note" aria-label="In production today">
+                <span>Cancelled-slot fill</span><span>CGM monitoring</span><span>Patient app</span>
+              </p>
+            </div>
+            <div className="s-glow-wrap s-reveal" style={{ animationDelay: "120ms" }}>
               <ReviewQueueMock />
             </div>
+          </div>
+          <div className="s-metrics" style={{ marginTop: 64 }}>
+            <div><b>12 agents</b><span>under one supervisor, in a fixed, inspectable order</span></div>
+            <div><b>1 audit trail</b><span>who drafted, who decided, what changed</span></div>
+            <div><b>0 autonomous decisions</b><span>nothing reaches a record without a named clinician</span></div>
           </div>
         </div>
       </section>
@@ -71,16 +78,16 @@ export default function HomePage() {
               <h3 className="s-h3">Automation that oversteps</h3>
               <p className="s-small">Auto-writes to the record, auto-dosing, diagnostic claims, with nobody accountable in the loop.</p>
             </div>
-            <div className="s-card" style={{ background: "var(--s-brand)", borderColor: "var(--s-brand)" }}>
-              <h3 className="s-h3" style={{ color: "#fff" }}>Aksh’s answer</h3>
-              <ul className="s-check" style={{ color: "#fff" }}>
+            <div className="s-card s-card--accent">
+              <h3 className="s-h3">Aksh’s answer</h3>
+              <ul className="s-check">
                 {[
                   ["One orchestrator", "a supervisor runs every agent in a fixed, inspectable order"],
                   ["One audit trail", "who drafted, who decided, what changed"],
                   ["One consent model", "shared by every module and role"],
                   ["One rule", "nothing reaches a record or prescription without a human decision"],
                 ].map(([k, v]) => (
-                  <li key={k} style={{ color: "rgb(255 255 255 / 0.9)" }}><Check aria-hidden style={{ color: "#9fe3d5" }} /><span><strong style={{ color: "#fff" }}>{k}:</strong> {v}</span></li>
+                  <li key={k}><Check aria-hidden /><span><strong>{k}:</strong> {v}</span></li>
                 ))}
               </ul>
             </div>
@@ -167,7 +174,7 @@ export default function HomePage() {
               <Link href="/product" className="s-link">What’s available now →</Link>
             </div>
             <div style={{ display: "grid", gap: 16 }}>
-              <SlotFillMock />
+              <div className="s-glow-wrap"><SlotFillMock /></div>
             </div>
           </div>
         </div>
@@ -184,7 +191,7 @@ export default function HomePage() {
               <li><Check aria-hidden />Missing data, like an overdue eye-screening date, is listed rather than guessed.</li>
               <li><Check aria-hidden />No autonomous diagnosis, prescribing or treatment.</li>
             </ul>
-            <Link href="/security" className="s-btn s-btn--light" style={{ justifySelf: "start" }}>Security and clinical safety</Link>
+            <Link href="/security" className="s-btn s-btn--ghost" style={{ justifySelf: "start" }}>Security and clinical safety</Link>
           </div>
           <div style={{ display: "grid", gap: 12 }}>
             <p className="s-small">Mandatory human gates</p>
@@ -238,8 +245,8 @@ export default function HomePage() {
               <p>Tell us about your organisation. We go live one governed workflow at a time.</p>
             </div>
             <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--light">Request access</Link>
-              <Link href="/platform" className="s-btn s-btn--outline-light">Explore the platform</Link>
+              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
+              <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
             </div>
           </div>
         </div>

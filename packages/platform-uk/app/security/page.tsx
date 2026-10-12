@@ -131,8 +131,8 @@ export default function SecurityPage() {
               <p>We will share our data processing agreement and help with your privacy impact assessment.</p>
             </div>
             <div className="s-actions">
-              <Link href="/contact" className="s-btn s-btn--light">Contact us</Link>
-              <Link href="/resources/going-live" className="s-btn s-btn--outline-light">Going-live guide</Link>
+              <Link href="/contact" className="s-btn s-btn--primary">Contact us</Link>
+              <Link href="/resources/going-live" className="s-btn s-btn--ghost">Going-live guide</Link>
             </div>
           </div>
         </div>
