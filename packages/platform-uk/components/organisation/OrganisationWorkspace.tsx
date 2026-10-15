@@ -187,6 +187,8 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
     emergencyNumber: org.locale.emergencyNumber ?? "",
     urgentAdviceLine: org.locale.urgentAdviceLine ?? "",
     crisisLine: org.locale.crisisLine ?? "",
+    guidelineName: org.locale.guidelineName ?? "",
+    guidelineVersion: org.locale.guidelineVersion ?? "",
   });
   const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -225,6 +227,16 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
           <label className="text-sm"><span className="text-muted">Emergency number</span><Input value={form.emergencyNumber} onChange={set("emergencyNumber")} aria-label="Emergency number" inputMode="tel" /></label>
           <label className="text-sm"><span className="text-muted">Urgent advice line (optional)</span><Input value={form.urgentAdviceLine} onChange={set("urgentAdviceLine")} aria-label="Urgent advice line" inputMode="tel" /></label>
           <label className="text-sm sm:col-span-2"><span className="text-muted">Mental health crisis line (optional)</span><Input value={form.crisisLine} onChange={set("crisisLine")} aria-label="Crisis line" /></label>
+          <label className="text-sm">
+            <span className="text-muted">Clinical guideline you follow</span>
+            <Input value={form.guidelineName} onChange={set("guidelineName")} aria-label="Clinical guideline" list="guideline-suggestions" placeholder="e.g. ADA Standards of Care" />
+            <datalist id="guideline-suggestions">
+              <option value="ADA Standards of Care in Diabetes" />
+              <option value="IDF Clinical Practice Recommendations" />
+              <option value="National guideline (name it)" />
+            </datalist>
+          </label>
+          <label className="text-sm"><span className="text-muted">Guideline version or year</span><Input value={form.guidelineVersion} onChange={set("guidelineVersion")} aria-label="Guideline version" placeholder="e.g. 2026" /></label>
           <p className="text-xs text-muted sm:col-span-2">
             These numbers appear in safety messages to your patients. Until an emergency number is set, messages say “your local emergency number”.
             Organisation ID (for other organisations recording shared care): <span className="font-mono">{org.id}</span>

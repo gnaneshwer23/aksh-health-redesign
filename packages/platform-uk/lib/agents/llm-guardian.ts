@@ -1,10 +1,11 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { getMockGuardianResponse, getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchGuardianFromGraph, fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { GuardianSeverity, Neo4jGuardianInteraction } from "@/lib/neo4j/types";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const GUARDIAN_MODEL = "openai/gpt-5.4-mini";
 
@@ -13,13 +14,11 @@ Given known drug–drug interactions for a patient, produce a concise clinical s
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the alert is filed.
 - Be conservative; escalate uncertainty.
-- Use UK clinical English and BNF framing when references are supplied.
+- Use clear clinical English; cite the supplied medicines reference when one is given.
 - Output JSON only with keys: summary (string), clinicianActions (array of strings), safetyNotes (array of strings), confidence (0-1 number).`;
 
 export function isLlmGuardianConfigured() {
-  if (process.env.ENABLE_LLM_GUARDIAN === "false") return false;
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("GUARDIAN");
 }
 
 export type GuardianDraft = {

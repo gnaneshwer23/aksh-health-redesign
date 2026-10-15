@@ -220,7 +220,9 @@ and unused).
 | B5 | Evaluation → release | Golden fixtures exist but no thresholds gate a release |
 | B6 | Clinic enquiries → follow-up | Enquiries now email ops; no in-product status for the enquirer beyond a reference |
 
-No defects (failing functionality) were found in the production journeys during this session; the last full CI run
+One defect in the demo estate: the diabetes decision-history snapshot fails to save ("Converting circular structure
+to JSON") and is skipped by its fail-open path, so no snapshot is recorded (`lib/disease-modules/diabetes/decision-history.ts`).
+Fix with P2-4. No defects were found in the production journeys during this session; the last full CI run
 (37 e2e specs, 108 unit/DB tests) passed on `main`.
 
 ---
@@ -256,6 +258,16 @@ Complexity: S ≤ 1 day · M 2–5 days · L 1–3 weeks. Owner F = founder/CSO/
 | F-4 | Design partner and locked baseline | Critical (commercial) | First live clinic | — | — | F | Signed pilot; baseline accepted in go-live |
 
 ---
+
+### Progress (16 Oct 2026)
+
+- P0-3 done: agent model calls are opt-in per agent (`ENABLE_LLM_<AGENT>=true`) and never run in the real workspace
+  (`lib/ai/llm-gate.ts`, `tests/llm-gate.test.ts`).
+- P0-4 done: organisations record the clinical guideline they follow (name and version) in settings; shown in the
+  capability register.
+- P1-1 first slice done: Today is one ranked work list across slot fill, bookings to confirm, hand-offs, readings to
+  check, low-glucose CGM and CGM uploads, each with why, due time and a deep link to the exact item.
+- P0-1 and P0-2 remain with the founder (Neon console and Vercel production settings).
 
 ## 10. Recommended implementation sequence
 

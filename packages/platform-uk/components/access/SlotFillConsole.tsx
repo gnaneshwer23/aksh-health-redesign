@@ -166,6 +166,12 @@ export function SlotFillConsole() {
     void load();
   }, [load]);
 
+  // Deep link from Today: /dashboard/access?slot=<workflow id> opens that slot.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("slot");
+    if (id && /^[\w-]{1,64}$/.test(id)) void open(id);
+  }, [open]);
+
   async function act(body: Record<string, unknown>) {
     if (!wf) return;
     setBusy(true);

@@ -1,10 +1,11 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const DR_ASSIST_MODEL = "openai/gpt-5.4-mini";
 
@@ -13,16 +14,14 @@ Given known conditions, medications, and risk context, suggest SNOMED CT codes (
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim codes are filed.
 - Be conservative; escalate uncertainty.
-- Use UK clinical English.
+- Use clear, plain clinical English.
 - Do not invent conditions that are not supplied.
 - Output JSON only with keys: summary (string), codes (array of {system, code, display, confidence}), clinicianActions (array of strings), safetyNotes (array of strings), confidence (0-1 number).
 - system must be "SNOMED CT" or "ICD-10".
 - ICD-10 means the WHO edition used in the UK (e.g. I80.2, E11.9). Never use US ICD-10-CM codes (e.g. I82.4x, E11.65).`;
 
 export function isLlmDrAssistConfigured() {
-  if (process.env.ENABLE_LLM_DR_ASSIST === "false") return false;
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("DR_ASSIST");
 }
 
 export type DrAssistCodeSuggestion = {

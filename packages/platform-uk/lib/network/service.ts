@@ -35,6 +35,8 @@ const localeSchema = z
     emergencyNumber: z.string().max(16).optional(),
     urgentAdviceLine: z.string().max(32).optional(),
     crisisLine: z.string().max(64).optional(),
+    guidelineName: z.string().max(120).optional(),
+    guidelineVersion: z.string().max(40).optional(),
   })
   .strict();
 

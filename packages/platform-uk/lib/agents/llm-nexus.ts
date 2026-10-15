@@ -1,10 +1,11 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const NEXUS_MODEL = "openai/gpt-5.4-mini";
 
@@ -14,13 +15,11 @@ Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim any correlation is filed.
 - Only correlate data that is supplied. Never invent conditions, medications, results, or risk scores.
 - Be conservative; flag uncertainty explicitly.
-- Use UK clinical English.
+- Use clear, plain clinical English.
 - Output JSON only with keys: summary (string), correlations (array of {link, significance, suggestedConsideration}), safetyNotes (array of strings), confidence (0-1 number).`;
 
 export function isLlmNexusConfigured() {
-  if (process.env.ENABLE_LLM_NEXUS === "false") return false;
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("NEXUS");
 }
 
 export type NexusCorrelation = {

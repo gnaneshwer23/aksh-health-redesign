@@ -14,8 +14,9 @@ import { WEEKLY_REVIEW_VERSION } from "./weekly-review";
 export async function getCapabilityRegister(ctx: NetworkContext, orgId: string) {
   if (!ctx.orgIds.includes(orgId)) throw new NetworkError("Not a member of this organisation", 403);
   return withTenant(ctx, async (client) => {
-    const org = (await client.query<{ name: string; status: string; pilot_stage: string; verified_at: Date | null }>(
-      `SELECT name, status, pilot_stage, verified_at FROM aksh.organisations WHERE id = $1`,
+    const org = (await client.query<{ name: string; status: string; pilot_stage: string; verified_at: Date | null; guideline_name: string | null; guideline_version: string | null }>(
+      `SELECT name, status, pilot_stage, verified_at, locale->>'guidelineName' AS guideline_name, locale->>'guidelineVersion' AS guideline_version
+       FROM aksh.organisations WHERE id = $1`,
       [orgId]
     )).rows[0];
     if (!org) throw new NetworkError("Organisation not found", 404);
@@ -38,6 +39,8 @@ export async function getCapabilityRegister(ctx: NetworkContext, orgId: string) 
         metricVersion: "slot-fill-v1.2",
         reportVersion: WEEKLY_REVIEW_VERSION,
       },
+      // The clinical guideline the organisation declared (any country); null until set in organisation settings.
+      clinicalGuideline: org.guideline_name ? { name: org.guideline_name, version: org.guideline_version || null } : null,
       stageHistory: stages.map((s) => ({ stage: s.to_stage, note: s.note, at: s.created_at.toISOString() })),
       connectors: { active: keys.active, environment: adapterEnvironment(), capabilities: CONNECTOR_CAPABILITIES },
       // §8.1 machine-readable honesty fields: literal and testable.

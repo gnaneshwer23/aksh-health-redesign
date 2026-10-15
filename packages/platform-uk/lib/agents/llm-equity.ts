@@ -1,10 +1,11 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { isNeo4jConfigured } from "@/lib/neo4j";
 import { getMockIcsPopulationResponse } from "@/lib/neo4j/mock-fallback";
 import { fetchIcsPopulationFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jIcsPopulationResponse } from "@/lib/neo4j/types";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const EQUITY_MODEL = "openai/gpt-5.4-mini";
 
@@ -18,9 +19,7 @@ Rules:
 - Output JSON only with keys: summary (string), priorities (array of strings), recommendedActions (array of strings), safetyNotes (array of strings), confidence (0-1 number).`;
 
 export function isLlmEquityConfigured() {
-  if (process.env.ENABLE_LLM_EQUITY === "false") return false;
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("EQUITY");
 }
 
 export type EquityDraft = {

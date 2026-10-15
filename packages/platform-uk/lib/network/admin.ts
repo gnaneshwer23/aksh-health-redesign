@@ -45,6 +45,9 @@ export const updateOrganisationSchema = z.object({
       emergencyNumber: phoneish.optional().or(z.literal("")),
       urgentAdviceLine: phoneish.optional().or(z.literal("")),
       crisisLine: z.string().trim().max(64).optional().or(z.literal("")),
+      /** The clinical guideline this organisation follows, by name and version (any country). Cited by rules. */
+      guidelineName: z.string().trim().max(120).optional().or(z.literal("")),
+      guidelineVersion: z.string().trim().max(40).optional().or(z.literal("")),
     })
     .optional(),
 });
