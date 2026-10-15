@@ -103,13 +103,36 @@ async function db() {
   assert.ok(t.cgm, "clinicians get the CGM worklist");
   assert.equal(typeof t.readingsToReview, "number");
 
+  // The work list: one item per thing to do, urgent first, each with why, due and a link to the exact item.
+  const mine = t.work.filter((w) => w.organisation === t.organisations[0]!.name);
+  const closing = mine.find((w) => w.kind === "slot")!;
+  assert.equal(closing.priority, 0, "an offer closing within 4 hours is urgent");
+  assert.match(closing.why, /Offer closes within 4 hours/);
+  assert.match(closing.href, /^\/dashboard\/access\?slot=/);
+  const readBack = mine.find((w) => w.kind === "read_back")!;
+  assert.equal(readBack.href, `/dashboard/access?slot=${b.workflowId}`);
+  assert.ok(t.work.indexOf(closing) < t.work.indexOf(readBack), "urgent before due soon");
+  await applyAction(ctx, b.workflowId, { action: "complaint", idempotencyKey: `c-${tag}`, note: "Asked to be called after 5pm" });
+  await getPgPool().query(
+    `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by) VALUES ($1, 'glucose', 6.2, 'mmol/L', NOW() - INTERVAL '1 hour', 'patient_reported', false, $2)`,
+    [p!.id, nurseId]
+  );
+  t = await getToday(ctx);
+  const ho = t.work.find((w) => w.kind === "handoff" && w.title === "Hand-off: Complaint raised");
+  assert.ok(ho, "an open hand-off is listed");
+  assert.equal(ho!.href, `/dashboard/access?slot=${b.workflowId}`);
+  const rd = t.work.find((w) => w.kind === "readings" && w.href === `/dashboard/network?patient=${p!.id}`);
+  assert.ok(rd && /1 reading from Ada Today to check/.test(rd.title), "unverified shared readings are listed per patient");
+  assert.ok(!(await getToday(adminCtx)).work.some((w) => w.kind === "readings"), "managers do not get clinical items");
+
   // Another organisation's staff see none of it.
   const otherId = await user("other");
   await createOrganisation({ userId: otherId, email: `o-${tag}@akshhealth.test`, displayName: "Other", role: "practice-manager" }, { name: `Other ${tag}`, kind: "clinic" });
   const other = await getToday(await loadNetworkContext(otherId, "practice-manager"));
   assert.equal(other.slots.toWork + other.slots.awaitingReadBack, 0);
+  assert.ok(!other.work.some((w) => w.organisation === t.organisations[0]!.name || w.href.includes(b.workflowId)), "no work leaks across organisations");
   assert.ok(!other.organisations.some((o) => o.id === org.id));
-  console.log("real-workspace: Today counts, setup steps, clinician-only worklists, isolation — PASS");
+  console.log("real-workspace: Today counts, work list (order, reasons, links, hand-offs, readings), setup steps, clinician-only worklists, isolation — PASS");
 }
 
 pure();

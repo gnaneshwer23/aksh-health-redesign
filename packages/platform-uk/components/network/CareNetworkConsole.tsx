@@ -110,6 +110,14 @@ export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
     if (r.ok) setDetail(await r.json());
   }
 
+  // Deep link from Today: /dashboard/network?patient=<id> opens the patients tab with that patient.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("patient");
+    if (!id || !/^[\w-]{1,64}$/.test(id)) return;
+    setTab("patients");
+    void fetch(`/api/network/patients/${id}`).then(async (r) => (r.ok ? setDetail(await r.json()) : undefined));
+  }, []);
+
   const empty = summary && summary.totals.organisations === 0;
 
   return (

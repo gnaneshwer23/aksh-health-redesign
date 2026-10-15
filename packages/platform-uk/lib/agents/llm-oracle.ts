@@ -1,3 +1,4 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
@@ -5,7 +6,7 @@ import { isNeo4jConfigured } from "@/lib/neo4j";
 import { fetchPatientFromGraph } from "@/lib/neo4j/queries";
 import type { Neo4jPatientResponse } from "@/lib/neo4j/types";
 import type { OracleRisk } from "@/lib/mock-data/types";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const ORACLE_MODEL = "openai/gpt-5.4-mini";
 
@@ -14,14 +15,12 @@ Given a patient's known risk score, conditions, medications, and contributing fa
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the score is filed.
 - Be conservative; escalate uncertainty.
-- Use UK clinical English.
+- Use clear, plain clinical English.
 - Do not invent scores, conditions, or medications that are not supplied.
 - Output JSON only with keys: summary (string), contributingFactors (array of strings), clinicianActions (array of strings), safetyNotes (array of strings), confidence (0-1 number).`;
 
 export function isLlmOracleConfigured() {
-  if (process.env.ENABLE_LLM_ORACLE === "false") return false;
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("ORACLE");
 }
 
 export type OracleDraft = {

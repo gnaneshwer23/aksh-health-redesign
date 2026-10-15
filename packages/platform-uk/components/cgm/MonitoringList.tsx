@@ -46,6 +46,12 @@ export function MonitoringList() {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
 
+  // Deep link from Today: /dashboard/monitoring?patient=<id> opens that patient's row.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("patient");
+    if (id && /^[\w-]{1,64}$/.test(id)) setOpen(id);
+  }, []);
+
   useEffect(() => {
     void fetch("/api/network/cgm/monitoring")
       .then(async (r) => {

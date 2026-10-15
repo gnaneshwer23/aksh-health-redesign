@@ -14,6 +14,7 @@ import { getWeeklyReview, mondayOf } from "../lib/access/weekly-review";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { setPilotStage } from "../lib/golive/service";
+import { updateOrganisation } from "../lib/network/admin";
 import { withTenant } from "../lib/network/db";
 import { loadNetworkContext } from "../lib/network/context";
 import { acceptStaffInvite, createInvite, createOrganisation, importPatients, NetworkError } from "../lib/network/service";
@@ -107,6 +108,9 @@ async function db() {
     assert.equal(reg.stageHistory[0]!.stage, "staff_assisted");
     assert.equal(reg.connectors.capabilities.write, false);
     assert.equal(reg.honesty.liveEmis, false);
+    assert.equal(reg.clinicalGuideline, null, "no guideline until the organisation declares one");
+    await updateOrganisation(admin, org.id, { locale: { timezone: "UTC", guidelineName: "ADA Standards of Care in Diabetes", guidelineVersion: "2026" } });
+    assert.deepEqual((await getCapabilityRegister(ctx, org.id)).clinicalGuideline, { name: "ADA Standards of Care in Diabetes", version: "2026" });
     assert.equal(reg.honesty.messagesSentByAksh, false);
     assert.equal(reg.honesty.bookingConfirmedOnlyByReadBack, true);
     const outsider = await user("outsider");

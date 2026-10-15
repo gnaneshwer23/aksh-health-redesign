@@ -1,5 +1,6 @@
+import { llmAgentEnabled } from "./ai/llm-gate";
 import type { ReviewCase } from "./types";
-import { aiConfigured, aiProvider } from "./ai/model";
+import { aiProvider } from "./ai/model";
 
 export function isFastApiSynthesisEnabled() {
   return process.env.ENABLE_FASTAPI_SYNTHESIS === "true";
@@ -159,28 +160,23 @@ function aiProviderLabel() {
 }
 
 function isLlmSynthesisEnabled() {
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("SYNTHESIS");
 }
 
 function isLlmGuardianEnabled() {
-  if (process.env.ENABLE_LLM_GUARDIAN === "false") return false;
-  return isLlmSynthesisEnabled();
+  return llmAgentEnabled("GUARDIAN");
 }
 
 function isLlmOracleEnabled() {
-  if (process.env.ENABLE_LLM_ORACLE === "false") return false;
-  return isLlmSynthesisEnabled();
+  return llmAgentEnabled("ORACLE");
 }
 
 function isLlmDrAssistEnabled() {
-  if (process.env.ENABLE_LLM_DR_ASSIST === "false") return false;
-  return isLlmSynthesisEnabled();
+  return llmAgentEnabled("DR_ASSIST");
 }
 
 function isLlmEquityEnabled() {
-  if (process.env.ENABLE_LLM_EQUITY === "false") return false;
-  return isLlmSynthesisEnabled();
+  return llmAgentEnabled("EQUITY");
 }
 
 export function shouldSyncAcceptedCaseToMedplum(existing: ReviewCase, payload: ReviewCase, updated: ReviewCase) {

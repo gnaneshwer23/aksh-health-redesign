@@ -1,7 +1,8 @@
+import { llmAgentEnabled } from "../ai/llm-gate";
 import { generateText } from "ai";
 
 import { buildInputSummary, extractPatientLabel } from "@/lib/intake-generation";
-import { aiConfigured, languageModel } from "../ai/model";
+import { languageModel } from "../ai/model";
 
 export const SYNTHESIS_MODEL = "openai/gpt-5.4-mini";
 
@@ -10,12 +11,11 @@ Produce a structured SOAP-style draft from the clinician transcript.
 Rules:
 - Draft only. Never instruct writing to EMIS/SystmOne or claim the note is filed.
 - Be conservative; flag uncertainty.
-- Use UK clinical English.
+- Use clear, plain clinical English.
 - Output JSON only with keys: subjective, objective, assessment, plan, safetyNotes (array of strings), confidence (0-1 number).`;
 
 export function isLlmSynthesisConfigured() {
-  if (process.env.ENABLE_LLM_SYNTHESIS === "false") return false;
-  return aiConfigured();
+  return llmAgentEnabled("SYNTHESIS");
 }
 
 export type SynthesisDraft = {

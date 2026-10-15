@@ -251,6 +251,7 @@ export function GoLiveTab({ org, onMessage, onStatusChange }: { org: Org; onMess
 
 type Register = {
   workflow: { mode: string; contactExecutedBy: string; ruleVersion: string; templateVersion: string; metricVersion: string };
+  clinicalGuideline?: { name: string; version: string | null } | null;
   stageHistory: { stage: string; note: string; at: string }[];
   connectors: { active: number; environment: string; capabilities: Record<string, boolean> };
   honesty: Record<string, boolean>;
@@ -286,6 +287,9 @@ function CapabilityRegister({ orgId }: { orgId: string }) {
           <p className="text-xs font-medium text-muted">Workflow</p>
           <p className="text-foreground">{MODE_LABEL[r.workflow.mode] ?? r.workflow.mode} · contact by {r.workflow.contactExecutedBy}</p>
           <p className="text-xs text-muted">Rules {r.workflow.ruleVersion} · wording {r.workflow.templateVersion} · metric {r.workflow.metricVersion}</p>
+          <p className="text-xs text-muted" data-clinical-guideline>
+            Clinical guideline: {r.clinicalGuideline ? `${r.clinicalGuideline.name}${r.clinicalGuideline.version ? ` (${r.clinicalGuideline.version})` : ""}` : "not set yet (add it in Settings)"}
+          </p>
           {r.stageHistory[0] ? <p className="text-xs text-muted">Last stage change: {r.stageHistory[0].stage.replace("_", "-")} · {new Date(r.stageHistory[0].at).toLocaleDateString()} · “{r.stageHistory[0].note}”</p> : null}
         </div>
         <div className="space-y-1">

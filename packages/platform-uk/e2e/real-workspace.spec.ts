@@ -115,4 +115,6 @@ test("real workspace: onboarding is role, identity, clinic, consent, then Today"
   await expect(page).toHaveURL(/\/dashboard\/today/, { timeout: 30_000 });
   await expect(page.locator("[data-today-org]")).toContainText("Harbour Diabetes Clinic", { timeout: 20_000 });
   await expect(page.locator("[data-today-org]")).toContainText("0 patients");
+  await expect(page.locator("[data-needs-you]")).toContainText("Needs you now");
+  await expect(page.locator("[data-work-empty]")).toContainText("Nothing needs you right now");
 });
