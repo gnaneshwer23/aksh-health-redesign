@@ -46,13 +46,22 @@ test.describe("Public site", () => {
     expect(overflow, "no horizontal scroll at phone width").toBeLessThanOrEqual(0);
   });
 
-  test("how it works: data flow, twelve components with honest status, diabetes, controls, go-live", async ({ page }) => {
+  test("how it works: data flow, diabetes now and next, controls, go-live; no internal engineering detail", async ({ page }) => {
     await page.goto("/platform");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aksh works beside your records system, not instead of it.");
-    for (const id of ["flow", "components", "diabetes", "controls", "go-live"]) await expect(page.locator(`#${id}`)).toBeVisible();
-    await expect(page.locator("[data-agents] > div")).toHaveCount(12);
-    await expect(page.locator("[data-agents]")).toContainText("Planned");
-    await expect(page.locator("[data-agents]")).toContainText("In production");
+    for (const id of ["flow", "diabetes", "controls", "go-live"]) await expect(page.locator(`#${id}`)).toBeVisible();
+    await expect(page.locator('[data-diabetes-areas] [data-availability="available"]')).toContainText("Glucose and CGM");
+    await expect(page.locator('[data-diabetes-areas] [data-availability="development"]')).toContainText("Medication safety");
+  });
+
+  test("public pages carry no internal codenames or engineering status", async ({ page }) => {
+    for (const path of ["/", "/platform", "/product", "/security", "/resources"]) {
+      await page.goto(path);
+      const text = await page.locator("main").innerText();
+      for (const banned of ["CONDUCTOR", "GUARDIAN", "SYNTHESIS", "HORIZON", "NEXUS", "CANVAS", "Synthetic validation", "synthetic validation", "Planned", "Track B", "PRD"]) {
+        expect(text, `${path} shows "${banned}"`).not.toContain(banned);
+      }
+    }
   });
 
   test("product page sections are reachable by anchor", async ({ page }) => {

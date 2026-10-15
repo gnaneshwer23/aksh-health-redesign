@@ -419,3 +419,16 @@
 .s-flow li::before { content: ""; position: absolute; left: 0; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--s-teal-2); }
 @media (max-width: 980px) { .s-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .s-flow { grid-template-columns: 1fr; } }
+
+/* Available now / In development grouping (public site; no engineering status). */
+.s-pillar__group { display: grid; gap: 8px; }
+.s-pillar__label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--s-teal-2); display: inline-flex; align-items: center; gap: 8px; }
+.s-pillar__label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--s-lime); box-shadow: 0 0 0 2px var(--s-teal) inset; }
+[data-availability="development"] .s-pillar__label { color: var(--s-muted); }
+[data-availability="development"] .s-pillar__label::before { background: transparent; box-shadow: 0 0 0 2px var(--s-line-strong) inset; }
+[data-availability="development"] .s-pillar__item { background: transparent; border-style: dashed; }
+.s-avail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.s-avail__col { display: grid; gap: 10px; align-content: start; }
+.s-avail__col .s-area { background: var(--s-raised); }
+.s-avail__col[data-availability="development"] .s-area { background: transparent; border-style: dashed; }
+@media (max-width: 860px) { .s-avail { grid-template-columns: 1fr; } }

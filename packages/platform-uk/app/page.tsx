@@ -5,17 +5,14 @@ import { Activity, CalendarClock, Check, Layers, LineChart, ShieldAlert, Smartph
 import { ReviewQueueMock, SlotFillMock } from "@/components/site/Mockups";
 import { Pillars } from "@/components/site/Pillars";
 import { SiteShell } from "@/components/site/SiteShell";
-import { DIABETES_AREAS, HUMAN_GATES, NON_OBJECTIVES, PRODUCT_LOOP, STATUS_LABEL } from "@/components/site/vision";
+import { DiabetesAreas } from "@/components/site/DiabetesAreas";
+import { HUMAN_GATES, NON_OBJECTIVES, PRODUCT_LOOP } from "@/components/site/vision";
 
 export const metadata: Metadata = {
   title: "Aksh Health | Clinical intelligence, under clinical control",
   description:
     "Aksh prepares worklists and drafts for patient access and clinical review from the systems a clinic already uses. A named clinician decides every step. First module: Aksh Diabetes.",
 };
-
-function Status({ s }: { s: keyof typeof STATUS_LABEL }) {
-  return <span className={`s-status s-status--${s}`}>{STATUS_LABEL[s]}</span>;
-}
 
 export default function HomePage() {
   return (
@@ -131,19 +128,10 @@ export default function HomePage() {
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">First module · Aksh Diabetes</span>
-            <h2 className="s-h2">Nine areas, one review queue.</h2>
-            <p className="s-lede">Each area adds to one review queue instead of becoming another tool. They share the same checks and audit trail.</p>
-            <div className="s-legend"><Status s="production" /><Status s="synthetic" /></div>
+            <h2 className="s-h2">Diabetes care, one worklist at a time.</h2>
+            <p className="s-lede">Glucose monitoring is available today. The rest of the module adds to the same worklist and review queue, with the same safeguards.</p>
           </div>
-          <div className="s-areas">
-            {DIABETES_AREAS.map((a) => (
-              <div key={a.name} className="s-area">
-                <div className="s-row"><h3 className="s-h3" style={{ fontSize: 18 }}>{a.name}</h3><Status s={a.status} /></div>
-                <p className="s-small">{a.output}</p>
-                <p className="s-area__gate">{a.gate}</p>
-              </div>
-            ))}
-          </div>
+          <DiabetesAreas />
         </div>
       </section>
 
@@ -210,10 +198,8 @@ export default function HomePage() {
             <span className="s-eyebrow">Limits</span>
             <h2 className="s-h2">What Aksh will not do.</h2>
             <p className="s-body">
-              Every capability is labelled: in production, tested on synthetic data only, or planned. These limits are part
-              of the design.
+              These limits are part of the design. We say clearly what is available today and what is still in development.
             </p>
-            <div className="s-legend"><Status s="production" /><Status s="synthetic" /><Status s="planned" /></div>
           </div>
           <ul className="s-limits">
             {NON_OBJECTIVES.map((n) => <li key={n}>{n}</li>)}
