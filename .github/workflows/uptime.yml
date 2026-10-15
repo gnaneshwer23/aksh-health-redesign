@@ -1,0 +1,40 @@
+name: Production uptime
+
+# Every 15 minutes: the public site, sign-in and the database are up, and the production guardrails hold (synthetic and
+# agent APIs closed). A failed run emails the repository owner (GitHub notifications for failed scheduled workflows).
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE: https://www.akshhealth.com
+    steps:
+      - name: Site, sign-in and database
+        run: |
+          set -u
+          fail=0
+          for p in / /platform /product /security /signin; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$BASE$p")
+            echo "$code $p"; [ "$code" = "200" ] || fail=1
+          done
+          health=$(curl -s --max-time 20 -w ' %{http_code}' "$BASE/api/health")
+          echo "health: $health"
+          case "$health" in *'"status":"ok"'*' 200') ;; *) fail=1 ;; esac
+          exit $fail
+      - name: Production guardrails
+        run: |
+          set -u
+          fail=0
+          for p in /api/agents/orchestrate /api/chat /api/clinical-spine/orchestrate /api/front-desk/conversations /api/eval/agents; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST "$BASE$p")
+            echo "$code POST $p"; [ "$code" = "403" ] || fail=1
+          done
+          exit $fail

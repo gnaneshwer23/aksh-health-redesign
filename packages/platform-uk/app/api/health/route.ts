@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getPgPool, isPostgresConfigured } from "../../../lib/db/client";
+import { isRealWorkspace } from "../../../lib/env/workspace";
 import { checkNeo4jHealth, isNeo4jConfigured } from "../../../lib/neo4j";
 
 export const dynamic = "force-dynamic";
@@ -24,8 +25,16 @@ async function checkDatabaseHealth(): Promise<ServiceHealth> {
   }
 }
 
-/** Public production health probe — no secrets in the response body. */
+/**
+ * Health probe. In the real workspace (production) it says only ok/degraded, with 503 when the database is down so
+ * uptime monitors alert; the detailed view (graph, modes) is for simulation and local.
+ */
 export async function GET() {
+  if (isRealWorkspace()) {
+    const database = await checkDatabaseHealth();
+    const ok = !database.configured || database.connected;
+    return NextResponse.json({ status: ok ? "ok" : "degraded" }, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store" } });
+  }
   const [database, neo4jHealth] = await Promise.all([checkDatabaseHealth(), checkNeo4jHealth()]);
 
   const neo4j: ServiceHealth = {

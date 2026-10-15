@@ -3,10 +3,11 @@ import { formatAccessRequestReferenceId } from "@/lib/access-requests/reference-
 import { sendEmail } from "@/lib/email/send";
 
 export async function notifyAccessRequestSubmitted(record: AccessRequestRecord) {
-  const notifyEmail = process.env.ACCESS_REQUEST_NOTIFY_EMAIL?.trim();
+  // A dedicated inbox if configured, else the ops alert inbox, so no enquiry goes unseen.
+  const notifyEmail = process.env.ACCESS_REQUEST_NOTIFY_EMAIL?.trim() || process.env.OPS_ALERT_EMAIL?.trim();
   if (!notifyEmail) {
     console.warn(
-      "[access-request] ACCESS_REQUEST_NOTIFY_EMAIL is not set. Enquiry saved but no notification sent."
+      "[access-request] Neither ACCESS_REQUEST_NOTIFY_EMAIL nor OPS_ALERT_EMAIL is set. Enquiry saved but no notification sent."
     );
     return { sent: false, provider: "none" as const };
   }
