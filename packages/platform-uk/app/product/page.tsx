@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-import { CgmMock, PatientMock, ReviewMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { CgmMock, PatientMock, ReviewMock, SlotFillMock } from "@/components/site/Mockups";
 import { PageHead, SubNav } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
@@ -59,25 +59,12 @@ export default function ProductPage() {
                   "Checks earliest and latest dates, notice period, preferred site, opt-outs and existing offers",
                   "A limit on offers per patient in 30 days, and channels you can switch off",
                   "Staff can skip a patient with a reason, defer, or pass the slot to a person",
+                  "Staff send the offer through your own channel; Aksh never contacts patients",
+                  "A slot counts as filled only when your schedule shows the booking",
                 ]}
               />
             </div>
             <SlotFillMock />
-          </div>
-          <div className="s-feature s-feature--flip">
-            <div className="s-feature__copy">
-              <h3 className="s-h3" style={{ fontSize: 24 }}>Shadow mode first. Every booking checked.</h3>
-              <p className="s-body">
-                Aksh drafts the offer from an approved template that contains only the appointment and your clinic’s details.
-                Your staff approve it and send it through the channel you already use. Aksh records that nothing left the
-                system.
-              </p>
-              <p className="s-body">
-                An accepted offer is not a booking. The slot counts as filled only when your schedule shows the booking for
-                the patient staff selected, before the appointment starts. Anything else goes to a person, with a due time.
-              </p>
-            </div>
-            <WorkflowMock />
           </div>
         </div>
       </section>
@@ -163,12 +150,11 @@ export default function ProductPage() {
             <span className="s-eyebrow">Who uses it</span>
             <h2 className="s-h2">Each role sees only what it needs.</h2>
           </div>
-          <div className="s-grid s-grid--4">
+          <div className="s-grid s-grid--3">
             {[
               { t: "Clinicians", b: "Physicians, nurses and pharmacists work the slot queue, review readings and CGM uploads, and see the monitoring worklist." },
               { t: "Practice managers", b: "Work the slot queue and run the organisation: staff, invites, connections, settings, go-live and the weekly review." },
               { t: "Patients", b: "Link to their clinic, record and share readings, upload CGM data and download their record." },
-              { t: "Aksh reviewers", b: "Review go-live evidence and approve organisations. Always with two-step sign-in, always audited." },
             ].map((r) => (
               <div key={r.t} className="s-card">
                 <h3 className="s-h3">{r.t}</h3>

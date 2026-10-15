@@ -46,12 +46,12 @@ test.describe("Public site", () => {
     expect(overflow, "no horizontal scroll at phone width").toBeLessThanOrEqual(0);
   });
 
-  test("how it works: data flow, diabetes now and next, controls, go-live; no internal engineering detail", async ({ page }) => {
+  test("how it works: system map, two walkthroughs with product screens, control, getting started", async ({ page }) => {
     await page.goto("/platform");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aksh works beside your records system, not instead of it.");
-    for (const id of ["flow", "diabetes", "controls", "go-live"]) await expect(page.locator(`#${id}`)).toBeVisible();
-    await expect(page.locator('[data-diabetes-areas] [data-availability="available"]')).toContainText("Glucose and CGM");
-    await expect(page.locator('[data-diabetes-areas] [data-availability="development"]')).toContainText("Medication safety");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aksh works beside your systems, and your team decides.");
+    await expect(page.locator("[data-system-map]")).toContainText("Prepares the work");
+    for (const id of ["where", "slot-fill", "glucose", "control", "start"]) await expect(page.locator(`#${id}`)).toBeVisible();
+    await expect(page.locator("#slot-fill .s-frame").first()).toBeVisible();
   });
 
   test("public pages carry no internal codenames or engineering status", async ({ page }) => {

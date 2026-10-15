@@ -107,7 +107,7 @@ export default function GetStartedPageClient() {
       <section className="s-section s-section--tight">
         <div className="s-container" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 48 }}>
           <div className="s-feature" style={{ alignItems: "start", gap: 56 }}>
-            <aside style={{ display: "grid", gap: 20, alignContent: "start" }}>
+            <aside style={{ display: "grid", gap: 20, alignContent: "start", position: "sticky", top: 100 }}>
               <h2 className="s-h3">What happens next</h2>
               <ol style={{ display: "grid", gap: 16 }}>
                 {NEXT_STEPS.map((s, i) => (
