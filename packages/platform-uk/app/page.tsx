@@ -124,7 +124,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft">
+      <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 80 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">First module · Aksh Diabetes</span>

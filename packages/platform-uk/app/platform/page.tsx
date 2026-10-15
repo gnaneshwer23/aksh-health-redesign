@@ -1,153 +1,192 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check } from "lucide-react";
 
-import { PageHead, SectionTitle, SubNav } from "@/components/site/PageParts";
+import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
 import { SiteShell } from "@/components/site/SiteShell";
-import { DiabetesAreas } from "@/components/site/DiabetesAreas";
-import { HUMAN_GATES } from "@/components/site/vision";
 
 export const metadata: Metadata = {
   title: "How it works",
   description:
-    "How Aksh works beside your records system: what it reads, what it prepares for your team, who decides, and what is recorded.",
+    "Where Aksh sits beside your records and scheduling systems, and what happens step by step when an appointment frees up or glucose data arrives.",
 };
 
-const FLOW: { title: string; items: string[]; you?: boolean }[] = [
-  {
-    title: "Comes in",
-    items: [
-      "Freed slots and bookings from your scheduling system (FHIR R4 or JSON)",
-      "Your patient list, from a CSV export",
-      "CGM exports and device readings",
-      "Readings patients choose to share",
-    ],
-  },
-  {
-    title: "Aksh prepares",
-    items: [
-      "Waiting-list patients who fit a freed slot, ranked, with reasons",
-      "CGM metrics and a worklist, low glucose first",
-      "Flags for missing, stale or unverified data",
-      "Drafts for clinical review (in development)",
-    ],
-  },
-  {
-    title: "Your team decides",
-    you: true,
-    items: ["Offer, skip or defer, with a reason", "Accept a patient upload or send it back", "Accept, edit or reject any draft", "Hand anything to a named person"],
-  },
-  {
-    title: "It is recorded",
-    items: [
-      "Who acted, in which organisation, and when",
-      "History the database will not let anyone edit",
-      "Bookings counted only when your schedule confirms them",
-      "A weekly review your clinic signs off",
-    ],
-  },
+const SOURCES = [
+  { name: "Scheduling system", detail: "Freed slots and bookings" },
+  { name: "Records system", detail: "Your patient list" },
+  { name: "CGM devices", detail: "Uploads or a device feed" },
+  { name: "Patient app", detail: "Readings patients share" },
 ];
 
-const CONTROLS = [
-  "Access is decided in the database: each clinic sees only its own patients, whatever the screen shows.",
-  "No patient data is sent to an AI model in production. Ranking and metrics are rules you can read.",
-  "Aksh writes nothing to your records system until a separately approved go-live.",
-  "Every action is attributed and kept in history that cannot be edited or deleted.",
-  "Testing uses a separate environment with fictional patients; it cannot touch real data.",
+const SLOT_STEPS: { title: string; body: string; you?: boolean }[] = [
+  { title: "An appointment frees up", body: "Your scheduling system reports the cancellation, or a member of staff records it." },
+  { title: "Aksh finds who fits", body: "Every patient waiting for that appointment type is checked against the slot and your clinic’s rules, then ranked, with the reason shown for each." },
+  { title: "Your staff choose and contact", body: "Staff pick the patient, approve the message from your wording, and contact them through the channel you already use.", you: true },
+  { title: "Your schedule confirms the booking", body: "The slot counts as filled only when your schedule shows the booking for that patient. Anything uncertain goes to a person with a due time." },
+  { title: "You see the result every week", body: "Fill rate, staff time and issues, against the baseline your clinic set before going live." },
 ];
+
+const CGM_STEPS: { title: string; body: string; you?: boolean }[] = [
+  { title: "Glucose data arrives", body: "A clinic upload, a device feed, or a patient’s own upload from the app." },
+  { title: "Aksh calculates the standard measures", body: "Time in range, time low and high, variability and the daily pattern, over the last 14 days, with a warning when data is too thin." },
+  { title: "The worklist puts low glucose first", body: "Patients are ordered by urgency, so the people who need attention are at the top." },
+  { title: "A clinician reviews and decides", body: "Patient uploads count only after a clinician reviews them. Aksh does not contact the patient or change treatment.", you: true },
+];
+
+function Steps({ steps }: { steps: { title: string; body: string; you?: boolean }[] }) {
+  return (
+    <ol className="s-walk__steps">
+      {steps.map((s) => (
+        <li key={s.title} className={s.you ? "s-walk--you" : undefined}>
+          <span><b>{s.title}</b><p>{s.body}</p></span>
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 export default function PlatformPage() {
   return (
     <SiteShell>
-      <PageHead
-        eyebrow="How it works"
-        title="Aksh works beside your records system, not instead of it."
-        lede="It reads from the systems you already use, prepares worklists and drafts for your team, and records every decision. People make every clinical and patient-facing call."
-        glance={{
-          title: "At a glance",
-          rows: [
-            ["Runs beside", "Your EHR and scheduling system"],
-            ["Reads", "FHIR R4, CSV exports, CGM files, device feeds"],
-            ["Writes back", "Nothing, until an approved go-live"],
-            ["Decides", "Your staff, every time"],
-            ["AI on patient data", "None in production"],
-          ],
-        }}
-      />
-      <SubNav items={[["#flow", "Data flow"], ["#diabetes", "Aksh Diabetes"], ["#controls", "Controls"], ["#go-live", "Going live"]]} />
+      <section className="s-page-head">
+        <div className="s-container s-page-head__inner">
+          <span className="s-eyebrow">How it works</span>
+          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.4vw, 54px)" }}>Aksh works beside your systems, and your team decides.</h1>
+          <p className="s-lede">
+            It reads what your clinic already records, prepares the work, and keeps a record of every decision. It does not
+            replace your records system and does not act on its own.
+          </p>
+        </div>
+      </section>
 
-      <section className="s-section" id="flow" style={{ scrollMarginTop: 130 }}>
+      <section className="s-section s-section--tight" id="where" aria-labelledby="where-title">
         <div className="s-container">
-          <SectionTitle n="01" title="What happens to your data" lede="Four steps, the same for every workflow. The third is always a person." />
-          <div className="s-flow">
-            {FLOW.map((f) => (
-              <div key={f.title} className={f.you ? "s-flow--you" : undefined}>
-                <h3 className="s-h3" style={{ fontSize: 18 }}>{f.title}</h3>
-                <ul>{f.items.map((i) => <li key={i}>{i}</li>)}</ul>
+          <h2 id="where-title" className="s-h3" style={{ fontSize: 22, marginBottom: 20 }}>Where Aksh sits</h2>
+          <div className="s-map" data-system-map>
+            <div className="s-map__col">
+              <span className="s-map__title">Your systems</span>
+              {SOURCES.map((x) => <div key={x.name} className="s-map__node"><b>{x.name}</b>{x.detail}</div>)}
+            </div>
+            <div className="s-map__arrow" aria-hidden><span>reads</span></div>
+            <div className="s-map__col">
+              <span className="s-map__title">Aksh</span>
+              <div className="s-map__core">
+                <b>Prepares the work</b>
+                <ul>
+                  <li>Matches patients to freed slots</li>
+                  <li>Calculates glucose measures</li>
+                  <li>Checks against your rules</li>
+                  <li>Flags missing or unverified data</li>
+                </ul>
               </div>
+            </div>
+            <div className="s-map__arrow" aria-hidden><span>worklist</span></div>
+            <div className="s-map__col">
+              <span className="s-map__title">Your team</span>
+              <div className="s-map__node s-map__you"><b>Decides</b>Who to offer, what to send, what a reading means</div>
+              <div className="s-map__node"><b>Acts</b>Through your own phone, messaging and schedule</div>
+            </div>
+            <div className="s-map__arrow" aria-hidden><span>recorded</span></div>
+            <div className="s-map__col">
+              <span className="s-map__title">The record</span>
+              <div className="s-map__node"><b>History</b>Who decided what, and when. It cannot be edited.</div>
+              <div className="s-map__node"><b>Weekly results</b>Against your own baseline</div>
+            </div>
+          </div>
+          <p className="s-map-note">
+            <span>Reads only: nothing is written to your records system</span>
+            <span>No patient data is sent to AI models</span>
+            <span>Each clinic sees only its own patients</span>
+          </p>
+        </div>
+      </section>
+
+      <section className="s-section s-section--soft" id="slot-fill">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Example one</span>
+            <h2 className="s-h2">A freed appointment, start to finish</h2>
+          </div>
+          <div className="s-walk">
+            <Steps steps={SLOT_STEPS} />
+            <div className="s-walk__screens">
+              <SlotFillMock />
+              <WorkflowMock />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section" id="glucose">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Example two</span>
+            <h2 className="s-h2">Glucose between visits</h2>
+          </div>
+          <div className="s-walk">
+            <Steps steps={CGM_STEPS} />
+            <div className="s-walk__screens">
+              <CgmMock />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="s-section s-section--soft" id="control">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Control</span>
+            <h2 className="s-h2">What stays with your clinic</h2>
+          </div>
+          <div className="s-three">
+            <div className="s-card">
+              <h3 className="s-h3">Every decision</h3>
+              <p className="s-small">Aksh prepares options and drafts. Choosing a patient, contacting them and anything clinical is done by your staff.</p>
+            </div>
+            <div className="s-card">
+              <h3 className="s-h3">Your records</h3>
+              <p className="s-small">Aksh reads from your systems and writes nothing back. Your records system stays the source of truth.</p>
+            </div>
+            <div className="s-card">
+              <h3 className="s-h3">Your data</h3>
+              <p className="s-small">Each clinic sees only its own patients. You can export everything your organisation holds at any time.</p>
+            </div>
+          </div>
+          <p style={{ marginTop: 20 }}><Link href="/security" className="s-link">Security and data protection →</Link></p>
+        </div>
+      </section>
+
+      <section className="s-section" id="start">
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
+            <span className="s-eyebrow">Getting started</span>
+            <h2 className="s-h2">What you need to start</h2>
+            <p className="s-body">Most clinics start with cancelled-slot fill and add glucose monitoring when they are ready. Every clinic starts in shadow mode: staff make every contact, and Aksh keeps the record.</p>
+            <Link href="/resources/going-live" className="s-link">What going live involves →</Link>
+          </div>
+          <div className="s-spec">
+            {[
+              ["Your patient list", "A CSV export from your records system"],
+              ["A waiting list", "Patients who want an earlier appointment, with the reason"],
+              ["Freed slots", "Recorded by staff, or sent by your scheduling system"],
+              ["Glucose data (optional)", "CGM exports or a device feed"],
+              ["Before going live", "A data processing agreement, a privacy assessment and a named clinical lead"],
+            ].map(([k, v]) => (
+              <div key={k} style={{ gridTemplateColumns: "minmax(0, 0.8fr) minmax(0, 1.4fr)" }}><b>{k}</b><span>{v}</span></div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 130 }}>
-        <div className="s-container">
-          <SectionTitle
-            n="02"
-            eyebrow="Aksh Diabetes"
-            title="What a diabetes care team gets"
-            lede="Glucose monitoring is available today. The rest of the module adds to the same worklist, with the reasoning shown and a clinician deciding."
-          />
-          <DiabetesAreas />
-        </div>
-      </section>
-
-      <section className="s-section" id="controls" style={{ scrollMarginTop: 130 }}>
-        <div className="s-container s-split">
-          <div>
-            <SectionTitle n="03" title="Controls that do not depend on the screen" />
-            <p className="s-body">These are enforced on the server and in the database. A role that may not take an action cannot, whatever the interface shows.</p>
-            <Link href="/security" className="s-link">Security in detail →</Link>
-          </div>
-          <div style={{ display: "grid", gap: 16 }}>
-            <ul className="s-check" style={{ background: "var(--s-raised)", border: "1px solid var(--s-line)", borderRadius: 20, padding: 24 }}>
-              {CONTROLS.map((c) => <li key={c}><Check aria-hidden />{c}</li>)}
-            </ul>
-            <div className="s-spec" aria-label="Decisions that always need a named person">
-              {HUMAN_GATES.map((g) => (
-                <div key={g.gate} style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.4fr)" }}>
-                  <b>{g.gate}</b>
-                  <span>{g.who}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="s-section s-section--soft" id="go-live" style={{ scrollMarginTop: 130 }}>
-        <div className="s-container">
-          <SectionTitle n="04" title="Going live" lede="A clinic sets up in the product, shows its evidence, and starts in shadow mode. Each stage is reviewed and recorded." />
-          <ol className="s-steps">
-            <li className="s-step"><span className="s-step__n">1</span><h3 className="s-h3">Set up</h3><p className="s-small">Invite staff, load patients and the waiting list, connect your schedule.</p></li>
-            <li className="s-step"><span className="s-step__n">2</span><h3 className="s-h3">Show evidence</h3><p className="s-small">Data processing agreement, privacy assessment, clinical safety lead, contact channel and a locked baseline.</p></li>
-            <li className="s-step"><span className="s-step__n">3</span><h3 className="s-h3">Aksh review</h3><p className="s-small">Each item is checked; anything missing comes back with a reason.</p></li>
-            <li className="s-step"><span className="s-step__n">4</span><h3 className="s-h3">Shadow mode</h3><p className="s-small">Staff make every contact through their own channels. Widen only when the weekly reviews support it.</p></li>
-          </ol>
-          <p style={{ marginTop: 20 }}><Link href="/resources/going-live" className="s-link">The go-live guide →</Link></p>
-        </div>
-      </section>
-
-      <section className="s-section">
+      <section className="s-section" style={{ paddingTop: 0 }}>
         <div className="s-container">
           <div className="s-cta">
             <div>
-              <h2 className="s-h2">Start with one workflow.</h2>
-              <p>Most clinics start with cancelled-slot fill in shadow mode. We will walk through your process and what go-live involves.</p>
+              <h2 className="s-h2">See it with your own waiting list.</h2>
+              <p>We will walk through your cancellation process and what going live would involve for your clinic.</p>
             </div>
             <div className="s-actions">
               <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/product" className="s-btn s-btn--ghost">What is available</Link>
+              <Link href="/product" className="s-btn s-btn--ghost">See the features</Link>
             </div>
           </div>
         </div>
