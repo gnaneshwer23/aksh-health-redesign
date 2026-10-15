@@ -65,7 +65,9 @@ export function csvToPatients(text: string): { patients: Record<string, unknown>
   const patients = body.map((r) => {
     const sex = get(r, "sex")?.toLowerCase();
     const type = get(r, "diabetes_type")?.toLowerCase().replace(/\s+/g, "_");
-    const hba1c = get(r, "latest_hba1c_mmol_mol");
+    // HbA1c in mmol/mol (IFCC), or in % (NGSP/DCCT) via the optional latest_hba1c_percent column, stored as mmol/mol.
+    const pct = get(r, "latest_hba1c_percent");
+    const hba1c = get(r, "latest_hba1c_mmol_mol") ?? (pct && Number.isFinite(Number(pct)) ? String(Math.round((Number(pct) - 2.15) * 10.929)) : pct);
     const hba1cDate = get(r, "hba1c_date");
     const email = get(r, "email");
     const phone = get(r, "phone");

@@ -10,7 +10,7 @@ import { DIABETES_AREAS, HUMAN_GATES, NON_OBJECTIVES, PRODUCT_LOOP, STATUS_LABEL
 export const metadata: Metadata = {
   title: "Aksh Health | Clinical intelligence, under clinical control",
   description:
-    "Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded administrative automation and clinician-reviewed clinical intelligence. First module: Aksh Diabetes.",
+    "Aksh prepares worklists and drafts for patient access and clinical review from the systems a clinic already uses. A named clinician decides every step. First module: Aksh Diabetes.",
 };
 
 function Status({ s }: { s: keyof typeof STATUS_LABEL }) {
@@ -27,13 +27,12 @@ export default function HomePage() {
               <span className="s-pill-frost"><i>Platform</i>Aksh Intelligence Platform · first module: Aksh Diabetes</span>
               <h1 className="s-h1">Clinical intelligence, <span className="s-grad">under clinical control.</span></h1>
               <p className="s-lede">
-                Aksh connects patient access and clinical workflows through auditable AI orchestration, starting with bounded
-                administrative automation and clinician-reviewed clinical intelligence. A named clinician decides; the
-                platform never decides alone.
+                Aksh prepares worklists and drafts from the systems your clinic already uses, for patient access and clinical
+                review. A named clinician decides every step, and every decision is recorded. It never acts on its own.
               </p>
               <div className="s-actions">
                 <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-                <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
+                <Link href="/platform" className="s-btn s-btn--ghost">How it works</Link>
               </div>
               <p className="s-hero-panel__note" aria-label="In production today">
                 <span>Cancelled-slot fill</span><span>CGM monitoring</span><span>Patient app</span>
@@ -65,7 +64,7 @@ export default function HomePage() {
           <div className="s-head">
             <span className="s-eyebrow">The problem</span>
             <h2 className="s-h2">Clinical AI fails in two predictable ways.</h2>
-            <p className="s-lede">Aksh is built as one auditable intelligence layer beside the EHR, so every capability shares the same safety, audit and consent boundary.</p>
+            <p className="s-lede">Aksh is one system beside the EHR, so every capability follows the same rules for safety, audit and consent.</p>
           </div>
           <div className="s-grid s-grid--3">
             <div className="s-card">
@@ -82,7 +81,7 @@ export default function HomePage() {
               <h3 className="s-h3">Aksh’s answer</h3>
               <ul className="s-check">
                 {[
-                  ["One orchestrator", "a supervisor runs every agent in a fixed, inspectable order"],
+                  ["One supervisor", "runs every component in a fixed order that can be inspected"],
                   ["One audit trail", "who drafted, who decided, what changed"],
                   ["One consent model", "shared by every module and role"],
                   ["One rule", "nothing reaches a record or prescription without a human decision"],
@@ -99,23 +98,23 @@ export default function HomePage() {
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">The Aksh Intelligence Platform</span>
-            <h2 className="s-h2">Two pillars on one safe foundation.</h2>
+            <h2 className="s-h2">Two products on one foundation.</h2>
             <p className="s-lede">
-              Patient access and clinical intelligence share identity, consent, audit and integration, so every capability
-              inherits the same safety boundary. Each item shows where it is today.
+              Patient access and clinical review share sign-in, consent, connections and audit, so both follow the same
+              rules. Each item shows where it is today.
             </p>
           </div>
           <Pillars />
-          <div style={{ marginTop: 24 }}><Link href="/platform" className="s-link">See the full platform →</Link></div>
+          <div style={{ marginTop: 24 }}><Link href="/platform" className="s-link">How it works →</Link></div>
         </div>
       </section>
 
       <section className="s-section">
         <div className="s-container">
           <div className="s-head">
-            <span className="s-eyebrow">End-to-end loop</span>
-            <h2 className="s-h2">From signal to governed learning.</h2>
-            <p className="s-lede">Every step has a defined boundary. The clinician decision sits in the middle, and nothing after it bypasses governance.</p>
+            <span className="s-eyebrow">End to end</span>
+            <h2 className="s-h2">From data in to a recorded decision.</h2>
+            <p className="s-lede">The clinician decision sits in the middle. Nothing after it happens without that decision.</p>
           </div>
           <ol className="s-loop">
             {PRODUCT_LOOP.map((s) => (
@@ -132,8 +131,8 @@ export default function HomePage() {
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">First module · Aksh Diabetes</span>
-            <h2 className="s-h2">Nine intelligence areas, one review queue.</h2>
-            <p className="s-lede">Each area is a signal, not a separate tool. Together they feed risk and medication-safety checks on the same orchestrator and audit trail.</p>
+            <h2 className="s-h2">Nine areas, one review queue.</h2>
+            <p className="s-lede">Each area adds to one review queue instead of becoming another tool. They share the same checks and audit trail.</p>
             <div className="s-legend"><Status s="production" /><Status s="synthetic" /></div>
           </div>
           <div className="s-areas">
@@ -152,8 +151,8 @@ export default function HomePage() {
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">Available now</span>
-            <h2 className="s-h2">The first workflows, live with clinics.</h2>
-            <p className="s-lede">The platform reaches production one governed workflow at a time. These run today with real organisations, in shadow mode first.</p>
+            <h2 className="s-h2">Ready for clinics today.</h2>
+            <p className="s-lede">These workflows are in production and ready for a clinic to go live. Each one starts in shadow mode.</p>
           </div>
           <div className="s-feature">
             <div className="s-feature__copy">
@@ -208,11 +207,11 @@ export default function HomePage() {
       <section className="s-section">
         <div className="s-container s-feature" style={{ alignItems: "start" }}>
           <div className="s-feature__copy">
-            <span className="s-eyebrow">Built with ambition, communicated with precision</span>
+            <span className="s-eyebrow">Limits</span>
             <h2 className="s-h2">What Aksh will not do.</h2>
             <p className="s-body">
-              We say what is in production, what is validated only on synthetic data, and what is planned. Hard limits are
-              part of the design, not a disclaimer.
+              Every capability is labelled: in production, tested on synthetic data only, or planned. These limits are part
+              of the design.
             </p>
             <div className="s-legend"><Status s="production" /><Status s="synthetic" /><Status s="planned" /></div>
           </div>
@@ -242,11 +241,11 @@ export default function HomePage() {
           <div className="s-cta">
             <div>
               <h2 className="s-h2">Clinical intelligence should help clinicians think, not replace them.</h2>
-              <p>Tell us about your organisation. We go live one governed workflow at a time.</p>
+              <p>Tell us about your organisation. Clinics go live one workflow at a time.</p>
             </div>
             <div className="s-actions">
               <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/platform" className="s-btn s-btn--ghost">Explore the platform</Link>
+              <Link href="/platform" className="s-btn s-btn--ghost">How it works</Link>
             </div>
           </div>
         </div>

@@ -31,7 +31,7 @@ const CSV_NOTES: Record<string, string> = {
   email: "Optional contact detail.",
   phone: "Optional contact detail.",
   preferred_channel: "How the patient prefers to be contacted (for example sms, phone, email). Patients without one are not offered slots.",
-  latest_hba1c_mmol_mol: "Optional. Most recent HbA1c in mmol/mol.",
+  latest_hba1c_mmol_mol: "Optional. Most recent HbA1c in mmol/mol (IFCC). If your records use %, add a latest_hba1c_percent column instead.",
   hba1c_date: "Optional. YYYY-MM-DD of that HbA1c.",
 };
 
@@ -138,17 +138,17 @@ export const GUIDES: Guide[] = [
           <li><strong>Patient uploads:</strong> patients upload from the app. Their data counts in clinic views only after a clinician reviews the upload.</li>
           <li><strong>Device feed:</strong> a device or aggregator sends FHIR R4 glucose Observations through the connector. See the <a href="/resources/schedule-connector">connector guide</a>.</li>
         </ul>
-        <p>Ambiguous times (for example across a clock change) and values outside 1–40 mmol/L are rejected with a reason rather than guessed.</p>
+        <p>Ambiguous times (for example across a clock change) and values outside 18–720 mg/dL (1–40 mmol/L) are rejected with a reason rather than guessed.</p>
         <h2>Metrics</h2>
         <p>Calculated over the last 14 days from trusted readings, following the international consensus on time in range.</p>
         <Table
-          head={["Metric", "Range (mmol/L)", "General adult target"]}
+          head={["Metric", "Range, mg/dL (mmol/L)", "General adult target"]}
           rows={[
-            ["Time in range", "3.9–10.0", "More than 70%"],
-            ["Time below range", "Below 3.9", "Less than 4%"],
-            ["Time below 3.0", "Below 3.0", "Less than 1%"],
-            ["Time above range", "Above 10.0", "Less than 25%"],
-            ["Time above 13.9", "Above 13.9", "Less than 5%"],
+            ["Time in range", "70–180 (3.9–10.0)", "More than 70%"],
+            ["Time below range", "Below 70 (3.9)", "Less than 4%"],
+            ["Time below 54", "Below 54 (3.0)", "Less than 1%"],
+            ["Time above range", "Above 180 (10.0)", "Less than 25%"],
+            ["Time above 250", "Above 250 (13.9)", "Less than 5%"],
             ["Coefficient of variation", "", "36% or less"],
             ["GMI", "Estimated from mean glucose", "Shown, not targeted"],
           ]}
@@ -205,7 +205,7 @@ export const GUIDES: Guide[] = [
             ["UNKNOWN_APPOINTMENT_TYPE", "Map this type in the connection settings"],
             ["NO_PATIENT_IDENTIFIER", "Include the patient’s record number"],
             ["INEXACT_VALUE", "A value with <, > or similar is a bound, not a reading"],
-            ["OUT_OF_RANGE / FUTURE_TIME", "Glucose outside 1–40 mmol/L, or a time in the future"],
+            ["OUT_OF_RANGE / FUTURE_TIME", "Glucose outside 18–720 mg/dL (1–40 mmol/L), or a time in the future"],
           ]}
         />
       </>

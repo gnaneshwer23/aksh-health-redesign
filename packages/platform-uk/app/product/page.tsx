@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import { CgmMock, PatientMock, ReviewMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { PageHead, SubNav } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -24,31 +25,29 @@ function Checks({ items }: { items: string[] }) {
 export default function ProductPage() {
   return (
     <SiteShell>
-      <section className="s-page-head">
-        <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">Available now</span>
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>The first workflows of the platform, live with clinics.</h1>
-          <p className="s-lede">
-            The <a href="/platform" className="s-link">Aksh Intelligence Platform</a> reaches production one governed workflow
-            at a time. These run today with real organisations: fill freed appointments, watch glucose between visits, give
-            patients a way to share, and measure the result. A person stays in charge of every decision.
-          </p>
-          <nav className="s-actions" aria-label="On this page">
-            <a href="#slot-fill" className="s-btn s-btn--ghost s-btn--sm">Slot fill</a>
-            <a href="#monitoring" className="s-btn s-btn--ghost s-btn--sm">Monitoring</a>
-            <a href="#patients" className="s-btn s-btn--ghost s-btn--sm">Patient app</a>
-            <a href="#results" className="s-btn s-btn--ghost s-btn--sm">Results</a>
-            <a href="#connect" className="s-btn s-btn--ghost s-btn--sm">Connections</a>
-          </nav>
-        </div>
-      </section>
+      <PageHead
+        eyebrow="Available now"
+        title="What a clinic can use today."
+        lede="Four workflows are in production: filling freed appointments, monitoring glucose between visits, a patient app for sharing readings, and a weekly review of results. Every clinic starts in shadow mode, with staff making every contact."
+        glance={{
+          title: "At a glance",
+          rows: [
+            ["Status", "In production, ready for go-live"],
+            ["Starts in", "Shadow mode"],
+            ["Contacts patients", "Your staff, through your channels"],
+            ["Books appointments", "No. Your schedule confirms each booking"],
+            ["You provide", "Patient list, schedule feed, CGM files"],
+          ],
+        }}
+      />
+      <SubNav items={[["#slot-fill", "Slot fill"], ["#monitoring", "Monitoring"], ["#patients", "Patient app"], ["#results", "Results"], ["#roles", "Roles"], ["#connect", "Connections"]]} />
 
-      <section className="s-section" id="slot-fill" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section" id="slot-fill" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-feature">
             <div className="s-feature__copy">
               <span className="s-eyebrow">Cancelled-slot fill</span>
-              <h2 className="s-h2">The right patient, offered the slot, with the reasons on screen.</h2>
+              <h2 className="s-h2">Freed slots matched to your waiting list, with reasons.</h2>
               <p className="s-body">
                 A freed appointment arrives from your scheduling system or is recorded by staff. Aksh checks every patient on
                 the waiting list for that appointment type against the slot and your clinic’s rules, ranks those who fit, and
@@ -67,7 +66,7 @@ export default function ProductPage() {
           </div>
           <div className="s-feature s-feature--flip">
             <div className="s-feature__copy">
-              <h3 className="s-h3" style={{ fontSize: 24 }}>Shadow mode first. Read-back always.</h3>
+              <h3 className="s-h3" style={{ fontSize: 24 }}>Shadow mode first. Every booking checked.</h3>
               <p className="s-body">
                 Aksh drafts the offer from an approved template that contains only the appointment and your clinic’s details.
                 Your staff approve it and send it through the channel you already use. Aksh records that nothing left the
@@ -83,7 +82,7 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="monitoring" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section s-section--soft" id="monitoring" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-feature">
             <div className="s-feature__copy">
@@ -108,12 +107,12 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section" id="patients" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section" id="patients" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-feature s-feature--flip">
             <div className="s-feature__copy">
               <span className="s-eyebrow">Patient app</span>
-              <h2 className="s-h2">Patients share what matters, on their terms.</h2>
+              <h2 className="s-h2">Patients share readings when they choose.</h2>
               <p className="s-body">
                 Your clinic gives a patient an invite code. They link their account with the code and their date of birth,
                 then record readings or upload CGM exports. Readings before linking stay private until the patient chooses to
@@ -133,12 +132,12 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="results" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section s-section--soft" id="results" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-feature">
             <div className="s-feature__copy">
               <span className="s-eyebrow">Measured results</span>
-              <h2 className="s-h2">Improvement you can defend in a meeting.</h2>
+              <h2 className="s-h2">Results with one definition and a locked baseline.</h2>
               <p className="s-body">
                 Fill rate has one definition: slots where the patient accepted before the offer expired and the booking was
                 verified before the slot started, divided by slots received. Your baseline is locked before go-live and cannot
@@ -158,11 +157,11 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section" id="roles">
+      <section className="s-section" id="roles" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">Who uses it</span>
-            <h2 className="s-h2">Each role sees what it needs, and nothing more.</h2>
+            <h2 className="s-h2">Each role sees only what it needs.</h2>
           </div>
           <div className="s-grid s-grid--4">
             {[
@@ -180,7 +179,7 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="connect" style={{ scrollMarginTop: 80 }}>
+      <section className="s-section s-section--soft" id="connect" style={{ scrollMarginTop: 130 }}>
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">Connections</span>

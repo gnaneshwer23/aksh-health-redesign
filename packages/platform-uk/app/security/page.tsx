@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { PageHead, SubNav } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
   title: "Security",
   description:
-    "How Aksh protects clinical data: isolation by organisation, two-step sign-in, append-only audit, encryption, backups, data export and a governed go-live.",
+    "How Aksh protects clinical data: isolation by organisation, two-step sign-in, append-only audit, encryption, backups, data export and an approved go-live.",
 };
 
 const SECTIONS: { id: string; title: string; intro: string; points: { t: string; b: string }[] }[] = [
@@ -45,10 +46,10 @@ const SECTIONS: { id: string; title: string; intro: string; points: { t: string;
   {
     id: "data",
     title: "Data protection",
-    intro: "You stay in control of the data you bring.",
+    intro: "Your organisation stays in control of its data.",
     points: [
       { t: "Encryption", b: "TLS for all traffic with HSTS. Data encrypted at rest by the database service. Two-step secrets additionally encrypted by Aksh." },
-      { t: "AI under governance", b: "In production today, no patient data is sent to an AI model: ranking and metrics are deterministic rules you can read. AI capabilities are validated on synthetic data and reach real patients only through a governed go-live." },
+      { t: "No patient data to AI models", b: "In production, no patient data is sent to an AI model, and the services that could do so are switched off. Ranking and metrics are fixed rules you can read. AI features are tested on synthetic data and reach real patients only through an approved go-live." },
       { t: "Export", b: "Organisation admins export everything their organisation holds as one machine-readable file; patients download their own record. Exports are audited." },
       { t: "Retention", b: "Operational error logs are kept for 90 days and are scrubbed of personal details; rate-limit counters for 24 hours." },
       { t: "Separate environments", b: "Production holds real organisations only. Testing runs on a separate database with synthetic data; tooling refuses to write test data to production." },
@@ -57,12 +58,12 @@ const SECTIONS: { id: string; title: string; intro: string; points: { t: string;
   {
     id: "operations",
     title: "Operations",
-    intro: "Run like a clinical service.",
+    intro: "How the service is run and watched.",
     points: [
-      { t: "Backups and restore", b: "Point-in-time recovery on the production database, with restore drills run and recorded." },
-      { t: "Monitoring", b: "Server errors are recorded and alert the operations team. Scheduled jobs expire stale offers and apply retention daily." },
+      { t: "Backups and restore", b: "The production database is backed up by the database service with point-in-time restore. A recorded restore test is part of readiness before the first clinic goes live." },
+      { t: "Monitoring", b: "Server errors are recorded and alert the operations team. An independent check confirms every 15 minutes that the service and database are up. Scheduled jobs expire stale offers and apply retention daily." },
       { t: "Secure defaults", b: "Strict transport security, no framing, no content sniffing, and a restrictive permissions policy on every response." },
-      { t: "Dependencies", b: "Pinned versions, reviewed advisories, and automated tests on every change." },
+      { t: "Changes", b: "Pinned dependency versions, reviewed security advisories, and the full automated test suite on every change before it reaches production." },
     ],
   },
   {
@@ -81,44 +82,45 @@ const SECTIONS: { id: string; title: string; intro: string; points: { t: string;
 export default function SecurityPage() {
   return (
     <SiteShell>
-      <section className="s-page-head">
-        <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">Security</span>
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Security your governance team can check.</h1>
-          <p className="s-lede">
-            How Aksh protects clinical data, who can see it, and what has to be true before an organisation goes live. We do
-            not claim certifications we do not hold.
-          </p>
-        </div>
-      </section>
+      <PageHead
+        eyebrow="Security"
+        title="Security your governance team can check."
+        lede="How Aksh protects clinical data, who can see it, and what has to be true before an organisation goes live. We do not claim certifications we do not hold."
+        glance={{
+          title: "Key facts",
+          rows: [
+            ["Isolation", "Per organisation, enforced in the database"],
+            ["Sign-in", "Two-step, required for reviewers"],
+            ["History", "Cannot be edited or deleted"],
+            ["AI on patient data", "None in production"],
+            ["Go-live", "DPA, privacy assessment, safety lead"],
+          ],
+        }}
+      />
+      <SubNav items={SECTIONS.map((x) => [`#${x.id}`, x.title] as [string, string])} />
 
       <section className="s-section s-section--tight">
-        <div className="s-container s-doc">
-          <nav className="s-doc__nav" aria-label="Sections">
-            <span className="s-doc__nav-title">On this page</span>
-            {SECTIONS.map((s) => <a key={s.id} href={`#${s.id}`}>{s.title}</a>)}
-          </nav>
-          <div style={{ display: "grid", gap: 72 }}>
-            {SECTIONS.map((s) => (
-              <section key={s.id} id={s.id} style={{ scrollMarginTop: 96, display: "grid", gap: 24 }}>
-                <div style={{ display: "grid", gap: 8 }}>
-                  <h2 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 32px)" }}>{s.title}</h2>
-                  <p className="s-body">{s.intro}</p>
-                </div>
-                <div className="s-grid s-grid--2">
-                  {s.points.map((p) => (
-                    <div key={p.t} className="s-card" style={{ padding: 24 }}>
-                      <h3 className="s-h3" style={{ fontSize: 17 }}>{p.t}</h3>
-                      <p className="s-small">{p.b}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
-            <div className="s-note">
-              Reporting a vulnerability or need our security documentation for a procurement review? Email{" "}
-              <a className="s-link" href="mailto:gnaneshwer.jadav@gmail.com">gnaneshwer.jadav@gmail.com</a>.
-            </div>
+        <div className="s-container" style={{ display: "grid", gap: 80 }}>
+          {SECTIONS.map((x, i) => (
+            <section key={x.id} id={x.id} className="s-split" style={{ scrollMarginTop: 130 }}>
+              <div>
+                <div className="s-sectitle"><span className="s-num">{String(i + 1).padStart(2, "0")}</span></div>
+                <h2 className="s-h2" style={{ fontSize: "clamp(26px, 2.6vw, 34px)" }}>{x.title}</h2>
+                <p className="s-body">{x.intro}</p>
+              </div>
+              <div className="s-spec">
+                {x.points.map((p) => (
+                  <div key={p.t} style={{ gridTemplateColumns: "minmax(0, 0.7fr) minmax(0, 1.6fr)", alignItems: "start" }}>
+                    <b>{p.t}</b>
+                    <span>{p.b}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+          <div className="s-note">
+            Reporting a vulnerability, or need our security documentation for a procurement review? Email{" "}
+            <a className="s-link" href="mailto:gnaneshwer.jadav@gmail.com">gnaneshwer.jadav@gmail.com</a>.
           </div>
         </div>
       </section>

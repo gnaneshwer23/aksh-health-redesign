@@ -4,7 +4,7 @@ const COLUMNS = [
   {
     title: "Platform",
     links: [
-      { label: "The platform", href: "/platform" },
+      { label: "How it works", href: "/platform" },
       { label: "Aksh Diabetes", href: "/platform#diabetes" },
       { label: "Available now", href: "/product" },
       { label: "Cancelled-slot fill", href: "/product#slot-fill" },
@@ -44,8 +44,8 @@ export function SiteFooter() {
               Aksh Health
             </Link>
             <p className="s-small" style={{ maxWidth: 320 }}>
-              Clinical intelligence, under clinical control. One auditable intelligence layer beside the EHR; first module:
-              Aksh Diabetes.
+              Clinical intelligence, under clinical control. Worklists and drafts beside your records system, decided by
+              your clinicians. First module: Aksh Diabetes.
             </p>
           </div>
           {COLUMNS.map((c) => (

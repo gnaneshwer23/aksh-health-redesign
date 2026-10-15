@@ -13,11 +13,11 @@ test.describe("Public site", () => {
     await expect(page.locator("#available-now")).toContainText("Cancelled-slot fill");
     // PRD v1.1: two pillars on shared foundations, every item with its status.
     const pillars = page.locator("[data-pillars]");
-    await expect(pillars).toContainText("Patient Access & Operations");
-    await expect(pillars).toContainText("Clinical Intelligence & Care Coordination");
-    await expect(pillars).toContainText("Platform foundations");
+    await expect(pillars).toContainText("Patient access");
+    await expect(pillars).toContainText("Clinical review");
+    await expect(pillars).toContainText("Shared foundations");
     const nav = page.locator("[data-site-nav]");
-    for (const label of ["Platform", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/get-started");
     await expect(nav.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
     await expect(page.getByText("Illustrative example").first()).toBeVisible();
@@ -39,17 +39,18 @@ test.describe("Public site", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    for (const label of ["Platform", "Available now", "Security", "Resources", "Contact", "Request access", "Sign in"]) {
+    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact", "Request access", "Sign in"]) {
       await expect(page.locator(".s-nav__panel").getByRole("link", { name: label, exact: true })).toBeVisible();
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, "no horizontal scroll at phone width").toBeLessThanOrEqual(0);
   });
 
-  test("platform page: layers, twelve agents with honest status, loop, diabetes, gates", async ({ page }) => {
+  test("how it works: data flow, twelve components with honest status, diabetes, controls, go-live", async ({ page }) => {
     await page.goto("/platform");
-    for (const id of ["layers", "agents", "loop", "diabetes", "gates"]) await expect(page.locator(`#${id}`)).toBeVisible();
-    await expect(page.locator("[data-agents] .s-card")).toHaveCount(12);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aksh works beside your records system, not instead of it.");
+    for (const id of ["flow", "components", "diabetes", "controls", "go-live"]) await expect(page.locator(`#${id}`)).toBeVisible();
+    await expect(page.locator("[data-agents] > div")).toHaveCount(12);
     await expect(page.locator("[data-agents]")).toContainText("Planned");
     await expect(page.locator("[data-agents]")).toContainText("In production");
   });
