@@ -26,6 +26,16 @@ const completeOnboardingSchema = z.object({
   consents: z.record(z.string(), z.unknown()).optional(),
 });
 
+/** Only real IANA zones are stored. */
+function isValidTimeZone(tz: string) {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -114,6 +124,11 @@ export async function POST(request: Request) {
                   ? "My clinic"
                   : undefined,
             withSampleData: !described,
+            locale: {
+              ...(org.glucoseUnit === "mmol/L" || org.glucoseUnit === "mg/dL" ? { glucoseUnit: org.glucoseUnit } : {}),
+              ...(org.hba1cUnit === "mmol/mol" || org.hba1cUnit === "%" ? { hba1cUnit: org.hba1cUnit } : {}),
+              ...(typeof org.timezone === "string" && org.timezone.length <= 64 && isValidTimeZone(org.timezone) ? { timezone: org.timezone } : {}),
+            },
           }
         );
       } catch (provisionError) {

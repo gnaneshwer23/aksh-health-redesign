@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import { ICS_REGIONS } from "@/lib/access-requests/validation";
 import type { UserRole } from "@/lib/onboarding/roles";
 import { useOnboardingStore } from "@/lib/onboarding/store";
 import { useProofEnvironment, useRealWorkspace } from "@/components/workspace/WorkspaceMode";
+import { defaultUnits } from "@/lib/units";
 import { ORG_EHR_OPTIONS, getOrgSchema } from "@/lib/onboarding/validation";
 
 type OrgFormProps = {
@@ -55,6 +56,16 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
     mode: "onChange",
   });
 
+  // Units and time zone default from the browser's locale (any country); the person can change them.
+  const glucoseUnitNow = form.watch("glucoseUnit");
+  const hba1cUnitNow = form.watch("hba1cUnit");
+  useEffect(() => {
+    const d = defaultUnits(typeof navigator !== "undefined" ? navigator.language : null);
+    if (!glucoseUnitNow) form.setValue("glucoseUnit", d.glucoseUnit);
+    if (!hba1cUnitNow) form.setValue("hba1cUnit", d.hba1cUnit);
+    if (!form.getValues("timezone")) form.setValue("timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  }, [form, glucoseUnitNow, hba1cUnitNow]);
+
   const useSynthetic = form.watch("useSynthetic") !== false;
   const joining = form.watch("join") === true;
   const joinedOrganisationId = form.watch("joinedOrganisationId") as string | undefined;
@@ -78,13 +89,21 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
     else setJoinError(data.error ?? "That code did not work. Check it with your organisation admin.");
   }
 
-  function submit(values: FormValues) {
+  function submit(raw: FormValues) {
+    // Country defaults for anything still empty (the pre-fill can be lost if the form re-initialises).
+    const d = defaultUnits(typeof navigator !== "undefined" ? navigator.language : null);
+    const values: FormValues = {
+      ...raw,
+      glucoseUnit: raw.glucoseUnit || d.glucoseUnit,
+      hba1cUnit: raw.hba1cUnit || d.hba1cUnit,
+      timezone: raw.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
     setOrganisation(
       values.join === true
         ? { join: true, joinedOrganisationId: values.joinedOrganisationId }
         : values.useSynthetic === false
           ? values
-          : { useSynthetic: true, organisationName: "Aksh sandbox clinic" }
+          : { useSynthetic: true, organisationName: "Aksh sandbox clinic", glucoseUnit: values.glucoseUnit, hba1cUnit: values.hba1cUnit, timezone: values.timezone }
     );
     onSubmit();
   }
@@ -160,6 +179,50 @@ export function OrgForm({ role, onSubmit }: OrgFormProps) {
 
         {mode !== "describe" ? null : (
           <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="glucoseUnit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Glucose units</FormLabel>
+                  <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger aria-label="Glucose units">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="mg/dL">mg/dL</SelectItem>
+                      <SelectItem value="mmol/L">mmol/L</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hba1cUnit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>HbA1c units</FormLabel>
+                  <Select value={String(field.value ?? "")} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger aria-label="HbA1c units">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="%">% (NGSP/DCCT)</SelectItem>
+                      <SelectItem value="mmol/mol">mmol/mol (IFCC)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Pre-filled for your country. You can change units later in Organisation settings.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="organisationName"

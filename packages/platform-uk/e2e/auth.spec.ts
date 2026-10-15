@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { createOnboardedTestUser, signInViaUi } from "./helpers/auth";
 
 const SIGNUP_ROLE_LABELS = [
-  "Physician (GP / family doctor)",
+  "Physician (primary care or specialist)",
   "Nurse / Diabetes educator",
   "Clinical Pharmacist",
   "Clinic manager / Admin",

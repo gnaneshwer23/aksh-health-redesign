@@ -92,6 +92,10 @@ export const organisationSchema = z
     organisationId: z.string().trim().max(40).optional().or(z.literal("")),
     ehrSystem: z.enum(ORG_EHR_OPTIONS).optional(),
     region: z.string().optional().or(z.literal("")),
+    /** Units the clinic reads results in (any country): pre-filled from the browser's locale, editable later. */
+    glucoseUnit: z.preprocess((v) => (v === "" || v === null ? undefined : v), z.enum(["mmol/L", "mg/dL"]).optional()),
+    hba1cUnit: z.preprocess((v) => (v === "" || v === null ? undefined : v), z.enum(["mmol/mol", "%"]).optional()),
+    timezone: z.string().max(64).optional(),
     /** Joining an existing organisation with a staff invite code (accepted before this step is submitted). */
     join: z.boolean().optional(),
     joinedOrganisationId: z.string().optional(),

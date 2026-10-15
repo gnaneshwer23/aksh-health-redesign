@@ -239,7 +239,7 @@ export function CgmPanel({ base, audience }: { base: string; audience: "clinicia
             <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-1 text-xs" data-cgm-metrics>
               <dt className="text-muted">Time in range</dt><dd className="m-0 font-semibold text-foreground">{m.pct.inRange}%</dd>
               <dt className="text-muted">Average glucose</dt><dd className="m-0 text-foreground">{glucose(m.meanMmol, unit)}</dd>
-              <dt className="text-muted">GMI</dt><dd className="m-0 text-foreground">{m.gmiPct}% ({m.gmiMmolMol} mmol/mol)</dd>
+              <dt className="text-muted">GMI</dt><dd className="m-0 text-foreground">{m.gmiPct}% · {m.gmiMmolMol} mmol/mol</dd>
               <dt className="text-muted">Variability (CV)</dt><dd className="m-0 text-foreground">{m.cvPct}%</dd>
             </dl>
           </div>

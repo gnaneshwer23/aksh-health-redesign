@@ -80,7 +80,7 @@ test("real workspace: onboarding is role, identity, clinic, consent, then Today"
   await applyApiCookiesToPage(page, request);
   await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
   await page.goto("/onboarding/role-select");
-  await page.getByRole("button", { name: /^Physician \(GP \/ family doctor\)/ }).click();
+  await page.getByRole("button", { name: /^Physician \(primary care or specialist\)/ }).click();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
 
   await expect(page).toHaveURL(/\/onboarding\/identity/);

@@ -131,7 +131,9 @@ const count = <T,>(xs: T[], f: (x: T) => string) =>
 
 export async function networkSummary(ctx: NetworkContext, region?: string) {
   return withTenant(ctx, async (client) => {
-    const orgs = (await client.query<{ id: string; kind: string; region: string | null }>(`SELECT id, kind, region FROM aksh.organisations`)).rows;
+    const orgs = (await client.query<{ id: string; kind: string; region: string | null; hba1c_unit: string | null }>(`SELECT id, kind, region, locale->>'hba1cUnit' AS hba1c_unit FROM aksh.organisations`)).rows;
+    // Show figures in the caller's own organisation's unit (first membership), mmol/mol if none was chosen.
+    const ownUnit = (orgs.find((o) => ctx.orgIds.includes(o.id) && o.hba1c_unit)?.hba1c_unit ?? "mmol/mol") as "mmol/mol" | "%";
     const members = (await client.query<{ role: string; organisation_id: string }>(`SELECT role, organisation_id FROM aksh.memberships WHERE status = 'active'`)).rows;
     const facts = await loadFacts(client);
     const inRegion = (r: string | null) => !region || r === region;
@@ -160,6 +162,7 @@ export async function networkSummary(ctx: NetworkContext, region?: string) {
       byOrgKind: count(orgs.filter((o) => inRegion(o.region)), (o) => o.kind),
       byRole: count(members, (m) => ROLE_LABEL[m.role] ?? m.role),
       glycaemia: {
+        hba1cUnit: ownUnit,
         meanHba1cMmolMol: withDiabetes.length ? Math.round(withDiabetes.reduce((n, r) => n + r.d.last!.value, 0) / withDiabetes.length) : 0,
         atTargetPct: withDiabetes.length ? Math.round((atTarget / withDiabetes.length) * 100) : 0,
         cgmUsers: cgm.length,

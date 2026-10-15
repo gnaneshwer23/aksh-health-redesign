@@ -16,6 +16,7 @@ type Agg = {
   name: string;
   record_ref: string | null;
   organisation: string;
+  glucose_unit: string | null;
   n: number;
   first_at: Date;
   last_at: Date;
@@ -44,7 +45,7 @@ export async function listMonitoring(ctx: NetworkContext) {
          SELECT r.patient_id, r.at, r.mmol, EXTRACT(EPOCH FROM r.at - lag(r.at) OVER (PARTITION BY r.patient_id ORDER BY r.at)) / 60 AS gap
          FROM latest l JOIN aksh.cgm_trusted_readings r ON r.patient_id = l.patient_id AND r.at > l.last_at - INTERVAL '14 days' AND r.at <= l.last_at
        )
-       SELECT w.patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation,
+       SELECT w.patient_id, p.given_name || ' ' || p.family_name AS name, p.record_ref, o.name AS organisation, o.locale->>'glucoseUnit' AS glucose_unit,
               count(*)::int AS n, min(w.at) AS first_at, l.last_at, avg(w.mmol) AS mean, stddev_samp(w.mmol) AS sd,
               percentile_cont(0.5) WITHIN GROUP (ORDER BY w.gap) FILTER (WHERE w.gap > 0 AND w.gap <= 20) AS median_gap,
               count(*) FILTER (WHERE w.mmol < 3.0)::int AS very_low,
@@ -57,7 +58,7 @@ export async function listMonitoring(ctx: NetworkContext) {
        JOIN latest l ON l.patient_id = w.patient_id
        JOIN aksh.network_patients p ON p.id = w.patient_id
        LEFT JOIN LATERAL aksh.org_public(p.organisation_id) o ON TRUE
-       GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, l.last_at`,
+       GROUP BY w.patient_id, p.given_name, p.family_name, p.record_ref, o.name, o.locale->>'glucoseUnit', l.last_at`,
       [ids]
     )).rows;
     // Patients whose only recent CGM data is an unreviewed patient upload: listed so the upload can be found and reviewed.
@@ -81,6 +82,7 @@ export async function listMonitoring(ctx: NetworkContext) {
       stale: false,
       pct: { veryLow: 0, low: 0, inRange: 0, veryHigh: 0 },
       meanMmol: 0,
+      glucoseUnit: "mmol/L",
       cvPct: 0,
       wearPct: 0,
       sufficient: false,
@@ -104,7 +106,7 @@ export async function listMonitoring(ctx: NetworkContext) {
         const cvPct = a.sd ? (Number(a.sd) / mean) * 100 : 0;
         const hoursSince = (now - a.last_at.getTime()) / 3_600_000;
         const stale = hoursSince > 72;
-        const flags = consensusFlags({ veryLow, low, inRange, veryHigh, cvPct, days, wearPct, sufficient });
+        const flags = consensusFlags({ veryLow, low, inRange, veryHigh, cvPct, days, wearPct, sufficient }, a.glucose_unit ?? "mmol/L");
         if (stale) flags.unshift(`no CGM data for ${Math.floor(hoursSince / 24)} days`);
         return {
           patientId: a.patient_id,
@@ -115,6 +117,7 @@ export async function listMonitoring(ctx: NetworkContext) {
           stale,
           pct: { veryLow: round1(veryLow), low: round1(low), inRange: round1(inRange), veryHigh: round1(veryHigh) },
           meanMmol: round1(mean),
+          glucoseUnit: a.glucose_unit ?? "mmol/L",
           cvPct: round1(cvPct),
           wearPct: round1(wearPct),
           sufficient,

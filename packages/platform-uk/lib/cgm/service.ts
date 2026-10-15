@@ -56,7 +56,7 @@ function summarise(parsed: ReturnType<typeof parseCgmExport>) {
     from: points[0]?.at ?? null,
     to: points[points.length - 1]?.at ?? null,
     // Metrics over the most recent 14 days in the file.
-    metrics: computeMetrics(points, 14, last + 1),
+    metrics: computeMetrics(points, 14, last + 1, parsed.unit),
     problem: parsed.problem ?? null,
   };
 }
@@ -179,7 +179,7 @@ export async function getCgm(ctx: NetworkContext, patientId: string) {
       latest: latest.toISOString(),
       // Data more than 3 days old is shown, but labelled: it describes then, not now.
       stale: Date.now() - latest.getTime() > 3 * 86_400_000,
-      metrics: computeMetrics(points, 14, latest.getTime() + 1),
+      metrics: computeMetrics(points, 14, latest.getTime() + 1, who.glucoseUnit),
       agp: agp(points, who.timeZone ?? "UTC"),
       uploads,
       pendingPatientUploads,
