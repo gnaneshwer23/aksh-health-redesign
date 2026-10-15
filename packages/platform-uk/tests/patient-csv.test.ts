@@ -17,4 +17,8 @@ assert.ok(!parsed.success && parsed.error.issues.some((i) => i.path[0] === "date
 assert.equal((bad.patients[0] as { diabetesType: string }).diabetesType, "type_2", "type normalised");
 
 assert.deepEqual(csvToPatients("given_name,family_name\nA,B").missingColumns, ["record_number", "date_of_birth"]);
-console.log("patient-csv: parser, template, mapping, validation errors — PASS");
+// HbA1c in % (most countries) is converted to mmol/mol on import.
+const pctRow = csvToPatients("record_number,given_name,family_name,date_of_birth,latest_hba1c_percent,hba1c_date\nP1,Ana,Diaz,1970-01-01,7.0,2026-09-01").patients[0] as { observations: { value: number; unit: string }[] };
+assert.equal(pctRow.observations[0]!.value, 53);
+assert.equal(pctRow.observations[0]!.unit, "mmol/mol");
+console.log("patient-csv: parser, template, mapping, validation errors, HbA1c % — PASS");

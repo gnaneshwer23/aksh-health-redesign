@@ -7,7 +7,7 @@ import { isProofEnvironment } from "@/lib/env/proof";
 
 export const metadata: Metadata = {
   title: "Clinical-proof environment",
-  description: "Synthetic validation of the Aksh clinical intelligence layer. No real patients.",
+  description: "Where Aksh clinical features are tested on synthetic patients. No real patients.",
   robots: { index: false, follow: false },
 };
 
@@ -22,7 +22,7 @@ const PATHS = [
   },
   {
     title: "Aksh Diabetes on a care-network patient",
-    body: "Create a sandbox clinic, open a patient in the care network and run a clinical review. Trusted CGM and verified HbA1c from the record feed the diabetes signals (the Track B link).",
+    body: "Create a sandbox clinic, open a patient in the care network and run a clinical review. Trusted CGM and verified HbA1c from the record feed the diabetes signals.",
     href: "/signup",
     cta: "Create a sandbox account",
   },
@@ -43,7 +43,7 @@ const PATHS = [
 const LIMITS = [
   "Synthetic data only: the 100-patient cohort and sandbox clinics. Real patient data is refused by design, and this environment cannot reach production.",
   "Agent outputs are drafts for a clinician. No EHR write, no message to a patient, no autonomous decision.",
-  "Clinical intelligence is in validation (Track B). It is not available to clinics in production until a governed go-live: clinical safety case, DPIA and regulatory opinion.",
+  "Clinical features are in validation. It is not available to clinics in production until an approved go-live: clinical safety case, DPIA and regulatory opinion.",
   "Figures shown here describe the synthetic world. They are not evidence of clinical effect.",
 ];
 
@@ -56,7 +56,7 @@ export default function ProofPage() {
           <span className="s-eyebrow">Clinical-proof environment</span>
           <h1 className="s-h1" style={{ fontSize: "clamp(34px, 4.4vw, 52px)" }}>See the clinical layer work, on synthetic patients.</h1>
           <p className="s-lede">
-            This is where the Aksh clinical intelligence layer is validated before any clinic uses it: the agents, Aksh
+            This is where Aksh clinical features are tested before any clinic uses them: the agents, Aksh
             Diabetes and the human gates, running end to end on a synthetic world. It is separate from the product clinics
             use, which runs patient access in shadow mode and has the clinical agents switched off.
           </p>

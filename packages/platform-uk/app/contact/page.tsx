@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2, Mail } from "lucide-react";
 
+import { PageHead } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -17,13 +18,19 @@ const ROUTES = [
 export default function ContactPage() {
   return (
     <SiteShell>
-      <section className="s-page-head">
-        <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">Contact</span>
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Talk to us.</h1>
-          <p className="s-lede">Choose the route that fits and the right person will get back to you.</p>
-        </div>
-      </section>
+      <PageHead
+        eyebrow="Contact"
+        title="Talk to us."
+        lede="Choose the route that fits and the right person will reply."
+        glance={{
+          title: "Who to contact",
+          rows: [
+            ["A new clinic", <Link key="a" href="/get-started" className="s-link">Request access</Link>],
+            ["Security or data protection", "Email, below"],
+            ["Vulnerability report", "Email, below"],
+          ],
+        }}
+      />
       <section className="s-section s-section--tight">
         <div className="s-container">
           <div className="s-grid s-grid--2">

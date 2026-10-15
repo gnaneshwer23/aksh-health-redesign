@@ -69,7 +69,7 @@ export function SlotFillMock() {
 
 export function CgmMock() {
   const rows = [
-    { name: "A. Mensah", tir: 48, low: 6, vlow: 2, flag: "Time below 3.0 mmol/L is 1% or more", tone: "red" as const },
+    { name: "A. Mensah", tir: 48, low: 6, vlow: 2, flag: "Time below 54 mg/dL is 1% or more", tone: "red" as const },
     { name: "S. Novak", tir: 61, low: 2, vlow: 0, flag: "Time in range is under 70%", tone: "amber" as const },
     { name: "L. Rossi", tir: 78, low: 1, vlow: 0, flag: "Within general targets", tone: "mint" as const },
   ];
@@ -132,7 +132,7 @@ export function PatientMock() {
         <div className="s-tags"><span className="s-tag">Glucose</span><span className="s-tag">Blood pressure</span><span className="s-tag">Weight</span></div>
       </div>
       <div className="s-card-ui">
-        <div className="s-row"><span className="s-ui-strong">Glucose 6.8 mmol/L</span><span className="s-pill s-pill--mint">Shared with your clinic</span></div>
+        <div className="s-row"><span className="s-ui-strong">Glucose 122 mg/dL</span><span className="s-pill s-pill--mint">Shared with your clinic</span></div>
         <span className="s-ui-muted">Before breakfast · today 07:42</span>
       </div>
       <div className="s-card-ui">
@@ -176,9 +176,9 @@ export function WorkflowMock() {
 /** The platform's core idea: every output is a draft in one review queue until a named clinician decides. */
 export function ReviewQueueMock() {
   const items = [
-    { t: "HbA1c 68 mmol/mol", d: "Lab result · trend rising over 9 months", s: "Needs review", tone: "amber" as const },
+    { t: "HbA1c 8.4%", d: "Lab result · trend rising over 9 months", s: "Needs review", tone: "amber" as const },
     { t: "Interaction: anticoagulant with aspirin", d: "Medication safety · held for pharmacist", s: "Held", tone: "red" as const },
-    { t: "HbA1c “about 60”", d: "Patient-reported · not yet verified", s: "Unverified", tone: "grey" as const },
+    { t: "HbA1c “about 7.5%”", d: "Patient-reported · not yet verified", s: "Unverified", tone: "grey" as const },
     { t: "Medication review booked", d: "Approved by named clinician · audited", s: "Approved", tone: "mint" as const },
   ];
   return (

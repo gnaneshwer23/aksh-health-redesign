@@ -25,14 +25,14 @@ export const PLATFORM_LAYERS: { name: string; detail: string }[] = [
 
 /** PRD §1.3: the end-to-end loop. */
 export const PRODUCT_LOOP: { step: string; detail: string }[] = [
-  { step: "Signal in", detail: "Notes, labs, medicines, devices and what patients report" },
+  { step: "Data in", detail: "Notes, labs, medicines, devices and what patients report" },
   { step: "Capture", detail: "Notes, voice and intake become structured context" },
   { step: "Understand and draft", detail: "Documentation, coding and disease signals as drafts" },
-  { step: "Detect and reason", detail: "Safety, risk, coordination and referral checks" },
+  { step: "Check", detail: "Medication safety, risk change and referral checks" },
   { step: "Clinician decides", detail: "Accept, edit or reject, plus mandatory gates" },
-  { step: "Stage", detail: "FHIR R4 staging beside the EHR, never an unsanctioned write" },
-  { step: "Audit", detail: "Every draft and decision attributable and tamper-evident" },
-  { step: "Learn, governed", detail: "Gated evaluation before any model change" },
+  { step: "Stage", detail: "Prepared in FHIR R4 beside the EHR; nothing written without approval" },
+  { step: "Record", detail: "Every draft and decision kept with who and when" },
+  { step: "Improve", detail: "Any model change is evaluated and approved first" },
 ];
 
 /** The twelve platform agents (lib/agents.ts AGENT_DIRECTORY). Human label first, codename second. */
@@ -40,14 +40,14 @@ export const PLATFORM_AGENTS: { label: string; codename: string; role: string; s
   { label: "Clinical intake", codename: "CANVAS", role: "Structured capture from notes, forms, voice and intake", status: "synthetic" },
   { label: "Clinical documentation", codename: "SYNTHESIS", role: "Structured notes and coding drafts", status: "synthetic" },
   { label: "Medication safety", codename: "GUARDIAN", role: "Interaction and allergy flags held for review", status: "synthetic" },
-  { label: "Predictive risk", codename: "HORIZON", role: "Risk change with its contributing factors listed", status: "synthetic" },
-  { label: "Clinical intelligence", codename: "NEXUS", role: "Correlates labs, medicines and signals into one picture", status: "synthetic" },
+  { label: "Risk change", codename: "HORIZON", role: "Shows how a patient's risk has changed and why", status: "synthetic" },
+  { label: "Results and medicines", codename: "NEXUS", role: "Links lab results, medicines and readings for the reviewer", status: "synthetic" },
   { label: "Care coordination", codename: "PATHWAY", role: "Referral, pathway and follow-up packages for sign-off", status: "synthetic" },
-  { label: "Population health", codename: "COMPASS", role: "Registries, care gaps and equity views", status: "partial" },
+  { label: "Population health", codename: "COMPASS", role: "Registers, care gaps and equity views", status: "partial" },
   { label: "Interoperability", codename: "BRIDGE", role: "FHIR R4 connections for schedules, bookings and devices", status: "production" },
-  { label: "Regulatory and audit", codename: "SHIELD", role: "Append-only record of every draft and decision", status: "production" },
-  { label: "Supervisor", codename: "CONDUCTOR", role: "Runs every agent in a fixed, inspectable order", status: "synthetic" },
-  { label: "Imaging intelligence", codename: "PRISM", role: "Imaging review support", status: "planned" },
+  { label: "Audit trail", codename: "SHIELD", role: "A record of every draft and decision that cannot be edited", status: "production" },
+  { label: "Supervisor", codename: "CONDUCTOR", role: "Runs the components in a fixed order that can be inspected", status: "synthetic" },
+  { label: "Imaging", codename: "PRISM", role: "Support for reviewing images", status: "planned" },
   { label: "Clinical research", codename: "ATLAS", role: "Research and trial support", status: "planned" },
 ];
 
@@ -61,7 +61,7 @@ export const DIABETES_AREAS: { name: string; output: string; gate: string; statu
   { name: "Exercise", output: "Resistance and cardio talking points", gate: "Same coaching gate as nutrition", status: "synthetic" },
   { name: "Behaviour", output: "Habit and adherence talking points", gate: "Distress or risk disclosures escalate to a person", status: "synthetic" },
   { name: "Complications", output: "Retinopathy, neuropathy, kidney, cardiovascular and liver flags", gate: "Referral-triggering flags use the referral gate", status: "synthetic" },
-  { name: "Prevention", output: "Risk trajectory and personalised priorities", gate: "Plan changes need a clinician", status: "synthetic" },
+  { name: "Prevention", output: "Risk trend and the next priorities for the care plan", gate: "Plan changes need a clinician", status: "synthetic" },
 ];
 
 /** PRD §2.3: mandatory human gates and who confirms them. */
@@ -81,31 +81,31 @@ export const NON_OBJECTIVES: string[] = [
   "No silent or automatic model retraining",
   "No fake or implied certification or regulatory approval",
   "No clinical output without an explanation",
-  "No real patient data without an explicit governed decision",
+  "No real patient data without an explicit, approved decision",
 ];
 
 /** Commercial Execution PRD v1.1: two pillars on shared foundations. */
 export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: string; items: { name: string; detail: string; status: Status }[] }[] = [
   {
     key: "access",
-    title: "Patient Access & Operations",
-    subtitle: "Access, scheduling and care navigation, staff-supervised",
+    title: "Patient access",
+    subtitle: "Filling freed appointments and handling requests, with staff in charge",
     items: [
       { name: "Cancellation-slot fill", detail: "Freed slots matched to the waiting list; staff contact; booking verified on read-back", status: "production" },
       { name: "Staff hand-off", detail: "Named queue, reason, due time; nothing disappears silently", status: "production" },
       { name: "Outbound campaigns", detail: "Missed, lapsed and recall outreach under approved templates", status: "planned" },
-      { name: "Patient-access agent", detail: "Routine questions, scheduling and referral intake, with hand-off", status: "synthetic" },
+      { name: "Patient requests", detail: "Routine questions and scheduling requests, handed to staff when needed", status: "synthetic" },
     ],
   },
   {
     key: "clinical",
-    title: "Clinical Intelligence & Care Coordination",
-    subtitle: "Multi-agent clinical workflow with human oversight",
+    title: "Clinical review",
+    subtitle: "Worklists and drafts for clinicians to accept, edit or reject",
     items: [
       { name: "CGM and readings monitoring", detail: "Consensus metrics as a clinician worklist", status: "production" },
-      { name: "Capture, documentation and coding", detail: "CANVAS · VOICE · SYNTHESIS · Dr.Assist drafts", status: "synthetic" },
-      { name: "Safety, risk and coordination", detail: "GUARDIAN · HORIZON · NEXUS · PATHWAY drafts", status: "synthetic" },
-      { name: "Clinician review and approval", detail: "Accept · edit · reject, under one supervisor (CONDUCTOR)", status: "synthetic" },
+      { name: "Notes and coding", detail: "Structured notes and coding drafts from consultations", status: "synthetic" },
+      { name: "Safety, risk and referrals", detail: "Medication safety, risk change and referral drafts", status: "synthetic" },
+      { name: "Review queue", detail: "One queue to accept, edit or reject every draft", status: "synthetic" },
     ],
   },
 ];
@@ -113,17 +113,17 @@ export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: str
 export const FOUNDATIONS: { name: string; detail: string; status: Status }[] = [
   { name: "Identity and access", detail: "Roles, two-step sign-in, organisation isolation", status: "production" },
   { name: "Data and integration", detail: "FHIR R4 connections, read only", status: "production" },
-  { name: "Knowledge layer", detail: "Guidelines, ontologies, graph", status: "synthetic" },
-  { name: "Observability and security", detail: "Monitoring, append-only audit", status: "production" },
-  { name: "Continuous learning", detail: "Governed evaluation; no automatic retraining", status: "synthetic" },
+  { name: "Clinical knowledge", detail: "Guidelines and terminology, with sources", status: "synthetic" },
+  { name: "Monitoring and audit", detail: "Alerts, uptime checks, uneditable history", status: "production" },
+  { name: "Model changes", detail: "Evaluated and approved before use", status: "synthetic" },
 ];
 
 /** What the platform is for. Aims, measured against a locked baseline before any claim is made. */
 export const OUTCOMES: { name: string; detail: string }[] = [
-  { name: "Improved access", detail: "Fewer missed appointments" },
-  { name: "Efficient operations", detail: "Cancellations filled, less admin" },
-  { name: "Safer decisions", detail: "Medication safety, risk aware" },
-  { name: "Better coordination", detail: "Referrals, follow-up, handover" },
-  { name: "Population insight", detail: "Equity and demand planning" },
-  { name: "Measurable value", detail: "Baseline and verified lift" },
+  { name: "Fewer empty slots", detail: "Freed appointments filled from the waiting list" },
+  { name: "Less staff time", detail: "Minutes per filled slot, measured" },
+  { name: "Earlier attention", detail: "Low glucose seen first" },
+  { name: "Safer medicines", detail: "Interaction and allergy checks before review" },
+  { name: "No lost hand-offs", detail: "Every hand-off has an owner and a due time" },
+  { name: "Results you can check", detail: "Against a baseline locked before go-live" },
 ];

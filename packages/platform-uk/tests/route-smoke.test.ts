@@ -365,8 +365,8 @@ async function run() {
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/admin/precision-health");
   await assertFileIncludes("components/dashboard/Sidebar.tsx", "/dashboard/researcher#federated");
   // Security page: honest posture, no certification or digital-twin claims.
-  await assertFileIncludes("app/security/page.tsx", "We do\n            not claim certifications we do not hold");
-  await assertFileIncludes("app/security/page.tsx", "AI under governance");
+  await assertFileIncludes("app/security/page.tsx", "We do not claim certifications we do not hold");
+  await assertFileIncludes("app/security/page.tsx", "No patient data to AI models");
   await assertFileExcludes("app/security/page.tsx", "digital twin");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "gate-checklist-progress.json");
   await assertFileIncludes("scripts/generate-evidence-pack.mjs", "precision-health-scaffold-snapshot.json");
