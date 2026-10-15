@@ -54,26 +54,34 @@ export function isPublicDemoPath(pathname: string): boolean {
 }
 
 /**
- * APIs behind the synthetic estate, closed in the real workspace:
- * - clinical-proof agents and spine (CONDUCTOR, HORIZON, GUARDIAN, precision health, graph, research, learning) run on
- *   the synthetic cohort; Track B is not open in the real workspace;
+ * APIs open in the real workspace (production): an allowlist of what the real product uses. Everything else under
+ * /api is the synthetic estate or internal tooling and is closed there:
+ * - clinical-proof agents and spine (CONDUCTOR, HORIZON, GUARDIAN, precision health, graph, research, learning, chat)
+ *   run on the synthetic cohort; Track B is not open in the real workspace, and no patient data goes to cloud AI;
  * - the mock patient record API (`/api/patients`; real records are `/api/network/patients`);
- * - Front Desk / Asha, the synthetic receptionist with its own in-memory calendar. Slot fill has one implementation,
- *   `lib/access` (platform map G3), and no other path may book or offer slots in the real workspace.
- * None of these is called by a real-workspace page.
+ * - Front Desk / Asha: slot fill has one implementation, `lib/access` (platform map G3);
+ * - internal posture documents and demo tooling (system, integrations, eval, readiness, roadmap, simulation, ...).
  */
-const SYNTHETIC_API_PREFIXES = [
-  "/api/agents",
-  "/api/clinical-spine",
-  "/api/precision-health",
-  "/api/patients",
-  "/api/front-desk",
-  "/api/neo4j",
-  "/api/graphrag",
-  "/api/research",
-  "/api/learning",
+const REAL_API_ALLOW = [
+  "/api/access",
+  "/api/access-requests",
+  "/api/admin/access-requests",
+  "/api/auth",
+  "/api/connect",
+  "/api/cron",
+  "/api/feedback",
+  "/api/health",
+  "/api/invites",
+  "/api/me",
+  "/api/network",
+  "/api/onboarding",
+  "/api/orgs",
+  "/api/platform",
+  "/api/profile",
+  "/api/telemetry",
+  "/api/today",
 ];
 export function isClosedInRealWorkspace(pathname: string): boolean {
-  return under(pathname, SYNTHETIC_API_PREFIXES);
+  return under(pathname, ["/api"]) && !under(pathname, REAL_API_ALLOW);
 }
 export const TRACK_B_NOT_OPEN = "TRACK_B_NOT_OPEN: clinical agents and synthetic services are not available in this workspace until a governed go-live opens Track B";

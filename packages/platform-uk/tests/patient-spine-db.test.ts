@@ -24,7 +24,10 @@ function pure() {
   assert.equal(hba1cPercent(48), 6.5);
   assert.ok(isClosedInRealWorkspace("/api/agents/orchestrate") && isClosedInRealWorkspace("/api/agents/horizon"));
   assert.ok(isClosedInRealWorkspace("/api/front-desk/state") && isClosedInRealWorkspace("/api/patients/P001"), "one slot fill: Front Desk closed in the real workspace");
-  assert.ok(!isClosedInRealWorkspace("/api/network/patients") && !isClosedInRealWorkspace("/api/access/queue") && !isClosedInRealWorkspace("/api/agentsx"));
+  assert.ok(!isClosedInRealWorkspace("/api/network/patients") && !isClosedInRealWorkspace("/api/access/queue") && !isClosedInRealWorkspace("/api/auth/session"));
+  for (const p of ["/api/chat", "/api/chat/patient", "/api/eval/agents", "/api/system/database-contract", "/api/integrations/medplum-status", "/api/admin/e2e", "/api/pilot/apply", "/api/roadmap"]) assert.ok(isClosedInRealWorkspace(p), p);
+  for (const p of ["/api/health", "/api/connect/v1/slots", "/api/cron/retention", "/api/orgs/x/capabilities", "/api/admin/access-requests", "/api/today"]) assert.ok(!isClosedInRealWorkspace(p), p);
+  assert.ok(!isClosedInRealWorkspace("/dashboard/today"), "only APIs are affected");
 
   const p001 = getPatientById("P001")!;
   registerSpinePatient({ ...p001, id: "spine-test-1", name: "Spine Test" });

@@ -70,6 +70,13 @@ test("real workspace: the clinical agents and the Track B link are closed", asyn
     expect((await r.json()).error).toMatch(/TRACK_B_NOT_OPEN/);
   }
   for (const path of ["/api/front-desk/state", "/api/patients/P001"]) expect((await request.get(path)).status(), path).toBe(403);
+  for (const path of ["/api/chat", "/api/eval/agents", "/api/system/database-contract", "/api/integrations/medplum-status", "/api/roadmap"]) {
+    expect((await request.get(path)).status(), `${path} closed`).toBe(403);
+  }
+  const health = await request.get("/api/health");
+  expect(health.status()).toBe(200);
+  expect(await health.json()).toEqual({ status: "ok" });
+  expect((await request.get("/api/today")).status(), "allowed APIs still reach their own auth").not.toBe(403);
   const review = await request.post("/api/network/patients/any/clinical-review");
   expect(review.status()).toBe(403);
 });
