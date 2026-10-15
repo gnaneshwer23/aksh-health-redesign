@@ -21,7 +21,7 @@ const GAP_TO_TYPE: Record<string, string> = {
   "Statin not recorded": "medication_review",
 };
 
-export async function provisionSandbox(actor: { userId: string; email: string; displayName: string; role: string | null }, options: { organisationName?: string; withSampleData: boolean }) {
+export async function provisionSandbox(actor: { userId: string; email: string; displayName: string; role: string | null }, options: { organisationName?: string; withSampleData: boolean; locale?: { timezone?: string; glucoseUnit?: "mmol/L" | "mg/dL"; hba1cUnit?: "mmol/mol" | "%" } }) {
   const existing = await loadNetworkContext(actor.userId, actor.role);
   if (existing.orgIds.length) return { organisationId: existing.orgIds[0]!, created: false };
 
@@ -29,7 +29,7 @@ export async function provisionSandbox(actor: { userId: string; email: string; d
   const org = await createOrganisation(actor, {
     name: options.organisationName?.trim() || `${firstName}’s sandbox clinic`,
     kind: "clinic",
-    locale: { timezone: "UTC", glucoseUnit: "mmol/L", hba1cUnit: "mmol/mol" },
+    locale: { timezone: "UTC", glucoseUnit: "mmol/L", hba1cUnit: "mmol/mol", ...options.locale },
   });
   if (!options.withSampleData) return { organisationId: org.id, created: true };
 

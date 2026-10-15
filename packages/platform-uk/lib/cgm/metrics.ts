@@ -2,11 +2,14 @@
  * CGM metrics following the international consensus on time in range (Battelino et al., Diabetes Care 2019) and the
  * glucose management indicator (Bergenstal et al., 2018). Pure.
  *
- * Ranges (mmol/L): very low < 3.0, low 3.0–3.8, in range 3.9–10.0, high 10.1–13.9, very high > 13.9.
+ * Ranges (mmol/L; mg/dL in brackets): very low < 3.0 (54), low 3.0–3.8, in range 3.9–10.0 (70–180), high 10.1–13.9,
+ * very high > 13.9 (250). Stored in mmol/L; shown in the organisation's unit (lib/units.ts).
  * General targets for most adults with type 1 or type 2 diabetes: TIR > 70%, TBR < 4%, < 3.0 below 1%,
  * TAR < 25%, > 13.9 below 5%, CV ≤ 36%. Data are sufficient with ≥ 14 days and ≥ 70% sensor wear.
  * Targets differ for older or high-risk people and in pregnancy; the clinician decides which apply.
  */
+import { formatGlucose, type GlucoseUnit } from "../units";
+
 export type CgmPoint = { at: string; mmol: number };
 
 export type CgmMetrics = {
@@ -43,13 +46,13 @@ export function samplingInterval(points: CgmPoint[]): number {
 }
 
 /** Flags against the general adult consensus targets, worst first. Shared by the patient view and monitoring. */
-export function consensusFlags(m: { veryLow: number; low: number; inRange: number; veryHigh: number; cvPct: number; days: number; wearPct: number; sufficient: boolean }) {
+export function consensusFlags(m: { veryLow: number; low: number; inRange: number; veryHigh: number; cvPct: number; days: number; wearPct: number; sufficient: boolean }, unit: GlucoseUnit | string | null = "mmol/L") {
   const flags: string[] = [];
-  if (m.veryLow >= 1) flags.push("time below 3.0 mmol/L is 1% or more");
+  if (m.veryLow >= 1) flags.push(`time below ${formatGlucose(3.0, unit)} is 1% or more`);
   if (m.veryLow + m.low >= 4) flags.push("time below range is 4% or more");
   if (m.inRange < 70) flags.push("time in range is under 70%");
   if (100 - m.veryLow - m.low - m.inRange >= 25) flags.push("time above range is 25% or more");
-  if (m.veryHigh >= 5) flags.push("time above 13.9 mmol/L is 5% or more");
+  if (m.veryHigh >= 5) flags.push(`time above ${formatGlucose(13.9, unit)} is 5% or more`);
   if (m.cvPct > 36) flags.push("glucose variability (CV) is above 36%");
   if (!m.sufficient) flags.push(`not enough data for reliable metrics (${m.days} days, ${round1(m.wearPct)}% wear; needs 14 days and 70%)`);
   return flags;
@@ -66,7 +69,7 @@ export function urgency(m: { veryLow: number; low: number; inRange: number; very
   return 6;
 }
 
-export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now()): CgmMetrics | null {
+export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now(), unit: GlucoseUnit | string | null = "mmol/L"): CgmMetrics | null {
   const from = now - windowDays * 86_400_000;
   const points = all.filter((p) => {
     const t = Date.parse(p.at);
@@ -94,7 +97,7 @@ export function computeMetrics(all: CgmPoint[], windowDays = 14, now = Date.now(
   const gmiPct = 3.31 + 0.02392 * meanMgdl;
   const gmiMmolMol = 12.71 + 4.70587 * mean;
   const sufficient = days >= 14 && wear >= 70;
-  const flags = consensusFlags({ veryLow, low, inRange, veryHigh, cvPct: (sd / mean) * 100, days, wearPct: wear, sufficient });
+  const flags = consensusFlags({ veryLow, low, inRange, veryHigh, cvPct: (sd / mean) * 100, days, wearPct: wear, sufficient }, unit);
   return {
     from: points[0]!.at,
     to: points[n - 1]!.at,

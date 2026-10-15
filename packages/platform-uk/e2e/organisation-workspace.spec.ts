@@ -47,7 +47,7 @@ test("organisation: a clinic signs up, invites staff, imports patients and reach
   const adminCtx = await browser.newContext();
   await createFreshTestUser(adminCtx.request, baseURL!, { role: "gp", label: "org-admin" });
   const admin = await adminCtx.newPage();
-  await onboard(admin, /^Physician \(GP \/ family doctor\)/, "Dr Morgan Admin", async (p) => {
+  await onboard(admin, /^Physician \(primary care or specialist\)/, "Dr Morgan Admin", async (p) => {
     await p.getByRole("radio", { name: /Describe my organisation/ }).click();
     await p.getByLabel("Clinic or organisation name").fill(clinic);
   });

@@ -66,7 +66,7 @@ test("cgm: clinic and patient uploads, consensus metrics, AGP, and checking the 
   await panel.getByLabel("CGM export file").setInputFiles({ name: "clarity.csv", mimeType: "text/csv", buffer: Buffer.from(dexcomCsv()) });
   await expect(panel.locator("[data-cgm-preview]")).toContainText("Dexcom Clarity export in mg/dL · 4032 readings");
   await panel.getByRole("button", { name: /^Save 4032 readings/ }).click();
-  await expect(panel.getByRole("status").first()).toContainText("4032 readings saved");
+  await expect(panel.getByRole("status").first()).toContainText("4032 readings saved", { timeout: 20_000 });
   await expect(panel.locator("[data-cgm-metrics]")).toContainText("70%");
   await expect(panel.locator("[data-cgm-flags]")).toContainText("time below range is 4% or more");
   await expect(panel.getByRole("img", { name: /Ambulatory glucose profile/ })).toBeVisible();

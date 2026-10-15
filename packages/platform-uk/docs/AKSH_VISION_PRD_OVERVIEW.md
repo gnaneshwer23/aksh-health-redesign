@@ -3,7 +3,7 @@
 **Document ID:** AKSH-VISION-PRD-OVERVIEW
 **Version:** 1.4
 **Date:** 2026-10-10
-**Product:** Aksh Intelligence Platform (UK/EU) · first module: Aksh Diabetes
+**Product:** Aksh Intelligence Platform (any country; general diabetes solution, founder decision 2026-10-15) · first module: Aksh Diabetes
 **Live:** https://akshhealth.com
 
 ---
@@ -66,7 +66,7 @@ Signal in (synthetic / pilot-consented)
 | Track | Meaning | Status |
 | --- | --- | --- |
 | **A — Synthetic / internal clinic / pilot marketing** | Demo + HITL + sim EHR · no live PHI write | **GO** (audited Oct 2026 on akshhealth.com) |
-| **B — Live NHS clinical / EMR write** | Real PHI · live EMIS/SystmOne · DPIA / partner | **NO-GO by design** until separately governed |
+| **B — Live clinical / EHR write** | Real PHI · a live EHR (e.g. Epic, Oracle Health, EMIS) · DPIA or local equivalent / partner | **NO-GO by design** until separately governed |
 
 Never sell Track A as Track B. Never imply MHRA / DCB / DPIA complete from rehearsal artefacts.
 

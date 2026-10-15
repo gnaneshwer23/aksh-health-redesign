@@ -53,7 +53,7 @@ const CLINICAL_ORG_STEPS: OnboardingStepId[] = [
 export const ROLES: RoleDefinition[] = [
   {
     id: "gp",
-    label: "Physician (GP / family doctor)",
+    label: "Physician (primary care or specialist)",
     description: "Fill freed appointments, review patient readings and monitor CGM",
     icon: "stethoscope",
     color: "#003D7A",

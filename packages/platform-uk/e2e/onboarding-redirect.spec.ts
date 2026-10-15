@@ -15,6 +15,6 @@ test.describe("Onboarding redirect", () => {
     await page.waitForURL(/\/onboarding/, { timeout: 15_000 });
 
     await expect(page).toHaveURL(/\/onboarding\/role-select/);
-    await expect(page.getByRole("button", { name: /GP/i }).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /Physician/i }).first()).toBeVisible();
   });
 });

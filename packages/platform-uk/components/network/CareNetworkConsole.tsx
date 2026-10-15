@@ -7,6 +7,7 @@ import { ClinicalReviewPanel } from "@/components/network/ClinicalReviewPanel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { getPatientDetail, listOrganisations, listPatients, listProfessionals, networkSummary } from "@/lib/network/read";
+import { formatHba1c } from "@/lib/units";
 import { cn } from "@/lib/utils";
 
 type Summary = Awaited<ReturnType<typeof networkSummary>>;
@@ -154,8 +155,8 @@ export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
               { k: "Patients", v: summary.totals.patients },
               { k: "Healthcare professionals", v: summary.totals.professionals },
               { k: "Organisations", v: summary.totals.organisations },
-              { k: "Mean HbA1c (diabetes)", v: `${summary.glycaemia.meanHba1cMmolMol} mmol/mol` },
-              { k: "At HbA1c ≤ 53 mmol/mol (7%)", v: `${summary.glycaemia.atTargetPct}%` },
+              { k: "Mean HbA1c (diabetes)", v: formatHba1c(summary.glycaemia.meanHba1cMmolMol, summary.glycaemia.hba1cUnit) },
+              { k: summary.glycaemia.hba1cUnit === "%" ? "At HbA1c ≤ 7%" : "At HbA1c ≤ 53 mmol/mol", v: `${summary.glycaemia.atTargetPct}%` },
               { k: "CGM users", v: summary.glycaemia.cgmUsers },
               { k: "Mean time in range (CGM)", v: `${summary.glycaemia.meanTimeInRangePct}%` },
               { k: "Linked to the patient app", v: summary.engagement.appUsers },
@@ -268,7 +269,7 @@ export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
                       <Sparkline values={detail.hba1c.map((h) => h.hba1cMmolMol)} />
                       <div className="text-xs">
                         <p className="text-foreground">HbA1c {hba1cText(detail.hba1c[detail.hba1c.length - 1] ?? null, detail.unit)}</p>
-                        {detail.hba1c.length > 1 ? <p className="text-muted">{detail.hba1c.map((h) => h.hba1cMmolMol).join(" → ")} mmol/mol</p> : null}
+                        {detail.hba1c.length > 1 ? <p className="text-muted">{detail.hba1c.map((h) => (detail.unit === "%" ? h.hba1cPercent : h.hba1cMmolMol)).join(" → ")} {detail.unit}</p> : null}
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">{bandBadge(detail.risk.band)}<span className="text-xs text-muted">score {detail.risk.score}: {detail.risk.drivers.join(", ") || "no major drivers"}</span></div>
