@@ -32,7 +32,7 @@ export function updateQueueItemDecision(
   reviewCase: ReviewCase,
   itemId: string,
   status: ReviewQueueItemStatus,
-  options: { decidedBy: string; rejectionReason?: string; content?: string }
+  options: { decidedBy: string; rejectionReason?: string; content?: string; durableAudit?: boolean }
 ): ReviewCase {
   const currentItems = resolveReviewQueueItems(reviewCase);
   const target = currentItems.find((item) => item.id === itemId);
@@ -60,7 +60,8 @@ export function updateQueueItemDecision(
     shieldEvent
   );
 
-  scheduleDurableShieldWrite({
+  // The server decision endpoint writes the durable audit row in the same transaction as the decision instead.
+  if (options.durableAudit !== false) scheduleDurableShieldWrite({
     action: shieldAction,
     actor: options.decidedBy,
     event: shieldEvent,

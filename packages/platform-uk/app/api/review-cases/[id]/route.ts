@@ -7,7 +7,7 @@ import { shouldSyncAcceptedCaseToMedplum } from "@/lib/integration-config";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { attachPracticeIdToCase } from "@/lib/db/tenant-context";
 import { readReviewCaseById, readReviewCases, updateReviewCase } from "@/lib/review-case-repository";
-import { buildEvidencePayload, normalizeReviewCaseForPersistence } from "@/lib/workflow";
+import { buildEvidencePayload, normalizeReviewCaseForPersistence, resolveReviewQueueItems } from "@/lib/workflow";
 import { pushToMedplum } from "@/lib/medplum-client";
 import type { ReviewCase } from "@/lib/types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
@@ -59,6 +59,24 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
   if (existing.userId && existing.userId !== userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
+
+  // Draft decisions (accept / edit / reject) are made only through the decision endpoint, which checks the version and
+  // writes the audit record in the same transaction. This route refuses to change them, and refuses stale saves.
+  const before = new Map(resolveReviewQueueItems(existing).map((i) => [i.id, i]));
+  const changedDecision = resolveReviewQueueItems(payload).some((i) => {
+    const b = before.get(i.id);
+    return b && (b.status !== i.status || (b.decidedBy ?? null) !== (i.decidedBy ?? null) || (b.rejectionReason ?? null) !== (i.rejectionReason ?? null));
+  });
+  if (changedDecision) {
+    return NextResponse.json(
+      { error: "Accept, edit and reject are recorded through /api/review-cases/:id/items/:itemId/decision.", code: "USE_DECISION_ENDPOINT" },
+      { status: 409 }
+    );
+  }
+  if (payload.version !== undefined && payload.version !== (existing.version ?? 0)) {
+    return NextResponse.json({ error: "The case changed since you opened it; reload to see the latest version.", code: "STALE_CASE" }, { status: 409 });
+  }
+  payload.version = (existing.version ?? 0) + 1;
 
   // EC-CLIN-3 / REQ-021: the AppRole collapses GP/Nurse/Pharmacist; disposition rights do not.
   const scope = evaluateDecisionScope({

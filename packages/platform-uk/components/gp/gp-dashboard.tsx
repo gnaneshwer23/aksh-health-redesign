@@ -10,11 +10,11 @@ import { VoiceMicPanel } from "@/components/gp/voice-mic-panel";
 import { GOLDEN_SCENARIO_PATEL_DEMO_ID, GOLDEN_SCENARIO_V_UK1_ID, deriveAgentCards } from "@/lib/agents";
 import { useReviewCases } from "@/lib/use-review-cases";
 import type { ReviewQueueItemType } from "@/lib/types";
-import { resolveReviewQueueItems, updateQueueItemDecision } from "@/lib/workflow";
+import { resolveReviewQueueItems } from "@/lib/workflow";
 
 export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { caseId?: string }) {
-  const { cases, getCaseById, isLoaded, updateCase } = useReviewCases();
-  const [reviewerName, setReviewerName] = useState("Dr Morgan");
+  const { cases, getCaseById, isLoaded, updateCase, decideItem, error: decisionError } = useReviewCases();
+  const reviewerName = "your signed-in account";
   const [agentFilter, setAgentFilter] = useState<ReviewQueueItemType | null>(null);
   const [offerHealthPlanOnAccept, setOfferHealthPlanOnAccept] = useState(false);
   const [spineNotice, setSpineNotice] = useState<string | null>(null);
@@ -69,28 +69,20 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
     }
   }
 
+  // Decisions are made on the server (version check, role gates, audit in one transaction); the screen shows the result.
   function handleAccept(itemId: string) {
     if (!reviewCase) return;
-    void persist(updateQueueItemDecision(activeCase, itemId, "ACCEPTED", { decidedBy: reviewerName }), {
-      offerHealthPlan: offerHealthPlanOnAccept
-    });
+    void decideItem(activeCase.id, itemId, { action: "accept", offerHealthPlan: offerHealthPlanOnAccept });
   }
 
   function handleReject(itemId: string, reason: string) {
     if (!reviewCase) return;
-    void persist(
-      updateQueueItemDecision(activeCase, itemId, "REJECTED", {
-        decidedBy: reviewerName,
-        rejectionReason: reason
-      })
-    );
+    void decideItem(activeCase.id, itemId, { action: "reject", reason });
   }
 
   function handleEdit(itemId: string, content: string) {
     if (!reviewCase) return;
-    void persist(
-      updateQueueItemDecision(activeCase, itemId, "DRAFT", { decidedBy: reviewerName, content })
-    );
+    void decideItem(activeCase.id, itemId, { action: "edit", content });
   }
 
   function handleVoiceTranscript(transcript: string) {
@@ -138,10 +130,12 @@ export function GpDashboardClient({ caseId = GOLDEN_SCENARIO_PATEL_DEMO_ID }: { 
       </header>
 
       <div className="gp-dashboard__toolbar panel">
-        <label className="gp-reviewer-field">
-          <span>Reviewer name</span>
-          <input onChange={(event) => setReviewerName(event.target.value)} value={reviewerName} />
-        </label>
+        <p className="gp-reviewer-field" data-reviewer-identity>
+          Decisions are recorded under your signed-in account, with the time and the case version.
+        </p>
+        {decisionError ? (
+          <p className="gp-reviewer-field" role="alert" data-decision-error style={{ color: "#b42318" }}>{decisionError}</p>
+        ) : null}
         <label className="gp-reviewer-field" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <input
             type="checkbox"

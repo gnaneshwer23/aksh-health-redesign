@@ -73,6 +73,84 @@ function hashEvent(parts: Record<string, unknown>) {
  * governed-evaluation path) must check `result.persisted` and surface a
  * failure signal to the caller/UI rather than swallowing it silently.
  */
+/**
+ * Insert one audit event using the given connection, so a caller can make it part of its own transaction (a
+ * reviewer decision and its audit record commit together or not at all). The caller must run ensureShieldAuditSchema
+ * first and connect as a role allowed to write this table.
+ */
+export async function insertShieldAuditEvent(
+  q: { query: <R extends Record<string, unknown> = Record<string, unknown>>(text: string, values?: unknown[]) => Promise<{ rows: R[] }> },
+  input: DurableShieldAuditInput
+): Promise<DurableShieldAuditRow> {
+  const prev = await q.query<{ id: string }>(
+    `SELECT id FROM aksh.shield_audit_events ORDER BY recorded_at DESC, id DESC LIMIT 1`
+  );
+  const prevEventId = prev.rows[0]?.id ?? null;
+  const id = `shield-${randomUUID()}`;
+  const recordedAt = new Date().toISOString();
+  const payload = input.payload ?? {};
+  const contentHash = hashEvent({
+    id,
+    recordedAt,
+    prevEventId,
+    action: input.action,
+    actor: input.actor,
+    label: input.label,
+    detail: input.detail ?? null,
+    caseId: input.caseId ?? null,
+    queueItemId: input.queueItemId ?? null,
+    practiceId: input.practiceId ?? null,
+    agentLabel: input.agentLabel ?? null,
+    resourceRef: input.resourceRef ?? null,
+    payload
+  });
+
+  await q.query(
+    `INSERT INTO aksh.shield_audit_events (
+      id, recorded_at, practice_id, case_id, queue_item_id, action, actor, agent_label,
+      category, label, detail, resource_ref, payload, prev_event_id, content_hash
+    ) VALUES (
+      $1, $2::timestamptz, $3, $4, $5, $6, $7, $8,
+      $9, $10, $11, $12, $13::jsonb, $14, $15
+    )`,
+    [
+      id,
+      recordedAt,
+      input.practiceId ?? null,
+      input.caseId ?? null,
+      input.queueItemId ?? null,
+      input.action,
+      input.actor,
+      input.agentLabel ?? null,
+      input.category ?? "reviewer_decision",
+      input.label,
+      input.detail ?? null,
+      input.resourceRef ?? null,
+      JSON.stringify(payload),
+      prevEventId,
+      contentHash
+    ]
+  );
+
+  return {
+      id,
+      recordedAt,
+      practiceId: input.practiceId ?? null,
+      caseId: input.caseId ?? null,
+      queueItemId: input.queueItemId ?? null,
+      action: input.action,
+      actor: input.actor,
+      agentLabel: input.agentLabel ?? null,
+      category: input.category ?? "reviewer_decision",
+      label: input.label,
+      detail: input.detail ?? null,
+      resourceRef: input.resourceRef ?? null,
+      payload,
+      prevEventId,
+      contentHash
+  };
+}
+
 export async function persistShieldAuditEvent(
   input: DurableShieldAuditInput
 ): Promise<ShieldAuditWriteResult> {
@@ -82,77 +160,7 @@ export async function persistShieldAuditEvent(
 
   try {
     await ensureShieldAuditSchema();
-    const pool = getPgPool();
-    const prev = await pool.query<{ id: string }>(
-      `SELECT id FROM aksh.shield_audit_events ORDER BY recorded_at DESC, id DESC LIMIT 1`
-    );
-    const prevEventId = prev.rows[0]?.id ?? null;
-    const id = `shield-${randomUUID()}`;
-    const recordedAt = new Date().toISOString();
-    const payload = input.payload ?? {};
-    const contentHash = hashEvent({
-      id,
-      recordedAt,
-      prevEventId,
-      action: input.action,
-      actor: input.actor,
-      label: input.label,
-      detail: input.detail ?? null,
-      caseId: input.caseId ?? null,
-      queueItemId: input.queueItemId ?? null,
-      practiceId: input.practiceId ?? null,
-      agentLabel: input.agentLabel ?? null,
-      resourceRef: input.resourceRef ?? null,
-      payload
-    });
-
-    await pool.query(
-      `INSERT INTO aksh.shield_audit_events (
-        id, recorded_at, practice_id, case_id, queue_item_id, action, actor, agent_label,
-        category, label, detail, resource_ref, payload, prev_event_id, content_hash
-      ) VALUES (
-        $1, $2::timestamptz, $3, $4, $5, $6, $7, $8,
-        $9, $10, $11, $12, $13::jsonb, $14, $15
-      )`,
-      [
-        id,
-        recordedAt,
-        input.practiceId ?? null,
-        input.caseId ?? null,
-        input.queueItemId ?? null,
-        input.action,
-        input.actor,
-        input.agentLabel ?? null,
-        input.category ?? "reviewer_decision",
-        input.label,
-        input.detail ?? null,
-        input.resourceRef ?? null,
-        JSON.stringify(payload),
-        prevEventId,
-        contentHash
-      ]
-    );
-
-    return {
-      persisted: true,
-      row: {
-        id,
-        recordedAt,
-        practiceId: input.practiceId ?? null,
-        caseId: input.caseId ?? null,
-        queueItemId: input.queueItemId ?? null,
-        action: input.action,
-        actor: input.actor,
-        agentLabel: input.agentLabel ?? null,
-        category: input.category ?? "reviewer_decision",
-        label: input.label,
-        detail: input.detail ?? null,
-        resourceRef: input.resourceRef ?? null,
-        payload,
-        prevEventId,
-        contentHash
-      }
-    };
+    return { persisted: true, row: await insertShieldAuditEvent(getPgPool() as never, input) };
   } catch (error) {
     console.error("[shield-audit] persist failed", error);
     return {

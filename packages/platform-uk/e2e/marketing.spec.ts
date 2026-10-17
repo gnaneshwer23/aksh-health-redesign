@@ -26,7 +26,8 @@ test.describe("Public site", () => {
   test("no demo, walkthrough, sandbox or chat widget anywhere on the public pages", async ({ page }) => {
     for (const path of ["/", "/platform", "/product", "/security", "/resources", "/contact", "/get-started"]) {
       await page.goto(path);
-      const text = (await page.locator("body").innerText()).toLowerCase();
+      // "Synthetic demo" is a capability status label (lib/status/capabilities.ts), not an offer of a demo.
+      const text = (await page.locator("body").innerText()).toLowerCase().replaceAll("synthetic demo", "");
       for (const banned of ["walkthrough", "patel", "sandbox", "try without an account", "demo"]) {
         expect(text, `${path} mentions "${banned}"`).not.toContain(banned);
       }
@@ -54,11 +55,21 @@ test.describe("Public site", () => {
     await expect(page.locator("#slot-fill .s-frame").first()).toBeVisible();
   });
 
-  test("public pages carry no internal codenames or engineering status", async ({ page }) => {
+  test("statuses on the home page come from the capability register", async ({ page }) => {
+    await page.goto("/");
+    const slot = page.locator('[data-pillars] [data-status]').filter({ hasText: "Cancelled-slot fill" });
+    await expect(slot).toHaveAttribute("data-status", "production");
+    await expect(slot).toContainText("Production");
+    const queue = page.locator('[data-pillars] [data-status]').filter({ hasText: "Clinical review queue" });
+    await expect(queue).toHaveAttribute("data-status", "in_validation");
+    await expect(page.locator("[data-pillars]")).toContainText("Built; not yet released for real patients");
+  });
+
+  test("public pages carry no internal codenames or process names", async ({ page }) => {
     for (const path of ["/", "/platform", "/product", "/security", "/resources"]) {
       await page.goto(path);
       const text = await page.locator("main").innerText();
-      for (const banned of ["CONDUCTOR", "GUARDIAN", "SYNTHESIS", "HORIZON", "NEXUS", "CANVAS", "Synthetic validation", "synthetic validation", "Planned", "Track B", "PRD"]) {
+      for (const banned of ["CONDUCTOR", "GUARDIAN", "SYNTHESIS", "HORIZON", "NEXUS", "CANVAS", "Track B", "PRD"]) {
         expect(text, `${path} shows "${banned}"`).not.toContain(banned);
       }
     }
