@@ -4,12 +4,19 @@
  * names belong in internal documents (docs/AKSH_PHASE1_AUDIT_*.md, the platform map), never here.
  * When something reaches production for clinics, move it from "development" to "available".
  */
-export type Availability = "available" | "development";
+import { capability, STATUS_LABEL, type CapabilityId, type CapabilityStatus } from "@/lib/status/capabilities";
 
-export const AVAILABILITY_LABEL: Record<Availability, string> = {
-  available: "Available now",
-  development: "In development",
+export type { CapabilityStatus };
+export { STATUS_LABEL };
+
+/** One item on the site, with name, description and status from the capability register (lib/status/capabilities.ts). */
+export type SiteItem = { id: CapabilityId; name: string; detail: string; status: CapabilityStatus };
+const item = (id: CapabilityId, detail?: string): SiteItem => {
+  const c = capability(id);
+  return { id, name: c.name, detail: detail ?? c.description, status: c.status };
 };
+const ORDER: Record<CapabilityStatus, number> = { production: 0, synthetic_demo: 1, in_validation: 2, planned: 3 };
+const byStatus = <T extends SiteItem>(items: T[]): T[] => [...items].sort((x, y) => ORDER[x.status] - ORDER[y.status]);
 
 /** End to end: the same order for every workflow; the clinician decision sits in the middle. */
 export const PRODUCT_LOOP: { step: string; detail: string }[] = [
@@ -23,15 +30,15 @@ export const PRODUCT_LOOP: { step: string; detail: string }[] = [
   { step: "Review", detail: "Weekly results against a baseline set before go-live" },
 ];
 
-/** Aksh Diabetes: what a care team gets, now and next. */
-export const DIABETES_AREAS: { name: string; output: string; safeguard: string; availability: Availability }[] = [
-  { name: "Glucose and CGM", output: "Time in range, low and high glucose, variability and daily patterns, as a worklist", safeguard: "Low glucose first; the clinician decides the response", availability: "available" },
-  { name: "Readings from patients", output: "Glucose, blood pressure and weight shared from the patient app", safeguard: "Marked as patient-reported until a clinician checks them", availability: "available" },
-  { name: "HbA1c", output: "Latest value and trend over time", safeguard: "Clinician review before any change to the care plan", availability: "development" },
-  { name: "Medication safety", output: "Interaction, allergy and low-glucose risk flags for insulin and other medicines", safeguard: "Explains; never sets or changes a dose", availability: "development" },
-  { name: "Complications", output: "Kidney, eye, foot, heart and liver checks that are due or overdue", safeguard: "Referrals need a clinician's confirmation", availability: "development" },
-  { name: "Lifestyle support", output: "Nutrition, activity and habit talking points for consultations", safeguard: "Concerns raised by patients go to a person", availability: "development" },
-];
+/** Aksh Diabetes: what a care team gets, with each capability's status and its safeguard. */
+export const DIABETES_AREAS = byStatus<SiteItem & { safeguard: string }>([
+  { ...item("cgm_monitoring", "Time in range, low and high glucose, variability and daily patterns, as a worklist"), safeguard: "Low glucose first; the clinician decides the response" },
+  { ...item("patient_readings", "Glucose, blood pressure and weight shared from the patient app"), safeguard: "Marked as patient-reported until a clinician checks them" },
+  { ...item("hba1c_trends"), safeguard: "Clinician review before any change to the care plan" },
+  { ...item("medication_safety_referrals", "Interaction, allergy and low-glucose risk flags for insulin and other medicines"), safeguard: "Explains; never sets or changes a dose" },
+  { ...item("complications", "Kidney, eye, foot, heart and liver checks that are due or overdue"), safeguard: "Referrals need a clinician's confirmation" },
+  { ...item("lifestyle_support", "Nutrition, activity and habit talking points for consultations"), safeguard: "Concerns raised by patients go to a person" },
+]);
 
 /** Decisions that always need a named person, and who confirms them. */
 export const HUMAN_GATES: { gate: string; who: string }[] = [
@@ -53,39 +60,29 @@ export const NON_OBJECTIVES: string[] = [
   "No patient data sent to AI models in production",
 ];
 
-/** The two products, each with what is available now and what is coming. */
-export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: string; items: { name: string; detail: string; availability: Availability }[] }[] = [
+/** The two products, each listing its capabilities with their status. */
+export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: string; items: SiteItem[] }[] = [
   {
     key: "access",
     title: "Patient access",
     subtitle: "Fill freed appointments from your waiting list, with staff in charge",
-    items: [
-      { name: "Cancelled-slot fill", detail: "Freed slots matched to the waiting list, with reasons; staff make the contact; every booking checked against your schedule", availability: "available" },
-      { name: "Hand-offs", detail: "Anything that needs a person goes to a named queue with a due time", availability: "available" },
-      { name: "Weekly results", detail: "Fill rate, staff time and issues against your own baseline", availability: "available" },
-      { name: "Patient requests", detail: "Routine questions and scheduling requests, passed to staff when needed", availability: "development" },
-    ],
+    items: byStatus([item("slot_fill"), item("handoffs"), item("weekly_results"), item("patient_requests"), item("outbound_campaigns")]),
   },
   {
     key: "clinical",
     title: "Clinical review",
     subtitle: "Worklists and drafts for clinicians to accept, edit or reject",
-    items: [
-      { name: "Glucose monitoring", detail: "CGM and shared readings as one worklist, low glucose first", availability: "available" },
-      { name: "One review queue", detail: "Every draft in one place, with its evidence and the decision recorded", availability: "development" },
-      { name: "Notes and coding drafts", detail: "Structured notes from consultations, ready for review", availability: "development" },
-      { name: "Medication safety and referrals", detail: "Interaction checks, risk changes and referral drafts", availability: "development" },
-    ],
+    items: byStatus([item("cgm_monitoring", "CGM and shared readings as one worklist, low glucose first"), item("review_queue"), item("notes_coding"), item("medication_safety_referrals")]),
   },
 ];
 
-/** Shared by both products. Only what is in place today. */
-export const FOUNDATIONS: { name: string; detail: string }[] = [
-  { name: "Sign-in and access", detail: "Roles, two-step sign-in, each clinic sees only its own patients" },
-  { name: "Connections", detail: "Reads schedules and device data from your systems" },
-  { name: "Consent", detail: "Patients choose what they share, and with whom" },
-  { name: "Audit", detail: "A record of every action that cannot be edited" },
-  { name: "Monitoring", detail: "Alerts and uptime checks around the clock" },
+/** Shared by both products. */
+export const FOUNDATIONS: SiteItem[] = [
+  item("identity_access"),
+  item("schedule_connector", "Reads schedules and device data from your systems"),
+  item("consent"),
+  item("audit"),
+  item("monitoring_ops"),
 ];
 
 /** What Aksh is built to improve, measured against each clinic's own baseline. */

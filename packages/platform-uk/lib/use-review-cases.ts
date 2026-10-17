@@ -97,6 +97,42 @@ export function useReviewCases() {
     [cases]
   );
 
+  /**
+   * Accept, edit or reject one draft. The server decides and stores the result (with its audit record); the screen
+   * shows what was stored, never an optimistic guess.
+   */
+  const decideItem = useCallback(
+    async (caseId: string, itemId: string, body: { action: "accept" | "edit" | "reject"; content?: string; reason?: string; offerHealthPlan?: boolean }) => {
+      const current = cases.find((c) => c.id === caseId);
+      setIsSaving(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/review-cases/${caseId}/items/${itemId}/decision`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...body, expectedVersion: current?.version ?? 0 }),
+        });
+        const data = (await response.json().catch(() => ({}))) as { reviewCase?: ReviewCase; error?: string; code?: string };
+        if (!response.ok || !data.reviewCase) {
+          if (data.code === "STALE_CASE") {
+            const fresh = await fetch("/api/review-cases", { cache: "no-store" });
+            if (fresh.ok) setCases(((await fresh.json()) as { cases: ReviewCase[] }).cases);
+          }
+          setError(data.error ?? "The decision was not recorded.");
+          return null;
+        }
+        setCases((all) => all.map((c) => (c.id === caseId ? data.reviewCase! : c)));
+        return data;
+      } catch {
+        setError("The decision was not recorded. Check your connection and try again.");
+        return null;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [cases]
+  );
+
   const resetCases = useCallback(async () => {
     setIsSaving(true);
     setError(null);
@@ -179,6 +215,7 @@ export function useReviewCases() {
       isSaving,
       error,
       updateCase,
+      decideItem,
       getCaseById,
       resetCases,
       retryLastSave,
@@ -199,7 +236,8 @@ export function useReviewCases() {
       retryLastSave,
       retryShieldAuditWrite,
       shieldAuditWarning,
-      updateCase
+      updateCase,
+      decideItem
     ]
   );
 }

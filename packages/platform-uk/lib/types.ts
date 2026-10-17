@@ -47,6 +47,8 @@ export type ReviewQueueItem = {
   title: string;
   summary: string;
   content?: string;
+  /** The generated draft before any clinician edit; kept so the original and the edit can both be seen. */
+  originalContent?: string;
   metadata?: Record<string, string | number | string[]>;
   decidedAt?: string;
   decidedBy?: string;
@@ -471,6 +473,8 @@ export type FhirExportBundle = {
 
 export type ReviewCase = {
   id: string;
+  /** Server-owned version, incremented on every write; used to refuse conflicting saves. */
+  version?: number;
   userId: string; // Owner of this case (from authenticated session)
   practiceId?: string;
   scenarioId?: string;

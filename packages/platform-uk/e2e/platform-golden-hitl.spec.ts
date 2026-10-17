@@ -10,7 +10,7 @@ import {
   loadE2EBatchManifest,
 } from "./helpers/e2e-platform";
 import { createOnboardedTestUser } from "./helpers/auth";
-import { resolveReviewQueueItems, updateQueueItemDecision } from "../lib/workflow/review-queue";
+import { resolveReviewQueueItems } from "../lib/workflow/review-queue";
 import type { ReviewCase } from "../lib/types";
 
 /**
@@ -88,20 +88,18 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
       queueItems.find((i) => i.status === "DRAFT");
     expect(draftItem?.id).toBeTruthy();
 
-    const rejected = updateQueueItemDecision(reviewCase, draftItem!.id, "REJECTED", {
-      decidedBy: "Dr E2E Hitl",
-      rejectionReason: "Not clinically appropriate this visit — defer recommendation",
+    // The decision is made on the server (version check, audit in the same transaction), then the case is closed.
+    const decision = await request.post(`/api/review-cases/${reviewCase.id}/items/${draftItem!.id}/decision`, {
+      data: { action: "reject", reason: "Not clinically appropriate this visit — defer recommendation", expectedVersion: reviewCase.version ?? 0 },
     });
-
+    expect(decision.ok()).toBeTruthy();
+    const decisionBody = (await decision.json()) as { reviewCase: ReviewCase; spine?: { learningEventIds?: string[]; ehrWrite?: boolean; autoRetrain?: boolean }; outcome: { auditDurable: boolean } };
+    expect(decisionBody.outcome.auditDurable).toBe(true);
     const put = await request.put(`/api/review-cases/${reviewCase.id}`, {
-      data: {
-        ...rejected,
-        status: "rejected",
-        updatedAt: new Date().toISOString(),
-      },
+      data: { ...decisionBody.reviewCase, status: "rejected" },
     });
     expect(put.ok()).toBeTruthy();
-    const putBody = (await put.json()) as {
+    const putBody = { ...((await put.json()) as object), spine: decisionBody.spine } as {
       spine?: {
         learningEventIds?: string[];
         ehrWrite?: boolean;
@@ -165,20 +163,17 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
       queueItems.find((i) => i.status === "DRAFT");
     expect(draftItem?.id).toBeTruthy();
 
-    const accepted = updateQueueItemDecision(reviewCase, draftItem!.id, "ACCEPTED", {
-      decidedBy: "Dr E2E Hitl",
+    const decision = await request.post(`/api/review-cases/${reviewCase.id}/items/${draftItem!.id}/decision`, {
+      data: { action: "accept", offerHealthPlan: true, expectedVersion: reviewCase.version ?? 0 },
     });
+    expect(decision.ok()).toBeTruthy();
+    const decisionBody = (await decision.json()) as { reviewCase: ReviewCase; spine?: Record<string, unknown> };
 
     const put = await request.put(`/api/review-cases/${reviewCase.id}`, {
-      data: {
-        ...accepted,
-        status: "accepted",
-        updatedAt: new Date().toISOString(),
-        offerHealthPlan: true,
-      },
+      data: { ...decisionBody.reviewCase, status: "accepted" },
     });
     expect(put.ok()).toBeTruthy();
-    const putBody = (await put.json()) as {
+    const putBody = { ...((await put.json()) as object), spine: decisionBody.spine } as {
       spine?: {
         learningEventIds?: string[];
         healthPlanId?: string | null;
@@ -246,16 +241,8 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
     const editedContent =
       "Clinician-modified plan: continue current therapy, reinforce diet, recheck HbA1c. Draft only — HITL.";
 
-    const edited = updateQueueItemDecision(reviewCase, draftItem!.id, "DRAFT", {
-      decidedBy: "Dr E2E Hitl",
-      content: editedContent,
-    });
-
-    const put = await request.put(`/api/review-cases/${reviewCase.id}`, {
-      data: {
-        ...edited,
-        updatedAt: new Date().toISOString(),
-      },
+    const put = await request.post(`/api/review-cases/${reviewCase.id}/items/${draftItem!.id}/decision`, {
+      data: { action: "edit", content: editedContent, expectedVersion: reviewCase.version ?? 0 },
     });
     expect(put.ok()).toBeTruthy();
     const putBody = (await put.json()) as {
@@ -279,6 +266,7 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
     expect(editedItem?.status).toBe("DRAFT");
     expect(editedItem?.content).toContain("Clinician-modified");
     expect(editedItem?.content).not.toBe(originalContent);
+    expect(editedItem?.originalContent).toBe(draftItem!.content ?? "");
 
     test.info().annotations.push({
       type: "golden-scenario",
