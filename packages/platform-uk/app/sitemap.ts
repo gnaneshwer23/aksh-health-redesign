@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://akshhealth.com";
+const SITE_URL = "https://www.akshhealth.com";
 
 import { GUIDES } from "@/components/site/guides";
 
