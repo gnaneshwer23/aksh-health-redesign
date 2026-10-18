@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const ROUTES = [
-  { icon: Building2, title: "Bring Aksh to your clinic", body: "Tell us about your diabetes service and how cancellations work today. We will arrange a call with the right person.", href: "/get-started", cta: "Request access" },
+  { icon: Building2, title: "Request a pilot", body: "Tell us about your diabetes service. We will arrange a call to scope a pilot around one workflow.", href: "/get-started", cta: "Request a pilot" },
   { icon: Mail, title: "Email us", body: "Security and data protection questions, a vulnerability report, partnerships or anything else.", href: "mailto:gnaneshwer.jadav@gmail.com", cta: "gnaneshwer.jadav@gmail.com" },
 ];
 
@@ -25,7 +25,7 @@ export default function ContactPage() {
         glance={{
           title: "Who to contact",
           rows: [
-            ["A new clinic", <Link key="a" href="/get-started" className="s-link">Request access</Link>],
+            ["A new clinic", <Link key="a" href="/get-started" className="s-link">Request a pilot</Link>],
             ["Security or data protection", "Email, below"],
             ["Vulnerability report", "Email, below"],
           ],

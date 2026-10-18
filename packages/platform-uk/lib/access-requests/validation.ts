@@ -49,10 +49,11 @@ export const accessRequestSchema = z.object({
   region: z.enum(ICS_REGIONS),
   contactName: z.string().trim().min(2).max(120),
   contactEmail: z.string().trim().email().max(254),
-  ehrSystems: z.array(z.enum(EHR_SYSTEMS)).min(1),
+  // Systems and go-live commitments are covered on the scoping call; optional here so the first contact stays short.
+  ehrSystems: z.array(z.enum(EHR_SYSTEMS)).max(EHR_SYSTEMS.length).default([]),
   listSize: z.enum(LIST_SIZES),
   itContact: z.string().trim().max(200).optional().or(z.literal("")),
-  commitments: z.array(z.enum(ORGANISATION_COMMITMENTS)).min(1),
+  commitments: z.array(z.enum(ORGANISATION_COMMITMENTS)).max(ORGANISATION_COMMITMENTS.length).default([]),
 });
 
 export type AccessRequestInput = z.infer<typeof accessRequestSchema>;

@@ -3,13 +3,13 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import { CgmMock, PatientMock, ReviewMock, SlotFillMock } from "@/components/site/Mockups";
-import { PageHead, SubNav } from "@/components/site/PageParts";
+import { PageHead, PilotCta, SubNav } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
   title: "Available now",
   description:
-    "The Aksh workflows in production with clinics today: cancelled-slot fill, CGM monitoring, the patient app and measured results.",
+    "What is included in the Aksh workflows in production: cancelled-slot fill and glucose monitoring, with the patient app and weekly results that support them.",
 };
 
 function Checks({ items }: { items: string[] }) {
@@ -28,7 +28,7 @@ export default function ProductPage() {
       <PageHead
         eyebrow="Available now"
         title="What a clinic can use today."
-        lede="Four workflows are in production: filling freed appointments, monitoring glucose between visits, a patient app for sharing readings, and a weekly review of results. Every clinic starts in shadow mode, with staff making every contact."
+        lede="Two workflows are in production, cancelled-slot fill and glucose monitoring, supported by the patient app and weekly results. This page lists what each includes; How it works shows them step by step."
         glance={{
           title: "At a glance",
           rows: [
@@ -48,11 +48,7 @@ export default function ProductPage() {
             <div className="s-feature__copy">
               <span className="s-eyebrow">Cancelled-slot fill</span>
               <h2 className="s-h2">Freed slots matched to your waiting list, with reasons.</h2>
-              <p className="s-body">
-                A freed appointment arrives from your scheduling system or is recorded by staff. Aksh checks every patient on
-                the waiting list for that appointment type against the slot and your clinic’s rules, ranks those who fit, and
-                lists the rest with the reason they were not offered.
-              </p>
+              <p className="s-body">What the matching checks, what staff can do, and how a fill is counted.</p>
               <Checks
                 items={[
                   "Ranking by reason for waiting, in the order your clinic sets: overdue care, patient request, clinician request",
@@ -63,6 +59,7 @@ export default function ProductPage() {
                   "A slot counts as filled only when your schedule shows the booking",
                 ]}
               />
+              <Link href="/platform#slot-fill" className="s-link">Step by step →</Link>
             </div>
             <SlotFillMock />
           </div>
@@ -75,10 +72,7 @@ export default function ProductPage() {
             <div className="s-feature__copy">
               <span className="s-eyebrow">Diabetes monitoring</span>
               <h2 className="s-h2">A worklist of who needs attention, not another dashboard.</h2>
-              <p className="s-body">
-                Continuous glucose data from uploads or a device feed, and readings patients share from the app, come
-                together per patient. The worklist puts low glucose first, then high glucose, then missing data.
-              </p>
+              <p className="s-body">What the worklist calculates and when the numbers can be relied on.</p>
               <Checks
                 items={[
                   "Time in range, time below and above range, mean glucose, GMI and coefficient of variation",
@@ -88,6 +82,7 @@ export default function ProductPage() {
                   "Patient uploads are reviewed by a clinician before they count",
                 ]}
               />
+              <Link href="/platform#glucose" className="s-link">Step by step →</Link>
             </div>
             <CgmMock />
           </div>
@@ -192,20 +187,7 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="s-section">
-        <div className="s-container">
-          <div className="s-cta">
-            <div>
-              <h2 className="s-h2">See it with your own waiting list.</h2>
-              <p>We will walk through your cancellation process and what go-live would involve for your clinic.</p>
-            </div>
-            <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/resources" className="s-btn s-btn--ghost">Read the guides</Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PilotCta secondary={{ href: "/resources", label: "Read the guides" }} />
     </SiteShell>
   );
 }

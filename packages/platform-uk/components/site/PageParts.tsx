@@ -1,4 +1,25 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
+
+/** The one closing call to action used on every marketing page. */
+export function PilotCta({ title = "Start with one workflow and your own numbers.", body = "Tell us about your care team. We will scope a pilot around the workflow that matters most to you.", secondary }: { title?: string; body?: string; secondary?: { href: string; label: string } }) {
+  return (
+    <section className="s-section" style={{ paddingTop: 0 }}>
+      <div className="s-container">
+        <div className="s-cta">
+          <div>
+            <h2 className="s-h2">{title}</h2>
+            <p>{body}</p>
+          </div>
+          <div className="s-actions">
+            <Link href="/get-started" className="s-btn s-btn--primary">Request a pilot</Link>
+            {secondary ? <Link href={secondary.href} className="s-btn s-btn--ghost">{secondary.label}</Link> : null}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /** Inner-page header: copy on the left, an at-a-glance spec card on the right. */
 export function PageHead({ eyebrow, title, lede, glance, children }: { eyebrow: string; title: string; lede: ReactNode; glance?: { title: string; rows: [string, ReactNode][] }; children?: ReactNode }) {

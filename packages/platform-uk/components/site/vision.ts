@@ -30,16 +30,6 @@ export const PRODUCT_LOOP: { step: string; detail: string }[] = [
   { step: "Review", detail: "Weekly results against a baseline set before go-live" },
 ];
 
-/** Aksh Diabetes: what a care team gets, with each capability's status and its safeguard. */
-export const DIABETES_AREAS = byStatus<SiteItem & { safeguard: string }>([
-  { ...item("cgm_monitoring", "Time in range, low and high glucose, variability and daily patterns, as a worklist"), safeguard: "Low glucose first; the clinician decides the response" },
-  { ...item("patient_readings", "Glucose, blood pressure and weight shared from the patient app"), safeguard: "Marked as patient-reported until a clinician checks them" },
-  { ...item("hba1c_trends"), safeguard: "Clinician review before any change to the care plan" },
-  { ...item("medication_safety_referrals", "Interaction, allergy and low-glucose risk flags for insulin and other medicines"), safeguard: "Explains; never sets or changes a dose" },
-  { ...item("complications", "Kidney, eye, foot, heart and liver checks that are due or overdue"), safeguard: "Referrals need a clinician's confirmation" },
-  { ...item("lifestyle_support", "Nutrition, activity and habit talking points for consultations"), safeguard: "Concerns raised by patients go to a person" },
-]);
-
 /** Decisions that always need a named person, and who confirms them. */
 export const HUMAN_GATES: { gate: string; who: string }[] = [
   { gate: "Urgent concerns", who: "Responsible clinician confirms" },
@@ -64,15 +54,24 @@ export const NON_OBJECTIVES: string[] = [
 export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: string; items: SiteItem[] }[] = [
   {
     key: "access",
-    title: "Patient access",
+    title: "Appointments",
     subtitle: "Fill freed appointments from your waiting list, with staff in charge",
     items: byStatus([item("slot_fill"), item("handoffs"), item("weekly_results"), item("patient_requests"), item("outbound_campaigns")]),
   },
   {
     key: "clinical",
-    title: "Clinical review",
-    subtitle: "Worklists and drafts for clinicians to accept, edit or reject",
-    items: byStatus([item("cgm_monitoring", "CGM and shared readings as one worklist, low glucose first"), item("review_queue"), item("notes_coding"), item("medication_safety_referrals")]),
+    title: "Diabetes care",
+    subtitle: "Monitoring worklists now; drafts for clinicians to accept, edit or reject next",
+    items: byStatus([
+      item("cgm_monitoring", "CGM and shared readings as one worklist, low glucose first. The clinician decides the response."),
+      item("patient_readings", "Glucose, blood pressure and weight from the patient app, marked patient-reported until checked."),
+      item("review_queue"),
+      item("notes_coding"),
+      item("medication_safety_referrals", "Interaction, allergy and low-glucose risk flags, and referral drafts. Explains; never sets or changes a dose."),
+      item("hba1c_trends", "Latest value and trend in your units. Clinician review before any change to the care plan."),
+      item("complications", "Kidney, eye, foot, heart and liver checks due or overdue. Referrals need a clinician's confirmation."),
+      item("lifestyle_support", "Talking points for consultations. Concerns raised by patients go to a person."),
+    ]),
   },
 ];
 
@@ -83,14 +82,4 @@ export const FOUNDATIONS: SiteItem[] = [
   item("consent"),
   item("audit"),
   item("monitoring_ops"),
-];
-
-/** What Aksh is built to improve, measured against each clinic's own baseline. */
-export const OUTCOMES: { name: string; detail: string }[] = [
-  { name: "Fewer empty slots", detail: "Freed appointments filled from the waiting list" },
-  { name: "Less staff time", detail: "Minutes per filled slot, measured" },
-  { name: "Earlier attention", detail: "Low glucose seen first" },
-  { name: "Safer medicines", detail: "Checks before a clinician reviews" },
-  { name: "No lost hand-offs", detail: "Every hand-off has an owner and a due time" },
-  { name: "Results you can check", detail: "Against a baseline locked before go-live" },
 ];
