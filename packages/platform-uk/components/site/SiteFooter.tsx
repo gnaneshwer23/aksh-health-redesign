@@ -24,7 +24,7 @@ const COLUMNS = [
     title: "Company",
     links: [
       { label: "Contact", href: "/contact" },
-      { label: "Request access", href: "/get-started" },
+      { label: "Request a pilot", href: "/get-started" },
       { label: "Sign in", href: "/signin" },
       { label: "Privacy", href: "/privacy" },
       { label: "Terms", href: "/terms" },

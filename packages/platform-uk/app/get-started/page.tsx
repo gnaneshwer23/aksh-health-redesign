@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bring Aksh to your organisation",
+  title: "Request a pilot",
   description:
-    "Request access for your organisation. For practice managers, regional leads, and hospital procurement teams.",
+    "Request an organisational pilot of Aksh for your diabetes care team. Six questions; we reply in person.",
 };
 
 export { default } from "./GetStartedPageClient";

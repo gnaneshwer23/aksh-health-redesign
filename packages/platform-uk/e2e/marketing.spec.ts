@@ -11,6 +11,9 @@ test.describe("Public site", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Diabetes reviews, better coordinated.");
     const hero = page.locator(".s-hero-panel");
     await expect(hero.getByRole("link", { name: "Request an organisational pilot" })).toHaveAttribute("href", "/get-started");
+    // No section repeated from other pages: the full capability list and limits live on How it works.
+    await expect(page.locator("[data-pillars]")).toHaveCount(0);
+    await expect(page.locator(".s-limits")).toHaveCount(0);
     await expect(hero).toContainText("Cancelled-slot fill");
     // Each available workflow: how it works, what staff do, what you measure.
     for (const id of ["slot_fill", "cgm_monitoring"]) {
@@ -24,7 +27,7 @@ test.describe("Public site", () => {
     await expect(page.locator("#diabetes")).toContainText("In validation");
     const nav = page.locator("[data-site-nav]");
     for (const label of ["How it works", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/get-started");
+    await expect(nav.getByRole("link", { name: "Request a pilot" })).toHaveAttribute("href", "/get-started");
     await expect(nav.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
     await expect(page.getByText("Illustrative example").first()).toBeVisible();
   });
@@ -46,7 +49,7 @@ test.describe("Public site", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact", "Request access", "Sign in"]) {
+    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact", "Request a pilot", "Sign in"]) {
       await expect(page.locator(".s-nav__panel").getByRole("link", { name: label, exact: true })).toBeVisible();
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -59,6 +62,9 @@ test.describe("Public site", () => {
     await expect(page.locator("[data-system-map]")).toContainText("Prepares the work");
     for (const id of ["where", "slot-fill", "glucose", "control", "start"]) await expect(page.locator(`#${id}`)).toBeVisible();
     await expect(page.locator("#slot-fill .s-frame").first()).toBeVisible();
+    // Limits and named-person decisions live here, once.
+    await expect(page.locator("#control .s-limits")).toContainText("No patient data sent to AI models in production");
+    await expect(page.locator("#capabilities [data-pillars]")).toContainText("Lifestyle support");
   });
 
   test("statuses on how it works come from the capability register", async ({ page }) => {
@@ -79,6 +85,13 @@ test.describe("Public site", () => {
         expect(text, `${path} shows "${banned}"`).not.toContain(banned);
       }
     }
+  });
+
+  test("available now describes two workflows and links to the step-by-step", async ({ page }) => {
+    await page.goto("/product");
+    await expect(page.locator(".s-page-head")).toContainText("Two workflows are in production");
+    await expect(page.locator("#slot-fill").getByRole("link", { name: "Step by step →" })).toHaveAttribute("href", "/platform#slot-fill");
+    await expect(page.locator("#monitoring").getByRole("link", { name: "Step by step →" })).toHaveAttribute("href", "/platform#glucose");
   });
 
   test("product page sections are reachable by anchor", async ({ page }) => {
@@ -112,12 +125,32 @@ test.describe("Public site", () => {
     await page.getByRole("button", { name: "Send request" }).click();
     await expect(page.getByText("Enter your name.")).toBeVisible();
     await expect(page.getByText("Enter a valid work email address.")).toBeVisible();
-    await expect(page.getByText("Confirm at least one commitment.")).toBeVisible();
+    await expect(page.getByText("Choose an organisation type.")).toBeVisible();
+    // First contact is short: systems and go-live commitments move to the scoping call.
+    await expect(page.locator("form input, form select")).toHaveCount(6);
   });
 
-  test("contact page offers request access and email", async ({ page }) => {
+  test("request a pilot submits with only the six first-contact fields", async ({ page }) => {
+    let body: Record<string, unknown> | null = null;
+    await page.route("**/api/access-requests", async (route) => {
+      body = route.request().postDataJSON();
+      await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ referenceLabel: "AR-TEST" }) });
+    });
+    await page.goto("/get-started");
+    await page.locator("#field-contactName input").fill("Test Lead");
+    await page.locator("#field-contactEmail input").fill("lead@example.org");
+    await page.locator("#field-orgName input").fill("Example Diabetes Centre");
+    await page.locator("#field-orgType select").selectOption({ index: 1 });
+    await page.locator("#field-region select").selectOption({ index: 1 });
+    await page.locator("#field-listSize select").selectOption({ index: 1 });
+    await page.getByRole("button", { name: "Send request" }).click();
+    await expect(page.getByRole("status")).toContainText("Request received");
+    expect(body).not.toBeNull();
+  });
+
+  test("contact page offers request a pilot and email", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.locator("main").getByRole("link", { name: "Request access →" })).toHaveAttribute("href", "/get-started");
+    await expect(page.locator("main").getByRole("link", { name: "Request a pilot →" })).toHaveAttribute("href", "/get-started");
     await expect(page.getByRole("link", { name: "gnaneshwer.jadav@gmail.com" })).toHaveAttribute("href", "mailto:gnaneshwer.jadav@gmail.com");
     await expect(page.locator("body")).not.toContainText("@akshhealth.com");
   });

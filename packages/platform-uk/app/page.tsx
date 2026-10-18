@@ -4,10 +4,10 @@ import { Activity, CalendarClock, Check, ClipboardList } from "lucide-react";
 
 import { CgmMock, ReviewQueueMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
 import { SiteShell } from "@/components/site/SiteShell";
-import { DiabetesAreas } from "@/components/site/DiabetesAreas";
+import { PilotCta } from "@/components/site/PageParts";
 import { StatusPill } from "@/components/site/StatusPill";
-import { HUMAN_GATES, NON_OBJECTIVES } from "@/components/site/vision";
-import { CAPABILITIES, capability, type CapabilityId } from "@/lib/status/capabilities";
+import { HUMAN_GATES } from "@/components/site/vision";
+import { capability, type CapabilityId } from "@/lib/status/capabilities";
 
 export const metadata: Metadata = {
   title: "Aksh Health | Diabetes reviews, better coordinated",
@@ -59,8 +59,6 @@ const PROBLEMS = [
   { t: "Glucose data without a worklist", b: "CGM and home readings arrive, but nobody can see quickly who needs attention first." },
   { t: "Work that is hard to evidence", b: "Hand-offs get lost between staff, and it is difficult to show what changed after a new process." },
 ];
-
-const PRODUCTION_COUNT = CAPABILITIES.filter((c) => c.status === "production").length;
 
 export default function HomePage() {
   return (
@@ -150,8 +148,8 @@ export default function HomePage() {
             })}
           </div>
           <p className="s-small" style={{ marginTop: 32 }}>
-            Also in production: readings shared from the patient app, hand-offs with owners and due times, and weekly results.
-            {" "}{PRODUCTION_COUNT} capabilities in production in total; <Link href="/product" className="s-link">see everything available now</Link>.
+            Both come with the patient app for shared readings, hand-offs with an owner and due time, and weekly results.
+            {" "}<Link href="/product" className="s-link">What each workflow includes →</Link>
           </p>
         </div>
       </section>
@@ -200,49 +198,21 @@ export default function HomePage() {
         <div className="s-container s-feature" style={{ alignItems: "start" }}>
           <div className="s-feature__copy">
             <span className="s-eyebrow">What comes next</span>
-            <h2 className="s-h2">Clinical review, in validation.</h2>
+            <h2 className="s-h2">Clinical drafts, <span style={{ whiteSpace: "nowrap" }}>in validation.</span></h2>
             <p className="s-body">
               The next part of Aksh Diabetes prepares drafts for clinicians: HbA1c trends, medication safety checks, overdue
               complication checks and referral drafts, each accepted, edited or rejected in one review queue. It is built and
               tested on synthetic data, and is not released for real patients until its clinical safety case and evaluation are
               complete.
             </p>
-            <Link href="/platform" className="s-link">How the platform fits together →</Link>
+            <span><StatusPill s="in_validation" /></span>
+            <Link href="/platform#capabilities" className="s-link">Every capability and its status →</Link>
           </div>
           <div className="s-glow-wrap"><ReviewQueueMock /></div>
         </div>
-        <div className="s-container" style={{ marginTop: 40 }}>
-          <DiabetesAreas />
-        </div>
       </section>
 
-      <section className="s-section">
-        <div className="s-container s-feature" style={{ alignItems: "start" }}>
-          <div className="s-feature__copy">
-            <span className="s-eyebrow">Limits</span>
-            <h2 className="s-h2">What Aksh will not do.</h2>
-            <p className="s-body">These limits are part of the design.</p>
-          </div>
-          <ul className="s-limits">
-            {NON_OBJECTIVES.map((n) => <li key={n}>{n}</li>)}
-          </ul>
-        </div>
-      </section>
-
-      <section className="s-section">
-        <div className="s-container">
-          <div className="s-cta">
-            <div>
-              <h2 className="s-h2">Start with one workflow and your own numbers.</h2>
-              <p>Tell us about your care team. We will scope a pilot around the workflow that matters most to you.</p>
-            </div>
-            <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
-              <Link href="/contact" className="s-btn s-btn--ghost">Contact us</Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PilotCta secondary={{ href: "/contact", label: "Contact us" }} />
     </SiteShell>
   );
 }

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { PilotCta } from "@/components/site/PageParts";
 import { Pillars } from "@/components/site/Pillars";
+import { HUMAN_GATES, NON_OBJECTIVES } from "@/components/site/vision";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -143,27 +145,22 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft" id="control">
-        <div className="s-container">
-          <div className="s-head">
+      <section className="s-section s-dark" id="control">
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
             <span className="s-eyebrow">Control</span>
-            <h2 className="s-h2">What stays with your clinic</h2>
+            <h2 className="s-h2">What Aksh will not do</h2>
+            <p className="s-body">Aksh prepares options and drafts. Choosing a patient, contacting them and anything clinical stays with your staff, and some decisions always need a named person.</p>
+            <ol className="s-gates">
+              {HUMAN_GATES.map((g, i) => (
+                <li key={g.gate} className="s-gate"><b>{i + 1}</b><span><strong>{g.gate}</strong>{g.who}</span></li>
+              ))}
+            </ol>
+            <Link href="/security" className="s-btn s-btn--ghost" style={{ justifySelf: "start" }}>Security and clinical safety</Link>
           </div>
-          <div className="s-three">
-            <div className="s-card">
-              <h3 className="s-h3">Every decision</h3>
-              <p className="s-small">Aksh prepares options and drafts. Choosing a patient, contacting them and anything clinical is done by your staff.</p>
-            </div>
-            <div className="s-card">
-              <h3 className="s-h3">Your records</h3>
-              <p className="s-small">Aksh reads from your systems and writes nothing back. Your records system stays the source of truth.</p>
-            </div>
-            <div className="s-card">
-              <h3 className="s-h3">Your data</h3>
-              <p className="s-small">Each clinic sees only its own patients. You can export everything your organisation holds at any time.</p>
-            </div>
-          </div>
-          <p style={{ marginTop: 20 }}><Link href="/security" className="s-link">Security and data protection →</Link></p>
+          <ul className="s-limits">
+            {NON_OBJECTIVES.map((n) => <li key={n}>{n}</li>)}
+          </ul>
         </div>
       </section>
 
@@ -189,20 +186,7 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      <section className="s-section" style={{ paddingTop: 0 }}>
-        <div className="s-container">
-          <div className="s-cta">
-            <div>
-              <h2 className="s-h2">See it with your own waiting list.</h2>
-              <p>We will walk through your cancellation process and what going live would involve for your clinic.</p>
-            </div>
-            <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/product" className="s-btn s-btn--ghost">See the features</Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PilotCta secondary={{ href: "/product", label: "What’s available now" }} />
     </SiteShell>
   );
 }

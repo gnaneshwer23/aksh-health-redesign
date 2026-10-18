@@ -28,7 +28,7 @@ export default function SignupPage() {
           <p>
             New to Aksh as an organisation?{" "}
             <Link href="/get-started" className="font-semibold text-secondary hover:underline">
-              Request access
+              Request a pilot
             </Link>
           </p>
         </div>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 import { SiteShell } from "@/components/site/SiteShell";
-import { EHR_SYSTEMS, ICS_REGIONS, LIST_SIZES, ORG_TYPES, ORGANISATION_COMMITMENTS, accessRequestSchema } from "@/lib/access-requests/validation";
+import { ICS_REGIONS, LIST_SIZES, ORG_TYPES, accessRequestSchema } from "@/lib/access-requests/validation";
 
 const FIELD_MESSAGES: Record<string, string> = {
   orgType: "Choose an organisation type.",
@@ -35,12 +35,10 @@ type FormState = {
 
 const NEXT_STEPS = [
   { title: "A named person replies", note: "Not an autoresponder" },
-  { title: "A call with your clinical and operations leads", note: "Your cancellation process, waiting list and systems" },
+  { title: "A scoping call with your clinical and operations leads", note: "The workflow to start with, your systems and what go-live needs" },
   { title: "Setup and go-live", note: "Your clinic, your team, the checklist, then shadow mode" },
 ];
 
-const box: React.CSSProperties = { display: "grid", gap: 8, border: 0, padding: 0, margin: 0, minWidth: 0 };
-const optionStyle: React.CSSProperties = { display: "flex", gap: 10, alignItems: "flex-start", fontSize: 15, fontWeight: 400, color: "var(--s-ink-2)", padding: "10px 12px", border: "1px solid var(--s-line)", borderRadius: 10, cursor: "pointer" };
 const errStyle: React.CSSProperties = { fontSize: 13, fontWeight: 500, color: "var(--s-red)" };
 
 export default function GetStartedPageClient() {
@@ -62,8 +60,6 @@ export default function GetStartedPageClient() {
       return next;
     });
   };
-  const toggle = (key: "ehrSystems" | "commitments", value: string) =>
-    update(key, form[key].includes(value) ? form[key].filter((v) => v !== value) : [...form[key], value]);
 
   const err = (key: keyof FormState) => (errors[key] ? <span id={`${key}-error`} style={errStyle}>{errors[key]}</span> : null);
   const aria = (key: keyof FormState) => ({ "aria-invalid": errors[key] ? (true as const) : undefined, "aria-describedby": errors[key] ? `${key}-error` : undefined });
@@ -98,9 +94,9 @@ export default function GetStartedPageClient() {
     <SiteShell>
       <section className="s-page-head">
         <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">Request access</span>
-          <h1 id="get-started-title" className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Bring Aksh to your clinic.</h1>
-          <p className="s-lede">Tell us about your organisation. It takes about two minutes.</p>
+          <span className="s-eyebrow">Request a pilot</span>
+          <h1 id="get-started-title" className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 54px)" }}>Request an organisational pilot.</h1>
+          <p className="s-lede">Six questions about your organisation. We reply in person and scope the pilot on a call.</p>
         </div>
       </section>
 
@@ -173,44 +169,17 @@ export default function GetStartedPageClient() {
                       </select>
                       {err("listSize")}
                     </label>
-                    <label className="s-field" id="field-odsCode">Organisation ID <span style={{ fontWeight: 400, color: "var(--s-faint)" }}>(optional)</span>
-                      <input value={form.odsCode} onChange={(e) => update("odsCode", e.target.value)} placeholder="Registration, facility or licence ID" {...aria("odsCode")} />
-                      {err("odsCode")}
-                    </label>
-                    <label className="s-field" id="field-itContact">IT lead <span style={{ fontWeight: 400, color: "var(--s-faint)" }}>(optional)</span>
-                      <input value={form.itContact} onChange={(e) => update("itContact", e.target.value)} placeholder="Name and email" {...aria("itContact")} />
-                      {err("itContact")}
-                    </label>
                   </div>
 
-                  <fieldset style={box} id="field-ehrSystems" {...aria("ehrSystems")}>
-                    <legend className="s-field" style={{ marginBottom: 8 }}>Records or scheduling system in use</legend>
-                    <div className="s-grid s-grid--2" style={{ gap: 8 }}>
-                      {EHR_SYSTEMS.map((s) => (
-                        <label key={s} style={optionStyle}>
-                          <input type="checkbox" checked={form.ehrSystems.includes(s)} onChange={() => toggle("ehrSystems", s)} style={{ marginTop: 4 }} />
-                          <span>{s}</span>
-                        </label>
-                      ))}
-                    </div>
-                    {err("ehrSystems")}
-                  </fieldset>
-
-                  <fieldset style={box} id="field-commitments" {...aria("commitments")}>
-                    <legend className="s-field" style={{ marginBottom: 8 }}>Before go-live, your organisation can…</legend>
-                    {ORGANISATION_COMMITMENTS.map((c) => (
-                      <label key={c} style={optionStyle}>
-                        <input type="checkbox" checked={form.commitments.includes(c)} onChange={() => toggle("commitments", c)} style={{ marginTop: 4 }} />
-                        <span>{c.replace(/^We will /, "").replace(/^./, (x) => x.toUpperCase())}</span>
-                      </label>
-                    ))}
-                    {err("commitments")}
-                  </fieldset>
+                  <p className="s-small" style={{ margin: 0 }}>
+                    Systems, integration and go-live requirements are covered on the scoping call.{" "}
+                    <Link href="/resources/going-live" className="s-link">What going live involves</Link>.
+                  </p>
 
                   {submitError ? <p role="alert" style={errStyle}>{submitError}</p> : null}
                   <div className="s-actions" style={{ alignItems: "center" }}>
                     <button type="submit" className="s-btn s-btn--primary" disabled={submitting}>{submitting ? "Sending…" : "Send request"}</button>
-                    <span className="s-small">We use these details only to respond. See our <Link href="/privacy" className="s-link">privacy notice</Link>.</span>
+                    <span className="s-small">We use these details only to reply to you. See our <Link href="/privacy" className="s-link">privacy notice</Link>.</span>
                   </div>
                 </form>
               )}

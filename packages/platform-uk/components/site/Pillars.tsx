@@ -1,4 +1,4 @@
-import { FOUNDATIONS, OUTCOMES, PILLARS } from "@/components/site/vision";
+import { FOUNDATIONS, PILLARS } from "@/components/site/vision";
 import { StatusLegend, StatusPill } from "@/components/site/StatusPill";
 
 /** The two products on one foundation; every item shows its status from the capability register. */
@@ -25,15 +25,12 @@ export function Pillars() {
         ))}
       </div>
       <div className="s-foundations">
-        <div className="s-row"><h3 className="s-h3" style={{ fontSize: 18 }}>Shared foundations</h3><span className="s-small">Both products use the same sign-in, connections, consent and audit</span></div>
+        <div className="s-row"><h3 className="s-h3" style={{ fontSize: 18 }}>Shared foundations</h3><span className="s-small">Used by everything above</span></div>
         <div className="s-foundations__grid">
           {FOUNDATIONS.map((f) => (
             <div key={f.id}><b style={{ fontSize: 14, color: "var(--s-ink)" }}>{f.name}</b><span className="s-small" style={{ fontSize: 13 }}>{f.detail}</span><StatusPill s={f.status} /></div>
           ))}
         </div>
-      </div>
-      <div className="s-outcomes" aria-label="What Aksh is built to improve">
-        {OUTCOMES.map((o) => <div key={o.name}><b>{o.name}</b><span>{o.detail}</span></div>)}
       </div>
     </div>
   );

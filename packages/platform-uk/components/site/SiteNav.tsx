@@ -43,7 +43,7 @@ export function SiteNav() {
           </nav>
           <div className="s-nav__right">
             <Link href="/signin" className="s-nav__signin">Sign in</Link>
-            <Link href="/get-started" className="s-btn s-btn--primary s-btn--sm">Request access</Link>
+            <Link href="/get-started" className="s-btn s-btn--primary s-btn--sm">Request a pilot</Link>
           </div>
           <button type="button" className="s-nav__menu" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
             {open ? <X size={20} /> : <Menu size={20} />}
@@ -54,7 +54,7 @@ export function SiteNav() {
             <Link key={l.href} href={l.href}>{l.label}</Link>
           ))}
           <div className="s-actions">
-            <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
+            <Link href="/get-started" className="s-btn s-btn--primary">Request a pilot</Link>
             <Link href="/signin" className="s-btn s-btn--ghost">Sign in</Link>
           </div>
         </div>
