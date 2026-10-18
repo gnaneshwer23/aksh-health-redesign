@@ -1,18 +1,66 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Activity, CalendarClock, Check, Layers, LineChart, ShieldAlert, Smartphone } from "lucide-react";
+import { Activity, CalendarClock, Check, ClipboardList } from "lucide-react";
 
-import { ReviewQueueMock, SlotFillMock } from "@/components/site/Mockups";
-import { Pillars } from "@/components/site/Pillars";
+import { CgmMock, ReviewQueueMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
 import { SiteShell } from "@/components/site/SiteShell";
 import { DiabetesAreas } from "@/components/site/DiabetesAreas";
-import { HUMAN_GATES, NON_OBJECTIVES, PRODUCT_LOOP } from "@/components/site/vision";
+import { StatusPill } from "@/components/site/StatusPill";
+import { HUMAN_GATES, NON_OBJECTIVES } from "@/components/site/vision";
+import { CAPABILITIES, capability, type CapabilityId } from "@/lib/status/capabilities";
 
 export const metadata: Metadata = {
-  title: "Aksh Health | Clinical intelligence, under clinical control",
+  title: "Aksh Health | Diabetes reviews, better coordinated",
   description:
-    "Aksh prepares worklists and drafts for patient access and clinical review from the systems a clinic already uses. A named clinician decides every step. First module: Aksh Diabetes.",
+    "Aksh helps diabetes care teams fill cancelled appointments from the waiting list and see whose glucose needs attention first. Staff decide every step; results are measured against your own baseline.",
 };
+
+/** The workflows a clinic can use today. Each one: how it works, what staff do, what the clinic measures. */
+const WORKFLOWS: {
+  id: CapabilityId;
+  anchor: string;
+  icon: typeof CalendarClock;
+  title: string;
+  value: string;
+  how: string;
+  staff: string;
+  measure: string;
+  guide: string;
+  mock: "slot" | "cgm";
+}[] = [
+  {
+    id: "slot_fill",
+    anchor: "slot-fill",
+    icon: CalendarClock,
+    title: "Fill cancelled appointments",
+    value: "When an appointment is freed, Aksh ranks the patients on your waiting list who fit it, with the reasons, and says why the others were not offered.",
+    how: "Freed slots arrive from your schedule or are recorded by staff. Aksh checks the waiting list against dates, notice, site and opt-outs, and ranks by the reasons for waiting in the order your clinic sets.",
+    staff: "Staff choose who to offer it to and send the offer through your own channel; Aksh never contacts patients. Anything unusual goes to a named person with a due time.",
+    measure: "A slot counts as filled only when your schedule shows the booking. Fill rate and staff minutes per slot, weekly.",
+    guide: "/resources/slot-fill",
+    mock: "slot",
+  },
+  {
+    id: "cgm_monitoring",
+    anchor: "monitoring",
+    icon: Activity,
+    title: "See whose glucose needs attention first",
+    value: "CGM data and readings shared from the patient app become one worklist, with low glucose at the top.",
+    how: "Aksh calculates time in range, time below and above range, variability and the daily pattern from CGM uploads or a device feed, flagged against the general consensus targets.",
+    staff: "A clinician works down the list (low glucose first, then high, then missing data), decides which targets apply and decides the response.",
+    measure: "Whose data is sufficient (14 days, 70% sensor wear) and who has been reviewed. Patient uploads count only after a clinician checks them.",
+    guide: "/resources/cgm-and-readings",
+    mock: "cgm",
+  },
+];
+
+const PROBLEMS = [
+  { t: "Cancelled slots go unused", b: "A review is cancelled at short notice and the slot is lost, while patients who need it wait weeks." },
+  { t: "Glucose data without a worklist", b: "CGM and home readings arrive, but nobody can see quickly who needs attention first." },
+  { t: "Work that is hard to evidence", b: "Hand-offs get lost between staff, and it is difficult to show what changed after a new process." },
+];
+
+const PRODUCTION_COUNT = CAPABILITIES.filter((c) => c.status === "production").length;
 
 export default function HomePage() {
   return (
@@ -21,149 +69,105 @@ export default function HomePage() {
         <div className="s-container s-hero-panel__card">
           <div className="s-hero-panel__grid">
             <div className="s-hero__copy s-reveal">
-              <span className="s-pill-frost"><i>Platform</i>Aksh Intelligence Platform · first module: Aksh Diabetes</span>
-              <h1 className="s-h1">Clinical intelligence, <span className="s-grad">under clinical control.</span></h1>
+              <span className="s-pill-frost"><i>Aksh Diabetes</i>For diabetes care teams</span>
+              <h1 className="s-h1">Diabetes reviews, <span className="s-grad">better coordinated.</span></h1>
               <p className="s-lede">
-                Aksh prepares worklists and drafts from the systems your clinic already uses, for patient access and clinical
-                review. A named clinician decides every step, and every decision is recorded. It never acts on its own.
+                Aksh helps your team fill cancelled appointments from the waiting list and see whose glucose needs attention
+                first. Your staff decide every step, and results are measured against your own baseline.
               </p>
               <div className="s-actions">
-                <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-                <Link href="/platform" className="s-btn s-btn--ghost">How it works</Link>
+                <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
+                <Link href="/product" className="s-btn s-btn--ghost">What’s available now</Link>
               </div>
               <p className="s-hero-panel__note" aria-label="In production today">
-                <span>Cancelled-slot fill</span><span>CGM monitoring</span><span>Patient app</span>
+                {(["slot_fill", "cgm_monitoring", "patient_readings"] as CapabilityId[]).map((id) => <span key={id}>{capability(id).name}</span>)}
               </p>
             </div>
             <div className="s-glow-wrap s-reveal" style={{ animationDelay: "120ms" }}>
-              <ReviewQueueMock />
+              <SlotFillMock />
             </div>
           </div>
           <div className="s-metrics" style={{ marginTop: 48 }}>
-            <div><b>12 agents</b><span>under one supervisor, in a fixed, inspectable order</span></div>
-            <div><b>1 audit trail</b><span>who drafted, who decided, what changed</span></div>
-            <div><b>0 autonomous decisions</b><span>nothing reaches a record without a named clinician</span></div>
+            <div><b>Staff decide</b><span>every contact and every clinical response</span></div>
+            <div><b>Confirmed bookings</b><span>a slot counts only when your schedule shows the booking</span></div>
+            <div><b>Your baseline</b><span>locked before go-live, reviewed weekly</span></div>
           </div>
         </div>
       </section>
 
-      <div className="s-container">
-        <div className="s-facts">
-          <div className="s-fact"><b>Human review</b><span>A named clinician decides every clinical step</span></div>
-          <div className="s-fact"><b>Auditability</b><span>Every draft and decision attributed</span></div>
-          <div className="s-fact"><b>One consent model</b><span>Shared by every module and role</span></div>
-          <div className="s-fact"><b>Diabetes first</b><span>A focused clinical wedge, built to extend</span></div>
-        </div>
-      </div>
-
-      <section className="s-section">
+      <section className="s-section" id="problem">
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">The problem</span>
-            <h2 className="s-h2">Clinical AI fails in two predictable ways.</h2>
-            <p className="s-lede">Aksh is one system beside the EHR, so every capability follows the same rules for safety, audit and consent.</p>
+            <h2 className="s-h2">Three things that slow diabetes care down.</h2>
           </div>
           <div className="s-grid s-grid--3">
-            <div className="s-card">
-              <span className="s-icon"><Layers /></span>
-              <h3 className="s-h3">Point tools that don’t compose</h3>
-              <p className="s-small">Separate risk, coding and coaching apps, each with its own trust and safety boundary. The clinician becomes the integration layer.</p>
-            </div>
-            <div className="s-card">
-              <span className="s-icon"><ShieldAlert /></span>
-              <h3 className="s-h3">Automation that oversteps</h3>
-              <p className="s-small">Auto-writes to the record, auto-dosing, diagnostic claims, with nobody accountable in the loop.</p>
-            </div>
-            <div className="s-card s-card--accent">
-              <h3 className="s-h3">Aksh’s answer</h3>
-              <ul className="s-check">
-                {[
-                  ["One supervisor", "runs every component in a fixed order that can be inspected"],
-                  ["One audit trail", "who drafted, who decided, what changed"],
-                  ["One consent model", "shared by every module and role"],
-                  ["One rule", "nothing reaches a record or prescription without a human decision"],
-                ].map(([k, v]) => (
-                  <li key={k}><Check aria-hidden /><span><strong>{k}:</strong> {v}</span></li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="s-section s-section--soft" id="platform">
-        <div className="s-container">
-          <div className="s-head">
-            <span className="s-eyebrow">The Aksh Intelligence Platform</span>
-            <h2 className="s-h2">Two products on one foundation.</h2>
-            <p className="s-lede">
-              Patient access and clinical review share sign-in, consent, connections and audit, so both follow the same
-              rules. Each item shows where it is today.
-            </p>
-          </div>
-          <Pillars />
-          <div style={{ marginTop: 24 }}><Link href="/platform" className="s-link">How it works →</Link></div>
-        </div>
-      </section>
-
-      <section className="s-section">
-        <div className="s-container">
-          <div className="s-head">
-            <span className="s-eyebrow">End to end</span>
-            <h2 className="s-h2">From data in to a recorded decision.</h2>
-            <p className="s-lede">The clinician decision sits in the middle. Nothing after it happens without that decision.</p>
-          </div>
-          <ol className="s-loop">
-            {PRODUCT_LOOP.map((s) => (
-              <li key={s.step} className={s.step === "Clinician decides" ? "s-loop--decide" : undefined}>
-                <h3 className="s-h3" style={{ fontSize: 17 }}>{s.step}</h3>
-                <p className="s-small">{s.detail}</p>
-              </li>
+            {PROBLEMS.map((p) => (
+              <div key={p.t} className="s-card">
+                <h3 className="s-h3">{p.t}</h3>
+                <p className="s-small">{p.b}</p>
+              </div>
             ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 80 }}>
-        <div className="s-container">
-          <div className="s-head">
-            <span className="s-eyebrow">First module · Aksh Diabetes</span>
-            <h2 className="s-h2">Diabetes care, one worklist at a time.</h2>
-            <p className="s-lede">Glucose monitoring is available today. The rest of the module adds to the same worklist and review queue, with the same safeguards.</p>
           </div>
-          <DiabetesAreas />
         </div>
       </section>
 
-      <section className="s-section" id="available-now">
+      <section className="s-section s-section--soft" id="available-now">
         <div className="s-container">
           <div className="s-head">
             <span className="s-eyebrow">Available now</span>
-            <h2 className="s-h2">Ready for clinics today.</h2>
-            <p className="s-lede">These workflows are in production and ready for a clinic to go live. Each one starts in shadow mode.</p>
+            <h2 className="s-h2">Two workflows a clinic can start with today.</h2>
+            <p className="s-lede">Both are in production. Each starts in shadow mode alongside your current process, so you can compare before you rely on it.</p>
           </div>
-          <div className="s-feature">
-            <div className="s-feature__copy">
-              <div className="s-grid s-grid--2" style={{ gap: 14 }}>
-                {[
-                  { icon: CalendarClock, t: "Cancelled-slot fill", b: "Freed appointments offered to the patients who need them most, with the reasons. Staff decide every contact." },
-                  { icon: Activity, t: "CGM monitoring", b: "Time in range and consensus targets as a worklist, low glucose first." },
-                  { icon: Smartphone, t: "Patient app", b: "Readings and CGM uploads shared with the care team, on the patient’s terms." },
-                  { icon: LineChart, t: "Measured results", b: "Weekly review against a baseline locked before go-live." },
-                ].map(({ icon: Icon, t, b }) => (
-                  <div key={t} className="s-card" style={{ padding: 20 }}>
-                    <span className="s-icon"><Icon /></span>
-                    <h3 className="s-h3" style={{ fontSize: 17 }}>{t}</h3>
-                    <p className="s-small">{b}</p>
+          <div style={{ display: "grid", gap: 56 }}>
+            {WORKFLOWS.map((w, i) => {
+              const Icon = w.icon;
+              const c = capability(w.id);
+              return (
+                <article key={w.id} id={w.anchor} className="s-workflow" data-workflow={w.id} data-status={c.status} style={{ scrollMarginTop: 80 }}>
+                  <div className={`s-feature${i % 2 ? " s-feature--flip" : ""}`} style={{ alignItems: "center" }}>
+                  <div className="s-feature__copy">
+                    <div className="s-row" style={{ justifyContent: "flex-start", gap: 12 }}>
+                      <span className="s-icon"><Icon /></span>
+                      <StatusPill s={c.status} />
+                    </div>
+                    <h3 className="s-h2" style={{ fontSize: "clamp(26px, 3vw, 34px)" }}>{w.title}</h3>
+                    <p className="s-body">{w.value}</p>
+                    <div className="s-actions">
+                      <Link href={`/product#${w.anchor}`} className="s-link">How {w.id === "slot_fill" ? "slot filling" : "glucose monitoring"} works →</Link>
+                      <Link href={w.guide} className="s-link">Setup guide →</Link>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <Link href="/product" className="s-link">What’s available now →</Link>
-            </div>
-            <div style={{ display: "grid", gap: 16 }}>
-              <div className="s-glow-wrap"><SlotFillMock /></div>
-            </div>
+                  <div className="s-glow-wrap">{w.mock === "slot" ? <WorkflowMock /> : <CgmMock />}</div>
+                  </div>
+                  <dl className="s-flow3">
+                    <div><dt>How it works</dt><dd>{w.how}</dd></div>
+                    <div><dt>What staff do</dt><dd>{w.staff}</dd></div>
+                    <div><dt>What you measure</dt><dd>{w.measure}</dd></div>
+                  </dl>
+                </article>
+              );
+            })}
           </div>
+          <p className="s-small" style={{ marginTop: 32 }}>
+            Also in production: readings shared from the patient app, hand-offs with owners and due times, and weekly results.
+            {" "}{PRODUCTION_COUNT} capabilities in production in total; <Link href="/product" className="s-link">see everything available now</Link>.
+          </p>
+        </div>
+      </section>
+
+      <section className="s-section" id="pilot">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">How a pilot runs</span>
+            <h2 className="s-h2">One workflow, one baseline, then widen on evidence.</h2>
+          </div>
+          <ol className="s-steps">
+            <li className="s-step"><span className="s-step__n">01</span><h3 className="s-h3">Scope one workflow</h3><p className="s-small">Choose slot filling or glucose monitoring, name the reviewers and agree the boundaries.</p></li>
+            <li className="s-step"><span className="s-step__n">02</span><h3 className="s-h3">Set up your clinic</h3><p className="s-small">Invite your team, load patients and the waiting list, connect your schedule or CGM data.</p></li>
+            <li className="s-step"><span className="s-step__n">03</span><h3 className="s-h3">Lock the baseline</h3><p className="s-small">Data processing agreement, privacy assessment, a clinical safety lead, and your current numbers recorded.</p></li>
+            <li className="s-step"><span className="s-step__n">04</span><h3 className="s-h3">Run in shadow, then live</h3><p className="s-small">Compare with your current process each week. Go live and add workflows only when the results support it.</p></li>
+          </ol>
         </div>
       </section>
 
@@ -171,24 +175,44 @@ export default function HomePage() {
         <div className="s-container s-feature" style={{ alignItems: "start" }}>
           <div className="s-feature__copy">
             <span className="s-eyebrow">Clinician control</span>
-            <h2 className="s-h2">Every output is a draft until a named clinician decides.</h2>
+            <h2 className="s-h2">Aksh prepares the work. A named person decides.</h2>
             <ul className="s-check">
-              <li><Check aria-hidden />Accept, edit or reject before anything can affect the record.</li>
-              <li><Check aria-hidden />Every decision is attributed to a named reviewer and audited.</li>
-              <li><Check aria-hidden />Missing data, like an overdue eye-screening date, is listed rather than guessed.</li>
-              <li><Check aria-hidden />No autonomous diagnosis, prescribing or treatment.</li>
+              <li><Check aria-hidden />Every proposal comes with its reasons.</li>
+              <li><Check aria-hidden />Decisions are recorded under the signed-in account, in an audit record that cannot be edited.</li>
+              <li><Check aria-hidden />Missing information is shown as missing, never guessed.</li>
+              <li><Check aria-hidden />No patient data is sent to AI models in production.</li>
             </ul>
             <Link href="/security" className="s-btn s-btn--ghost" style={{ justifySelf: "start" }}>Security and clinical safety</Link>
           </div>
           <div style={{ display: "grid", gap: 12 }}>
-            <p className="s-small">Mandatory human gates</p>
+            <p className="s-small">Decisions that always need a named person</p>
             <ol className="s-gates">
               {HUMAN_GATES.map((g, i) => (
                 <li key={g.gate} className="s-gate"><b>{i + 1}</b><span><strong>{g.gate}</strong>{g.who}</span></li>
               ))}
             </ol>
-            <p className="s-small">Enforced on the server, not just hidden in the interface.</p>
+            <p className="s-small">Enforced on the server, not only in the interface.</p>
           </div>
+        </div>
+      </section>
+
+      <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 80 }}>
+        <div className="s-container s-feature" style={{ alignItems: "start" }}>
+          <div className="s-feature__copy">
+            <span className="s-eyebrow">What comes next</span>
+            <h2 className="s-h2">Clinical review, in validation.</h2>
+            <p className="s-body">
+              The next part of Aksh Diabetes prepares drafts for clinicians: HbA1c trends, medication safety checks, overdue
+              complication checks and referral drafts, each accepted, edited or rejected in one review queue. It is built and
+              tested on synthetic data, and is not released for real patients until its clinical safety case and evaluation are
+              complete.
+            </p>
+            <Link href="/platform" className="s-link">How the platform fits together →</Link>
+          </div>
+          <div className="s-glow-wrap"><ReviewQueueMock /></div>
+        </div>
+        <div className="s-container" style={{ marginTop: 40 }}>
+          <DiabetesAreas />
         </div>
       </section>
 
@@ -197,9 +221,7 @@ export default function HomePage() {
           <div className="s-feature__copy">
             <span className="s-eyebrow">Limits</span>
             <h2 className="s-h2">What Aksh will not do.</h2>
-            <p className="s-body">
-              These limits are part of the design. We say clearly what is available today and what is still in development.
-            </p>
+            <p className="s-body">These limits are part of the design.</p>
           </div>
           <ul className="s-limits">
             {NON_OBJECTIVES.map((n) => <li key={n}>{n}</li>)}
@@ -207,31 +229,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="s-section s-section--soft">
-        <div className="s-container">
-          <div className="s-head">
-            <span className="s-eyebrow">Start with a controlled use case</span>
-            <h2 className="s-h2">From first conversation to live clinic, one step at a time.</h2>
-          </div>
-          <ol className="s-steps">
-            <li className="s-step"><span className="s-step__n">01</span><h3 className="s-h3">Scope one workflow</h3><p className="s-small">Pick the diabetes workflow to start with, name the reviewers and set the governance boundaries.</p></li>
-            <li className="s-step"><span className="s-step__n">02</span><h3 className="s-h3">Set up your clinic</h3><p className="s-small">Invite your team, check registrations, load patients and the waiting list.</p></li>
-            <li className="s-step"><span className="s-step__n">03</span><h3 className="s-h3">Complete go-live</h3><p className="s-small">Data processing agreement, privacy assessment, clinical safety lead and a locked baseline.</p></li>
-            <li className="s-step"><span className="s-step__n">04</span><h3 className="s-h3">Widen on evidence</h3><p className="s-small">Start in shadow mode; add workflows only when the evidence supports it.</p></li>
-          </ol>
-        </div>
-      </section>
-
       <section className="s-section">
         <div className="s-container">
           <div className="s-cta">
             <div>
-              <h2 className="s-h2">Clinical intelligence should help clinicians think, not replace them.</h2>
-              <p>Tell us about your organisation. Clinics go live one workflow at a time.</p>
+              <h2 className="s-h2">Start with one workflow and your own numbers.</h2>
+              <p>Tell us about your care team. We will scope a pilot around the workflow that matters most to you.</p>
             </div>
             <div className="s-actions">
-              <Link href="/get-started" className="s-btn s-btn--primary">Request access</Link>
-              <Link href="/platform" className="s-btn s-btn--ghost">How it works</Link>
+              <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
+              <Link href="/contact" className="s-btn s-btn--ghost">Contact us</Link>
             </div>
           </div>
         </div>

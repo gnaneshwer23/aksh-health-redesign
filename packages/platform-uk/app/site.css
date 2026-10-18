@@ -480,3 +480,11 @@
 .s-status-legend dt { margin: 0; }
 .s-status-legend dd { margin: 0; font-size: 13px; color: var(--s-muted); }
 [data-status="planned"].s-pillar__item, [data-status="planned"].s-area { background: transparent; border-style: dashed; }
+
+/* Available-now workflow: how it works / what staff do / what you measure */
+.s-workflow { display: grid; gap: 28px; }
+.s-flow3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
+.s-flow3 > div { padding: 20px 22px; border-radius: 20px; background: var(--s-raised); border: 1px solid var(--s-line); display: grid; gap: 6px; align-content: start; }
+.s-flow3 dt { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--s-teal); }
+.s-flow3 dd { margin: 0; font-size: 15px; line-height: 1.5; color: var(--s-ink-2); }
+@media (max-width: 760px) { .s-flow3 { grid-template-columns: 1fr; } }

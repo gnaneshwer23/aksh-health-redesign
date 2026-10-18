@@ -6,16 +6,22 @@ test.describe("Public site", () => {
     await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
   });
 
-  test("home leads with the vision and shows what is live", async ({ page }) => {
+  test("home leads with the available workflows and one pilot call to action", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Clinical intelligence, under clinical control.");
-    await expect(page.getByText("Aksh Intelligence Platform · first module: Aksh Diabetes")).toBeVisible();
-    await expect(page.locator("#available-now")).toContainText("Cancelled-slot fill");
-    // PRD v1.1: two pillars on shared foundations, every item with its status.
-    const pillars = page.locator("[data-pillars]");
-    await expect(pillars).toContainText("Patient access");
-    await expect(pillars).toContainText("Clinical review");
-    await expect(pillars).toContainText("Shared foundations");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Diabetes reviews, better coordinated.");
+    const hero = page.locator(".s-hero-panel");
+    await expect(hero.getByRole("link", { name: "Request an organisational pilot" })).toHaveAttribute("href", "/get-started");
+    await expect(hero).toContainText("Cancelled-slot fill");
+    // Each available workflow: how it works, what staff do, what you measure.
+    for (const id of ["slot_fill", "cgm_monitoring"]) {
+      const w = page.locator(`[data-workflow="${id}"]`);
+      await expect(w).toHaveAttribute("data-status", "production");
+      for (const label of ["How it works", "What staff do", "What you measure"]) await expect(w).toContainText(label);
+    }
+    // The clinical review vision comes after what is available, and is labelled as in validation.
+    const order = await page.evaluate(() => ["available-now", "diabetes"].map((id) => document.getElementById(id)!.getBoundingClientRect().top));
+    expect(order[0]).toBeLessThan(order[1]);
+    await expect(page.locator("#diabetes")).toContainText("In validation");
     const nav = page.locator("[data-site-nav]");
     for (const label of ["How it works", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/get-started");
@@ -55,8 +61,8 @@ test.describe("Public site", () => {
     await expect(page.locator("#slot-fill .s-frame").first()).toBeVisible();
   });
 
-  test("statuses on the home page come from the capability register", async ({ page }) => {
-    await page.goto("/");
+  test("statuses on how it works come from the capability register", async ({ page }) => {
+    await page.goto("/platform");
     const slot = page.locator('[data-pillars] [data-status]').filter({ hasText: "Cancelled-slot fill" });
     await expect(slot).toHaveAttribute("data-status", "production");
     await expect(slot).toContainText("Production");
