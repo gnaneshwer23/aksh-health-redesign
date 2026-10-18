@@ -34,7 +34,7 @@ export const DASHBOARD_LABELS = {
 } as const;
 
 export const SEO_DEFAULTS = {
-  title: "Aksh Health | Clinical Intelligence, Under Clinical Control",
+  title: "Aksh Health | Diabetes reviews, better coordinated",
   description:
-    "Aksh Health helps clinical teams capture, understand, review and coordinate care with AI-assisted intelligence and named clinician oversight. Diabetes-first, for clinicians and patients in any care setting."
+    "Aksh helps diabetes care teams fill cancelled appointments from the waiting list and see whose glucose needs attention first. Staff decide every step; results are measured against your own baseline."
 };

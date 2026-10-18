@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Aksh Health — Clinical intelligence, under clinical control";
+export const alt = "Aksh Health — Diabetes reviews, better coordinated";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -47,7 +47,7 @@ export default function OpenGraphImage() {
           </div>
         </div>
         <div style={{ fontSize: 52, fontWeight: 700, lineHeight: 1.1, maxWidth: 940 }}>
-          Clinical intelligence, under clinical control.
+          Diabetes reviews, better coordinated.
         </div>
         <div
           style={{
@@ -58,7 +58,7 @@ export default function OpenGraphImage() {
             lineHeight: 1.35,
           }}
         >
-          Diabetes care, properly coordinated. AI assists. Clinicians decide.
+          Fill cancelled appointments and see whose glucose needs attention first. Your staff decide every step.
         </div>
       </div>
     ),

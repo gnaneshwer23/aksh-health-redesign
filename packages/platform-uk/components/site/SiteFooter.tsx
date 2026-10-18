@@ -44,8 +44,8 @@ export function SiteFooter() {
               Aksh Health
             </Link>
             <p className="s-small" style={{ maxWidth: 320 }}>
-              Clinical intelligence, under clinical control. Worklists and drafts beside your records system, decided by
-              your clinicians. First module: Aksh Diabetes.
+              Diabetes reviews, better coordinated. Worklists beside your records system, with your staff deciding every
+              step.
             </p>
           </div>
           {COLUMNS.map((c) => (

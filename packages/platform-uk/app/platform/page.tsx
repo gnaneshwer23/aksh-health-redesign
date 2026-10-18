@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { Pillars } from "@/components/site/Pillars";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -128,6 +129,17 @@ export default function PlatformPage() {
               <CgmMock />
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="s-section" id="capabilities">
+        <div className="s-container">
+          <div className="s-head">
+            <span className="s-eyebrow">Capabilities</span>
+            <h2 className="s-h2">Everything Aksh does, and where each part is today</h2>
+            <p className="s-lede">Patient access and clinical review share sign-in, consent, connections and audit. Only what is marked Production is available to clinics.</p>
+          </div>
+          <Pillars />
         </div>
       </section>
 
