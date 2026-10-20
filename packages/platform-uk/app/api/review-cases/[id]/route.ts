@@ -73,6 +73,34 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       { status: 409 }
     );
   }
+  // Case decisions and human-gate decisions are made only through /decision and /gates/:gateId (server-checked,
+  // attributed to the signed-in account, audited in the same transaction). This route saves content edits only.
+  const gateKey = (c: ReviewCase) => JSON.stringify((c.humanGateDecisions ?? []).map((g) => [g.id, g.status, g.decidedBy ?? null, g.note ?? null]).sort());
+  const changedCaseDecision =
+    (payload.status ?? existing.status) !== existing.status ||
+    gateKey(payload) !== gateKey(existing) ||
+    JSON.stringify(payload.frozenArtifact ?? null) !== JSON.stringify(existing.frozenArtifact ?? null) ||
+    (payload.reviewSummary?.lastDecision ?? null) !== (existing.reviewSummary?.lastDecision ?? null);
+  if (changedCaseDecision) {
+    return NextResponse.json(
+      { error: "Case and gate decisions are recorded through /api/review-cases/:id/decision and /api/review-cases/:id/gates/:gateId.", code: "USE_DECISION_ENDPOINT" },
+      { status: 409 }
+    );
+  }
+  // History is append-only: earlier entries cannot change, decision entries cannot be added here, and every new edit
+  // or note is attributed to the signed-in account, whatever name the browser sent.
+  // The stored history is kept as stored (the browser's copy is ignored); only entries the server has not seen are added.
+  const priorEvents = existing.auditEvents ?? [];
+  const knownIds = new Set(priorEvents.map((e) => e.id));
+  const addedEvents = (payload.auditEvents ?? []).filter((e) => !knownIds.has(e.id));
+  if (addedEvents.some((e) => e.category === "reviewer_decision" || e.category === "override")) {
+    return NextResponse.json({ error: "Decisions are recorded through the decision endpoints.", code: "USE_DECISION_ENDPOINT" }, { status: 409 });
+  }
+  const editor = auth.context.userEmail ?? userId;
+  payload.auditEvents = [...priorEvents, ...addedEvents.map((e) => ({ ...e, actor: editor }))];
+  const priorChanges = new Set((existing.fieldChanges ?? []).map((c) => c.id));
+  payload.fieldChanges = (payload.fieldChanges ?? existing.fieldChanges ?? []).map((c) => (priorChanges.has(c.id) ? c : { ...c, actor: editor }));
+
   if (payload.version !== undefined && payload.version !== (existing.version ?? 0)) {
     return NextResponse.json({ error: "The case changed since you opened it; reload to see the latest version.", code: "STALE_CASE" }, { status: 409 });
   }

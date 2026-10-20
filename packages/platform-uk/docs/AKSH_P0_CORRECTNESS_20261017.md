@@ -62,14 +62,26 @@ and increments the version itself.
   and accessibility: 30 passed in total across runs.
 - Route smoke: pass. Production link crawl: no broken links.
 
-## 5. Known limitations
+## 5. Known limitations — updated 20 Oct 2026 (P0 remainder done)
 
-- Case-level transitions on the other review screens (case detail, ops dashboards, meeting packet) still save through
-  the generic route. They can no longer change item decisions and are version-checked, but their case-level audit
-  entries are still client-authored. Next increment: move case accept / finalise to a server endpoint.
-- The voice-transcript edit on the GP screen still saves through the generic route (content only, not a decision).
-- Accept → FHIR staging runs on case-level accept via the generic route; its result is returned but staging failures
-  are logged rather than surfaced to the reviewer.
+Done on 20 Oct:
+- Case decisions (`POST /api/review-cases/:id/decision`: accept / reject / defer) and human-gate decisions
+  (`POST /api/review-cases/:id/gates/:gateId`) are decided on the server: version check; acceptance needs the
+  accountability acknowledgement and re-checks every safety blocker, the reviewer checklist and each required gate (409
+  `BLOCKED` with the reasons); the signed-in account is recorded; an accepted case is final (409 `CASE_FINAL`); the
+  audit row is written in the same transaction.
+- Accept → BRIDGE staging now runs in the decision route and its result (staged / failed) is returned and shown to
+  the reviewer; `liveRecordWrite` is always false.
+- The generic save (`PUT`) refuses changes to status, gate decisions, the frozen artifact and the last decision, refuses
+  new decision or override history entries, keeps the stored history as stored (append-only by id), and stamps the
+  signed-in account on every new edit, note and field change.
+- The case screen calls the server routes; the free-text reviewer name is gone.
+
+Still open:
+- Meeting outcomes, follow-up owners and hand-off notes on the ops dashboard, meeting packet and drill-down pages are
+  operational metadata saved through the generic route (attributed to the signed-in account by the server).
+- `/api/audit/shield` accepts audit events written by dashboard panels (agent run summaries); these are not case
+  decisions but should be server-authored too (next increment, with the agent register).
 
 ## 6. Release checklist (this increment)
 

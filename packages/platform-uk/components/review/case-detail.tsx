@@ -12,6 +12,7 @@ import { FeedbackLinkedPanel } from "@/components/review/feedback-linked-panel";
 import { PatientHistory } from "@/components/review/patient-history";
 import type { ShieldAuditWarning } from "@/lib/use-review-cases";
 import type { ReviewCase } from "@/lib/types";
+import type { CaseActions } from "@/components/review/case-detail/useCaseReviewWorkflow";
 
 export function CaseDetail({
   demoMode = false,
@@ -21,6 +22,8 @@ export function CaseDetail({
   onRetrySave,
   reviewCase,
   onUpdateCase,
+  onDecideCase,
+  onDecideGate,
   shieldAuditWarning = null,
   isRetryingShieldAudit = false,
   onDismissShieldAuditWarning,
@@ -33,12 +36,14 @@ export function CaseDetail({
   onRetrySave: () => Promise<void>;
   reviewCase: ReviewCase;
   onUpdateCase: (reviewCase: ReviewCase) => void;
+  onDecideCase: CaseActions["decideCase"];
+  onDecideGate: CaseActions["decideGate"];
   shieldAuditWarning?: ShieldAuditWarning | null;
   isRetryingShieldAudit?: boolean;
   onDismissShieldAuditWarning?: () => void;
   onRetryShieldAuditWrite?: () => Promise<void>;
 }) {
-  const workflow = useCaseReviewWorkflow(reviewCase, onUpdateCase);
+  const workflow = useCaseReviewWorkflow(reviewCase, onUpdateCase, { decideCase: onDecideCase, decideGate: onDecideGate });
   const demoQuery =
     demoMode || recordingMode
       ? `?${demoMode ? "demo=1" : ""}${demoMode && recordingMode ? "&" : ""}${recordingMode ? "recording=1" : ""}`
