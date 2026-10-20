@@ -78,10 +78,10 @@ async function postAgent(path: string, body: Record<string, unknown>) {
   return response.json() as Promise<{ draft?: AgentDraftState }>;
 }
 
+/** The agent's draft was staged for GP review; the server writes the audit wording (lib/audit/panel-events.ts). */
 function shieldAccept(
   payload: {
     agentLabel: string;
-    label: string;
     detail: string;
     resourceRef: string;
     extra?: Record<string, unknown>;
@@ -90,12 +90,12 @@ function shieldAccept(
 ) {
   return recordShieldEvent(
     {
+      event: "staged",
+      subject: payload.agentLabel === "HORIZON" ? "risk_brief" : "draft",
       action: "accept",
-      agentLabel: payload.agentLabel,
-      label: payload.label,
-      detail: payload.detail,
+      agent: payload.agentLabel,
+      note: payload.detail,
       resourceRef: payload.resourceRef,
-      payload: payload.extra,
     },
     { authenticated }
   );
@@ -230,7 +230,6 @@ export function AgentControlPanel({
     const shieldOutcome = await shieldAccept(
       {
         agentLabel: "DrASSIST",
-        label: "SHIELD: Dr.Assist coding draft staged for GP review",
         detail: drAssistNote,
         resourceRef: `${current.name} (${current.id})`,
         extra: { mode: drAssistDraft.mode, dataSource: drAssistDraft.dataSource, viaBridge: true }
@@ -285,7 +284,6 @@ export function AgentControlPanel({
     const shieldOutcome = await shieldAccept(
       {
         agentLabel: "HORIZON",
-        label: "SHIELD: HORIZON risk brief staged for GP review",
         detail: oracleNote,
         resourceRef: `${current.name} (${current.id})`,
         extra: { mode: oracleDraft.mode, dataSource: oracleDraft.dataSource, viaBridge: true }
@@ -345,7 +343,6 @@ export function AgentControlPanel({
     const shieldOutcome = await shieldAccept(
       {
         agentLabel: "GUARDIAN",
-        label: "SHIELD: GUARDIAN brief staged for GP review",
         detail: content,
         resourceRef: `${current.name} (${current.id})`,
         extra: { mode: guardianDraft.mode, dataSource: guardianDraft.dataSource, viaBridge: true }
@@ -419,7 +416,6 @@ export function AgentControlPanel({
     const shieldOutcome = await shieldAccept(
       {
         agentLabel: "SYNTHESIS",
-        label: "SHIELD: SYNTHESIS SOAP draft staged for GP review",
         detail: synthesisNote,
         resourceRef: `${current.name} (${current.id})`,
         extra: { mode: synthesisDraft.mode, level: synthesisLevel, viaBridge: true }
@@ -485,7 +481,6 @@ export function AgentControlPanel({
     const shieldOutcome = await shieldAccept(
       {
         agentLabel: "PATHWAY",
-        label: "SHIELD: PATHWAY package staged for GP review",
         detail: content,
         resourceRef: `${current.name} (${current.id})`,
         extra: { mode: referralDraft.mode, eReferralWrite: false, viaBridge: true }

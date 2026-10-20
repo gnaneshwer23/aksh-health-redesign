@@ -38,14 +38,7 @@ export function ExportEvaluationButton() {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "export",
-            agentLabel: "SHIELD",
-            label: "SHIELD: researcher evaluation JSON exported",
-            detail: filename,
-            category: "system",
-            resourceRef: `research-evaluation/${orgSlug}`
-          })
+          body: JSON.stringify({ event: "exported", subject: "evaluation", action: "export", agent: "SHIELD", note: filename, resourceRef: `research-evaluation/${orgSlug}` })
         });
       } catch {
         // Download still succeeded even if audit write failed.

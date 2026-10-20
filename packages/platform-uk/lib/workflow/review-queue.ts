@@ -3,8 +3,7 @@ import { applyReferralAccept, maybeStageReferralPackage } from "../referral-agen
 import {
   createShieldAuditEvent,
   applyQueueItemStatus,
-  appendShieldAudit,
-  scheduleDurableShieldWrite
+  appendShieldAudit
 } from "../shield-audit";
 import { formatCaseTimestamp } from "../time-format";
 import type { ReviewCase, ReviewQueueItem, ReviewQueueItemStatus } from "../types";
@@ -32,7 +31,7 @@ export function updateQueueItemDecision(
   reviewCase: ReviewCase,
   itemId: string,
   status: ReviewQueueItemStatus,
-  options: { decidedBy: string; rejectionReason?: string; content?: string; durableAudit?: boolean }
+  options: { decidedBy: string; rejectionReason?: string; content?: string }
 ): ReviewCase {
   const currentItems = resolveReviewQueueItems(reviewCase);
   const target = currentItems.find((item) => item.id === itemId);
@@ -60,17 +59,6 @@ export function updateQueueItemDecision(
     shieldEvent
   );
 
-  // The server decision endpoint writes the durable audit row in the same transaction as the decision instead.
-  if (options.durableAudit !== false) scheduleDurableShieldWrite({
-    action: shieldAction,
-    actor: options.decidedBy,
-    event: shieldEvent,
-    caseId: reviewCase.id,
-    practiceId: reviewCase.practiceId,
-    queueItemId: itemId,
-    agentLabel: CLINICAL_AGENT_META[target.agentId].label,
-    resourceRef: `${target.title} → ${status}`
-  });
 
   // Demo cases stage the scripted referral; agent-run cases get PATHWAY drafts from their own evidence (lib/clinical-spine/enqueue.ts).
   if (!nextCase.agentRun) nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));

@@ -45,44 +45,6 @@ export function createShieldAuditEvent({
   };
 }
 
-/**
- * Dual-write helper safe for client bundles (never imports `pg`).
- * Persists via POST /api/audit/shield from the browser.
- * Server routes that already have a DB connection should call
- * `persistShieldAuditEvent` directly instead.
- */
-export function scheduleDurableShieldWrite(options: {
-  action: ShieldAction;
-  actor: string;
-  event: AuditEvent;
-  caseId?: string;
-  practiceId?: string;
-  queueItemId?: string;
-  agentLabel?: string;
-  resourceRef?: string;
-}) {
-  // Dual-write is browser-only; avoid bare `window` so Node test compiles (no DOM lib).
-  const browserGlobal = globalThis as typeof globalThis & { window?: unknown };
-  if (typeof browserGlobal.window === "undefined") {
-    return;
-  }
-
-  void fetch("/api/audit/shield", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: options.action,
-      label: options.event.label,
-      detail: options.event.detail,
-      category: options.event.category,
-      caseId: options.caseId,
-      agentLabel: options.agentLabel,
-      resourceRef: options.resourceRef
-    })
-  }).catch(() => undefined);
-}
-
 export function createFhirShieldAuditEvent({
   action,
   actor,
@@ -202,8 +164,6 @@ export function appendCaseLevelShieldAudit(
     action: ShieldAction;
     actor: string;
     detail: string;
-    /** false when the caller writes the durable audit row itself, in the same transaction as the case. */
-    durableAudit?: boolean;
   }
 ): ReviewCase {
   const shieldEvent = createShieldAuditEvent({
@@ -220,14 +180,5 @@ export function appendCaseLevelShieldAudit(
   });
 
   const next = appendFhirShieldAudit(appendShieldAudit(reviewCase, shieldEvent), fhirEvent);
-  if (options.durableAudit === false) return next;
-  scheduleDurableShieldWrite({
-    action: options.action,
-    actor: options.actor,
-    event: shieldEvent,
-    caseId: reviewCase.id,
-    practiceId: reviewCase.practiceId,
-    resourceRef: `ReviewCase/${reviewCase.id}`
-  });
   return next;
 }

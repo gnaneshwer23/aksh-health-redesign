@@ -81,18 +81,12 @@ export function CoachingDraftPanel({
   const escalate = async (kind: AgentKind, draft: CoachingDraft) => {
     const outcome = await recordShieldEvent(
       {
+        event: "escalated",
+        subject: "coaching",
         action: "defer",
-        agentLabel: draft.agentId,
-        label: `SHIELD: ${draft.agentId} coaching escalated for clinician HITL`,
-        detail: draft.summary.slice(0, 200),
+        agent: draft.agentId,
+        note: draft.summary.slice(0, 200),
         resourceRef: `${patientLabel ?? patientId} (${patientId})`,
-        payload: {
-          mode: draft.mode,
-          isClinicalAdvice: false,
-          ehrWrite: false,
-          hitlRequired: true,
-          escalated: true,
-        },
       },
       { authenticated: reviewer.authenticated }
     );

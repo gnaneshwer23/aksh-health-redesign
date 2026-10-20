@@ -179,32 +179,7 @@ export function ClinicalOrchestratePanel({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "accept",
-          agentLabel: agent,
-          label: `SHIELD: ${agent} draft accepted (clinical spine orchestrate)`,
-          detail: summary.slice(0, 280),
-          resourceRef: `${patientLabel ?? patientId} (${patientId})`,
-          category: "reviewer_decision",
-          payload: {
-            ehrWrite: false,
-            hitlRequired: true,
-            physiologicalTwin: false,
-            liveEmis: false,
-            safetyRoute: result?.safetyRoute ?? null,
-            // B4: this disposition also covers any [Diabetes]-prefixed HORIZON/GUARDIAN content merged
-            // additively above — no separate diabetes review paradigm, so name it here for auditability.
-            diabetesModuleContribution:
-              (agent === "ORACLE" || agent === "GUARDIAN") && result?.diabetes
-                ? {
-                    referralIndicated: result.diabetes.signals.complications
-                      .filter((c) => c.flagLevel === "referral_indicated")
-                      .map((c) => c.domain),
-                    referralGate: "referral_pathway" as const,
-                  }
-                : null,
-          },
-        }),
+        body: JSON.stringify({ event: "decided", subject: "draft", action: "accept", agent, note: summary.slice(0, 280), resourceRef: `${patientLabel ?? patientId} (${patientId})` }),
       });
     } catch {
       // Local HITL still applies.

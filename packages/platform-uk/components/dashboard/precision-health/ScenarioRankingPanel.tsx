@@ -96,22 +96,7 @@ export function ScenarioRankingPanel({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "accept",
-          agentLabel: "TWIN_SIM",
-          label: "SHIELD: synthetic scenario ranking staged (not physiological twin)",
-          detail: `Top: ${result.options[0]?.label ?? "n/a"} · mode=${result.simulationMode}`,
-          resourceRef: `${patientLabel ?? patientId} (${patientId})`,
-          category: "reviewer_decision",
-          payload: {
-            physiologicalTwin: false,
-            simulationMode: "synthetic_rules",
-            ehrWrite: false,
-            hitlRequired: true,
-            planPromotionRequiresHitl: true,
-            topIntervention: result.options[0]?.interventionId ?? null,
-          },
-        }),
+        body: JSON.stringify({ event: "staged", subject: "scenario_ranking", action: "accept", agent: "TWIN_SIM", note: `Top: ${result.options[0]?.label ?? "n/a"} · mode=${result.simulationMode}`, resourceRef: `${patientLabel ?? patientId} (${patientId})` }),
       });
     } catch {
       // Local staging still applies.

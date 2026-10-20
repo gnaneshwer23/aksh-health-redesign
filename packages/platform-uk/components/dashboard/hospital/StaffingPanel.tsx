@@ -8,9 +8,9 @@ import type { HospitalData } from "@/lib/mock-data/types";
 import { wardStaffing } from "@/lib/mock-data";
 import { useDashboardStore } from "@/lib/zustand/dashboardStore";
 
+/** A staffing recommendation was accepted or dismissed; the server writes the audit wording. */
 async function logStaffingShield(payload: {
   action: "accept" | "reject";
-  label: string;
   detail: string;
   resourceRef: string;
 }) {
@@ -20,9 +20,12 @@ async function logStaffingShield(payload: {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...payload,
-        agentLabel: "SHIELD",
-        category: "reviewer_decision"
+        event: "decided",
+        subject: "staffing_recommendation",
+        action: payload.action,
+        agent: "SHIELD",
+        note: payload.detail,
+        resourceRef: payload.resourceRef
       })
     });
   } catch {
@@ -73,7 +76,6 @@ export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hosp
               onClick={() => {
                 void logStaffingShield({
                   action: "accept",
-                  label: "SHIELD: hospital agency request logged (rehearsal)",
                   detail: t.message,
                   resourceRef: `${label} / ${t.ward}`
                 });
@@ -93,7 +95,6 @@ export function StaffingPanel({ data, hospitalName }: { data: HospitalData; hosp
                 dismissAgencyAlert(t.ward);
                 void logStaffingShield({
                   action: "reject",
-                  label: "SHIELD: hospital agency alert acknowledged without request",
                   detail: t.message,
                   resourceRef: `${label} / ${t.ward}`
                 });

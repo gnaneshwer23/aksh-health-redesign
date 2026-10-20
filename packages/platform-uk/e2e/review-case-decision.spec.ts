@@ -81,18 +81,25 @@ test.describe("Review case decisions on the server", () => {
   test("panel audit events: server identity and practice; cannot forge an agent, an action or another user's case", async ({ request, baseURL, playwright }) => {
     const owner = await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "audit-owner" });
     const mine = ((await (await request.post("/api/review-cases", { data: { action: "create", patientLabel: "Synthetic patient", rawInput: "Routine diabetes review.", sourceType: "note" } })).json()) as { reviewCase: ReviewCase }).reviewCase;
-    const ok = await request.post("/api/audit/shield", { data: { action: "accept", label: "Acknowledged GUARDIAN brief", agentLabel: "GUARDIAN", caseId: mine.id, category: "reviewer_decision" } });
+    const ok = await request.post("/api/audit/shield", { data: { event: "staged", subject: "interaction_alert", action: "accept", agent: "GUARDIAN", caseId: mine.id, note: "Checked allergy list" } });
     expect(ok.ok(), await ok.text()).toBeTruthy();
-    const row = ((await ok.json()) as { event: { actor: string; practiceId: string | null } }).event;
+    const row = ((await ok.json()) as { event: { actor: string; practiceId: string | null; label: string; detail: string } }).event;
     expect(row.actor).toBe(owner.email);
     expect(row.practiceId).toBeTruthy();
-    expect((await request.post("/api/audit/shield", { data: { action: "accept", label: "x", agentLabel: "SUPERVISOR_ROOT" } })).status()).toBe(400);
-    expect((await request.post("/api/audit/shield", { data: { action: "approve_prescription", label: "x" } })).status()).toBe(400);
+    expect(row.label).toBe("SHIELD: GUARDIAN medication interaction alert staged for clinician review");
+    expect(row.detail).toBe("Checked allergy list");
+    // Free-text wording is refused: the server writes it.
+    const free = await request.post("/api/audit/shield", { data: { label: "Dr X approved the prescription", event: "decided", subject: "draft", action: "accept" } });
+    expect(free.status()).toBe(400);
+    expect(((await free.json()) as { code: string }).code).toBe("LABEL_NOT_ACCEPTED");
+    expect((await request.post("/api/audit/shield", { data: { event: "decided", subject: "draft", action: "accept", agent: "SUPERVISOR_ROOT" } })).status()).toBe(400);
+    expect((await request.post("/api/audit/shield", { data: { event: "decided", subject: "draft", action: "approve_prescription" } })).status()).toBe(400);
+    expect((await request.post("/api/audit/shield", { data: { event: "deleted", subject: "draft", action: "accept" } })).status()).toBe(400);
 
     // Another user cannot write into this user's case.
     const other = await playwright.request.newContext({ baseURL });
     await createOnboardedTestUser(other, baseURL!, { role: "gp", label: "audit-other" });
-    const forged = await other.post("/api/audit/shield", { data: { action: "accept", label: "Forged decision", agentLabel: "CONDUCTOR", caseId: mine.id } });
+    const forged = await other.post("/api/audit/shield", { data: { event: "decided", subject: "draft", action: "accept", agent: "CONDUCTOR", caseId: mine.id } });
     expect(forged.status()).toBe(403);
     await other.dispose();
   });

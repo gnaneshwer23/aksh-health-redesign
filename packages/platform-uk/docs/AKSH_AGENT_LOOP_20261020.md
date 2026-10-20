@@ -84,6 +84,18 @@ clinical safety officer confirms them (`targetsConfirmedBy`); no agent is ever r
 
 Every agent also needs: clinical safety case and hazard log, DPIA and regulatory opinion, approved go-live.
 
+## Audit wording is server-written (21 Oct)
+
+Dashboard panels send a structured event (`event`, `subject`, `agent`, `action`, optional `note`); the server writes
+the wording from `lib/audit/panel-events.ts`, stamps account, practice and origin. Free-text labels are refused
+(`LABEL_NOT_ACCEPTED`). The dead browser "dual-write" of case events was removed: decisions are audited server-side in
+the same transaction.
+
+## Organisation targets (21 Oct)
+
+LDL watch level and HbA1c target are organisation settings from fixed options (`lib/rules/targets.ts`), linked to the
+registered rules `lipids.ldl_watch` and `hba1c.target`.
+
 ## Still open
 
 - VOICE live transcription needs a governed decision (on-premise speech recognition or a processor agreement).
