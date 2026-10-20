@@ -7,6 +7,7 @@ import type { PoolClient } from "pg";
 
 import { LAB_CATALOG, type LabKind } from "../labs/catalog";
 import { observationProvenance, type Provenance } from "../provenance";
+import { DEFAULT_TARGETS, orgTargets } from "../rules/targets";
 import { ageOn, deriveCareGaps, deriveRisk } from "./derive";
 import { withTenant, type NetworkContext } from "./db";
 
@@ -20,7 +21,8 @@ export const TYPE_LABEL: Record<string, string> = {
 };
 
 /** Population summaries only: HbA1c ≤ 53 mmol/mol (7.0%). Individual targets are a clinician's decision. */
-export const HBA1C_TARGET_MMOL = 53;
+/** Default HbA1c target; each organisation may choose another (lib/rules/targets.ts). */
+export const HBA1C_TARGET_MMOL = DEFAULT_TARGETS.hba1cTargetMmol;
 
 export const ROLE_LABEL: Record<string, string> = {
   gp: "Physician",
@@ -188,7 +190,8 @@ export async function networkSummary(ctx: NetworkContext, region?: string) {
     const pts = facts.filter((f) => inRegion(f.region));
     const rows = pts.map((f) => ({ f, d: derived(f) }));
     const withDiabetes = rows.filter((r) => r.f.diabetes_type !== "prediabetes" && r.d.last);
-    const atTarget = withDiabetes.filter((r) => r.d.last!.value <= HBA1C_TARGET_MMOL).length;
+    // Each patient is counted against their own organisation's HbA1c target (its choice, or the default).
+    const atTarget = withDiabetes.filter((r) => r.d.last!.value <= orgTargets(r.f.locale).hba1cTargetMmol).length;
     const cgm = pts.filter((f) => f.tir !== null);
     const regions = [...new Set(orgs.map((o) => o.region).filter(Boolean) as string[])].sort();
     return {

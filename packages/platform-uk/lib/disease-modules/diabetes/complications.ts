@@ -1,5 +1,6 @@
 import { LAB_CATALOG, type LabKind } from "../../labs/catalog";
 import { describeLab, monthsSince, type LabResult, type LabSnapshot } from "../../labs/snapshot";
+import { DEFAULT_TARGETS, type OrgTargets } from "../../rules/targets";
 import type { DiabetesPatientContext, DiabetesSignalHonesty } from "./types";
 import { DIABETES_SIGNAL_HONESTY } from "./types";
 
@@ -64,30 +65,30 @@ export type ComplicationSignal = {
 export const LAB_RULE_VERSION = "lab-rules-2026-10-20";
 export const LAB_MAX_AGE_MONTHS = 15;
 
-type LabRule = { ruleId: string; kind: LabKind; level: Exclude<ComplicationFlagLevel, "none">; test: (v: number) => boolean; text: string };
+type LabRule = { ruleId: string; kind: LabKind; level: Exclude<ComplicationFlagLevel, "none">; test: (v: number, t: OrgTargets) => boolean; text: (t: OrgTargets) => string };
 export const LAB_RULES: Partial<Record<DiabetesComplicationDomain, { kinds: LabKind[]; rules: LabRule[] }>> = {
   ckd: {
     kinds: ["egfr", "acr"],
     rules: [
-      { ruleId: "kidney.egfr_below_30", kind: "egfr", level: "referral_indicated", test: (v) => v < 30, text: "eGFR below 30" },
-      { ruleId: "kidney.acr_30_or_more", kind: "acr", level: "referral_indicated", test: (v) => v >= 30, text: "ACR 30 mg/mmol or more" },
-      { ruleId: "kidney.egfr_below_60", kind: "egfr", level: "watch", test: (v) => v < 60, text: "eGFR below 60" },
-      { ruleId: "kidney.acr_above_3", kind: "acr", level: "watch", test: (v) => v > 3, text: "ACR above 3 mg/mmol" },
+      { ruleId: "kidney.egfr_below_30", kind: "egfr", level: "referral_indicated", test: (v) => v < 30, text: () => "eGFR below 30" },
+      { ruleId: "kidney.acr_30_or_more", kind: "acr", level: "referral_indicated", test: (v) => v >= 30, text: () => "ACR 30 mg/mmol or more" },
+      { ruleId: "kidney.egfr_below_60", kind: "egfr", level: "watch", test: (v) => v < 60, text: () => "eGFR below 60" },
+      { ruleId: "kidney.acr_above_3", kind: "acr", level: "watch", test: (v) => v > 3, text: () => "ACR above 3 mg/mmol" },
     ],
   },
   cardiovascular: {
     kinds: ["ldl"],
-    rules: [{ ruleId: "lipids.ldl_2_6", kind: "ldl", level: "watch", test: (v) => v >= 2.6, text: "LDL 2.6 mmol/L or more" }],
+    rules: [{ ruleId: "lipids.ldl_watch", kind: "ldl", level: "watch", test: (v, t) => v >= t.ldlWatchMmol, text: (t) => `LDL ${t.ldlWatchMmol} mmol/L or more (${t.chosen.ldlWatchMmol ? "organisation target" : "default"})` }],
   },
   fatty_liver: {
     kinds: ["alt"],
-    rules: [{ ruleId: "liver.alt_above_40", kind: "alt", level: "watch", test: (v) => v > 40, text: "ALT above 40 U/L" }],
+    rules: [{ ruleId: "liver.alt_above_40", kind: "alt", level: "watch", test: (v) => v > 40, text: () => "ALT above 40 U/L" }],
   },
 };
 
 const RANK: Record<ComplicationFlagLevel, number> = { none: 0, watch: 1, referral_indicated: 2 };
 
-function labAssessment(domain: DiabetesComplicationDomain, labs: LabSnapshot | undefined, now: Date) {
+function labAssessment(domain: DiabetesComplicationDomain, labs: LabSnapshot | undefined, now: Date, targets: OrgTargets) {
   const def = LAB_RULES[domain];
   if (!def) return null;
   const usable = new Map<LabKind, LabResult>();
@@ -102,14 +103,14 @@ function labAssessment(domain: DiabetesComplicationDomain, labs: LabSnapshot | u
   const ruleIds: string[] = [];
   for (const rule of def.rules) {
     const r = usable.get(rule.kind);
-    if (r && rule.test(r.value)) {
+    if (r && rule.test(r.value, targets)) {
       ruleIds.push(rule.ruleId);
       if (RANK[rule.level] > RANK[level]) level = rule.level;
     }
   }
   for (const [k, r] of usable) {
-    const hit = def.rules.find((x) => x.kind === k && x.test(r.value));
-    refs.push(describeLab(LAB_CATALOG[k].label, r) + (hit ? ` — ${hit.text}` : ""));
+    const hit = def.rules.find((x) => x.kind === k && x.test(r.value, targets));
+    refs.push(describeLab(LAB_CATALOG[k].label, r) + (hit ? ` — ${hit.text(targets)}` : ""));
   }
   return { level, refs, missing, used: usable.size, ruleIds };
 }
@@ -125,11 +126,12 @@ export function buildComplicationSignal(
   domain: DiabetesComplicationDomain,
   evidenceRefs: string[] = [],
   labs?: LabSnapshot,
-  now: Date = new Date()
+  now: Date = new Date(),
+  targets: OrgTargets = DEFAULT_TARGETS
 ): ComplicationSignal {
   const patientLabel = context.patientLabel?.trim() || context.patientId;
   const fromEvidence = deriveFlagLevel(evidenceRefs.length);
-  const lab = labAssessment(domain, labs, now);
+  const lab = labAssessment(domain, labs, now, targets);
   const fromLabs = lab?.level ?? "none";
   const flagLevel = RANK[fromLabs] >= RANK[fromEvidence] ? fromLabs : fromEvidence;
   const basis = lab && lab.used > 0 && RANK[fromLabs] >= RANK[fromEvidence] ? "laboratory" : evidenceRefs.length ? "evidence_count" : "none";
@@ -149,7 +151,7 @@ export function buildComplicationSignal(
     referralGate: "referral_pathway",
     limitations: [
       lab
-        ? `Laboratory rule ${LAB_RULE_VERSION} (${LAB_RULES[domain]!.rules.map((r) => r.text).join("; ")}): flags for clinician review; thresholds not yet signed off by a clinical lead.`
+        ? `Laboratory rule ${LAB_RULE_VERSION} (${LAB_RULES[domain]!.rules.map((r) => r.text(targets)).join("; ")}): flags for clinician review; thresholds not yet signed off by a clinical lead.`
         : "No laboratory rule for this domain: evidence-count heuristic (0 refs=none, 1=watch, ≥2=referral_indicated), a conservative placeholder.",
       ...(lab?.missing.length ? [`Missing or out of date (over ${LAB_MAX_AGE_MONTHS} months): ${lab.missing.join("; ")}. Not assumed normal.`] : []),
       "Per-domain referral-trigger thresholds pending clinical lead sign-off (spec §\"Open questions\" #4).",

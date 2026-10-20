@@ -7,6 +7,8 @@
  * them off as part of go-live. "operational" rules involve no clinical judgement (data quality, ordering, workflow).
  * Each organisation records which guideline it follows (organisation settings: guideline name and version).
  */
+import type { TargetKey } from "./targets";
+
 export type RuleSignOff = "pending_clinical_lead" | "operational";
 
 export type ClinicalRule = {
@@ -21,6 +23,8 @@ export type ClinicalRule = {
   signOff: RuleSignOff;
   /** File and an exact text fragment that must appear in it. */
   codeRef: { file: string; contains: string };
+  /** When the threshold is an organisation target (lib/rules/targets.ts): the setting that holds it. */
+  parameter?: TargetKey;
   usedBy: string[];
 };
 
@@ -35,10 +39,10 @@ export const RULES: ClinicalRule[] = [
   { id: "kidney.acr_30_or_more", version: "lab-rules-2026-10-20", area: "kidney", statement: "Urine ACR 30 mg/mmol or more → referral indicated (clinician confirms)", source: KDIGO, sourceDetail: "Albuminuria category A3", effectiveFrom: "2026-10-20", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/complications.ts", contains: "test: (v) => v >= 30" }, usedBy: ["Aksh Diabetes complications", "PATHWAY"] },
   { id: "labs.max_age_15_months", version: "lab-rules-2026-10-20", area: "data_quality", statement: "Results older than 15 months are not used and are shown as missing", source: "Aksh heuristic", sourceDetail: "Annual diabetes review plus a 3-month margin", effectiveFrom: "2026-10-20", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/complications.ts", contains: "LAB_MAX_AGE_MONTHS = 15" }, usedBy: ["Aksh Diabetes complications"] },
   // Lipids and liver
-  { id: "lipids.ldl_2_6", version: "lab-rules-2026-10-20", area: "lipids", statement: "LDL 2.6 mmol/L or more → cardiovascular watch (never a referral on its own)", source: "Aksh heuristic", sourceDetail: "2.6 mmol/L (100 mg/dL) is a widely used upper goal; current diabetes and cardiology guidance sets lower goals (for example 1.8 or 1.4 mmol/L) by cardiovascular risk, so each organisation should set its own", effectiveFrom: "2026-10-20", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/complications.ts", contains: "test: (v) => v >= 2.6" }, usedBy: ["Aksh Diabetes complications"] },
+  { id: "lipids.ldl_watch", version: "lab-rules-2026-10-20", area: "lipids", statement: "LDL at or above the organisation's watch level raises a cardiovascular watch (never a referral on its own); default 2.6 mmol/L, options 1.4 / 1.8 / 2.6 / 3.0", source: "Organisation's chosen guideline", sourceDetail: "Default 2.6 mmol/L (100 mg/dL) is a widely used upper goal; current diabetes and cardiology guidance sets lower goals by cardiovascular risk, so each organisation chooses", effectiveFrom: "2026-10-21", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/complications.ts", contains: "test: (v, t) => v >= t.ldlWatchMmol" }, usedBy: ["Aksh Diabetes complications"], parameter: "ldlWatchMmol" },
   { id: "liver.alt_above_40", version: "lab-rules-2026-10-20", area: "liver", statement: "ALT above 40 U/L → liver watch (never a referral on its own)", source: "Aksh heuristic", sourceDetail: "Common laboratory upper reference limit; sex-specific limits not yet applied", effectiveFrom: "2026-10-20", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/complications.ts", contains: "test: (v) => v > 40" }, usedBy: ["Aksh Diabetes complications"] },
   // Glycaemia
-  { id: "hba1c.target_53", version: "network-v1", area: "glycaemia", statement: "HbA1c at or below 53 mmol/mol (7%) counts as at target in summaries", source: "ADA Standards of Care in Diabetes 2025, section 6", sourceDetail: "A1C goal below 7% for many non-pregnant adults; individualised", effectiveFrom: "2026-10-01", signOff: "pending_clinical_lead", codeRef: { file: "lib/network/read.ts", contains: "HBA1C_TARGET_MMOL = 53" }, usedBy: ["Care network summary"] },
+  { id: "hba1c.target", version: "network-v2", area: "glycaemia", statement: "HbA1c at or below the organisation's target counts as at target in summaries; default 53 mmol/mol (7%), options 48 / 53 / 58 / 64", source: "Organisation's chosen guideline", sourceDetail: "Default follows the common A1C goal below 7% for many non-pregnant adults (ADA Standards of Care); goals are individualised", effectiveFrom: "2026-10-21", signOff: "pending_clinical_lead", codeRef: { file: "lib/network/read.ts", contains: "orgTargets(r.f.locale).hba1cTargetMmol" }, usedBy: ["Care network summary"], parameter: "hba1cTargetMmol" },
   { id: "hba1c.stable_band_2", version: "hba1c-engine-mmol-2026-10-20", area: "glycaemia", statement: "A change under 2 mmol/mol between the two latest results is 'stable'", source: "Aksh heuristic", sourceDetail: "About 0.2 percentage points", effectiveFrom: "2026-10-20", signOff: "pending_clinical_lead", codeRef: { file: "lib/disease-modules/diabetes/hba1c.ts", contains: "STABLE_BAND_MMOL = 2" }, usedBy: ["Aksh Diabetes HbA1c trend", "HORIZON factors"] },
   // CGM
   { id: "cgm.tir_70", version: "cgm-consensus-2019", area: "cgm", statement: "Time in range under 70% is flagged", source: CONSENSUS, sourceDetail: "General adult target TIR > 70%", effectiveFrom: "2026-10-01", signOff: "pending_clinical_lead", codeRef: { file: "lib/cgm/metrics.ts", contains: "if (m.inRange < 70)" }, usedBy: ["CGM monitoring worklist"] },

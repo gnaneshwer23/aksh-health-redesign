@@ -39,6 +39,8 @@ const localeSchema = z
     crisisLine: z.string().max(64).optional(),
     guidelineName: z.string().max(120).optional(),
     guidelineVersion: z.string().max(40).optional(),
+    ldlWatchMmol: z.enum(["1.4", "1.8", "2.6", "3.0"]).optional(),
+    hba1cTargetMmol: z.enum(["48", "53", "58", "64"]).optional(),
   })
   .strict();
 

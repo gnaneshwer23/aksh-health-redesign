@@ -1,5 +1,6 @@
 "use client";
 
+import { ORG_TARGETS } from "@/lib/rules/targets";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -189,6 +190,8 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
     crisisLine: org.locale.crisisLine ?? "",
     guidelineName: org.locale.guidelineName ?? "",
     guidelineVersion: org.locale.guidelineVersion ?? "",
+    ldlWatchMmol: org.locale.ldlWatchMmol ?? "",
+    hba1cTargetMmol: org.locale.hba1cTargetMmol ?? "",
   });
   const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -237,6 +240,18 @@ function SettingsTab({ org, onSaved }: { org: Org; onSaved: (m: string) => void 
             </datalist>
           </label>
           <label className="text-sm"><span className="text-muted">Guideline version or year</span><Input value={form.guidelineVersion} onChange={set("guidelineVersion")} aria-label="Guideline version" placeholder="e.g. 2026" /></label>
+          {(["hba1cTargetMmol", "ldlWatchMmol"] as const).map((k) => (
+            <label key={k} className="text-sm" data-target={k}>
+              <span className="text-muted">{ORG_TARGETS[k].label} ({ORG_TARGETS[k].unit})</span>
+              <select className="mt-1 h-9 w-full rounded-md border border-border bg-card px-2 text-sm" value={form[k]} onChange={set(k)} aria-label={ORG_TARGETS[k].label}>
+                <option value="">Default ({ORG_TARGETS[k].defaultValue})</option>
+                {ORG_TARGETS[k].options.map((o) => <option key={o.value} value={o.value}>{o.value}: {o.note}</option>)}
+              </select>
+            </label>
+          ))}
+          <p className="text-xs text-muted sm:col-span-2">
+            Targets set which results raise a flag for review. Choose the values your clinical guideline uses; your clinical lead signs them off before go-live.
+          </p>
           <p className="text-xs text-muted sm:col-span-2">
             These numbers appear in safety messages to your patients. Until an emergency number is set, messages say “your local emergency number”.
             Organisation ID (for other organisations recording shared care): <span className="font-mono">{org.id}</span>

@@ -48,12 +48,17 @@ export const updateOrganisationSchema = z.object({
       /** The clinical guideline this organisation follows, by name and version (any country). Cited by rules. */
       guidelineName: z.string().trim().max(120).optional().or(z.literal("")),
       guidelineVersion: z.string().trim().max(40).optional().or(z.literal("")),
+      /** Clinical targets for registered rules, from fixed options (lib/rules/targets.ts). "" returns to the default. */
+      ldlWatchMmol: z.enum(["1.4", "1.8", "2.6", "3.0"]).optional().or(z.literal("")),
+      hba1cTargetMmol: z.enum(["48", "53", "58", "64"]).optional().or(z.literal("")),
     })
     .optional(),
 });
 
 /** Name, region and locale. The locale drives units and the emergency wording Asha uses for this organisation. */
-export async function updateOrganisation(ctx: NetworkContext, orgId: string, input: z.infer<typeof updateOrganisationSchema>) {
+export async function updateOrganisation(ctx: NetworkContext, orgId: string, raw: z.input<typeof updateOrganisationSchema>) {
+  // Validated here as well as in the route, so no caller can store a target outside the fixed options.
+  const input = updateOrganisationSchema.parse(raw);
   requireAdmin(ctx, orgId);
   return withTenant(ctx, async (client) => {
     const current = (await client.query<{ locale: Record<string, string> }>(`SELECT locale FROM aksh.organisations WHERE id = $1`, [orgId])).rows[0];

@@ -72,7 +72,8 @@ async function db() {
   const nurseId = await mk("nurse");
   const org = await createOrganisation({ userId: nurseId, email: `sp-${tag}@akshhealth.test`, displayName: "Nurse", role: "nurse" }, { name: `Spine Clinic ${tag}`, kind: "diabetes_centre" });
   let nurse = await loadNetworkContext(nurseId, "nurse");
-  await updateOrganisation(nurse, org.id, { locale: { timezone: "UTC" } });
+  await updateOrganisation(nurse, org.id, { locale: { timezone: "UTC", ldlWatchMmol: "1.8" } });
+  await assert.rejects(updateOrganisation(nurse, org.id, { locale: { ldlWatchMmol: "2.2" } } as never), "only the fixed target options are accepted");
   nurse = await loadNetworkContext(nurseId, "nurse");
   const day = (d: number) => new Date(Date.now() - d * 86_400_000).toISOString().slice(0, 10);
   const [pt] = (await importPatients(nurse, org.id, { patients: [{
@@ -90,6 +91,8 @@ async function db() {
 
   const spine = await loadSpinePatient(nurse, pt!.id);
   assert.equal(spine.patient.name, "Asha Spine");
+  assert.equal(spine.careNetwork.targets?.ldlWatchMmol, 1.8, "the organisation's chosen LDL target reaches the agents");
+  assert.equal(spine.careNetwork.targets?.chosen.hba1cTargetMmol, false);
   assert.deepEqual(spine.patient.clinicalProfiles, ["t2d"]);
   assert.ok(spine.patient.activeMedications.includes("Metformin 1 g twice daily"));
   assert.equal(spine.patient.vitals?.bloodPressure, "142/86");
