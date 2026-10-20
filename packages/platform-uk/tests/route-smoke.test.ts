@@ -423,8 +423,8 @@ async function run() {
   await assertFileIncludes("components/onboarding/TutorialPlayer.tsx", 'aria-label="Skip tutorial"');
   await assertFileIncludes("app/security/page.tsx", "Row-level security");
   // The public site is the real product: no demo hero, no sandbox offer.
-  // Headline is split for the gradient accent: "Clinical intelligence, <span>under clinical control.</span>".
-  await assertFileIncludes("app/page.tsx", "Clinical intelligence, <span className=\"s-grad\">under clinical control.</span>");
+  // Headline is split for the gradient accent: "Diabetes reviews, <span>better coordinated.</span>".
+  await assertFileIncludes("app/page.tsx", "Diabetes reviews, <span className=\"s-grad\">better coordinated.</span>");
   await assertFileExcludes("app/page.tsx", "Start free");
   await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
@@ -485,7 +485,8 @@ async function run() {
   await assertFileIncludes("lib/human-gates.ts", "medication_decision");
   await assertFileIncludes("components/review/case-detail.tsx", "Reviewer Human Gates");
   await assertFileIncludes("components/review/case-detail/useCaseReviewWorkflow.ts", "updateHumanGateDecision");
-  await assertFileIncludes("components/review/case-detail/useCaseReviewWorkflow.ts", "humanGateBlockers");
+  // Required human gates block acceptance on the server (P0 remainder, 20 Oct 2026).
+  await assertFileIncludes("lib/workflow/decide-review-case.ts", "still requires an explicit reviewer decision");
   await assertFileIncludes("components/review/human-gate-summary.tsx", 'data-testid="human-gate-summary"');
   await assertFileIncludes("components/review/human-gate-summary.tsx", "human-gate-${gate.id}");
   await assertFileIncludes("components/review/human-gate-summary.tsx", "human-gate-${gate.id}-confirm");

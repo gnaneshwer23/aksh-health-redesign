@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { isLlmEquityConfigured, runEquityAgent } from "@/lib/agents/llm-equity";
+import { summariseLoopOutcomes } from "@/lib/clinical-spine/loop-outcomes";
+import { resolveTenantContext } from "@/lib/db/tenant-context";
+import { listAgentRunCases } from "@/lib/repositories/loop-outcomes-repository";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -28,6 +31,11 @@ export async function POST(request: Request) {
   }
 
   const draft = await runEquityAgent({ focusCategory: body.focusCategory });
+  // The organisation's own agent-loop results (aggregates only, small counts suppressed): what was drafted and what
+  // clinicians did with it. Deterministic; never sent to a model.
+  const tenant = resolveTenantContext(request, auth.context);
+  const loop = await listAgentRunCases(tenant.practiceId);
+  const loopOutcomes = { source: loop.source, ...summariseLoopOutcomes(loop.cases) };
 
   const shield = await persistShieldAuditEvent({
     action: "defer",
@@ -43,12 +51,14 @@ export async function POST(request: Request) {
       dataSource: draft.dataSource,
       equityFlags: draft.equityFlags,
       priorities: draft.priorities,
-      safetyNotes: draft.safetyNotes
+      safetyNotes: draft.safetyNotes,
+      loopRuns: loopOutcomes.runs
     }
   });
 
   return NextResponse.json({
     draft,
+    loopOutcomes,
     hitlRequired: true,
     ehrWrite: false,
     shieldLogged: shield.persisted

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toaster";
 import type { EquityDraft } from "@/lib/agents/llm-equity";
+import type { LoopOutcomes } from "@/lib/clinical-spine/loop-outcomes";
 import { POPULATION_SUPPRESSION_DISCLOSURE, suppressSmallCell } from "@/lib/precision-health/population-suppression";
 
 import { useIcsData } from "./IcsDataContext";
@@ -17,6 +18,7 @@ export function EquityDeepDive() {
   const { data, loading, liveData, source } = useIcsData();
   const { status } = useSession();
   const [draft, setDraft] = useState<EquityDraft | null>(null);
+  const [loop, setLoop] = useState<(LoopOutcomes & { source: string }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [planLogged, setPlanLogged] = useState(false);
 
@@ -40,8 +42,9 @@ export function EquityDeepDive() {
         toast({ title: "COMPASS unavailable", description: "Could not generate an equity action brief." });
         return;
       }
-      const payload = (await response.json()) as { draft: EquityDraft; shieldLogged?: boolean };
+      const payload = (await response.json()) as { draft: EquityDraft; shieldLogged?: boolean; loopOutcomes?: LoopOutcomes & { source: string } };
       setDraft(payload.draft);
+      setLoop(payload.loopOutcomes ?? null);
       setPlanLogged(true);
       toast({
         title: "COMPASS draft ready",
@@ -123,6 +126,32 @@ export function EquityDeepDive() {
                   ))}
                 </ul>
                 <p className="text-[11px] text-muted">{draft.safetyNotes[0]}</p>
+              </div>
+            ) : null}
+            {loop ? (
+              <div className="mt-3 space-y-2 rounded-lg border border-border p-3 text-xs" data-loop-outcomes>
+                <p className="font-medium text-foreground">Agent loop in your organisation</p>
+                <p className="text-muted">
+                  {loop.runs} agent reviews · {loop.casesAccepted} accepted · priority urgent {loop.priority.Urgent}, high {loop.priority.High}, normal {loop.priority.Normal}
+                </p>
+                {loop.agents.length ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow><TableHead>Agent</TableHead><TableHead>Drafts</TableHead><TableHead>Accepted</TableHead><TableHead>Edited</TableHead><TableHead>Rejected</TableHead><TableHead>Rejection rate</TableHead></TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loop.agents.map((a) => (
+                        <TableRow key={a.agent}>
+                          <TableCell>{a.agent}</TableCell><TableCell>{a.drafts}</TableCell><TableCell>{a.accepted}</TableCell><TableCell>{a.edited}</TableCell><TableCell>{a.rejected}</TableCell>
+                          <TableCell>{a.rejectionRate === null ? "too few" : `${Math.round(a.rejectionRate * 100)}%`}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : <p className="text-muted">No agent reviews yet.</p>}
+                {loop.referrals.length ? <p className="text-muted">Referrals: {loop.referrals.map((r) => `${r.domain.replace(/_/g, " ")} held ${r.held}, drafted ${r.drafted}, confirmed ${r.confirmed}`).join(" · ")}</p> : null}
+                {loop.missingLabs.length ? <p className="text-muted">Most often missing: {loop.missingLabs.slice(0, 4).map((m) => `${m.lab} (${m.runs})`).join(" · ")}</p> : null}
+                <p className="text-[11px] text-muted">{loop.suppression}</p>
               </div>
             ) : null}
           </>
