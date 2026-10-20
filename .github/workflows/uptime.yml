@@ -1,4 +1,4 @@
-name: Production uptime
+name: Uptime (production and proof)
 
 # Every 15 minutes: the public site, sign-in and the database are up, and the production guardrails hold (synthetic and
 # agent APIs closed). A failed run emails the repository owner (GitHub notifications for failed scheduled workflows).
@@ -27,7 +27,8 @@ jobs:
           done
           health=$(curl -s --max-time 20 -w ' %{http_code}' "$BASE/api/health")
           echo "health: $health"
-          case "$health" in *'"status":"ok"'*' 200') ;; *) fail=1 ;; esac
+          # Production answers {"status":"ok"} and nothing else; detail means it is not running in production mode.
+          [ "$health" = '{"status":"ok"} 200' ] || fail=1
           exit $fail
       - name: Production guardrails
         run: |
@@ -37,4 +38,24 @@ jobs:
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST "$BASE$p")
             echo "$code POST $p"; [ "$code" = "403" ] || fail=1
           done
+          exit $fail
+
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PROOF: https://aksh-clinical-proof.vercel.app
+    steps:
+      - name: Proof site up, synthetic only, not indexed
+        run: |
+          set -u
+          fail=0
+          code=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "$PROOF/")
+          echo "/ -> $code"; [ "$code" = "307 $PROOF/proof" ] || fail=1
+          for p in /proof /signin; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$PROOF$p")
+            echo "$code $p"; [ "$code" = "200" ] || fail=1
+          done
+          curl -s -I --max-time 20 "$PROOF/proof" | grep -qi '^x-robots-tag: noindex' || { echo "missing noindex"; fail=1; }
+          curl -s --max-time 20 "$PROOF/proof" | grep -q 'Synthetic data only' || { echo "missing synthetic banner"; fail=1; }
           exit $fail

@@ -87,6 +87,21 @@ export default function ProofPage() {
           </ul>
         </div>
       </section>
+
+      <section className="s-section">
+        <div className="s-container">
+          <div className="s-cta" data-proof-to-production>
+            <div>
+              <h2 className="s-h2">Ready to use Aksh with your own team?</h2>
+              <p>Pilots run in the production product at akshhealth.com, starting with the workflows that are available now.</p>
+            </div>
+            <div className="s-actions">
+              <a href="https://www.akshhealth.com/get-started" className="s-btn s-btn--primary">Request a pilot</a>
+              <a href="https://www.akshhealth.com/product" className="s-btn s-btn--ghost">What’s available now</a>
+            </div>
+          </div>
+        </div>
+      </section>
     </SiteShell>
   );
 }
