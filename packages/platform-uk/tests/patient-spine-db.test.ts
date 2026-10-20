@@ -87,7 +87,7 @@ async function db() {
   assert.deepEqual(spine.patient.clinicalProfiles, ["t2d"]);
   assert.ok(spine.patient.activeMedications.includes("Metformin 1 g twice daily"));
   assert.equal(spine.patient.vitals?.bloodPressure, "142/86");
-  assert.deepEqual(spine.careNetwork.hba1cReadings.map((r) => r.valuePercent), [7.5, 8.0], "unverified patient-reported HbA1c is not counted");
+  assert.deepEqual(spine.careNetwork.hba1cReadings.map((r) => r.valueMmolMol), [58, 64], "unverified patient-reported HbA1c is not counted");
   assert.equal(spine.provenance.glucoseSource, "care_network_cgm");
   assert.ok(spine.provenance.cgmReadings > 3000);
   assert.ok(spine.careNetwork.glucoseReadings.every((r) => r.glucoseMgDl >= 55 && r.glucoseMgDl <= 200), "mmol/L converted to mg/dL");

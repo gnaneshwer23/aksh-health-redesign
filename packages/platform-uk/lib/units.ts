@@ -10,6 +10,8 @@ export const MG_PER_MMOL = 18.0182;
 
 /** IFCC mmol/mol → NGSP/DCCT %. */
 export const hba1cPercentFrom = (mmolMol: number) => Math.round((mmolMol / 10.929 + 2.15) * 10) / 10;
+/** DCCT % → IFCC mmol/mol (IFCC-NGSP master equation). */
+export const hba1cMmolFromPercent = (percent: number) => Math.round((percent - 2.15) * 10.929);
 
 export function formatGlucose(mmol: number, unit: GlucoseUnit | string | null | undefined = "mmol/L"): string {
   return unit === "mg/dL" ? `${Math.round(mmol * MG_PER_MMOL)} mg/dL` : `${(Math.round(mmol * 10) / 10).toFixed(1)} mmol/L`;

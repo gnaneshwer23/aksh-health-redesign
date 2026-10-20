@@ -5,6 +5,7 @@
  */
 import type { PoolClient } from "pg";
 
+import { LAB_CATALOG, type LabKind } from "../labs/catalog";
 import { ageOn, deriveCareGaps, deriveRisk } from "./derive";
 import { withTenant, type NetworkContext } from "./db";
 
@@ -70,6 +71,47 @@ type FactRow = {
  * (device data from staff imports and device feeds is verified on entry; a patient's own export is not). Unverified patient readings are shown separately (review list), never folded into risk or care gaps.
  */
 // Corrected lab results (041) keep the original row; a row that has been replaced no longer counts.
+/** Laboratory results shown in the patient record; HbA1c has its own trend above the table. */
+const LAB_TABLE_KINDS: LabKind[] = ["egfr", "acr", "creatinine", "ldl", "total_cholesterol", "hdl", "triglycerides", "alt", "glucose"];
+/** Shown as "not on record" when absent: the checks every diabetes review needs. */
+const EXPECTED_LABS: LabKind[] = ["egfr", "acr", "ldl"];
+
+export type LabRow = {
+  kind: LabKind;
+  label: string;
+  unit: string;
+  latest: { value: number; observedAt: string; channel: string | null; code: string | null; corrected: boolean; asSent: string | null } | null;
+  history: { value: number; observedAt: string }[];
+  change: number | null;
+};
+
+function labTable(rows: { kind: LabKind; value: number; observed_at: Date; channel: string | null; code: string | null; corrected: boolean; original_value: number | null; original_unit: string | null }[]): LabRow[] {
+  const kinds = LAB_TABLE_KINDS.filter((k) => EXPECTED_LABS.includes(k) || rows.some((r) => r.kind === k));
+  return kinds.map((kind) => {
+    const series = rows.filter((r) => r.kind === kind);
+    const last = series.at(-1);
+    const prev = series.at(-2);
+    const d = LAB_CATALOG[kind];
+    return {
+      kind,
+      label: d.label,
+      unit: d.displayUnit,
+      latest: last
+        ? {
+            value: last.value,
+            observedAt: last.observed_at.toISOString().slice(0, 10),
+            channel: last.channel,
+            code: last.code,
+            corrected: last.corrected,
+            asSent: last.original_value !== null && last.original_unit && last.original_unit.toLowerCase() !== d.unit.toLowerCase() ? `${last.original_value} ${last.original_unit}` : null,
+          }
+        : null,
+      history: series.slice(-6).map((r) => ({ value: r.value, observedAt: r.observed_at.toISOString().slice(0, 10) })),
+      change: last && prev ? Math.round((last.value - prev.value) * 100) / 100 : null,
+    };
+  });
+}
+
 const COUNTS = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified) AND NOT EXISTS (SELECT 1 FROM aksh.network_observations c WHERE c.replaces_id = x.id)`;
 const latestOf = (kind: string) =>
   `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC, recorded_at DESC LIMIT 1)`;
@@ -240,6 +282,15 @@ export async function getPatientDetail(ctx: NetworkContext, id: string) {
        LEFT JOIN aksh.memberships m ON m.id = ct.membership_id WHERE ct.patient_id = $1 AND ct.ended_at IS NULL ORDER BY ct.added_at`,
       [id]
     );
+    // Laboratory results: trusted, corrections applied, newest last per kind (lib/labs/catalog.ts).
+    const labRows = (await client.query<{ kind: LabKind; value: number; observed_at: Date; channel: string | null; code: string | null; corrected: boolean; original_value: number | null; original_unit: string | null }>(
+      `SELECT x.kind, x.value::float AS value, x.observed_at, x.channel, x.code, (x.replaces_id IS NOT NULL) AS corrected,
+              x.original_value::float AS original_value, x.original_unit
+         FROM aksh.network_observations x
+        WHERE x.patient_id = $1 AND x.kind = ANY($2) AND (x.kind <> 'glucose' OR x.source = 'lab') AND ${COUNTS}
+        ORDER BY x.observed_at, x.recorded_at`,
+      [id, LAB_TABLE_KINDS]
+    )).rows;
     const consents = await client.query<{ grantee_organisation_id: string; purpose: string; status: string; recorded_at: string }>(
       `SELECT DISTINCT ON (grantee_organisation_id, purpose) grantee_organisation_id, purpose, status, recorded_at::text
        FROM aksh.consent_records WHERE patient_id = $1 ORDER BY grantee_organisation_id, purpose, recorded_at DESC`,
@@ -262,6 +313,7 @@ export async function getPatientDetail(ctx: NetworkContext, id: string) {
       openCareGaps: d.gaps,
       vitals: { systolic: f.sbp, diastolic: f.dbp, bmi: f.bmi, egfr: f.egfr, acr: f.acr, ldl: f.ldl, hypos90d: f.hypos90, footRisk: f.foot_risk },
       cgm: f.tir !== null ? { timeInRangePct: f.tir, timeBelowRangePct: f.tbr } : null,
+      labs: labTable(labRows),
       conditions: f.conditions ?? [],
       medications: meds.rows.map((m) => ({ name: m.name, class: m.drug_class, dose: m.dose, since: m.started_on })),
       careTeam: team.rows.map((t) => ({

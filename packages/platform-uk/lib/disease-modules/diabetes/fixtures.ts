@@ -1,3 +1,4 @@
+import type { LabSnapshot } from "../../labs/snapshot";
 import type {
   DiabetesGlucoseReading,
   DiabetesHbA1cReading,
@@ -51,8 +52,8 @@ export const DIABETES_DEMO_GLUCOSE_READINGS: DiabetesGlucoseReading[] = [
 ];
 
 export const DIABETES_DEMO_HBA1C_READINGS: DiabetesHbA1cReading[] = [
-  { recordedAt: "2026-04-01T00:00:00.000Z", valuePercent: 7.8 },
-  { recordedAt: "2026-07-01T00:00:00.000Z", valuePercent: 7.5 }
+  { recordedAt: "2026-04-01T00:00:00.000Z", valueMmolMol: 62 },
+  { recordedAt: "2026-07-01T00:00:00.000Z", valueMmolMol: 58 }
 ];
 
 export const DIABETES_DEMO_INSULIN_REGIMEN: InsulinRegimenSummary = {
@@ -68,6 +69,8 @@ export type DiabetesFixtureBundle = {
   insulinRegimen?: InsulinRegimenSummary;
   glp1SideEffects: string[];
   complicationEvidence: Partial<Record<DiabetesComplicationDomain, string[]>>;
+  /** Latest trusted laboratory results (care-network patients); fixtures have none. */
+  labs?: LabSnapshot;
 };
 
 export const EMPTY_DIABETES_FIXTURE_BUNDLE: DiabetesFixtureBundle = {
@@ -95,12 +98,12 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
       { recordedAt: "2026-06-01T13:00:00.000Z", glucoseMgDl: 201, context: "post_prandial" }
     ],
     hba1cReadings: [
-      { recordedAt: "2025-07-10T00:00:00.000Z", valuePercent: 6.8 },
-      { recordedAt: "2025-10-10T00:00:00.000Z", valuePercent: 7.1 },
-      { recordedAt: "2026-01-10T00:00:00.000Z", valuePercent: 7.6 },
-      { recordedAt: "2026-04-10T00:00:00.000Z", valuePercent: 8.0 },
-      { recordedAt: "2026-06-10T00:00:00.000Z", valuePercent: 8.2 },
-      { recordedAt: "2026-07-10T00:00:00.000Z", valuePercent: 8.4 }
+      { recordedAt: "2025-07-10T00:00:00.000Z", valueMmolMol: 51 },
+      { recordedAt: "2025-10-10T00:00:00.000Z", valueMmolMol: 54 },
+      { recordedAt: "2026-01-10T00:00:00.000Z", valueMmolMol: 60 },
+      { recordedAt: "2026-04-10T00:00:00.000Z", valueMmolMol: 64 },
+      { recordedAt: "2026-06-10T00:00:00.000Z", valueMmolMol: 66 },
+      { recordedAt: "2026-07-10T00:00:00.000Z", valueMmolMol: 68 }
     ],
     insulinRegimen: {
       medications: ["No insulin — Metformin 1g BD only"],
@@ -117,8 +120,8 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
       { recordedAt: "2026-04-15T13:00:00.000Z", glucoseMgDl: 142, context: "post_prandial" }
     ],
     hba1cReadings: [
-      { recordedAt: "2025-11-01T00:00:00.000Z", valuePercent: 7.0 },
-      { recordedAt: "2026-05-01T00:00:00.000Z", valuePercent: 6.6 }
+      { recordedAt: "2025-11-01T00:00:00.000Z", valueMmolMol: 53 },
+      { recordedAt: "2026-05-01T00:00:00.000Z", valueMmolMol: 49 }
     ],
     insulinRegimen: {
       medications: ["No insulin — Metformin 500mg BD only"],
@@ -130,8 +133,8 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
   P017: {
     glucoseReadings: [],
     hba1cReadings: [
-      { recordedAt: "2026-01-08T00:00:00.000Z", valuePercent: 7.2 },
-      { recordedAt: "2026-07-08T00:00:00.000Z", valuePercent: 7.3 }
+      { recordedAt: "2026-01-08T00:00:00.000Z", valueMmolMol: 55 },
+      { recordedAt: "2026-07-08T00:00:00.000Z", valueMmolMol: 56 }
     ],
     insulinRegimen: {
       medications: ["No insulin recorded — Metformin/Ramipril per EHR; EHR export conflicting"],
@@ -148,8 +151,8 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
       { recordedAt: "2026-07-05T07:00:00.000Z", glucoseMgDl: 205, context: "fasting" }
     ],
     hba1cReadings: [
-      { recordedAt: "2026-01-05T00:00:00.000Z", valuePercent: 8.0 },
-      { recordedAt: "2026-07-05T00:00:00.000Z", valuePercent: 8.9 }
+      { recordedAt: "2026-01-05T00:00:00.000Z", valueMmolMol: 64 },
+      { recordedAt: "2026-07-05T00:00:00.000Z", valueMmolMol: 74 }
     ],
     insulinRegimen: {
       medications: ["No insulin — Metformin 850mg BD; steroid-dependent COPD may affect glycaemic control"],
@@ -163,7 +166,7 @@ const DIABETES_COHORT_FIXTURES: Record<string, DiabetesFixtureBundle> = {
   },
   P026: {
     glucoseReadings: [],
-    hba1cReadings: [{ recordedAt: "2026-06-01T00:00:00.000Z", valuePercent: 7.6 }],
+    hba1cReadings: [{ recordedAt: "2026-06-01T00:00:00.000Z", valueMmolMol: 60 }],
     insulinRegimen: {
       medications: ["Insulin glargine (basal)", "Insulin aspart (mealtime)"],
       reportedHypoEventCount: 2

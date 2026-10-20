@@ -1,6 +1,7 @@
 import type { DiabetesHbA1cReading, DiabetesPatientContext, DiabetesSignalHonesty } from "./types";
 import { DIABETES_SIGNAL_HONESTY } from "./types";
 import { isRealReadingsSource, type DiabetesReadingsSource } from "./glucose";
+import { hba1cPercentFrom } from "../../units";
 
 /**
  * HbA1c Intelligence (diabetes spec area #2).
@@ -36,10 +37,11 @@ export type HbA1cSignal = {
   feedsInto: "HORIZON";
   patientId: string;
   patientLabel: string;
-  latestValuePercent: number | null;
+  /** IFCC mmol/mol. */
+  latestValueMmolMol: number | null;
   trend: HbA1cTrend;
   /** Non-diagnostic trend estimate only. Never presented as a diagnosis or clinical prediction. */
-  predictedNext3MonthsPercent: number | null;
+  predictedNext3MonthsMmolMol: number | null;
   isDiagnosticPrediction: false;
   /** C6 (P1-2): where `readings` came from — never silently blended without this tag. */
   readingsSource: DiabetesReadingsSource;
@@ -47,11 +49,12 @@ export type HbA1cSignal = {
   limitations: string[];
 } & DiabetesSignalHonesty;
 
-/** Rule threshold: a change smaller than this (percentage points) between the two latest readings is "stable". */
-const STABLE_BAND_PERCENT = 0.2;
-/** Clamp a rule-based extrapolation to a plausible HbA1c range so a small sample never produces an implausible estimate. */
-const PLAUSIBLE_MIN_PERCENT = 4;
-const PLAUSIBLE_MAX_PERCENT = 15;
+/** Rule threshold: a change smaller than this (mmol/mol, ≈0.2 percentage points) between the two latest readings is "stable". */
+const STABLE_BAND_MMOL = 2;
+/** Clamp a rule-based extrapolation to a plausible HbA1c range (≈4–15%) so a small sample never produces an implausible estimate. */
+const PLAUSIBLE_MIN_MMOL = 20;
+const PLAUSIBLE_MAX_MMOL = 140;
+const show = (mmol: number) => `${Math.round(mmol)} mmol/mol (${hba1cPercentFrom(mmol)}%)`;
 
 function monthsBetween(earlierIso: string, laterIso: string): number {
   const earlier = new Date(earlierIso).getTime();
@@ -60,9 +63,7 @@ function monthsBetween(earlierIso: string, laterIso: string): number {
   return (later - earlier) / (1000 * 60 * 60 * 24 * 30.44);
 }
 
-function round1(value: number): number {
-  return Math.round(value * 10) / 10;
-}
+
 
 /**
  * Collapse duplicate timestamps (common when E2E/golden re-ingests the same
@@ -95,9 +96,9 @@ export function buildHbA1cSignal(
       feedsInto: "HORIZON",
       patientId: context.patientId,
       patientLabel,
-      latestValuePercent: null,
+      latestValueMmolMol: null,
       trend: "insufficient_data",
-      predictedNext3MonthsPercent: null,
+      predictedNext3MonthsMmolMol: null,
       isDiagnosticPrediction: false,
       readingsSource,
       explanation: ["No HbA1c readings supplied — does not fabricate lab values."],
@@ -115,12 +116,12 @@ export function buildHbA1cSignal(
       feedsInto: "HORIZON",
       patientId: context.patientId,
       patientLabel,
-      latestValuePercent: latest.valuePercent,
+      latestValueMmolMol: latest.valueMmolMol,
       trend: "insufficient_data",
-      predictedNext3MonthsPercent: null,
+      predictedNext3MonthsMmolMol: null,
       isDiagnosticPrediction: false,
       readingsSource,
-      explanation: [`Latest recorded HbA1c: ${latest.valuePercent}% — only one reading on file, trend needs ≥2.`],
+      explanation: [`Latest recorded HbA1c: ${show(latest.valueMmolMol)} — only one reading on file, trend needs ≥2.`],
       limitations: [
         "Only one HbA1c reading available — trend/3-month estimate needs at least two readings.",
         "Any future estimate remains a non-diagnostic trend, never a clinical prediction."
@@ -130,32 +131,30 @@ export function buildHbA1cSignal(
   }
 
   const previous = sorted[sorted.length - 2];
-  const delta = latest.valuePercent - previous.valuePercent;
+  const delta = latest.valueMmolMol - previous.valueMmolMol;
   const trend: HbA1cTrend =
-    delta <= -STABLE_BAND_PERCENT ? "improving" : delta >= STABLE_BAND_PERCENT ? "worsening" : "stable";
+    delta <= -STABLE_BAND_MMOL ? "improving" : delta >= STABLE_BAND_MMOL ? "worsening" : "stable";
 
   const months = monthsBetween(previous.recordedAt, latest.recordedAt);
   const ratePerMonth = months > 0 ? delta / months : 0;
-  const rawPrediction = latest.valuePercent + ratePerMonth * 3;
-  const predictedNext3MonthsPercent =
-    months > 0
-      ? round1(Math.min(PLAUSIBLE_MAX_PERCENT, Math.max(PLAUSIBLE_MIN_PERCENT, rawPrediction)))
-      : null;
+  const rawPrediction = latest.valueMmolMol + ratePerMonth * 3;
+  const predictedNext3MonthsMmolMol =
+    months > 0 ? Math.round(Math.min(PLAUSIBLE_MAX_MMOL, Math.max(PLAUSIBLE_MIN_MMOL, rawPrediction))) : null;
 
   return {
     moduleId: "HBA1C",
     feedsInto: "HORIZON",
     patientId: context.patientId,
     patientLabel,
-    latestValuePercent: latest.valuePercent,
+    latestValueMmolMol: latest.valueMmolMol,
     trend,
-    predictedNext3MonthsPercent,
+    predictedNext3MonthsMmolMol,
     isDiagnosticPrediction: false,
     readingsSource,
     explanation: [
-      `Latest recorded HbA1c: ${latest.valuePercent}% (${previous.valuePercent}% → ${latest.valuePercent}% over ~${Math.round(months)} month(s)) — trend: ${trend}.`,
-      predictedNext3MonthsPercent !== null
-        ? `Non-diagnostic 3-month linear trend estimate: ${predictedNext3MonthsPercent}% — a rules-based extrapolation, not a clinical prediction.`
+      `Latest recorded HbA1c: ${show(latest.valueMmolMol)} (${Math.round(previous.valueMmolMol)} → ${Math.round(latest.valueMmolMol)} mmol/mol over ~${Math.round(months)} month(s)) — trend: ${trend}.`,
+      predictedNext3MonthsMmolMol !== null
+        ? `Non-diagnostic 3-month linear trend estimate: ${show(predictedNext3MonthsMmolMol)} — a rules-based extrapolation, not a clinical prediction.`
         : "3-month estimate not computed — reading dates too close together."
     ],
     limitations: [

@@ -123,7 +123,8 @@ export type DiabetesGlucoseReading = {
   context?: "fasting" | "post_prandial" | "bedtime" | "unspecified";
 };
 
+/** HbA1c in IFCC mmol/mol, the unit Aksh stores everywhere (lib/units.ts). Display converts per organisation. */
 export type DiabetesHbA1cReading = {
   recordedAt: string;
-  valuePercent: number;
+  valueMmolMol: number;
 };

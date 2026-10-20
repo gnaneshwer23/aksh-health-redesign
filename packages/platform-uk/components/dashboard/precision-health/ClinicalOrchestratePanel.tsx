@@ -425,8 +425,8 @@ export function ClinicalOrchestratePanel({
                   <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
                     <p className="font-semibold">HbA1c</p>
                     <p className="text-muted">
-                      {result.diabetes.signals.hba1c.latestValuePercent !== null
-                        ? `Latest ${formatHbA1c(result.diabetes.signals.hba1c.latestValuePercent)} · trend ${result.diabetes.signals.hba1c.trend}`
+                      {result.diabetes.signals.hba1c.latestValueMmolMol !== null
+                        ? `Latest ${formatHbA1c(result.diabetes.signals.hba1c.latestValueMmolMol)} · trend ${result.diabetes.signals.hba1c.trend}`
                         : (result.diabetes.signals.hba1c.limitations[0] ?? "no data on file")}
                     </p>
                   </div>
@@ -467,7 +467,7 @@ export function ClinicalOrchestratePanel({
                   </div>
                 </div>
 
-                {result.diabetes.signals.complications.some((c) => c.flagLevel !== "none") && (
+                {result.diabetes.signals.complications.some((c) => c.flagLevel !== "none" || (c.missingLabs?.length ?? 0) > 0) && (
                   <div className="rounded-sm border border-border-subtle bg-card p-2 text-[11px]">
                     <p className="font-semibold">Complications</p>
                     <ul className="mt-1 space-y-1">
@@ -491,9 +491,21 @@ export function ClinicalOrchestratePanel({
                                 new gate type)
                               </span>
                             )}
+                            {c.evidenceRefs.length > 0 && (
+                              <span className="w-full text-muted" data-testid={`diabetes-complication-evidence-${c.domain}`}>
+                                {c.basis === "laboratory" ? "From laboratory results: " : "Evidence: "}
+                                {c.evidenceRefs.join(" · ")}
+                              </span>
+                            )}
                           </li>
                         ))}
                     </ul>
+                    {result.diabetes.signals.complications.some((c) => (c.missingLabs?.length ?? 0) > 0) && (
+                      <p className="mt-1 text-warning" data-testid="diabetes-missing-labs">
+                        Missing or out of date (not assumed normal):{" "}
+                        {[...new Set(result.diabetes.signals.complications.flatMap((c) => c.missingLabs ?? []))].join(" · ")}
+                      </p>
+                    )}
                   </div>
                 )}
 

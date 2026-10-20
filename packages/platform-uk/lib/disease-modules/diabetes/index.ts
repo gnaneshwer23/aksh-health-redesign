@@ -182,7 +182,7 @@ export function buildDiabetesRiskContribution(
     "COMPLICATIONS",
     () =>
       DIABETES_COMPLICATION_DOMAINS.map((domain) =>
-        buildComplicationSignal(context, domain, bundle.complicationEvidence?.[domain] ?? [])
+        buildComplicationSignal(context, domain, bundle.complicationEvidence?.[domain] ?? [], bundle.labs)
       ),
     [] as ComplicationSignal[]
   );
@@ -209,16 +209,16 @@ export function buildDiabetesRiskContribution(
 
   const horizonContributingFactors: string[] = [
     ...glucose.limitations.map((limitation) => `Glucose: ${limitation}`),
-    hba1c.latestValuePercent !== null
-      ? `HbA1c: latest ${hba1c.latestValuePercent}% (trend: ${hba1c.trend})${
-          hba1c.predictedNext3MonthsPercent !== null
-            ? `, non-diagnostic 3-month trend estimate ${hba1c.predictedNext3MonthsPercent}%`
+    hba1c.latestValueMmolMol !== null
+      ? `HbA1c: latest ${hba1c.latestValueMmolMol} mmol/mol (trend: ${hba1c.trend})${
+          hba1c.predictedNext3MonthsMmolMol !== null
+            ? `, non-diagnostic 3-month trend estimate ${hba1c.predictedNext3MonthsMmolMol} mmol/mol`
             : ""
         }`
       : `HbA1c: ${hba1c.limitations[0] ?? "no data on file"}`,
     ...complications
       .filter((c) => c.flagLevel !== "none")
-      .map((c) => `Complications (${c.domain}): ${c.flagLevel} (${c.evidenceRefs.length} evidence ref(s))`),
+      .map((c) => `Complications (${c.domain}): ${c.flagLevel} (${c.basis === "laboratory" ? c.evidenceRefs.join("; ") : `${c.evidenceRefs.length} evidence ref(s)`})`),
     prevention.riskTrajectoryLabel !== "insufficient_data"
       ? `Prevention: risk trajectory ${prevention.riskTrajectoryLabel}`
       : `Prevention: ${prevention.limitations[0] ?? "insufficient data"}`

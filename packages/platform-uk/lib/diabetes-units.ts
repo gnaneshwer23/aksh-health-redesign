@@ -1,12 +1,14 @@
 /**
- * HbA1c display for UK primary care: IFCC mmol/mol first, DCCT % in brackets.
- * Engines keep storing % (latestValuePercent); only presentation converts.
- * mmol/mol = (DCCT% − 2.15) × 10.929
+ * HbA1c display for clinicians: IFCC mmol/mol first, DCCT % in brackets. Engines and storage use mmol/mol
+ * (lib/units.ts); only presentation shows %.
  */
+import { hba1cMmolFromPercent, hba1cPercentFrom } from "./units";
+
+/** Kept for callers converting a value entered in %. */
 export function hba1cPercentToMmolMol(percent: number): number {
-  return Math.round((percent - 2.15) * 10.929);
+  return hba1cMmolFromPercent(percent);
 }
 
-export function formatHbA1c(percent: number): string {
-  return `${hba1cPercentToMmolMol(percent)} mmol/mol (${percent}%)`;
+export function formatHbA1c(mmolMol: number): string {
+  return `${Math.round(mmolMol)} mmol/mol (${hba1cPercentFrom(mmolMol)}%)`;
 }

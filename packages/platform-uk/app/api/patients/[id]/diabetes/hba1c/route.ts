@@ -1,3 +1,4 @@
+import { normaliseLab } from "@/lib/labs/catalog";
 import { NextResponse } from "next/server";
 
 import { recordDiabetesHbA1cReading, loadIngestedDiabetesReadings } from "@/lib/disease-modules/diabetes/ingest";
@@ -38,7 +39,8 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  let body: { recordedAt?: string; valuePercent?: number };
+  // mmol/mol (IFCC) is the stored unit; a value in % is accepted and converted (lib/labs/catalog.ts).
+  let body: { recordedAt?: string; valueMmolMol?: number; valuePercent?: number };
   try {
     body = await request.json();
   } catch {
@@ -46,18 +48,19 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const recordedAt = body.recordedAt?.trim();
-  const valuePercent = body.valuePercent;
+  const sent = typeof body.valueMmolMol === "number" ? { value: body.valueMmolMol, unit: "mmol/mol" } : { value: body.valuePercent ?? NaN, unit: "%" };
+  const normalised = normaliseLab("hba1c", sent.value, sent.unit);
   if (!recordedAt || Number.isNaN(new Date(recordedAt).getTime())) {
     return NextResponse.json({ error: "recordedAt (ISO 8601 timestamp) is required." }, { status: 400 });
   }
-  if (typeof valuePercent !== "number" || !Number.isFinite(valuePercent) || valuePercent <= 0 || valuePercent > 20) {
-    return NextResponse.json({ error: "valuePercent must be a plausible HbA1c percentage." }, { status: 400 });
+  if (!normalised.ok) {
+    return NextResponse.json({ error: `Send valueMmolMol (or valuePercent): ${normalised.message}` }, { status: 400 });
   }
 
   const { fact, source } = await recordDiabetesHbA1cReading(
     {
       patientId,
-      reading: { recordedAt, valuePercent },
+      reading: { recordedAt, valueMmolMol: normalised.value },
       source: { system: "diabetes_ingest_api", reference: auth.context.userEmail ?? auth.context.userId }
     },
     { scopeKey: auth.context.scopeKey }

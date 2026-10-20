@@ -15,8 +15,10 @@ type Conversion = Record<string, (v: number) => number>;
 export type LabDefinition = {
   kind: LabKind;
   label: string;
-  /** Unit stored and shown to clinicians (UCUM). */
+  /** Unit stored (UCUM). */
   unit: string;
+  /** The same unit written for people. */
+  displayUnit: string;
   /** LOINC codes that map to this kind. */
   loinc: string[];
   /** Accepted units (normalised, see normaliseUnit) and how to convert each to the stored unit. */
@@ -38,6 +40,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "hba1c",
     label: "HbA1c",
     unit: "mmol/mol",
+    displayUnit: "mmol/mol",
     loinc: ["4548-4", "17856-6", "41995-2", "59261-8"],
     // IFCC-NGSP master equation: mmol/mol = (% − 2.15) × 10.929.
     units: { "mmol/mol": same, "%": (v) => (v - 2.15) * 10.929 },
@@ -48,6 +51,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "glucose",
     label: "Glucose (laboratory)",
     unit: "mmol/L",
+    displayUnit: "mmol/L",
     loinc: ["2345-7", "2339-0", "1558-6", "14749-6", "14771-0", "41604-0"],
     units: { "mmol/l": same, "mg/dl": (v) => v / GLUCOSE_MG_PER_MMOL },
     range: [1, 40],
@@ -57,6 +61,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "egfr",
     label: "eGFR",
     unit: "mL/min/{1.73_m2}",
+    displayUnit: "mL/min/1.73 m²",
     loinc: ["33914-3", "48642-3", "48643-1", "62238-1", "69405-9", "88293-6", "88294-4", "98979-8"],
     units: { "ml/min/{1.73_m2}": same, "ml/min/1.73m2": same, "ml/min/1.73_m2": same },
     range: [1, 200],
@@ -66,6 +71,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "acr",
     label: "Urine albumin:creatinine ratio",
     unit: "mg/mmol",
+    displayUnit: "mg/mmol",
     loinc: ["14959-1", "9318-7", "13705-9", "32294-1"],
     units: { "mg/mmol": same, "mg/g": (v) => v / ACR_MG_G_PER_MG_MMOL },
     range: [0, 3000],
@@ -75,6 +81,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "ldl",
     label: "LDL cholesterol",
     unit: "mmol/L",
+    displayUnit: "mmol/L",
     loinc: ["22748-8", "13457-7", "18262-6", "2089-1", "39469-2"],
     units: { "mmol/l": same, "mg/dl": (v) => v / CHOL_MG_PER_MMOL },
     range: [0.1, 15],
@@ -84,6 +91,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "total_cholesterol",
     label: "Total cholesterol",
     unit: "mmol/L",
+    displayUnit: "mmol/L",
     loinc: ["14647-2", "2093-3"],
     units: { "mmol/l": same, "mg/dl": (v) => v / CHOL_MG_PER_MMOL },
     range: [0.5, 20],
@@ -93,6 +101,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "hdl",
     label: "HDL cholesterol",
     unit: "mmol/L",
+    displayUnit: "mmol/L",
     loinc: ["14646-4", "2085-9"],
     units: { "mmol/l": same, "mg/dl": (v) => v / CHOL_MG_PER_MMOL },
     range: [0.1, 5],
@@ -102,6 +111,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "triglycerides",
     label: "Triglycerides",
     unit: "mmol/L",
+    displayUnit: "mmol/L",
     loinc: ["14927-8", "2571-8"],
     units: { "mmol/l": same, "mg/dl": (v) => v / TG_MG_PER_MMOL },
     range: [0.1, 50],
@@ -111,6 +121,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "creatinine",
     label: "Creatinine (serum)",
     unit: "umol/L",
+    displayUnit: "µmol/L",
     loinc: ["14682-9", "2160-0", "38483-4"],
     units: { "umol/l": same, "mg/dl": (v) => v * CREATININE_UMOL_PER_MG_DL },
     range: [10, 2000],
@@ -120,6 +131,7 @@ export const LAB_CATALOG: Record<LabKind, LabDefinition> = {
     kind: "alt",
     label: "ALT",
     unit: "U/L",
+    displayUnit: "U/L",
     loinc: ["1742-6", "1743-4", "1744-2", "76625-3"],
     units: { "u/l": same, "iu/l": same, "[iu]/l": same },
     range: [1, 5000],

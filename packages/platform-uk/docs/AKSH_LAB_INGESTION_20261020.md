@@ -19,13 +19,21 @@ glucose only. Lipids, creatinine and ALT had nowhere to go.
 | Reads | Replaced rows no longer count in the record, risk and care gaps, or the agents' patient view |
 | Guide | Connector guide lists every result, unit and LOINC code, and the correction rules |
 
-## Not in this increment (next)
+## Increment 2 (agents read the labs)
 
-- Agents read the new results: the patient spine (simulation) passes eGFR, ACR, lipids, creatinine and ALT to the
-  diabetes module; complication checks use lab values instead of evidence counts.
-- Patient record shows a laboratory results table with trends and provenance.
+| Area | Change |
+|---|---|
+| Agents' patient view (`lib/clinical-spine/spine-patient.ts`) | Latest trusted eGFR, ACR, creatinine, LDL, total cholesterol, HDL, triglycerides and ALT, each with date, channel, LOINC code and correction flag (`lib/labs/snapshot.ts`), passed into Aksh Diabetes. Simulation only (Track B gate unchanged) |
+| Complication checks (`complications.ts`) | Kidney from eGFR/ACR (watch: eGFR < 60 or ACR > 3 mg/mmol; referral indicated: eGFR < 30 or ACR ≥ 30), heart from LDL ≥ 2.6 mmol/L (watch only), liver from ALT > 40 U/L (watch only). Results older than 15 months are not used and are listed as missing ("not assumed normal"). Eye and foot keep the evidence-count rule. Each signal names its basis, the values used and rule version `lab-rules-2026-10-20`. Thresholds flag for clinician review and await clinical lead sign-off; referrals still go through the referral gate |
+| Clinician screen | Complications show the lab values behind each flag and the missing results |
+| Patient record | Laboratory results table: latest value and unit, change since last, trend line, date, source (lab feed / staff / import), LOINC code, "corrected" marker, value as sent when converted. eGFR, ACR and LDL show "Not on record" when absent |
+| HbA1c | One unit: IFCC mmol/mol in storage, engines, agents and prompts (stable band 2 mmol/mol, plausible 20–140). Facts stored in % before this change are converted on read; the demo HbA1c API accepts mmol/mol or %. % is shown only alongside, for display |
+
+## Still to do
+
 - CSV import columns for the new results.
-- HbA1c is stored as mmol/mol in the record but as percent in the diabetes engines; unify on mmol/mol.
+- Clinical lead sign-off of the lab rule thresholds (until then they are review flags only, and complications stay In validation).
+- Laboratory glucose is stored but not yet used by the agents.
 
 ## Tests
 
