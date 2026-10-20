@@ -102,7 +102,7 @@ export function decideReviewCase(existing: ReviewCase, req: CaseDecisionRequest,
   };
   if (req.decision === "accept") next = { ...next, frozenArtifact: createFrozenArtifact(next, { frozenBy: actor }) };
   const detail = req.decision === "accept" ? `Case ${existing.id} accepted with frozen evidence artifact` : `Case ${existing.id} marked ${req.decision}`;
-  next = appendCaseLevelShieldAudit(next, { action: req.decision, actor, detail, durableAudit: false });
+  next = appendCaseLevelShieldAudit(next, { action: req.decision, actor, detail });
   next = { ...next, version: current + 1 };
   return {
     next,

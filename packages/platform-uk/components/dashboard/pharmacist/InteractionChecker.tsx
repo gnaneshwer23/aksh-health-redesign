@@ -144,14 +144,7 @@ export function InteractionChecker() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "accept",
-          agentLabel: "GUARDIAN",
-          label: "SHIELD: pharmacist GUARDIAN alert staged for GP",
-          detail: `${ix.drugA} + ${ix.drugB} (${ix.severity})`,
-          resourceRef: `${checkPatient.name} (${checkPatient.id})`,
-          category: "reviewer_decision"
-        })
+        body: JSON.stringify({ event: "staged", subject: "interaction_alert", action: "accept", agent: "GUARDIAN", note: `${ix.drugA} + ${ix.drugB} (${ix.severity})`, resourceRef: `${checkPatient.name} (${checkPatient.id})` })
       });
     } catch {
       // Staging still applies locally.

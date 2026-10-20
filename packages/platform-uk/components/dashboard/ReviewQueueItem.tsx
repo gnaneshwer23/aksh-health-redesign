@@ -44,10 +44,11 @@ export function ReviewQueueItem({ item }: { item: ReviewQueueItemType }) {
   const audit = (action: "accept" | "reject" | "edit", detail: string) =>
     recordShieldEvent(
       {
+        event: "decided",
+        subject: "draft",
         action,
-        label: `${action === "accept" ? "Accepted" : action === "reject" ? "Rejected" : "Edited"} ${item.agentType} draft: ${item.title}`,
-        detail,
-        agentLabel: item.agentType,
+        note: `${item.title}${detail ? ` — ${detail}` : ""}`,
+        agent: item.agentType,
         resourceRef: `${item.id} / ${item.patientName}`,
       },
       { authenticated: reviewer.authenticated }

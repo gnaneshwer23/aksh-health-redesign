@@ -9,14 +9,15 @@
 export type ShieldWriteOutcome = "logged" | "not_signed_in" | "unavailable" | "failed";
 
 export type ShieldWritePayload = {
-  action: "accept" | "reject" | "edit" | "defer" | string;
-  label: string;
-  detail?: string;
-  agentLabel?: string;
+  /** What happened (lib/audit/panel-events.ts); the server writes the wording from these. */
+  event: "staged" | "decided" | "exported" | "escalated";
+  subject: "draft" | "health_plan" | "risk_brief" | "interaction_alert" | "handover" | "scenario_ranking" | "coaching" | "capacity_recommendation" | "staffing_recommendation" | "evaluation";
+  action: "accept" | "reject" | "edit" | "defer" | "export" | "view";
+  agent?: string;
+  /** The user's own note, kept attributed to them. */
+  note?: string;
   resourceRef?: string;
   caseId?: string;
-  category?: string;
-  payload?: Record<string, unknown>;
 };
 
 export async function recordShieldEvent(
@@ -31,11 +32,7 @@ export async function recordShieldEvent(
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...payload,
-        detail: payload.detail?.slice(0, 280),
-        category: payload.category ?? "reviewer_decision",
-      }),
+      body: JSON.stringify({ ...payload, note: payload.note?.slice(0, 280) }),
     });
     if (response.ok) return "logged";
     if (response.status === 401) return "not_signed_in";

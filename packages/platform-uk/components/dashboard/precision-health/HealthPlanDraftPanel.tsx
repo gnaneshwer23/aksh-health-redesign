@@ -140,21 +140,7 @@ export function HealthPlanDraftPanel({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "accept",
-          agentLabel: "SYNTHESIS",
-          label: "SHIELD: personalised health plan staged for clinician review",
-          detail: note.slice(0, 280),
-          resourceRef: `${patientLabel ?? patientId} (${patientId})`,
-          category: "reviewer_decision",
-          payload: {
-            planId: active.id,
-            status: "DRAFT",
-            ehrWrite: false,
-            physiologicalTwin: false,
-            hitlRequired: true,
-          },
-        }),
+        body: JSON.stringify({ event: "staged", subject: "health_plan", action: "accept", agent: "SYNTHESIS", note: note.slice(0, 280), resourceRef: `${patientLabel ?? patientId} (${patientId})` }),
       });
     } catch {
       // Local staging still applies.

@@ -4,20 +4,17 @@ import {
   listShieldAuditEvents,
   persistShieldAuditEvent
 } from "@/lib/repositories/shield-audit-repository";
-import { AGENTS } from "@/lib/agents/register";
+import { composePanelEvent } from "@/lib/audit/panel-events";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { readReviewCases } from "@/lib/review-case-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 /**
- * Dashboard panels record what a signed-in user did with an agent output (acknowledged, accepted, exported). The server
- * decides who (signed-in account), where (the user's practice), and marks the origin; the browser may only choose from
- * fixed actions and agent labels, and may reference only its own review cases. Case and draft decisions themselves are
- * recorded by the decision endpoints, never here.
+ * Dashboard panels record what a signed-in user did with an agent output (staged, decided, escalated, exported) as a
+ * structured event (lib/audit/panel-events.ts). The server writes the wording, decides who (signed-in account), where
+ * (the user's practice) and marks the origin; the browser sends no label text and may reference only its own review
+ * cases. Case and draft decisions themselves are recorded by the decision endpoints, never here.
  */
-const PANEL_ACTIONS = new Set(["accept", "edit", "reject", "defer", "export", "view"]);
-const PANEL_CATEGORIES = new Set(["reviewer_decision", "reviewer_note", "system"]);
-const PANEL_AGENTS = new Set<string>([...AGENTS.flatMap((a) => [a.id, ...a.legacyIds]), "TWIN_SIM"]);
 const cap = (v: unknown, n: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, n) : undefined);
 
 export const dynamic = "force-dynamic";
@@ -56,31 +53,18 @@ export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
 
-  let body: {
-    action?: string;
-    label?: string;
-    detail?: string;
-    agentLabel?: string;
-    resourceRef?: string;
-    caseId?: string;
-    category?: string;
-  };
+  let body: Record<string, unknown>;
   try {
-    body = await request.json();
+    body = (await request.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
-
-  const label = cap(body.label, 200);
-  if (!label) {
-    return NextResponse.json({ error: "label is required." }, { status: 400 });
+  if ("label" in body) {
+    return NextResponse.json({ error: "Send a structured event (event, subject, agent, action); the server writes the wording.", code: "LABEL_NOT_ACCEPTED" }, { status: 400 });
   }
-  const action = cap(body.action, 20) ?? "view";
-  if (!PANEL_ACTIONS.has(action)) return NextResponse.json({ error: "Unknown action." }, { status: 400 });
-  const category = cap(body.category, 40) ?? "reviewer_note";
-  if (!PANEL_CATEGORIES.has(category)) return NextResponse.json({ error: "Unknown category." }, { status: 400 });
-  const agentLabel = cap(body.agentLabel, 40);
-  if (agentLabel && !PANEL_AGENTS.has(agentLabel)) return NextResponse.json({ error: "Unknown agent." }, { status: 400 });
+  const composed = composePanelEvent({ event: body.event, subject: body.subject, agent: body.agent, action: body.action });
+  if ("error" in composed) return NextResponse.json({ error: composed.error }, { status: 400 });
+
   const tenant = resolveTenantContext(request, auth.context);
   const caseId = cap(body.caseId, 120);
   if (caseId) {
@@ -91,16 +75,17 @@ export async function POST(request: Request) {
   }
 
   const result = await persistShieldAuditEvent({
-    action,
+    action: composed.action,
     actor: auth.context.userEmail ?? auth.context.userId,
-    label,
-    detail: cap(body.detail, 1000),
-    category,
-    agentLabel,
+    label: composed.label,
+    // The user's own note, attributed to them; never used as the event wording.
+    detail: cap(body.note, 1000),
+    category: composed.category,
+    agentLabel: composed.agent,
     resourceRef: cap(body.resourceRef, 200),
     caseId,
     practiceId: tenant.practiceId,
-    payload: { origin: "dashboard_panel" }
+    payload: { origin: "dashboard_panel", event: composed.event, subject: composed.subject }
   });
 
   if (!result.persisted) {

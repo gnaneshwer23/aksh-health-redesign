@@ -22,10 +22,11 @@ export function CapacityPanel({ data, hospitalName }: { data: HospitalData; hosp
   const logDecision = async (recId: string, text: string, action: "accept" | "reject") => {
     const outcome = await recordShieldEvent(
       {
+        event: "decided",
+        subject: "capacity_recommendation",
         action,
-        agentLabel: "HORIZON",
-        label: `SHIELD: hospital capacity recommendation ${action === "accept" ? "accepted" : "dismissed"}`,
-        detail: text,
+        agent: "HORIZON",
+        note: text,
         resourceRef: `${label} / ${recId}`,
       },
       { authenticated: reviewer.authenticated }

@@ -110,20 +110,7 @@ export function OracleRiskPanel({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "accept",
-          agentLabel: "HORIZON",
-          label: "SHIELD: HORIZON risk brief staged for GP review",
-          detail: note.slice(0, 280),
-          resourceRef: `${patientName} (${patientId})`,
-          category: "reviewer_decision",
-          payload: {
-            oracleScore: draft?.oracleScore ?? score,
-            oracleRisk: draft?.oracleRisk ?? risk,
-            mode: draft?.mode,
-            dataSource: draft?.dataSource ?? source
-          }
-        })
+        body: JSON.stringify({ event: "staged", subject: "risk_brief", action: "accept", agent: "HORIZON", note: note.slice(0, 280), resourceRef: `${patientName} (${patientId})` })
       });
     } catch {
       // Local staging still applies.

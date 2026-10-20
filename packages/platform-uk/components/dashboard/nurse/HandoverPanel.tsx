@@ -132,13 +132,7 @@ export function HandoverPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                   method: "POST",
                   credentials: "include",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    action: "accept",
-                    agentLabel: "SYNTHESIS",
-                    label: "SHIELD: nurse handover approved",
-                    detail: "Shared after HITL accept",
-                    resourceRef: wardLabel
-                  })
+                  body: JSON.stringify({ event: "decided", subject: "handover", action: "accept", agent: "SYNTHESIS", note: "Shared after HITL accept", resourceRef: wardLabel })
                 });
                 toast({ title: "Handover shared" });
               }}

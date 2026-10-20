@@ -99,12 +99,12 @@ async function runGoldenPathPatient(
   // SHIELD append when Postgres available — never fail the golden path if durable audit is down
   const shieldPost = await request.post("/api/audit/shield", {
     data: {
+      event: "staged",
+      subject: "draft",
       action: "defer",
-      label: `Clinical-proof golden path ${patient.id}`,
-      detail: `profiles=${patient.profiles.join(",")}; partnerBlocked=emis`,
-      agentLabel: "SHIELD",
+      agent: "SHIELD",
+      note: `profiles=${patient.profiles.join(",")}; partnerBlocked=emis`,
       resourceRef: `${patient.name} (${patient.id})`,
-      category: "system",
     },
   });
   if (shieldPost.status() === 503) {

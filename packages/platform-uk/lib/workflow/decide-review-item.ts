@@ -47,7 +47,6 @@ export function decideReviewItem(existing: ReviewCase, itemId: string, req: Item
     decidedBy: actor,
     rejectionReason: req.reason?.trim(),
     content: req.action === "edit" ? req.content!.trim() : undefined,
-    durableAudit: false,
   });
   // Keep the generated text when a clinician edits it, so the original and the edit can both be seen.
   if (req.action === "edit") {
