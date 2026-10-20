@@ -21,6 +21,8 @@ import { refreshSummaries } from "@/lib/cgm/service";
 import {
   appointmentFromFhir,
   observationFromFhir,
+  observationRoute,
+  labFromFhir,
   appointmentFromJson,
   BOOKED_STATUSES,
   resourcesOf,
@@ -28,6 +30,7 @@ import {
   slotFromJson,
   type AppointmentFact,
   type ConnectorConfig,
+  type LabFact,
   type SlotFact,
 } from "./fhir";
 
@@ -280,7 +283,9 @@ export async function receiveObservations(key: ConnectorKey, body: unknown) {
   const resources = resourcesOf(body, "Observation");
   if (!resources) throw new NetworkError("Send a FHIR Observation or a Bundle of Observations", 400);
   if (resources.length > 5000) throw new NetworkError("At most 5000 observations per request", 413);
-  const facts = resources.map(observationFromFhir);
+  // Laboratory results go to the patient record; device glucose goes to the CGM stream (lib/connector/fhir.ts).
+  const labResources = resources.filter((r) => observationRoute(r as Record<string, unknown>) === "lab");
+  const facts = resources.filter((r) => observationRoute(r as Record<string, unknown>) !== "lab").map(observationFromFhir);
   const counts: Record<string, number> = {};
   const byRef = new Map<string, { at: string; mmol: number }[]>();
   for (const f of facts) {
@@ -330,8 +335,76 @@ export async function receiveObservations(key: ConnectorKey, body: unknown) {
       }
     });
   }
+  if (labResources.length) patients.push(...(await receiveLabResults(key, labResources.map((r) => labFromFhir(r as Record<string, unknown>)), counts)));
   for (const p of patients) await logEvent(key, "observation", "fhir", { ref: p.ref, result: p.result, message: p.accepted !== undefined ? `${p.accepted} stored, ${p.duplicate} already stored` : undefined });
-  const rejected = Object.entries(counts).filter(([k]) => !["ACCEPTED", "DUPLICATE"].includes(k));
+  const rejected = Object.entries(counts).filter(([k]) => !["ACCEPTED", "DUPLICATE", "LAB_ACCEPTED", "LAB_DUPLICATE", "LAB_CORRECTED"].includes(k));
   if (rejected.length) await logEvent(key, "observation", "fhir", { ref: null, result: "REJECTED_ITEMS", message: rejected.map(([k, n]) => `${n} ${k}`).join(", ") });
   return { counts, patients };
+}
+
+/**
+ * Stores laboratory results in network_observations with their provenance (LOINC code, the source's Observation.id,
+ * channel "connector", the value and unit as sent). The same result sent again is a duplicate. An amended or corrected
+ * result is a new row that replaces the previous one (both are kept). A changed value sent as "final" is refused: the
+ * source must mark corrections, so a silent overwrite cannot happen.
+ */
+async function receiveLabResults(key: ConnectorKey, facts: LabFact[], counts: Record<string, number>) {
+  const out: { ref: string; result: string; accepted?: number; duplicate?: number }[] = [];
+  const ok = facts.filter((f): f is Extract<LabFact, { ok: true }> => f.ok);
+  for (const f of facts) if (!f.ok) counts[`LAB_${f.code}`] = (counts[`LAB_${f.code}`] ?? 0) + 1;
+  if (!ok.length) return out;
+  const ctx = connectorContext(key);
+  await withTenant(ctx, async (client) => {
+    const refs = [...new Set(ok.map((f) => f.patientIdentifiers[0]!))];
+    const found = new Map(
+      (await client.query<{ id: string; record_ref: string }>(
+        `SELECT id, record_ref FROM aksh.network_patients WHERE organisation_id = $1 AND record_ref = ANY($2)`,
+        [key.organisationId, refs]
+      )).rows.map((r) => [r.record_ref, r.id])
+    );
+    const perPatient = new Map<string, { accepted: number; duplicate: number }>();
+    const unknown = new Set<string>();
+    const bump = (ref: string, k: "accepted" | "duplicate") => {
+      const p = perPatient.get(ref) ?? { accepted: 0, duplicate: 0 };
+      p[k] += 1;
+      perPatient.set(ref, p);
+    };
+    for (const f of ok) {
+      const ref = f.patientIdentifiers[0]!;
+      const patientId = found.get(ref);
+      if (!patientId) {
+        counts.LAB_UNKNOWN_PATIENT = (counts.LAB_UNKNOWN_PATIENT ?? 0) + 1;
+        if (!unknown.has(ref)) out.push({ ref, result: "UNKNOWN_PATIENT" });
+        unknown.add(ref);
+        continue;
+      }
+      const current = (await client.query<{ id: string; value: string; observed_at: Date; kind: string }>(
+        `SELECT x.id, x.value::text AS value, x.observed_at, x.kind FROM aksh.network_observations x
+          WHERE x.patient_id = $1 AND x.external_ref = $2 AND x.channel = 'connector'
+            AND NOT EXISTS (SELECT 1 FROM aksh.network_observations c WHERE c.replaces_id = x.id)
+          ORDER BY x.recorded_at DESC LIMIT 1`,
+        [patientId, f.ref]
+      )).rows[0];
+      if (current && current.kind === f.kind && Number(current.value) === f.value && current.observed_at.toISOString() === f.at) {
+        counts.LAB_DUPLICATE = (counts.LAB_DUPLICATE ?? 0) + 1;
+        bump(ref, "duplicate");
+        continue;
+      }
+      if (current && (!f.corrected || current.kind !== f.kind)) {
+        counts.LAB_CONFLICTING_FINAL = (counts.LAB_CONFLICTING_FINAL ?? 0) + 1;
+        continue;
+      }
+      await client.query(
+        `INSERT INTO aksh.network_observations
+           (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, code, code_system, external_ref, channel,
+            client_ref, original_value, original_unit, replaces_id, connector_key_id)
+         VALUES ($1, $2, $3, $4, $5, 'lab', true, NULL, $6, 'http://loinc.org', $7, 'connector', $8, $9, $10, $11, $12)`,
+        [patientId, f.kind, f.value, f.unit, f.at, f.loinc, f.ref, `lab:${f.ref}:${current ? current.id : "0"}`, f.originalValue, f.originalUnit, current?.id ?? null, key.id]
+      );
+      counts[current ? "LAB_CORRECTED" : "LAB_ACCEPTED"] = (counts[current ? "LAB_CORRECTED" : "LAB_ACCEPTED"] ?? 0) + 1;
+      bump(ref, "accepted");
+    }
+    for (const [ref, p] of perPatient) out.push({ ref, result: "LAB_ACCEPTED", accepted: p.accepted, duplicate: p.duplicate });
+  });
+  return out;
 }

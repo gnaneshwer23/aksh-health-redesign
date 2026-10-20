@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { AUTO_ITEMS, EVIDENCE_ITEMS } from "@/lib/golive/checklist";
 import { APPOINTMENT_TYPE_LABEL } from "@/lib/access/eligibility";
+import { LAB_CATALOG, LAB_KINDS } from "@/lib/labs/catalog";
 import { PATIENT_CSV_COLUMNS, PATIENT_CSV_TEMPLATE } from "@/lib/network/csv";
 
 export type Guide = { slug: string; title: string; summary: string; group: "Start" | "Workflows" | "Connect" | "Governance"; body: ReactNode };
@@ -165,7 +166,7 @@ export const GUIDES: Guide[] = [
     slug: "schedule-connector",
     group: "Connect",
     title: "Schedule connector",
-    summary: "Send freed slots, bookings and glucose readings from your systems.",
+    summary: "Send freed slots, bookings, glucose readings and laboratory results from your systems.",
     body: (
       <>
         <p>Create a connection in <strong>Organisation → Connections</strong>. The key is shown once; Aksh stores only its hash. Send it as a bearer token. Every request returns a result code per item, so your system can act on each one.</p>
@@ -174,7 +175,7 @@ export const GUIDES: Guide[] = [
           rows={[
             [<code key="s">POST /api/connect/v1/slots</code>, "Freed or taken slots", "FHIR R4 Slot or Bundle, or { slots: [...] }"],
             [<code key="a">POST /api/connect/v1/appointments</code>, "Bookings read back from your schedule", "FHIR R4 Appointment or Bundle, or { appointments: [...] }"],
-            [<code key="o">POST /api/connect/v1/observations</code>, "Glucose readings from devices", "FHIR R4 Observation or Bundle"],
+            [<code key="o">POST /api/connect/v1/observations</code>, "Glucose readings from devices, and laboratory results", "FHIR R4 Observation or Bundle"],
           ]}
         />
         <h2>Slots</h2>
@@ -195,6 +196,24 @@ export const GUIDES: Guide[] = [
         <p>Send bookings with their slot reference and the patient’s record number (<code>{`{ id, status, slotId, patientRecordNumber }`}</code> in JSON). A booking for the patient staff selected, with status booked, arrived, fulfilled or checked-in, confirms the slot as filled. A different patient means the slot went elsewhere, and a person resolves it.</p>
         <h2>Glucose observations</h2>
         <p>Final, amended or corrected glucose Observations with an exact value and a timestamp with an offset. <code>subject.identifier.value</code> must be the patient’s record number. Duplicates by patient and time are skipped.</p>
+        <h2>Laboratory results</h2>
+        <p>
+          Send laboratory results as FHIR R4 Observations with a LOINC code, an <code>id</code> from your system, an exact
+          value with its unit, and a time with an offset. Aksh converts each value to the unit it stores and refuses values
+          outside a plausible range, which usually means a unit error. Glucose is treated as a laboratory result only when
+          <code> category</code> is <code>laboratory</code>; otherwise it is a device reading.
+        </p>
+        <Table
+          head={["Result", "Stored as", "Also accepted", "LOINC (examples)"]}
+          rows={LAB_KINDS.map((k) => {
+            const d = LAB_CATALOG[k];
+            return [d.label, d.unit, Object.keys(d.units).filter((u) => u !== d.unit.toLowerCase()).join(", ") || "—", d.loinc.slice(0, 3).join(", ")];
+          })}
+        />
+        <ul>
+          <li>The same result sent again is skipped. A changed value must be sent with status <code>amended</code> or <code>corrected</code>: it replaces the earlier result, and both stay in the record. A changed value sent as <code>final</code> is refused (<code>LAB_CONFLICTING_FINAL</code>).</li>
+          <li>Each result keeps its LOINC code, your <code>id</code>, the value and unit as sent, and the connection that sent it.</li>
+        </ul>
         <h2>Common result codes</h2>
         <Table
           head={["Code", "Meaning"]}
@@ -206,6 +225,9 @@ export const GUIDES: Guide[] = [
             ["NO_PATIENT_IDENTIFIER", "Include the patient’s record number"],
             ["INEXACT_VALUE", "A value with <, > or similar is a bound, not a reading"],
             ["OUT_OF_RANGE / FUTURE_TIME", "Glucose outside 18–720 mg/dL (1–40 mmol/L), or a time in the future"],
+            ["LAB_UNKNOWN_UNIT / LAB_OUT_OF_RANGE", "Send a unit from the table above; check the value and unit match"],
+            ["LAB_UNKNOWN_CODE / LAB_MISSING_ID", "Use a LOINC code from the table, and include the Observation id"],
+            ["LAB_CONFLICTING_FINAL", "Send the changed result as amended or corrected"],
           ]}
         />
       </>

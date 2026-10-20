@@ -39,6 +39,7 @@ export type CapabilityId =
   | "schedule_connector"
   | "cgm_monitoring"
   | "patient_readings"
+  | "lab_results"
   | "identity_access"
   | "audit"
   | "consent"
@@ -126,6 +127,15 @@ export const CAPABILITIES: Capability[] = [
     environment: "production",
     dependencies: ["Patient linked with an invite code"],
     evidence: ["tests/readings-db.test.ts", "e2e/patient-readings.spec.ts"],
+  },
+  {
+    id: "lab_results",
+    name: "Laboratory results",
+    description: "HbA1c, kidney function, lipids and liver results from your lab system or entered by staff, converted to one set of units, range-checked, with the source and any correction kept.",
+    status: "production",
+    environment: "production",
+    dependencies: ["Laboratory feed through the connector (FHIR R4 Observation with LOINC), or staff entry"],
+    evidence: ["tests/lab-results-db.test.ts"],
   },
   {
     id: "identity_access",

@@ -20,7 +20,8 @@ import { NetworkError } from "../network/service";
 const MG_PER_MMOL = 18.0182;
 /** HbA1c IFCC (mmol/mol) → DCCT (%), the unit the diabetes module's HbA1c signal uses. */
 export const hba1cPercent = (mmolMol: number) => Math.round((mmolMol / 10.929 + 2.15) * 10) / 10;
-const TRUSTED = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified)`;
+// Corrected lab results (041) keep the original row; a row that has been replaced no longer counts.
+const TRUSTED = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified) AND NOT EXISTS (SELECT 1 FROM aksh.network_observations c WHERE c.replaces_id = x.id)`;
 
 
 export class TrackBClosedError extends NetworkError {
