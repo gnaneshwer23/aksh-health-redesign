@@ -3,6 +3,7 @@
  * with their trusted CGM and HbA1c, under row-level security, clinicians only, and never in the real workspace.
  * Pure checks first; DB part skips without DATABASE_URL.
  */
+import { listAgentRunCases } from "../lib/repositories/loop-outcomes-repository";
 import { buildSpineReviewCase, draftPendingReferrals } from "../lib/clinical-spine/enqueue";
 import { persistItemDecision } from "../lib/repositories/review-decision-repository";
 import { createReviewCase, readReviewCases } from "../lib/review-case-repository";
@@ -137,6 +138,8 @@ async function db() {
     await createReviewCase(built, scope, nurseId, practice);
     try {
       const stored = (await readReviewCases(scope, practice)).find((c) => c.id === built.id)!;
+      const orgRuns = await listAgentRunCases(practice);
+      assert.ok(orgRuns.cases.some((c) => c.id === built.id), "COMPASS sees the organisation's agent-run cases");
       assert.equal(stored.agentRun?.source, "clinical_spine");
       const items = resolveReviewQueueItems(stored);
       assert.ok(items.length >= 3 && items.every((i) => i.status === "DRAFT"));

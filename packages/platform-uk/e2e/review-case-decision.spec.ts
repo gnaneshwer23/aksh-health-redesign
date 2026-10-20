@@ -77,4 +77,23 @@ test.describe("Review case decisions on the server", () => {
     expect(stored.status).toBe("accepted");
     expect(stored.reviewSummary?.lastReviewer).toBe(user.email);
   });
+
+  test("panel audit events: server identity and practice; cannot forge an agent, an action or another user's case", async ({ request, baseURL, playwright }) => {
+    const owner = await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "audit-owner" });
+    const mine = ((await (await request.post("/api/review-cases", { data: { action: "create", patientLabel: "Synthetic patient", rawInput: "Routine diabetes review.", sourceType: "note" } })).json()) as { reviewCase: ReviewCase }).reviewCase;
+    const ok = await request.post("/api/audit/shield", { data: { action: "accept", label: "Acknowledged GUARDIAN brief", agentLabel: "GUARDIAN", caseId: mine.id, category: "reviewer_decision" } });
+    expect(ok.ok(), await ok.text()).toBeTruthy();
+    const row = ((await ok.json()) as { event: { actor: string; practiceId: string | null } }).event;
+    expect(row.actor).toBe(owner.email);
+    expect(row.practiceId).toBeTruthy();
+    expect((await request.post("/api/audit/shield", { data: { action: "accept", label: "x", agentLabel: "SUPERVISOR_ROOT" } })).status()).toBe(400);
+    expect((await request.post("/api/audit/shield", { data: { action: "approve_prescription", label: "x" } })).status()).toBe(400);
+
+    // Another user cannot write into this user's case.
+    const other = await playwright.request.newContext({ baseURL });
+    await createOnboardedTestUser(other, baseURL!, { role: "gp", label: "audit-other" });
+    const forged = await other.post("/api/audit/shield", { data: { action: "accept", label: "Forged decision", agentLabel: "CONDUCTOR", caseId: mine.id } });
+    expect(forged.status()).toBe(403);
+    await other.dispose();
+  });
 });

@@ -44,7 +44,11 @@ No agent runs on real patients in production: the LLM gate refuses model calls t
    (`draftPendingReferrals`); a clinician confirms it (referral gate).
 7. **Stage** — case accept → BRIDGE stages FHIR R4; result shown; nothing written to a live record.
 8. **Learn** — each decision writes a learning event; outcomes link later; releases are manual (G-ML-1/2/3).
-9. **Population** — COMPASS on request, aggregates only.
+9. **Population** — COMPASS on request, aggregates only. Since 21 Oct it also returns the organisation's own loop
+   outcomes (`lib/clinical-spine/loop-outcomes.ts`): agent reviews, drafts accepted / edited / rejected per agent,
+   rejection and accepted-unedited rates (shown only with 5 or more decided drafts), referrals held / drafted /
+   confirmed by domain, and the most often missing results. Counts 1–4 are shown as "<5"; no patient is named. These
+   are the measures each agent's release criteria use.
 
 ## Rules (`lib/rules/registry.ts`)
 
@@ -66,7 +70,7 @@ stored, decision persisted with audit).
 ## Still open
 
 - VOICE live transcription needs a governed decision (on-premise speech recognition or a processor agreement).
-- COMPASS is not yet fed by loop outcomes; it reads its own aggregates.
-- `/api/audit/shield` accepts panel-written events; move to server-authored events.
+- Done 21 Oct: `/api/audit/shield` now takes only fixed actions and agent labels, the user's own cases, stamps the
+  signed-in account and practice and marks `origin: dashboard_panel`; reads are limited to the caller's practice.
 - Clinical lead sign-off of the registered thresholds; per-organisation guideline selection should pick rule sets.
 - Release criteria per agent (capability register) before any agent runs for real patients.
