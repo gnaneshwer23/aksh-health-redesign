@@ -14,10 +14,34 @@ export const PATIENT_CSV_COLUMNS = [
   "preferred_channel",
   "latest_hba1c_mmol_mol",
   "hba1c_date",
+  "egfr",
+  "urine_acr_mg_mmol",
+  "creatinine_umol_l",
+  "ldl_mmol_l",
+  "total_cholesterol_mmol_l",
+  "hdl_mmol_l",
+  "triglycerides_mmol_l",
+  "alt_u_l",
+  "labs_date",
 ] as const;
 
+/**
+ * Latest laboratory results, one column per result, in the unit named in the column (lib/labs/catalog.ts converts and
+ * range-checks them). labs_date is the date of these results; a result without a date is refused, not guessed.
+ */
+export const LAB_CSV_COLUMNS: { column: (typeof PATIENT_CSV_COLUMNS)[number]; kind: string; unit: string }[] = [
+  { column: "egfr", kind: "egfr", unit: "mL/min/{1.73_m2}" },
+  { column: "urine_acr_mg_mmol", kind: "acr", unit: "mg/mmol" },
+  { column: "creatinine_umol_l", kind: "creatinine", unit: "umol/L" },
+  { column: "ldl_mmol_l", kind: "ldl", unit: "mmol/L" },
+  { column: "total_cholesterol_mmol_l", kind: "total_cholesterol", unit: "mmol/L" },
+  { column: "hdl_mmol_l", kind: "hdl", unit: "mmol/L" },
+  { column: "triglycerides_mmol_l", kind: "triglycerides", unit: "mmol/L" },
+  { column: "alt_u_l", kind: "alt", unit: "U/L" },
+];
+
 export const PATIENT_CSV_TEMPLATE =
-  PATIENT_CSV_COLUMNS.join(",") + "\n" + "MRN-0001,Amara,Okoye,1968-03-14,female,type_2,amara@example.com,+00 0000 000000,sms,62,2026-09-20\n";
+  PATIENT_CSV_COLUMNS.join(",") + "\n" + "MRN-0001,Amara,Okoye,1968-03-14,female,type_2,amara@example.com,+00 0000 000000,sms,62,2026-09-20,58,4.2,110,2.9,4.8,1.1,1.9,32,2026-09-20\n";
 
 export function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -72,6 +96,11 @@ export function csvToPatients(text: string): { patients: Record<string, unknown>
     const email = get(r, "email");
     const phone = get(r, "phone");
     const channel = get(r, "preferred_channel");
+    const labsDate = get(r, "labs_date") ?? "";
+    const labs = LAB_CSV_COLUMNS.flatMap(({ column, kind, unit }) => {
+      const v = get(r, column);
+      return v === undefined ? [] : [{ kind, value: Number(v), unit, observedAt: labsDate, source: "lab" }];
+    });
     return {
       recordRef: get(r, "record_number"),
       givenName: get(r, "given_name"),
@@ -81,8 +110,13 @@ export function csvToPatients(text: string): { patients: Record<string, unknown>
       ...(sex ? { sex } : {}),
       ...(type ? { diabetesType: type } : {}),
       ...(email || phone || channel ? { contact: { ...(email ? { email } : {}), ...(phone ? { phone } : {}), ...(channel ? { preferredChannel: channel } : {}) } } : {}),
-      ...(hba1c
-        ? { observations: [{ kind: "hba1c", value: Number(hba1c), unit: "mmol/mol", observedAt: hba1cDate ?? "", source: "lab" }] }
+      ...(hba1c || labs.length
+        ? {
+            observations: [
+              ...(hba1c ? [{ kind: "hba1c", value: Number(hba1c), unit: "mmol/mol", observedAt: hba1cDate ?? "", source: "lab" }] : []),
+              ...labs,
+            ],
+          }
         : {}),
     };
   });

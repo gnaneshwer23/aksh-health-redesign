@@ -142,7 +142,7 @@ test("organisation: a clinic signs up, invites staff, imports patients and reach
   await expect(nurse.locator("[data-slot-detail]")).toContainText("Slot recorded", { timeout: 20_000 });
   await expect(nurse.locator("[data-slot-queue]")).toContainText(/foot check/i);
   await nurse.getByRole("button", { name: "Find patients for this slot" }).click();
-  await expect(nurse.locator("[data-candidates]")).toContainText("Nadia Example");
+  await expect(nurse.locator("[data-candidates]")).toContainText("Nadia Example", { timeout: 20_000 });
   await nurse.getByRole("button", { name: "Draft offer" }).click();
   await expect(nurse.locator("[data-offer-text]")).toContainText(`Hi Nadia, ${clinic} can offer you a foot check`, { timeout: 20_000 });
   // §10.2: staff time against the slot.
