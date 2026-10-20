@@ -3,6 +3,7 @@
  * slot and booking facts. Pure and strict: anything ambiguous is reported back with a code instead of guessed.
  */
 import { APPOINTMENT_TYPE_LABEL } from "@/lib/access/eligibility";
+import { LAB_CATALOG, labKindForLoinc, normaliseLab, type LabKind } from "@/lib/labs/catalog";
 
 export type ConnectorConfig = { typeMap?: Record<string, string>; offerCloseHours?: number; site?: string };
 
@@ -177,6 +178,89 @@ export const BOOKED_STATUSES = new Set(["booked", "arrived", "fulfilled", "check
 export type ObservationFact =
   | { ok: true; ref: string; at: string; mmol: number; patientIdentifiers: string[] }
   | { ok: false; ref: string | null; code: string; message: string };
+
+/** A laboratory result (lib/labs/catalog.ts), stored in the patient's record rather than the CGM stream. */
+export type LabFact =
+  | {
+      ok: true;
+      lab: true;
+      ref: string;
+      at: string;
+      kind: LabKind;
+      value: number;
+      unit: string;
+      originalValue: number;
+      originalUnit: string;
+      loinc: string;
+      corrected: boolean;
+      patientIdentifiers: string[];
+    }
+  | { ok: false; ref: string | null; code: string; message: string };
+
+const LOINC_SYSTEM = "http://loinc.org";
+
+function loincCodes(code: Json | undefined): string[] {
+  return asArray(code?.coding)
+    .filter((c) => c && typeof c === "object" && (!c.system || String(c.system) === LOINC_SYSTEM))
+    .map((c) => String(c.code ?? "").trim())
+    .filter(Boolean);
+}
+
+function isLaboratory(r: Json): boolean {
+  return asArray(r.category).some((cat) => asArray((cat as Json)?.coding).some((c) => String((c as Json)?.code ?? "") === "laboratory"));
+}
+
+/**
+ * Which path an Observation takes. A LOINC code in the lab catalogue makes it a laboratory result, except glucose,
+ * which is a laboratory result only when Observation.category says "laboratory"; otherwise glucose is a device reading
+ * for the CGM stream (unchanged behaviour for existing device feeds).
+ */
+export function observationRoute(r: Json): "lab" | "glucose" {
+  if (!r || typeof r !== "object") return "glucose";
+  const kind = loincCodes(r.code as Json | undefined).map(labKindForLoinc).find((k): k is LabKind => Boolean(k));
+  if (!kind) return "glucose";
+  if (kind === "glucose" && !isLaboratory(r)) return "glucose";
+  return "lab";
+}
+
+/** A FHIR Observation carrying one laboratory result for a patient identified by the clinic's record number. */
+export function labFromFhir(r: Json): LabFact {
+  if (!r || typeof r !== "object") return { ok: false, ref: null, code: "INVALID_ITEM", message: "Each entry must be an Observation resource" };
+  const ref = str(r.id) ?? null;
+  if (!ref) return { ok: false, ref, code: "MISSING_ID", message: "Observation.id is required for laboratory results (it identifies corrections)" };
+  const status = str(r.status);
+  if (!status || !FINAL.has(status)) return { ok: false, ref, code: "IGNORED_STATUS", message: "Only final, amended or corrected observations are stored" };
+  const loinc = loincCodes(r.code as Json | undefined).find((c) => labKindForLoinc(c));
+  const kind = labKindForLoinc(loinc);
+  if (!loinc || !kind) return { ok: false, ref, code: "UNKNOWN_CODE", message: "Observation.code has no LOINC code Aksh accepts" };
+  const q = r.valueQuantity as Json | undefined;
+  if (!q) return { ok: false, ref, code: "INVALID_VALUE", message: "valueQuantity is required" };
+  if (q.comparator !== undefined) return { ok: false, ref, code: "INEXACT_VALUE", message: "valueQuantity.comparator (<, >, <=, >=) marks a bound, not a result" };
+  const value = typeof q.value === "number" ? q.value : NaN;
+  const unit = String(q.code ?? q.unit ?? "");
+  const v = normaliseLab(kind, value, unit);
+  if (!v.ok) return { ok: false, ref, code: v.code, message: v.message };
+  const t = instant(r.effectiveDateTime ?? r.effectiveInstant ?? r.issued);
+  if (Number.isNaN(t)) return { ok: false, ref, code: "INVALID_TIME", message: "effectiveDateTime must include an offset (Z or +hh:mm)" };
+  if (t > Date.now() + 5 * 60_000) return { ok: false, ref, code: "FUTURE_TIME", message: "Observation time is in the future" };
+  const subject = r.subject as Json | undefined;
+  const ids = [str((subject?.identifier as Json | undefined)?.value)].filter((x): x is string => Boolean(x));
+  if (!ids.length) return { ok: false, ref, code: "NO_PATIENT_IDENTIFIER", message: "Observation.subject.identifier.value must be the patient's record number" };
+  return {
+    ok: true,
+    lab: true,
+    ref,
+    at: new Date(t).toISOString(),
+    kind,
+    value: v.value,
+    unit: LAB_CATALOG[kind].unit,
+    originalValue: v.originalValue,
+    originalUnit: v.originalUnit,
+    loinc,
+    corrected: status !== "final",
+    patientIdentifiers: ids,
+  };
+}
 
 /** LOINC codes for glucose concentration (blood, serum/plasma, capillary, interstitial/body fluid). */
 const GLUCOSE_LOINC = new Set(["15074-8", "2339-0", "2345-7", "14743-9", "14745-4", "41653-7", "41652-9", "2340-8", "2341-6"]);

@@ -69,7 +69,8 @@ type FactRow = {
  * Readings that count clinically: not entered in error, and patient-reported or device values only once verified
  * (device data from staff imports and device feeds is verified on entry; a patient's own export is not). Unverified patient readings are shown separately (review list), never folded into risk or care gaps.
  */
-const COUNTS = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified)`;
+// Corrected lab results (041) keep the original row; a row that has been replaced no longer counts.
+const COUNTS = `x.status = 'final' AND (x.source NOT IN ('patient_reported', 'device') OR x.verified) AND NOT EXISTS (SELECT 1 FROM aksh.network_observations c WHERE c.replaces_id = x.id)`;
 const latestOf = (kind: string) =>
   `(SELECT value::float FROM aksh.network_observations x WHERE x.patient_id = p.id AND x.kind = '${kind}' AND ${COUNTS} ORDER BY observed_at DESC, recorded_at DESC LIMIT 1)`;
 

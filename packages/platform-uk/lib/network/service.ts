@@ -5,6 +5,8 @@
  */
 import { z } from "zod";
 
+import { isLabKind, normaliseLab } from "@/lib/labs/catalog";
+
 import { getDeploymentEnvironment } from "@/lib/env/deployment";
 
 import { generateInviteCode, hashInviteCode } from "./codes";
@@ -215,13 +217,28 @@ export async function acceptPatientInvite(
   });
 }
 
-const observationSchema = z.object({
-  kind: z.enum(["hba1c", "glucose", "systolic_bp", "diastolic_bp", "weight", "bmi", "egfr", "acr", "ldl", "cgm_time_in_range", "cgm_time_below_range", "hypo_event"]),
-  value: z.number().finite(),
-  unit: z.string().min(1).max(16),
-  observedAt: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
-  source: z.enum(["lab", "clinic", "device", "patient_reported"]),
-});
+const observationSchema = z
+  .object({
+    kind: z.enum([
+      "hba1c", "glucose", "systolic_bp", "diastolic_bp", "weight", "bmi", "egfr", "acr", "ldl",
+      "total_cholesterol", "hdl", "triglycerides", "creatinine", "alt",
+      "cgm_time_in_range", "cgm_time_below_range", "hypo_event",
+    ]),
+    value: z.number().finite(),
+    unit: z.string().min(1).max(24),
+    observedAt: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+    source: z.enum(["lab", "clinic", "device", "patient_reported"]),
+  })
+  // Laboratory kinds are converted to the stored unit and range-checked (lib/labs/catalog.ts); the value as entered is kept.
+  .transform((o, ctx) => {
+    if (!isLabKind(o.kind)) return { ...o, originalValue: null as number | null, originalUnit: null as string | null };
+    const v = normaliseLab(o.kind, o.value, o.unit);
+    if (!v.ok) {
+      ctx.addIssue({ code: "custom", path: ["value"], message: v.message });
+      return z.NEVER;
+    }
+    return { ...o, value: v.value, unit: v.unit, originalValue: v.originalValue, originalUnit: v.originalUnit };
+  });
 
 const medicationSchema = z.object({
   name: z.string().min(1).max(120),
@@ -252,7 +269,9 @@ export const importPatientSchema = z.object({
 export const importPatientsSchema = z.object({ patients: z.array(importPatientSchema).min(1).max(100) });
 
 /** Import or update patients for an organisation (idempotent on record reference), with history. */
-export async function importPatients(ctx: NetworkContext, orgId: string, input: z.infer<typeof importPatientsSchema>) {
+export async function importPatients(ctx: NetworkContext, orgId: string, raw: z.input<typeof importPatientsSchema>) {
+  // Parsed here as well as in the route: laboratory values are converted and range-checked on every path (idempotent).
+  const input = importPatientsSchema.parse(raw);
   if (!ctx.orgIds.includes(orgId) || (!CLINICAL_ROLES.has(ctx.role ?? "") && !ctx.adminOrgIds.includes(orgId))) {
     throw new NetworkError("Your role cannot import patients for this organisation", 403);
   }
@@ -277,9 +296,9 @@ export async function importPatients(ctx: NetworkContext, orgId: string, input: 
       if (created) {
         for (const o of p.observations ?? []) {
           await client.query(
-            `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [id, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId]
+            `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, original_value, original_unit, channel)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'csv_import')`,
+            [id, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId, o.originalValue, o.originalUnit]
           );
         }
         for (const m of p.medications ?? []) {
@@ -310,7 +329,8 @@ export const patientRecordSchema = z.discriminatedUnion("type", [
 ]);
 
 /** Add an observation, medicine, care-team member or consent record to a patient. RLS enforces scope. */
-export async function addPatientRecord(ctx: NetworkContext, patientId: string, input: z.infer<typeof patientRecordSchema>) {
+export async function addPatientRecord(ctx: NetworkContext, patientId: string, raw: z.input<typeof patientRecordSchema>) {
+  const input = patientRecordSchema.parse(raw);
   const isPatientSelf = ctx.patientIds.includes(patientId);
   if (input.type === "observation" && isPatientSelf && input.observation.source !== "patient_reported") {
     throw new NetworkError("Patients can only add patient-reported readings", 403);
@@ -336,9 +356,9 @@ export async function addPatientRecord(ctx: NetworkContext, patientId: string, i
     if (input.type === "observation") {
       const o = input.observation;
       const r = await client.query<{ id: string }>(
-        `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-        [patientId, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId]
+        `INSERT INTO aksh.network_observations (patient_id, kind, value, unit, observed_at, source, verified, recorded_by, original_value, original_unit, channel)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'manual') RETURNING id`,
+        [patientId, o.kind, o.value, o.unit, o.observedAt, o.source, o.source === "lab" || o.source === "clinic" || o.source === "device", ctx.userId, o.originalValue, o.originalUnit]
       );
       id = r.rows[0]!.id;
     } else if (input.type === "medication") {

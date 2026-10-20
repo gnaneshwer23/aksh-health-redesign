@@ -65,6 +65,7 @@ export const PILLARS: { key: "access" | "clinical"; title: string; subtitle: str
     items: byStatus([
       item("cgm_monitoring", "CGM and shared readings as one worklist, low glucose first. The clinician decides the response."),
       item("patient_readings", "Glucose, blood pressure and weight from the patient app, marked patient-reported until checked."),
+      item("lab_results"),
       item("review_queue"),
       item("notes_coding"),
       item("medication_safety_referrals", "Interaction, allergy and low-glucose risk flags, and referral drafts. Explains; never sets or changes a dose."),
