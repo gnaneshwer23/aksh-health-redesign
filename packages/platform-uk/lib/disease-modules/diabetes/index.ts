@@ -182,7 +182,7 @@ export function buildDiabetesRiskContribution(
     "COMPLICATIONS",
     () =>
       DIABETES_COMPLICATION_DOMAINS.map((domain) =>
-        buildComplicationSignal(context, domain, bundle.complicationEvidence?.[domain] ?? [], bundle.labs)
+        buildComplicationSignal(context, domain, bundle.complicationEvidence?.[domain] ?? [], bundle.labs, undefined, bundle.targets)
       ),
     [] as ComplicationSignal[]
   );

@@ -1,4 +1,5 @@
 import type { LabSnapshot } from "../../labs/snapshot";
+import type { OrgTargets } from "../../rules/targets";
 import type {
   DiabetesGlucoseReading,
   DiabetesHbA1cReading,
@@ -71,6 +72,8 @@ export type DiabetesFixtureBundle = {
   complicationEvidence: Partial<Record<DiabetesComplicationDomain, string[]>>;
   /** Latest trusted laboratory results (care-network patients); fixtures have none. */
   labs?: LabSnapshot;
+  /** The organisation's clinical targets (lib/rules/targets.ts); defaults when absent. */
+  targets?: OrgTargets;
 };
 
 export const EMPTY_DIABETES_FIXTURE_BUNDLE: DiabetesFixtureBundle = {

@@ -29,6 +29,7 @@
 
 import { hba1cMmolFromPercent } from "../../units";
 import type { LabSnapshot } from "../../labs/snapshot";
+import type { OrgTargets } from "../../rules/targets";
 import { recordPatientStateFact, listPatientStateFacts } from "../../patient-state/repository";
 import type { PatientStateFactSource } from "../../patient-state/types";
 import type { DiabetesGlucoseReading, DiabetesHbA1cReading } from "./types";
@@ -160,7 +161,7 @@ export type DiabetesPatientStateOverrides = {
 };
 
 /** Readings from the care network (trusted CGM, recorded HbA1c) for a care-network patient. */
-export type CareNetworkDiabetesReadings = { glucoseReadings: DiabetesGlucoseReading[]; hba1cReadings: DiabetesHbA1cReading[]; labs?: LabSnapshot };
+export type CareNetworkDiabetesReadings = { glucoseReadings: DiabetesGlucoseReading[]; hba1cReadings: DiabetesHbA1cReading[]; labs?: LabSnapshot; targets?: OrgTargets };
 
 /**
  * Builds the `input` override + provenance flags for
@@ -194,6 +195,7 @@ export async function loadDiabetesPatientStateOverrides(
     overrides.hba1cReadingsSource = "care_network_cgm";
   }
 
+  if (options?.careNetwork?.targets) input.targets = options.careNetwork.targets;
   if (options?.careNetwork?.labs && Object.keys(options.careNetwork.labs).length) {
     input.labs = options.careNetwork.labs;
     overrides.labsSource = "care_network_lab";

@@ -8,6 +8,7 @@ import path from "node:path";
 
 import { LAB_RULE_VERSION, LAB_RULES } from "../lib/disease-modules/diabetes/complications";
 import { RULES } from "../lib/rules/registry";
+import { ORG_TARGETS } from "../lib/rules/targets";
 
 const root = path.join(__dirname, "..");
 const ids = RULES.map((r) => r.id);
@@ -22,6 +23,14 @@ for (const r of RULES) {
 }
 // Every laboratory rule carries the version the complication signals report.
 for (const r of RULES.filter((x) => x.codeRef.file.endsWith("complications.ts"))) assert.equal(r.version, LAB_RULE_VERSION, `${r.id}: version matches LAB_RULE_VERSION`);
+// Organisation targets and their rules point at each other.
+for (const t of Object.values(ORG_TARGETS)) {
+  const r = RULES.find((x) => x.id === t.ruleId);
+  assert.ok(r, `${t.ruleId} (target ${t.key}) is registered`);
+  assert.equal(r!.parameter, t.key);
+  assert.ok(t.options.some((o) => o.value === t.defaultValue), `${t.key}: default is one of the options`);
+}
+for (const r of RULES.filter((x) => x.parameter)) assert.equal(ORG_TARGETS[r.parameter!].ruleId, r.id);
 // Every rule the complication checks apply is registered.
 for (const def of Object.values(LAB_RULES)) for (const r of def!.rules) assert.ok(ids.includes(r.ruleId), `${r.ruleId} is registered`);
 // Clinical thresholds await sign-off; only data-quality and workflow rules are operational.

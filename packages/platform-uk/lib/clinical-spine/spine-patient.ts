@@ -16,6 +16,7 @@ import type { Patient } from "../mock-data/types";
 import type { CareNetworkDiabetesReadings } from "../disease-modules/diabetes/ingest";
 import { LAB_KINDS, type LabKind } from "../labs/catalog";
 import type { LabSnapshot } from "../labs/snapshot";
+import { orgTargets } from "../rules/targets";
 import { withTenant, type NetworkContext } from "../network/db";
 import { NetworkError } from "../network/service";
 
@@ -41,9 +42,10 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
   if (isRealWorkspace()) throw new TrackBClosedError();
   if (!CLINICIAN_ROLES.has(ctx.role ?? "")) throw new NetworkError("Only clinicians run a clinical review", 403);
   return withTenant(ctx, async (client) => {
-    const p = (await client.query<{ id: string; record_ref: string | null; given_name: string; family_name: string; dob: string; sex: string | null; diabetes_type: string | null; conditions: string[]; organisation: string | null; next_appointment: Date | null }>(
+    const p = (await client.query<{ id: string; record_ref: string | null; given_name: string; family_name: string; dob: string; sex: string | null; diabetes_type: string | null; conditions: string[]; organisation: string | null; next_appointment: Date | null; locale: Record<string, unknown> | null }>(
       `SELECT p.id, p.record_ref, p.given_name, p.family_name, to_char(p.date_of_birth, 'YYYY-MM-DD') AS dob, p.sex, p.diabetes_type, p.conditions,
-              (SELECT o.name FROM aksh.organisations o WHERE o.id = p.organisation_id) AS organisation, p.next_appointment
+              (SELECT o.name FROM aksh.organisations o WHERE o.id = p.organisation_id) AS organisation, p.next_appointment,
+              (SELECT o.locale FROM aksh.organisations o WHERE o.id = p.organisation_id) AS locale
        FROM aksh.network_patients p WHERE p.id = $1`,
       [patientId]
     )).rows[0];
@@ -108,6 +110,7 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
       glucoseReadings: cgm.map((r) => ({ recordedAt: r.at.toISOString(), glucoseMgDl: Math.round(r.mmol * MG_PER_MMOL), context: "unspecified" as const })),
       hba1cReadings: hba1c,
       labs,
+      targets: orgTargets(p.locale),
     };
     return {
       patient,
