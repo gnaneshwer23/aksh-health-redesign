@@ -123,13 +123,13 @@ async function run() {
   assert.equal(contribution.signals.hba1c.trend, "worsening");
   assert.equal(contribution.signals.hba1c.isDiagnosticPrediction, false);
   if (contribution.signals.hba1c.readingsSource === "fixture") {
-    assert.equal(contribution.signals.hba1c.latestValuePercent, 8.4);
+    assert.equal(contribution.signals.hba1c.latestValueMmolMol, 68);
   } else {
     assert.equal(contribution.signals.hba1c.readingsSource, "patient_state_ingest");
     assert.ok(
-      typeof contribution.signals.hba1c.latestValuePercent === "number" &&
-        contribution.signals.hba1c.latestValuePercent >= 8.0,
-      `ingest-backed P002 latest HbA1c should remain elevated, got ${contribution.signals.hba1c.latestValuePercent}`
+      typeof contribution.signals.hba1c.latestValueMmolMol === "number" &&
+        contribution.signals.hba1c.latestValueMmolMol >= 64,
+      `ingest-backed P002 latest HbA1c should remain elevated, got ${contribution.signals.hba1c.latestValueMmolMol}`
     );
   }
 
@@ -204,7 +204,7 @@ async function run() {
   );
   // P026 has a single HbA1c reading — trend must be insufficient_data, never fabricated
   assert.equal(p026Result.diabetes!.signals.hba1c.trend, "insufficient_data");
-  assert.equal(p026Result.diabetes!.signals.hba1c.predictedNext3MonthsPercent, null);
+  assert.equal(p026Result.diabetes!.signals.hba1c.predictedNext3MonthsMmolMol, null);
 
   // ==========================================================================
   // 5. Improving patient (P007 — well-controlled, no complications)
@@ -242,38 +242,38 @@ async function run() {
   // --- HbA1c: no readings -> insufficient_data, never fabricates a value ---
   const hba1cNone = buildHbA1cSignal({ patientId: "UNIT-TEST" }, []);
   assert.equal(hba1cNone.trend, "insufficient_data");
-  assert.equal(hba1cNone.latestValuePercent, null);
-  assert.equal(hba1cNone.predictedNext3MonthsPercent, null);
+  assert.equal(hba1cNone.latestValueMmolMol, null);
+  assert.equal(hba1cNone.predictedNext3MonthsMmolMol, null);
 
   // --- HbA1c: one reading -> insufficient_data (needs >=2 for a trend) ---
   const hba1cOne = buildHbA1cSignal({ patientId: "UNIT-TEST" }, [
-    { recordedAt: "2026-01-01T00:00:00.000Z", valuePercent: 7.0 }
+    { recordedAt: "2026-01-01T00:00:00.000Z", valueMmolMol: 53 }
   ]);
   assert.equal(hba1cOne.trend, "insufficient_data");
-  assert.equal(hba1cOne.latestValuePercent, 7.0);
+  assert.equal(hba1cOne.latestValueMmolMol, 53);
 
   // --- HbA1c: two readings, improving ---
   const hba1cImproving = buildHbA1cSignal({ patientId: "UNIT-TEST" }, [
-    { recordedAt: "2026-01-01T00:00:00.000Z", valuePercent: 8.0 },
-    { recordedAt: "2026-04-01T00:00:00.000Z", valuePercent: 7.4 }
+    { recordedAt: "2026-01-01T00:00:00.000Z", valueMmolMol: 64 },
+    { recordedAt: "2026-04-01T00:00:00.000Z", valueMmolMol: 57 }
   ]);
   assert.equal(hba1cImproving.trend, "improving");
-  assert.ok(hba1cImproving.predictedNext3MonthsPercent !== null);
+  assert.ok(hba1cImproving.predictedNext3MonthsMmolMol !== null);
   assert.equal(hba1cImproving.isDiagnosticPrediction, false);
 
   // --- HbA1c: two readings, stable (delta within band) ---
   const hba1cStable = buildHbA1cSignal({ patientId: "UNIT-TEST" }, [
-    { recordedAt: "2026-01-01T00:00:00.000Z", valuePercent: 7.0 },
-    { recordedAt: "2026-04-01T00:00:00.000Z", valuePercent: 7.05 }
+    { recordedAt: "2026-01-01T00:00:00.000Z", valueMmolMol: 53 },
+    { recordedAt: "2026-04-01T00:00:00.000Z", valueMmolMol: 54 }
   ]);
   assert.equal(hba1cStable.trend, "stable");
 
   // --- HbA1c: extreme delta clamps to plausible range, never returns an implausible value ---
   const hba1cExtreme = buildHbA1cSignal({ patientId: "UNIT-TEST" }, [
-    { recordedAt: "2026-01-01T00:00:00.000Z", valuePercent: 6.0 },
-    { recordedAt: "2026-01-15T00:00:00.000Z", valuePercent: 14.5 }
+    { recordedAt: "2026-01-01T00:00:00.000Z", valueMmolMol: 42 },
+    { recordedAt: "2026-01-15T00:00:00.000Z", valueMmolMol: 135 }
   ]);
-  assert.ok(hba1cExtreme.predictedNext3MonthsPercent === null || hba1cExtreme.predictedNext3MonthsPercent! <= 15);
+  assert.ok(hba1cExtreme.predictedNext3MonthsMmolMol === null || hba1cExtreme.predictedNext3MonthsMmolMol! <= 140);
 
   // --- Complications: evidence-count heuristic (0/1/2+) ---
   const complicationsNone = buildComplicationSignal({ patientId: "UNIT-TEST" }, "retinopathy", []);

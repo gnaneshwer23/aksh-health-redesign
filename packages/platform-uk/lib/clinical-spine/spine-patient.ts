@@ -14,6 +14,8 @@ import { CLINICIAN_ROLES, isRealWorkspace, TRACK_B_NOT_OPEN } from "../env/works
 import { registerSpinePatient } from "../mock-data/patients";
 import type { Patient } from "../mock-data/types";
 import type { CareNetworkDiabetesReadings } from "../disease-modules/diabetes/ingest";
+import { LAB_KINDS, type LabKind } from "../labs/catalog";
+import type { LabSnapshot } from "../labs/snapshot";
 import { withTenant, type NetworkContext } from "../network/db";
 import { NetworkError } from "../network/service";
 
@@ -30,7 +32,10 @@ export class TrackBClosedError extends NetworkError {
   }
 }
 
-export type SpinePatient = { patient: Patient; careNetwork: CareNetworkDiabetesReadings; provenance: { patientSource: "care_network"; glucoseSource: "care_network_cgm" | "none"; cgmReadings: number; hba1cReadings: number } };
+export type SpinePatient = { patient: Patient; careNetwork: CareNetworkDiabetesReadings; provenance: { patientSource: "care_network"; glucoseSource: "care_network_cgm" | "none"; cgmReadings: number; hba1cReadings: number; labResults: number } };
+
+/** Laboratory kinds the agents read as a snapshot (HbA1c has its own series; laboratory glucose is not used yet). */
+const SNAPSHOT_KINDS = LAB_KINDS.filter((k) => k !== "hba1c" && k !== "glucose");
 
 export async function loadSpinePatient(ctx: NetworkContext, patientId: string, now = new Date()): Promise<SpinePatient> {
   if (isRealWorkspace()) throw new TrackBClosedError();
@@ -52,6 +57,17 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
        WHERE x.patient_id = $1 AND x.kind IN ('hba1c', 'systolic_bp', 'diastolic_bp') AND ${TRUSTED} ORDER BY x.observed_at`,
       [patientId]
     )).rows;
+    // Latest trusted result of each laboratory kind, with its provenance (lib/labs/snapshot.ts).
+    const labRows = (await client.query<{ kind: LabKind; value: number; unit: string; observed_at: Date; channel: string | null; code: string | null; corrected: boolean }>(
+      `SELECT DISTINCT ON (x.kind) x.kind, x.value::float AS value, x.unit, x.observed_at, x.channel, x.code, (x.replaces_id IS NOT NULL) AS corrected
+         FROM aksh.network_observations x
+        WHERE x.patient_id = $1 AND x.kind = ANY($2) AND ${TRUSTED}
+        ORDER BY x.kind, x.observed_at DESC, x.recorded_at DESC`,
+      [patientId, SNAPSHOT_KINDS]
+    )).rows;
+    const labs: LabSnapshot = Object.fromEntries(
+      labRows.map((r) => [r.kind, { kind: r.kind, value: r.value, unit: r.unit, observedAt: r.observed_at.toISOString(), channel: r.channel, code: r.code, corrected: r.corrected }])
+    );
     const cgm = (await client.query<{ at: Date; mmol: number }>(
       `SELECT at, mmol::float AS mmol FROM aksh.cgm_trusted_readings WHERE patient_id = $1 AND at > $2::timestamptz - INTERVAL '14 days' AND at <= $2 ORDER BY at`,
       [patientId, now]
@@ -61,7 +77,7 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
     const age = Math.floor((now.getTime() - born.getTime()) / (365.25 * 86_400_000));
     const sys = obs.filter((o) => o.kind === "systolic_bp").at(-1);
     const dia = obs.filter((o) => o.kind === "diastolic_bp").at(-1);
-    const hba1c = obs.filter((o) => o.kind === "hba1c").map((o) => ({ recordedAt: o.observed_at.toISOString(), valuePercent: hba1cPercent(o.value) }));
+    const hba1c = obs.filter((o) => o.kind === "hba1c").map((o) => ({ recordedAt: o.observed_at.toISOString(), valueMmolMol: o.value }));
     const conditions = [...(p.diabetes_type ? [`Diabetes (${p.diabetes_type.replace(/_/g, " ")})`] : []), ...(p.conditions ?? [])];
     const diabetic = Boolean(p.diabetes_type && p.diabetes_type !== "none");
     const patient: Patient = {
@@ -91,11 +107,12 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
     const careNetwork: CareNetworkDiabetesReadings = {
       glucoseReadings: cgm.map((r) => ({ recordedAt: r.at.toISOString(), glucoseMgDl: Math.round(r.mmol * MG_PER_MMOL), context: "unspecified" as const })),
       hba1cReadings: hba1c,
+      labs,
     };
     return {
       patient,
       careNetwork,
-      provenance: { patientSource: "care_network", glucoseSource: cgm.length ? "care_network_cgm" : "none", cgmReadings: cgm.length, hba1cReadings: hba1c.length },
+      provenance: { patientSource: "care_network", glucoseSource: cgm.length ? "care_network_cgm" : "none", cgmReadings: cgm.length, hba1cReadings: hba1c.length, labResults: labRows.length },
     };
   });
 }

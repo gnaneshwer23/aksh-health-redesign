@@ -13,6 +13,7 @@ import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 import { LAB_CATALOG, labKindForLoinc, normaliseLab } from "../lib/labs/catalog";
 import { loadNetworkContext } from "../lib/network/context";
+import { loadSpinePatient } from "../lib/clinical-spine/spine-patient";
 import { getPatientDetail } from "../lib/network/read";
 import { acceptStaffInvite, addPatientRecord, createInvite, createOrganisation, importPatients } from "../lib/network/service";
 
@@ -167,11 +168,31 @@ async function run() {
     const cr = (await getPgPool().query(`SELECT value::float AS value, unit, channel FROM aksh.network_observations WHERE patient_id = $1 AND kind = 'creatinine'`, [patient!.id])).rows[0]!;
     assert.deepEqual([cr.value, cr.unit, cr.channel], [106, "umol/L", "manual"]);
     await assert.rejects(addPatientRecord(gpCtx, patient!.id, { type: "observation", observation: { kind: "hba1c", value: 7.2, unit: "mmol/mol", observedAt: "2026-10-02", source: "lab" } } as never));
+
+    // The agents' patient view carries the latest trusted lab results with provenance; HbA1c in mmol/mol.
+    const spine = await loadSpinePatient(gpCtx, patient!.id, new Date("2026-10-20T00:00:00Z"));
+    assert.equal(spine.careNetwork.labs?.egfr?.value, 52);
+    assert.equal(spine.careNetwork.labs?.egfr?.channel, "connector");
+    assert.equal(spine.careNetwork.labs?.creatinine?.value, 106);
+    assert.equal(spine.careNetwork.labs?.ldl?.value, 3.4);
+    assert.deepEqual(spine.careNetwork.hba1cReadings.map((r) => r.valueMmolMol), [58], "corrected HbA1c, in mmol/mol");
+    assert.ok(spine.provenance.labResults >= 3);
+
+    // The patient record's lab table: latest, source, and the core checks shown as missing when absent.
+    const record = await getPatientDetail(gpCtx, patient!.id);
+    const egfrRow = record!.labs.find((r) => r.kind === "egfr")!;
+    assert.equal(egfrRow.latest?.value, 52);
+    assert.equal(egfrRow.latest?.channel, "connector");
+    assert.equal(egfrRow.latest?.code, "33914-3");
+    const acrRow = record!.labs.find((r) => r.kind === "acr")!;
+    assert.equal(acrRow.latest, null, "urine ACR not on record is shown as missing");
+    const crRow = record!.labs.find((r) => r.kind === "creatinine")!;
+    assert.equal(crRow.latest?.asSent, "1.2 mg/dL", "the value as entered is shown when it was converted");
   } finally {
     // Records are append-only (organisations cannot be deleted while they hold patients); test rows stay in the
     // simulation database under their unique tag, like the other database suites.
   }
-  console.log("lab-results: catalogue, FHIR routing, connector provenance, duplicates, corrections kept and applied, manual units — PASS");
+  console.log("lab-results: catalogue, FHIR routing, connector provenance, duplicates, corrections kept and applied, manual units, agents' lab view, record lab table — PASS");
 }
 
 run()

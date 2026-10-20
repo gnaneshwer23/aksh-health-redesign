@@ -23,7 +23,7 @@ export type PatientChatChartContext = {
     recommendation: string;
   }>;
   diabetes: {
-    hba1c: Array<{ recordedAt: string; valuePercent: number }>;
+    hba1c: Array<{ recordedAt: string; valueMmolMol: number }>;
     glucose: Array<{ recordedAt: string; glucoseMgDl: number; context?: string }>;
     insulinNotes: string | null;
   };
@@ -172,7 +172,7 @@ export async function loadPatientChatContext(
     diabetes: {
       hba1c: diabetesBundle.hba1cReadings.map((r) => ({
         recordedAt: r.recordedAt,
-        valuePercent: r.valuePercent,
+        valueMmolMol: r.valueMmolMol,
       })),
       glucose: diabetesBundle.glucoseReadings.map((r) => ({
         recordedAt: r.recordedAt,
@@ -190,7 +190,7 @@ export function formatPatientChatContextForPrompt(ctx: PatientChatChartContext):
   const hba1c =
     ctx.diabetes.hba1c.length > 0
       ? ctx.diabetes.hba1c
-          .map((r) => `${r.valuePercent}% @ ${r.recordedAt.slice(0, 10)}`)
+          .map((r) => `${r.valueMmolMol} mmol/mol @ ${r.recordedAt.slice(0, 10)}`)
           .join("; ")
       : "none in fixture";
   const glucose =

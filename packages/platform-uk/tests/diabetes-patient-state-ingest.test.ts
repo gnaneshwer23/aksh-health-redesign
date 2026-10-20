@@ -70,13 +70,13 @@ async function testHbA1cIngestRoundTrip() {
   const patientId = `test-diab-hba1c-${Date.now()}`;
   const options = { scopeKey };
 
-  await recordDiabetesHbA1cReading({ patientId, reading: { recordedAt: "2026-02-01T00:00:00.000Z", valuePercent: 8.2 } }, options);
-  await recordDiabetesHbA1cReading({ patientId, reading: { recordedAt: "2026-08-01T00:00:00.000Z", valuePercent: 7.3 } }, options);
+  await recordDiabetesHbA1cReading({ patientId, reading: { recordedAt: "2026-02-01T00:00:00.000Z", valueMmolMol: 66 } }, options);
+  await recordDiabetesHbA1cReading({ patientId, reading: { recordedAt: "2026-08-01T00:00:00.000Z", valueMmolMol: 56 } }, options);
 
   const { hba1cReadings } = await loadIngestedDiabetesReadings(patientId, options);
   assert.equal(hba1cReadings.length, 2);
-  assert.equal(hba1cReadings[0].valuePercent, 8.2);
-  assert.equal(hba1cReadings[1].valuePercent, 7.3);
+  assert.equal(hba1cReadings[0].valueMmolMol, 66);
+  assert.equal(hba1cReadings[1].valueMmolMol, 56);
 
   const overrides = await loadDiabetesPatientStateOverrides(patientId, options);
   assert.equal(overrides.hba1cReadingsSource, "patient_state_ingest");
@@ -90,7 +90,7 @@ async function testHbA1cIngestRoundTrip() {
   );
   assert.equal(contribution.signals.hba1c.readingsSource, "patient_state_ingest");
   assert.equal(contribution.signals.hba1c.trend, "improving", "real two-point trend derivation runs over ingested HbA1c readings");
-  assert.equal(contribution.signals.hba1c.latestValuePercent, 7.3);
+  assert.equal(contribution.signals.hba1c.latestValueMmolMol, 56);
 
   console.log("Diabetes Patient State ingest: HbA1c round-trip + real trend derivation over ingested data passed.");
 }
@@ -114,7 +114,7 @@ function testGlucoseNeverDerivesRealPatternRegardlessOfSource() {
 
 function testHbA1cDefaultSourceIsFixture() {
   const signal = buildHbA1cSignal({ patientId: "UNIT-TEST" }, [
-    { recordedAt: "2026-01-01T00:00:00.000Z", valuePercent: 7.0 }
+    { recordedAt: "2026-01-01T00:00:00.000Z", valueMmolMol: 53 }
   ]);
   assert.equal(signal.readingsSource, "fixture");
   console.log("Diabetes Patient State ingest: HbA1c default readingsSource is 'fixture' when unspecified.");

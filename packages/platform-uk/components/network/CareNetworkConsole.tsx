@@ -59,6 +59,66 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
+/** A small trend line scaled to the values themselves (lab results span very different ranges). */
+function MiniTrend({ values }: { values: number[] }) {
+  if (values.length < 2) return null;
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const pad = (hi - lo || Math.abs(hi) || 1) * 0.2;
+  const pts = values.map((v, i) => `${(i / (values.length - 1)) * 56},${18 - ((v - (lo - pad)) / (hi - lo + 2 * pad)) * 16}`).join(" ");
+  return (
+    <svg width="56" height="20" viewBox="0 0 56 20" aria-hidden>
+      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-secondary" />
+    </svg>
+  );
+}
+
+const CHANNEL_LABEL: Record<string, string> = { connector: "Lab feed", manual: "Entered by staff", csv_import: "Imported", patient_app: "Patient app", cgm: "CGM" };
+
+/** Laboratory results: latest value, change, trend, date and where it came from. Missing core checks are shown as missing. */
+function LabResults({ rows }: { rows: PatientDetail["labs"] }) {
+  if (!rows.length) return null;
+  return (
+    <div data-lab-results>
+      <p className="mb-1 text-xs font-medium text-foreground">Laboratory results</p>
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="text-left text-muted">
+            <th className="py-1 font-normal">Result</th>
+            <th className="py-1 font-normal">Latest</th>
+            <th className="py-1 font-normal">Trend</th>
+            <th className="py-1 font-normal">Date · source</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.kind} className="border-t border-border-subtle align-top" data-lab={r.kind}>
+              <td className="py-1 pr-2 text-foreground">{r.label}</td>
+              {r.latest ? (
+                <>
+                  <td className="py-1 pr-2 text-foreground">
+                    {r.latest.value} {r.unit}
+                    {r.change !== null && r.change !== 0 ? <span className="text-muted"> ({r.change > 0 ? "+" : ""}{r.change})</span> : null}
+                    {r.latest.asSent ? <span className="block text-muted">sent as {r.latest.asSent}</span> : null}
+                  </td>
+                  <td className="py-1 pr-2"><MiniTrend values={r.history.map((h) => h.value)} /></td>
+                  <td className="py-1 text-muted">
+                    {r.latest.observedAt} · {r.latest.channel ? CHANNEL_LABEL[r.latest.channel] ?? r.latest.channel : "Recorded"}
+                    {r.latest.code ? ` · LOINC ${r.latest.code}` : ""}
+                    {r.latest.corrected ? <span className="ml-1 rounded bg-warning/15 px-1 text-warning">corrected</span> : null}
+                  </td>
+                </>
+              ) : (
+                <td colSpan={3} className="py-1 text-warning" data-lab-missing>Not on record</td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 const TAB_LABEL: Record<Tab, string> = { overview: "Summary", patients: "Patients", professionals: "Care team", organisations: "Organisations" };
 
 /** `simple` (real workspace): opens on the patient list; no cross-organisation directory tab. */
@@ -284,11 +344,10 @@ export function CareNetworkConsole({ simple = false }: { simple?: boolean }) {
                     <dl className="grid grid-cols-2 gap-2 text-xs">
                       <div><dt className="text-muted">BP</dt><dd className="m-0 text-foreground">{detail.vitals.systolic ?? "–"}/{detail.vitals.diastolic ?? "–"} mmHg</dd></div>
                       <div><dt className="text-muted">BMI</dt><dd className="m-0 text-foreground">{detail.vitals.bmi ?? "–"}</dd></div>
-                      <div><dt className="text-muted">eGFR · urine ACR</dt><dd className="m-0 text-foreground">{detail.vitals.egfr ?? "–"} · {detail.vitals.acr ?? "–"} mg/mmol</dd></div>
-                      <div><dt className="text-muted">LDL</dt><dd className="m-0 text-foreground">{detail.vitals.ldl ?? "–"} mmol/L</dd></div>
                       <div><dt className="text-muted">Hypos (90 days)</dt><dd className="m-0 text-foreground">{detail.vitals.hypos90d}</dd></div>
                       <div><dt className="text-muted">Foot risk</dt><dd className="m-0 text-foreground">{detail.vitals.footRisk ?? "not recorded"}</dd></div>
                     </dl>
+                    <LabResults rows={detail.labs} />
                     {detail.cgm ? (
                       <p className="rounded-lg bg-surface-muted px-3 py-2 text-xs">CGM: time in range {detail.cgm.timeInRangePct}%{detail.cgm.timeBelowRangePct !== null ? `, below range ${detail.cgm.timeBelowRangePct}%` : ""}</p>
                     ) : null}

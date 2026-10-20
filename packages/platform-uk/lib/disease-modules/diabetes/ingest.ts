@@ -27,6 +27,8 @@
  * honest `insufficient_data` stub regardless of where readings came from.
  */
 
+import { hba1cMmolFromPercent } from "../../units";
+import type { LabSnapshot } from "../../labs/snapshot";
 import { recordPatientStateFact, listPatientStateFacts } from "../../patient-state/repository";
 import type { PatientStateFactSource } from "../../patient-state/types";
 import type { DiabetesGlucoseReading, DiabetesHbA1cReading } from "./types";
@@ -96,13 +98,14 @@ function isGlucoseReadingShape(value: unknown): value is DiabetesGlucoseReading 
   );
 }
 
-function isHbA1cReadingShape(value: unknown): value is DiabetesHbA1cReading {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    typeof (value as DiabetesHbA1cReading).recordedAt === "string" &&
-    typeof (value as DiabetesHbA1cReading).valuePercent === "number"
-  );
+/** Reads a stored HbA1c fact. Facts written before 20 Oct 2026 hold valuePercent; they are converted to mmol/mol here. */
+export function toHbA1cReading(value: unknown): DiabetesHbA1cReading | null {
+  if (typeof value !== "object" || value === null) return null;
+  const v = value as { recordedAt?: unknown; valueMmolMol?: unknown; valuePercent?: unknown };
+  if (typeof v.recordedAt !== "string") return null;
+  if (typeof v.valueMmolMol === "number") return { recordedAt: v.recordedAt, valueMmolMol: v.valueMmolMol };
+  if (typeof v.valuePercent === "number") return { recordedAt: v.recordedAt, valueMmolMol: hba1cMmolFromPercent(v.valuePercent) };
+  return null;
 }
 
 function sortByRecordedAt<T extends { recordedAt: string }>(readings: T[]): T[] {
@@ -140,7 +143,7 @@ export async function loadIngestedDiabetesReadings(
       facts.filter((f) => f.factType === DIABETES_GLUCOSE_FACT_TYPE).map((f) => f.value).filter(isGlucoseReadingShape)
     );
     const hba1cReadings = dedupeByRecordedAt(
-      facts.filter((f) => f.factType === DIABETES_HBA1C_FACT_TYPE).map((f) => f.value).filter(isHbA1cReadingShape)
+      facts.filter((f) => f.factType === DIABETES_HBA1C_FACT_TYPE).map((f) => toHbA1cReading(f.value)).filter((r): r is DiabetesHbA1cReading => r !== null)
     );
     return { glucoseReadings, hba1cReadings };
   } catch (error) {
@@ -153,10 +156,11 @@ export type DiabetesPatientStateOverrides = {
   input: Partial<DiabetesFixtureBundle>;
   glucoseReadingsSource?: "patient_state_ingest" | "care_network_cgm";
   hba1cReadingsSource?: "patient_state_ingest" | "care_network_cgm";
+  labsSource?: "care_network_lab";
 };
 
 /** Readings from the care network (trusted CGM, recorded HbA1c) for a care-network patient. */
-export type CareNetworkDiabetesReadings = { glucoseReadings: DiabetesGlucoseReading[]; hba1cReadings: DiabetesHbA1cReading[] };
+export type CareNetworkDiabetesReadings = { glucoseReadings: DiabetesGlucoseReading[]; hba1cReadings: DiabetesHbA1cReading[]; labs?: LabSnapshot };
 
 /**
  * Builds the `input` override + provenance flags for
@@ -188,6 +192,11 @@ export async function loadDiabetesPatientStateOverrides(
   } else if (options?.careNetwork?.hba1cReadings.length) {
     input.hba1cReadings = options.careNetwork.hba1cReadings;
     overrides.hba1cReadingsSource = "care_network_cgm";
+  }
+
+  if (options?.careNetwork?.labs && Object.keys(options.careNetwork.labs).length) {
+    input.labs = options.careNetwork.labs;
+    overrides.labsSource = "care_network_lab";
   }
 
   return overrides;

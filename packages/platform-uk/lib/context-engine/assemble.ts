@@ -20,7 +20,8 @@ function factString(value: unknown): string | null {
   if (typeof value === "string" || typeof value === "number") return String(value);
   if (typeof value === "object") {
     const rec = value as Record<string, unknown>;
-    if (typeof rec.valuePercent === "number") return `${rec.valuePercent}%`;
+    if (typeof rec.valueMmolMol === "number") return `${rec.valueMmolMol} mmol/mol`;
+    if (typeof rec.valuePercent === "number") return `${rec.valuePercent}%`; // facts stored before 20 Oct 2026
     if (typeof rec.value === "string" || typeof rec.value === "number") return String(rec.value);
   }
   try {
@@ -76,7 +77,7 @@ export async function assembleClinicalContext(
     for (const row of hba1cFacts) {
       laboratory_results.push({
         name: "HbA1c",
-        value: `${row.valuePercent}%`,
+        value: `${row.valueMmolMol} mmol/mol`,
         recordedAt: row.recordedAt,
       });
     }
@@ -97,7 +98,7 @@ export async function assembleClinicalContext(
       for (const row of diabetes.hba1cReadings) {
         laboratory_results.push({
           name: "HbA1c",
-          value: `${row.valuePercent}%`,
+          value: `${row.valueMmolMol} mmol/mol`,
           recordedAt: row.recordedAt,
         });
       }
