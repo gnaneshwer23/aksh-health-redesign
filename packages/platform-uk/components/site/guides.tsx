@@ -34,6 +34,15 @@ const CSV_NOTES: Record<string, string> = {
   preferred_channel: "How the patient prefers to be contacted (for example sms, phone, email). Patients without one are not offered slots.",
   latest_hba1c_mmol_mol: "Optional. Most recent HbA1c in mmol/mol (IFCC). If your records use %, add a latest_hba1c_percent column instead.",
   hba1c_date: "Optional. YYYY-MM-DD of that HbA1c.",
+  egfr: "Optional. eGFR in mL/min/1.73 m².",
+  urine_acr_mg_mmol: "Optional. Urine albumin:creatinine ratio in mg/mmol.",
+  creatinine_umol_l: "Optional. Serum creatinine in µmol/L.",
+  ldl_mmol_l: "Optional. LDL cholesterol in mmol/L.",
+  total_cholesterol_mmol_l: "Optional. Total cholesterol in mmol/L.",
+  hdl_mmol_l: "Optional. HDL cholesterol in mmol/L.",
+  triglycerides_mmol_l: "Optional. Triglycerides in mmol/L.",
+  alt_u_l: "Optional. ALT in U/L.",
+  labs_date: "Required when any laboratory column is filled. YYYY-MM-DD of those results. Values in another unit or outside a plausible range are reported row by row, not stored.",
 };
 
 export const GUIDES: Guide[] = [
