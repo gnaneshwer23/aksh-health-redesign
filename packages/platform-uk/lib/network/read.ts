@@ -6,6 +6,7 @@
 import type { PoolClient } from "pg";
 
 import { LAB_CATALOG, type LabKind } from "../labs/catalog";
+import { observationProvenance, type Provenance } from "../provenance";
 import { ageOn, deriveCareGaps, deriveRisk } from "./derive";
 import { withTenant, type NetworkContext } from "./db";
 
@@ -80,12 +81,14 @@ export type LabRow = {
   kind: LabKind;
   label: string;
   unit: string;
-  latest: { value: number; observedAt: string; channel: string | null; code: string | null; corrected: boolean; asSent: string | null } | null;
+  latest: { value: number; observedAt: string; channel: string | null; code: string | null; corrected: boolean; asSent: string | null; provenance: Provenance } | null;
   history: { value: number; observedAt: string }[];
   change: number | null;
 };
 
-function labTable(rows: { kind: LabKind; value: number; observed_at: Date; channel: string | null; code: string | null; corrected: boolean; original_value: number | null; original_unit: string | null }[]): LabRow[] {
+type LabDbRow = { kind: LabKind; value: number; observed_at: Date; channel: string | null; code: string | null; corrected: boolean; source: string; verified: boolean; original_value: number | null; original_unit: string | null };
+
+function labTable(rows: LabDbRow[]): LabRow[] {
   const kinds = LAB_TABLE_KINDS.filter((k) => EXPECTED_LABS.includes(k) || rows.some((r) => r.kind === k));
   return kinds.map((kind) => {
     const series = rows.filter((r) => r.kind === kind);
@@ -103,6 +106,7 @@ function labTable(rows: { kind: LabKind; value: number; observed_at: Date; chann
             channel: last.channel,
             code: last.code,
             corrected: last.corrected,
+            provenance: observationProvenance(last),
             asSent: last.original_value !== null && last.original_unit && last.original_unit.toLowerCase() !== d.unit.toLowerCase() ? `${last.original_value} ${last.original_unit}` : null,
           }
         : null,
@@ -283,8 +287,8 @@ export async function getPatientDetail(ctx: NetworkContext, id: string) {
       [id]
     );
     // Laboratory results: trusted, corrections applied, newest last per kind (lib/labs/catalog.ts).
-    const labRows = (await client.query<{ kind: LabKind; value: number; observed_at: Date; channel: string | null; code: string | null; corrected: boolean; original_value: number | null; original_unit: string | null }>(
-      `SELECT x.kind, x.value::float AS value, x.observed_at, x.channel, x.code, (x.replaces_id IS NOT NULL) AS corrected,
+    const labRows = (await client.query<LabDbRow>(
+      `SELECT x.kind, x.value::float AS value, x.observed_at, x.channel, x.code, (x.replaces_id IS NOT NULL) AS corrected, x.source, x.verified,
               x.original_value::float AS original_value, x.original_unit
          FROM aksh.network_observations x
         WHERE x.patient_id = $1 AND x.kind = ANY($2) AND (x.kind <> 'glucose' OR x.source = 'lab') AND ${COUNTS}

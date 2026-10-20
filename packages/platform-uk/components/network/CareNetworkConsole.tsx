@@ -6,6 +6,7 @@ import { CgmPanel } from "@/components/cgm/CgmPanel";
 import { ClinicalReviewPanel } from "@/components/network/ClinicalReviewPanel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PROVENANCE_LABEL } from "@/lib/provenance";
 import type { getPatientDetail, listOrganisations, listPatients, listProfessionals, networkSummary } from "@/lib/network/read";
 import { formatHba1c } from "@/lib/units";
 import { cn } from "@/lib/utils";
@@ -103,7 +104,7 @@ function LabResults({ rows }: { rows: PatientDetail["labs"] }) {
                   </td>
                   <td className="py-1 pr-2"><MiniTrend values={r.history.map((h) => h.value)} /></td>
                   <td className="py-1 text-muted">
-                    {r.latest.observedAt} · {r.latest.channel ? CHANNEL_LABEL[r.latest.channel] ?? r.latest.channel : "Recorded"}
+                    {r.latest.observedAt} · {r.latest.channel ? CHANNEL_LABEL[r.latest.channel] ?? r.latest.channel : "Recorded"} · {PROVENANCE_LABEL[r.latest.provenance]}
                     {r.latest.code ? ` · LOINC ${r.latest.code}` : ""}
                     {r.latest.corrected ? <span className="ml-1 rounded bg-warning/15 px-1 text-warning">corrected</span> : null}
                   </td>

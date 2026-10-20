@@ -72,7 +72,8 @@ export function updateQueueItemDecision(
     resourceRef: `${target.title} → ${status}`
   });
 
-  nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));
+  // Demo cases stage the scripted referral; agent-run cases get PATHWAY drafts from their own evidence (lib/clinical-spine/enqueue.ts).
+  if (!nextCase.agentRun) nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));
 
   if (target.itemType === "referral_package" && status === "ACCEPTED") {
     nextCase = applyReferralAccept(nextCase);

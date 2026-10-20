@@ -66,7 +66,7 @@ export async function loadSpinePatient(ctx: NetworkContext, patientId: string, n
       [patientId, SNAPSHOT_KINDS]
     )).rows;
     const labs: LabSnapshot = Object.fromEntries(
-      labRows.map((r) => [r.kind, { kind: r.kind, value: r.value, unit: r.unit, observedAt: r.observed_at.toISOString(), channel: r.channel, code: r.code, corrected: r.corrected }])
+      labRows.map((r) => [r.kind, { kind: r.kind, value: r.value, unit: r.unit, observedAt: r.observed_at.toISOString(), channel: r.channel, code: r.code, corrected: r.corrected, provenance: "observed" as const }])
     );
     const cgm = (await client.query<{ at: Date; mmol: number }>(
       `SELECT at, mmol::float AS mmol FROM aksh.cgm_trusted_readings WHERE patient_id = $1 AND at > $2::timestamptz - INTERVAL '14 days' AND at <= $2 ORDER BY at`,

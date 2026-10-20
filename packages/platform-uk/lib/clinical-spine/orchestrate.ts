@@ -55,6 +55,8 @@ export type ClinicalSpineOrchestrateResult = {
   };
   /** False when Guardian BLOCK — drafts must not enter the HITL review queue. */
   draftEnqueueAllowed: boolean;
+  /** Whether the run's SHIELD record was stored (false without a database or when the write failed). */
+  runAuditRecorded: boolean;
   ehrWrite: false;
   hitlRequired: true;
   physiologicalTwin: false;
@@ -214,7 +216,8 @@ export async function runClinicalSpineOrchestrate(
   // SHIELD-audited exactly like existing agent outputs — reuses this same
   // orchestrate audit event (no new audit table/event schema); the payload
   // below simply names the diabetes contribution when one was applied.
-  void persistShieldAuditEvent({
+  // FR-AGT-011: one SHIELD record per run, awaited so its outcome is reported (not fire-and-forget).
+  const runAudit = await persistShieldAuditEvent({
     action: "defer",
     actor,
     label: `SHIELD: clinical spine orchestrate (${orchestration.queuePriority} → ${safetyRoute})`,
@@ -255,6 +258,7 @@ export async function runClinicalSpineOrchestrate(
 
   return {
     artifactType: "aksh-clinical-spine-orchestrate",
+    runAuditRecorded: runAudit.persisted,
     orchestration,
     safetyRoute,
     safetyRouteLabel: SAFETY_ROUTE_LABELS[safetyRoute].title,

@@ -3,6 +3,11 @@
  * with their trusted CGM and HbA1c, under row-level security, clinicians only, and never in the real workspace.
  * Pure checks first; DB part skips without DATABASE_URL.
  */
+import { buildSpineReviewCase, draftPendingReferrals } from "../lib/clinical-spine/enqueue";
+import { persistItemDecision } from "../lib/repositories/review-decision-repository";
+import { createReviewCase, readReviewCases } from "../lib/review-case-repository";
+import { decideReviewItem } from "../lib/workflow/decide-review-item";
+import { resolveReviewQueueItems } from "../lib/workflow/review-queue";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
@@ -121,12 +126,34 @@ async function db() {
     assert.ok(result.diabetes!.signals.glucose.tirPercent! > 50);
     assert.equal(result.ehrWrite, false);
     assert.equal(result.hitlRequired, true);
+    assert.equal(result.runAuditRecorded, true, "the run's SHIELD record is stored, not fire-and-forget");
+
+    // The loop closes: the drafts become a stored review case, decided on the server, version by version.
+    const withCodes = await runClinicalSpineOrchestrate({ patientId: prepared.patient.id, careNetwork: prepared.careNetwork, includeDrAssist: true, includeTwinRanking: false, actor: "patient-spine-test" });
+    assert.equal(withCodes.draftEnqueueAllowed, true);
+    const scope = `spine-${tag}`;
+    const practice = "practice-demo";
+    const built = { ...buildSpineReviewCase({ patientId: pt!.id, patientLabel: prepared.patient.name, result: withCodes, userId: nurseId }), practiceId: practice };
+    await createReviewCase(built, scope, nurseId, practice);
+    try {
+      const stored = (await readReviewCases(scope, practice)).find((c) => c.id === built.id)!;
+      assert.equal(stored.agentRun?.source, "clinical_spine");
+      const items = resolveReviewQueueItems(stored);
+      assert.ok(items.length >= 3 && items.every((i) => i.status === "DRAFT"));
+      const soap = items.find((i) => i.itemType === "soap_note")!;
+      const d = decideReviewItem(stored, soap.id, { action: "accept", expectedVersion: stored.version ?? 0 }, "nurse.test@aksh.test");
+      const saved = await persistItemDecision({ next: draftPendingReferrals(d.next), expectedVersion: stored.version ?? 0, scopeKey: scope, practiceId: practice, userId: nurseId, audit: d.audit });
+      assert.equal(saved.auditDurable, true);
+      const after = (await readReviewCases(scope, practice)).find((c) => c.id === built.id)!;
+      assert.equal(resolveReviewQueueItems(after).find((i) => i.id === soap.id)!.decidedBy, "nurse.test@aksh.test");
+    } finally {
+      await getPgPool().query(`DELETE FROM aksh.review_cases WHERE scope_key = $1`, [scope]);
+    }
   } finally {
     if (prior === undefined) delete process.env.ENABLE_DIABETES_MODULE;
     else process.env.ENABLE_DIABETES_MODULE = prior;
   }
-  await new Promise((r) => setTimeout(r, 2000)); // let the fire-and-forget shield audit writes land before the pool closes
-  console.log("patient-spine: care-network patient → CONDUCTOR + Aksh Diabetes (trusted CGM, verified HbA1c), clinicians only, RLS, Track B closed in the real workspace — PASS");
+  console.log("patient-spine: care-network patient → CONDUCTOR + Aksh Diabetes (trusted CGM, verified HbA1c), clinicians only, RLS, Track B closed in the real workspace, run audited, drafts enqueued and decided on the server — PASS");
 }
 
 pure();

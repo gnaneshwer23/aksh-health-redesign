@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useRealWorkspace } from "@/components/workspace/WorkspaceMode";
 
 type Review = {
-  provenance: { patientSource: string; glucoseSource: string; cgmReadings: number; hba1cReadings: number };
+  provenance: { patientSource: string; glucoseSource: string; cgmReadings: number; hba1cReadings: number; labResults?: number };
+  review?: { enqueued: boolean; caseId?: string; items?: number; reason?: string };
   result: {
     safetyRouteLabel: string;
     diabetesModuleEnabled: boolean;
@@ -52,7 +53,7 @@ export function ClinicalReviewPanel({ patientId }: { patientId: string }) {
         <div className="space-y-1.5" role="status">
           <p className="m-0"><span className="text-muted">Route:</span> <span className="text-foreground">{state.review.result.safetyRouteLabel}</span>{state.review.result.guardianGateway ? ` · Guardian ${state.review.result.guardianGateway.output_status}` : ""}</p>
           <p className="m-0 text-muted">
-            Data: care-network record · {state.review.provenance.cgmReadings} trusted CGM readings (14 days) · {state.review.provenance.hba1cReadings} verified HbA1c
+            Data: care-network record · {state.review.provenance.cgmReadings} trusted CGM readings (14 days) · {state.review.provenance.hba1cReadings} verified HbA1c · {state.review.provenance.labResults ?? 0} laboratory results
           </p>
           {!state.review.result.diabetesModuleEnabled ? <p className="m-0 text-muted">Aksh Diabetes is switched off in this environment.</p> : null}
           {g ? <p className="m-0"><span className="text-muted">Glucose:</span> <span className="text-foreground">{g.tirPercent !== null ? `time in range ${g.tirPercent}%, variability ${g.variabilityScore}%` : `not enough data (${g.dataCompleteness})`}</span></p> : null}
@@ -61,6 +62,16 @@ export function ClinicalReviewPanel({ patientId }: { patientId: string }) {
           ) : null}
           {state.review.result.diabetes?.guardianSafetyFlags.length ? (
             <ul className="m-0 list-disc space-y-0.5 pl-4 text-foreground">{state.review.result.diabetes.guardianSafetyFlags.slice(0, 6).map((f) => <li key={f}>{f}</li>)}</ul>
+          ) : null}
+          {state.review.review?.enqueued ? (
+            <p className="m-0" data-review-enqueued>
+              <a className="font-medium text-secondary underline" href={`/cases/${state.review.review.caseId}`}>
+                Review {state.review.review.items} draft{state.review.review.items === 1 ? "" : "s"} →
+              </a>{" "}
+              <span className="text-muted">Accept, edit or reject each one; referrals are drafted once the note and codes are accepted.</span>
+            </p>
+          ) : state.review.review ? (
+            <p className="m-0 text-warning" data-review-blocked>{state.review.review.reason}</p>
           ) : null}
           <p className="m-0 text-muted">Draft for a clinician. Nothing is written to the record and nothing is sent to the patient.</p>
         </div>
