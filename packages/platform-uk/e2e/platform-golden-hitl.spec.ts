@@ -95,11 +95,13 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
     expect(decision.ok()).toBeTruthy();
     const decisionBody = (await decision.json()) as { reviewCase: ReviewCase; spine?: { learningEventIds?: string[]; ehrWrite?: boolean; autoRetrain?: boolean }; outcome: { auditDurable: boolean } };
     expect(decisionBody.outcome.auditDurable).toBe(true);
-    const put = await request.put(`/api/review-cases/${reviewCase.id}`, {
-      data: { ...decisionBody.reviewCase, status: "rejected" },
+    // The case is closed on the server too (version-checked, audited, signed-in identity).
+    const put = await request.post(`/api/review-cases/${reviewCase.id}/decision`, {
+      data: { decision: "reject", acknowledged: false, notes: "Not clinically appropriate this visit", expectedVersion: decisionBody.reviewCase.version },
     });
-    expect(put.ok()).toBeTruthy();
-    const putBody = { ...((await put.json()) as object), spine: decisionBody.spine } as {
+    expect(put.ok(), await put.text()).toBeTruthy();
+    const closed = (await put.json()) as { reviewCase: ReviewCase; staging: { status: string } };
+    const putBody = { reviewCase: closed.reviewCase, bridgeStaging: closed.staging.status === "staged" ? closed.staging : null, spine: decisionBody.spine } as {
       spine?: {
         learningEventIds?: string[];
         ehrWrite?: boolean;
@@ -169,11 +171,14 @@ test.describe("Platform golden journeys — HITL / intervention", () => {
     expect(decision.ok()).toBeTruthy();
     const decisionBody = (await decision.json()) as { reviewCase: ReviewCase; spine?: Record<string, unknown> };
 
-    const put = await request.put(`/api/review-cases/${reviewCase.id}`, {
-      data: { ...decisionBody.reviewCase, status: "accepted" },
+    const put = await request.post(`/api/review-cases/${reviewCase.id}/decision`, {
+      data: { decision: "accept", acknowledged: true, expectedVersion: decisionBody.reviewCase.version },
     });
-    expect(put.ok()).toBeTruthy();
-    const putBody = { ...((await put.json()) as object), spine: decisionBody.spine } as {
+    expect(put.ok(), await put.text()).toBeTruthy();
+    const closed = (await put.json()) as { reviewCase: ReviewCase; staging: { status: string; liveRecordWrite: boolean } };
+    expect(closed.reviewCase.status).toBe("accepted");
+    expect(closed.staging.liveRecordWrite).toBe(false);
+    const putBody = { spine: decisionBody.spine, bridgeStaging: closed.staging.status === "staged" ? { liveEmis: false } : null } as {
       spine?: {
         learningEventIds?: string[];
         healthPlanId?: string | null;

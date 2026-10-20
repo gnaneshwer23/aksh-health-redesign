@@ -32,15 +32,9 @@ export function DecisionPanel({
   return (
     <div className="panel stack">
       <h3>Reviewer Decision</h3>
-      <label className="stack" style={{ gap: 8 }}>
-        <strong>Reviewer</strong>
-        <input
-          data-testid="decision-reviewer-name"
-          disabled={isAccepted}
-          onChange={e => setReviewerName(e.target.value)}
-          value={reviewerName}
-        />
-      </label>
+      <p className="muted" data-testid="decision-reviewer-name">
+        Decisions are recorded under your signed-in account{reviewerName ? ` (last decision by ${reviewerName})` : ""}.
+      </p>
       <label className="stack" style={{ gap: 8 }}>
         <strong>Reviewer Notes</strong>
         <textarea

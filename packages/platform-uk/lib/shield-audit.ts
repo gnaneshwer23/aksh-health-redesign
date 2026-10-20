@@ -202,6 +202,8 @@ export function appendCaseLevelShieldAudit(
     action: ShieldAction;
     actor: string;
     detail: string;
+    /** false when the caller writes the durable audit row itself, in the same transaction as the case. */
+    durableAudit?: boolean;
   }
 ): ReviewCase {
   const shieldEvent = createShieldAuditEvent({
@@ -218,6 +220,7 @@ export function appendCaseLevelShieldAudit(
   });
 
   const next = appendFhirShieldAudit(appendShieldAudit(reviewCase, shieldEvent), fhirEvent);
+  if (options.durableAudit === false) return next;
   scheduleDurableShieldWrite({
     action: options.action,
     actor: options.actor,

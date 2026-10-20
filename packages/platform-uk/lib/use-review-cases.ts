@@ -133,6 +133,54 @@ export function useReviewCases() {
     [cases]
   );
 
+  /**
+   * Case-level decisions (accept / reject / defer) and human-gate decisions, decided on the server. Returns the stored
+   * case, or the server's reason (blockers, stale version) so the screen can show it.
+   */
+  const postCaseAction = useCallback(
+    async (caseId: string, path: string, body: Record<string, unknown>) => {
+      const current = cases.find((c) => c.id === caseId);
+      setIsSaving(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/review-cases/${caseId}/${path}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...body, expectedVersion: current?.version ?? 0 }),
+        });
+        const data = (await response.json().catch(() => ({}))) as {
+          reviewCase?: ReviewCase;
+          error?: string;
+          code?: string;
+          blockers?: string[];
+          staging?: { status: string; detail?: string };
+        };
+        if (!response.ok || !data.reviewCase) {
+          if (data.code === "STALE_CASE") {
+            const fresh = await fetch("/api/review-cases", { cache: "no-store" });
+            if (fresh.ok) setCases(((await fresh.json()) as { cases: ReviewCase[] }).cases);
+          }
+          return { ok: false as const, error: (data.blockers?.[0] ?? data.error ?? "The decision was not recorded.").replace(/^[A-Z_]+: /, ""), code: data.code };
+        }
+        setCases((all) => all.map((c) => (c.id === caseId ? data.reviewCase! : c)));
+        return { ok: true as const, reviewCase: data.reviewCase, staging: data.staging };
+      } catch {
+        return { ok: false as const, error: "The decision was not recorded. Check your connection and try again." };
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [cases]
+  );
+  const decideCase = useCallback(
+    (caseId: string, body: { decision: "accept" | "reject" | "defer"; notes?: string; overrideReason?: string; acknowledged: boolean }) => postCaseAction(caseId, "decision", body),
+    [postCaseAction]
+  );
+  const decideGate = useCallback(
+    (caseId: string, gateId: string, body: { status: "open" | "confirmed" | "not_applicable"; note?: string }) => postCaseAction(caseId, `gates/${gateId}`, body),
+    [postCaseAction]
+  );
+
   const resetCases = useCallback(async () => {
     setIsSaving(true);
     setError(null);
@@ -216,6 +264,8 @@ export function useReviewCases() {
       error,
       updateCase,
       decideItem,
+      decideCase,
+      decideGate,
       getCaseById,
       resetCases,
       retryLastSave,
@@ -237,7 +287,9 @@ export function useReviewCases() {
       retryShieldAuditWrite,
       shieldAuditWarning,
       updateCase,
-      decideItem
+      decideItem,
+      decideCase,
+      decideGate
     ]
   );
 }

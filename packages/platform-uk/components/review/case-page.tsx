@@ -21,6 +21,8 @@ export function CasePageClient({
     isSaving,
     retryLastSave,
     updateCase,
+    decideCase,
+    decideGate,
     shieldAuditWarning,
     isRetryingShieldAudit,
     dismissShieldAuditWarning,
@@ -44,6 +46,8 @@ export function CasePageClient({
       isSaving={isSaving}
       onRetrySave={retryLastSave}
       onUpdateCase={updateCase}
+      onDecideCase={decideCase}
+      onDecideGate={decideGate}
       recordingMode={recordingMode}
       reviewCase={reviewCase}
       shieldAuditWarning={shieldAuditWarning}

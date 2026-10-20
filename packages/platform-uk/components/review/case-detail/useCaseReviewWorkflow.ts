@@ -1,12 +1,9 @@
 import { useMemo, useState } from "react";
-import { createHumanGateDecision, deriveHumanGates, ensureHumanGateDecisionSnapshot } from "@/lib/human-gates";
-import { appendCaseLevelShieldAudit } from "@/lib/shield-audit";
+import { deriveHumanGates } from "@/lib/human-gates";
 import type { AuditEvent, FhirBundleDraft, HumanGateDecisionStatus, HumanGateId, ReviewCase, ReviewerDecision } from "@/lib/types";
 import {
-  createFrozenArtifact,
   createFieldChange,
   createReviewerEvent,
-  decisionLabel,
   deriveAcceptanceBlockers,
   deriveChecklistAcceptanceBlockers,
   deriveClinicalConcerns,
@@ -21,15 +18,24 @@ import {
   deriveValidationProtocol,
   deriveValidationReadiness,
   draftSectionsFromBundle,
-  formatCaseTimestamp,
-  toStatus
+  formatCaseTimestamp
 } from "@/lib/workflow";
 
-export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (reviewCase: ReviewCase) => void) {
+type ActionResult = { ok: true; reviewCase: ReviewCase; staging?: { status: string; detail?: string } } | { ok: false; error: string; code?: string };
+/** Server-decided case actions (lib/use-review-cases.ts): case accept/reject/defer and human-gate decisions. */
+export type CaseActions = {
+  decideCase: (caseId: string, body: { decision: ReviewerDecision; notes?: string; overrideReason?: string; acknowledged: boolean }) => Promise<ActionResult>;
+  decideGate: (caseId: string, gateId: string, body: { status: HumanGateDecisionStatus; note?: string }) => Promise<ActionResult>;
+};
+
+export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (reviewCase: ReviewCase) => void, actions: CaseActions) {
   const [draft, setDraft] = useState<FhirBundleDraft>(reviewCase.draft);
   const [auditEvents, setAuditEvents] = useState(reviewCase.auditEvents);
   const [status, setStatus] = useState(reviewCase.status);
-  const [reviewerName, setReviewerName] = useState(reviewCase.reviewSummary?.lastReviewer ?? "Dr Morgan");
+  // Display only: the server records every decision under the signed-in account.
+  const [reviewerName, setReviewerName] = useState(reviewCase.reviewSummary?.lastReviewer ?? "");
+  // Placeholder for edits saved through the generic route; the server replaces it with the signed-in account.
+  const editorLabel = "signed-in reviewer";
   const [reviewerNotes, setReviewerNotes] = useState(reviewCase.reviewSummary?.reviewerNotes ?? "");
   const [overrideReason, setOverrideReason] = useState(reviewCase.reviewSummary?.overrideReason ?? "");
   const [decisionError, setDecisionError] = useState("");
@@ -97,41 +103,17 @@ export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (rev
     });
   }
 
-  function updateHumanGateDecision(gateId: HumanGateId, decisionStatus: HumanGateDecisionStatus, note?: string) {
-    if (!reviewerName.trim() || isAccepted) {
-      setDecisionError("Add a reviewer name before recording a human-gate decision.");
+  async function updateHumanGateDecision(gateId: HumanGateId, decisionStatus: HumanGateDecisionStatus, note?: string) {
+    if (isAccepted) return;
+    const result = await actions.decideGate(reviewCase.id, gateId, { status: decisionStatus, note: note?.trim() || undefined });
+    if (!result.ok) {
+      setDecisionError(result.error);
       return;
     }
-
-    const decidedAt = formatCaseTimestamp();
-    const nextDecision = createHumanGateDecision({
-      id: gateId,
-      status: decisionStatus,
-      note: note?.trim() || undefined,
-      decidedAt,
-      decidedBy: reviewerName
-    });
-    const nextHumanGateDecisions = [
-      ...humanGateDecisions.filter((decision) => decision.id !== gateId),
-      nextDecision
-    ];
-    const nextAuditEvents = [
-      ...auditEvents,
-      createReviewerEvent(
-        "reviewer_note",
-        "Human gate decision recorded",
-        reviewerName,
-        `${gateId.replaceAll("_", " ")} marked ${decisionStatus.replaceAll("_", " ")}${note?.trim() ? `: ${note.trim()}` : ""}`
-      )
-    ];
-
-    setHumanGateDecisions(nextHumanGateDecisions);
-    setAuditEvents(nextAuditEvents);
+    setHumanGateDecisions(result.reviewCase.humanGateDecisions ?? []);
+    setAuditEvents(result.reviewCase.auditEvents);
+    setReviewerName(result.reviewCase.humanGateDecisions?.find((d) => d.id === gateId)?.decidedBy ?? reviewerName);
     setDecisionError("");
-    persistCase({
-      humanGateDecisions: nextHumanGateDecisions,
-      auditEvents: nextAuditEvents
-    });
   }
 
   function updateDraftField(sectionId: string, fieldKey: string, value: string) {
@@ -188,7 +170,7 @@ export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (rev
   }
 
   function recordFieldEdit(sectionId: string, sectionTitle: string, fieldLabel: string, value: string) {
-    if (!reviewerName.trim() || isAccepted) {
+    if (isAccepted) {
       return;
     }
 
@@ -204,13 +186,13 @@ export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (rev
       createReviewerEvent(
         "reviewer_edit",
         `Edited ${sectionTitle}`,
-        reviewerName,
+        editorLabel,
         `${fieldLabel} updated from "${previousValue || "empty"}" to "${value || "empty"}"`
       )
     ];
     const nextFieldChanges = [
       ...(reviewCase.fieldChanges ?? []),
-      createFieldChange(sectionId, snapshotKey, fieldLabel, previousValue, value, reviewerName)
+      createFieldChange(sectionId, snapshotKey, fieldLabel, previousValue, value, editorLabel)
     ];
 
     setAuditEvents(nextAuditEvents);
@@ -236,7 +218,7 @@ export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (rev
       completed,
       confirmationNote: next.confirmationNote ?? previous.confirmationNote ?? "",
       completedAt: completed ? previous.completedAt ?? formatCaseTimestamp() : undefined,
-      completedBy: completed ? previous.completedBy ?? reviewerName : undefined
+      completedBy: completed ? previous.completedBy ?? editorLabel : undefined
     };
     const nextChecklist = reviewerChecklist.map((item) =>
       item.id === itemId ? updatedItem : existingById.get(item.id) ?? item
@@ -261,100 +243,30 @@ export function useCaseReviewWorkflow(reviewCase: ReviewCase, onUpdateCase: (rev
     updateChecklist(itemId, { confirmationNote: note });
   }
 
-  function handleDecision(decision: ReviewerDecision) {
-    if (!reviewerName.trim()) {
-      setDecisionError("Add a reviewer name before recording a decision.");
+  async function handleDecision(decision: ReviewerDecision) {
+    if (decision === "accept" && !hasAcknowledgedSource) {
+      setDecisionError("Confirm the clinical accountability check before accepting this case.");
       return;
     }
-
-    const workingCase: ReviewCase = {
-      ...workingReviewCase,
-      reviewSummary: {
-        ...workingReviewCase.reviewSummary,
-        lastReviewer: reviewerName,
-        reviewerNotes,
-        overrideReason
-      }
-    };
-    const blockers = deriveAcceptanceBlockers(workingCase);
-    const checklistBlockers = deriveChecklistAcceptanceBlockers(workingCase);
-    const humanGateBlockers = deriveHumanGates(workingCase)
-      .filter((gate) => gate.status === "required")
-      .map((gate) => `${gate.label} still requires an explicit reviewer decision.`);
-
-    if (decision === "accept") {
-      if (!hasAcknowledgedSource) {
-        setDecisionError("Confirm the clinical accountability check before accepting this case.");
-        return;
-      }
-
-      if (blockers.length || checklistBlockers.length) {
-        setDecisionError([...blockers, ...checklistBlockers][0] ?? "Resolve open blockers before accepting this case.");
-        return;
-      }
-
-      if (humanGateBlockers.length) {
-        setDecisionError(humanGateBlockers[0]);
-        return;
-      }
-    }
-
-    const nextStatus = toStatus(decision);
-    const decisionEvent = createReviewerEvent(
-      "reviewer_decision",
-      decisionLabel(decision),
-      reviewerName,
-      reviewerNotes || undefined
-    );
-    const overrideEvent =
-      decision === "accept" && overrideReason.trim()
-        ? createReviewerEvent("override", "Override reason recorded", reviewerName, overrideReason)
-        : null;
-    const nextAuditEvents = [...auditEvents, decisionEvent, ...(overrideEvent ? [overrideEvent] : [])];
-    const nextHumanGateDecisions = ensureHumanGateDecisionSnapshot(workingCase, {
-      decidedAt: formatCaseTimestamp(),
-      decidedBy: reviewerName
+    // The server re-checks every blocker and required gate, and records the decision under the signed-in account.
+    const result = await actions.decideCase(reviewCase.id, {
+      decision,
+      notes: reviewerNotes || undefined,
+      overrideReason: overrideReason || undefined,
+      acknowledged: hasAcknowledgedSource,
     });
-    const nextReviewCase: ReviewCase = {
-      ...workingCase,
-      status: nextStatus,
-      updatedAt: formatCaseTimestamp(),
-      auditEvents: nextAuditEvents,
-      humanGateDecisions: nextHumanGateDecisions,
-      reviewSummary: {
-        ...workingCase.reviewSummary,
-        lastReviewer: reviewerName,
-        lastDecision: decision,
-        lastDecisionAt: formatCaseTimestamp(),
-        reviewerNotes,
-        overrideReason
-      }
-    };
-
-    const nextCase =
-      decision === "accept"
-        ? appendCaseLevelShieldAudit(
-            {
-              ...nextReviewCase,
-              frozenArtifact: createFrozenArtifact(nextReviewCase, { frozenBy: reviewerName })
-            },
-            {
-              action: "accept",
-              actor: reviewerName,
-              detail: `Case ${reviewCase.id} accepted with frozen evidence artifact`
-            }
-          )
-        : appendCaseLevelShieldAudit(nextReviewCase, {
-            action: decision === "reject" ? "reject" : "defer",
-            actor: reviewerName,
-            detail: `Case ${reviewCase.id} marked ${decision}`
-          });
-
-    setStatus(nextStatus);
-    setAuditEvents(nextCase.auditEvents);
-    setHumanGateDecisions(nextHumanGateDecisions);
-    setDecisionError("");
-    onUpdateCase(nextCase);
+    if (!result.ok) {
+      setDecisionError(result.error);
+      return;
+    }
+    const saved = result.reviewCase;
+    setStatus(saved.status);
+    setAuditEvents(saved.auditEvents);
+    setHumanGateDecisions(saved.humanGateDecisions ?? []);
+    setReviewerName(saved.reviewSummary?.lastReviewer ?? "");
+    setDecisionError(
+      result.staging?.status === "failed" ? `Case accepted, but staging the accepted content failed: ${result.staging.detail ?? "unknown error"}. Nothing was written to any record.` : ""
+    );
   }
 
   async function handleRemediate() {
