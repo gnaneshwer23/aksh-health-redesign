@@ -9,6 +9,7 @@ import {
 import { nextAuthSecret } from "@/lib/auth-secret";
 import { isClosedInRealWorkspace, isPublicDemoPath, isRealWorkspace, realHomeFor, realWorkspaceRedirect, TRACK_B_NOT_OPEN } from "@/lib/env/workspace";
 import { isProofEnvironment, proofRedirect } from "@/lib/env/proof";
+import { productionHostMisconfigured } from "@/lib/env/production-host";
 import type { UserRole } from "@/lib/onboarding/roles";
 
 const publicRoutePrefixes = [
@@ -62,6 +63,10 @@ function isAuthEntryPath(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
+  // The production domain must only ever be served in production mode; otherwise refuse everything.
+  if (productionHostMisconfigured(request.headers.get("host"))) {
+    return new NextResponse("Service temporarily unavailable.", { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "300" } });
+  }
   if (!isProofEnvironment()) return route(request);
   // Clinical-proof environment: its own landing page, nothing that invites real details, never indexed.
   const target = proofRedirect(request.nextUrl.pathname);
