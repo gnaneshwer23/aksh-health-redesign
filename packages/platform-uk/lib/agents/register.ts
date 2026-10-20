@@ -78,7 +78,31 @@ export type AgentContract = {
   evidence: string[];
   status: CapabilityStatus;
   environment: "simulation" | "none";
+  /** What must be true before the agent may run for real patients (lib/agents/readiness.ts evaluates it). */
+  release?: ReleaseCriteria;
 };
+
+/**
+ * Release criteria. Numeric targets are measured on decided drafts in the agent loop (synthetic validation) and are
+ * PROPOSED: the clinical safety officer confirms or changes them; `targetsConfirmedBy` records who and when.
+ */
+export type ReleaseCriteria = {
+  /** Name the loop records against (review item metadata.agent). */
+  tallyName?: string;
+  minDecided?: number;
+  maxRejectionRate?: number;
+  minAcceptedUneditedRate?: number;
+  /** PATHWAY: share of drafted referrals a clinician confirmed. */
+  minConfirmationRate?: number;
+  signOffs: string[];
+  targetsConfirmedBy: null | { name: string; role: string; date: string };
+};
+
+const SIGN_OFFS = [
+  "Clinical safety case and hazard log signed by the clinical safety officer",
+  "Data protection impact assessment and regulatory opinion",
+  "Approved go-live for the organisation",
+];
 
 const THROWS = "The whole run stops and no partial result is shown (FR-AGT-036/037); the clinician sees an explicit failure.";
 
@@ -101,6 +125,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-orchestration.test.ts", "tests/clinical-spine-phase-c.test.ts", "tests/patient-spine-db.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: [...SIGN_OFFS, "Orchestration failure drills recorded (timeouts, evidence failures)"], targetsConfirmedBy: null },
   },
   {
     id: "VOICE",
@@ -122,6 +147,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/workflow-scenarios.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: [...SIGN_OFFS, "Governed decision on speech processing (on-premise or processor agreement)"], targetsConfirmedBy: null },
   },
   {
     id: "CANVAS",
@@ -141,6 +167,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/export-mapping.test.ts", "tests/workflow-scenarios.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: SIGN_OFFS, targetsConfirmedBy: null },
   },
   {
     id: "SYNTHESIS",
@@ -161,6 +188,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-orchestration.test.ts", "tests/review-decision-db.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { tallyName: "SYNTHESIS", minDecided: 50, maxRejectionRate: 0.1, minAcceptedUneditedRate: 0.6, signOffs: SIGN_OFFS, targetsConfirmedBy: null },
   },
   {
     id: "DrASSIST",
@@ -182,6 +210,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-orchestration.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { tallyName: "Dr.Assist", minDecided: 50, maxRejectionRate: 0.1, minAcceptedUneditedRate: 0.7, signOffs: SIGN_OFFS, targetsConfirmedBy: null },
   },
   {
     id: "GUARDIAN",
@@ -203,6 +232,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-hitl.test.ts", "tests/clinical-proof-hazard-trace.test.ts", "tests/review-case-decision-db.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { tallyName: "GUARDIAN", minDecided: 50, maxRejectionRate: 0.2, signOffs: [...SIGN_OFFS, "Hazard test set: every known red interaction flagged"], targetsConfirmedBy: null },
   },
   {
     id: "HORIZON",
@@ -223,6 +253,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-orchestration.test.ts", "tests/clinical-spine-diabetes.test.ts", "tests/lab-agents.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { tallyName: "HORIZON", minDecided: 50, maxRejectionRate: 0.15, signOffs: SIGN_OFFS, targetsConfirmedBy: null },
   },
   {
     id: "NEXUS",
@@ -242,6 +273,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-orchestration.test.ts", "tests/clinical-spine-phase-c.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: SIGN_OFFS, targetsConfirmedBy: null },
   },
   {
     id: "PATHWAY",
@@ -263,6 +295,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/intervention-draft-shape.test.ts", "tests/diabetes-decision-escalation.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { tallyName: "PATHWAY", minDecided: 20, minConfirmationRate: 0.8, signOffs: [...SIGN_OFFS, "Referral thresholds in the rule registry signed off"], targetsConfirmedBy: null },
   },
   {
     id: "BRIDGE",
@@ -282,6 +315,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/demo-launch-d1.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: [...SIGN_OFFS, "Integration with the organisation's record system agreed and tested"], targetsConfirmedBy: null },
   },
   {
     id: "SHIELD",
@@ -301,6 +335,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/clinical-proof-shield.test.ts", "tests/review-decision-db.test.ts", "tests/review-case-decision-db.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: [...SIGN_OFFS, "Audit integrity check (hash chain) passes on the organisation's data"], targetsConfirmedBy: null },
   },
   {
     id: "COMPASS",
@@ -320,6 +355,7 @@ export const AGENTS: AgentContract[] = [
     evidence: ["tests/api-contracts.test.ts"],
     status: "in_validation",
     environment: "simulation",
+    release: { signOffs: [...SIGN_OFFS, "Small-cell suppression reviewed by the data protection lead"], targetsConfirmedBy: null },
   },
   {
     id: "PRISM",

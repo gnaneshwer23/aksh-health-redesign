@@ -96,4 +96,15 @@ test.describe("Review case decisions on the server", () => {
     expect(forged.status()).toBe(403);
     await other.dispose();
   });
+
+  test("release readiness: measured on the loop, proposed targets, no agent ready", async ({ request, baseURL }) => {
+    await createOnboardedTestUser(request, baseURL!, { role: "gp", label: "readiness" });
+    const r = await request.get("/api/agents/readiness");
+    expect(r.ok(), await r.text()).toBeTruthy();
+    const body = (await r.json()) as { agents: { id: string; ready: boolean; criteria: { name: string }[] }[] };
+    const synthesis = body.agents.find((a) => a.id === "SYNTHESIS")!;
+    expect(synthesis.criteria.map((c) => c.name)).toContain("Rejection rate");
+    expect(body.agents.every((a) => !a.ready)).toBeTruthy();
+    expect(body.agents.some((a) => a.id === "PRISM" || a.id === "ATLAS")).toBeFalsy();
+  });
 });
