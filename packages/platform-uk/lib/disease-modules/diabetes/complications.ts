@@ -47,6 +47,8 @@ export type ComplicationSignal = {
   basis: "laboratory" | "evidence_count" | "none";
   /** Laboratory results that were due but missing or out of date: shown for clinician review, never assumed normal. */
   missingLabs: string[];
+  /** Registered rules (lib/rules/registry.ts) that raised the flag. */
+  ruleIds: string[];
   ruleVersion: string;
   /** Referral drafts route through the existing PATHWAY agent + referral_pathway human gate — no new gate type. */
   referralGate: "referral_pathway";
@@ -62,24 +64,24 @@ export type ComplicationSignal = {
 export const LAB_RULE_VERSION = "lab-rules-2026-10-20";
 export const LAB_MAX_AGE_MONTHS = 15;
 
-type LabRule = { kind: LabKind; level: Exclude<ComplicationFlagLevel, "none">; test: (v: number) => boolean; text: string };
+type LabRule = { ruleId: string; kind: LabKind; level: Exclude<ComplicationFlagLevel, "none">; test: (v: number) => boolean; text: string };
 export const LAB_RULES: Partial<Record<DiabetesComplicationDomain, { kinds: LabKind[]; rules: LabRule[] }>> = {
   ckd: {
     kinds: ["egfr", "acr"],
     rules: [
-      { kind: "egfr", level: "referral_indicated", test: (v) => v < 30, text: "eGFR below 30" },
-      { kind: "acr", level: "referral_indicated", test: (v) => v >= 30, text: "ACR 30 mg/mmol or more" },
-      { kind: "egfr", level: "watch", test: (v) => v < 60, text: "eGFR below 60" },
-      { kind: "acr", level: "watch", test: (v) => v > 3, text: "ACR above 3 mg/mmol" },
+      { ruleId: "kidney.egfr_below_30", kind: "egfr", level: "referral_indicated", test: (v) => v < 30, text: "eGFR below 30" },
+      { ruleId: "kidney.acr_30_or_more", kind: "acr", level: "referral_indicated", test: (v) => v >= 30, text: "ACR 30 mg/mmol or more" },
+      { ruleId: "kidney.egfr_below_60", kind: "egfr", level: "watch", test: (v) => v < 60, text: "eGFR below 60" },
+      { ruleId: "kidney.acr_above_3", kind: "acr", level: "watch", test: (v) => v > 3, text: "ACR above 3 mg/mmol" },
     ],
   },
   cardiovascular: {
     kinds: ["ldl"],
-    rules: [{ kind: "ldl", level: "watch", test: (v) => v >= 2.6, text: "LDL 2.6 mmol/L or more" }],
+    rules: [{ ruleId: "lipids.ldl_2_6", kind: "ldl", level: "watch", test: (v) => v >= 2.6, text: "LDL 2.6 mmol/L or more" }],
   },
   fatty_liver: {
     kinds: ["alt"],
-    rules: [{ kind: "alt", level: "watch", test: (v) => v > 40, text: "ALT above 40 U/L" }],
+    rules: [{ ruleId: "liver.alt_above_40", kind: "alt", level: "watch", test: (v) => v > 40, text: "ALT above 40 U/L" }],
   },
 };
 
@@ -97,15 +99,19 @@ function labAssessment(domain: DiabetesComplicationDomain, labs: LabSnapshot | u
   }
   let level: ComplicationFlagLevel = "none";
   const refs: string[] = [];
+  const ruleIds: string[] = [];
   for (const rule of def.rules) {
     const r = usable.get(rule.kind);
-    if (r && rule.test(r.value) && RANK[rule.level] > RANK[level]) level = rule.level;
+    if (r && rule.test(r.value)) {
+      ruleIds.push(rule.ruleId);
+      if (RANK[rule.level] > RANK[level]) level = rule.level;
+    }
   }
   for (const [k, r] of usable) {
     const hit = def.rules.find((x) => x.kind === k && x.test(r.value));
     refs.push(describeLab(LAB_CATALOG[k].label, r) + (hit ? ` — ${hit.text}` : ""));
   }
-  return { level, refs, missing, used: usable.size };
+  return { level, refs, missing, used: usable.size, ruleIds };
 }
 
 function deriveFlagLevel(evidenceCount: number): ComplicationFlagLevel {
@@ -138,6 +144,7 @@ export function buildComplicationSignal(
     evidenceRefs: [...(lab?.refs ?? []), ...evidenceRefs],
     basis,
     missingLabs: lab?.missing ?? [],
+    ruleIds: lab?.ruleIds ?? [],
     ruleVersion: LAB_RULE_VERSION,
     referralGate: "referral_pathway",
     limitations: [

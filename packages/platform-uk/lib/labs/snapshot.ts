@@ -2,6 +2,8 @@
  * The latest trusted laboratory result of each kind for one patient: what the clinical agents read. Values are in the
  * stored units of lib/labs/catalog.ts. Pure types and helpers; loading lives with the caller (patient spine, record).
  */
+import type { Provenance } from "../provenance";
+
 import type { LabKind } from "./catalog";
 
 export type LabResult = {
@@ -15,6 +17,8 @@ export type LabResult = {
   code: string | null;
   /** True when this value replaced an earlier result (a laboratory correction). */
   corrected: boolean;
+  /** What kind of value this is (lib/provenance.ts). Laboratory results are "observed". */
+  provenance?: Provenance;
 };
 
 export type LabSnapshot = Partial<Record<LabKind, LabResult>>;

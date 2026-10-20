@@ -471,6 +471,22 @@ export type FhirExportBundle = {
   }>;
 };
 
+export type AgentRunSummary = {
+  source: "clinical_spine";
+  ranAt: string;
+  queuePriority: "Urgent" | "High" | "Normal";
+  reviewOrder: string[];
+  safetyRoute: string;
+  /** Rule version the complication checks used (lib/rules/registry.ts). */
+  ruleVersion: string;
+  pendingReferrals: { domain: string; reason: string; evidence: string[]; ruleIds: string[] }[];
+  /** Laboratory results that were missing or out of date for the run (never assumed normal). */
+  missingLabs: string[];
+  /** NEXUS correlations: review-only input to the clinician's assessment. */
+  correlations: { link: string; significance: string; suggestedConsideration: string }[];
+  modelUsed: boolean;
+};
+
 export type ReviewCase = {
   id: string;
   /** Server-owned version, incremented on every write; used to refuse conflicting saves. */
@@ -486,6 +502,11 @@ export type ReviewCase = {
    */
   patientId?: string;
   patientLabel: string;
+  /**
+   * Set when the case came from an agent run on a care-network patient (lib/clinical-spine/enqueue.ts): what CONDUCTOR
+   * resolved, and the referrals PATHWAY will draft once the note and codes are accepted.
+   */
+  agentRun?: AgentRunSummary;
   digitalTwinPercent?: number;
   status: WorkflowStatus;
   updatedAt: string;

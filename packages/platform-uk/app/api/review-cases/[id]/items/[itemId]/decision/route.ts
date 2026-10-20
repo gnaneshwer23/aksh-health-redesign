@@ -7,6 +7,7 @@ import { persistItemDecision } from "@/lib/repositories/review-decision-reposito
 import { readReviewCases } from "@/lib/review-case-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 import { DecisionError, decideReviewItem, parseItemDecision } from "@/lib/workflow/decide-review-item";
+import { draftPendingReferrals } from "@/lib/clinical-spine/enqueue";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,10 @@ export async function POST(request: Request, props: { params: Promise<{ id: stri
     if (existing.userId && existing.userId !== userId) return NextResponse.json({ error: "Not your case" }, { status: 403 });
 
     const actor = auth.context.userEmail ?? userId;
-    const { next, outcome, audit } = decideReviewItem(existing, itemId.slice(0, 120), req, actor);
+    const decided = decideReviewItem(existing, itemId.slice(0, 120), req, actor);
+    const { outcome, audit } = decided;
+    // PATHWAY (FR-AGT-024): referral drafts appear once the note and codes are accepted; saved with this decision.
+    const next = draftPendingReferrals(decided.next);
     // Role-specific gates (for example medication decisions) are enforced here, on the server.
     const scope = evaluateDecisionScope({ persona: auth.context.clinicalPersona, existing, next });
     if (!scope.allowed) return NextResponse.json({ error: `Forbidden. ${scope.reason}` }, { status: 403 });

@@ -21,6 +21,7 @@ assert.equal(ckdWatch.flagLevel, "watch");
 assert.equal(ckdWatch.basis, "laboratory");
 assert.ok(ckdWatch.evidenceRefs.some((r) => r.includes("eGFR 52") && r.includes("eGFR below 60")));
 assert.equal(ckdWatch.ruleVersion, LAB_RULE_VERSION);
+assert.deepEqual(ckdWatch.ruleIds, ["kidney.egfr_below_60"], "the flag cites the registered rule");
 const ckdRefer = buildComplicationSignal(ctx, "ckd", [], { egfr: lab("egfr", 70, "mL/min/{1.73_m2}"), acr: lab("acr", 35, "mg/mmol") } as LabSnapshot, now);
 assert.equal(ckdRefer.flagLevel, "referral_indicated", "ACR 30 mg/mmol or more indicates referral for clinician review");
 assert.equal(ckdRefer.referralGate, "referral_pathway", "a referral still needs a clinician's confirmation");

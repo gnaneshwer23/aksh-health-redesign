@@ -12,6 +12,7 @@
  * - Zero autonomous EHR write (ehrWrite always false)
  */
 
+import { REVIEW_ORDER } from "../agents/register";
 import { runDrAssistAgent, type DrAssistDraft } from "../agents/llm-dr-assist";
 import { runGuardianAgent, type GuardianDraft } from "../agents/llm-guardian";
 import { runNexusAgent, type NexusDraft } from "../agents/llm-nexus";
@@ -124,23 +125,14 @@ function resolveQueuePriority(
   return "Normal";
 }
 
-function resolveReviewOrder(
+export function resolveReviewOrder(
   priority: QueuePriority,
   includeDrAssist: boolean,
   includeNexus: boolean
 ): OrchestrationAgentId[] {
-  // NEXUS after SYNTHESIS/GUARDIAN/HORIZON (correlations after risk). GUARDIAN still leads when urgent.
-  if (priority === "Urgent") {
-    const rest: OrchestrationAgentId[] = ["ORACLE", "SYNTHESIS"];
-    if (includeNexus) rest.push("NEXUS");
-    if (includeDrAssist) rest.push("DrASSIST");
-    return ["GUARDIAN", ...rest];
-  }
-  // Non-urgent: documentation first, then safety + risk + correlations
-  const base: OrchestrationAgentId[] = ["SYNTHESIS", "GUARDIAN", "ORACLE"];
-  if (includeNexus) base.push("NEXUS");
-  if (includeDrAssist) base.push("DrASSIST");
-  return base;
+  // The order is defined once, in the agent register (Volume I §7.3 step 4): GUARDIAN leads when urgent.
+  const order = priority === "Urgent" ? REVIEW_ORDER.urgent : REVIEW_ORDER.normal;
+  return order.filter((id) => (id !== "NEXUS" || includeNexus) && (id !== "DrASSIST" || includeDrAssist)) as OrchestrationAgentId[];
 }
 
 function collectEvidence(outputs: OrchestrationOutputs): AgentEvidence[] {
