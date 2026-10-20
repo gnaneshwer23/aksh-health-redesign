@@ -23,11 +23,21 @@ export type LoopOutcomes = {
   suppression: string;
 };
 
-export function summariseLoopOutcomes(cases: ReviewCase[]): LoopOutcomes {
+/** Exact counts (internal: synthetic validation and release readiness). Population display uses summariseLoopOutcomes. */
+export type LoopTally = {
+  runs: number;
+  casesAccepted: number;
+  agents: Map<string, { drafts: number; accepted: number; edited: number; rejected: number; pending: number }>;
+  referrals: Map<string, { held: number; drafted: number; confirmed: number }>;
+  missing: Map<string, number>;
+  priority: { Urgent: number; High: number; Normal: number };
+};
+
+export function tallyLoop(cases: ReviewCase[]): LoopTally {
   const seen = new Set<string>();
   const runs = cases.filter((c) => c.agentRun && !seen.has(c.id) && (seen.add(c.id), true));
-  const byAgent = new Map<string, { drafts: number; accepted: number; edited: number; rejected: number; pending: number }>();
-  const referrals = new Map<string, { held: number; drafted: number; confirmed: number }>();
+  const agents: LoopTally["agents"] = new Map();
+  const referrals: LoopTally["referrals"] = new Map();
   const missing = new Map<string, number>();
   const priority = { Urgent: 0, High: 0, Normal: 0 };
   for (const c of runs) {
@@ -43,14 +53,13 @@ export function summariseLoopOutcomes(cases: ReviewCase[]): LoopOutcomes {
     }
     for (const i of c.reviewQueueItems ?? []) {
       const agent = String(i.metadata?.agent ?? i.agentId);
-      const a = byAgent.get(agent) ?? { drafts: 0, accepted: 0, edited: 0, rejected: 0, pending: 0 };
+      const a = agents.get(agent) ?? { drafts: 0, accepted: 0, edited: 0, rejected: 0, pending: 0 };
       a.drafts += 1;
-      const edited = i.originalContent !== undefined;
       if (i.status === "ACCEPTED") a.accepted += 1;
       else if (i.status === "REJECTED") a.rejected += 1;
       else a.pending += 1;
-      if (edited) a.edited += 1;
-      byAgent.set(agent, a);
+      if (i.originalContent !== undefined) a.edited += 1;
+      agents.set(agent, a);
       if (i.itemType === "referral_package") {
         const domain = String(i.metadata?.domain ?? "other");
         const e = referrals.get(domain) ?? { held: 0, drafted: 0, confirmed: 0 };
@@ -60,11 +69,16 @@ export function summariseLoopOutcomes(cases: ReviewCase[]): LoopOutcomes {
       }
     }
   }
+  return { runs: runs.length, casesAccepted: runs.filter((c) => c.status === "accepted").length, agents, referrals, missing, priority };
+}
+
+export function summariseLoopOutcomes(cases: ReviewCase[]): LoopOutcomes {
+  const t = tallyLoop(cases);
   const rate = (n: number, d: number) => (d >= SMALL_CELL ? Math.round((n / d) * 100) / 100 : null);
   return {
-    runs: suppress(runs.length),
-    casesAccepted: suppress(runs.filter((c) => c.status === "accepted").length),
-    agents: [...byAgent.entries()]
+    runs: suppress(t.runs),
+    casesAccepted: suppress(t.casesAccepted),
+    agents: [...t.agents.entries()]
       .sort((x, y) => y[1].drafts - x[1].drafts)
       .map(([agent, a]) => {
         const decided = a.accepted + a.rejected;
@@ -79,9 +93,9 @@ export function summariseLoopOutcomes(cases: ReviewCase[]): LoopOutcomes {
           rejectionRate: rate(a.rejected, decided),
         };
       }),
-    referrals: [...referrals.entries()].map(([domain, r]) => ({ domain, held: suppress(r.held), drafted: suppress(r.drafted), confirmed: suppress(r.confirmed) })),
-    missingLabs: [...missing.entries()].sort((x, y) => y[1] - x[1]).map(([lab, n]) => ({ lab, runs: suppress(n) })),
-    priority: { Urgent: suppress(priority.Urgent), High: suppress(priority.High), Normal: suppress(priority.Normal) },
+    referrals: [...t.referrals.entries()].map(([domain, r]) => ({ domain, held: suppress(r.held), drafted: suppress(r.drafted), confirmed: suppress(r.confirmed) })),
+    missingLabs: [...t.missing.entries()].sort((x, y) => y[1] - x[1]).map(([lab, n]) => ({ lab, runs: suppress(n) })),
+    priority: { Urgent: suppress(t.priority.Urgent), High: suppress(t.priority.High), Normal: suppress(t.priority.Normal) },
     suppression: `Counts from 1 to ${SMALL_CELL - 1} are shown as "<5"; rates need at least ${SMALL_CELL} decided drafts. No patient is named.`,
   };
 }

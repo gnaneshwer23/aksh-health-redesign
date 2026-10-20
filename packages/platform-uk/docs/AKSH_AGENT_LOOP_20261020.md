@@ -67,6 +67,23 @@ view and the patient record; every enqueued draft is `ai_draft`.
 order → accept note and codes → PATHWAY referral), `tests/patient-spine-db.test.ts` (simulation DB: run audited, case
 stored, decision persisted with audit).
 
+## Release criteria (21 Oct)
+
+Each runnable agent in the register has release criteria (`release`), and `GET /api/agents/readiness` measures them
+against the organisation's agent-loop results (`lib/agents/readiness.ts`). Numeric targets are **proposed** until the
+clinical safety officer confirms them (`targetsConfirmedBy`); no agent is ever ready on numbers alone.
+
+| Agent | Decided drafts | Rejection rate | Accepted without edits | Other |
+|---|---|---|---|---|
+| SYNTHESIS | ≥ 50 | ≤ 10% | ≥ 60% | — |
+| DrAssist | ≥ 50 | ≤ 10% | ≥ 70% | — |
+| GUARDIAN | ≥ 50 | ≤ 20% | — | hazard test set: every known red interaction flagged |
+| HORIZON | ≥ 50 | ≤ 15% | — | — |
+| PATHWAY | ≥ 20 | — | — | ≥ 80% of referral drafts confirmed; referral thresholds signed off |
+| Others | — | — | — | sign-offs only (speech-processing decision for VOICE, suppression review for COMPASS, etc.) |
+
+Every agent also needs: clinical safety case and hazard log, DPIA and regulatory opinion, approved go-live.
+
 ## Still open
 
 - VOICE live transcription needs a governed decision (on-premise speech recognition or a processor agreement).
