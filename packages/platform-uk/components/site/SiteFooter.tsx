@@ -5,6 +5,7 @@ const COLUMNS = [
     title: "Platform",
     links: [
       { label: "How it works", href: "/platform" },
+      { label: "AI agents", href: "/agents" },
       { label: "Aksh Diabetes", href: "/#diabetes" },
       { label: "Available now", href: "/product" },
       { label: "Cancelled-slot fill", href: "/product#slot-fill" },

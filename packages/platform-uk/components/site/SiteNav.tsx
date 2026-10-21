@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export const SITE_LINKS = [
   { label: "How it works", href: "/platform" },
+  { label: "AI agents", href: "/agents" },
   { label: "Available now", href: "/product" },
   { label: "Security", href: "/security" },
   { label: "Resources", href: "/resources" },

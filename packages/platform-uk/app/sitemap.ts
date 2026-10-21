@@ -7,6 +7,7 @@ import { GUIDES } from "@/components/site/guides";
 const PUBLIC_PATHS = [
   "/",
   "/platform",
+  "/agents",
   "/product",
   "/security",
   "/resources",
