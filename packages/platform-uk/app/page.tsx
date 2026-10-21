@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Activity, CalendarClock, Check, ClipboardList } from "lucide-react";
 
-import { CgmMock, ReviewQueueMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { AgentLineFigure } from "@/components/site/AgentLineFigure";
+import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PilotCta } from "@/components/site/PageParts";
 import { StatusPill } from "@/components/site/StatusPill";
@@ -195,20 +196,25 @@ export default function HomePage() {
       </section>
 
       <section className="s-section s-section--soft" id="diabetes" style={{ scrollMarginTop: 80 }}>
-        <div className="s-container s-feature" style={{ alignItems: "start" }}>
-          <div className="s-feature__copy">
-            <span className="s-eyebrow">What comes next</span>
-            <h2 className="s-h2">Clinical drafts, <span style={{ whiteSpace: "nowrap" }}>in validation.</span></h2>
-            <p className="s-body">
-              The next part of Aksh Diabetes prepares drafts for clinicians: HbA1c trends, medication safety checks, overdue
-              complication checks and referral drafts, each accepted, edited or rejected in one review queue. It is built and
-              tested on synthetic data, and is not released for real patients until its clinical safety case and evaluation are
-              complete.
-            </p>
-            <span><StatusPill s="in_validation" /></span>
-            <Link href="/platform#capabilities" className="s-link">Every capability and its status →</Link>
+        <div className="s-container">
+          <div className="s-row" style={{ alignItems: "end", flexWrap: "wrap", gap: 16, marginBottom: 28 }}>
+            <div style={{ maxWidth: 760 }}>
+              <h2 className="s-h2">Clinical AI, <span style={{ whiteSpace: "nowrap" }}>under clinical control.</span></h2>
+              <p className="s-lede" style={{ marginTop: 16 }}>
+                Next for Aksh Diabetes: fourteen specialised agents that draft notes and codes, check medicines, read
+                laboratory trends, explain risk and prepare referrals, all stopping at a named clinician. In validation on
+                synthetic patients; not used for real patients until each agent meets its release criteria.
+              </p>
+            </div>
+            <span style={{ display: "inline-flex", gap: 12, alignItems: "center" }}>
+              <StatusPill s="in_validation" />
+              <Link href="/agents" className="s-btn s-btn--ghost">Meet the agents</Link>
+            </span>
           </div>
-          <div className="s-glow-wrap"><ReviewQueueMock /></div>
+          <AgentLineFigure />
+          <p className="s-small" style={{ marginTop: 16 }}>
+            <Link href="/platform#capabilities" className="s-link">Every capability and its status →</Link>
+          </p>
         </div>
       </section>
 

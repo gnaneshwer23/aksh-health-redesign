@@ -33,7 +33,7 @@ test.describe("Public site", () => {
   });
 
   test("no demo, walkthrough, sandbox or chat widget anywhere on the public pages", async ({ page }) => {
-    for (const path of ["/", "/platform", "/product", "/security", "/resources", "/contact", "/get-started"]) {
+    for (const path of ["/", "/platform", "/product", "/security", "/resources", "/contact", "/get-started", "/agents"]) {
       await page.goto(path);
       // "Synthetic demo" is a capability status label (lib/status/capabilities.ts), not an offer of a demo.
       const text = (await page.locator("body").innerText()).toLowerCase().replaceAll("synthetic demo", "");
@@ -78,13 +78,38 @@ test.describe("Public site", () => {
   });
 
   test("public pages carry no internal codenames or process names", async ({ page }) => {
-    for (const path of ["/", "/platform", "/product", "/security", "/resources"]) {
+    // Agents appear by product name (Aksh Guardian), never by internal code id (GUARDIAN).
+    for (const path of ["/", "/platform", "/product", "/security", "/resources", "/agents"]) {
       await page.goto(path);
       const text = await page.locator("main").innerText();
       for (const banned of ["CONDUCTOR", "GUARDIAN", "SYNTHESIS", "HORIZON", "NEXUS", "CANVAS", "Track B", "PRD"]) {
         expect(text, `${path} shows "${banned}"`).not.toContain(banned);
       }
     }
+  });
+
+  test("AI agents page: every agent with its role and status, the review line works by keyboard, release criteria shown", async ({ page }) => {
+    await page.goto("/agents");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("A clinician makes every decision.");
+    await expect(page.locator(".s-page-head")).toContainText("in validation on synthetic patients");
+    for (const name of ["Aksh Orchestrator", "Aksh Voice", "Aksh Canvas", "Aksh Synthesis", "DrAssist AI", "Aksh Guardian", "Aksh Horizon", "Aksh Nexus", "Aksh Pathway", "Aksh Bridge", "Aksh Shield", "Aksh Compass", "Aksh Prism", "Aksh Trials Agent"]) {
+      await expect(page.locator("#agents")).toContainText(name);
+    }
+    // Statuses come from the agent register: none is shown as in production; the two Phase 2 agents are planned.
+    await expect(page.locator('#agents [data-agent] .s-status--production')).toHaveCount(0);
+    await expect(page.locator('#agents [data-agent="PRISM"]')).toContainText("Planned");
+    // The figure: keyboard focus explains a station; the clinician decision changes what moves on.
+    const line = page.locator("[data-agent-line]").first();
+    await line.locator('[data-station="GUARDIAN"]').focus();
+    await expect(line.locator(".s-line__readout h3")).toHaveText("Aksh Guardian");
+    await line.getByRole("button", { name: "rejects" }).click();
+    await expect(line.locator(".s-line__outcome")).toContainText("Nothing moves on");
+    await line.getByRole("button", { name: "accepts" }).click();
+    await expect(line.locator(".s-line__outcome")).toContainText("Bridge stages the record");
+    await expect(page.locator("#release table")).toContainText("Aksh Synthesis");
+    await expect(page.locator("#technology")).toContainText("no patient data is sent to any AI model");
+    const nav = page.locator("[data-site-nav]");
+    await expect(nav.getByRole("link", { name: "AI agents", exact: true })).toHaveAttribute("href", "/agents");
   });
 
   test("available now describes two workflows and links to the step-by-step", async ({ page }) => {

@@ -7,6 +7,13 @@ function criticalViolations(violations: Result[]) {
 }
 
 test.describe("Accessibility (axe-core)", () => {
+  test("AI agents page has no critical axe violations", async ({ page }) => {
+    await page.goto("/agents");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+    expect(criticalViolations(results.violations)).toEqual([]);
+  });
+
   test("homepage has no critical axe violations", async ({ page }) => {
     await page.goto("/");
     await expect(
