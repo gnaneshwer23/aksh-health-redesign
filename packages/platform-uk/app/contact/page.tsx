@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2, Mail } from "lucide-react";
 
-import { PageHead } from "@/components/site/PageParts";
+import { PageHero } from "@/components/site/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -18,19 +18,13 @@ const ROUTES = [
 export default function ContactPage() {
   return (
     <SiteShell>
-      <PageHead
-        eyebrow="Contact"
-        title="Talk to us."
-        lede="Choose the route that fits and the right person will reply."
-        glance={{
-          title: "Who to contact",
-          rows: [
-            ["A new clinic", <Link key="a" href="/get-started" className="s-link">Request a pilot</Link>],
-            ["Security or data protection", "Email, below"],
-            ["Vulnerability report", "Email, below"],
-          ],
-        }}
-      />
+      <PageHero title="Talk to us." lede="Choose the route that fits and the right person will reply.">
+        <dl className="s-facts-inline">
+          <div><dt>A new clinic</dt><dd>{<Link key="a" href="/get-started" className="s-link">Request a pilot</Link>}</dd></div>
+          <div><dt>Security or data protection</dt><dd>Email, below</dd></div>
+          <div><dt>Vulnerability report</dt><dd>Email, below</dd></div>
+        </dl>
+      </PageHero>
       <section className="s-section s-section--tight">
         <div className="s-container">
           <div className="s-grid s-grid--2">

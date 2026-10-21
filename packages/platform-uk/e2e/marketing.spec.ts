@@ -8,8 +8,10 @@ test.describe("Public site", () => {
 
   test("home leads with the available workflows and one pilot call to action", async ({ page }) => {
     await page.goto("/");
+    // One product canvas opens the page; each page shows a different module of the same workspace.
+    await expect(page.locator('[data-hero] [data-canvas="today"]')).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Diabetes reviews, better coordinated.");
-    const hero = page.locator(".s-hero-panel");
+    const hero = page.locator("[data-hero]");
     await expect(hero.getByRole("link", { name: "Request an organisational pilot" })).toHaveAttribute("href", "/get-started");
     // No section repeated from other pages: the full capability list and limits live on How it works.
     await expect(page.locator("[data-pillars]")).toHaveCount(0);
@@ -61,7 +63,7 @@ test.describe("Public site", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aksh works beside your systems, and your team decides.");
     await expect(page.locator("[data-system-map]")).toContainText("Prepares the work");
     for (const id of ["where", "slot-fill", "glucose", "control", "start"]) await expect(page.locator(`#${id}`)).toBeVisible();
-    await expect(page.locator("#slot-fill .s-frame").first()).toBeVisible();
+    await expect(page.locator("#slot-fill .c-cluster").first()).toBeVisible();
     // Limits and named-person decisions live here, once.
     await expect(page.locator("#control .s-limits")).toContainText("No patient data sent to AI models in production");
     await expect(page.locator("#capabilities [data-pillars]")).toContainText("Lifestyle support");
@@ -75,6 +77,19 @@ test.describe("Public site", () => {
     const queue = page.locator('[data-pillars] [data-status]').filter({ hasText: "Clinical review queue" });
     await expect(queue).toHaveAttribute("data-status", "in_validation");
     await expect(page.locator("[data-pillars]")).toContainText("Built; not yet released for real patients");
+  });
+
+  test("every product page opens with the same workspace canvas on its own module", async ({ page }) => {
+    for (const [path, module] of [["/", "today"], ["/product", "record"], ["/agents", "agents"], ["/security", "audit"]] as const) {
+      await page.goto(path);
+      await expect(page.locator(`[data-hero] [data-canvas="${module}"]`), path).toBeVisible();
+      await expect(page.locator("[data-hero] [data-canvas]"), path).toHaveCount(1);
+      await expect(page.locator(`[data-hero] [data-canvas="${module}"]`)).toContainText("Synthetic data");
+    }
+    for (const path of ["/platform", "/resources", "/contact"]) {
+      await page.goto(path);
+      await expect(page.locator("[data-hero] h1"), path).toBeVisible();
+    }
   });
 
   test("public pages carry no internal codenames or process names", async ({ page }) => {
@@ -91,7 +106,7 @@ test.describe("Public site", () => {
   test("AI agents page: every agent with its role and status, the review line works by keyboard, release criteria shown", async ({ page }) => {
     await page.goto("/agents");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("A clinician makes every decision.");
-    await expect(page.locator(".s-page-head")).toContainText("in validation on synthetic patients");
+    await expect(page.locator("[data-validation-note]")).toContainText("in validation on synthetic patients");
     for (const name of ["Aksh Orchestrator", "Aksh Voice", "Aksh Canvas", "Aksh Synthesis", "DrAssist AI", "Aksh Guardian", "Aksh Horizon", "Aksh Nexus", "Aksh Pathway", "Aksh Bridge", "Aksh Shield", "Aksh Compass", "Aksh Prism", "Aksh Trials Agent"]) {
       await expect(page.locator("#agents")).toContainText(name);
     }
@@ -114,7 +129,7 @@ test.describe("Public site", () => {
 
   test("available now describes two workflows and links to the step-by-step", async ({ page }) => {
     await page.goto("/product");
-    await expect(page.locator(".s-page-head")).toContainText("Two workflows are in production");
+    await expect(page.locator("[data-hero]")).toContainText("Two workflows are in production");
     await expect(page.locator("#slot-fill").getByRole("link", { name: "Step by step →" })).toHaveAttribute("href", "/platform#slot-fill");
     await expect(page.locator("#monitoring").getByRole("link", { name: "Step by step →" })).toHaveAttribute("href", "/platform#glucose");
   });

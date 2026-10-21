@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { Chip, Cluster, RangeStack, Tile, Timeline, Worklist } from "@/components/site/canvas/tiles";
+import { PageHero } from "@/components/site/PageHero";
 import { PilotCta } from "@/components/site/PageParts";
 import { Pillars } from "@/components/site/Pillars";
 import { HUMAN_GATES, NON_OBJECTIVES } from "@/components/site/vision";
@@ -50,16 +51,7 @@ function Steps({ steps }: { steps: { title: string; body: string; you?: boolean 
 export default function PlatformPage() {
   return (
     <SiteShell>
-      <section className="s-page-head">
-        <div className="s-container s-page-head__inner">
-          <span className="s-eyebrow">How it works</span>
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.4vw, 54px)" }}>Aksh works beside your systems, and your team decides.</h1>
-          <p className="s-lede">
-            It reads what your clinic already records, prepares the work, and keeps a record of every decision. It does not
-            replace your records system and does not act on its own.
-          </p>
-        </div>
-      </section>
+      <PageHero title="Aksh works beside your systems, and your team decides." lede="It reads what your clinic already records, prepares the work, and keeps a record of every decision. It does not replace your records system and does not act on its own." />
 
       <section className="s-section s-section--tight" id="where" aria-labelledby="where-title">
         <div className="s-container">
@@ -111,10 +103,22 @@ export default function PlatformPage() {
           </div>
           <div className="s-walk">
             <Steps steps={SLOT_STEPS} />
-            <div className="s-walk__screens">
-              <SlotFillMock />
-              <WorkflowMock />
-            </div>
+            <Cluster cols={1}>
+              <Tile title="Slot history · Thu 09:40" aside={<Chip tone="amber">Shadow mode</Chip>}>
+                <Timeline
+                  steps={[
+                    { t: "Slot received from your schedule", d: "Diabetes review, 20 minutes", state: "done" },
+                    { t: "3 patients ranked, 1 not eligible", d: "Overdue care first, reasons shown for each", state: "done" },
+                    { t: "Offer approved by staff", d: "Sent through your own channel, not by Aksh", state: "done" },
+                    { t: "Patient accepted", d: "Waiting for the schedule to show the booking", state: "done" },
+                    { t: "Booking confirmed by the schedule", d: "Counted as filled", state: "now" },
+                  ]}
+                />
+              </Tile>
+              <Tile title="If the schedule does not show the booking" aside={<Chip tone="red">Hand-off</Chip>}>
+                <p className="c-text">Aksh never counts it as filled. A hand-off goes to your reception queue with a reason and a due time.</p>
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>
@@ -127,9 +131,20 @@ export default function PlatformPage() {
           </div>
           <div className="s-walk">
             <Steps steps={CGM_STEPS} />
-            <div className="s-walk__screens">
-              <CgmMock />
-            </div>
+            <Cluster cols={1}>
+              <Tile title="Worklist · low glucose first">
+                <Worklist
+                  rows={[
+                    { dot: "red", name: "A. Mensah", detail: "2% below 3.0 mmol/L", chip: <Chip tone="red">Urgent</Chip> },
+                    { dot: "amber", name: "S. Novak", detail: "Time in range 61%", chip: <Chip tone="amber">Review</Chip> },
+                    { dot: "grey", name: "P. Silva", detail: "9 days of data, not enough yet", chip: <Chip>Data</Chip> },
+                  ]}
+                />
+              </Tile>
+              <Tile title="Time in ranges · A. Mensah">
+                <RangeStack parts={[{ label: "Very high", pct: 12, tone: "vhigh" }, { label: "High", pct: 32, tone: "high" }, { label: "In range", pct: 48, tone: "in" }, { label: "Low", pct: 6, tone: "low" }, { label: "Very low", pct: 2, tone: "vlow" }]} />
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>

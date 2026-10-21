@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Activity, CalendarClock, Check, ClipboardList } from "lucide-react";
 
-import { AgentLineFigure } from "@/components/site/AgentLineFigure";
-import { CgmMock, SlotFillMock, WorkflowMock } from "@/components/site/Mockups";
+import { ProductCanvas } from "@/components/site/canvas/ProductCanvas";
+import { PageHero } from "@/components/site/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PilotCta } from "@/components/site/PageParts";
 import { StatusPill } from "@/components/site/StatusPill";
@@ -64,35 +64,19 @@ const PROBLEMS = [
 export default function HomePage() {
   return (
     <SiteShell>
-      <section className="s-hero-panel">
-        <div className="s-container s-hero-panel__card">
-          <div className="s-hero-panel__grid">
-            <div className="s-hero__copy s-reveal">
-              <span className="s-pill-frost"><i>Aksh Diabetes</i>For diabetes care teams</span>
-              <h1 className="s-h1">Diabetes reviews, <span className="s-grad">better coordinated.</span></h1>
-              <p className="s-lede">
-                Aksh helps your team fill cancelled appointments from the waiting list and see whose glucose needs attention
-                first. Your staff decide every step, and results are measured against your own baseline.
-              </p>
-              <div className="s-actions">
-                <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
-                <Link href="/product" className="s-btn s-btn--ghost">What’s available now</Link>
-              </div>
-              <p className="s-hero-panel__note" aria-label="In production today">
-                {(["slot_fill", "cgm_monitoring", "patient_readings"] as CapabilityId[]).map((id) => <span key={id}>{capability(id).name}</span>)}
-              </p>
-            </div>
-            <div className="s-glow-wrap s-reveal" style={{ animationDelay: "120ms" }}>
-              <SlotFillMock />
-            </div>
-          </div>
-          <div className="s-metrics" style={{ marginTop: 48 }}>
-            <div><b>Staff decide</b><span>every contact and every clinical response</span></div>
-            <div><b>Confirmed bookings</b><span>a slot counts only when your schedule shows the booking</span></div>
-            <div><b>Your baseline</b><span>locked before go-live, reviewed weekly</span></div>
-          </div>
+      <PageHero
+        title={<>Diabetes reviews, <span className="s-grad">better coordinated.</span></>}
+        lede="Aksh helps your team fill cancelled appointments from the waiting list and see whose glucose needs attention first. Your staff decide every step, and results are measured against your own baseline."
+        module="today"
+      >
+        <div className="s-actions">
+          <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
+          <Link href="/product" className="s-btn s-btn--ghost">What’s available now</Link>
         </div>
-      </section>
+        <p className="s-hero-panel__note" aria-label="In production today">
+          {(["slot_fill", "cgm_monitoring", "patient_readings"] as CapabilityId[]).map((id) => <span key={id}>{capability(id).name}</span>)}
+        </p>
+      </PageHero>
 
       <section className="s-section" id="problem">
         <div className="s-container">
@@ -124,21 +108,23 @@ export default function HomePage() {
               const c = capability(w.id);
               return (
                 <article key={w.id} id={w.anchor} className="s-workflow" data-workflow={w.id} data-status={c.status} style={{ scrollMarginTop: 80 }}>
-                  <div className={`s-feature${i % 2 ? " s-feature--flip" : ""}`} style={{ alignItems: "center" }}>
-                  <div className="s-feature__copy">
-                    <div className="s-row" style={{ justifyContent: "flex-start", gap: 12 }}>
-                      <span className="s-icon"><Icon /></span>
-                      <StatusPill s={c.status} />
+                  <div className="s-workflow__head">
+                    <div>
+                      <div className="s-row" style={{ justifyContent: "flex-start", gap: 12, marginBottom: 12 }}>
+                        <span className="s-icon"><Icon /></span>
+                        <StatusPill s={c.status} />
+                      </div>
+                      <h3 className="s-h2" style={{ fontSize: "clamp(26px, 3vw, 36px)" }}>{w.title}</h3>
                     </div>
-                    <h3 className="s-h2" style={{ fontSize: "clamp(26px, 3vw, 34px)" }}>{w.title}</h3>
-                    <p className="s-body">{w.value}</p>
-                    <div className="s-actions">
-                      <Link href={`/product#${w.anchor}`} className="s-link">How {w.id === "slot_fill" ? "slot filling" : "glucose monitoring"} works →</Link>
-                      <Link href={w.guide} className="s-link">Setup guide →</Link>
+                    <div>
+                      <p className="s-body" style={{ margin: 0 }}>{w.value}</p>
+                      <div className="s-actions" style={{ marginTop: 12 }}>
+                        <Link href={`/product#${w.anchor}`} className="s-link">How {w.id === "slot_fill" ? "slot filling" : "glucose monitoring"} works →</Link>
+                        <Link href={w.guide} className="s-link">Setup guide →</Link>
+                      </div>
                     </div>
                   </div>
-                  <div className="s-glow-wrap">{w.mock === "slot" ? <WorkflowMock /> : <CgmMock />}</div>
-                  </div>
+                  <ProductCanvas module={w.mock === "slot" ? "slots" : "glucose"} />
                   <dl className="s-flow3">
                     <div><dt>How it works</dt><dd>{w.how}</dd></div>
                     <div><dt>What staff do</dt><dd>{w.staff}</dd></div>
@@ -211,7 +197,7 @@ export default function HomePage() {
               <Link href="/agents" className="s-btn s-btn--ghost">Meet the agents</Link>
             </span>
           </div>
-          <AgentLineFigure />
+          <ProductCanvas module="agents" />
           <p className="s-small" style={{ marginTop: 16 }}>
             <Link href="/platform#capabilities" className="s-link">Every capability and its status →</Link>
           </p>

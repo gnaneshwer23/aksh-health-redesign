@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { AgentLineFigure } from "@/components/site/AgentLineFigure";
+import { PageHero } from "@/components/site/PageHero";
 import { AGENT_FACTS, PUBLIC_AGENTS, STAGES } from "@/components/site/agents-content";
 import { PilotCta } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
@@ -48,38 +48,22 @@ export default function AgentsPage() {
   const releaseRows = AGENTS.filter((a) => a.release?.minDecided);
   return (
     <SiteShell>
-      <section className="s-page-head">
-        <div className="s-container s-page-head__inner">
-          <h1 className="s-h1" style={{ fontSize: "clamp(36px, 4.6vw, 58px)", maxWidth: 900 }}>
-            Fourteen specialised agents. <span className="s-grad">A clinician makes every decision.</span>
-          </h1>
-          <p className="s-lede">
-            Aksh&apos;s clinical AI works as one supervised review line. Agents capture, draft, check and organise the work;
-            a named clinician accepts, edits or rejects every output, and nothing reaches a record without that decision.
-          </p>
-          <p className="s-small" style={{ maxWidth: 720 }}>
-            <StatusPill s="in_validation" /> The agents are in validation on synthetic patients. They are not used for real
-            patients until each one meets its release criteria and your clinical safety officer signs it off.
-          </p>
-          <div className="s-figures" aria-label="Key figures">
-            <div><b>{AGENT_FACTS.agents}</b><span>specialised agents under one supervisor</span></div>
-            <div><b>{AGENT_FACTS.humanGates}</b><span>decisions that always need a named person</span></div>
-            <div><b>{AGENT_FACTS.registeredRules}</b><span>clinical rules, each with its source</span></div>
-            <div><b>0</b><span>patient records sent to AI models in production</span></div>
-          </div>
+      <PageHero
+        title={<>Fourteen specialised agents. <span className="s-grad">A clinician makes every decision.</span></>}
+        lede="Aksh's clinical AI works as one supervised review line. Agents capture, draft, check and organise the work; a named clinician accepts, edits or rejects every output, and nothing reaches a record without that decision."
+        module="agents"
+      >
+        <p className="s-small" data-validation-note>
+          <StatusPill s="in_validation" /> The agents are in validation on synthetic patients. They are not used for real
+          patients until each one meets its release criteria and your clinical safety officer signs it off.
+        </p>
+        <div className="s-figures" aria-label="Key figures">
+          <div><b>{AGENT_FACTS.agents}</b><span>specialised agents under one supervisor</span></div>
+          <div><b>{AGENT_FACTS.humanGates}</b><span>decisions that always need a named person</span></div>
+          <div><b>{AGENT_FACTS.registeredRules}</b><span>clinical rules, each with its source</span></div>
+          <div><b>0</b><span>patient records sent to AI models in production</span></div>
         </div>
-      </section>
-
-      <section className="s-section s-section--tight" id="line">
-        <div className="s-container">
-          <h2 className="s-h2" style={{ maxWidth: 760 }}>The review line</h2>
-          <p className="s-lede" style={{ marginBottom: 28 }}>
-            Patient data enters on the left. Four agents work on it in parallel, then everything stops at the clinician.
-            Only what the clinician accepts moves on.
-          </p>
-          <AgentLineFigure />
-        </div>
-      </section>
+      </PageHero>
 
       <section className="s-section" id="agents">
         <div className="s-container">
