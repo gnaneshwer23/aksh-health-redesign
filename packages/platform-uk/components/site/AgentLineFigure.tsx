@@ -53,6 +53,8 @@ const STATIONS: Station[] = [
   { key: "ATLAS", x: 12.4, y: 0.8, w: 0.8, d: 0.8, h: 0.5, kind: "planned", label: "Trials (planned)", agent: byId("ATLAS") },
 ];
 
+const FLOOR: Pt[] = [iso(-0.5, -4.6), iso(13.6, -4.6), iso(13.6, 2.6), iso(-0.5, 2.6)];
+
 const centre = (k: string, z = 0.02): Pt => {
   const s = STATIONS.find((x) => x.key === k)!;
   return iso(s.x + s.w / 2, s.y + s.d / 2, z);
@@ -80,10 +82,11 @@ export function AgentLineFigure() {
   }, []);
 
   const box = useMemo(() => {
-    const all = STATIONS.flatMap((s) => [iso(s.x, s.y, s.h), iso(s.x + s.w, s.y, 0), iso(s.x, s.y + s.d, 0), iso(s.x + s.w, s.y + s.d, 0), iso(s.x, s.y, s.h + 0.7)]);
+    // The floor sets the frame, so nothing is cropped at the edges.
+    const all = [...FLOOR, ...STATIONS.flatMap((s) => [iso(s.x, s.y, s.h + 0.7), iso(s.x + s.w, s.y + s.d, 0)])];
     const xs = all.map((p) => p[0]);
     const ys = all.map((p) => p[1]);
-    const pad = 28;
+    const pad = 14;
     return { x: Math.min(...xs) - pad, y: Math.min(...ys) - pad, w: Math.max(...xs) - Math.min(...xs) + pad * 2, h: Math.max(...ys) - Math.min(...ys) + pad * 2 };
   }, []);
 
@@ -108,7 +111,7 @@ export function AgentLineFigure() {
             </filter>
           </defs>
           {/* floor */}
-          <polygon points={pts([iso(-0.6, -4.6), iso(13.8, -4.6), iso(13.8, 2.8), iso(-0.6, 2.8)])} className="s-line__floor" />
+          <polygon points={pts(FLOOR)} className="s-line__floor" />
           {/* belts */}
           {PRE.map((d, i) => <path key={`b${i}`} d={d} className="s-line__belt" />)}
           {POST_ACCEPT.map((d, i) => <path key={`p${i}`} d={d} className={`s-line__belt s-line__belt--post${decision === "accepted" ? " is-open" : ""}`} />)}

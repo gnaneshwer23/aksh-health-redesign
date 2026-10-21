@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-import { CgmMock, PatientMock, ReviewMock, SlotFillMock } from "@/components/site/Mockups";
-import { PageHead, PilotCta, SubNav } from "@/components/site/PageParts";
+import { AgpChart, Bars, Big, Chip, Cluster, Stats, Tile, Worklist } from "@/components/site/canvas/tiles";
+import { PageHero } from "@/components/site/PageHero";
+import { PilotCta, SubNav } from "@/components/site/PageParts";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -25,21 +26,18 @@ function Checks({ items }: { items: string[] }) {
 export default function ProductPage() {
   return (
     <SiteShell>
-      <PageHead
-        eyebrow="Available now"
+      <PageHero
         title="What a clinic can use today."
         lede="Two workflows are in production, cancelled-slot fill and glucose monitoring, supported by the patient app and weekly results. This page lists what each includes; How it works shows them step by step."
-        glance={{
-          title: "At a glance",
-          rows: [
-            ["Status", "In production, ready for go-live"],
-            ["Starts in", "Shadow mode"],
-            ["Contacts patients", "Your staff, through your channels"],
-            ["Books appointments", "No. Your schedule confirms each booking"],
-            ["You provide", "Patient list, schedule feed, CGM files"],
-          ],
-        }}
-      />
+        module="record"
+      >
+        <dl className="s-facts-inline">
+          <div><dt>Starts in</dt><dd>Shadow mode</dd></div>
+          <div><dt>Contacts patients</dt><dd>Your staff, your channels</dd></div>
+          <div><dt>Books appointments</dt><dd>No, your schedule confirms</dd></div>
+          <div><dt>You provide</dt><dd>Patient list, schedule feed, CGM files</dd></div>
+        </dl>
+      </PageHero>
       <SubNav items={[["#slot-fill", "Slot fill"], ["#monitoring", "Monitoring"], ["#patients", "Patient app"], ["#results", "Results"], ["#roles", "Roles"], ["#connect", "Connections"]]} />
 
       <section className="s-section" id="slot-fill" style={{ scrollMarginTop: 130 }}>
@@ -61,7 +59,18 @@ export default function ProductPage() {
               />
               <Link href="/platform#slot-fill" className="s-link">Step by step →</Link>
             </div>
-            <SlotFillMock />
+            <Cluster cols={1}>
+              <Tile title="Diabetes review · Thu 09:40" aside={<Chip tone="amber">Shadow mode</Chip>}>
+                <Worklist
+                  rows={[
+                    { dot: "lime", name: "1 · R. Okafor", detail: "Overdue care · waiting since 12 Aug", chip: <Chip tone="lime">Eligible</Chip> },
+                    { dot: "lime", name: "2 · M. Haddad", detail: "Patient asked · waiting since 3 Sep", chip: <Chip tone="lime">Eligible</Chip> },
+                    { dot: "grey", name: "J. Lindqvist", detail: "Needs 24 h notice", chip: <Chip>Not offered</Chip> },
+                  ]}
+                />
+                <div className="c-actions" aria-hidden><span className="is-primary">Draft offer</span><span>Skip with reason</span><span>Hand off</span></div>
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>
@@ -84,7 +93,12 @@ export default function ProductPage() {
               />
               <Link href="/platform#glucose" className="s-link">Step by step →</Link>
             </div>
-            <CgmMock />
+            <Cluster cols={1}>
+              <Tile title="A. Mensah · 14 days" aside={<Chip tone="teal">94% sensor wear</Chip>}>
+                <AgpChart height={200} />
+                <Stats items={[{ value: "9.8", label: "Mean mmol/L" }, { value: "7.9%", label: "GMI" }, { value: "41%", label: "CV" }, { value: "48%", label: "In range" }]} />
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>
@@ -109,7 +123,17 @@ export default function ProductPage() {
                 ]}
               />
             </div>
-            <PatientMock />
+            <Cluster cols={1}>
+              <Tile title="Shared from the patient app" aside={<Chip tone="amber">Patient-reported</Chip>}>
+                <Worklist
+                  rows={[
+                    { dot: "amber", name: "Glucose 4.1 mmol/L", detail: "Before breakfast · today 07:42", chip: <Chip>Not yet checked</Chip> },
+                    { dot: "amber", name: "Blood pressure 138/84", detail: "Home monitor · yesterday", chip: <Chip>Not yet checked</Chip> },
+                    { dot: "teal", name: "Weight 82.4 kg", detail: "Checked by nurse · Monday", chip: <Chip tone="teal">Confirmed</Chip> },
+                  ]}
+                />
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>
@@ -134,7 +158,15 @@ export default function ProductPage() {
                 ]}
               />
             </div>
-            <ReviewMock />
+            <Cluster cols={2}>
+              <Tile title="Fill rate">
+                <Big value="68" unit="%" label="16 of 24 slots · 95% range 47–84%" />
+                <Bars values={[38, 44, 52, 49, 61, 68]} labels={["W1", "W2", "W3", "W4", "W5", "W6"]} highlight={5} height={110} unit="%" max={80} />
+              </Tile>
+              <Tile title="This week" aside={<Chip tone="teal">Signed off</Chip>}>
+                <Stats items={[{ value: "41%", label: "Locked baseline" }, { value: "6 min", label: "Staff per fill" }, { value: "2", label: "Hand-offs" }, { value: "0", label: "Complaints" }]} />
+              </Tile>
+            </Cluster>
           </div>
         </div>
       </section>

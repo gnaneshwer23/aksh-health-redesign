@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PageHead, SubNav } from "@/components/site/PageParts";
+import { SubNav } from "@/components/site/PageParts";
+import { PageHero } from "@/components/site/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -82,21 +83,18 @@ const SECTIONS: { id: string; title: string; intro: string; points: { t: string;
 export default function SecurityPage() {
   return (
     <SiteShell>
-      <PageHead
-        eyebrow="Security"
+      <PageHero
         title="Security your governance team can check."
         lede="How Aksh protects clinical data, who can see it, and what has to be true before an organisation goes live. We do not claim certifications we do not hold."
-        glance={{
-          title: "Key facts",
-          rows: [
-            ["Isolation", "Per organisation, enforced in the database"],
-            ["Sign-in", "Two-step, required for reviewers"],
-            ["History", "Cannot be edited or deleted"],
-            ["AI on patient data", "None in production"],
-            ["Go-live", "DPA, privacy assessment, safety lead"],
-          ],
-        }}
-      />
+        module="audit"
+      >
+        <dl className="s-facts-inline">
+          <div><dt>Isolation</dt><dd>Per organisation, in the database</dd></div>
+          <div><dt>Sign-in</dt><dd>Two-step for reviewers</dd></div>
+          <div><dt>History</dt><dd>Cannot be edited or deleted</dd></div>
+          <div><dt>AI on patient data</dt><dd>None in production</dd></div>
+        </dl>
+      </PageHero>
       <SubNav items={SECTIONS.map((x) => [`#${x.id}`, x.title] as [string, string])} />
 
       <section className="s-section s-section--tight">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { GUIDE_GROUPS, GUIDES } from "@/components/site/guides";
-import { PageHead } from "@/components/site/PageParts";
+import { PageHero } from "@/components/site/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
 
 export const metadata: Metadata = {
@@ -24,19 +24,13 @@ const FAQ = [
 export default function ResourcesPage() {
   return (
     <SiteShell>
-      <PageHead
-        eyebrow="Resources"
-        title="Guides for your team."
-        lede="How to set up Aksh, run slot fill and monitoring day to day, connect your systems, and go live."
-        glance={{
-          title: "Start here",
-          rows: [
-            ["New clinic", <Link key="a" href="/resources/getting-started" className="s-link">Getting started</Link>],
-            ["IT and integration", <Link key="b" href="/resources/schedule-connector" className="s-link">Schedule connector</Link>],
-            ["Governance", <Link key="c" href="/resources/going-live" className="s-link">Going live</Link>],
-          ],
-        }}
-      />
+      <PageHero title="Guides for your team." lede="How to set up Aksh, run slot fill and monitoring day to day, connect your systems, and go live.">
+        <dl className="s-facts-inline">
+          <div><dt>New clinic</dt><dd>{<Link key="a" href="/resources/getting-started" className="s-link">Getting started</Link>}</dd></div>
+          <div><dt>IT and integration</dt><dd>{<Link key="b" href="/resources/schedule-connector" className="s-link">Schedule connector</Link>}</dd></div>
+          <div><dt>Governance</dt><dd>{<Link key="c" href="/resources/going-live" className="s-link">Going live</Link>}</dd></div>
+        </dl>
+      </PageHero>
 
       <section className="s-section s-section--tight">
         <div className="s-container" style={{ display: "grid", gap: 56 }}>
