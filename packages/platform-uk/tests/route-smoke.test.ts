@@ -433,6 +433,14 @@ async function run() {
   await assertFileIncludes("app/page.tsx", "Explore a demo");
   await assertFileIncludes("app/page.tsx", "/demo/slot-fill");
   await assertFileIncludes("app/page.tsx", "/demo/glucose");
+  await assertFileIncludes("app/page.tsx", "DiabetesHistoryPreview");
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "review-prep");
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "Synthetic");
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "human gate");
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", 's="in_validation"');
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", 'href="/demo"');
+  await assertFileExcludes("components/site/DiabetesHistoryPreview.tsx", "Medome");
+  await assertFileExcludes("components/site/DiabetesHistoryPreview.tsx", "Eve");
   await assertFileIncludes("app/demo/page.tsx", "Explore a demo");
   await assertFileIncludes("app/demo/slot-fill/page.tsx", "SlotFillDemo");
   await assertFileIncludes("app/demo/glucose/page.tsx", "GlucoseMonitorDemo");
