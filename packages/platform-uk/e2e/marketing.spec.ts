@@ -119,6 +119,38 @@ test.describe("Public site", () => {
     }
   });
 
+  test("product canvas rail switches modules and keeps the synthetic badge", async ({ page }) => {
+    await page.goto("/");
+    const canvas = page.locator("[data-hero] [data-canvas]").first();
+    const rail = canvas.locator(".c-rail");
+    const seg = canvas.locator(".c-seg");
+    await expect(canvas).toHaveAttribute("data-canvas", "today");
+    await expect(rail.getByRole("button", { name: "Today" })).toHaveAttribute("aria-current", "page");
+
+    const visits: [string, string, RegExp][] = [
+      ["Fill slots", "slots", /Fill cancelled slots/],
+      ["Glucose", "glucose", /Glucose monitoring/],
+      ["Patient record", "record", /Patient record/],
+      ["Review line", "agents", /Clinical review/],
+      ["Audit", "audit", /Audit and access/],
+      ["Today", "today", /^Today$/],
+    ];
+    for (const [label, module, title] of visits) {
+      await rail.getByRole("button", { name: label }).click();
+      await expect(canvas).toHaveAttribute("data-canvas", module);
+      await expect(canvas.locator(".c-head__title")).toHaveText(title);
+      await expect(rail.getByRole("button", { name: label })).toHaveAttribute("aria-current", "page");
+      await expect(canvas).toContainText("Synthetic data");
+    }
+
+    await seg.getByRole("button", { name: "Patients" }).click();
+    await expect(canvas).toHaveAttribute("data-canvas", "glucose");
+    await seg.getByRole("button", { name: "Results" }).click();
+    await expect(canvas).toHaveAttribute("data-canvas", "audit");
+    await seg.getByRole("button", { name: "Today" }).click();
+    await expect(canvas).toHaveAttribute("data-canvas", "today");
+  });
+
   test("public pages carry no internal codenames or process names", async ({ page }) => {
     // Agents appear by product name (Aksh Guardian), never by internal code id (GUARDIAN).
     for (const path of ["/", "/platform", "/product", "/security", "/resources", "/agents"]) {
