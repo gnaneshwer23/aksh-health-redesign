@@ -17,18 +17,20 @@ export default function HomePage() {
       <AgentGrid />
       <VoiceAgentSection />
 
-      {/* Pilot CTA Section */}
-      <section className="py-24 bg-emerald text-white text-center">
+      {/* Legacy scaffold notice — this package is not production */}
+      <section className="py-24 bg-slate-800 text-white text-center" data-legacy-scaffold>
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-4">Join the Phase 1 ICS Pilot — October 2026</h2>
-          <p className="text-white/80 text-xl mb-8">
-            3 NHS ICS sites · 150 clinicians · 5,000 patients · EMIS Web and SystmOne
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300 mb-4">Legacy package · not the live site</p>
+          <h2 className="text-3xl font-bold mb-4">This marketing scaffold is retired.</h2>
+          <p className="text-white/80 text-lg mb-8">
+            Historical ICS pilot CTAs here are outdated. The live product is www.akshhealth.com
+            (packages/platform-uk). Do not deploy this package.
           </p>
           <Link
-            href="/pilot/apply"
-            className="inline-block px-10 py-4 bg-white text-emerald font-bold rounded-xl hover:bg-white/90 transition-colors text-lg shadow-lg"
+            href="https://www.akshhealth.com"
+            className="inline-block px-10 py-4 bg-white text-slate-900 font-bold rounded-xl hover:bg-white/90 transition-colors text-lg shadow-lg"
           >
-            Apply for Pilot Cohort
+            Go to the live site
           </Link>
         </div>
       </section>

@@ -1,36 +1,47 @@
-# 0ne Health (Aksh Health + Akeno)
+# Aksh Health (aksh-health-redesign)
 
-Single monorepo for the Aksh Health UK/EU platform, India app and marketing site, shared foundation library, and the Akeno Health full-stack platform (services + web).
+Monorepo for the Aksh Health platform: production clinical workflows (UK/EU), India apps, shared foundation, and related packages.
 
-**Production:** https://0ne-health.vercel.app — single deploy from `packages/platform-uk` (Neon Postgres backend).
+## Authoritative deployment map
 
-**Remote:** https://github.com/gnaneshwer23/0ne-Health
+| Role | Value |
+|------|-------|
+| **Production domain** | https://www.akshhealth.com |
+| **Vercel project** | `aksh-health-redesign` |
+| **Root directory** | `packages/platform-uk` |
+| **GitHub repo** | https://github.com/gnaneshwer23/aksh-health-redesign |
+| **Proof (noindex)** | https://aksh-clinical-proof.vercel.app — same commit as production; clinical proof surfaces |
+| **Legacy / older deploy** | https://0ne-health.vercel.app — superseded; docs that call it production are stale. Do not delete Vercel projects from this repo. |
 
-See `docs/DEPLOYMENT_CONSOLIDATION.md` for Vercel project retirement and route map.
+Capability truth lives in `packages/platform-uk/lib/status/capabilities.ts` (LIVE_ORGANISATIONS, production vs in_validation). See `docs/DEPLOYMENT_CONSOLIDATION.md` for the full map.
+
+**Do not deploy** `packages/aksh-health` — legacy marketing scaffold with outdated pilot claims; keep it marked legacy if retained.
 
 ## Repository layout
 
 ```
-0ne-Health/
+aksh-health-redesign/
 ├── README.md
-├── docs/                          # Cross-cutting plans + strategy index
+├── docs/                          # Cross-cutting plans + deployment map
 ├── packages/
 │   ├── foundation/                # @akshhealth/foundation (shared types & fixtures)
-│   ├── platform-uk/               # Aksh Health UK/EU clinical proof platform (Phase A/B)
-│   ├── platform-india-app/      # Aksh Health India Phase 0 app
-│   ├── marketing-india/         # Aksh Health India marketing site
-│   ├── marketing-os/            # Legacy marketing site (retired — content merged into platform-uk)
+│   ├── platform-uk/               # Live site + workflows (www.akshhealth.com)
+│   ├── platform-india-app/        # Aksh Health India Phase 0 app
+│   ├── marketing-india/           # Aksh Health India marketing site
+│   ├── marketing-os/              # Legacy marketing site (retired — content merged into platform-uk)
+│   ├── aksh-health/               # LEGACY — do not deploy; outdated ICS pilot claims
 │   └── akeno/                     # Akeno Health L0–L10 services, contracts, web dashboard
 ```
 
-| Package | Path | Former / related GitHub repo |
-|---------|------|------------------------------|
-| Foundation | `packages/foundation` | [akshhealth-shared-uk-india-foundation](https://github.com/gnaneshwer23/akshhealth-shared-uk-india-foundation) |
-| UK/EU platform | `packages/platform-uk` | [akshhealth-uk-eu-platform](https://github.com/gnaneshwer23/akshhealth-uk-eu-platform) |
-| India app | `packages/platform-india-app` | [akshhealth-india-app](https://github.com/gnaneshwer23/akshhealth-india-app) |
-| India marketing | `packages/marketing-india` | [akshhealth-india-web](https://github.com/gnaneshwer23/akshhealth-india-web) |
-| Marketing OS | `packages/marketing-os` | (this monorepo) |
-| Akeno platform | `packages/akeno` | [akenohealth](https://github.com/gnaneshwer23/akenohealth) |
+| Package | Path | Notes |
+|---------|------|-------|
+| Foundation | `packages/foundation` | Shared types & fixtures |
+| UK/EU platform (live) | `packages/platform-uk` | Production app root for Vercel |
+| India app | `packages/platform-india-app` | Phase 0 intake/review |
+| India marketing | `packages/marketing-india` | Content site |
+| Marketing OS | `packages/marketing-os` | Retired; reference only |
+| Legacy marketing | `packages/aksh-health` | Not production; do not deploy |
+| Akeno platform | `packages/akeno` | Multi-service platform |
 
 Each package keeps its own `README.md` with product-specific detail.
 
@@ -48,11 +59,11 @@ npm test   # if defined in package.json
 
 ### `packages/platform-uk`
 
-UK/EU clinical workflow platform and **unified production app** (marketing + onboarding + dashboards + demo). Deployed to https://0ne-health.vercel.app.
+Live production app (marketing + workflows + workspace + demos). Deploys to https://www.akshhealth.com from Vercel project `aksh-health-redesign`.
 
 ```bash
 cd packages/platform-uk
-cp .env.local.example .env.local   # set Neon DATABASE_URL and auth secrets
+cp .env.local.example .env.local   # local Neon child branch only — never production main
 npm install
 npm run dev
 ```
@@ -84,39 +95,25 @@ npm run dev
 
 **Retired** — marketing content merged into `packages/platform-uk`. Kept in monorepo for reference only.
 
-```bash
-cd packages/marketing-os
-npm install
-npm run dev   # localhost:3010 — do not deploy separately
-```
+### `packages/aksh-health`
+
+**Legacy.** Not the live site. Contains outdated October 2026 ICS pilot claims. Do not deploy.
 
 ### `packages/akeno`
 
 Multi-service healthcare platform (Python services + Next.js web). See `packages/akeno/README.md`.
 
-**Neon (Postgres):** Configure `DATABASE_URL` in `packages/akeno/.env.local` (from `packages/akeno/.env.example`). Setup guide: `packages/akeno/docs/infra/neon-vercel-setup.md`.
-
-```bash
-cd packages/akeno
-cp .env.example .env.local
-python scripts/apply_neon_migrations.py
-python scripts/seed_neon_data.py
-cd web && npm install && npm run dev
-```
-
-Local infra (Postgres, Neo4j, Kafka): `packages/akeno/infra/docker-compose.yml`.
-
 ## Documentation
 
-- `docs/AKSH_PLATFORM_IMPLEMENTATION_PLAN.md` — implementation plan
-- `docs/PHASE_A_COMPLETE.md` — Phase A completion notes
-- `docs/AkshHealth_Current_Issues_Log.md` — issues log
-- `docs/STRATEGY_DOCUMENTS.md` — pointers to local Word/Excel strategy assets (not committed)
+- `docs/DEPLOYMENT_CONSOLIDATION.md` — authoritative domains and Vercel map
+- `packages/platform-uk/lib/status/capabilities.ts` — what is production vs in validation
+- `docs/STRATEGY_DOCUMENTS.md` — pointers to local strategy assets (not committed)
 
 ## Development notes
 
 - Do not commit `.env.local` or credentials; use `*.example` templates.
-- Run `npm install` (and Python venv if needed) inside each package you work on.
+- Local Neon must point at a child/simulation branch — never write to production Neon main.
+- Run `npm install` inside each package you work on.
 - This monorepo does not use a root workspace manager yet; treat packages as independent apps/libs until a unified toolchain is added.
 
 ## License

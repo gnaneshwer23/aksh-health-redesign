@@ -17,7 +17,7 @@ export default function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-8">
           <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-white/80 text-sm font-medium">NHS Phase 1 Pilot — October 2026</span>
+          <span className="text-white/80 text-sm font-medium">Legacy scaffold · not production</span>
         </div>
 
         {/* Headline */}
@@ -38,10 +38,10 @@ export default function HeroSection() {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
           <Link
-            href="/pilot"
+            href="https://www.akshhealth.com"
             className="px-8 py-4 bg-white text-navy font-bold rounded-xl hover:bg-white/90 transition-colors text-lg shadow-lg"
           >
-            Request a Pilot
+            Live site (www.akshhealth.com)
           </Link>
           <Link
             href="#how-it-works"

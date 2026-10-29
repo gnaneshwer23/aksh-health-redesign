@@ -57,7 +57,10 @@ export default function ProductPage() {
                   "A slot counts as filled only when your schedule shows the booking",
                 ]}
               />
-              <Link href="/platform#slot-fill" className="s-link">Step by step →</Link>
+              <div className="s-actions" style={{ marginTop: 8 }}>
+                <Link href="/demo/slot-fill" className="s-link">Try the guided demo →</Link>
+                <Link href="/platform#slot-fill" className="s-link">Step by step →</Link>
+              </div>
             </div>
             <Cluster cols={1}>
               <Tile title="Diabetes review · Thu 09:40" aside={<Chip tone="amber">Shadow mode</Chip>}>
@@ -91,7 +94,10 @@ export default function ProductPage() {
                   "Patient uploads are reviewed by a clinician before they count",
                 ]}
               />
-              <Link href="/platform#glucose" className="s-link">Step by step →</Link>
+              <div className="s-actions" style={{ marginTop: 8 }}>
+                <Link href="/demo/glucose" className="s-link">Try the guided demo →</Link>
+                <Link href="/platform#glucose" className="s-link">Step by step →</Link>
+              </div>
             </div>
             <Cluster cols={1}>
               <Tile title="A. Mensah · 14 days" aside={<Chip tone="teal">94% sensor wear</Chip>}>

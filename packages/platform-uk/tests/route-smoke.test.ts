@@ -425,6 +425,14 @@ async function run() {
   // The public site is the real product: no demo hero, no sandbox offer.
   // Headline is split for the gradient accent: "Diabetes reviews, <span>better coordinated.</span>".
   await assertFileIncludes("app/page.tsx", "Diabetes reviews, <span className=\"s-grad\">better coordinated.</span>");
+  await assertFileIncludes("app/page.tsx", "Explore a demo");
+  await assertFileIncludes("app/page.tsx", "/demo/slot-fill");
+  await assertFileIncludes("app/page.tsx", "/demo/glucose");
+  await assertFileIncludes("app/demo/page.tsx", "Explore a demo");
+  await assertFileIncludes("app/demo/slot-fill/page.tsx", "SlotFillDemo");
+  await assertFileIncludes("app/demo/glucose/page.tsx", "GlucoseMonitorDemo");
+  await assertFileIncludes("lib/workflow-demos.ts", "Cancelled-slot fill");
+  await assertFileIncludes("components/demo/workflow/WorkflowDemoPlayer.tsx", "Synthetic data only");
   await assertFileExcludes("app/page.tsx", "Start free");
   await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
