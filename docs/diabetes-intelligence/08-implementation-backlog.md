@@ -1,6 +1,6 @@
 # 08 — Implementation backlog + dependencies
 
-## Done in this delivery
+## Done in Phase 0 delivery
 
 | ID | Item | Depends on |
 |----|------|------------|
@@ -12,6 +12,18 @@
 | S4 | GP journey workspace UI | S3 |
 | S5 | Tests `tests/diabetes-intelligence-journey.test.ts` | S2 |
 | S6 | Capability `diabetes_care_journey` = `synthetic_demo` + evidence | S5 |
+
+## Done in Phase 1 delivery
+
+| ID | Item | Depends on |
+|----|------|------------|
+| P1-1 | Migration `044_patient_intelligence_foundation.sql` | P0 inventory |
+| P1-2 | `lib/patient-intelligence/*` domain + quality + FHIR map | P1-1 |
+| P1-3 | APIs `/api/patients/[id]/patient-360*` | P1-2 |
+| P1-4 | GP Patient 360 workspace UI | P1-3 |
+| P1-5 | Wire journey history to prefer seeded spine | P1-2, S2 |
+| P1-6 | Tests + capability `patient_360_foundation` | P1-2 |
+| P1-7 | Docs `10-phase1-patient-360.md` + gap/schema/API updates | P1-6 |
 
 ## Next (Phases 3–4 productization)
 

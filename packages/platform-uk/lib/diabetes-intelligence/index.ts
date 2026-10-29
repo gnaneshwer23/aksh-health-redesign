@@ -7,4 +7,5 @@ export {
   decideJourneyCarePlan,
   advanceFollowUp,
   buildClinicalHistory,
+  buildClinicalHistoryAsync,
 } from "./journey";

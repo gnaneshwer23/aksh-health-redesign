@@ -52,7 +52,8 @@ export type CapabilityId =
   | "hba1c_trends"
   | "complications"
   | "lifestyle_support"
-  | "diabetes_care_journey";
+  | "diabetes_care_journey"
+  | "patient_360_foundation";
 
 export type Capability = {
   id: CapabilityId;
@@ -261,6 +262,16 @@ export const CAPABILITIES: Capability[] = [
     environment: "simulation",
     dependencies: ["Patient State facts or mock cohort history", "Authenticated clinician scope"],
     evidence: ["tests/diabetes-intelligence-journey.test.ts"],
+  },
+  {
+    id: "patient_360_foundation",
+    name: "Patient 360 intelligence foundation",
+    description:
+      "Synthetic Patient 360 spine: structured conditions/comorbidities, family history, diabetes classification, allergies, medication reconciliation scaffolding (no prescribe), encounters, lab/vital observations with provenance/quality flags, care-team assignments, consent/sharing preferences, longitudinal timeline, FHIR-compatible bundle snapshot. Not clinically validated; ehrWrite stays false.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: ["Mock cohort or seeded spine", "Authenticated clinician scope", "Migration 044 (local-dev)"],
+    evidence: ["tests/patient-intelligence-360.test.ts"],
   },
 ];
 

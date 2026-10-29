@@ -22,12 +22,13 @@
 | *(no prior)* `care_plan_records` | **Added in 043** — durable care plans |
 | *(no prior)* `care_follow_up_tasks` | **Added in 043** — care-plan follow-ups |
 | *(no prior)* `care_journey_events` | **Added in 043** — append-only journey audit |
+| *(no prior)* `patient_conditions` … `patient_sharing_preferences` | **Added in 044** — Patient 360 foundation spine |
 
-Full migration list: `001`–`028`, `030`–`042` (no `029`), then **`043_diabetes_care_journey.sql`**.
+Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**.
 
 ## Migration plan
 
-### Applied by this delivery (local-dev)
+### Applied by Phase 0 delivery (local-dev)
 
 **`043_diabetes_care_journey.sql`**
 
@@ -37,12 +38,24 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), then **`043_diabet
 - `aksh.care_journey_events` — append-only timeline events for the connected journey
 - RLS aligned to `aksh_tenant` + org context where `organisation_id` present; simulation scope key supported for file/pg dual path
 
+### Applied by Phase 1 delivery (local-dev)
+
+**`044_patient_intelligence_foundation.sql`**
+
+- `patient_conditions`, `patient_allergies`, `patient_family_history`
+- `patient_diabetes_profiles` (typed classification)
+- `patient_encounters`, `patient_observation_items` (labs/vitals + quality flags)
+- `medication_reconciliation_runs` (HITL scaffolding; `autonomous_prescribe` / `ehr_write` false)
+- `patient_care_assignments`, `patient_sharing_preferences` (append-only)
+- RLS org-null-or-ctx pattern; file fallback for unit tests
+
 ### Near-term (Phases 3–4)
 
 | Migration | Intent |
 |-----------|--------|
-| `044` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
-| `045` (planned) | Materialized missing-data summary table if query cost warrants |
+| `045` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
+| `046` (planned) | Materialized missing-data summary table if query cost warrants |
+| `047` (planned) | Optional projection bridges Patient 360 spine ↔ `network_*` |
 
 ### Explicit non-goals
 
