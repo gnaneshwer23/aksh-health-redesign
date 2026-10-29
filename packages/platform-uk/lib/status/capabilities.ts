@@ -51,7 +51,8 @@ export type CapabilityId =
   | "medication_safety_referrals"
   | "hba1c_trends"
   | "complications"
-  | "lifestyle_support";
+  | "lifestyle_support"
+  | "diabetes_care_journey";
 
 export type Capability = {
   id: CapabilityId;
@@ -250,6 +251,16 @@ export const CAPABILITIES: Capability[] = [
     dependencies: ["Clinical review queue"],
     evidence: ["tests/clinical-spine-diabetes.test.ts"],
     releaseCriteria: CLINICAL_RELEASE,
+  },
+  {
+    id: "diabetes_care_journey",
+    name: "Connected diabetes care journey",
+    description:
+      "Synthetic end-to-end path: clinical history, glucose observations with missing-data indicators, clinician Accept/Edit/Reject on a care-plan draft, approved plan, follow-up task, and longitudinal timeline. Not for live patients; ehrWrite stays false.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: ["Patient State facts or mock cohort history", "Authenticated clinician scope"],
+    evidence: ["tests/diabetes-intelligence-journey.test.ts"],
   },
 ];
 
