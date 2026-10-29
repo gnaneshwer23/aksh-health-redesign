@@ -25,6 +25,17 @@
 | P1-6 | Tests + capability `patient_360_foundation` | P1-2 |
 | P1-7 | Docs `10-phase1-patient-360.md` + gap/schema/API updates | P1-6 |
 
+## Done in Phase 2 delivery
+
+| ID | Item | Depends on |
+|----|------|------------|
+| P2-1 | Migration `045_diabetes_glucose_intelligence.sql` | P1 inventory |
+| P2-2 | Glucose ingest contracts + deterministic TIR/HbA1c calcs | Existing `cgm/metrics`, `hba1c.ts` |
+| P2-3 | APIs `/api/patients/[id]/diabetes-intelligence*` + worklist | P2-2 |
+| P2-4 | GP glucose intelligence UI + worklist | P2-3 |
+| P2-5 | Tests + capability `diabetes_glucose_intelligence` | P2-2 |
+| P2-6 | Docs `11-phase2-glucose-intelligence.md` + gap/schema/API updates | P2-5 |
+
 ## Next (Phases 3–4 productization)
 
 | ID | Item | Depends on |

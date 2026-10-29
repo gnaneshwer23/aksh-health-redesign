@@ -1,12 +1,13 @@
 # Remaining work — Phases 2–6
 
-After Phase 0 (docs + journey slice) and Phase 1 (Patient 360 foundation synthetic spine):
+After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), and Phase 2 (glucose intelligence synthetic):
 
-## Phase 2 — Glucose & history depth
+## Phase 2 leftovers (productization)
 
-- Promote diabetes module signals beyond sparse/insufficient_data defaults
-- Tighten Patient 360 ↔ network observations / CGM projection
-- See gap matrix Phase 2 rows
+- Live CGM vendor connectors + projection into `cgm_trusted_readings`
+- Resolve `OQ-DIAB-1` modality schema with clinical lead
+- Playwright E2E for glucose intelligence
+- See [11-phase2-glucose-intelligence.md](./11-phase2-glucose-intelligence.md)
 
 ## Phase 1 leftovers (productization)
 

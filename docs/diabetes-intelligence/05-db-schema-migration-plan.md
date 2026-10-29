@@ -24,7 +24,7 @@
 | *(no prior)* `care_journey_events` | **Added in 043** — append-only journey audit |
 | *(no prior)* `patient_conditions` … `patient_sharing_preferences` | **Added in 044** — Patient 360 foundation spine |
 
-Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**.
+Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**, **`045_diabetes_glucose_intelligence.sql`**.
 
 ## Migration plan
 
@@ -49,13 +49,22 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_ca
 - `patient_care_assignments`, `patient_sharing_preferences` (append-only)
 - RLS org-null-or-ctx pattern; file fallback for unit tests
 
+### Applied by Phase 2 delivery (local-dev)
+
+**`045_diabetes_glucose_intelligence.sql`**
+
+- `glucose_series_readings` — CGM / SMBG / lab HbA1c staging with quality flags
+- `glucose_intelligence_reviews` — DRAFT→APPROVED/REJECTED HITL reviews (`ehr_write` false)
+- `glucose_intelligence_review_decisions` — append-only Accept/Edit/Reject
+- RLS org-null-or-ctx pattern; file fallback for unit tests
+
 ### Near-term (Phases 3–4)
 
 | Migration | Intent |
 |-----------|--------|
-| `045` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
-| `046` (planned) | Materialized missing-data summary table if query cost warrants |
-| `047` (planned) | Optional projection bridges Patient 360 spine ↔ `network_*` |
+| `046` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
+| `047` (planned) | Materialized missing-data summary table if query cost warrants |
+| `048` (planned) | Optional projection bridges Patient 360 / glucose spine ↔ `network_*` / `cgm_*` |
 
 ### Explicit non-goals
 
