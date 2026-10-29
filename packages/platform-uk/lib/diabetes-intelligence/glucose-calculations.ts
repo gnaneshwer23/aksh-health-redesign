@@ -57,19 +57,20 @@ export function normalizeIngestPoint(
 
 export function readingsToChart(readings: GlucoseSeriesReading[]): ChartPoint[] {
   return readings
-    .map((r) => {
+    .flatMap((r): ChartPoint[] => {
       const value =
         r.channel === "lab_hba1c" ? r.valueMmolMol : r.valueMmolL;
-      if (value == null) return null;
-      return {
-        at: r.recordedAt,
-        value: Math.round(value * 100) / 100,
-        channel: r.channel,
-        context: r.context,
-        qualityFlag: r.qualityFlag,
-      } satisfies ChartPoint;
+      if (value == null) return [];
+      return [
+        {
+          at: r.recordedAt,
+          value: Math.round(value * 100) / 100,
+          channel: r.channel,
+          context: r.context,
+          qualityFlag: r.qualityFlag,
+        },
+      ];
     })
-    .filter((p): p is ChartPoint => p != null)
     .sort((a, b) => a.at.localeCompare(b.at));
 }
 
