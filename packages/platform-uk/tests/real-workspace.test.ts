@@ -46,7 +46,8 @@ function pure() {
   for (const open of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
     assert.equal(isPublicDemoPath(open), false, `${open} remains public on production`);
   }
-  for (const gated of ["/demo/patel", "/demo/script", "/demo/precision-health-loop", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"]) {
+  assert.equal(isPublicDemoPath("/voice-care"), false, "/voice-care is a legacy alias to /demo, not a gated surface");
+  for (const gated of ["/demo/patel", "/demo/script", "/demo/precision-health-loop", "/asha", "/gp-dashboard", "/product/demo"]) {
     assert.equal(isPublicDemoPath(gated), true, `${gated} stays gated`);
   }
   console.log("real-workspace: environment flag, staff/clinician/patient routing — PASS");

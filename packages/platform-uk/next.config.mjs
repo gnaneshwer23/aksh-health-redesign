@@ -66,7 +66,7 @@ const createNextConfig = (phase) => ({
       },
       {
         source: "/voice-care",
-        destination: "/demo/patel",
+        destination: "/demo",
         permanent: false
       },
       {

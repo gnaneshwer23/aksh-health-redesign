@@ -79,7 +79,8 @@ What we do NOT claim:
 Compliance disclaimer: badges and pathway language describe aligned design and control mapping. They do not represent certification, accreditation, or regulatory approval.
 
 ## Demo & walkthrough
-- Live Patel practice demo: /demo/patel (also /demo, /voice-care, and /walkthrough redirect there)
+- Public synthetic demos: /demo (also /demo/slot-fill, /demo/glucose; legacy /voice-care redirects to /demo)
+- Investor Patel walkthrough: /demo/patel (gated on production / real workspace)
 - Request a guided organisation session via Get started.
 
 ## Access paths
