@@ -59,6 +59,18 @@
 | P4-6 | Tests + capability `continuous_care_operations` | P4-2 |
 | P4-7 | Docs `13-phase4-continuous-care.md` + gap/schema/API updates | P4-6 |
 
+## Done in Phase 5 delivery
+
+| ID | Item | Depends on |
+|----|------|------------|
+| P5-1 | Migration `048_diabetes_agent_intelligence.sql` | P0–P4 inventory |
+| P5-2 | `lib/diabetes-intelligence/agent-intel-*` domain | Shared context modules |
+| P5-3 | APIs `/api/patients/[id]/agent-intelligence*` + GP worklist | P5-2 |
+| P5-4 | GP agent intelligence UI + worklist | P5-3 |
+| P5-5 | Offline eval suite + version pins + validation | P5-2 |
+| P5-6 | Tests + capability `diabetes_agent_intelligence` | P5-2 |
+| P5-7 | Docs `14-phase5-agent-intelligence.md` + gap/schema/API updates | P5-6 |
+
 ## Next (Phases 4 leftovers / productization)
 
 | ID | Item | Depends on |
@@ -69,11 +81,12 @@
 | N4 | ~~Nurse queue for care follow-ups / medcare tasks~~ | **Done in P4** (synthetic) |
 | N5 | E2E Playwright golden path for journey / medcare / continuous care | S4, P3, P4 |
 
-## Later (Phases 5–6)
+## Later (Phase 5 leftovers / Phase 6)
 
 | ID | Item | Depends on |
 |----|------|------------|
-| L1 | Evaluation harness thresholds for diabetes signals | disease module |
+| L1 | Evaluation harness thresholds for diabetes signals | disease module + Phase 5 eval |
+| L1b | Learning-loop feedback into signal thresholds (audited) | learning_events, P5 HITL |
 | L2 | Clinical safety case + CSO sign-off | CLINICAL_RELEASE |
 | L3 | DPIA / regulatory opinion | governance |
 | L4 | Device vendor production connectors | contracts |

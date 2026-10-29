@@ -24,7 +24,7 @@
 | *(no prior)* `care_journey_events` | **Added in 043** — append-only journey audit |
 | *(no prior)* `patient_conditions` … `patient_sharing_preferences` | **Added in 044** — Patient 360 foundation spine |
 
-Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**, **`045_diabetes_glucose_intelligence.sql`**, **`046_medication_personalised_care.sql`**, **`047_continuous_care.sql`**.
+Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**, **`045_diabetes_glucose_intelligence.sql`**, **`046_medication_personalised_care.sql`**, **`047_continuous_care.sql`**, **`048_diabetes_agent_intelligence.sql`**.
 
 ## Migration plan
 
@@ -85,13 +85,24 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_ca
 - RLS org-null-or-ctx pattern; file fallback for unit tests
 - Apply on simulation / local-dev Neon only — never production main
 
-### Near-term (Phases 5+)
+### Applied by Phase 5 delivery (local-dev)
+
+**`048_diabetes_agent_intelligence.sql`**
+
+- `agent_intel_runs` — orchestration runs with model/prompt version pins (`llm_used` / `ehr_write` false)
+- `agent_intel_drafts` — AI drafts (history / SOAP / missing / evidence / follow-up) with provenance + HITL status
+- `agent_intel_decisions` — append-only Accept/Edit/Reject
+- `agent_intel_history` — append-only audit trail
+- `agent_intel_version_pins` — append-only model/prompt registry
+- File fallback for unit tests; apply on simulation / local-dev Neon only — never production main
+
+### Near-term (Phase 6+)
 
 | Migration | Intent |
 |-----------|--------|
-| `048` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
-| `049` (planned) | Materialized missing-data summary table if query cost warrants |
-| `050` (planned) | Optional projection bridges Patient 360 / glucose / medcare / continuous-care spine ↔ `network_*` / `cgm_*` |
+| `049` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
+| `050` (planned) | Materialized missing-data summary table if query cost warrants |
+| `051` (planned) | Optional projection bridges Patient 360 / glucose / medcare / continuous-care / agent-intel spine ↔ `network_*` / `cgm_*` |
 
 ### Explicit non-goals
 

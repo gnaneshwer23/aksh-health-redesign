@@ -68,3 +68,32 @@ export {
   buildContinuousCareWorklist,
   deriveContinuousCareAnalytics,
 } from "./continuous-care-assemble";
+
+export * from "./agent-intel-types";
+export {
+  AGENT_INTEL_SCHEMA_VERSION,
+  AGENT_INTEL_VERSION_REGISTRY,
+  ACTIVE_AGENT_INTEL_VERSION,
+  formatVersionPin,
+  resolveDraftingMode,
+} from "./agent-intel-versions";
+export { AUTHORISED_AGENT_TOOLS, buildSharedPatientContext } from "./agent-intel-context";
+export { SYNTHETIC_EVIDENCE_CORPUS, retrieveEvidenceForContext } from "./agent-intel-retrieval";
+export { validateStructuredDraft } from "./agent-intel-validate";
+export {
+  draftAllKindsForPatient,
+  buildPayloadForKind,
+  createDraftFromPayload,
+} from "./agent-intel-draft";
+export {
+  AGENT_INTEL_EVAL_CASES,
+  runAgentIntelEvalCase,
+  runAgentIntelEvalSuite,
+} from "./agent-intel-eval";
+export {
+  buildAgentIntelligence,
+  seedAndBuildAgentIntelligence,
+  runAgentOrchestration,
+  decideAgentIntelligenceDraft,
+  buildAgentIntelligenceWorklist,
+} from "./agent-intel-assemble";

@@ -1,6 +1,6 @@
-# Remaining work — Phases 5–6 (+ Phase 3–4 leftovers)
+# Remaining work — Phase 6 (+ Phase 3–5 leftovers)
 
-After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), Phase 3 (medication & personalised care synthetic), and Phase 4 (continuous care synthetic):
+After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), Phase 3 (medication & personalised care synthetic), Phase 4 (continuous care synthetic), and Phase 5 (agent intelligence synthetic):
 
 ## Phase 4 leftovers (productization)
 
@@ -39,12 +39,14 @@ After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 
 - Journey + continuous-care events merged into `/api/patients/[id]/timeline`
 - Recall / outbound campaigns (capability still `planned`)
 
-## Phase 5 — Agent intelligence
+## Phase 5 — Agent intelligence — **shipped (synthetic)**
 
-- Keep disease module rules-first; promote ML only under governance
-- Strengthen AKSH_DIABETES loop evaluation
-- Learning loop feedback into signal thresholds (with audit)
-- Governed drafting with clinician approval gates and model/prompt version tracking
+- Governed drafting: history summary, clinical documentation, missing-info, evidence retrieval, follow-up drafts
+- Clinician Accept/Edit/Reject gates; structured validation; model/prompt version pins
+- Offline evaluation datasets / regression; shared patient context (no silos)
+- Capability `diabetes_agent_intelligence` = `synthetic_demo`
+- Leftovers: learning-loop → signal thresholds productization; optional gated LLM; Playwright E2E
+- See [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md)
 
 ## Phase 6 — Readiness
 

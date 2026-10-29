@@ -194,6 +194,32 @@ Role-filtered nurse/ops queue (`ownerRole === "nurse"`).
 
 Merges diabetes journey events + continuous-care decision history into the precision-health timeline (`care_journey` / `continuous_care` kinds). Still `ehrWrite: false`, `unifiedHealthRecord: false`.
 
+## New — Agent intelligence (Phase 5)
+
+### GET `/api/patients/[id]/agent-intelligence`
+
+Assembled snapshot: shared patient context, version registry + active pin, AI drafts, orchestration runs, decision history, offline eval suite results, AI vs verified distinction note.
+
+### POST `/api/patients/[id]/agent-intelligence`
+
+```ts
+{ action: "seed_synthetic" | "run_orchestration" }
+```
+
+Produces deterministic synthetic drafts (history summary, clinical documentation, missing-information, evidence retrieval, follow-up). `llmUsed: false` in this delivery.
+
+### POST `/api/patients/[id]/agent-intelligence/draft/[draftId]/decision`
+
+```ts
+{ action: "accept" | "edit" | "reject"; reason?: string; editedPayload?: StructuredDraftPayload }
+```
+
+Reject requires reason. Edit requires `editedPayload` (re-validated). Accept/Edit mark `verifiedClinical: true` and `provenance: clinician_verified` on the **draft artifact only**. Never sets `ehrWrite` or `prescribeOrTreat` true.
+
+### GET `/api/gp/agent-intelligence/worklist`
+
+Open AI drafts awaiting HITL (`provenance: ai_generated`).
+
 ## Error contract
 
 - `400` validation / missing reason on reject
