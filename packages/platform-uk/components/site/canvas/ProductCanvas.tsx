@@ -1,16 +1,20 @@
+"use client";
+
 /**
  * One product canvas for the whole public site. Every page shows the same Aksh workspace (same frame, rail, header and
  * tiles) focused on a different module, so the site reads as one product rather than separate mock-ups. Illustrative,
- * synthetic data only; the frame states it.
+ * synthetic data only; the frame states it. The left rail and top segmented control switch modules in-place.
  */
-import { Activity, CalendarClock, ClipboardCheck, FlaskConical, LayoutGrid, ShieldCheck, Workflow } from "lucide-react";
-import type { ReactNode } from "react";
+import { Activity, CalendarClock, FlaskConical, LayoutGrid, ShieldCheck, Workflow } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
 import { AgentLineFigure } from "@/components/site/AgentLineFigure";
 
 import { AgpChart, Bars, Big, Chip, Draft, RangeStack, Ring, Stats, Tile, Timeline, Worklist } from "./tiles";
 
 export type CanvasModule = "today" | "slots" | "glucose" | "agents" | "record" | "audit";
+
+type SegKey = "today" | "patients" | "results";
 
 const RAIL: { key: CanvasModule; label: string; Icon: typeof LayoutGrid }[] = [
   { key: "today", label: "Today", Icon: LayoutGrid },
@@ -30,16 +34,58 @@ const TITLE: Record<CanvasModule, string> = {
   audit: "Audit and access",
 };
 
-function Frame({ module, children, note }: { module: CanvasModule; children: ReactNode; note?: string }) {
+const SEGMENTS: { key: SegKey; label: string }[] = [
+  { key: "today", label: "Today" },
+  { key: "patients", label: "Patients" },
+  { key: "results", label: "Results" },
+];
+
+function segFor(module: CanvasModule): SegKey {
+  if (module === "today" || module === "slots") return "today";
+  if (module === "glucose" || module === "record") return "patients";
+  return "results";
+}
+
+function moduleForSeg(seg: SegKey): CanvasModule {
+  if (seg === "today") return "today";
+  if (seg === "patients") return "glucose";
+  return "audit";
+}
+
+function Frame({
+  module,
+  onModule,
+  children,
+  note,
+}: {
+  module: CanvasModule;
+  onModule: (next: CanvasModule) => void;
+  children: ReactNode;
+  note?: string;
+}) {
+  const activeSeg = segFor(module);
   return (
     <figure className="c-canvas" data-canvas={module} aria-label={`Aksh workspace, ${TITLE[module]} (illustrative, synthetic data)`}>
-      <nav className="c-rail" aria-hidden>
-        <span className="c-rail__mark">A</span>
-        {RAIL.map(({ key, label, Icon }) => (
-          <span key={key} className={`c-rail__item${key === module ? " is-on" : ""}`} title={label}>
-            <Icon size={18} strokeWidth={1.8} />
-          </span>
-        ))}
+      <nav className="c-rail" aria-label="Workspace modules">
+        <span className="c-rail__mark" aria-hidden>
+          A
+        </span>
+        {RAIL.map(({ key, label, Icon }) => {
+          const on = key === module;
+          return (
+            <button
+              key={key}
+              type="button"
+              className={`c-rail__item${on ? " is-on" : ""}`}
+              aria-label={label}
+              aria-current={on ? "page" : undefined}
+              title={label}
+              onClick={() => onModule(key)}
+            >
+              <Icon size={18} strokeWidth={1.8} aria-hidden />
+            </button>
+          );
+        })}
       </nav>
       <div className="c-main">
         <header className="c-head">
@@ -48,25 +94,38 @@ function Frame({ module, children, note }: { module: CanvasModule; children: Rea
             <h3 className="c-head__title">{TITLE[module]}</h3>
           </div>
           <div className="c-head__right">
-            <span className="c-seg" aria-hidden>
-              <span className={module === "today" ? "is-on" : ""}>Today</span>
-              <span className={module === "glucose" || module === "record" ? "is-on" : ""}>Patients</span>
-              <span className={module === "audit" ? "is-on" : ""}>Results</span>
-            </span>
+            <div className="c-seg" role="group" aria-label="Workspace sections">
+              {SEGMENTS.map(({ key, label }) => {
+                const on = key === activeSeg;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={on}
+                    className={on ? "is-on" : undefined}
+                    onClick={() => onModule(moduleForSeg(key))}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
             <Chip tone="ink">Synthetic data</Chip>
           </div>
         </header>
-        <div className={`c-grid c-grid--${module}`}>{children}</div>
+        <div className={`c-grid c-grid--${module}`} key={module}>
+          {children}
+        </div>
         <figcaption className="c-caption">Illustrative example · synthetic patients · {note ?? "the real screens work the same way"}</figcaption>
       </div>
     </figure>
   );
 }
 
-export function ProductCanvas({ module }: { module: CanvasModule }) {
+function ModuleBody({ module }: { module: CanvasModule }) {
   if (module === "today") {
     return (
-      <Frame module="today">
+      <>
         <Tile title="Needs you now" aside={<Chip tone="red">2 urgent</Chip>} span="need">
           <Worklist
             rows={[
@@ -93,12 +152,12 @@ export function ProductCanvas({ module }: { module: CanvasModule }) {
         <Tile title="Waiting for a clinician" aside={<Chip tone="ai">In validation</Chip>} span="draft">
           <Draft agent="Synthesis" title="Consultation note" body="HbA1c 68 mmol/mol, rising since March. Plan: review treatment, recheck in 3 months." />
         </Tile>
-      </Frame>
+      </>
     );
   }
   if (module === "slots") {
     return (
-      <Frame module="slots" note="staff choose and contact; Aksh never contacts patients">
+      <>
         <Tile title="Diabetes review · Thu 09:40" aside={<Chip tone="amber">Shadow mode</Chip>} span="slot">
           <Worklist
             rows={[
@@ -126,12 +185,12 @@ export function ProductCanvas({ module }: { module: CanvasModule }) {
         <Tile title="Staff time per filled slot" span="time">
           <Big value="6" unit="min" label="median, from staff logs" />
         </Tile>
-      </Frame>
+      </>
     );
   }
   if (module === "glucose") {
     return (
-      <Frame module="glucose" note="the clinician decides which targets apply">
+      <>
         <Tile title="Worklist · low glucose first" span="list">
           <Worklist
             rows={[
@@ -152,12 +211,12 @@ export function ProductCanvas({ module }: { module: CanvasModule }) {
           <RangeStack parts={[{ label: "Very high", pct: 12, tone: "vhigh" }, { label: "High", pct: 32, tone: "high" }, { label: "In range", pct: 48, tone: "in" }, { label: "Low", pct: 6, tone: "low" }, { label: "Very low", pct: 2, tone: "vlow" }]} />
         </Tile>
         <Tile title="Variability" span="cv"><Big value="41" unit="%" label="CV · target 36% or less" /></Tile>
-      </Frame>
+      </>
     );
   }
   if (module === "record") {
     return (
-      <Frame module="record" note="every value says where it came from">
+      <>
         <Tile title="HbA1c" aside={<Chip>mmol/mol</Chip>} span="a1c">
           <Big value="68" unit="mmol/mol" label="8.4% · lab feed · 14 Oct" />
           <Bars values={[58, 61, 60, 64, 66, 68]} labels={["Nov", "Jan", "Mar", "May", "Jul", "Oct"]} highlight={5} height={120} max={80} />
@@ -175,12 +234,12 @@ export function ProductCanvas({ module }: { module: CanvasModule }) {
         <Tile title="Kidney check" aside={<Chip tone="ai">AI draft · in validation</Chip>} span="flag">
           <p className="c-text">eGFR below 60 → kidney watch. Rule <b>kidney.egfr_below_60</b>, KDIGO 2024. For clinician review.</p>
         </Tile>
-      </Frame>
+      </>
     );
   }
   if (module === "audit") {
     return (
-      <Frame module="audit" note="the database will not let anyone edit or delete a record">
+      <>
         <Tile title="Audit ledger" aside={<Chip tone="teal">Hash-chained</Chip>} span="ledger">
           <Worklist
             rows={[
@@ -201,14 +260,29 @@ export function ProductCanvas({ module }: { module: CanvasModule }) {
           </table>
         </Tile>
         <Tile title="Two-step sign-in" span="mfa"><Big value="Required" label="for every reviewer before they can decide" /></Tile>
-      </Frame>
+      </>
     );
   }
   return (
-    <Frame module="agents" note="agents in validation; a clinician decides every draft">
-      <Tile span="line" className="c-tile--flush">
-        <AgentLineFigure />
-      </Tile>
+    <Tile span="line" className="c-tile--flush">
+      <AgentLineFigure />
+    </Tile>
+  );
+}
+
+const NOTE: Partial<Record<CanvasModule, string>> = {
+  slots: "staff choose and contact; Aksh never contacts patients",
+  glucose: "the clinician decides which targets apply",
+  record: "every value says where it came from",
+  audit: "the database will not let anyone edit or delete a record",
+  agents: "agents in validation; a clinician decides every draft",
+};
+
+export function ProductCanvas({ module }: { module: CanvasModule }) {
+  const [active, setActive] = useState<CanvasModule>(module);
+  return (
+    <Frame module={active} onModule={setActive} note={NOTE[active]}>
+      <ModuleBody module={active} />
     </Frame>
   );
 }

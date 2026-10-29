@@ -70,11 +70,11 @@ export default function HomePage() {
         lede="Aksh helps your team fill cancelled appointments from the waiting list and see whose glucose needs attention first. Your staff decide every step, and results are measured against your own baseline."
         module="today"
       >
-        <div className="s-actions">
+        <div className="s-actions s-hero2__actions">
           <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
           <Link href="/demo" className="s-btn s-btn--ghost">Explore a demo</Link>
         </div>
-        <p className="s-hero-panel__note" aria-label="In production today">
+        <p className="s-hero-panel__note s-hero2__pills" aria-label="In production today">
           {(["slot_fill", "cgm_monitoring", "patient_readings"] as CapabilityId[]).map((id) => <span key={id}>{capability(id).name}</span>)}
         </p>
       </PageHero>

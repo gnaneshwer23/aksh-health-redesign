@@ -430,6 +430,8 @@ async function run() {
   // The public site is the real product: no demo hero, no sandbox offer.
   // Headline is split for the gradient accent: "Diabetes reviews, <span>better coordinated.</span>".
   await assertFileIncludes("app/page.tsx", "Diabetes reviews, <span className=\"s-grad\">better coordinated.</span>");
+  await assertFileIncludes("components/site/canvas/ProductCanvas.tsx", "Workspace modules");
+  await assertFileIncludes("components/site/canvas/ProductCanvas.tsx", 'aria-current={on ? "page" : undefined}');
   await assertFileIncludes("app/page.tsx", "Explore a demo");
   await assertFileIncludes("app/page.tsx", "/demo/slot-fill");
   await assertFileIncludes("app/page.tsx", "/demo/glucose");
