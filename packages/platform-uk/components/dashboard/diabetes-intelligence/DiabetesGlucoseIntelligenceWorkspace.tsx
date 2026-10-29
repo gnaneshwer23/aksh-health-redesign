@@ -142,6 +142,9 @@ export function DiabetesGlucoseIntelligenceWorkspace({ patientId, patientLabel }
           <Link href={`/dashboard/gp/diabetes-journey/${encodeURIComponent(patientId)}`}>
             <Button variant="outline">Care journey</Button>
           </Link>
+          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/medication-care`}>
+            <Button variant="outline">Medication & care</Button>
+          </Link>
         </div>
       </header>
 

@@ -1,6 +1,13 @@
-# Remaining work — Phases 2–6
+# Remaining work — Phases 4–6
 
-After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), and Phase 2 (glucose intelligence synthetic):
+After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), and Phase 3 (medication & personalised care synthetic):
+
+## Phase 3 leftovers (productization)
+
+- Licensed / maintained drug-interaction source under governance (stub remains labeled until then)
+- Org FK + RLS proof for medcare tables against live orgs
+- Playwright E2E for medication & personalised care
+- See [12-phase3-medication-personalised-care.md](./12-phase3-medication-personalised-care.md)
 
 ## Phase 2 leftovers (productization)
 
@@ -17,15 +24,12 @@ After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), and Phas
 - Playwright E2E for Patient 360
 
 
-## Phase 3 — Clinician review depth
+## Phase 4 — Continuous care / longitudinal operations
 
-- Unify journey care-plan decisions with `review_cases` item decisions where appropriate
-- SOAP/coding drafts attached to the same patient dossier
-- Medication safety remains HITL; still no dose recommendation writes
-
-## Phase 4 — Longitudinal operations
-
-- Nurse/ops queues for `care_follow_up_tasks`
+- Follow-up worklists, appointment coordination, patient-reported updates
+- Notification preferences, staff escalation queues, completed-action tracking
+- Care-plan progress monitoring; operational and safety analytics
+- Nurse/ops queues for `care_follow_up_tasks` and medcare assigned tasks
 - Merge journey events into `/api/patients/[id]/timeline`
 - Recall / outbound campaigns (capability still `planned`)
 
@@ -34,6 +38,7 @@ After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), and Phas
 - Keep disease module rules-first; promote ML only under governance
 - Strengthen AKSH_DIABETES loop evaluation
 - Learning loop feedback into signal thresholds (with audit)
+- Governed drafting with clinician approval gates and model/prompt version tracking
 
 ## Phase 6 — Readiness
 

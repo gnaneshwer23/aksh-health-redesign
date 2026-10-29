@@ -36,15 +36,26 @@
 | P2-5 | Tests + capability `diabetes_glucose_intelligence` | P2-2 |
 | P2-6 | Docs `11-phase2-glucose-intelligence.md` + gap/schema/API updates | P2-5 |
 
-## Next (Phases 3–4 productization)
+## Done in Phase 3 delivery
+
+| ID | Item | Depends on |
+|----|------|------------|
+| P3-1 | Migration `046_medication_personalised_care.sql` | P1 inventory |
+| P3-2 | `lib/diabetes-intelligence/medcare-*` domain | P3-1 / file store |
+| P3-3 | APIs `/api/patients/[id]/medication-care*` | P3-2 |
+| P3-4 | GP medication & personalised care UI | P3-3 |
+| P3-5 | Tests + capability `medication_personalised_care` | P3-2 |
+| P3-6 | Docs `12-phase3-medication-personalised-care.md` + gap/schema/API updates | P3-5 |
+
+## Next (Phases 4 productization)
 
 | ID | Item | Depends on |
 |----|------|------------|
 | N1 | Wire journey timeline into existing `/timeline` API | S2 |
 | N2 | Org-scoped plans linked to `network_patients` | S1, RLS tests |
 | N3 | Promote health-plan panel to call journey decision API | S3 |
-| N4 | Nurse queue for care follow-ups | N2 |
-| N5 | E2E Playwright golden path for journey | S4 |
+| N4 | Nurse queue for care follow-ups / medcare tasks | N2, P3 |
+| N5 | E2E Playwright golden path for journey / medcare | S4, P3 |
 
 ## Later (Phases 5–6)
 

@@ -49,6 +49,16 @@ export default function GpPatientDetailPage(props: { params: Promise<{ id: strin
           <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/gp/patients/${patient.id}/patient-360`}>Patient 360 (synthetic)</Link>
           </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/patients/${patient.id}/diabetes-intelligence`}>
+              Glucose intelligence (synthetic)
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/patients/${patient.id}/medication-care`}>
+              Medication & care (synthetic)
+            </Link>
+          </Button>
         </div>
 
         <header className="dashboard-card border-border-subtle p-6 shadow-sm">

@@ -120,6 +120,43 @@ Never sets `ehrWrite` true.
 
 Urgency-ranked synthetic worklist items for the authenticated clinician scope.
 
+## New — Medication & personalised care (Phase 3)
+
+### GET `/api/patients/[id]/medication-care`
+
+Assembled snapshot: meds, recon runs, allergy + **synthetic** interaction panel, safety flags/reviews, care-plan templates/plans, goals, education, tasks, handoffs, approval history.
+
+### POST `/api/patients/[id]/medication-care`
+
+```ts
+{ action: "seed_synthetic" | "start_med_recon" | "draft_safety_review"
+        | "apply_care_plan_template" | "set_goal_status" | "update_task" | "handoff_task";
+  templateId?: CarePlanTemplateId;
+  goalId?: string; goalStatus?: PatientGoalStatus;
+  taskId?: string; taskStatus?: CareTaskStatus; note?: string;
+  fromRole?: string; toRole?: string; toMemberDisplay?: string; summary?: string }
+```
+
+### POST `/api/patients/[id]/medication-care/medication-reconciliation/[runId]/decision`
+
+```ts
+{ action: "complete" | "cancel"; note?: string }
+```
+
+Never sets `ehrWrite` or `autonomousPrescribe` true.
+
+### POST `/api/patients/[id]/medication-care/safety-review/[reviewId]/decision`
+
+```ts
+{ action: "accept" | "edit" | "reject"; editedSections?: MedCareReviewSection[]; reason?: string }
+```
+
+### POST `/api/patients/[id]/medication-care/care-plan/[planId]/decision`
+
+```ts
+{ action: "accept" | "edit" | "reject"; editedSections?: PersonalisedCarePlanSection[]; reason?: string }
+```
+
 ## Error contract
 
 - `400` validation / missing reason on reject
