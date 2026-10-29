@@ -573,6 +573,14 @@ async function run() {
   );
   await assertFileIncludes("app/dashboard/admin/precision-health/page.tsx", "DataInteropAuditPanel");
 
+  // Public review-line diagram: clinician hero, legend, honest validation status, no production claim.
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", 'data-agent-line');
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", "s-line__legend");
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", "in validation (synthetic patients only)");
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", "Clinician decides");
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", "labelNudge");
+  await assertFileExcludes("components/site/AgentLineFigure.tsx", "autonomous clinical");
+
   console.log("Route and UI smoke checks passed.");
 }
 

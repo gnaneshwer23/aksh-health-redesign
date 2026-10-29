@@ -135,6 +135,10 @@ test.describe("Public site", () => {
     await expect(page.locator('#agents [data-agent="PRISM"]')).toContainText("Planned");
     // The figure: keyboard focus explains a station; the clinician decision changes what moves on.
     const line = page.locator("[data-agent-line]").first();
+    await expect(line.locator(".s-line__legend")).toContainText("in validation");
+    await expect(line.locator(".s-line__legend")).toContainText("planned");
+    await expect(line.locator(".s-line__legend")).toContainText("draft travelling");
+    await expect(line.locator(".s-line__zone-label").filter({ hasText: "Clinician decides" })).toHaveCount(1);
     await line.locator('[data-station="GUARDIAN"]').focus();
     await expect(line.locator(".s-line__readout h3")).toHaveText("Aksh Guardian");
     await line.getByRole("button", { name: "rejects" }).click();
