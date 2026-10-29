@@ -56,10 +56,15 @@ test("real workspace: sign-up offers only roles with a working product", async (
   await expect(grid).toContainText("Patient");
 });
 
-test("real workspace: public demo pages go to the home page", async ({ page }) => {
-  for (const path of ["/demo/patel", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"]) {
+test("real workspace: investor demos stay gated; marketing workflow demos stay public", async ({ page }) => {
+  for (const path of ["/demo/patel", "/demo/script", "/demo/precision-health-loop", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"]) {
     await page.goto(path);
     await expect(page, path).toHaveURL(/\/$/);
+  }
+  for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+    await page.goto(path);
+    await expect(page, path).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}$`));
+    await expect(page.getByText(/synthetic/i).first()).toBeVisible();
   }
 });
 

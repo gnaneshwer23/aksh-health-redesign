@@ -8,7 +8,7 @@ import { randomUUID } from "node:crypto";
 import { addToWaitlist, applyAction, ingestSlot } from "../lib/access/service";
 import { closePgPool, getPgPool, isPostgresConfigured } from "../lib/db/client";
 import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
-import { isRealWorkspace, REAL_ROLES, realHomeFor, realWorkspaceRedirect } from "../lib/env/workspace";
+import { isPublicDemoPath, isRealWorkspace, REAL_ROLES, realHomeFor, realWorkspaceRedirect } from "../lib/env/workspace";
 import { loadNetworkContext } from "../lib/network/context";
 import { acceptStaffInvite, createInvite, createOrganisation, importPatients } from "../lib/network/service";
 import { getToday } from "../lib/workspace/today";
@@ -41,6 +41,14 @@ function pure() {
   assert.equal(realHomeFor("patient"), "/dashboard/patient");
   assert.equal(realHomeFor("nurse"), "/dashboard/today");
   for (const r of ["ics-lead", "hospital-executive", "researcher"]) assert.equal(REAL_ROLES.has(r), false, `${r} is not offered yet`);
+
+  // Marketing synthetic demos stay public; investor/internal demos stay gated.
+  for (const open of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+    assert.equal(isPublicDemoPath(open), false, `${open} remains public on production`);
+  }
+  for (const gated of ["/demo/patel", "/demo/script", "/demo/precision-health-loop", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"]) {
+    assert.equal(isPublicDemoPath(gated), true, `${gated} stays gated`);
+  }
   console.log("real-workspace: environment flag, staff/clinician/patient routing — PASS");
 }
 
