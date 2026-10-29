@@ -1,62 +1,62 @@
 # Deployment consolidation
 
-**Production:** https://0ne-health.vercel.app — single deploy from `packages/platform-uk`
-
-## Single Vercel project
+## Authoritative production map
 
 | Setting | Value |
 |---------|-------|
-| Project | `0ne-health` |
+| Production domain | https://www.akshhealth.com |
+| Vercel project | `aksh-health-redesign` |
 | Root directory | `packages/platform-uk` |
-| Git repo | `gnaneshwer23/0ne-Health` (branch: `main`) |
-| Production URL | https://0ne-health.vercel.app |
+| GitHub repo | https://github.com/gnaneshwer23/aksh-health-redesign (branch: `main`) |
+| Proof environment (noindex) | https://aksh-clinical-proof.vercel.app — same git SHA as production; clinical proof / rehearsal surfaces |
 
-### Required environment variables
+Capability register: `packages/platform-uk/lib/status/capabilities.ts`. Production status means deployed and verified on www.akshhealth.com with passing tests; **LIVE_ORGANISATIONS** may still be `0`.
 
-- `DATABASE_URL` — Neon Postgres connection string
-- `USE_POSTGRES=true` — enable Postgres in production
-- `NEXTAUTH_URL=https://0ne-health.vercel.app`
+### Required environment variables (production)
+
+- `DATABASE_URL` — Neon Postgres (production project; not local child branches)
+- `USE_POSTGRES=true`
+- `NEXTAUTH_URL=https://www.akshhealth.com`
 - `NEXTAUTH_SECRET` — generate with `openssl rand -base64 32`
 
-## Retired Vercel projects
+Local development should use a Neon **child branch** (simulation) via `packages/platform-uk/.env.local`. Never write to production Neon main from local tools.
 
-The following projects are **superseded** by the unified `0ne-health` deployment. After confirming production is stable, delete them or add domain redirects to `https://0ne-health.vercel.app`:
+## Related / legacy Vercel projects
 
-| Project | Former URL | Action |
-|---------|------------|--------|
-| `aksh-health` | https://aksh-health.vercel.app | Delete or redirect → 0ne-health |
-| `marketing-os` | https://marketing-os-phi-plum.vercel.app | Delete or redirect → 0ne-health |
+Do **not** delete Vercel projects from this documentation or by scripted cleanup here. Retire only after an explicit ops decision.
 
-### Redirect via vercel.json (optional)
+| Project / URL | Status |
+|---------------|--------|
+| `aksh-health-redesign` → www.akshhealth.com | **Production** |
+| `aksh-clinical-proof` → aksh-clinical-proof.vercel.app | Proof / noindex; same commit as production |
+| `0ne-health` → 0ne-health.vercel.app | **Legacy / older deploy** — superseded; docs that call it production are stale |
+| Other historical projects (e.g. older `aksh-health`, `marketing-os`) | Superseded; leave in place until ops retires them |
 
-Add to each retired project's root `vercel.json`:
+### Packages that must not be deployed as the live site
 
-```json
-{
-  "redirects": [
-    { "source": "/(.*)", "destination": "https://0ne-health.vercel.app/$1", "permanent": true }
-  ]
-}
-```
+- `packages/aksh-health` — legacy marketing scaffold with outdated ICS pilot claims
+- `packages/marketing-os` — retired; content merged into `platform-uk`
 
-## Route map (unified app)
+## Route map (unified app — `packages/platform-uk`)
 
 | Route | Purpose |
 |-------|---------|
-| `/` | Marketing homepage |
-| `/platform`, `/for-clinicians`, `/for-hospitals`, `/for-patients`, `/docs` | Audience pages |
-| `/pilot`, `/pilot/apply` | Pilot programme |
-| `/signup` | Sign up → `/onboarding/role-select` (optional `?role=`) |
-| `/onboarding/*` | 8-role personalised onboarding |
-| `/dashboard/*` | Role dashboards |
-| `/demo/patel` | Investor demo |
+| `/` | Marketing homepage (diabetes workflows) |
+| `/platform` | How it works |
+| `/product` | What is available now |
+| `/demo` | Synthetic guided workflow demos (catalog) |
+| `/demo/slot-fill` | Cancelled-slot fill interactive demo |
+| `/demo/glucose` | Glucose / CGM monitoring interactive demo |
+| `/agents`, `/security`, `/resources`, `/get-started` | Audience and setup pages |
+| `/signup`, `/onboarding/*` | Sign up and role onboarding |
+| `/dashboard/*`, `/workspace` | Authenticated role surfaces |
 | `/api/*` | Neon Postgres when `USE_POSTGRES=true` |
 
 ## User journey
 
 1. Land on `/` (marketing)
-2. Click **Sign In** or visit `/signup?role=gp`
-3. Complete `/onboarding/*` flow
-4. Arrive at `/dashboard/{role}`
+2. Explore a synthetic demo (`/demo`) or request a pilot (`/get-started`)
+3. Sign in / complete `/onboarding/*`
+4. Arrive at organisation workspace / dashboards
 
-All links are same-origin — no cross-domain redirects.
+All primary links are same-origin on www.akshhealth.com.

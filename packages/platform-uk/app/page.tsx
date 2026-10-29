@@ -71,7 +71,7 @@ export default function HomePage() {
       >
         <div className="s-actions">
           <Link href="/get-started" className="s-btn s-btn--primary">Request an organisational pilot</Link>
-          <Link href="/product" className="s-btn s-btn--ghost">What’s available now</Link>
+          <Link href="/demo" className="s-btn s-btn--ghost">Explore a demo</Link>
         </div>
         <p className="s-hero-panel__note" aria-label="In production today">
           {(["slot_fill", "cgm_monitoring", "patient_readings"] as CapabilityId[]).map((id) => <span key={id}>{capability(id).name}</span>)}
@@ -119,6 +119,9 @@ export default function HomePage() {
                     <div>
                       <p className="s-body" style={{ margin: 0 }}>{w.value}</p>
                       <div className="s-actions" style={{ marginTop: 12 }}>
+                        <Link href={w.id === "slot_fill" ? "/demo/slot-fill" : "/demo/glucose"} className="s-link">
+                          Try the guided demo →
+                        </Link>
                         <Link href={`/product#${w.anchor}`} className="s-link">How {w.id === "slot_fill" ? "slot filling" : "glucose monitoring"} works →</Link>
                         <Link href={w.guide} className="s-link">Setup guide →</Link>
                       </div>
