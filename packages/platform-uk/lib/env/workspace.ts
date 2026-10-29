@@ -27,11 +27,12 @@ const PATIENT_PATHS = ["/dashboard/patient", "/dashboard/security"];
 const LEGACY_SESSION_PREFIXES = ["/cases", "/review", "/intake", "/workspace"];
 
 /** Public demo surfaces (synthetic practice, walkthroughs). Blocked in the real workspace except the allowlist below. */
-const PUBLIC_DEMO_PREFIXES = ["/demo", "/asha", "/voice-care", "/gp-dashboard", "/product/demo"];
+const PUBLIC_DEMO_PREFIXES = ["/demo", "/asha", "/gp-dashboard", "/product/demo"];
 
 /**
  * Synthetic marketing demos that stay publicly reachable on production / real workspace.
  * Exact paths only — does not open `/demo/patel`, `/demo/script`, or other investor walkthroughs.
+ * `/voice-care` is a legacy alias redirected to `/demo` (next.config + page), not a gated surface.
  */
 const REAL_WORKSPACE_PUBLIC_DEMOS = new Set(["/demo", "/demo/slot-fill", "/demo/glucose"]);
 

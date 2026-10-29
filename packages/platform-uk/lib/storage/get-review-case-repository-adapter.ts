@@ -25,6 +25,9 @@ function notImplemented(operation: string) {
 }
 
 function resolveAdapterId(): ReviewCaseRepositoryAdapterId {
+  // COMPASS listAgentRunCases always reads Postgres under practice RLS. Review-case creates
+  // only land there when this resolves to postgres_repository — set USE_POSTGRES=true (CI/DB
+  // tests) or AKSH_STORAGE_ADAPTER=postgres_repository. DATABASE_URL alone is not enough.
   if (process.env.USE_POSTGRES === "true") {
     return "postgres_repository";
   }

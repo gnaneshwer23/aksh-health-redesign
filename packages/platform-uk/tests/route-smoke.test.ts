@@ -196,6 +196,11 @@ async function run() {
   await assertFileIncludes("app/api/agents/voice-care/route.ts", "synthetic_outbound");
   await assertFileIncludes("lib/agents/voice-care.ts", "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC)");
   await assertFileIncludes("components/dashboard/nurse/VoiceCareEscalationCard.tsx", "/api/agents/voice-care");
+  // Legacy /voice-care must land on the public demo catalog, not gated /demo/patel (www dead-end).
+  await assertFileIncludes("next.config.mjs", 'source: "/voice-care"');
+  await assertFileIncludes("next.config.mjs", 'destination: "/demo"');
+  await assertFileIncludes("app/voice-care/page.tsx", 'redirect("/demo")');
+  await assertFileExcludes("app/voice-care/page.tsx", "/demo/patel");
   await assertFileIncludes("app/api/agents/nutrition/route.ts", "coaching_draft_only");
   await assertFileIncludes("app/api/agents/sleep/route.ts", "isClinicalAdvice");
   await assertFileIncludes("app/api/agents/exercise/route.ts", "coaching_draft_only");

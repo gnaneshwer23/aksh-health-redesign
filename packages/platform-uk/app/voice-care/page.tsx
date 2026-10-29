@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Fallback if config redirect is skipped; prefer next.config redirects. */
+/** Legacy alias → public demo catalog (not gated investor Patel walkthrough). */
 export default function VoiceCarePage() {
-  redirect("/demo/patel");
+  redirect("/demo");
 }
