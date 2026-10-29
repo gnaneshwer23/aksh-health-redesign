@@ -55,7 +55,8 @@ export type CapabilityId =
   | "diabetes_care_journey"
   | "patient_360_foundation"
   | "diabetes_glucose_intelligence"
-  | "medication_personalised_care";
+  | "medication_personalised_care"
+  | "continuous_care_operations";
 
 export type Capability = {
   id: CapabilityId;
@@ -302,6 +303,21 @@ export const CAPABILITIES: Capability[] = [
       "Migration 046 (local-dev)",
     ],
     evidence: ["tests/medication-personalised-care.test.ts"],
+  },
+  {
+    id: "continuous_care_operations",
+    name: "Continuous care / longitudinal operations (Phase 4)",
+    description:
+      "Synthetic follow-up worklists (journey + medcare + nurse), appointment coordination, patient-reported updates, notification preferences, staff escalation queues with HITL Accept/Edit/Reject, completed-action tracking, care-plan progress monitoring, and derived operational/safety analytics. Every workflow carries owner, status, timestamps, decision history, and measurable outcome. No autonomous clinical actions; ehrWrite stays false; outbound recall campaigns remain planned.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: [
+      "Authenticated clinician scope",
+      "Diabetes care journey follow-ups",
+      "Medication personalised care tasks",
+      "Migration 047 (local-dev)",
+    ],
+    evidence: ["tests/continuous-care-operations.test.ts"],
   },
 ];
 

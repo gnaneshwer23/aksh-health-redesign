@@ -157,6 +157,43 @@ Never sets `ehrWrite` or `autonomousPrescribe` true.
 { action: "accept" | "edit" | "reject"; editedSections?: PersonalisedCarePlanSection[]; reason?: string }
 ```
 
+## New — Continuous care (Phase 4)
+
+### GET `/api/patients/[id]/continuous-care`
+
+Assembled snapshot: follow-up worklist, appointments, patient-reported updates, notification preferences, escalation queue, completed actions, care-plan progress, decision history, operational/safety analytics.
+
+### POST `/api/patients/[id]/continuous-care`
+
+```ts
+{ action: "seed_synthetic" | "update_follow_up" | "update_appointment"
+        | "triage_patient_update" | "set_notification_prefs" | "update_plan_progress";
+  itemId?: string; appointmentId?: string; updateId?: string; progressId?: string;
+  status?: string; note?: string;
+  channels?: NotificationChannelPrefs; prefsStatus?: string; topics?: string[];
+  progressPct?: number; milestoneId?: string; milestoneDone?: boolean; planStatus?: string }
+```
+
+### POST `/api/patients/[id]/continuous-care/escalation/[escalationId]/decision`
+
+```ts
+{ action: "accept" | "edit" | "reject" | "resolve" | "queue"; reason?: string; editedNote?: string }
+```
+
+Never sets `ehrWrite` or `autonomousClinicalAction` true. Reject requires reason.
+
+### GET `/api/gp/continuous-care/worklist`
+
+Urgency-ranked synthetic continuous-care worklist (follow-ups, escalations, patient updates).
+
+### GET `/api/nurse/continuous-care/worklist`
+
+Role-filtered nurse/ops queue (`ownerRole === "nurse"`).
+
+### GET `/api/patients/[id]/timeline` (extended)
+
+Merges diabetes journey events + continuous-care decision history into the precision-health timeline (`care_journey` / `continuous_care` kinds). Still `ehrWrite: false`, `unifiedHealthRecord: false`.
+
 ## Error contract
 
 - `400` validation / missing reason on reject

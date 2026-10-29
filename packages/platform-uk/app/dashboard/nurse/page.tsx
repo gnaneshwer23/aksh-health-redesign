@@ -47,6 +47,9 @@ export default function NurseOverviewPage() {
                 {openAlerts ? "View GUARDIAN alerts" : "Check alerts"}
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/nurse/continuous-care">Continuous care queue</Link>
+            </Button>
           </div>
         </CardContent>
       </Card>

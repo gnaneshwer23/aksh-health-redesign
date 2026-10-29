@@ -24,7 +24,7 @@
 | *(no prior)* `care_journey_events` | **Added in 043** — append-only journey audit |
 | *(no prior)* `patient_conditions` … `patient_sharing_preferences` | **Added in 044** — Patient 360 foundation spine |
 
-Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**, **`045_diabetes_glucose_intelligence.sql`**.
+Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_care_journey.sql`**, **`044_patient_intelligence_foundation.sql`**, **`045_diabetes_glucose_intelligence.sql`**, **`046_medication_personalised_care.sql`**, **`047_continuous_care.sql`**.
 
 ## Migration plan
 
@@ -70,13 +70,28 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_ca
 - Interaction checks remain application-layer **synthetic stubs** (not a licensed drug DB table)
 - RLS org-null-or-ctx pattern; file fallback for unit tests
 
-### Near-term (Phases 4+)
+### Applied by Phase 4 delivery (local-dev)
+
+**`047_continuous_care.sql`**
+
+- `ccare_follow_up_items` — follow-up worklist (owner/status/priority/measurable outcome)
+- `ccare_appointments` — appointment coordination (HITL; no live booking claim)
+- `ccare_patient_updates` — patient-reported updates (unverified by default)
+- `ccare_notification_prefs` — channel / quiet-hours preferences
+- `ccare_escalations` + append-only `ccare_escalation_decisions` — staff escalation HITL
+- `ccare_completed_actions` — completed-action tracking
+- `ccare_plan_progress` — care-plan progress / milestones
+- `ccare_decision_history` — append-only workflow decision trail
+- RLS org-null-or-ctx pattern; file fallback for unit tests
+- Apply on simulation / local-dev Neon only — never production main
+
+### Near-term (Phases 5+)
 
 | Migration | Intent |
 |-----------|--------|
-| `047` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
-| `048` (planned) | Materialized missing-data summary table if query cost warrants |
-| `049` (planned) | Optional projection bridges Patient 360 / glucose / medcare spine ↔ `network_*` / `cgm_*` |
+| `048` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
+| `049` (planned) | Materialized missing-data summary table if query cost warrants |
+| `050` (planned) | Optional projection bridges Patient 360 / glucose / medcare / continuous-care spine ↔ `network_*` / `cgm_*` |
 
 ### Explicit non-goals
 
