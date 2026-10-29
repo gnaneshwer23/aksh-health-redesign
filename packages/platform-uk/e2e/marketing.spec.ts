@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-/** The public site: the real product only. No demos, walkthroughs, sandbox offers or chat widget. */
+/** Public marketing demos allowlisted on production / real workspace (synthetic content only). */
+const PUBLIC_DEMO_HREFS = new Set(["/demo", "/demo/slot-fill", "/demo/glucose"]);
+
+/** The public site: the real product, plus the allowlisted synthetic demos. No investor walkthroughs, sandbox offers or chat widget. */
 test.describe("Public site", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem("aksh_cookie_consent", "essential"));
@@ -13,6 +16,7 @@ test.describe("Public site", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Diabetes reviews, better coordinated.");
     const hero = page.locator("[data-hero]");
     await expect(hero.getByRole("link", { name: "Request an organisational pilot" })).toHaveAttribute("href", "/get-started");
+    await expect(hero.getByRole("link", { name: "Explore a demo" })).toHaveAttribute("href", "/demo");
     // No section repeated from other pages: the full capability list and limits live on How it works.
     await expect(page.locator("[data-pillars]")).toHaveCount(0);
     await expect(page.locator(".s-limits")).toHaveCount(0);
@@ -34,16 +38,32 @@ test.describe("Public site", () => {
     await expect(page.getByText("Illustrative example").first()).toBeVisible();
   });
 
-  test("no demo, walkthrough, sandbox or chat widget anywhere on the public pages", async ({ page }) => {
+  test("public pages promote only allowlisted synthetic demos — no walkthroughs, sandbox or chat", async ({ page }) => {
     for (const path of ["/", "/platform", "/product", "/security", "/resources", "/contact", "/get-started", "/agents"]) {
       await page.goto(path);
-      // "Synthetic demo" is a capability status label (lib/status/capabilities.ts), not an offer of a demo.
+      // "Synthetic demo" is a capability status label (lib/status/capabilities.ts), not an investor walkthrough.
       const text = (await page.locator("body").innerText()).toLowerCase().replaceAll("synthetic demo", "");
-      for (const banned of ["walkthrough", "patel", "sandbox", "try without an account", "demo"]) {
+      for (const banned of ["walkthrough", "patel", "sandbox", "try without an account"]) {
         expect(text, `${path} mentions "${banned}"`).not.toContain(banned);
       }
-      await expect(page.locator('a[href^="/demo"], a[href="/asha"]')).toHaveCount(0);
+      const demoHrefs = await page.locator('a[href^="/demo"], a[href="/asha"]').evaluateAll((els) =>
+        [...new Set(els.map((e) => (e.getAttribute("href") ?? "").split(/[?#]/)[0]!))]
+      );
+      for (const href of demoHrefs) {
+        expect(PUBLIC_DEMO_HREFS.has(href), `${path} links to gated demo ${href}`).toBe(true);
+      }
       await expect(page.getByRole("button", { name: /Open Ask Aksh Health chat/i })).toHaveCount(0);
+    }
+    await page.goto("/");
+    await expect(page.locator('a[href="/demo/slot-fill"]')).toBeVisible();
+    await expect(page.locator('a[href="/demo/glucose"]')).toBeVisible();
+  });
+
+  test("allowlisted marketing demos stay public with synthetic content", async ({ page }) => {
+    for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}$`));
+      await expect(page.getByText(/synthetic/i).first()).toBeVisible();
     }
   });
 
