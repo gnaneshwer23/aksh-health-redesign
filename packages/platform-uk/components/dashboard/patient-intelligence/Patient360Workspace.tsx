@@ -127,6 +127,11 @@ export function Patient360Workspace({ patientId, patientLabel }: Props) {
             <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}`}>Patient chart</Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/medication-care`}>
+              Medication & care
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/diabetes-intelligence`}>
               Glucose intelligence
             </Link>

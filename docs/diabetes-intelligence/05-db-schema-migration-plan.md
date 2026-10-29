@@ -58,13 +58,25 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_ca
 - `glucose_intelligence_review_decisions` — append-only Accept/Edit/Reject
 - RLS org-null-or-ctx pattern; file fallback for unit tests
 
-### Near-term (Phases 3–4)
+### Applied by Phase 3 delivery (local-dev)
+
+**`046_medication_personalised_care.sql`**
+
+- `medcare_safety_flags` — clinician-reviewed medication safety flags (`ehr_write` / `autonomous_prescribe` / `validated_cds` false)
+- `medcare_safety_reviews` + append-only `medcare_safety_review_decisions`
+- `medcare_care_plans` — individualised template drafts (HITL)
+- `medcare_patient_goals`, `medcare_assigned_tasks`, `medcare_handoffs`
+- `medcare_approval_history` — append-only review/approval trail
+- Interaction checks remain application-layer **synthetic stubs** (not a licensed drug DB table)
+- RLS org-null-or-ctx pattern; file fallback for unit tests
+
+### Near-term (Phases 4+)
 
 | Migration | Intent |
 |-----------|--------|
-| `046` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
-| `047` (planned) | Materialized missing-data summary table if query cost warrants |
-| `048` (planned) | Optional projection bridges Patient 360 / glucose spine ↔ `network_*` / `cgm_*` |
+| `047` (planned) | Optional link `care_plan_records.patient_id` → `network_patients` when org-scoped |
+| `048` (planned) | Materialized missing-data summary table if query cost warrants |
+| `049` (planned) | Optional projection bridges Patient 360 / glucose / medcare spine ↔ `network_*` / `cgm_*` |
 
 ### Explicit non-goals
 

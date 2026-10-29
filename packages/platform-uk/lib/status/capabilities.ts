@@ -54,7 +54,8 @@ export type CapabilityId =
   | "lifestyle_support"
   | "diabetes_care_journey"
   | "patient_360_foundation"
-  | "diabetes_glucose_intelligence";
+  | "diabetes_glucose_intelligence"
+  | "medication_personalised_care";
 
 export type Capability = {
   id: CapabilityId;
@@ -287,6 +288,20 @@ export const CAPABILITIES: Capability[] = [
       "Existing CGM metrics + HbA1c signal modules",
     ],
     evidence: ["tests/diabetes-glucose-intelligence.test.ts"],
+  },
+  {
+    id: "medication_personalised_care",
+    name: "Medication and personalised care (Phase 3)",
+    description:
+      "Synthetic medication lists + reconciliation workflow (extends Patient 360), allergy panel with clearly labeled synthetic interaction stub (not a licensed drug DB), clinician-reviewed medication safety flags, individualised care-plan templates, patient goals and educational resources, assigned tasks and care-team handoffs, and review/approval history. No autonomous prescribe/adjust; validatedCds=false; ehrWrite stays false.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: [
+      "Authenticated clinician scope",
+      "Patient 360 foundation",
+      "Migration 046 (local-dev)",
+    ],
+    evidence: ["tests/medication-personalised-care.test.ts"],
   },
 ];
 

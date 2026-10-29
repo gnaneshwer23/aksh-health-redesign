@@ -51,15 +51,22 @@ Statuses below are product reality, not marketing. Capability register remains a
 | Clinical history → Patient 360 unified view | `incomplete` → **slice closes synthetic path** | Journey + Patient 360 |
 | Live device vendor integrations | `incomplete` / `planned` | Contracts only; not claimed live |
 
-## Phase 3 — Clinician review & care plan
+## Phase 3 — Medication & personalised care
 
 | Feature | Status | Evidence / notes |
 |---------|--------|------------------|
-| Review queue Accept/Edit/Reject | `implemented+tested` | `in_validation` clinically |
-| Health plan draft artifact | `synthetic_demo` | Always DRAFT; JSON store |
-| **Approved care plan after HITL** | was `planned` → **`synthetic_demo` in this slice** | Postgres + file fallback |
+| Medication lists + recon workflow | **`synthetic_demo`** | Extends Patient 360; `medication_personalised_care` |
+| Allergy + interaction information | **`synthetic_demo`** | Allergies from P360; interactions = labeled synthetic stub (not licensed drug DB) |
+| Clinician-reviewed med safety flags | **`synthetic_demo`** | HITL Accept/Edit/Reject; `validatedCds: false` |
+| Individualised care-plan templates | **`synthetic_demo`** | Template → DRAFT → HITL |
+| Patient goals + educational resources | **`synthetic_demo`** | Goals + synthetic catalog |
+| Assigned tasks + care-team handoffs | **`synthetic_demo`** | Task status + handoff records |
+| Review / approval history | **`synthetic_demo`** | Append-oriented history |
+| Review queue Accept/Edit/Reject (platform) | `implemented+tested` | `in_validation` clinically |
+| Health plan draft artifact (legacy) | `synthetic_demo` | Always DRAFT; JSON store |
+| Journey approved care plan after HITL | **`synthetic_demo`** | Postgres + file fallback |
 | Notes/coding drafts | `implemented+tested` | `in_validation` |
-| Medication safety / referrals | `implemented+tested` | `in_validation`; no auto prescribe |
+| Medication safety / referrals (GUARDIAN path) | `implemented+tested` | `in_validation`; no auto prescribe |
 
 ## Phase 4 — Follow-up & longitudinal
 
