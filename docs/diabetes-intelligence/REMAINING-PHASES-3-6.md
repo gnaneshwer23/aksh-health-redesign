@@ -1,6 +1,13 @@
-# Remaining work — Phases 4–6
+# Remaining work — Phases 5–6 (+ Phase 3–4 leftovers)
 
-After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), and Phase 3 (medication & personalised care synthetic):
+After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), Phase 3 (medication & personalised care synthetic), and Phase 4 (continuous care synthetic):
+
+## Phase 4 leftovers (productization)
+
+- Org FK + RLS proof for continuous-care tables against live orgs
+- Playwright E2E for continuous care / nurse queue
+- Live schedule / recall connectors (outbound campaigns still `planned`)
+- See [13-phase4-continuous-care.md](./13-phase4-continuous-care.md)
 
 ## Phase 3 leftovers (productization)
 
@@ -20,17 +27,16 @@ After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 
 
 - Org FK + RLS proof for Patient 360 tables against live orgs
 - Edit UX for structured clinical rows (beyond seed/recon)
-- Single timeline projection with precision-health `/timeline`
+- Single timeline projection with precision-health `/timeline` (journey + continuous care already merged; modalities/cases remain)
 - Playwright E2E for Patient 360
 
-
-## Phase 4 — Continuous care / longitudinal operations
+## Phase 4 — Continuous care / longitudinal operations — **shipped (synthetic)**
 
 - Follow-up worklists, appointment coordination, patient-reported updates
 - Notification preferences, staff escalation queues, completed-action tracking
 - Care-plan progress monitoring; operational and safety analytics
-- Nurse/ops queues for `care_follow_up_tasks` and medcare assigned tasks
-- Merge journey events into `/api/patients/[id]/timeline`
+- Nurse/ops queues for continuous-care follow-ups and escalations
+- Journey + continuous-care events merged into `/api/patients/[id]/timeline`
 - Recall / outbound campaigns (capability still `planned`)
 
 ## Phase 5 — Agent intelligence

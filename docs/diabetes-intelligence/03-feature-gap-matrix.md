@@ -73,9 +73,17 @@ Statuses below are product reality, not marketing. Capability register remains a
 | Feature | Status | Evidence / notes |
 |---------|--------|------------------|
 | Access handoff_tasks | `implemented+tested` | Slot-fill oriented |
-| **Care-plan follow-up (owner/status/audit)** | was `planned` → **`synthetic_demo` in this slice** | |
+| **Care-plan follow-up (owner/status/audit)** | was `planned` → **`synthetic_demo` in this slice** | Journey + continuous care |
+| **Follow-up worklists (GP + nurse)** | **`synthetic_demo`** | `continuous_care_operations` |
+| **Appointment coordination** | **`synthetic_demo`** | No live booking connector |
+| **Patient-reported updates** | **`synthetic_demo`** | Unverified until ack |
+| **Notification preferences** | **`synthetic_demo`** | Channels + quiet hours |
+| **Staff escalation queues (HITL)** | **`synthetic_demo`** | Accept/Edit/Reject/Resolve |
+| **Completed-action tracking** | **`synthetic_demo`** | |
+| **Care-plan progress monitoring** | **`synthetic_demo`** | Milestones + % |
+| **Operational & safety analytics** | **`synthetic_demo`** | Derived; ehrWrites=0 |
 | Longitudinal timeline (cases + modalities) | `incomplete` | Existing timeline API |
-| **Journey timeline including plan + follow-up** | **`synthetic_demo` in this slice** | |
+| **Journey timeline including plan + follow-up** | **`synthetic_demo` in this slice** | Merged into `/timeline` |
 | Outbound recall campaigns | `planned` | capability |
 
 ## Phase 5 — Multi-agent diabetes intelligence

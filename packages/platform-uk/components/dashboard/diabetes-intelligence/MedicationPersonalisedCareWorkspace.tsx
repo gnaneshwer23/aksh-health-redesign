@@ -203,6 +203,9 @@ export function MedicationPersonalisedCareWorkspace({ patientId, patientLabel }:
           <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/diabetes-intelligence`}>
             <Button variant="outline">Glucose intelligence</Button>
           </Link>
+          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/continuous-care`}>
+            <Button variant="outline">Continuous care</Button>
+          </Link>
         </div>
       </header>
 

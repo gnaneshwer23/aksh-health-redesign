@@ -53,3 +53,18 @@ export {
   advanceMedCareTask,
   handoffMedCareTask,
 } from "./medcare-assemble";
+
+export * from "./continuous-care-types";
+export { buildContinuousCareSeed } from "./continuous-care-seed";
+export {
+  buildContinuousCare,
+  seedAndBuildContinuousCare,
+  advanceContinuousFollowUp,
+  advanceAppointment,
+  advancePatientUpdate,
+  setContinuousNotificationPrefs,
+  advanceCarePlanProgress,
+  decideStaffEscalation,
+  buildContinuousCareWorklist,
+  deriveContinuousCareAnalytics,
+} from "./continuous-care-assemble";

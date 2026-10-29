@@ -47,15 +47,27 @@
 | P3-5 | Tests + capability `medication_personalised_care` | P3-2 |
 | P3-6 | Docs `12-phase3-medication-personalised-care.md` + gap/schema/API updates | P3-5 |
 
-## Next (Phases 4 productization)
+## Done in Phase 4 delivery
 
 | ID | Item | Depends on |
 |----|------|------------|
-| N1 | Wire journey timeline into existing `/timeline` API | S2 |
+| P4-1 | Migration `047_continuous_care.sql` | P0–P3 inventory |
+| P4-2 | `lib/diabetes-intelligence/continuous-care-*` domain | P4-1 / file store |
+| P4-3 | APIs `/api/patients/[id]/continuous-care*` + GP/nurse worklists | P4-2 |
+| P4-4 | GP + nurse continuous care UI | P4-3 |
+| P4-5 | Merge journey + continuous-care into `/timeline` | S2, P4-2 |
+| P4-6 | Tests + capability `continuous_care_operations` | P4-2 |
+| P4-7 | Docs `13-phase4-continuous-care.md` + gap/schema/API updates | P4-6 |
+
+## Next (Phases 4 leftovers / productization)
+
+| ID | Item | Depends on |
+|----|------|------------|
+| N1 | ~~Wire journey timeline into existing `/timeline` API~~ | **Done in P4** |
 | N2 | Org-scoped plans linked to `network_patients` | S1, RLS tests |
 | N3 | Promote health-plan panel to call journey decision API | S3 |
-| N4 | Nurse queue for care follow-ups / medcare tasks | N2, P3 |
-| N5 | E2E Playwright golden path for journey / medcare | S4, P3 |
+| N4 | ~~Nurse queue for care follow-ups / medcare tasks~~ | **Done in P4** (synthetic) |
+| N5 | E2E Playwright golden path for journey / medcare / continuous care | S4, P3, P4 |
 
 ## Later (Phases 5–6)
 

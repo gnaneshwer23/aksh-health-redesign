@@ -11,7 +11,9 @@ export type TimelineEventKind =
   | "consent_change"
   | "health_plan"
   | "coaching_draft"
-  | "risk_state";
+  | "risk_state"
+  | "care_journey"
+  | "continuous_care";
 
 export type PatientTimelineEvent = {
   id: string;

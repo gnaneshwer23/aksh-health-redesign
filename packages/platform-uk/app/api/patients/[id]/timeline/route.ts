@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { listDecisionHistory } from "@/lib/diabetes-intelligence/continuous-care-repository";
+import { listJourneyEvents } from "@/lib/diabetes-intelligence/repository";
 import { getPatientById } from "@/lib/mock-data";
-import { buildPatientTimeline } from "@/lib/precision-health/timeline";
+import { buildPatientTimeline, type PatientTimelineEvent } from "@/lib/precision-health/timeline";
 import { listConsentGrants } from "@/lib/repositories/consent-grant-repository";
 import { listLearningEvents } from "@/lib/repositories/learning-event-repository";
 import { listModalitySamples } from "@/lib/repositories/modality-sample-repository";
@@ -25,12 +27,45 @@ export async function GET(request: Request, context: RouteContext) {
   const patient = getPatientById(patientId);
   const adapter = getReviewCaseRepositoryAdapter();
   const cases = await adapter.readReviewCases(auth.context.scopeKey, DEFAULT_PRACTICE_ID);
+  const scopeKey = auth.context.scopeKey;
 
-  const [modalitySamples, consentGrants, learning] = await Promise.all([
-    listModalitySamples({ scopeKey: auth.context.scopeKey, patientId }),
-    listConsentGrants({ scopeKey: auth.context.scopeKey, patientId, includeRevoked: true }),
-    listLearningEvents({ scopeKey: auth.context.scopeKey, limit: 100 })
-  ]);
+  const [modalitySamples, consentGrants, learning, journeyEvents, continuousHistory] =
+    await Promise.all([
+      listModalitySamples({ scopeKey, patientId }),
+      listConsentGrants({ scopeKey, patientId, includeRevoked: true }),
+      listLearningEvents({ scopeKey, limit: 100 }),
+      listJourneyEvents(patientId, { scopeKey }).catch(() => []),
+      listDecisionHistory(patientId, { scopeKey }).catch(() => []),
+    ]);
+
+  const extraEvents: PatientTimelineEvent[] = [
+    ...journeyEvents.map((e) => ({
+      id: e.id,
+      patientId,
+      kind: "care_journey" as const,
+      occurredAt: e.occurredAt,
+      title: e.title,
+      summary: e.summary,
+      source: "diabetes_care_journey",
+      ehrWrite: false as const,
+      metadata: { kind: e.kind, ...(e.metadata ?? {}) },
+    })),
+    ...continuousHistory.map((h) => ({
+      id: h.id,
+      patientId,
+      kind: "continuous_care" as const,
+      occurredAt: h.createdAt,
+      title: `Continuous care · ${h.subjectKind} · ${h.action}`,
+      summary: h.reason ?? `${h.action} by ${h.actor}`,
+      source: "continuous_care_operations",
+      ehrWrite: false as const,
+      metadata: {
+        subjectKind: h.subjectKind,
+        subjectId: h.subjectId,
+        measurableOutcome: h.measurableOutcome,
+      },
+    })),
+  ];
 
   const timeline = buildPatientTimeline({
     patientId,
@@ -38,13 +73,16 @@ export async function GET(request: Request, context: RouteContext) {
     cases,
     modalitySamples,
     consentGrants,
-    learningEvents: learning.events
+    learningEvents: learning.events,
+    extraEvents,
   });
 
   return NextResponse.json({
     ...timeline,
     patientLabel: patient?.name ?? patientId,
     ehrWrite: false,
-    unifiedHealthRecord: false
+    unifiedHealthRecord: false,
+    journeyEventsMerged: journeyEvents.length,
+    continuousCareEventsMerged: continuousHistory.length,
   });
 }
