@@ -95,6 +95,31 @@ Never sets `ehrWrite` or `autonomousPrescribe` true.
 
 FHIR R4–shaped Bundle snapshot for staging / inspection. `ehrWrite: false`.
 
+## New — Diabetes glucose intelligence (Phase 2)
+
+### GET `/api/patients/[id]/diabetes-intelligence`
+
+Assembled snapshot: CGM/SMBG/HbA1c series, charts, TIR (sufficiency-gated), quality indicators, reviews.
+
+### POST `/api/patients/[id]/diabetes-intelligence`
+
+```ts
+{ action: "seed_synthetic" | "ingest_batch" | "draft_review";
+  batch?: { channel: "cgm" | "smbg" | "lab_hba1c"; sourceSystem: string; points: GlucoseIngestPoint[] } }
+```
+
+### POST `/api/patients/[id]/diabetes-intelligence/review/[reviewId]/decision`
+
+```ts
+{ action: "accept" | "edit" | "reject"; editedSections?: GlucoseReviewSection[]; reason?: string }
+```
+
+Never sets `ehrWrite` true.
+
+### GET `/api/gp/diabetes-intelligence/worklist`
+
+Urgency-ranked synthetic worklist items for the authenticated clinician scope.
+
 ## Error contract
 
 - `400` validation / missing reason on reject

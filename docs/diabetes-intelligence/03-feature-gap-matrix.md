@@ -40,9 +40,16 @@ Statuses below are product reality, not marketing. Capability register remains a
 | CGM monitoring worklist | `implemented+tested` | `cgm_monitoring` production (code) |
 | Patient-reported readings | `implemented+tested` | `patient_readings` |
 | Lab HbA1c / renal / lipids | `implemented+tested` | `lab_results` |
-| Diabetes module glucose/HbA1c signals | `incomplete` / `synthetic_demo` | Flag-gated; glucose often `insufficient_data` until enough points |
-| Clinical history → Patient 360 unified view | `incomplete` → **slice closes synthetic path** | Journey workspace |
-| Missing-data indicators | `incomplete` → **slice adds explicit indicators** | CGM monitoring has stale/gap concepts |
+| Diabetes module glucose/HbA1c signals | `incomplete` / `synthetic_demo` | Disease-module path still flag-gated; Phase 2 assemble reuses HbA1c + CGM metrics |
+| Phase 2 glucose intelligence assemble | **`synthetic_demo`** | `diabetes_glucose_intelligence`; [11-phase2-glucose-intelligence.md](./11-phase2-glucose-intelligence.md) |
+| HbA1c trends (Phase 2 surface) | **`synthetic_demo`** | Deterministic two-point trend + chart |
+| CGM/SMBG ingestion contracts | **`synthetic_demo`** | Typed batches; migration 045 staging tables |
+| Glucose trend charts | **`synthetic_demo`** | Chart series + GP sparkline |
+| TIR when sufficiency permits | **`synthetic_demo`** | Battelino 2019 via `lib/cgm/metrics`; `sufficient` gated |
+| Missing-data / measurement quality | **`synthetic_demo`** | Explicit indicators on Phase 2 assemble |
+| Glucose review worklist + HITL sign-off | **`synthetic_demo`** | Accept/Edit/Reject; ehrWrite false |
+| Clinical history → Patient 360 unified view | `incomplete` → **slice closes synthetic path** | Journey + Patient 360 |
+| Live device vendor integrations | `incomplete` / `planned` | Contracts only; not claimed live |
 
 ## Phase 3 — Clinician review & care plan
 

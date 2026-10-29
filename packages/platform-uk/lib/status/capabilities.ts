@@ -53,7 +53,8 @@ export type CapabilityId =
   | "complications"
   | "lifestyle_support"
   | "diabetes_care_journey"
-  | "patient_360_foundation";
+  | "patient_360_foundation"
+  | "diabetes_glucose_intelligence";
 
 export type Capability = {
   id: CapabilityId;
@@ -272,6 +273,20 @@ export const CAPABILITIES: Capability[] = [
     environment: "simulation",
     dependencies: ["Mock cohort or seeded spine", "Authenticated clinician scope", "Migration 044 (local-dev)"],
     evidence: ["tests/patient-intelligence-360.test.ts"],
+  },
+  {
+    id: "diabetes_glucose_intelligence",
+    name: "Diabetes glucose intelligence (Phase 2)",
+    description:
+      "Synthetic HbA1c trends, CGM/SMBG ingestion contracts, glucose trend charts, time-in-range when consensus data sufficiency permits, missing-data and measurement-quality indicators, GP review worklist, explainable deterministic calculations, and clinician Accept/Edit/Reject sign-off. Not clinically validated; ehrWrite stays false.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: [
+      "Authenticated clinician scope",
+      "Migration 045 (local-dev)",
+      "Existing CGM metrics + HbA1c signal modules",
+    ],
+    evidence: ["tests/diabetes-glucose-intelligence.test.ts"],
   },
 ];
 
