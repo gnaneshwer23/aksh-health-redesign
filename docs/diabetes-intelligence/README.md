@@ -1,7 +1,7 @@
-# Connected Diabetes Intelligence — Phase 0 index
+# Connected Diabetes Intelligence — index
 
 **Date:** 29 October 2026  
-**Scope:** Documentation + smallest synthetic vertical slice in `packages/platform-uk`.  
+**Scope:** Phase 0 docs + vertical slice; Phase 1 Patient 360 foundation — all in `packages/platform-uk`.  
 **Ground truth:** `packages/platform-uk/lib/status/capabilities.ts`, `lib/agents/register.ts`, `db/migrations/`, live deploy root `packages/platform-uk` (www.akshhealth.com).  
 **LIVE_ORGANISATIONS:** `0` — no production clinical use.
 
@@ -18,7 +18,8 @@
 | 7 | [07-role-based-ux-journeys.md](./07-role-based-ux-journeys.md) | Role-based UX journeys |
 | 8 | [08-implementation-backlog.md](./08-implementation-backlog.md) | Backlog + dependencies |
 | 9 | [09-clinical-safety-gap-report.md](./09-clinical-safety-gap-report.md) | Honest safety / readiness gaps |
-| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after this slice |
+| 10 | [10-phase1-patient-360.md](./10-phase1-patient-360.md) | Phase 1 Patient 360 progress |
+| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–1 |
 
 ## Vertical slice (synthetic)
 
@@ -26,13 +27,21 @@
 
 Implemented under `packages/platform-uk` (see backlog). Feature flag / honesty: synthetic demo only; no EHR write; no autonomous prescribing.
 
-### How to try
+### How to try — Phase 0 journey
 
 1. From `packages/platform-uk`: ensure `.env.local` points at Neon **local-dev / simulation** (never production main).
-2. Optional: `npm run db:migrate -- --apply` (local-dev only) for migration `043_diabetes_care_journey.sql`.
+2. Optional: `npm run db:migrate -- --apply` (local-dev only) for migrations `043` / `044`.
 3. Run tests: `npx tsx tests/diabetes-intelligence-journey.test.ts`
 4. UI (authenticated GP): `/dashboard/gp/diabetes-journey/[patientId]` (e.g. a mock cohort patient id).
 5. APIs under `/api/patients/[id]/diabetes-journey/*`.
+
+### How to try — Phase 1 Patient 360
+
+1. Same Neon **local-dev** rule; optional apply `044_patient_intelligence_foundation.sql`.
+2. `npx tsx tests/patient-intelligence-360.test.ts`
+3. UI: `/dashboard/gp/patients/P002/patient-360`
+4. APIs under `/api/patients/[id]/patient-360` (+ `/fhir`, med-recon decision).
+5. Details: [10-phase1-patient-360.md](./10-phase1-patient-360.md).
 
 ## Non-negotiables
 

@@ -5,6 +5,10 @@ import {
   loadIngestedDiabetesReadings,
   recordDiabetesGlucoseReading,
 } from "../disease-modules/diabetes/ingest";
+import {
+  listAllergies,
+  listConditions,
+} from "../patient-intelligence/repository";
 import { assessGlucoseMissing, assessHistoryMissing } from "./missing-data";
 import {
   appendJourneyEvent,
@@ -45,6 +49,34 @@ export function buildClinicalHistory(patientId: string): ClinicalHistorySnapshot
   };
 }
 
+/** Prefer structured Patient 360 spine when seeded; else mock cohort snapshot. */
+export async function buildClinicalHistoryAsync(
+  patientId: string,
+  options?: { scopeKey?: string }
+): Promise<ClinicalHistorySnapshot> {
+  const scopeKey = options?.scopeKey ?? "shared";
+  const base = buildClinicalHistory(patientId);
+  try {
+    const [conditions, allergies] = await Promise.all([
+      listConditions(patientId, { scopeKey }),
+      listAllergies(patientId, { scopeKey }),
+    ]);
+    if (conditions.length === 0 && allergies.length === 0) return base;
+    return {
+      conditions: conditions.length
+        ? conditions.map((c) => c.display)
+        : base.conditions,
+      medications: base.medications,
+      allergies: allergies.length
+        ? allergies.map((a) => a.substance)
+        : base.allergies,
+      missingFields: base.missingFields,
+    };
+  } catch {
+    return base;
+  }
+}
+
 export async function loadGlucosePanel(
   patientId: string,
   options?: { scopeKey?: string }
@@ -70,7 +102,7 @@ export async function buildDiabetesJourney(
   const scopeKey = options?.scopeKey ?? "shared";
   const patient = getPatientById(patientId);
   const patientLabel = patient?.name ?? patientId;
-  const history = buildClinicalHistory(patientId);
+  const history = await buildClinicalHistoryAsync(patientId, { scopeKey });
   const historyMissing = assessHistoryMissing(history);
   const { observations } = await loadGlucosePanel(patientId, { scopeKey });
   const glucoseAssess = assessGlucoseMissing(observations);

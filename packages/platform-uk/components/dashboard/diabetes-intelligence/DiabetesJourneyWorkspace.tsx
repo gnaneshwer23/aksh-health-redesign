@@ -158,6 +158,11 @@ export function DiabetesJourneyWorkspace({ patientId, patientLabel }: Props) {
           <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}`}>Patient chart</Link>
           </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/patient-360`}>
+              Patient 360
+            </Link>
+          </Button>
           <Button
             size="sm"
             disabled={busy || loading}

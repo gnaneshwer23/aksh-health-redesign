@@ -12,7 +12,7 @@
 
 Statuses below are product reality, not marketing. Capability register remains authoritative for public claims.
 
-## Phase 1 — Foundations (patient identity, facts, audit)
+## Phase 1 — Foundations (patient identity, facts, audit) + Patient 360
 
 | Feature | Status | Evidence / notes |
 |---------|--------|------------------|
@@ -20,7 +20,18 @@ Statuses below are product reality, not marketing. Capability register remains a
 | Patient State append-only facts | `implemented+tested` | migration 013; ingest tests |
 | SHIELD / append-only audit | `implemented+tested` | shield_audit_events |
 | Consent model | `implemented+tested` | consent capabilities |
+| Patient 360 unified profile | **`synthetic_demo`** | migration 044; `patient_360_foundation`; [10-phase1-patient-360.md](./10-phase1-patient-360.md) |
+| Structured medical & family history | **`synthetic_demo`** | `patient_conditions`, `patient_family_history` |
+| Diabetes diagnosis classification | **`synthetic_demo`** | `patient_diabetes_profiles` + SNOMED map |
+| Conditions & comorbidities | **`synthetic_demo`** | categorised condition ledger |
+| Allergies + med reconciliation scaffolding | **`synthetic_demo`** | allergies + recon runs; no prescribe |
+| Clinical encounters | **`synthetic_demo`** | `patient_encounters` |
+| Lab / vital observations + provenance | **`synthetic_demo`** | `patient_observation_items` + quality flags |
+| Longitudinal Patient 360 timeline | **`synthetic_demo`** | assembled + journey events |
+| Care-team assignments (sim spine) | **`synthetic_demo`** | `patient_care_assignments` |
+| Consent / sharing preferences (sim) | **`synthetic_demo`** | append-only `patient_sharing_preferences` |
 | LIVE orgs on real patients | `research/validation` | LIVE_ORGANISATIONS=0 |
+| Network ↔ Patient 360 sync | `incomplete` / `planned` | still dual path; see Phase 1 doc gaps |
 
 ## Phase 2 — Glucose & history
 

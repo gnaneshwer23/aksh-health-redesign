@@ -1,6 +1,20 @@
-# Remaining work — Phases 3–6
+# Remaining work — Phases 2–6
 
-After this delivery (Phase 0 docs + synthetic vertical slice):
+After Phase 0 (docs + journey slice) and Phase 1 (Patient 360 foundation synthetic spine):
+
+## Phase 2 — Glucose & history depth
+
+- Promote diabetes module signals beyond sparse/insufficient_data defaults
+- Tighten Patient 360 ↔ network observations / CGM projection
+- See gap matrix Phase 2 rows
+
+## Phase 1 leftovers (productization)
+
+- Org FK + RLS proof for Patient 360 tables against live orgs
+- Edit UX for structured clinical rows (beyond seed/recon)
+- Single timeline projection with precision-health `/timeline`
+- Playwright E2E for Patient 360
+
 
 ## Phase 3 — Clinician review depth
 

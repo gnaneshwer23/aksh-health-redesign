@@ -31,7 +31,8 @@ Role UX (GP / nurse / patient)
 | Layer | Path | Responsibility |
 |-------|------|----------------|
 | Disease signals | `lib/disease-modules/diabetes/` | Typed signals; feed HORIZON/GUARDIAN; no prescribe |
-| Connected journey (this slice) | `lib/diabetes-intelligence/` | Care plan lifecycle, follow-up, journey timeline, missing-data |
+| Connected journey (Phase 0 slice) | `lib/diabetes-intelligence/` | Care plan lifecycle, follow-up, journey timeline, missing-data |
+| Patient 360 foundation (Phase 1) | `lib/patient-intelligence/` | Structured history, diabetes class, allergies, med recon scaffolding, encounters, observations, care team, sharing prefs, quality |
 | Patient State | `lib/patient-state/` | Append-only facts |
 | Care network | `lib/network/`, `lib/cgm/`, `lib/readings/`, `lib/labs/` | Org-scoped production data paths |
 | HITL | `lib/workflow/`, `review_cases` | Existing Accept/Edit/Reject for draft items |
