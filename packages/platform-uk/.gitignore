@@ -33,6 +33,8 @@ data/patient-state-facts.json
 # Local runtime / verify dumps (keep tracked seed + fixture JSON; ignore run artifacts)
 data/consent-grants.*.json
 data/health-plans.*.json
+data/diabetes-care-journey.json
+data/diabetes-care-journey.*.json
 data/modality-samples.*.json
 data/review-cases.phase_a_*.json
 data/review-cases.whole_loop_*.json

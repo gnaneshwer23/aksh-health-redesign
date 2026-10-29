@@ -43,6 +43,9 @@ export default function GpPatientDetailPage(props: { params: Promise<{ id: strin
           <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/gp/review-queue?patient=${patient.id}`}>Open review queue</Link>
           </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/gp/diabetes-journey/${patient.id}`}>Diabetes journey (synthetic)</Link>
+          </Button>
         </div>
 
         <header className="dashboard-card border-border-subtle p-6 shadow-sm">
