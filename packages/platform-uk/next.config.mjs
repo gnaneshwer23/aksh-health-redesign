@@ -50,11 +50,6 @@ const createNextConfig = (phase) => ({
         permanent: true
       },
       {
-        source: "/demo",
-        destination: "/demo/patel",
-        permanent: false
-      },
-      {
         source: "/dashboards",
         destination: "/platform",
         permanent: true

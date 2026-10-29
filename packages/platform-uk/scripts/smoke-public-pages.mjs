@@ -22,8 +22,9 @@ const pages = [
   { path: "/signup", text: "Create your account" },
   { path: "/signin", text: "Sign in" },
   { path: "/get-started", text: "Request a pilot for your organisation" },
-  { path: "/demo", text: "Mr James Patel walkthrough" },
-  { path: "/demo/patel", text: "Mr James Patel walkthrough" },
+  { path: "/demo", text: "Explore a demo" },
+  { path: "/demo/slot-fill", text: "Synthetic data only" },
+  { path: "/demo/glucose", text: "Synthetic data only" },
 ];
 
 async function assertOk(url, expectedText) {
