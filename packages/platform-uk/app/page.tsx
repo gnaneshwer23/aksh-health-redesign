@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Activity, CalendarClock, Check, ClipboardList } from "lucide-react";
+import { Activity, CalendarClock, Check } from "lucide-react";
 
 import { ProductCanvas } from "@/components/site/canvas/ProductCanvas";
+import { DiabetesHistoryPreview } from "@/components/site/DiabetesHistoryPreview";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteShell } from "@/components/site/SiteShell";
 import { PilotCta } from "@/components/site/PageParts";
@@ -143,6 +144,8 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+
+      <DiabetesHistoryPreview />
 
       <section className="s-section" id="pilot">
         <div className="s-container">

@@ -27,9 +27,16 @@ test.describe("Public site", () => {
       await expect(w).toHaveAttribute("data-status", "production");
       for (const label of ["How it works", "What staff do", "What you measure"]) await expect(w).toContainText(label);
     }
-    // The clinical review vision comes after what is available, and is labelled as in validation.
-    const order = await page.evaluate(() => ["available-now", "diabetes"].map((id) => document.getElementById(id)!.getBoundingClientRect().top));
+    // Review-prep history preview sits after production workflows; clinical AI vision follows later — both in validation.
+    const order = await page.evaluate(() =>
+      ["available-now", "review-prep", "diabetes"].map((id) => document.getElementById(id)!.getBoundingClientRect().top),
+    );
     expect(order[0]).toBeLessThan(order[1]);
+    expect(order[1]).toBeLessThan(order[2]);
+    await expect(page.locator("#review-prep")).toContainText("In validation");
+    await expect(page.locator("#review-prep")).toContainText("Synthetic");
+    await expect(page.locator("#review-prep")).toContainText("human gate");
+    await expect(page.locator("#review-prep").getByRole("link", { name: "Explore a demo" })).toHaveAttribute("href", "/demo");
     await expect(page.locator("#diabetes")).toContainText("In validation");
     const nav = page.locator("[data-site-nav]");
     for (const label of ["How it works", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
