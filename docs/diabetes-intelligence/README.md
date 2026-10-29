@@ -1,7 +1,7 @@
 # Connected Diabetes Intelligence — index
 
 **Date:** 29 October 2026  
-**Scope:** Phase 0 docs + vertical slice; Phase 1 Patient 360; Phase 2 glucose intelligence; Phase 3 medication & personalised care; Phase 4 continuous care — all in `packages/platform-uk`.  
+**Scope:** Phase 0 docs + vertical slice; Phase 1 Patient 360; Phase 2 glucose intelligence; Phase 3 medication & personalised care; Phase 4 continuous care; Phase 5 agent intelligence — all in `packages/platform-uk`.  
 **Ground truth:** `packages/platform-uk/lib/status/capabilities.ts`, `lib/agents/register.ts`, `db/migrations/`, live deploy root `packages/platform-uk` (www.akshhealth.com).  
 **LIVE_ORGANISATIONS:** `0` — no production clinical use.
 
@@ -22,7 +22,8 @@
 | 11 | [11-phase2-glucose-intelligence.md](./11-phase2-glucose-intelligence.md) | Phase 2 glucose intelligence progress |
 | 12 | [12-phase3-medication-personalised-care.md](./12-phase3-medication-personalised-care.md) | Phase 3 medication & personalised care |
 | 13 | [13-phase4-continuous-care.md](./13-phase4-continuous-care.md) | Phase 4 continuous care / longitudinal ops |
-| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–4 |
+| 14 | [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md) | Phase 5 agent intelligence / AI orchestration |
+| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–5 |
 
 ## Vertical slice (synthetic)
 
@@ -69,6 +70,14 @@ Implemented under `packages/platform-uk` (see backlog). Feature flag / honesty: 
 3. UI: `/dashboard/gp/patients/P002/continuous-care`, worklists `/dashboard/gp/continuous-care` and `/dashboard/nurse/continuous-care`
 4. APIs under `/api/patients/[id]/continuous-care` (+ escalation decision) and `/api/gp|nurse/continuous-care/worklist`
 5. Details: [13-phase4-continuous-care.md](./13-phase4-continuous-care.md).
+
+### How to try — Phase 5 agent intelligence
+
+1. Same Neon **local-dev** rule; optional apply `048_diabetes_agent_intelligence.sql`.
+2. `npx tsx tests/diabetes-agent-intelligence.test.ts`
+3. UI: `/dashboard/gp/patients/P002/agent-intelligence` and worklist `/dashboard/gp/agent-intelligence`
+4. APIs under `/api/patients/[id]/agent-intelligence` (+ draft decision) and `/api/gp/agent-intelligence/worklist`
+5. Details: [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md).
 
 ## Non-negotiables
 

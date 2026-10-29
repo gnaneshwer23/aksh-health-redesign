@@ -91,10 +91,15 @@ Statuses below are product reality, not marketing. Capability register remains a
 | Feature | Status | Evidence / notes |
 |---------|--------|------------------|
 | CONDUCTOR + specialists (sim) | `implemented+tested` | agents `in_validation` |
+| Governed drafting pack (history / SOAP / missing / evidence / follow-up) | **`synthetic_demo`** | `diabetes_agent_intelligence` |
+| Clinician Accept/Edit/Reject + AI vs verified labels | **`synthetic_demo`** | |
+| Model / prompt version tracking | **`synthetic_demo`** | Append-only registry |
+| Offline eval / regression suite | **`synthetic_demo`** | P002, P007 |
+| Shared patient context (no silos) | **`synthetic_demo`** | Reuses P360 / journey / agents register |
 | AKSH_DIABETES analyse in loop | `incomplete` | Present in register/loop; flag-gated wiring |
 | HbA1c trends / complications / lifestyle | `implemented+tested` | capabilities `in_validation` |
 | PRISM / ATLAS | `planned` | |
-| Continuous learning from Accept/Edit/Reject | `incomplete` | learning_events exist |
+| Continuous learning from Accept/Edit/Reject into thresholds | `incomplete` | learning_events exist; Phase 5 records HITL only |
 
 ## Phase 6 — Production readiness & integrations
 

@@ -56,7 +56,8 @@ export type CapabilityId =
   | "patient_360_foundation"
   | "diabetes_glucose_intelligence"
   | "medication_personalised_care"
-  | "continuous_care_operations";
+  | "continuous_care_operations"
+  | "diabetes_agent_intelligence";
 
 export type Capability = {
   id: CapabilityId;
@@ -318,6 +319,21 @@ export const CAPABILITIES: Capability[] = [
       "Migration 047 (local-dev)",
     ],
     evidence: ["tests/continuous-care-operations.test.ts"],
+  },
+  {
+    id: "diabetes_agent_intelligence",
+    name: "Diabetes agent intelligence / AI orchestration (Phase 5)",
+    description:
+      "Governed synthetic intelligence layer over shared patient context: history summarisation, clinical documentation drafting, missing-information identification, evidence-grounded retrieval, follow-up draft generation, clinician Accept/Edit/Reject gates, structured output validation, model/prompt version tracking, and offline evaluation regression. Clear AI-generated vs clinician-verified distinction. Deterministic drafting (offline-safe); no autonomous prescribe/treatment; ehrWrite stays false; not production clinical AI.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: [
+      "Authenticated clinician scope",
+      "Agents register (CONDUCTOR / specialists)",
+      "Patient 360 + diabetes journey modules (shared context)",
+      "Migration 048 (local-dev)",
+    ],
+    evidence: ["tests/diabetes-agent-intelligence.test.ts"],
   },
 ];
 
