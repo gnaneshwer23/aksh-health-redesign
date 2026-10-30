@@ -253,7 +253,12 @@ export function runCampaign(state: FrontDeskState, id: string, now = new Date())
 
 // ---------- Referral Desk ----------
 
-export function intakeReferral(state: FrontDeskState, letterText: string, at = new Date().toISOString()): ReferralIntake {
+export function intakeReferral(
+  state: FrontDeskState,
+  letterText: string,
+  at = new Date().toISOString(),
+  opts?: { careEpisodeId?: string | null }
+): ReferralIntake {
   const id = identifyPatient(letterText);
   const lines = letterText.split(/\n+/).map((l) => l.trim()).filter(Boolean);
   const reasonLine = lines.find((l) => /^(reason|re:|indication|presenting)/i.test(l)) ?? lines.find((l) => /refer/i.test(l)) ?? lines[0] ?? "";
@@ -261,17 +266,28 @@ export function intakeReferral(state: FrontDeskState, letterText: string, at = n
   const urgent = /\b(urgent|2ww|two week wait|same day|asap)\b/i.test(letterText);
   const suggestedType = detectAppointmentType(letterText) ?? (/diabet/i.test(letterText) ? "diabetes_review" : "gp_routine");
   const slot = id.kind === "matched" ? findFreeSlots(state, suggestedType, { after: at, limit: 1 })[0] ?? null : null;
+  const verifiedPatient =
+    id.kind === "matched"
+      ? { id: id.patient.id, name: displayName(id.patient), dob: id.patient.dob }
+      : null;
+  const reason = reasonLine.replace(/^(reason|re|indication|presenting)[:\s]*/i, "").slice(0, 240);
+  const careEpisodeId = opts?.careEpisodeId?.trim() || null;
   const intake: ReferralIntake = {
     id: newId("ref"),
     receivedAt: at,
     patientId: id.kind === "matched" ? id.patient.id : null,
     patientMatch: id.kind === "matched" ? "matched" : id.kind === "no_match" ? "not_found" : "ambiguous",
     referrer: referrer?.replace(/^(from|referrer):?\s*/i, "") ?? null,
-    reason: reasonLine.replace(/^(reason|re|indication|presenting)[:\s]*/i, "").slice(0, 240),
+    reason,
     urgency: urgent ? "urgent" : "routine",
     suggestedType,
     proposedSlotId: urgent ? null : slot?.id ?? null,
     status: id.kind === "matched" && !urgent && slot ? "proposed" : "handed_off",
+    careEpisodeId,
+    verifiedPatient,
+    intakeSummary: verifiedPatient
+      ? `${verifiedPatient.name} · DOB ${verifiedPatient.dob} · ${reason || "referral"}`
+      : reason || null,
   };
   state.referrals.unshift(intake);
   addWorkItem(state, {
@@ -293,17 +309,40 @@ export function intakeReferral(state: FrontDeskState, letterText: string, at = n
   return intake;
 }
 
-export function confirmReferralBooking(state: FrontDeskState, referralId: string) {
+export function confirmReferralBooking(
+  state: FrontDeskState,
+  referralId: string,
+  opts?: { careEpisodeId?: string | null }
+) {
   const r = state.referrals.find((x) => x.id === referralId);
   if (!r || r.status !== "proposed" || !r.patientId || !r.proposedSlotId) return null;
-  const booked = bookSlot(state, r.proposedSlotId, r.patientId, "staff", `ref:${r.id}`);
+  const careEpisodeId = opts?.careEpisodeId?.trim() || r.careEpisodeId || null;
+  if (careEpisodeId) r.careEpisodeId = careEpisodeId;
+  if (!r.verifiedPatient && r.patientId) {
+    const patient = getPatient(r.patientId);
+    if (patient) {
+      r.verifiedPatient = { id: patient.id, name: displayName(patient), dob: patient.dob };
+      r.intakeSummary =
+        r.intakeSummary ||
+        `${r.verifiedPatient.name} · DOB ${r.verifiedPatient.dob} · ${r.reason || "referral"}`;
+    }
+  }
+  const booked = bookSlot(
+    state,
+    r.proposedSlotId,
+    r.patientId,
+    "staff",
+    `ref:${r.id}`,
+    careEpisodeId
+  );
   if (!booked.ok) return null;
   r.status = "booked";
   if (!booked.idempotent) {
     const patient = getPatient(r.patientId);
     handoffBookingToNurse(state, booked.slot, {
-      patientLabel: patient ? displayName(patient) : undefined,
+      patientLabel: patient ? displayName(patient) : r.verifiedPatient?.name,
       channel: "staff",
+      careEpisodeId,
     });
   }
   return r;

@@ -111,11 +111,51 @@ export async function POST(request: Request) {
         reason: err instanceof Error ? err.message : "CONDUCTOR-from-intake failed",
       }));
 
+      // P1 — open Front Desk booking work item with verified identity + care_episode_id.
+      let intakeBookingHandoff: {
+        workItemId: string | null;
+        careEpisodeId: string | null;
+        verifiedPatient: { id: string; name: string; dob: string } | null;
+      } | null = null;
+      if (patientId && (careEpisodeId ?? created.careEpisodeId)) {
+        try {
+          const { withDeskDirectory } = await import("@/lib/front-desk/directory");
+          const { mutateState } = await import("@/lib/front-desk/store");
+          const {
+            openIntakeBookingWorkItem,
+            verifiedPatientFromId,
+          } = await import("@/lib/front-desk/intake-booking-handoff");
+          const ep = careEpisodeId ?? created.careEpisodeId!;
+          await withDeskDirectory(async () => {
+            const verified = verifiedPatientFromId(patientId);
+            if (!verified) return;
+            const { result } = await mutateState((s) =>
+              openIntakeBookingWorkItem(s, {
+                careEpisodeId: ep,
+                patientId,
+                verifiedPatient: verified,
+                intakeSummary: `${verified.name} · DOB ${verified.dob} · ${body?.rawInput?.slice(0, 120) || "intake"}`,
+                reviewCaseId: created.id,
+                reason: body?.rawInput?.slice(0, 200) ?? null,
+              })
+            );
+            intakeBookingHandoff = {
+              workItemId: result.id,
+              careEpisodeId: ep,
+              verifiedPatient: verified,
+            };
+          });
+        } catch {
+          intakeBookingHandoff = null;
+        }
+      }
+
       return NextResponse.json(
         {
           reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
           careEpisodeId,
           conductorFromIntake,
+          intakeBookingHandoff,
           ...extra,
         },
         { status: 201 }

@@ -182,6 +182,10 @@ export type ReferralIntake = {
   suggestedType: AppointmentType;
   proposedSlotId: string | null;
   status: "proposed" | "booked" | "handed_off";
+  /** Continuity with intake / care episode — reception must not re-key identity. */
+  careEpisodeId?: string | null;
+  verifiedPatient?: { id: string; name: string; dob: string } | null;
+  intakeSummary?: string | null;
 };
 
 export type BaselineMetrics = {
