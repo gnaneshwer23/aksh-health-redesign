@@ -30,7 +30,9 @@ Role UX (GP / nurse / patient)
 
 | Layer | Path | Responsibility |
 |-------|------|----------------|
+| Disease domain framework (Phase 6) | `lib/disease-domains/` | Plugin registry + contracts; diabetes active_synthetic; CVD/CKD/obesity planned scaffolds; other = research placeholder |
 | Disease signals | `lib/disease-modules/diabetes/` | Typed signals; feed HORIZON/GUARDIAN; no prescribe |
+| Heart typed stub (E5) | `lib/disease-modules/heart/` | CVD illustrative types only — zero wiring |
 | Connected journey (Phase 0 slice) | `lib/diabetes-intelligence/` | Care plan lifecycle, follow-up, journey timeline, missing-data |
 | Patient 360 foundation (Phase 1) | `lib/patient-intelligence/` | Structured history, diabetes class, allergies, med recon scaffolding, encounters, observations, care team, sharing prefs, quality |
 | Patient State | `lib/patient-state/` | Append-only facts |

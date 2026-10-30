@@ -81,7 +81,17 @@
 | N4 | ~~Nurse queue for care follow-ups / medcare tasks~~ | **Done in P4** (synthetic) |
 | N5 | E2E Playwright golden path for journey / medcare / continuous care | S4, P3, P4 |
 
-## Later (Phase 5 leftovers / Phase 6)
+## Done in Phase 6 delivery
+
+| ID | Item | Depends on |
+|----|------|------------|
+| P6-1 | `lib/disease-domains/*` contracts + registry | P0–P5 modules |
+| P6-2 | Diabetes plugin `active_synthetic` + CVD/CKD/obesity scaffolds + other placeholder | P6-1 |
+| P6-3 | Tests `tests/disease-domain-framework.test.ts` | P6-2 |
+| P6-4 | Capability `chronic_disease_domain_framework` + planned disease caps | P6-3 |
+| P6-5 | Docs `15-phase6-disease-domains.md` + gap/architecture/backlog updates | P6-4 |
+
+## Later (Phase 1–5 leftovers / post–Phase 6 readiness)
 
 | ID | Item | Depends on |
 |----|------|------------|
@@ -91,6 +101,7 @@
 | L3 | DPIA / regulatory opinion | governance |
 | L4 | Device vendor production connectors | contracts |
 | L5 | Capability promotion `in_validation` → (never auto) production | L2–L3, LIVE org |
+| L6 | Activate CVD/CKD/obesity only after clinical-lead specs + validation gates | P6, L2–L3 |
 
 ## Dependency graph (slice)
 

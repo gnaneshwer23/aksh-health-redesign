@@ -57,7 +57,11 @@ export type CapabilityId =
   | "diabetes_glucose_intelligence"
   | "medication_personalised_care"
   | "continuous_care_operations"
-  | "diabetes_agent_intelligence";
+  | "diabetes_agent_intelligence"
+  | "chronic_disease_domain_framework"
+  | "cardiovascular_disease_intelligence"
+  | "ckd_disease_intelligence"
+  | "obesity_metabolic_intelligence";
 
 export type Capability = {
   id: CapabilityId;
@@ -334,6 +338,49 @@ export const CAPABILITIES: Capability[] = [
       "Migration 048 (local-dev)",
     ],
     evidence: ["tests/diabetes-agent-intelligence.test.ts"],
+  },
+  {
+    id: "chronic_disease_domain_framework",
+    name: "Chronic disease domain framework (Phase 6)",
+    description:
+      "Reusable disease-domain plugin registry separating common infrastructure from disease-specific guidelines, observations, risk models, care pathways and validation requirements. Diabetes/metabolic is registered as active_synthetic against the existing synthetic path; cardiovascular, CKD and obesity are planned scaffolds that return not_activated (no fabricated clinical outputs); other chronic diseases are a research placeholder registry. No new disease clinical intelligence activated; ehrWrite and autonomousClinicalAction stay false.",
+    status: "synthetic_demo",
+    environment: "simulation",
+    dependencies: [
+      "Diabetes disease-modules + diabetes-intelligence synthetic path",
+      "Capability register honesty",
+    ],
+    evidence: ["tests/disease-domain-framework.test.ts"],
+  },
+  {
+    id: "cardiovascular_disease_intelligence",
+    name: "Cardiovascular disease intelligence",
+    description:
+      "Future CVD clinical intelligence. Planned scaffold only — not activated; no synthetic or live clinical outputs.",
+    status: "planned",
+    environment: "none",
+    dependencies: ["Chronic disease domain framework", "Clinical-lead CVD spec", "CLINICAL_RELEASE"],
+    evidence: [],
+  },
+  {
+    id: "ckd_disease_intelligence",
+    name: "Chronic kidney disease intelligence",
+    description:
+      "Future CKD clinical intelligence. Planned scaffold only — not activated; no synthetic or live clinical outputs.",
+    status: "planned",
+    environment: "none",
+    dependencies: ["Chronic disease domain framework", "Clinical-lead CKD spec", "CLINICAL_RELEASE"],
+    evidence: [],
+  },
+  {
+    id: "obesity_metabolic_intelligence",
+    name: "Obesity and related metabolic intelligence",
+    description:
+      "Future obesity / metabolic clinical intelligence. Planned scaffold only — not activated; no synthetic or live clinical outputs.",
+    status: "planned",
+    environment: "none",
+    dependencies: ["Chronic disease domain framework", "Clinical-lead obesity spec", "CLINICAL_RELEASE"],
+    evidence: [],
   },
 ];
 
