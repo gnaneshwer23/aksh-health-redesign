@@ -1,10 +1,14 @@
 # Milestone A — Baseline Audit (Phase A1)
 
 **Date:** 2026-10-30  
-**HEAD:** `9abf04c` (`origin/main` — includes merged PRs **#86–#96**; tip Merge PR #96 intake→booking handoff e2e)  
+**HEAD (historical A1 start):** `9abf04c` (`origin/main` — includes merged PRs **#86–#96**; tip Merge PR #96 intake→booking handoff e2e)  
 **App:** `packages/platform-uk`  
 **Branch:** `feat/milestone-a1-agent-runtime`  
 **Constraint:** Verified against current code — do **not** restate pre-#88 defects as open.
+
+### Post-merge tip (2026-10-30)
+
+Milestone A stack **#97–#101** landed on `main` at **`c186893`**. Follow-up P0: full multi-account browser click-path + optional Neon-backed `test:milestone-a5:neon` (hermetic file-store remains default). See [E2E_ACCEPTANCE_RESULTS.md](./E2E_ACCEPTANCE_RESULTS.md) and [TECHNICAL_READINESS_REPORT.md](./TECHNICAL_READINESS_REPORT.md).
 
 ---
 
@@ -152,7 +156,7 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 | BRIDGE validated staged FHIR | **Partial** | Staging + provenance; not live sync |
 | Agent Ops reliable operational data | **Partial**→**Done-ish** | A4 alerts/metrics from persisted durable runs |
 | Cross-tenant / unauthorised tests pass | **Partial**→**Done-ish** | A4/A5 negatives + browser role denials |
-| DB-backed multi-account browser E2E | **Partial** | API/unit §11.2 + browser role smoke; not full Neon click-path |
+| DB-backed multi-account browser E2E | **Done-ish** (post-merge P0) | API/unit §11.2 + browser booking→nurse→GP click-path; optional Neon A5 gate |
 | Crit/high security resolved or block | **Partial**→**Done-ish** | A4 crit/high documented + fixed; residuals listed |
 | Recovery from common failures verified | **Partial** | A2 claim/reclaim + A4 stuck-run alerts |
 | CI passes on final implementation branch | **Partial** | Stack review-only; unit gates green; Playwright re-verify after type fixes |
@@ -176,7 +180,7 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 6. Stakeholder handoffs: pharmacy/lab/specialist/delegation/episode closure (**A3** / D).
 7. Agent Ops fed by persisted run data + basic alerts (**A4** / F).
 8. Security pass: authz matrix, cross-tenant e2e, dependency/secret scan (**A4** / G).
-9. Golden multi-account browser journey + negatives in CI (**A5** / I).
+9. Golden multi-account browser journey + negatives in CI (**A5** / I) — **done-ish post-merge** (hermetic + optional Neon + Playwright click-path).
 
 ### P2 (hardening / polish)
 

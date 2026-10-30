@@ -42,9 +42,13 @@ export default function PharmacistOverviewPage() {
   return (
     <div className="space-y-6">
       <PharmacistHeroDemoPath />
-      <p className="sr-only" data-testid="pharmacist-honesty-banner">
-        Synthetic meds panel · GUARDIAN drafts · HITL Accept/Edit/Reject · SHIELD · liveEmis:false.
-        Mark Reviewed does not write to the EHR. Spine: POST /api/clinical-spine/pharmacist-review.
+      <p
+        className="rounded-xl border border-border/60 bg-card/80 px-3 py-2 text-xs text-muted"
+        data-testid="pharmacist-honesty-banner"
+      >
+        Pharmacy HITL · <strong>simulation until real EPS path</strong> · GUARDIAN drafts ·
+        Accept/Edit/Reject required · SHIELD · liveEmis:false · ehrWrite:false. Mark Reviewed does not
+        write to the EHR.
       </p>
       <RoleWorkspaceIntro
         eyebrow="Pharmacist workspace"
