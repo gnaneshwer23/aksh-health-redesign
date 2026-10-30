@@ -60,7 +60,7 @@ const STEP_BEATS: {
   {
     id: "timeline",
     label: "8 · Longitudinal timeline",
-    body: "Merged journey + continuous care + precision-health events for P002 (glucose/medcare/agent still partial — see defect INT-05).",
+    body: "Merged journey + continuous + glucose/medcare/agent events for P002 via /timeline (P360 panel still partial — INT-05 residual).",
   },
 ];
 

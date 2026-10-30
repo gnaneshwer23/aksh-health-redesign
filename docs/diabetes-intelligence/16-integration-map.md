@@ -7,7 +7,7 @@
 
 ## Verdict
 
-Phases 0–6 ship as **parallel synthetic modules** keyed by mock-cohort `patientId` (canonical demo: **P002**) and authenticated **`scopeKey` (= user id)**. There is **no single orchestrator** that advances one patient through all phases in one transaction. Safety posture holds: `ehrWrite: false`, no autonomous prescribe/treatment. Unvalidated intelligence remains **`synthetic_demo`**.
+Phases 0–6 ship as synthetic modules keyed by mock-cohort `patientId` (canonical demo: **P002**) and authenticated **`scopeKey` (= user id)**. **INT-01 mitigated:** `runConnectedDiabetesPipeline` + `/api/patients/[id]/connected-diabetes` (+ dashboard Pipeline step) walks Patient 360 → glucose → meds → journey care-plan draft → continuous care → agent intel with shared context. HITL Accept/Edit/Reject is **not** auto-applied. Safety posture holds: `ehrWrite: false`, no autonomous prescribe/treatment. Unvalidated intelligence remains **`synthetic_demo`**. Neon production schema/data untouched (facades only; no destructive drops).
 
 ## End-to-end path (as implemented)
 
@@ -33,14 +33,14 @@ Phases 0–6 ship as **parallel synthetic modules** keyed by mock-cohort `patien
 
 ## Stores (duplication)
 
-| Concern | Store A | Store B | Priority |
-|---------|---------|---------|----------|
-| Care plans | `aksh.care_plan_records` (journey) | `aksh.medcare_care_plans` | High unify |
-| Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | High |
-| Med recon | Patient 360 runs | medcare start also creates runs | Medium |
-| Glucose | Phase 2 `glucose_*` | disease-module ingest (journey) | High |
-| Timeline | P360 / journey / `/timeline` API | three partial views | High |
-| Agent context | mock cohort | live module snapshots | High |
+| Concern | Store A | Store B | Status |
+|---------|---------|---------|--------|
+| Care plans | `aksh.care_plan_records` (journey) | `aksh.medcare_care_plans` | **Mitigated** — `care-plan-facade` unified read; journey = HITL SoT |
+| Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | Open (separate ops surfaces) |
+| Med recon | Patient 360 runs | medcare start also creates runs | Medium (INT-04) |
+| Glucose | Phase 2 `glucose_*` (canonical) | disease-module ingest (journey) | **Mitigated** — `glucose-bridge` dual-write + series-first read |
+| Timeline | P360 / journey / `/timeline` API | three partial views | **Mitigated** on `/timeline` (glucose/medcare/agent merged) |
+| Agent context | mock cohort | live module snapshots | **Mitigated** — `buildSharedPatientContextAsync` |
 
 JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped by `scopeKey`).
 
@@ -65,14 +65,15 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 - `autonomousPrescribe` / `prescribeOrTreat` / `autonomousClinicalAction` = false
 - HITL required before clinical-looking drafts become “verified” artifacts (still synthetic store only)
 
-## Target integration (backlog — not this PR)
+## Target integration (remaining)
 
-1. Canonical glucose path (bridge ingest ↔ glucose-intelligence).
-2. Canonical care-plan + follow-up read model.
-3. Unified timeline projector including glucose/medcare/agent decisions.
-4. `buildSharedPatientContext` loads live 360 + glucose + medcare snapshots.
+1. ~~Canonical glucose path~~ — mitigated via `glucose-bridge` (stores retained; dual-write).
+2. ~~Canonical care-plan read model~~ — mitigated via facade; follow-up dual store still open.
+3. ~~Unified timeline projector~~ — mitigated on `/timeline` API; P360 panel still partial (INT-05 residual).
+4. ~~Live shared patient context~~ — mitigated via `buildSharedPatientContextAsync`.
 5. Org/practice tenancy on module stores (INT-08). Patient URL access gate shipped (INT-09).
-6. Shared `ConnectedPatientChrome` (shipped as UX step toward this).
+6. Shared `ConnectedPatientChrome` + Pipeline orchestrator entry (shipped).
+7. Physical store collapse / additive Neon local-dev migration if product requires single table (not done — avoid prod Neon risk).
 
 ## Related defects
 

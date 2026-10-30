@@ -8,6 +8,29 @@ export {
 } from "./connected-journey-steps";
 export type { ConnectedJourneyStepId, ConnectedJourneyStep } from "./connected-journey-steps";
 export {
+  buildConnectedDiabetesOrchestration,
+  runConnectedDiabetesPipeline,
+} from "./connected-journey-orchestrate";
+export type {
+  ConnectedDiabetesOrchestrationSnapshot,
+  ConnectedPipelineRunResult,
+  ConnectedPipelineStepResult,
+} from "./connected-journey-orchestrate";
+export {
+  listUnifiedCarePlans,
+  selectCanonicalJourneyPlans,
+  selectMedCarePlans,
+  toUnifiedFromJourney,
+  toUnifiedFromMedCare,
+} from "./care-plan-facade";
+export type { UnifiedCarePlan, UnifiedCarePlanSourceStore } from "./care-plan-facade";
+export {
+  loadUnifiedGlucoseObservations,
+  recordGlucoseViaBridge,
+  glucoseSeriesToObservations,
+  GLUCOSE_CANONICAL_STORE,
+} from "./glucose-bridge";
+export {
   buildDiabetesJourney,
   seedSyntheticJourney,
   draftJourneyCarePlan,
@@ -84,7 +107,11 @@ export {
   formatVersionPin,
   resolveDraftingMode,
 } from "./agent-intel-versions";
-export { AUTHORISED_AGENT_TOOLS, buildSharedPatientContext } from "./agent-intel-context";
+export {
+  AUTHORISED_AGENT_TOOLS,
+  buildSharedPatientContext,
+  buildSharedPatientContextAsync,
+} from "./agent-intel-context";
 export { SYNTHETIC_EVIDENCE_CORPUS, retrieveEvidenceForContext } from "./agent-intel-retrieval";
 export { validateStructuredDraft } from "./agent-intel-validate";
 export {

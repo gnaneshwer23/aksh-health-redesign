@@ -6,7 +6,7 @@ import { randomUUID } from "crypto";
 
 import { AGENTS } from "../agents/register";
 import { getPatientById } from "../mock-data";
-import { buildSharedPatientContext } from "./agent-intel-context";
+import { buildSharedPatientContextAsync } from "./agent-intel-context";
 import { draftAllKindsForPatient } from "./agent-intel-draft";
 import { AGENT_INTEL_EVAL_CASES, runAgentIntelEvalSuite } from "./agent-intel-eval";
 import {
@@ -58,7 +58,7 @@ export async function buildAgentIntelligence(
   options?: { scopeKey?: string }
 ): Promise<AgentIntelSnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
-  const sharedContext = buildSharedPatientContext(patientId);
+  const sharedContext = await buildSharedPatientContextAsync(patientId, { scopeKey });
   const [drafts, runs, history] = await Promise.all([
     listDrafts(patientId, { scopeKey }),
     listRuns(patientId, { scopeKey }),

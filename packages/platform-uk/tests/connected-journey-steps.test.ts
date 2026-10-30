@@ -18,7 +18,11 @@ assert.equal(CONNECTED_DEMO_PATIENT_ID, "P002");
 assert.match(CONNECTED_JOURNEY_DISCLOSURE, /Synthetic/);
 assert.match(CONNECTED_JOURNEY_DISCLOSURE, /LIVE organisations: 0/);
 
-assert.equal(CONNECTED_JOURNEY_STEPS.length, 7);
+assert.equal(CONNECTED_JOURNEY_STEPS.length, 8);
+assert.equal(
+  connectedJourneyStep("orchestrate").href("P002"),
+  "/dashboard/gp/patients/P002/connected-diabetes"
+);
 assert.equal(connectedJourneyStep("glucose").href("P002"), "/dashboard/gp/patients/P002/diabetes-intelligence");
 assert.equal(connectedJourneyStep("journey").href("P002"), "/dashboard/gp/diabetes-journey/P002");
 assert.equal(connectedJourneyStep("timeline").href("P002"), "/dashboard/gp/patients/P002/timeline");
@@ -41,6 +45,8 @@ for (const rel of [
   "components/demo/workflow/ConnectedDiabetesDemo.tsx",
   "app/demo/connected-diabetes/page.tsx",
   "app/dashboard/gp/patients/[id]/timeline/page.tsx",
+  "app/dashboard/gp/patients/[id]/connected-diabetes/page.tsx",
+  "components/dashboard/diabetes-intelligence/ConnectedDiabetesOrchestrationWorkspace.tsx",
 ]) {
   const text = readFileSync(join(root, rel), "utf8");
   assert.match(text, /[Ss]ynthetic|CONNECTED_JOURNEY_DISCLOSURE/, `${rel} must disclose synthetic`);

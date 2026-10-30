@@ -26,6 +26,7 @@ import { GET as getPatient360 } from "../app/api/patients/[id]/patient-360/route
 import { GET as getPatient360Fhir } from "../app/api/patients/[id]/patient-360/fhir/route";
 import { POST as postP360MedReconDecision } from "../app/api/patients/[id]/patient-360/medication-reconciliation/[runId]/decision/route";
 import { GET as getTimeline } from "../app/api/patients/[id]/timeline/route";
+import { GET as getConnectedDiabetes } from "../app/api/patients/[id]/connected-diabetes/route";
 import { denyUnlessConnectedPatientAccess } from "../lib/clinical-proof/connected-patient-access";
 import { evaluateAppRoleClinicalReadAccess } from "../lib/clinical-proof/tenant-isolation";
 
@@ -51,6 +52,7 @@ const CONNECTED_ROUTE_FILES = [
   "app/api/patients/[id]/agent-intelligence/route.ts",
   "app/api/patients/[id]/agent-intelligence/draft/[draftId]/decision/route.ts",
   "app/api/patients/[id]/timeline/route.ts",
+  "app/api/patients/[id]/connected-diabetes/route.ts",
 ];
 
 function authHeaders(role: string, extra: Record<string, string> = {}) {
@@ -174,6 +176,7 @@ async function run() {
       { name: "continuous-care", handler: getContinuousCare },
       { name: "agent-intelligence", handler: getAgentIntelligence },
       { name: "timeline", handler: getTimeline },
+      { name: "connected-diabetes", handler: getConnectedDiabetes },
     ];
 
     for (const { name, handler } of getCases) {

@@ -6,13 +6,13 @@
 
 | ID | Severity | Area | Title | Detail | Disposition |
 |----|----------|------|-------|--------|-------------|
-| INT-01 | **High** | Integration | No cross-phase data orchestration | Modules share `patientId` only; no pipeline assembles downstream inputs | **Open** — backlog |
-| INT-02 | **High** | Integration | Dual glucose pipelines | Journey ingest vs `glucose-repository` / Phase 2 workspace | **Open** |
-| INT-03 | **High** | Integration | Dual care-plan systems | Journey `care_plan_records` vs medcare `medcare_care_plans` | **Open** |
+| INT-01 | **High** | Integration | No cross-phase data orchestration | Modules share `patientId` only; no pipeline assembles downstream inputs | **Mitigated** — `runConnectedDiabetesPipeline` + `/api/patients/[id]/connected-diabetes` + dashboard Pipeline step; HITL gates retained |
+| INT-02 | **High** | Integration | Dual glucose pipelines | Journey ingest vs `glucose-repository` / Phase 2 workspace | **Mitigated** — `glucose-bridge` dual-writes journey → canonical `glucose_series_readings`; journey panel prefers series (legacy ingest fallback). Stores not collapsed/dropped. |
+| INT-03 | **High** | Integration | Dual care-plan systems | Journey `care_plan_records` vs medcare `medcare_care_plans` | **Mitigated** — `care-plan-facade` unified read model with `unifiedKey` + provenance; journey = connected HITL SoT; medcare templates remain medcare surface. No destructive merge. |
 | INT-04 | Medium | Integration | Dual med-recon entry points | `patient-360` vs `medication-care` both start recon | **Open** |
-| INT-05 | Medium | Integration | Timeline incomplete | `/timeline` + P360 omit glucose/medcare/agent events | **Open** |
+| INT-05 | Medium | Integration | Timeline incomplete | `/timeline` + P360 omit glucose/medcare/agent events | **Mitigated** — `/timeline` merges glucose series/reviews, medcare approval history, agent history (counts exposed). P360 panel still partial. |
 | INT-06 | Medium | UX | Broken timeline page link | Continuous care linked to missing `/patients/[id]/timeline` page | **Fixed** — timeline page + chrome |
-| INT-07 | Medium | Integration | Agent shared context mock-only | `buildSharedPatientContext` does not load 360/glucose/medcare | **Open** |
+| INT-07 | Medium | Integration | Agent shared context mock-only | `buildSharedPatientContext` does not load 360/glucose/medcare | **Mitigated** — `buildSharedPatientContextAsync` loads live module counts into sources; sync helper remains for deterministic drafts |
 | INT-08 | Medium | Tenancy | `organisation_id` unused | DB column on 043; never set/filtered | **Open** |
 | INT-16 | Medium | Tenancy | Deterministic row PKs collide across `scope_key` | Medcare seed IDs (`goal-P002-…`) are global PKs; second user’s seed races first. Mitigated with `ON CONFLICT DO UPDATE` on seed replace. | **Mitigated** — still prefer composite keys later |
 | INT-09 | **High** | Auth | Weak API patient access | No `evaluatePatientUrlAccess` on connected diabetes routes | **Fixed** — `denyUnlessConnectedPatientAccess` (`evaluateAppRoleClinicalReadAccess` → `evaluatePatientUrlAccess`) on all patient-scoped connected diabetes APIs; see `tests/connected-patient-api-access.test.ts`. Org/practice tenancy remains INT-08. |
