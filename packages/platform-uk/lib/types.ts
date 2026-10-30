@@ -488,6 +488,13 @@ export type AgentRunSummary = {
   /** NEXUS correlations: review-only input to the clinician's assessment. */
   correlations: { link: string; significance: string; suggestedConsideration: string }[];
   modelUsed: boolean;
+  /** Milestone A1 — correlation / episode / honest execution mode summary. */
+  correlationId?: string;
+  careEpisodeId?: string | null;
+  executionSchemaVersion?: string;
+  guardianOutcome?: "PASS" | "REVIEW" | "BLOCK" | null;
+  reviewStatus?: string;
+  agentVersions?: string[];
 };
 
 export type ReviewCase = {

@@ -12,15 +12,32 @@
  * - Zero autonomous EHR write (ehrWrite always false)
  */
 
-import { REVIEW_ORDER, toOrchestrationAgentId } from "../agents/register";
+import { REVIEW_ORDER, toOrchestrationAgentId, type AgentId } from "../agents/register";
 import { runDrAssistAgent, type DrAssistDraft } from "../agents/llm-dr-assist";
 import { runGuardianAgent, type GuardianDraft } from "../agents/llm-guardian";
 import { runNexusAgent, type NexusDraft } from "../agents/llm-nexus";
 import { runOracleAgent, type OracleDraft } from "../agents/llm-oracle";
 import { runSynthesisAgent, type SynthesisDraft } from "../agents/llm-synthesis";
+import {
+  AgentRuntimeError,
+  assertNotDuplicateRun,
+  assertRuntimeScope,
+  buildAgentExecutionMetadata,
+  buildRunBundleMetadata,
+  classifyAgentError,
+  newCorrelationId,
+  type AgentExecutionMetadata,
+  type AgentRunBundleMetadata,
+} from "../agents/execution-metadata";
 import { getPatientById } from "../mock-data/patients";
 
 export type OrchestrationAgentId = "SYNTHESIS" | "GUARDIAN" | "ORACLE" | "NEXUS" | "DrASSIST";
+
+/** Map orchestration slot ids to register AgentId (HORIZON owns ORACLE slot). */
+function toRegisterAgentId(slot: OrchestrationAgentId): AgentId {
+  if (slot === "ORACLE") return "HORIZON";
+  return slot;
+}
 
 export type QueuePriority = "Urgent" | "High" | "Normal";
 
@@ -62,6 +79,9 @@ export type OrchestrationResult = {
   timedOut: boolean;
   elapsedMs: number;
   perAgentMs: Partial<Record<OrchestrationAgentId, number>>;
+  /** Milestone A1 — standardised execution metadata for the run + per-agent slots. */
+  execution: AgentRunBundleMetadata;
+  agentMetadata: Partial<Record<OrchestrationAgentId, AgentExecutionMetadata>>;
 };
 
 export type OrchestrationOptions = {
@@ -75,6 +95,14 @@ export type OrchestrationOptions = {
   agentTimeoutMs?: number;
   /** Overall budget (default 30s — four parallel agents + optional DrASSIST) */
   overallTimeoutMs?: number;
+  /** Milestone A1 — care-episode / correlation / tenant scope for runtime metadata. */
+  careEpisodeId?: string;
+  correlationId?: string;
+  scopeKey?: string;
+  /** When set with expectedScopeKey, CROSS_TENANT is raised on mismatch. */
+  expectedScopeKey?: string;
+  /** Process-local idempotency key (durable dedupe is Milestone A2). */
+  idempotencyKey?: string;
 };
 
 class AgentTimeoutError extends Error {
@@ -198,165 +226,262 @@ function collectEvidence(outputs: OrchestrationOutputs): AgentEvidence[] {
 /**
  * Run SYNTHESIS + GUARDIAN + ORACLE + NEXUS (+ optional DrASSIST) against one patient context.
  * Drafts are independent — never mutate peer slots. NEXUS is draft-only.
+ * Milestone A1 attaches standardised execution metadata; clinical retries remain fail-closed (maxRetries=0).
  */
 export async function runAgentOrchestration(
   options: OrchestrationOptions
 ): Promise<OrchestrationResult> {
-  const patientId = options.patientId.trim();
-  const patient = getPatientById(patientId);
-  if (!patient) {
-    throw new Error(`Unknown patient for orchestration: ${patientId}`);
-  }
+  const startedAt = new Date().toISOString();
+  const correlationId = options.correlationId?.trim() || newCorrelationId("orch");
+  const careEpisodeId = options.careEpisodeId?.trim() || null;
 
-  const agentTimeoutMs = options.agentTimeoutMs ?? 8_000;
-  const overallTimeoutMs = options.overallTimeoutMs ?? 30_000;
-  const includeDrAssist = options.includeDrAssist ?? true;
-  const includeNexus = options.includeNexus !== false;
-  const proposedDrug = options.proposedDrug?.trim() || null;
-  const transcript =
-    options.transcript?.trim() || buildDefaultTranscript(patient.name, patientId);
+  try {
+    assertRuntimeScope({
+      requestScopeKey: options.scopeKey,
+      expectedScopeKey: options.expectedScopeKey,
+      patientId: options.patientId,
+    });
+    assertNotDuplicateRun(options.idempotencyKey);
 
-  const sharedContext: SharedPatientContext = {
-    patientId,
-    patientLabel: patient.name,
-    proposedDrug,
-    transcript,
-    flags: [...(patient.flags ?? [])]
-  };
-
-  const overallStarted = Date.now();
-  const perAgentMs: Partial<Record<OrchestrationAgentId, number>> = {};
-
-  const runAll = async (): Promise<OrchestrationOutputs> => {
-    // Parallel generation — each result lands in its own slot (no shared mutable draft)
-    const [synthesisTimed, guardianTimed, oracleTimed, nexusTimed] = await Promise.all([
-      withTimeout(
-        "SYNTHESIS",
-        runSynthesisAgent({
-          transcript,
-          patientLabel: `${patient.name} (${patientId})`
-        }),
-        agentTimeoutMs
-      ),
-      withTimeout(
-        "GUARDIAN",
-        runGuardianAgent({
-          patientId,
-          proposedDrug: proposedDrug ?? undefined
-        }),
-        agentTimeoutMs
-      ),
-      withTimeout("ORACLE", runOracleAgent({ patientId }), agentTimeoutMs),
-      includeNexus
-        ? withTimeout("NEXUS", runNexusAgent({ patientId }), agentTimeoutMs)
-        : Promise.resolve(null as { value: NexusDraft; elapsedMs: number } | null)
-    ]);
-
-    perAgentMs.SYNTHESIS = synthesisTimed.elapsedMs;
-    perAgentMs.GUARDIAN = guardianTimed.elapsedMs;
-    perAgentMs.ORACLE = oracleTimed.elapsedMs;
-    if (nexusTimed) {
-      perAgentMs.NEXUS = nexusTimed.elapsedMs;
+    const patientId = options.patientId.trim();
+    if (!patientId) {
+      throw new AgentRuntimeError({
+        code: "MISSING_CONTEXT",
+        message: "Orchestration requires patientId",
+        retryable: false,
+        agentId: "CONDUCTOR",
+      });
     }
 
-    if (!oracleTimed.value) {
-      throw new Error(`ORACLE returned null for ${patientId}`);
-    }
-    if (includeNexus) {
-      if (!nexusTimed?.value) {
-        throw new Error(`NEXUS returned null for ${patientId}`);
-      }
-      if (nexusTimed.value.status !== "draft") {
-        throw new Error("NEXUS must return status: draft — refusing non-draft output");
-      }
+    const patient = getPatientById(patientId);
+    if (!patient) {
+      throw new AgentRuntimeError({
+        code: "UNKNOWN_PATIENT",
+        message: `Unknown patient for orchestration: ${patientId}`,
+        retryable: false,
+        agentId: "CONDUCTOR",
+      });
     }
 
-    const outputs: OrchestrationOutputs = {
-      SYNTHESIS: synthesisTimed.value,
-      GUARDIAN: guardianTimed.value,
-      ORACLE: oracleTimed.value
+    const agentTimeoutMs = options.agentTimeoutMs ?? 8_000;
+    const overallTimeoutMs = options.overallTimeoutMs ?? 30_000;
+    const includeDrAssist = options.includeDrAssist ?? true;
+    const includeNexus = options.includeNexus !== false;
+    const proposedDrug = options.proposedDrug?.trim() || null;
+    const transcript =
+      options.transcript?.trim() || buildDefaultTranscript(patient.name, patientId);
+
+    const sharedContext: SharedPatientContext = {
+      patientId,
+      patientLabel: patient.name,
+      proposedDrug,
+      transcript,
+      flags: [...(patient.flags ?? [])],
     };
 
-    if (includeNexus && nexusTimed?.value) {
-      outputs.NEXUS = nexusTimed.value;
-    }
+    const overallStarted = Date.now();
+    const perAgentMs: Partial<Record<OrchestrationAgentId, number>> = {};
 
-    if (includeDrAssist) {
-      const drAssistTimed = await withTimeout(
-        "DrASSIST",
-        runDrAssistAgent({ patientId }),
-        agentTimeoutMs
-      );
-      perAgentMs.DrASSIST = drAssistTimed.elapsedMs;
-      if (!drAssistTimed.value) {
-        throw new Error(`DrASSIST returned null for ${patientId}`);
+    const runAll = async (): Promise<OrchestrationOutputs> => {
+      // Parallel generation — each result lands in its own slot (no shared mutable draft)
+      const [synthesisTimed, guardianTimed, oracleTimed, nexusTimed] = await Promise.all([
+        withTimeout(
+          "SYNTHESIS",
+          runSynthesisAgent({
+            transcript,
+            patientLabel: `${patient.name} (${patientId})`,
+          }),
+          agentTimeoutMs
+        ),
+        withTimeout(
+          "GUARDIAN",
+          runGuardianAgent({
+            patientId,
+            proposedDrug: proposedDrug ?? undefined,
+          }),
+          agentTimeoutMs
+        ),
+        withTimeout("ORACLE", runOracleAgent({ patientId }), agentTimeoutMs),
+        includeNexus
+          ? withTimeout("NEXUS", runNexusAgent({ patientId }), agentTimeoutMs)
+          : Promise.resolve(null as { value: NexusDraft; elapsedMs: number } | null),
+      ]);
+
+      perAgentMs.SYNTHESIS = synthesisTimed.elapsedMs;
+      perAgentMs.GUARDIAN = guardianTimed.elapsedMs;
+      perAgentMs.ORACLE = oracleTimed.elapsedMs;
+      if (nexusTimed) {
+        perAgentMs.NEXUS = nexusTimed.elapsedMs;
       }
-      outputs.DrASSIST = drAssistTimed.value;
+
+      if (!oracleTimed.value) {
+        throw new Error(`ORACLE returned null for ${patientId}`);
+      }
+      if (includeNexus) {
+        if (!nexusTimed?.value) {
+          throw new Error(`NEXUS returned null for ${patientId}`);
+        }
+        if (nexusTimed.value.status !== "draft") {
+          throw new Error("NEXUS must return status: draft — refusing non-draft output");
+        }
+      }
+
+      const outputs: OrchestrationOutputs = {
+        SYNTHESIS: synthesisTimed.value,
+        GUARDIAN: guardianTimed.value,
+        ORACLE: oracleTimed.value,
+      };
+
+      if (includeNexus && nexusTimed?.value) {
+        outputs.NEXUS = nexusTimed.value;
+      }
+
+      if (includeDrAssist) {
+        const drAssistTimed = await withTimeout(
+          "DrASSIST",
+          runDrAssistAgent({ patientId }),
+          agentTimeoutMs
+        );
+        perAgentMs.DrASSIST = drAssistTimed.elapsedMs;
+        if (!drAssistTimed.value) {
+          throw new Error(`DrASSIST returned null for ${patientId}`);
+        }
+        outputs.DrASSIST = drAssistTimed.value;
+      }
+
+      return outputs;
+    };
+
+    let timedOut = false;
+    let outputs: OrchestrationOutputs;
+    try {
+      let overallTimer: ReturnType<typeof setTimeout> | undefined;
+      outputs = await Promise.race([
+        runAll(),
+        new Promise<never>((_, reject) => {
+          overallTimer = setTimeout(() => {
+            timedOut = true;
+            reject(new Error(`Orchestration overall timeout after ${overallTimeoutMs}ms`));
+          }, overallTimeoutMs);
+        }),
+      ]).finally(() => {
+        if (overallTimer) clearTimeout(overallTimer);
+      });
+    } catch (error) {
+      if (error instanceof AgentTimeoutError || timedOut) {
+        timedOut = true;
+      }
+      const classified = classifyAgentError(error, "CONDUCTOR");
+      throw error instanceof AgentRuntimeError
+        ? error
+        : new AgentRuntimeError({
+            ...classified,
+            code: timedOut && classified.code === "INTERNAL" ? "OVERALL_TIMEOUT" : classified.code,
+          });
     }
 
-    return outputs;
-  };
+    // Shared-context assertions (throw = fail the proof)
+    assertSharedContext(sharedContext, outputs);
 
-  let timedOut = false;
-  let outputs: OrchestrationOutputs;
-  try {
-    let overallTimer: ReturnType<typeof setTimeout> | undefined;
-    outputs = await Promise.race([
-      runAll(),
-      new Promise<never>((_, reject) => {
-        overallTimer = setTimeout(() => {
-          timedOut = true;
-          reject(new Error(`Orchestration overall timeout after ${overallTimeoutMs}ms`));
-        }, overallTimeoutMs);
-      })
-    ]).finally(() => {
-      if (overallTimer) clearTimeout(overallTimer);
+    const queuePriority = resolveQueuePriority(
+      outputs.GUARDIAN,
+      outputs.ORACLE,
+      sharedContext.flags
+    );
+    const reviewOrder = resolveReviewOrder(queuePriority, includeDrAssist, includeNexus);
+    const evidence = collectEvidence(outputs);
+    const outputSlots = Object.keys(outputs) as OrchestrationAgentId[];
+
+    // No-overwrite: each slot must remain a distinct object reference
+    assertNoOverwrite(outputs);
+
+    if (!evidence.every((e) => e.evidenced)) {
+      const weak = evidence.filter((e) => !e.evidenced).map((e) => e.agent);
+      throw new AgentRuntimeError({
+        code: "EVIDENCE_MISSING",
+        message: `Independent evidence missing for: ${weak.join(", ")}`,
+        retryable: false,
+        agentId: "CONDUCTOR",
+      });
+    }
+
+    if (queuePriority === "Urgent" && reviewOrder[0] !== "GUARDIAN") {
+      throw new Error("Urgent orchestration must prioritise GUARDIAN first");
+    }
+
+    const completedAt = new Date().toISOString();
+    const agentMetadata: Partial<Record<OrchestrationAgentId, AgentExecutionMetadata>> = {};
+    const agentMetaList: AgentExecutionMetadata[] = [];
+
+    for (const slot of outputSlots) {
+      const draft = outputs[slot];
+      const draftMode =
+        draft && "mode" in draft ? (draft.mode as "llm" | "deterministic") : "deterministic";
+      const slotEvidence = evidence.find((e) => e.agent === slot);
+      const meta = buildAgentExecutionMetadata({
+        agentId: toRegisterAgentId(slot),
+        draftMode,
+        status: "completed",
+        startedAt,
+        completedAt,
+        durationMs: perAgentMs[slot] ?? null,
+        careEpisodeId,
+        correlationId,
+        evidenceRefs: slotEvidence ? [`${slot}:${slotEvidence.detail}`] : [],
+        reviewStatus: "pending_hitl",
+        maxRetries: 0,
+      });
+      agentMetadata[slot] = meta;
+      agentMetaList.push(meta);
+    }
+
+    const conductorMeta = buildAgentExecutionMetadata({
+      agentId: "CONDUCTOR",
+      executionMode: "orchestrator",
+      status: "completed",
+      startedAt,
+      completedAt,
+      durationMs: Date.now() - overallStarted,
+      careEpisodeId,
+      correlationId,
+      evidenceRefs: evidence.map((e) => `${e.agent}:${e.evidenced ? "ok" : "weak"}`),
+      reviewStatus: "pending_hitl",
+      maxRetries: 0,
     });
+    agentMetaList.unshift(conductorMeta);
+
+    const execution = buildRunBundleMetadata({
+      correlationId,
+      careEpisodeId,
+      scopeKey: options.scopeKey ?? null,
+      startedAt,
+      completedAt,
+      status: "completed",
+      agents: agentMetaList,
+      reviewStatus: "pending_hitl",
+      evidenceRefs: evidence.map((e) => `${e.agent}:${e.detail}`),
+    });
+
+    return {
+      artifactType: "aksh-uk-agent-orchestration",
+      sharedContext,
+      outputs,
+      outputSlots,
+      queuePriority,
+      reviewOrder,
+      evidence,
+      ehrWrite: false,
+      hitlRequired: true,
+      timedOut: false,
+      elapsedMs: Date.now() - overallStarted,
+      perAgentMs,
+      execution,
+      agentMetadata,
+    };
   } catch (error) {
-    if (error instanceof AgentTimeoutError || timedOut) {
-      timedOut = true;
-    }
-    throw error;
+    if (error instanceof AgentRuntimeError) throw error;
+    throw new AgentRuntimeError(classifyAgentError(error, "CONDUCTOR"));
   }
-
-  // Shared-context assertions (throw = fail the proof)
-  assertSharedContext(sharedContext, outputs);
-
-  const queuePriority = resolveQueuePriority(
-    outputs.GUARDIAN,
-    outputs.ORACLE,
-    sharedContext.flags
-  );
-  const reviewOrder = resolveReviewOrder(queuePriority, includeDrAssist, includeNexus);
-  const evidence = collectEvidence(outputs);
-  const outputSlots = Object.keys(outputs) as OrchestrationAgentId[];
-
-  // No-overwrite: each slot must remain a distinct object reference
-  assertNoOverwrite(outputs);
-
-  if (!evidence.every((e) => e.evidenced)) {
-    const weak = evidence.filter((e) => !e.evidenced).map((e) => e.agent);
-    throw new Error(`Independent evidence missing for: ${weak.join(", ")}`);
-  }
-
-  if (queuePriority === "Urgent" && reviewOrder[0] !== "GUARDIAN") {
-    throw new Error("Urgent orchestration must prioritise GUARDIAN first");
-  }
-
-  return {
-    artifactType: "aksh-uk-agent-orchestration",
-    sharedContext,
-    outputs,
-    outputSlots,
-    queuePriority,
-    reviewOrder,
-    evidence,
-    ehrWrite: false,
-    hitlRequired: true,
-    timedOut: false,
-    elapsedMs: Date.now() - overallStarted,
-    perAgentMs
-  };
 }
 
 function assertSharedContext(ctx: SharedPatientContext, outputs: OrchestrationOutputs) {

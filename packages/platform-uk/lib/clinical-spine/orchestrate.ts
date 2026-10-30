@@ -57,6 +57,9 @@ export type ClinicalSpineOrchestrateResult = {
   draftEnqueueAllowed: boolean;
   /** Whether the run's SHIELD record was stored (false without a database or when the write failed). */
   runAuditRecorded: boolean;
+  /** Milestone A1 — care episode / correlation echoed for durable A2 persistence. */
+  careEpisodeId: string | null;
+  correlationId: string;
   ehrWrite: false;
   hitlRequired: true;
   physiologicalTwin: false;
@@ -116,7 +119,12 @@ export async function runClinicalSpineOrchestrate(
     includeDrAssist: input.includeDrAssist ?? false,
     includeNexus: input.includeNexus !== false,
     agentTimeoutMs: input.agentTimeoutMs,
-    overallTimeoutMs: input.overallTimeoutMs
+    overallTimeoutMs: input.overallTimeoutMs,
+    careEpisodeId: input.careEpisodeId,
+    correlationId: input.correlationId,
+    scopeKey: input.scopeKey,
+    expectedScopeKey: input.expectedScopeKey,
+    idempotencyKey: input.idempotencyKey,
   });
 
   // --- B3 Diabetes v1 (docs/PHASED_BUILD_PLAN.md) ---
@@ -212,6 +220,27 @@ export async function runClinicalSpineOrchestrate(
       })
     : undefined;
 
+  const draftEnqueueAllowed = mayEnqueueAgentDraft(guardianGateway?.output_status);
+  const guardianOutcome = guardianGateway?.output_status ?? null;
+  const reviewStatus = draftEnqueueAllowed ? ("pending_hitl" as const) : ("blocked_from_queue" as const);
+
+  // Enrich A1 execution metadata with Guardian gateway outcome (post fan-out).
+  const orchestrationWithGuardian: OrchestrationResult = {
+    ...orchestration,
+    execution: {
+      ...orchestration.execution,
+      guardianOutcome,
+      reviewStatus,
+      status: draftEnqueueAllowed ? orchestration.execution.status : "blocked",
+      agents: orchestration.execution.agents.map((a) => ({
+        ...a,
+        guardianOutcome,
+        reviewStatus,
+        status: draftEnqueueAllowed || a.agentId === "CONDUCTOR" ? a.status : a.status,
+      })),
+    },
+  };
+
   // FR-DIAB-016: every diabetes-module output reaching a clinician is
   // SHIELD-audited exactly like existing agent outputs — reuses this same
   // orchestrate audit event (no new audit table/event schema); the payload
@@ -220,19 +249,19 @@ export async function runClinicalSpineOrchestrate(
   const runAudit = await persistShieldAuditEvent({
     action: "defer",
     actor,
-    label: `SHIELD: clinical spine orchestrate (${orchestration.queuePriority} → ${safetyRoute})`,
-    detail: `reviewOrder=${orchestration.reviewOrder.join("→")}; twin=${twin ? "synthetic_rules" : "off"}; HITL required${
+    label: `SHIELD: clinical spine orchestrate (${orchestrationWithGuardian.queuePriority} → ${safetyRoute})`,
+    detail: `reviewOrder=${orchestrationWithGuardian.reviewOrder.join("→")}; twin=${twin ? "synthetic_rules" : "off"}; HITL required${
       diabetes
         ? `; diabetes module contributed ${diabetes.horizonContributingFactors.length} HORIZON factor(s), ${diabetes.guardianSafetyFlags.length} GUARDIAN flag(s)`
         : ""
-    }`,
+    }; correlationId=${orchestrationWithGuardian.execution.correlationId}`,
     category: "system",
     caseId: input.caseId,
     agentLabel: "CONDUCTOR",
-    resourceRef: `${orchestration.sharedContext.patientLabel} (${orchestration.sharedContext.patientId})`,
+    resourceRef: `${orchestrationWithGuardian.sharedContext.patientLabel} (${orchestrationWithGuardian.sharedContext.patientId})`,
     payload: {
-      queuePriority: orchestration.queuePriority,
-      reviewOrder: orchestration.reviewOrder,
+      queuePriority: orchestrationWithGuardian.queuePriority,
+      reviewOrder: orchestrationWithGuardian.reviewOrder,
       safetyRoute,
       ehrWrite: false,
       hitlRequired: true,
@@ -252,14 +281,18 @@ export async function runClinicalSpineOrchestrate(
       context_version: contextPackage?.schemaVersion ?? null,
       model_version: "aksh-nexus-synthetic-v1",
       tools_used: contractedNexus?.tools_used ?? [],
-      output_status: guardianGateway?.output_status ?? null
+      output_status: guardianOutcome,
+      careEpisodeId: orchestrationWithGuardian.execution.careEpisodeId,
+      correlationId: orchestrationWithGuardian.execution.correlationId,
+      executionSchemaVersion: orchestrationWithGuardian.execution.schemaVersion,
+      draftEnqueueAllowed,
     }
   });
 
   return {
     artifactType: "aksh-clinical-spine-orchestrate",
     runAuditRecorded: runAudit.persisted,
-    orchestration,
+    orchestration: orchestrationWithGuardian,
     safetyRoute,
     safetyRouteLabel: SAFETY_ROUTE_LABELS[safetyRoute].title,
     twin,
@@ -286,7 +319,9 @@ export async function runClinicalSpineOrchestrate(
     guardianGateway: guardianGateway
       ? { output_status: guardianGateway.output_status, reasons: guardianGateway.reasons }
       : undefined,
-    draftEnqueueAllowed: mayEnqueueAgentDraft(guardianGateway?.output_status),
+    draftEnqueueAllowed,
+    careEpisodeId: orchestrationWithGuardian.execution.careEpisodeId,
+    correlationId: orchestrationWithGuardian.execution.correlationId,
     ehrWrite: false,
     hitlRequired: true,
     physiologicalTwin: false,
