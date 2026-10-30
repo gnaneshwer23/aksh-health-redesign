@@ -11,8 +11,11 @@ import { CONNECTED_DEMO_PATIENT_ID } from "../lib/diabetes-intelligence/connecte
  */
 const PATIENT = CONNECTED_DEMO_PATIENT_ID;
 
+/** Long-lived API posts (seed / draft) — avoid Playwright disposing request mid-flight. */
+const SEED_TIMEOUT_MS = 120_000;
+
 test.describe("Connected diabetes journey (synthetic)", () => {
-  test.setTimeout(180_000);
+  test.setTimeout(360_000);
 
   test("API path: seed → HITL gates → timeline; safety + isolation", async ({
     request,
@@ -27,12 +30,13 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Malformed / missing bodies ---
     const badGlucose = await request.post(`/api/patients/${PATIENT}/diabetes-intelligence`, {
       data: { action: "not_a_real_action" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(badGlucose.status()).toBe(400);
 
     const badDecide = await request.post(
       `/api/patients/${PATIENT}/diabetes-intelligence/review/missing-review/decision`,
-      { data: { action: "accept" } }
+      { data: { action: "accept" }, timeout: SEED_TIMEOUT_MS }
     );
     expect([400, 404, 500]).toContain(badDecide.status());
     const badDecideBody = (await badDecide.json()) as { ehrWrite?: boolean };
@@ -41,6 +45,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 1 Patient 360 ---
     const p360 = await request.post(`/api/patients/${PATIENT}/patient-360`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(p360.ok()).toBeTruthy();
     const p360Body = (await p360.json()) as { ehrWrite?: boolean };
@@ -49,12 +54,14 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 2 Glucose ---
     const glucoseSeed = await request.post(`/api/patients/${PATIENT}/diabetes-intelligence`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(glucoseSeed.ok()).toBeTruthy();
     expect(((await glucoseSeed.json()) as { ehrWrite: boolean }).ehrWrite).toBe(false);
 
     const glucoseDraft = await request.post(`/api/patients/${PATIENT}/diabetes-intelligence`, {
       data: { action: "draft_review" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(glucoseDraft.ok()).toBeTruthy();
     const glucoseDraftBody = (await glucoseDraft.json()) as {
@@ -68,13 +75,14 @@ test.describe("Connected diabetes journey (synthetic)", () => {
 
     const glucoseAccept = await request.post(
       `/api/patients/${PATIENT}/diabetes-intelligence/review/${pendingReview!.id}/decision`,
-      { data: { action: "accept" } }
+      { data: { action: "accept" }, timeout: SEED_TIMEOUT_MS }
     );
     expect(glucoseAccept.ok()).toBeTruthy();
     expect(((await glucoseAccept.json()) as { ehrWrite: boolean }).ehrWrite).toBe(false);
 
     const glucoseDraft2 = await request.post(`/api/patients/${PATIENT}/diabetes-intelligence`, {
       data: { action: "draft_review" },
+      timeout: SEED_TIMEOUT_MS,
     });
     const g2 = (await glucoseDraft2.json()) as { reviews: { id: string; status: string }[] };
     const rejectTarget =
@@ -82,7 +90,10 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     if (rejectTarget?.id) {
       const rejected = await request.post(
         `/api/patients/${PATIENT}/diabetes-intelligence/review/${rejectTarget.id}/decision`,
-        { data: { action: "reject", reason: "E2E reject — contradictory / thin data" } }
+        {
+          data: { action: "reject", reason: "E2E reject — contradictory / thin data" },
+          timeout: SEED_TIMEOUT_MS,
+        }
       );
       expect(rejected.ok()).toBeTruthy();
       expect(((await rejected.json()) as { ehrWrite: boolean }).ehrWrite).toBe(false);
@@ -91,10 +102,12 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 0 journey care plan ---
     const journeySeed = await request.post(`/api/patients/${PATIENT}/diabetes-journey`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(journeySeed.ok()).toBeTruthy();
     const journeyDraft = await request.post(`/api/patients/${PATIENT}/diabetes-journey`, {
       data: { action: "draft_care_plan" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(journeyDraft.ok()).toBeTruthy();
     const journeyBody = (await journeyDraft.json()) as {
@@ -106,7 +119,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect(draftPlan?.id).toBeTruthy();
     const journeyDecide = await request.post(
       `/api/patients/${PATIENT}/diabetes-journey/care-plan/${draftPlan!.id}/decision`,
-      { data: { action: "accept" } }
+      { data: { action: "accept" }, timeout: SEED_TIMEOUT_MS }
     );
     expect(journeyDecide.ok()).toBeTruthy();
     const journeyDecideBody = (await journeyDecide.json()) as {
@@ -120,6 +133,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 3 medication ---
     const medSeed = await request.post(`/api/patients/${PATIENT}/medication-care`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     if (!medSeed.ok()) {
       throw new Error(`medication-care seed failed (${medSeed.status()}): ${await medSeed.text()}`);
@@ -134,8 +148,11 @@ test.describe("Connected diabetes journey (synthetic)", () => {
 
     await request.post(`/api/patients/${PATIENT}/medication-care`, {
       data: { action: "apply_care_plan_template", templateId: "t2d_foundational" },
+      timeout: SEED_TIMEOUT_MS,
     });
-    const medAfter = await request.get(`/api/patients/${PATIENT}/medication-care`);
+    const medAfter = await request.get(`/api/patients/${PATIENT}/medication-care`, {
+      timeout: SEED_TIMEOUT_MS,
+    });
     const medSnap = (await medAfter.json()) as {
       carePlans: { id: string; status: string; sections?: { id: string; items: string[] }[] }[];
       ehrWrite: boolean;
@@ -153,6 +170,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
                 : s
             ),
           },
+          timeout: SEED_TIMEOUT_MS,
         }
       );
       const medEditBody = (await medEdit.json()) as { ehrWrite?: boolean };
@@ -162,6 +180,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 4 continuous care ---
     const ccSeed = await request.post(`/api/patients/${PATIENT}/continuous-care`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     if (!ccSeed.ok()) {
       throw new Error(`continuous-care seed failed (${ccSeed.status()}): ${await ccSeed.text()}`);
@@ -175,7 +194,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     if (esc?.id) {
       const escDecide = await request.post(
         `/api/patients/${PATIENT}/continuous-care/escalation/${esc.id}/decision`,
-        { data: { action: "reject", reason: "E2E reject escalation" } }
+        { data: { action: "reject", reason: "E2E reject escalation" }, timeout: SEED_TIMEOUT_MS }
       );
       const escBody = (await escDecide.json()) as { ehrWrite?: boolean };
       expect(escBody.ehrWrite ?? false).toBe(false);
@@ -184,10 +203,12 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     // --- Phase 5 agent intelligence ---
     const agentSeed = await request.post(`/api/patients/${PATIENT}/agent-intelligence`, {
       data: { action: "seed_synthetic" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(agentSeed.ok()).toBeTruthy();
     const agentOrch = await request.post(`/api/patients/${PATIENT}/agent-intelligence`, {
       data: { action: "run_orchestration" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(agentOrch.ok()).toBeTruthy();
     const agentBody = (await agentOrch.json()) as {
@@ -201,7 +222,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect(agentDraft?.provenance).toBe("ai_generated");
     const agentAccept = await request.post(
       `/api/patients/${PATIENT}/agent-intelligence/draft/${agentDraft!.id}/decision`,
-      { data: { action: "accept" } }
+      { data: { action: "accept" }, timeout: SEED_TIMEOUT_MS }
     );
     expect(agentAccept.ok()).toBeTruthy();
     const agentAfter = (await agentAccept.json()) as {
@@ -213,7 +234,9 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect(verified?.provenance).toBe("clinician_verified");
 
     // --- INT-01: connected pipeline orchestration ---
-    const orchStatus = await request.get(`/api/patients/${PATIENT}/connected-diabetes`);
+    const orchStatus = await request.get(`/api/patients/${PATIENT}/connected-diabetes`, {
+      timeout: SEED_TIMEOUT_MS,
+    });
     expect(orchStatus.ok()).toBeTruthy();
     const orchBody = (await orchStatus.json()) as {
       ehrWrite?: boolean;
@@ -257,6 +280,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
 
     const orchRun = await request.post(`/api/patients/${PATIENT}/connected-diabetes`, {
       data: { action: "run_pipeline" },
+      timeout: SEED_TIMEOUT_MS,
     });
     expect(orchRun.ok()).toBeTruthy();
     const orchRunBody = (await orchRun.json()) as {

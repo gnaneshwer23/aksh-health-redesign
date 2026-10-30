@@ -10,7 +10,8 @@ import { appendGlucoseBatch } from "@/lib/diabetes-intelligence/glucose-reposito
 import type { GlucoseIngestBatch } from "@/lib/diabetes-intelligence/glucose-types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
-export const maxDuration = 30;
+// Synthetic CGM seed can write ~1.5k readings; allow headroom on cold Neon links.
+export const maxDuration = 120;
 
 type RouteContext = { params: Promise<{ id: string }> };
 
