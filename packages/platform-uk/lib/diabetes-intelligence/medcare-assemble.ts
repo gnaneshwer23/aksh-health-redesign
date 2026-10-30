@@ -6,13 +6,16 @@ import { randomUUID } from "crypto";
 
 import { getPatientById } from "../mock-data";
 import {
-  createMedRecon,
-  decideMedRecon,
+  decideCanonicalMedReconciliation,
+  findOpenMedRecon,
+  startCanonicalMedReconciliation,
+} from "../patient-intelligence/med-recon-canonical";
+import {
   listAllergies,
   listCareAssignments,
   listMedRecons,
 } from "../patient-intelligence/repository";
-import type { MedicationListItem, MedReconDiscrepancy } from "../patient-intelligence/types";
+import type { MedicationListItem } from "../patient-intelligence/types";
 import {
   createHandoff,
   createPersonalisedCarePlan,
@@ -235,37 +238,14 @@ export async function seedAndBuildMedicationPersonalisedCare(
     { scopeKey, actor }
   );
 
-  // Ensure a pending med recon exists when cohort has meds (extends Phase 1 workflow).
-  const existing = await listMedRecons(patientId, { scopeKey });
-  if (!existing.some((r) => r.status === "pending_clinician" || r.status === "in_progress")) {
-    const discrepancies: MedReconDiscrepancy[] = medications
-      .filter((m) => m.status === "proposed")
-      .map((m) => ({
-        code: "proposed_medication",
-        message: `${m.name} is proposed — clinician reconciliation required before any prescribe`,
-        medication: m.name,
-      }));
-    await createMedRecon(
-      {
-        patientId,
-        sourceList: medications,
-        reconciledList: medications.filter((m) => m.status !== "proposed"),
-        discrepancies:
-          discrepancies.length > 0
-            ? discrepancies
-            : medications.length === 0
-              ? [{ code: "empty_medication_list", message: "No medications to reconcile" }]
-              : [
-                  {
-                    code: "confirm_active_list",
-                    message: "Confirm active list with patient — Phase 3 extends recon workflow",
-                  },
-                ],
-        createdBy: actor,
-        note: "Phase 3 seed — scaffolding only; does not prescribe or write EHR",
-      },
-      { scopeKey }
-    );
+  // INT-04 — ensure one open med recon via canonical write path (shared physical store).
+  const open = await findOpenMedRecon(patientId, { scopeKey });
+  if (!open) {
+    await startCanonicalMedReconciliation(patientId, {
+      scopeKey,
+      createdBy: actor,
+      entrySurface: "medcare",
+    });
   }
 
   return buildMedicationPersonalisedCare(patientId, { scopeKey });
@@ -276,31 +256,12 @@ export async function startMedCareReconciliation(
   options: { scopeKey?: string; createdBy: string }
 ): Promise<MedicationPersonalisedCareSnapshot> {
   const scopeKey = options.scopeKey ?? "shared";
-  const medications = medicationItemsFromCohort(patientId);
-  const discrepancies: MedReconDiscrepancy[] = medications
-    .filter((m) => m.status === "proposed")
-    .map((m) => ({
-      code: "proposed_medication",
-      message: `${m.name} is proposed — clinician reconciliation required before any prescribe`,
-      medication: m.name,
-    }));
-  if (medications.length === 0) {
-    discrepancies.push({
-      code: "empty_medication_list",
-      message: "No medications on cohort record to reconcile",
-    });
-  }
-  await createMedRecon(
-    {
-      patientId,
-      sourceList: medications,
-      reconciledList: medications.filter((m) => m.status !== "proposed"),
-      discrepancies,
-      createdBy: options.createdBy,
-      note: "Phase 3 recon — does not prescribe or write to EHR",
-    },
-    { scopeKey }
-  );
+  // INT-04 — canonical write path (dedupe open runs across patient-360 / medcare).
+  await startCanonicalMedReconciliation(patientId, {
+    scopeKey,
+    createdBy: options.createdBy,
+    entrySurface: "medcare",
+  });
   return buildMedicationPersonalisedCare(patientId, { scopeKey });
 }
 
@@ -315,7 +276,7 @@ export async function decideMedCareReconciliation(
   options?: { scopeKey?: string }
 ): Promise<MedicationPersonalisedCareSnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
-  await decideMedRecon(
+  await decideCanonicalMedReconciliation(
     {
       runId: input.runId,
       action: input.action,

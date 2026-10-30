@@ -46,7 +46,7 @@
 - [ ] Org go-live (GOV-03) — **fail**  
 - [x] INT-01…03 mitigated (orchestration + glucose/care-plan facades; stores not physically collapsed)  
 - [x] INT-09 patient URL access + INT-10 clinical persona on module HITL **fixed**; INT-08 org stamp + RLS proof path **mitigated**; follow-up dual store **mitigated** (facade + bridge)  
-- [ ] INT-04 dual med-recon entry + physical store collapse — **fail** (facades only; Neon prod untouched)  
+- [x] INT-04 dual med-recon entry — **mitigated** (canonical write + facade; single physical store; care-plan/follow-up table collapse still deferred; Neon prod untouched)  
 
 - [ ] Real-patient eval — **fail / not started**  
 

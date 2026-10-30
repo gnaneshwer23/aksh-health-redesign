@@ -124,6 +124,9 @@ export type MedReconDiscrepancy = {
   medication?: string;
 };
 
+/** INT-04 — which dual entry surface started the run (single physical store). */
+export type MedReconEntrySurface = "patient360" | "medcare" | "shared";
+
 export type MedicationReconciliationRun = {
   id: string;
   patientId: string;
@@ -136,11 +139,25 @@ export type MedicationReconciliationRun = {
   decidedBy: string | null;
   decidedAt: string | null;
   note: string | null;
+  /** Which UI/API surface started the run; null/legacy rows inferred from note. */
+  entrySurface: MedReconEntrySurface | null;
   hitlRequired: true;
   ehrWrite: false;
   autonomousPrescribe: false;
   synthetic: true;
 };
+
+/** Infer entry surface for pre-INT-04 rows that lack `entry_surface`. */
+export function inferMedReconEntrySurface(note: string | null | undefined): MedReconEntrySurface {
+  const n = (note ?? "").toLowerCase();
+  if (n.includes("medication-care") || n.includes("phase 3") || n.includes("medcare")) {
+    return "medcare";
+  }
+  if (n.includes("patient-360") || n.includes("patient 360") || n.includes("scaffolding only")) {
+    return "patient360";
+  }
+  return "shared";
+}
 
 export type CareAssignment = {
   id: string;

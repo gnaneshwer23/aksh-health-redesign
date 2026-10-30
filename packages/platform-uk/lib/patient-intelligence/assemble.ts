@@ -2,8 +2,10 @@ import { getPatientById } from "../mock-data";
 import { listJourneyEvents } from "../diabetes-intelligence/repository";
 import { assessPatient360Quality } from "./quality";
 import {
-  createMedRecon,
-  decideMedRecon,
+  decideCanonicalMedReconciliation,
+  startCanonicalMedReconciliation,
+} from "./med-recon-canonical";
+import {
   getDiabetesProfile,
   listAllergies,
   listCareAssignments,
@@ -17,7 +19,6 @@ import {
 import { seedPatient360FromCohort } from "./seed";
 import type {
   MedicationListItem,
-  MedReconDiscrepancy,
   Patient360Profile,
   PatientTimelineEvent,
 } from "./types";
@@ -287,34 +288,12 @@ export async function startMedicationReconciliation(
   options: { scopeKey?: string; createdBy: string }
 ): Promise<Patient360Profile> {
   const scopeKey = options.scopeKey ?? "shared";
-  const sourceList = medicationItemsFromCohort(patientId);
-  const discrepancies: MedReconDiscrepancy[] = sourceList
-    .filter((m) => m.status === "proposed")
-    .map((m) => ({
-      code: "proposed_medication",
-      message: `${m.name} is proposed — clinician reconciliation required before any prescribe`,
-      medication: m.name,
-    }));
-
-  if (sourceList.length === 0) {
-    discrepancies.push({
-      code: "empty_medication_list",
-      message: "No medications on cohort record to reconcile",
-    });
-  }
-
-  await createMedRecon(
-    {
-      patientId,
-      sourceList,
-      reconciledList: sourceList.filter((m) => m.status !== "proposed"),
-      discrepancies,
-      createdBy: options.createdBy,
-      note: "Scaffolding only — does not prescribe or write to EHR",
-    },
-    { scopeKey }
-  );
-
+  // INT-04 — canonical write path (dedupe open runs across patient-360 / medcare).
+  await startCanonicalMedReconciliation(patientId, {
+    scopeKey,
+    createdBy: options.createdBy,
+    entrySurface: "patient360",
+  });
   return buildPatient360(patientId, { scopeKey });
 }
 
@@ -329,7 +308,7 @@ export async function decideMedicationReconciliation(
   options?: { scopeKey?: string }
 ): Promise<Patient360Profile> {
   const scopeKey = options?.scopeKey ?? "shared";
-  await decideMedRecon(
+  await decideCanonicalMedReconciliation(
     {
       runId: input.runId,
       action: input.action,

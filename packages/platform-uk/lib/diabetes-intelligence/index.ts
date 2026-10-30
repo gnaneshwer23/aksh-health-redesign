@@ -38,6 +38,14 @@ export {
   FOLLOW_UP_CONTINUOUS_STORE,
 } from "./follow-up-bridge";
 export {
+  listUnifiedMedRecons,
+  selectOpenMedRecons,
+  selectPatient360MedRecons,
+  selectMedCareMedRecons,
+  toUnifiedMedRecon,
+} from "./med-recon-facade";
+export type { UnifiedMedRecon, UnifiedMedReconSourceStore } from "./med-recon-facade";
+export {
   CONNECTED_DIABETES_SIMULATION_ORG_ID,
   resolveConnectedDiabetesOrganisationId,
   rowVisibleToOrganisation,
