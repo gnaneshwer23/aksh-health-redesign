@@ -12,7 +12,7 @@
  * - Zero autonomous EHR write (ehrWrite always false)
  */
 
-import { REVIEW_ORDER } from "../agents/register";
+import { REVIEW_ORDER, toOrchestrationAgentId } from "../agents/register";
 import { runDrAssistAgent, type DrAssistDraft } from "../agents/llm-dr-assist";
 import { runGuardianAgent, type GuardianDraft } from "../agents/llm-guardian";
 import { runNexusAgent, type NexusDraft } from "../agents/llm-nexus";
@@ -131,8 +131,11 @@ export function resolveReviewOrder(
   includeNexus: boolean
 ): OrchestrationAgentId[] {
   // The order is defined once, in the agent register (Volume I §7.3 step 4): GUARDIAN leads when urgent.
+  // P1-ALIAS-01: REVIEW_ORDER uses canonical HORIZON; map to ORACLE output-slot id for callers.
   const order = priority === "Urgent" ? REVIEW_ORDER.urgent : REVIEW_ORDER.normal;
-  return order.filter((id) => (id !== "NEXUS" || includeNexus) && (id !== "DrASSIST" || includeDrAssist)) as OrchestrationAgentId[];
+  return order
+    .map((id) => toOrchestrationAgentId(id))
+    .filter((id) => (id !== "NEXUS" || includeNexus) && (id !== "DrASSIST" || includeDrAssist)) as OrchestrationAgentId[];
 }
 
 function collectEvidence(outputs: OrchestrationOutputs): AgentEvidence[] {

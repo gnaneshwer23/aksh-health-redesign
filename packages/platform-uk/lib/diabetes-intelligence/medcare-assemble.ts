@@ -361,11 +361,30 @@ export async function decideMedicationSafetyReview(
     editedSections?: MedCareReviewSection[];
   },
   options?: { scopeKey?: string }
-): Promise<MedicationPersonalisedCareSnapshot> {
+): Promise<
+  MedicationPersonalisedCareSnapshot & {
+    shieldAuditWriteFailed?: boolean;
+    shieldAuditWriteReason?: string | null;
+  }
+> {
   await decideSafetyReview(input, options);
-  return buildMedicationPersonalisedCare(input.patientId, {
+  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
+  const shield = await persistDiabetesDomainShieldDecision({
+    source: "medcare_safety",
+    action: input.action,
+    actor: input.actor,
+    patientId: input.patientId,
+    subjectId: input.reviewId,
+    reason: input.reason,
+  });
+  const snap = await buildMedicationPersonalisedCare(input.patientId, {
     scopeKey: options?.scopeKey,
   });
+  return {
+    ...snap,
+    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
+    shieldAuditWriteReason: shield.shieldAuditWriteReason,
+  };
 }
 
 export async function applyCarePlanTemplate(
@@ -456,16 +475,35 @@ export async function decideMedCarePlan(
     editedSections?: PersonalisedCarePlanSection[];
   },
   options?: { scopeKey?: string }
-): Promise<MedicationPersonalisedCareSnapshot> {
+): Promise<
+  MedicationPersonalisedCareSnapshot & {
+    shieldAuditWriteFailed?: boolean;
+    shieldAuditWriteReason?: string | null;
+  }
+> {
   const decided = await decidePersonalisedCarePlan(input, options);
   // INT-03 collapse — sync Accept/Edit/Reject into care_plan_records SoT
   const { syncMedCareDecisionToCanonical } = await import("./care-plan-bridge");
   await syncMedCareDecisionToCanonical(decided, input, {
     scopeKey: options?.scopeKey,
   });
-  return buildMedicationPersonalisedCare(input.patientId, {
+  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
+  const shield = await persistDiabetesDomainShieldDecision({
+    source: "medcare_plan",
+    action: input.action,
+    actor: input.actor,
+    patientId: input.patientId,
+    subjectId: input.planId,
+    reason: input.reason,
+  });
+  const snap = await buildMedicationPersonalisedCare(input.patientId, {
     scopeKey: options?.scopeKey,
   });
+  return {
+    ...snap,
+    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
+    shieldAuditWriteReason: shield.shieldAuditWriteReason,
+  };
 }
 
 export async function setPatientGoalStatus(

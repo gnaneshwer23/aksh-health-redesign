@@ -1,5 +1,5 @@
 /**
- * Golden-case fixtures for SYNTHESIS / GUARDIAN / ORACLE eval.
+ * Golden-case fixtures for SYNTHESIS / GUARDIAN / ORACLE (HORIZON) eval.
  * HITL-safe: scoring never writes to the EHR.
  */
 
@@ -17,6 +17,11 @@ export type GoldenCase = {
   };
   /** Substrings that must appear somewhere in the draft narrative fields. */
   mustMention: string[];
+  /**
+   * P1-EVAL-01 — groups of aliases; at least one string from each group must appear.
+   * Example: [["HORIZON", "ORACLE"]] accepts either product or legacy name.
+   */
+  mustMentionAnyOf?: string[][];
   /** Substrings that must appear in safetyNotes (joined). */
   safetyMustMention: string[];
   /** Minimum confidence when running deterministic-only (optional). */
@@ -52,11 +57,12 @@ export const GOLDEN_CASES: GoldenCase[] = [
   {
     id: "oracle-patel-risk",
     agent: "ORACLE",
-    label: "ORACLE risk brief for high-risk Patel case",
+    label: "HORIZON (legacy ORACLE) risk brief for high-risk Patel case",
     input: {
       patientId: "P002"
     },
-    mustMention: ["ORACLE", "risk"],
+    mustMention: ["risk"],
+    mustMentionAnyOf: [["HORIZON", "ORACLE"]],
     safetyMustMention: ["HITL"],
     minConfidence: 0.3
   }

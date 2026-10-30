@@ -397,11 +397,38 @@ export const AGENTS: AgentContract[] = [
   },
 ];
 
-/** CONDUCTOR's review order (Volume I §7.3 step 4), in code ids. GUARDIAN leads when the case is urgent. */
+/**
+ * CONDUCTOR's review order (Volume I §7.3 step 4), in **canonical** register ids.
+ * P1-ALIAS-01: HORIZON replaces legacy ORACLE in this list; orchestration maps to
+ * ClinicalAgentId / output slots via `toOrchestrationAgentId` (legacy accept).
+ * GUARDIAN leads when the case is urgent.
+ */
 export const REVIEW_ORDER = {
-  normal: ["SYNTHESIS", "GUARDIAN", "ORACLE", "NEXUS", "DrASSIST"],
-  urgent: ["GUARDIAN", "ORACLE", "SYNTHESIS", "NEXUS", "DrASSIST"],
+  normal: ["SYNTHESIS", "GUARDIAN", "HORIZON", "NEXUS", "DrASSIST"],
+  urgent: ["GUARDIAN", "HORIZON", "SYNTHESIS", "NEXUS", "DrASSIST"],
 } as const;
+
+/** Map product / legacy id → register canonical id (HORIZON, PATHWAY, COMPASS, DrASSIST). */
+export function canonicalAgentId(id: string): string {
+  const upper = id.trim();
+  for (const a of AGENTS) {
+    if (a.id === upper || a.legacyIds.includes(upper)) return a.id;
+  }
+  return upper;
+}
+
+/**
+ * Map register / product id → orchestration / ClinicalAgentId key still used in
+ * output slots and queue items (ORACLE, REFERRAL, EQUITY, DR_ASSIST→DrASSIST).
+ */
+export function toOrchestrationAgentId(id: string): string {
+  const canonical = canonicalAgentId(id);
+  if (canonical === "HORIZON") return "ORACLE";
+  if (canonical === "PATHWAY") return "REFERRAL";
+  if (canonical === "COMPASS") return "EQUITY";
+  if (canonical === "DrASSIST" || id === "DR_ASSIST") return "DrASSIST";
+  return canonical;
+}
 
 /** The loop, in order (FLOW-JRN-1). Each step names who acts; the clinician sits in the middle. */
 export const LOOP: { step: string; actor: AgentId | "CLINICIAN" | "AKSH_DIABETES"; detail: string }[] = [

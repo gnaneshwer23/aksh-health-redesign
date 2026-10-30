@@ -15,7 +15,9 @@ export type ReviewQueueItemType =
   | "diagnosis_codes"
   | "guardian_alert"
   | "oracle_update"
-  | "referral_package";
+  | "referral_package"
+  /** P1-LAB-01 — HITL lab investigation package (never auto-sent). */
+  | "lab_order";
 
 export type ServiceRequestResource = {
   resourceType: "ServiceRequest";
@@ -520,6 +522,8 @@ export type ReviewCase = {
   reviewQueueItems?: ReviewQueueItem[];
   oracleRiskScore?: OracleRiskScore;
   serviceRequestDraft?: ServiceRequestResource;
+  /** P1-LAB-01 — draft ServiceRequest stubs from accepted lab_order (ehrWrite:false). */
+  labServiceRequestDrafts?: ServiceRequestResource[];
   input: ConsultationInput;
   dataCollectionProfile?: DataCollectionProfile;
   safetyContext: SafetyContext;

@@ -91,6 +91,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/admin/precision-health", label: "System spine", icon: Heart },
     { href: "/dashboard/admin/consent", label: "Consent registry", icon: Shield },
     { href: "/dashboard/admin/audit", label: "Audit Log", icon: ClipboardList },
+    { href: "/dashboard/admin/agent-ops", label: "Agent Ops", icon: Activity },
     { href: "/dashboard/admin/learning", label: "Learning events", icon: BookOpen },
     { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", icon: FileText },
     { href: "/dashboard/admin/billing", label: "Billing", icon: Building2 },
