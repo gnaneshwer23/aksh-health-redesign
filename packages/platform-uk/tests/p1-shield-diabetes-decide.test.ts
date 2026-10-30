@@ -1,14 +1,18 @@
 /**
- * P1-SHIELD-01 — diabetes domain decide helpers dual-write SHIELD (fail-visible).
+ * P0-SHIELD-INTEGRITY — diabetes domain decide is fail-closed when durable SHIELD
+ * is required (Postgres); local/file mode remains honest fail-visible.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 async function main() {
-  const { persistDiabetesDomainShieldDecision } = await import(
-    "../lib/diabetes-intelligence/shield-decision-audit"
-  );
+  const {
+    persistDiabetesDomainShieldDecision,
+    withRequiredDiabetesDomainShield,
+    assertDurableShieldOrThrow,
+    ShieldAuditIntegrityError,
+  } = await import("../lib/diabetes-intelligence/shield-decision-audit");
   const root = path.join(__dirname, "..");
 
   // Without Postgres, persistShieldAuditEvent returns persisted:false — must surface fail-visible flags.
@@ -42,7 +46,71 @@ async function main() {
     assert.equal(r.shieldAuditWriteFailed, true, `${source} fail-visible`);
   }
 
-  // Assemble decide paths must call the shared helper (wiring proof).
+  // Local (no Postgres): withRequired still finalises but surfaces failed audit honestly.
+  let finalizedLocal = false;
+  const local = await withRequiredDiabetesDomainShield(
+    {
+      source: "medcare_safety",
+      action: "accept",
+      actor: "gp@test",
+      patientId: "P002",
+      subjectId: "review-local",
+    },
+    async () => {
+      finalizedLocal = true;
+      return { status: "APPROVED" as const };
+    }
+  );
+  assert.equal(finalizedLocal, true, "local mode may finalise with non-durable audit");
+  assert.equal(local.shieldAuditWriteFailed, true);
+  assert.equal(local.status, "APPROVED");
+
+  // Fail-closed gate: when Postgres is configured, unaudited finalisation is blocked.
+  const prevDb = process.env.DATABASE_URL;
+  const prevUse = process.env.USE_POSTGRES;
+  process.env.DATABASE_URL = "postgresql://shield-integrity-test.invalid/db";
+  delete process.env.USE_POSTGRES;
+
+  assert.ok(
+    process.env.DATABASE_URL?.trim() || process.env.USE_POSTGRES === "true",
+    "test env must look Postgres-configured"
+  );
+
+  const failedShield = {
+    shieldAuditPersisted: false,
+    shieldAuditWriteFailed: true,
+    shieldAuditWriteReason: "simulated_shield_write_failure",
+  };
+
+  assert.throws(
+    () => assertDurableShieldOrThrow(failedShield),
+    (err: unknown) => {
+      assert.ok(err instanceof ShieldAuditIntegrityError);
+      assert.equal(err.status, 503);
+      assert.equal(err.code, "SHIELD_AUDIT_REQUIRED");
+      assert.match(err.message, /not finalised/i);
+      return true;
+    }
+  );
+
+  // Successful durable audit must allow finalisation under Postgres.
+  assert.doesNotThrow(() =>
+    assertDurableShieldOrThrow({
+      shieldAuditPersisted: true,
+      shieldAuditWriteFailed: false,
+      shieldAuditWriteReason: null,
+    })
+  );
+
+  if (prevDb === undefined) delete process.env.DATABASE_URL;
+  else process.env.DATABASE_URL = prevDb;
+  if (prevUse === undefined) delete process.env.USE_POSTGRES;
+  else process.env.USE_POSTGRES = prevUse;
+
+  // After clearing Postgres env, failed shield must not throw (local honesty path).
+  assert.doesNotThrow(() => assertDurableShieldOrThrow(failedShield));
+
+  // Assemble decide paths must use fail-closed wrapper (wiring proof).
   const wired = [
     "lib/diabetes-intelligence/agent-intel-assemble.ts",
     "lib/diabetes-intelligence/medcare-assemble.ts",
@@ -52,10 +120,12 @@ async function main() {
   ];
   for (const rel of wired) {
     const src = readFileSync(path.join(root, rel), "utf8");
-    assert.match(src, /persistDiabetesDomainShieldDecision/, `${rel} wires SHIELD dual-write`);
+    assert.match(src, /withRequiredDiabetesDomainShield/, `${rel} wires fail-closed SHIELD`);
   }
 
-  console.log("p1-shield-diabetes-decide: fail-visible SHIELD on diabetes decide paths — PASS");
+  console.log(
+    "p1-shield-diabetes-decide: fail-closed SHIELD (Postgres) + honest local non-durable — PASS"
+  );
 }
 
 main().catch((err) => {

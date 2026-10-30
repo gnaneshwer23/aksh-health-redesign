@@ -74,6 +74,22 @@ export async function POST(request: Request, context: RouteContext) {
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;
     const message = err instanceof Error ? err.message : "Request failed";
-    return NextResponse.json({ error: message, ehrWrite: false }, { status });
+    const code = (err as { code?: string }).code;
+    const shieldAuditWriteReason = (err as { shieldAuditWriteReason?: string }).shieldAuditWriteReason;
+    return NextResponse.json(
+      {
+        error: message,
+        ehrWrite: false,
+        ...(code ? { code } : {}),
+        ...(status === 503
+          ? {
+              shieldAuditWriteFailed: true,
+              shieldAuditWriteReason: shieldAuditWriteReason ?? message,
+              decisionFinalised: false,
+            }
+          : {}),
+      },
+      { status }
+    );
   }
 }

@@ -2,6 +2,8 @@
 
 Review-only documentation from branch `docs/agent-functionality-audit`. **Do not treat as an implementation PR.**
 
+> **Status note (post #88–#91):** Findings written against pre-#88 `main` are **historical**. For current engineering status prefer code + merged PRs: unified review worklist (#88), SHIELD diabetes dual-write then fail-closed integrity, care-episode intake/booking handoff (#90), and CI 2.0 / P4 scaffolds (#85/#91). Do not expand PRISM/ATLAS or Agent Ops metric inventory from these docs alone.
+
 | Document | Purpose |
 | --- | --- |
 | [AGENT_FUNCTIONALITY_AUDIT.md](./AGENT_FUNCTIONALITY_AUDIT.md) | Inventory, A–F audit, maturity L0–L5, tests run |

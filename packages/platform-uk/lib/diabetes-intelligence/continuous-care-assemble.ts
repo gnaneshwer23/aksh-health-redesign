@@ -336,22 +336,21 @@ export async function decideStaffEscalation(
     shieldAuditWriteReason?: string | null;
   }
 > {
-  await decideEscalation(input, options);
-  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
-  const shield = await persistDiabetesDomainShieldDecision({
-    source: "continuous_care",
-    action: input.action,
-    actor: input.actor,
-    patientId: input.patientId,
-    subjectId: input.escalationId,
-    reason: input.reason,
-  });
-  const snap = await buildContinuousCare(input.patientId, options);
-  return {
-    ...snap,
-    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
-    shieldAuditWriteReason: shield.shieldAuditWriteReason,
-  };
+  const { withRequiredDiabetesDomainShield } = await import("./shield-decision-audit");
+  return withRequiredDiabetesDomainShield(
+    {
+      source: "continuous_care",
+      action: input.action,
+      actor: input.actor,
+      patientId: input.patientId,
+      subjectId: input.escalationId,
+      reason: input.reason,
+    },
+    async () => {
+      await decideEscalation(input, options);
+      return buildContinuousCare(input.patientId, options);
+    }
+  );
 }
 
 function worklistUrgencyFromItem(kind: ContinuousCareWorklistItem["kind"], priority: FollowUpPriority, dueAt: string | null, now: number): number {

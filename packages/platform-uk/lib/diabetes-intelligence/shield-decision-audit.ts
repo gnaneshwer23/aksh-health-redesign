@@ -1,12 +1,26 @@
 /**
- * P1-SHIELD-01 — fail-visible SHIELD dual-write for diabetes domain Accept/Edit/Reject.
- * Mirrors spine `persistShieldAuditEvent` discipline: never undoes the clinical decide;
- * surfaces `{ shieldAuditWriteFailed, shieldAuditWriteReason }` to callers.
+ * P0-SHIELD-INTEGRITY — consequential diabetes-domain Accept/Edit/Reject must not
+ * finalise without a durable SHIELD audit when Postgres is configured.
+ *
+ * Contract:
+ * - Postgres configured → fail-closed: SHIELD must persist *before* domain finalisation.
+ *   If audit cannot persist, finalisation is blocked (503 / SHIELD_AUDIT_REQUIRED).
+ * - Postgres unavailable (local file store) → same honesty as review-case `auditDurable:false`:
+ *   decide may proceed; callers still receive `shieldAuditWriteFailed`.
+ *
+ * Order is audit-then-finalise so a crashed decide cannot leave APPROVED/REJECTED
+ * without a corresponding audit intent. Orphan audits (audit ok, decide later fails)
+ * are acceptable; silent unaudited finalisation is not.
  */
 import {
   persistShieldAuditEvent,
   type DurableShieldAuditInput,
 } from "@/lib/repositories/shield-audit-repository";
+
+/** Mirrors `isPostgresConfigured` without importing the Pool client (keeps this gate lightweight). */
+function durableAuditRequired(): boolean {
+  return Boolean(process.env.DATABASE_URL?.trim() || process.env.USE_POSTGRES === "true");
+}
 
 export type DiabetesDomainShieldSource =
   | "agent_intel"
@@ -22,7 +36,7 @@ export type DiabetesDomainShieldResult = {
   shieldAuditPersisted: boolean;
 };
 
-export async function persistDiabetesDomainShieldDecision(input: {
+export type DiabetesDomainShieldInput = {
   source: DiabetesDomainShieldSource;
   action: "accept" | "edit" | "reject" | string;
   actor: string;
@@ -31,7 +45,25 @@ export async function persistDiabetesDomainShieldDecision(input: {
   reason?: string | null;
   careEpisodeId?: string | null;
   practiceId?: string | null;
-}): Promise<DiabetesDomainShieldResult> {
+};
+
+export class ShieldAuditIntegrityError extends Error {
+  readonly code = "SHIELD_AUDIT_REQUIRED";
+  readonly status = 503;
+  readonly shieldAuditWriteReason: string;
+
+  constructor(reason: string) {
+    super(
+      `Decision not finalised: SHIELD audit could not be persisted (${reason}). Retry when audit storage is available.`
+    );
+    this.name = "ShieldAuditIntegrityError";
+    this.shieldAuditWriteReason = reason;
+  }
+}
+
+export async function persistDiabetesDomainShieldDecision(
+  input: DiabetesDomainShieldInput
+): Promise<DiabetesDomainShieldResult> {
   const payload: DurableShieldAuditInput["payload"] = {
     source: input.source,
     patientId: input.patientId,
@@ -67,5 +99,41 @@ export async function persistDiabetesDomainShieldDecision(input: {
     shieldAuditWriteFailed: true,
     shieldAuditWriteReason: result.reason ?? "shield_audit_write_failed",
     shieldAuditPersisted: false,
+  };
+}
+
+/**
+ * Gate used by withRequiredDiabetesDomainShield. Exported for unit proofs so
+ * fail-closed behaviour can be asserted without opening a DB connection.
+ */
+export function assertDurableShieldOrThrow(shield: DiabetesDomainShieldResult): void {
+  if (!shield.shieldAuditPersisted && durableAuditRequired()) {
+    throw new ShieldAuditIntegrityError(
+      shield.shieldAuditWriteReason ?? "shield_audit_write_failed"
+    );
+  }
+}
+
+/**
+ * Persist SHIELD first; block domain finalisation when durable audit is required
+ * (Postgres) and the write failed. Then run `finalize`.
+ */
+export async function withRequiredDiabetesDomainShield<T extends object>(
+  input: DiabetesDomainShieldInput,
+  finalize: () => Promise<T>
+): Promise<
+  T & {
+    shieldAuditWriteFailed: boolean;
+    shieldAuditWriteReason: string | null;
+  }
+> {
+  const shield = await persistDiabetesDomainShieldDecision(input);
+  assertDurableShieldOrThrow(shield);
+
+  const result = await finalize();
+  return {
+    ...result,
+    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
+    shieldAuditWriteReason: shield.shieldAuditWriteReason,
   };
 }
