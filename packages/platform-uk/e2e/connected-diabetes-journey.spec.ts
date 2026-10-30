@@ -220,12 +220,60 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     const agentDraft = agentBody.drafts.find((d) => d.status === "DRAFT");
     expect(agentDraft?.id).toBeTruthy();
     expect(agentDraft?.provenance).toBe("ai_generated");
-    const agentAccept = await request.post(
+    // Domain decide is blocked — Accept/Edit/Reject only on primary review worklist.
+    const domainBlocked = await request.post(
       `/api/patients/${PATIENT}/agent-intelligence/draft/${agentDraft!.id}/decision`,
       { data: { action: "accept" }, timeout: SEED_TIMEOUT_MS }
     );
+    expect(domainBlocked.status()).toBe(409);
+    const blockedBody = (await domainBlocked.json()) as {
+      code?: string;
+      decisionHref?: string;
+      caseId?: string;
+      itemId?: string;
+      ehrWrite?: boolean;
+    };
+    expect(blockedBody.ehrWrite).toBe(false);
+    expect(["USE_PRIMARY_REVIEW", "PREP_ONLY_ENQUEUE_REQUIRED"]).toContain(blockedBody.code);
+
+    const worklist = await request.get("/api/gp/unified-review-worklist", {
+      timeout: SEED_TIMEOUT_MS,
+    });
+    expect(worklist.ok()).toBeTruthy();
+    const worklistBody = (await worklist.json()) as {
+      primaryWorklist: {
+        caseId: string;
+        itemId: string;
+        diabetesDraftId: string | null;
+      }[];
+    };
+    const primary =
+      worklistBody.primaryWorklist.find((i) => i.diabetesDraftId === agentDraft!.id) ??
+      (blockedBody.caseId && blockedBody.itemId
+        ? { caseId: blockedBody.caseId, itemId: blockedBody.itemId, diabetesDraftId: agentDraft!.id }
+        : null);
+    expect(primary?.caseId).toBeTruthy();
+    const caseGet = await request.get(`/api/review-cases/${primary!.caseId}`, {
+      timeout: SEED_TIMEOUT_MS,
+    });
+    expect(caseGet.ok()).toBeTruthy();
+    const caseBody = (await caseGet.json()) as { reviewCase: { version?: number } };
+    const agentAccept = await request.post(
+      `/api/review-cases/${primary!.caseId}/items/${primary!.itemId}/decision`,
+      {
+        data: {
+          action: "accept",
+          expectedVersion: caseBody.reviewCase.version ?? 0,
+        },
+        timeout: SEED_TIMEOUT_MS,
+      }
+    );
     expect(agentAccept.ok()).toBeTruthy();
-    const agentAfter = (await agentAccept.json()) as {
+    const agentSnap = await request.get(`/api/patients/${PATIENT}/agent-intelligence`, {
+      timeout: SEED_TIMEOUT_MS,
+    });
+    expect(agentSnap.ok()).toBeTruthy();
+    const agentAfter = (await agentSnap.json()) as {
       ehrWrite: boolean;
       drafts: { id: string; provenance: string }[];
     };
