@@ -42,14 +42,17 @@ assert.equal(handoff.decision, "handoff");
 
 assert.equal(PUBLIC_DEMOS[0]!.id, "slot-fill");
 assert.equal(PUBLIC_DEMOS[1]!.id, "glucose");
+assert.ok(PUBLIC_DEMOS.some((d) => d.id === "connected-diabetes"));
 
 const files = [
   "app/demo/page.tsx",
   "app/demo/slot-fill/page.tsx",
   "app/demo/glucose/page.tsx",
+  "app/demo/connected-diabetes/page.tsx",
   "components/demo/workflow/WorkflowDemoPlayer.tsx",
   "components/demo/workflow/SlotFillDemo.tsx",
   "components/demo/workflow/GlucoseMonitorDemo.tsx",
+  "components/demo/workflow/ConnectedDiabetesDemo.tsx",
   "app/page.tsx",
 ];
 for (const rel of files) {

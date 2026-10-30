@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 
+import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type { ContinuousCareSnapshot } from "@/lib/diabetes-intelligence/continuous-care-types";
@@ -96,40 +97,25 @@ export function ContinuousCareWorkspace({ patientId, patientLabel }: Props) {
 
   return (
     <div style={{ display: "grid", gap: 16, maxWidth: 1100 }}>
-      <header style={{ display: "grid", gap: 8 }}>
-        <p style={eyebrow}>
-          Continuous care · Phase 4 · synthetic · not clinically validated
-        </p>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 650, color: "#0f2744" }}>
-          {patientLabel ?? snap?.patientLabel ?? patientId}
-        </h1>
-        <p style={{ margin: 0, color: "#4a6278", maxWidth: 62 * 8, lineHeight: 1.5 }}>
-          Follow-up worklists, appointment coordination, patient-reported updates, notification
-          preferences, staff escalations (HITL), completed-action tracking, care-plan progress, and
-          ops/safety analytics. Every workflow has owner, status, timestamps, decision history, and
-          measurable outcome. ehrWrite stays false.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
-            Seed continuous care spine
-          </Button>
-          <Link href={`/dashboard/gp/continuous-care`}>
-            <Button variant="outline">GP worklist</Button>
-          </Link>
-          <Link href={`/dashboard/nurse/continuous-care`}>
-            <Button variant="outline">Nurse queue</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/medication-care`}>
-            <Button variant="outline">Medication care</Button>
-          </Link>
-          <Link href={`/dashboard/gp/diabetes-journey/${encodeURIComponent(patientId)}`}>
-            <Button variant="outline">Care journey</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/timeline`}>
-            <Button variant="outline">Timeline</Button>
-          </Link>
-        </div>
-      </header>
+      <ConnectedPatientChrome
+        patientId={patientId}
+        patientLabel={patientLabel ?? snap?.patientLabel}
+        activeStep="continuous"
+        subtitle="Phase 4 · follow-ups · escalations HITL · ops analytics"
+        actions={
+          <>
+            <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
+              Seed continuous care spine
+            </Button>
+            <Link href="/dashboard/gp/continuous-care">
+              <Button variant="outline">GP worklist</Button>
+            </Link>
+            <Link href="/dashboard/nurse/continuous-care">
+              <Button variant="outline">Nurse queue</Button>
+            </Link>
+          </>
+        }
+      />
 
       {loading || !snap ? (
         <p style={{ color: "#4a6278" }}>Loading continuous care…</p>

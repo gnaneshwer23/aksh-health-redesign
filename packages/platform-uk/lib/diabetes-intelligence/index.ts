@@ -1,6 +1,13 @@
 export * from "./types";
 export * from "./missing-data";
 export {
+  CONNECTED_JOURNEY_DISCLOSURE,
+  CONNECTED_DEMO_PATIENT_ID,
+  CONNECTED_JOURNEY_STEPS,
+  connectedJourneyStep,
+} from "./connected-journey-steps";
+export type { ConnectedJourneyStepId, ConnectedJourneyStep } from "./connected-journey-steps";
+export {
   buildDiabetesJourney,
   seedSyntheticJourney,
   draftJourneyCarePlan,

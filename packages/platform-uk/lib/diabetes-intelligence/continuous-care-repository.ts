@@ -161,7 +161,8 @@ export async function replacePatientContinuousCareSeed(
             (id, scope_key, patient_id, patient_label, title, source_kind, source_ref_id,
              owner_role, owner_display, status, priority, due_at, created_at, updated_at,
              closed_at, measurable_outcome, note, synthetic, ehr_write, autonomous_clinical_action)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::jsonb,$17,TRUE,FALSE,FALSE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::jsonb,$17,TRUE,FALSE,FALSE)
+           ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
           [
             f.id,
             scopeKey,
@@ -189,7 +190,8 @@ export async function replacePatientContinuousCareSeed(
             (id, scope_key, patient_id, patient_label, title, modality, owner_role, owner_display,
              status, scheduled_at, created_at, updated_at, closed_at, related_follow_up_id,
              measurable_outcome, note, hitl_required, synthetic, ehr_write, autonomous_clinical_action)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16,TRUE,TRUE,FALSE,FALSE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16,TRUE,TRUE,FALSE,FALSE)
+           ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
           [
             a.id,
             scopeKey,
@@ -215,7 +217,8 @@ export async function replacePatientContinuousCareSeed(
           `INSERT INTO aksh.ccare_patient_updates
             (id, scope_key, patient_id, patient_label, category, summary, owner_role, owner_display,
              status, created_at, updated_at, closed_at, measurable_outcome, synthetic, ehr_write, verified_by_clinician)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13::jsonb,TRUE,FALSE,FALSE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13::jsonb,TRUE,FALSE,FALSE)
+           ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
           [
             u.id,
             scopeKey,
@@ -238,7 +241,8 @@ export async function replacePatientContinuousCareSeed(
         `INSERT INTO aksh.ccare_notification_prefs
           (id, scope_key, patient_id, owner_role, owner_display, status, channels, quiet_hours,
            topics, created_at, updated_at, measurable_outcome, synthetic, ehr_write)
-         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9::jsonb,$10,$11,$12::jsonb,TRUE,FALSE)`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9::jsonb,$10,$11,$12::jsonb,TRUE,FALSE)
+         ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
         [
           p.id,
           scopeKey,
@@ -260,7 +264,8 @@ export async function replacePatientContinuousCareSeed(
             (id, scope_key, patient_id, patient_label, title, reason, severity, owner_role, owner_display,
              status, related_follow_up_id, related_update_id, created_at, updated_at, decided_by, decided_at,
              closed_at, measurable_outcome, hitl_required, synthetic, ehr_write, autonomous_clinical_action)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,TRUE,TRUE,FALSE,FALSE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,TRUE,TRUE,FALSE,FALSE)
+           ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
           [
             e.id,
             scopeKey,
@@ -288,7 +293,8 @@ export async function replacePatientContinuousCareSeed(
           `INSERT INTO aksh.ccare_plan_progress
             (id, scope_key, patient_id, patient_label, plan_ref_kind, plan_ref_id, title, owner_role,
              owner_display, status, progress_pct, milestones, created_at, updated_at, measurable_outcome, synthetic, ehr_write)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14,$15::jsonb,TRUE,FALSE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14,$15::jsonb,TRUE,FALSE)
+           ON CONFLICT (id) DO UPDATE SET scope_key = EXCLUDED.scope_key, patient_id = EXCLUDED.patient_id`,
           [
             pr.id,
             scopeKey,

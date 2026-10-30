@@ -31,6 +31,15 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     category: "Production workflow",
   },
   {
+    id: "connected-diabetes",
+    title: "Connected diabetes journey",
+    description:
+      "Flagship synthetic walkthrough: Patient 360 → glucose intelligence → medication & care → care-plan HITL → continuous care → agent drafts → timeline. Not clinically validated; ehrWrite stays false.",
+    href: "/demo/connected-diabetes",
+    duration: "~8 minutes",
+    category: "Synthetic clinical intelligence",
+  },
+  {
     id: "patel",
     title: "Patel clinical case study",
     description:

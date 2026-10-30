@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 
+import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type {
@@ -167,47 +168,33 @@ export function MedicationPersonalisedCareWorkspace({ patientId, patientLabel }:
 
   return (
     <div style={{ display: "grid", gap: 16, maxWidth: 1100 }}>
-      <header style={{ display: "grid", gap: 8 }}>
-        <p style={eyebrow}>
-          Medication & personalised care · Phase 3 · synthetic · not clinically validated
-        </p>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 650, color: "#0f2744" }}>
-          {patientLabel ?? snap?.patientLabel ?? patientId}
-        </h1>
-        <p style={{ margin: 0, color: "#4a6278", maxWidth: 62 * 8, lineHeight: 1.5 }}>
-          Medication lists and reconciliation, allergy panel with a clearly labeled synthetic
-          interaction stub (not a licensed drug database), clinician-reviewed safety flags,
-          care-plan templates, goals, education, tasks and handoffs. ehrWrite stays false.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
-            Seed synthetic meds & care spine
-          </Button>
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => void postAction({ action: "start_med_recon" })}
-          >
-            Start med reconciliation
-          </Button>
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => void postAction({ action: "draft_safety_review" })}
-          >
-            Draft safety review
-          </Button>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/patient-360`}>
-            <Button variant="outline">Patient 360</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/diabetes-intelligence`}>
-            <Button variant="outline">Glucose intelligence</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/continuous-care`}>
-            <Button variant="outline">Continuous care</Button>
-          </Link>
-        </div>
-      </header>
+      <ConnectedPatientChrome
+        patientId={patientId}
+        patientLabel={patientLabel ?? snap?.patientLabel}
+        activeStep="medication"
+        subtitle="Phase 3 · med recon · safety review · care-plan templates · no prescribe"
+        actions={
+          <>
+            <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
+              Seed synthetic meds & care spine
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => void postAction({ action: "start_med_recon" })}
+            >
+              Start med reconciliation
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => void postAction({ action: "draft_safety_review" })}
+            >
+              Draft safety review
+            </Button>
+          </>
+        }
+      />
 
       {loading || !snap ? (
         <p style={{ color: "#4a6278" }}>Loading medication & personalised care…</p>
