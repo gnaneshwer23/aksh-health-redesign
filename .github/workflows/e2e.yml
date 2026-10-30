@@ -57,9 +57,9 @@ jobs:
   playwright:
     name: Playwright E2E
     runs-on: ubuntu-latest
-    # The full suite plus a production build now runs past 20 minutes (CI runners reach the London database across
-    # the Atlantic); a cancelled run is not a result.
-    timeout-minutes: 40
+    # Full suite + production build + pending CI-branch migrations; Atlantic latency to Neon (eu-west-2).
+    # 40m cancelled mid-Playwright after migrations were added — keep headroom for retries.
+    timeout-minutes: 60
     needs: platform-unit-gates
     env:
       CI: true
@@ -120,6 +120,12 @@ jobs:
             echo "::error::No E2E database. Connect the Neon GitHub integration (NEON_PROJECT_ID + NEON_API_KEY) or set the E2E_DATABASE_URL secret."
             exit 1
           fi
+
+      # Ephemeral Neon CI branch may lag parent schema. Apply pending additive
+      # migrations so connected-diabetes tables (044+) exist. Never targets prod main.
+      - name: Apply pending migrations on CI branch
+        working-directory: packages/platform-uk
+        run: npx tsx scripts/db-migrate.ts --apply
 
       - name: Verify and build
         run: npm run verify && npm run build

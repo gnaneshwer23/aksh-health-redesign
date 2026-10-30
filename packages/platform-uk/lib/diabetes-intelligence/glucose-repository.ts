@@ -96,6 +96,52 @@ function mapReadingRow(r: {
   };
 }
 
+/** Multi-row INSERT — ~1.5k CGM points must not use per-row round-trips (CI Atlantic latency). */
+const GLUCOSE_INSERT_CHUNK = 400;
+
+async function bulkInsertGlucoseReadings(
+  queryable: { query: (sql: string, params?: unknown[]) => Promise<unknown> },
+  scopeKey: string,
+  rows: GlucoseSeriesReading[]
+): Promise<void> {
+  for (let offset = 0; offset < rows.length; offset += GLUCOSE_INSERT_CHUNK) {
+    const chunk = rows.slice(offset, offset + GLUCOSE_INSERT_CHUNK);
+    const values: unknown[] = [];
+    const placeholders: string[] = [];
+    chunk.forEach((row, i) => {
+      const b = i * 15;
+      placeholders.push(
+        `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7},$${b + 8},$${b + 9},$${b + 10},$${b + 11},$${b + 12},$${b + 13},$${b + 14},true,$${b + 15})`
+      );
+      values.push(
+        row.id,
+        scopeKey,
+        row.patientId,
+        row.channel,
+        row.recordedAt,
+        row.valueNumeric,
+        row.unit,
+        row.valueMmolL,
+        row.valueMmolMol,
+        row.context,
+        row.qualityFlag,
+        row.sourceSystem,
+        row.sourceReference,
+        row.verified,
+        row.ingestedAt
+      );
+    });
+    await queryable.query(
+      `INSERT INTO aksh.glucose_series_readings
+        (id, scope_key, patient_id, channel, recorded_at, value_numeric, unit,
+         value_mmol_l, value_mmol_mol, context, quality_flag, source_system,
+         source_reference, verified, synthetic, ingested_at)
+       VALUES ${placeholders.join(",")}`,
+      values
+    );
+  }
+}
+
 export async function replacePatientGlucoseSeries(
   patientId: string,
   batches: GlucoseIngestBatch[],
@@ -137,32 +183,7 @@ export async function replacePatientGlucoseSeries(
         `DELETE FROM aksh.glucose_series_readings WHERE scope_key = $1 AND patient_id = $2`,
         [scopeKey, patientId]
       );
-      for (const row of rows) {
-        await client.query(
-          `INSERT INTO aksh.glucose_series_readings
-            (id, scope_key, patient_id, channel, recorded_at, value_numeric, unit,
-             value_mmol_l, value_mmol_mol, context, quality_flag, source_system,
-             source_reference, verified, synthetic, ingested_at)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,true,$15)`,
-          [
-            row.id,
-            scopeKey,
-            row.patientId,
-            row.channel,
-            row.recordedAt,
-            row.valueNumeric,
-            row.unit,
-            row.valueMmolL,
-            row.valueMmolMol,
-            row.context,
-            row.qualityFlag,
-            row.sourceSystem,
-            row.sourceReference,
-            row.verified,
-            row.ingestedAt,
-          ]
-        );
-      }
+      await bulkInsertGlucoseReadings(client, scopeKey, rows);
       await client.query("COMMIT");
     } catch (e) {
       await client.query("ROLLBACK");
@@ -212,32 +233,7 @@ export async function appendGlucoseBatch(
 
   if (usePg()) {
     const pool = getPgPool();
-    for (const row of rows) {
-      await pool.query(
-        `INSERT INTO aksh.glucose_series_readings
-          (id, scope_key, patient_id, channel, recorded_at, value_numeric, unit,
-           value_mmol_l, value_mmol_mol, context, quality_flag, source_system,
-           source_reference, verified, synthetic, ingested_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,true,$15)`,
-        [
-          row.id,
-          scopeKey,
-          row.patientId,
-          row.channel,
-          row.recordedAt,
-          row.valueNumeric,
-          row.unit,
-          row.valueMmolL,
-          row.valueMmolMol,
-          row.context,
-          row.qualityFlag,
-          row.sourceSystem,
-          row.sourceReference,
-          row.verified,
-          row.ingestedAt,
-        ]
-      );
-    }
+    await bulkInsertGlucoseReadings(pool, scopeKey, rows);
     return rows;
   }
 
