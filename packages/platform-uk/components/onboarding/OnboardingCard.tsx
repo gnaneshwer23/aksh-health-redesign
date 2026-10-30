@@ -26,8 +26,18 @@ export function OnboardingCard({
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-        <div className="mb-6">
-        <Link href="/" className="font-display text-base font-semibold tracking-tight text-primary">
+      <div className="mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-[#121715]"
+          aria-label="Aksh Health home"
+        >
+          <span
+            className="grid h-8 w-8 place-items-center rounded-[10px] bg-[#121715] text-[13px] font-bold text-[#dcef55]"
+            aria-hidden
+          >
+            A
+          </span>
           Aksh Health
         </Link>
       </div>

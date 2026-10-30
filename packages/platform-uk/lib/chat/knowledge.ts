@@ -79,7 +79,7 @@ What we do NOT claim:
 Compliance disclaimer: badges and pathway language describe aligned design and control mapping. They do not represent certification, accreditation, or regulatory approval.
 
 ## Demo & walkthrough
-- Public synthetic demos: /demo (also /demo/slot-fill, /demo/glucose; legacy /voice-care redirects to /demo)
+- Public synthetic demos: /demo (also /demo/slot-fill, /demo/glucose, /demo/connected-diabetes; legacy /voice-care redirects to /demo)
 - Investor Patel walkthrough: /demo/patel (gated on production / real workspace)
 - Request a guided organisation session via Get started.
 

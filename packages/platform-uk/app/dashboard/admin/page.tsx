@@ -10,6 +10,7 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { IntegrationStatus } from "@/components/dashboard/IntegrationStatus";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { OrganisationEnquiriesPanel } from "@/components/dashboard/OrganisationEnquiriesPanel";
+import { RoleWorkspaceIntro } from "@/components/dashboard/RoleWorkspaceIntro";
 import { SystemStatusStrip } from "@/components/dashboard/SystemStatusStrip";
 import { UrgentGuardianAlertsPanel, getUrgentGuardianAlertCount } from "@/components/dashboard/UrgentGuardianAlertsPanel";
 import { Button } from "@/components/ui/button";
@@ -42,13 +43,16 @@ export default function AdminDashboardPage() {
         </p>
         <SystemStatusStrip />
 
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Practice operations overview</h2>
-          <p className="text-sm text-muted">
-            Ops for {orgLabel}: queue health, integration posture, and access enquiries — not a
-            certification scoreboard.
-          </p>
-        </div>
+        <RoleWorkspaceIntro
+          eyebrow="Practice operations"
+          title="Ops that stay honest about what is live"
+          lede={
+            <>
+              Ops for {orgLabel}: queue health, integration posture, and access enquiries — not a
+              certification scoreboard.
+            </>
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid="admin-ops-metrics">
           <MetricCard

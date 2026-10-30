@@ -85,14 +85,17 @@ export default function HomePage() {
             <span className="s-eyebrow">The problem</span>
             <h2 className="s-h2">Three things that slow diabetes care down.</h2>
           </div>
-          <div className="s-grid s-grid--3">
-            {PROBLEMS.map((p) => (
-              <div key={p.t} className="s-card">
-                <h3 className="s-h3">{p.t}</h3>
-                <p className="s-small">{p.b}</p>
-              </div>
+          <ol className="s-problems">
+            {PROBLEMS.map((p, i) => (
+              <li key={p.t} className="s-problems__item">
+                <span className="s-problems__n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 className="s-h3">{p.t}</h3>
+                  <p className="s-small">{p.b}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
@@ -198,13 +201,15 @@ export default function HomePage() {
                 synthetic patients; not used for real patients until each agent meets its release criteria.
               </p>
             </div>
-            <span style={{ display: "inline-flex", gap: 12, alignItems: "center" }}>
+            <span style={{ display: "inline-flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
               <StatusPill s="in_validation" />
+              <Link href="/demo/connected-diabetes" className="s-btn s-btn--primary">Connected diabetes demo</Link>
               <Link href="/agents" className="s-btn s-btn--ghost">Meet the agents</Link>
             </span>
           </div>
           <ProductCanvas module="agents" />
           <p className="s-small" style={{ marginTop: 16 }}>
+            Flagship synthetic journey · LIVE organisations: 0 ·{" "}
             <Link href="/platform#capabilities" className="s-link">Every capability and its status →</Link>
           </p>
         </div>

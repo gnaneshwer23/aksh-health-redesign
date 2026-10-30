@@ -8,6 +8,8 @@ const COLUMNS = [
       { label: "AI agents", href: "/agents" },
       { label: "Aksh Diabetes", href: "/#diabetes" },
       { label: "Available now", href: "/product" },
+      { label: "Explore a demo", href: "/demo" },
+      { label: "Connected diabetes demo", href: "/demo/connected-diabetes" },
       { label: "Cancelled-slot fill", href: "/product#slot-fill" },
       { label: "Measured results", href: "/product#results" },
     ],

@@ -1,7 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 /** Public marketing demos allowlisted on production / real workspace (synthetic content only). */
-const PUBLIC_DEMO_HREFS = new Set(["/demo", "/demo/slot-fill", "/demo/glucose"]);
+const PUBLIC_DEMO_HREFS = new Set([
+  "/demo",
+  "/demo/slot-fill",
+  "/demo/glucose",
+  "/demo/connected-diabetes",
+]);
 
 /** The public site: the real product, plus the allowlisted synthetic demos. No investor walkthroughs, sandbox offers or chat widget. */
 test.describe("Public site", () => {
@@ -39,10 +44,18 @@ test.describe("Public site", () => {
     await expect(page.locator("#review-prep").getByRole("link", { name: "Explore a demo" })).toHaveAttribute("href", "/demo");
     await expect(page.locator("#diabetes")).toContainText("In validation");
     const nav = page.locator("[data-site-nav]");
-    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact"]) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of ["How it works", "Available now", "Demo", "Security", "Resources", "Contact"]) {
+      await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    }
+    await expect(nav.getByRole("link", { name: "Demo", exact: true })).toHaveAttribute("href", "/demo");
     await expect(nav.getByRole("link", { name: "Request a pilot" })).toHaveAttribute("href", "/get-started");
     await expect(nav.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
+    await expect(page.locator("[data-hero] .s-hero2__brand")).toContainText("Aksh");
     await expect(page.getByText("Illustrative example").first()).toBeVisible();
+    await expect(page.locator("#diabetes").getByRole("link", { name: "Connected diabetes demo" })).toHaveAttribute(
+      "href",
+      "/demo/connected-diabetes",
+    );
   });
 
   test("public pages promote only allowlisted synthetic demos — no walkthroughs, sandbox or chat", async ({ page }) => {
@@ -67,18 +80,32 @@ test.describe("Public site", () => {
   });
 
   test("allowlisted marketing demos stay public with synthetic content", async ({ page }) => {
-    for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+    for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose", "/demo/connected-diabetes"]) {
       await page.goto(path);
       await expect(page, path).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}$`));
       await expect(page.getByText(/synthetic/i).first()).toBeVisible();
     }
   });
 
+  test("demo catalog leads with connected diabetes flagship", async ({ page }) => {
+    await page.goto("/demo");
+    await expect(page.locator("[data-hero] .s-hero2__brand")).toContainText("Aksh");
+    await expect(page.getByRole("link", { name: "Open connected diabetes demo" })).toHaveAttribute(
+      "href",
+      "/demo/connected-diabetes",
+    );
+    await expect(page.locator("#flagship")).toContainText("Connected diabetes journey");
+    await expect(page.locator("#flagship")).toContainText("not clinically validated");
+    await expect(page.locator("#flagship")).toContainText("synthetic_demo");
+    await expect(page.locator('[data-demo-card="slot-fill"]')).toBeVisible();
+    await expect(page.locator('[data-demo-card="glucose"]')).toBeVisible();
+  });
+
   test("mobile menu opens with every link", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    for (const label of ["How it works", "Available now", "Security", "Resources", "Contact", "Request a pilot", "Sign in"]) {
+    for (const label of ["How it works", "Available now", "Demo", "Security", "Resources", "Contact", "Request a pilot", "Sign in"]) {
       await expect(page.locator(".s-nav__panel").getByRole("link", { name: label, exact: true })).toBeVisible();
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

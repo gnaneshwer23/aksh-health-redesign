@@ -1,7 +1,9 @@
 # Design Refresh V1 — "Clinical Signal" (audit)
 
+> **Superseded for live product UX:** October 2026 clinic-light redesign — see [`PRODUCT_UX_OCT_2026.md`](./PRODUCT_UX_OCT_2026.md). This July document is historical.
+
 **Date:** 2026-07-23
-**Status:** Shipped to `main` (marketing + shared shells)
+**Status:** Shipped to `main` (marketing + shared shells) — later replaced visually by clinic light
 **Context:** Response to "design hasn't changed" feedback after U1–U8. U1–U8 was a product/demo-story track; the marketing look-and-feel was still the Owkin-style cream clone. This V1 is a real **visual redesign** of the design system, landing, shared marketing chrome, and the dashboard/onboarding shells — not a copy pass.
 
 ---

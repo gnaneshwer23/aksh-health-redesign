@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { RoleWorkspaceIntro } from "@/components/dashboard/RoleWorkspaceIntro";
 import { GuardianAlertsPanel } from "@/components/dashboard/nurse/GuardianAlertsPanel";
 import { NurseHeroDemoPath } from "@/components/dashboard/nurse/NurseHeroDemoPath";
 import { NursePatientHeader } from "@/components/dashboard/nurse/NursePatientHeader";
@@ -24,6 +25,21 @@ export default function NurseOverviewPage() {
         this proof build. Spine:{" "}
         <code className="text-[10px]">POST /api/clinical-spine/nurse-vitals</code>.
       </p>
+      <RoleWorkspaceIntro
+        eyebrow="Nurse workspace"
+        title="Diabetes reviews, better coordinated"
+        lede="Observations, handovers, and continuous-care follow-ups for the selected patient. Drafts wait for a named clinician."
+        actions={
+          <>
+            <Button asChild className="bg-[#121715] text-white hover:bg-black">
+              <Link href="/dashboard/nurse/observations">Record observations</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/nurse/continuous-care">Continuous care queue</Link>
+            </Button>
+          </>
+        }
+      />
       <NursePatientHeader />
 
       <Card className="dashboard-card border-0 shadow-none">
@@ -36,9 +52,6 @@ export default function NurseOverviewPage() {
             {patient.openAiItems}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button asChild className="bg-secondary hover:bg-secondary/90">
-              <Link href="/dashboard/nurse/observations">Record observations</Link>
-            </Button>
             <Button asChild variant="outline">
               <Link href="/dashboard/nurse/handover">Shift handover</Link>
             </Button>
@@ -46,9 +59,6 @@ export default function NurseOverviewPage() {
               <Link href="/dashboard/nurse/alerts">
                 {openAlerts ? "View GUARDIAN alerts" : "Check alerts"}
               </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/nurse/continuous-care">Continuous care queue</Link>
             </Button>
           </div>
         </CardContent>

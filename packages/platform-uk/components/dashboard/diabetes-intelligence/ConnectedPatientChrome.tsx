@@ -8,6 +8,7 @@ import {
   CONNECTED_JOURNEY_STEPS,
   type ConnectedJourneyStepId,
 } from "@/lib/diabetes-intelligence/connected-journey-steps";
+import { connectedDiabetesCssVars } from "@/lib/diabetes-intelligence/connected-diabetes-tokens";
 
 type Props = {
   patientId: string;
@@ -20,7 +21,7 @@ type Props = {
 
 /**
  * Shared patient header + journey stepper for Connected Diabetes Intelligence.
- * Reduces redundant cross-links without deleting phase workspaces.
+ * Clinical white/blue/teal chrome; aligns with clinic-light workspace shells.
  */
 export function ConnectedPatientChrome({
   patientId,
@@ -33,21 +34,22 @@ export function ConnectedPatientChrome({
 
   return (
     <header
-      className="rounded-lg border border-[#d7e3ef] bg-white p-5 text-[#0f2744]"
+      className="rounded-2xl border border-[var(--cd-line,#d7e3ef)] bg-[var(--cd-surface,#ffffff)] p-5 text-[var(--cd-ink,#0f2744)] shadow-sm"
+      style={connectedDiabetesCssVars}
       data-testid="connected-patient-chrome"
       data-active-step={activeStep}
       data-patient-id={patientId}
     >
       <p
-        className="text-xs font-semibold uppercase tracking-wide text-teal-700"
+        className="text-xs font-semibold uppercase tracking-wide text-[var(--cd-accent,#0d9488)]"
         role="status"
       >
         Connected diabetes intelligence · {CONNECTED_JOURNEY_DISCLOSURE}
       </p>
       <div className="mt-2 flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{label}</h1>
-          <p className="mt-1 text-sm text-[#5b6b7c]">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{label}</h1>
+          <p className="mt-1 text-sm text-[var(--cd-muted,#5b6b7c)]">
             Patient id {patientId}
             {subtitle ? ` · ${subtitle}` : null}
           </p>
@@ -73,7 +75,7 @@ export function ConnectedPatientChrome({
               className={
                 current
                   ? "rounded-md bg-[var(--cd-ink,#0f2744)] px-3 py-1.5 text-sm font-medium text-white"
-                  : "rounded-md border border-[var(--cd-line,#d7e3ef)] bg-[var(--cd-bg,#f7fafc)] px-3 py-1.5 text-sm text-[var(--cd-ink,#0f2744)] hover:border-teal-600"
+                  : "rounded-md border border-[var(--cd-line,#d7e3ef)] bg-[var(--cd-bg,#f7fafc)] px-3 py-1.5 text-sm text-[var(--cd-ink,#0f2744)] hover:border-[var(--cd-accent,#0d9488)]"
               }
             >
               <span className="opacity-70">{step.phase} · </span>
@@ -90,19 +92,19 @@ export function ConnectedPatientChrome({
       >
         <Link
           href="/dashboard/gp/diabetes-intelligence"
-          className="text-teal-800 underline-offset-2 hover:underline"
+          className="text-[var(--cd-accent,#0d9488)] underline-offset-2 hover:underline"
         >
           Glucose worklist
         </Link>
         <Link
           href="/dashboard/gp/continuous-care"
-          className="text-teal-800 underline-offset-2 hover:underline"
+          className="text-[var(--cd-accent,#0d9488)] underline-offset-2 hover:underline"
         >
           Continuous care worklist
         </Link>
         <Link
           href="/dashboard/gp/agent-intelligence"
-          className="text-teal-800 underline-offset-2 hover:underline"
+          className="text-[var(--cd-accent,#0d9488)] underline-offset-2 hover:underline"
         >
           Agent worklist
         </Link>
@@ -117,7 +119,7 @@ function ButtonishLink({ href, children }: { href: string; children: ReactNode }
   return (
     <Link
       href={href}
-      className="inline-flex items-center rounded-md border border-[#d7e3ef] px-3 py-1.5 text-sm text-[#0f2744] hover:border-teal-600"
+      className="inline-flex items-center rounded-md border border-[var(--cd-line,#d7e3ef)] px-3 py-1.5 text-sm text-[var(--cd-ink,#0f2744)] hover:border-[var(--cd-accent,#0d9488)]"
     >
       {children}
     </Link>
