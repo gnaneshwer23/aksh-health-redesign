@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideAgentIntelligenceDraft } from "@/lib/diabetes-intelligence";
 import type {
   AgentIntelDecisionAction,
@@ -21,6 +22,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (!patientId || !draftId) {
     return NextResponse.json({ error: "patient id and draftId required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   let body: {
     action?: AgentIntelDecisionAction;

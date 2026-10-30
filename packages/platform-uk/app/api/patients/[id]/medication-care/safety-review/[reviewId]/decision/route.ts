@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideMedicationSafetyReview } from "@/lib/diabetes-intelligence";
 import type { MedCareReviewSection } from "@/lib/diabetes-intelligence/medcare-types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
@@ -18,6 +19,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (!patientId || !rid) {
     return NextResponse.json({ error: "patient id and review id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   let body: {
     action?: "accept" | "edit" | "reject";

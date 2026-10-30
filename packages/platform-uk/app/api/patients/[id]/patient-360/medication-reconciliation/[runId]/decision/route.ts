@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideMedicationReconciliation } from "@/lib/patient-intelligence";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -17,6 +18,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (!patientId || !runId) {
     return NextResponse.json({ error: "patient id and run id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   let body: { action?: "complete" | "cancel"; note?: string } = {};
   try {

@@ -236,9 +236,42 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect([401, 403]).toContain(anonRes.status());
     await anon.close();
 
+    // --- INT-09: ops/researcher and unbound patient denied on connected APIs ---
+    const researcherCtx = await browser.newContext();
+    await createOnboardedTestUser(researcherCtx.request, baseURL!, {
+      role: "researcher",
+      label: "cdi-int09-researcher",
+    });
+    for (const path of [
+      `/api/patients/${PATIENT}/patient-360`,
+      `/api/patients/${PATIENT}/diabetes-intelligence`,
+      `/api/patients/${PATIENT}/medication-care`,
+      `/api/patients/${PATIENT}/continuous-care`,
+      `/api/patients/${PATIENT}/agent-intelligence`,
+      `/api/patients/${PATIENT}/diabetes-journey`,
+      `/api/patients/${PATIENT}/timeline`,
+    ]) {
+      const denied = await researcherCtx.request.get(path);
+      expect(denied.status(), `researcher GET ${path}`).toBe(403);
+      const deniedBody = (await denied.json()) as { denied?: boolean };
+      expect(deniedBody.denied).toBe(true);
+    }
+    await researcherCtx.close();
+
+    const patientCtx = await browser.newContext();
+    await createOnboardedTestUser(patientCtx.request, baseURL!, {
+      role: "patient",
+      label: "cdi-int09-patient",
+    });
+    // Real patient sessions have no boundPatientId today → fail closed (FR-CORE-005).
+    const patientCross = await patientCtx.request.get(`/api/patients/${PATIENT}/patient-360`);
+    expect(patientCross.status()).toBe(403);
+    expect(((await patientCross.json()) as { denied?: boolean }).denied).toBe(true);
+    await patientCtx.close();
+
     test.info().annotations.push({
       type: "connected-diabetes",
-      description: `API journey patient=${PATIENT} gp=${gpA.email} ehrWrite=false`,
+      description: `API journey patient=${PATIENT} gp=${gpA.email} ehrWrite=false int09=denied`,
     });
   });
 

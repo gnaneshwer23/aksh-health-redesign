@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { listDecisionHistory } from "@/lib/diabetes-intelligence/continuous-care-repository";
 import { listJourneyEvents } from "@/lib/diabetes-intelligence/repository";
 import { getPatientById } from "@/lib/mock-data";
@@ -23,6 +24,9 @@ export async function GET(request: Request, context: RouteContext) {
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   const patient = getPatientById(patientId);
   const adapter = getReviewCaseRepositoryAdapter();

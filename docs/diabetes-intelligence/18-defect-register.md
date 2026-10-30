@@ -15,7 +15,7 @@
 | INT-07 | Medium | Integration | Agent shared context mock-only | `buildSharedPatientContext` does not load 360/glucose/medcare | **Open** |
 | INT-08 | Medium | Tenancy | `organisation_id` unused | DB column on 043; never set/filtered | **Open** |
 | INT-16 | Medium | Tenancy | Deterministic row PKs collide across `scope_key` | Medcare seed IDs (`goal-P002-…`) are global PKs; second user’s seed races first. Mitigated with `ON CONFLICT DO UPDATE` on seed replace. | **Mitigated** — still prefer composite keys later |
-| INT-09 | **High** | Auth | Weak API patient access | No `evaluatePatientUrlAccess` on connected diabetes routes | **Open** — register; do not silently relax |
+| INT-09 | **High** | Auth | Weak API patient access | No `evaluatePatientUrlAccess` on connected diabetes routes | **Fixed** — `denyUnlessConnectedPatientAccess` (`evaluateAppRoleClinicalReadAccess` → `evaluatePatientUrlAccess`) on all patient-scoped connected diabetes APIs; see `tests/connected-patient-api-access.test.ts`. Org/practice tenancy remains INT-08. |
 | INT-10 | Medium | Auth | No clinical persona on module decisions | `evaluateDecisionScope` not on Accept/Edit/Reject | **Open** |
 | INT-11 | Low | UX | Route param inconsistency | `[id]` vs `diabetes-journey/[patientId]` | **Open** |
 | INT-12 | Low | UX | Worklists hard-code P002 | Empty-state demo links only | **Open** (mitigated by chrome + catalog) |
