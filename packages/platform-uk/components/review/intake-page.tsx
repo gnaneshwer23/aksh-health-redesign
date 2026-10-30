@@ -109,6 +109,8 @@ export function IntakePage({
 }) {
   const router = useRouter();
   const [patientLabel, setPatientLabel] = useState("");
+  /** Optional synthetic patient id — enables care_episode_id correlation (P2). */
+  const [patientId, setPatientId] = useState("");
   const [rawInput, setRawInput] = useState("");
   const [sourceType, setSourceType] = useState<ConsultationInput["sourceType"]>("note");
   const [sourceProfile, setSourceProfile] = useState<ConsultationInput["sourceProfile"]>("voice_note_intake");
@@ -120,8 +122,11 @@ export function IntakePage({
   const [medicationMentionOverride, setMedicationMentionOverride] = useState("");
   const [bloodPressureOverride, setBloodPressureOverride] = useState("");
   const [temperatureOverride, setTemperatureOverride] = useState("");
+  /** Opt-in CONDUCTOR after intake — only runs when ENABLE_CONDUCTOR_FROM_INTAKE=true. */
+  const [orchestrateAfterIntake, setOrchestrateAfterIntake] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastCareEpisodeId, setLastCareEpisodeId] = useState<string | null>(null);
 
   const inferredContextOverrides = useMemo(
     () => ({
@@ -199,8 +204,10 @@ export function IntakePage({
         body: JSON.stringify({
           action: "create",
           patientLabel,
+          patientId: patientId.trim() || undefined,
           rawInput,
           sourceType,
+          orchestrateAfterIntake: orchestrateAfterIntake || undefined,
           options: {
             pathwayHint,
             confidenceMode,
@@ -215,7 +222,11 @@ export function IntakePage({
         throw new Error("Failed to create generated review case.");
       }
 
-      const payload = (await response.json()) as { reviewCase: { id: string } };
+      const payload = (await response.json()) as {
+        reviewCase: { id: string; careEpisodeId?: string };
+        careEpisodeId?: string;
+      };
+      setLastCareEpisodeId(payload.careEpisodeId ?? payload.reviewCase.careEpisodeId ?? null);
       router.push(`/cases/${payload.reviewCase.id}${sharedQuery}`);
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Failed to create generated review case.");
@@ -265,6 +276,38 @@ export function IntakePage({
             }}
             value={patientLabel}
           />
+        </label>
+        <label className="stack" style={{ gap: 8 }}>
+          <strong>Synthetic patient id (optional)</strong>
+          <input
+            data-testid="intake-patient-id"
+            onChange={(event) => setPatientId(event.target.value)}
+            placeholder="e.g. P002 — enables care episode correlation"
+            style={{
+              borderRadius: 14,
+              border: "1px solid var(--line)",
+              padding: 12,
+              font: "inherit",
+              color: "var(--ink)"
+            }}
+            value={patientId}
+          />
+          <span style={{ fontSize: 12, color: "var(--muted)" }}>
+            When set, intake attaches a durable care_episode_id for booking → nurse → CONDUCTOR → review.
+            {lastCareEpisodeId ? ` Last episode: ${lastCareEpisodeId}` : ""}
+          </span>
+        </label>
+        <label className="stack" style={{ gap: 8, flexDirection: "row", alignItems: "center" }}>
+          <input
+            data-testid="intake-orchestrate-after"
+            type="checkbox"
+            checked={orchestrateAfterIntake}
+            onChange={(event) => setOrchestrateAfterIntake(event.target.checked)}
+          />
+          <span style={{ fontSize: 13 }}>
+            Offer CONDUCTOR after create (requires ENABLE_CONDUCTOR_FROM_INTAKE=true; evaluation-only;
+            Guardian gates intact; never auto-accepts)
+          </span>
         </label>
         <label className="stack" style={{ gap: 8 }}>
           <strong>Source Type</strong>

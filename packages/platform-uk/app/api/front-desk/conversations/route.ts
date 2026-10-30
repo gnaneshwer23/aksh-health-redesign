@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
+import { getOptionalAuthenticatedUserScope } from "@/lib/front-desk/auth";
 import { withDeskDirectory } from "@/lib/front-desk/directory";
 import { respond, startConversation } from "@/lib/front-desk/conversation";
+import { listOpenNurseObservationTasks } from "@/lib/front-desk/nurse-handoff";
 import { signSession, verifySession } from "@/lib/front-desk/session-token";
 import { mutateState } from "@/lib/front-desk/store";
 import type { ConversationSession } from "@/lib/front-desk/types";
@@ -25,6 +28,8 @@ const turnSchema = z.object({
   session: z.record(z.string(), z.unknown()),
   token: z.string().min(10).max(200),
   utterance: z.string().min(1).max(1000),
+  careEpisodeId: z.string().max(80).optional(),
+  care_episode_id: z.string().max(80).optional(),
 });
 
 /**
@@ -64,7 +69,7 @@ async function handlePOST(request: Request) {
     return NextResponse.json({ error: "Conversation could not be verified. Please start again." }, { status: 409 });
   }
   const before = session.stage;
-  const { result } = await mutateState((s) => respond(s, structuredClone(session), turn.data.utterance));
+  const { result, state } = await mutateState((s) => respond(s, structuredClone(session), turn.data.utterance));
 
   // Safety escalations are significant events: record them in SHIELD (synthetic patients).
   if (before !== "handed_off" && result.session.stage === "handed_off" && result.session.highestSafety !== "none") {
@@ -79,7 +84,49 @@ async function handlePOST(request: Request) {
     }).catch(() => undefined);
   }
 
-  return NextResponse.json({ reply: result.reply, session: result.session, token: signSession(result.session) });
+  // P2 — when a turn opens a new nurse_observation, correlate care episode for nurse worklist.
+  let careEpisodeId = readCareEpisodeId(turn.data);
+  const nurseTasks = listOpenNurseObservationTasks(state).filter(
+    (w) => w.patientId && w.patientId === result.session.patientId
+  );
+  const unlinked = nurseTasks.find((w) => !w.careEpisodeId);
+  if (unlinked && result.session.patientId) {
+    const auth = await getOptionalAuthenticatedUserScope(request);
+    const actor = auth?.userEmail ?? auth?.userId ?? "asha";
+    const scopeKey = auth?.scopeKey ?? "shared";
+    const correlated = await correlateCareEpisodeStage({
+      patientId: result.session.patientId,
+      actor,
+      scopeKey,
+      careEpisodeId,
+      stage: "booking",
+      linkId: unlinked.slotId ?? unlinked.id,
+      linkLabel: "Asha booking",
+    });
+    careEpisodeId = correlated.careEpisodeId;
+    await mutateState((s) => {
+      for (const w of listOpenNurseObservationTasks(s)) {
+        if (w.patientId !== result.session.patientId) continue;
+        w.careEpisodeId = careEpisodeId;
+        if (careEpisodeId && !w.summary.includes(careEpisodeId)) {
+          w.summary = `${w.summary} · episode ${careEpisodeId}`;
+        }
+        if (w.slotId) {
+          const slot = s.slots.find((x) => x.id === w.slotId);
+          if (slot) slot.careEpisodeId = careEpisodeId;
+        }
+      }
+      return true;
+    });
+  }
+
+  return NextResponse.json({
+    reply: result.reply,
+    session: result.session,
+    token: signSession(result.session),
+    careEpisodeId: careEpisodeId ?? null,
+    nurseObservationOpen: nurseTasks.length > 0,
+  });
 }
 
 /** Patients come from this request's database directory (see lib/front-desk/directory.ts). */

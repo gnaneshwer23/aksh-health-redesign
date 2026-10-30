@@ -11,7 +11,9 @@ import type { NurseEscalationTask, ReviewCase } from "@/lib/types";
 export type VoiceCareEscalationResult = {
   channel: "synthetic_outbound";
   telephony: false;
-  label: "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC)";
+  /** P2-VOICE-01 — not the VOICE (CANVAS dictation) register agent. */
+  label: "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC; NOT VOICE DICTATION)";
+  notVoiceDictation: true;
   transcript: string;
   escalation: VoiceCareEscalationState;
   nurseTask: NurseEscalationTask;
@@ -42,7 +44,8 @@ export function runVoiceCareEscalation(input: {
   return {
     channel: "synthetic_outbound",
     telephony: false,
-    label: "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC)",
+    label: "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC; NOT VOICE DICTATION)",
+    notVoiceDictation: true,
     transcript: VOICE_CARE_DAY3_TRANSCRIPT,
     escalation,
     nurseTask,

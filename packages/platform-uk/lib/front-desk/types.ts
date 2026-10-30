@@ -132,6 +132,10 @@ export type WorkItem = {
   handOffReason?: string;
   conversationId?: string;
   campaignId?: string;
+  /** P2 — correlates booking → nurse worklist → CONDUCTOR when present. */
+  careEpisodeId?: string | null;
+  /** Booked slot that opened a nurse_observation task. */
+  slotId?: string | null;
 };
 
 export type CampaignKind = "missed_appointment" | "lapsed_review" | "recall" | "health_check_in";
