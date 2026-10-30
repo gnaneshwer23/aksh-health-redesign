@@ -36,6 +36,8 @@ data/health-plans.*.json
 data/diabetes-care-journey.json
 data/diabetes-care-journey.*.json
 data/agent-intelligence.*.json
+data/care-episodes.json
+data/care-episodes.*.json
 data/continuous-care.*.json
 data/medication-personalised-care.*.json
 data/diabetes-glucose-intelligence.*.json

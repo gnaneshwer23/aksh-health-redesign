@@ -1,9 +1,11 @@
 # Aksh Health 1.0 — Current State Audit (from repository)
 
 **Source pack:** `Aksh_Health_2.0_Next_Steps_Document_Pack` (Documents 00–10)  
-**Evidence date:** 2026-10-05  
+**Evidence date:** 2026-10-05 (baseline) · **superseding classification:** 2026-10-30 — see [PHASE1_AGENT_ORCHESTRATION_CARE_EPISODE.md](./PHASE1_AGENT_ORCHESTRATION_CARE_EPISODE.md)  
 **Codebase:** `packages/platform-uk` · production [akshhealth.com](https://akshhealth.com)  
 **Rule honored:** facts from repo/deployment, not inferred capability.
+
+> **Update (2026-10-30):** Context Engine V1 (`lib/context-engine`), model registry (`lib/model-registry`), Guardian gateway (`lib/guardian-gateway`), evaluation engine (`lib/evaluation-engine`), and GraphRAG (`lib/graphrag`) are implemented and wired on clinical-spine / diabetes agent-intel paths. Rows below that mark those as Missing are **stale**; use the Phase 1 report for current status. Care Episode canonical model added in migration `052_care_episodes.sql`.
 
 This fills **Document 01**. Keep/Modify/Replace follows **Document 02** defaults against verified status.
 
