@@ -51,6 +51,20 @@ function scoreMentions(haystack: string, needles: string[], prefix: string): Eva
   });
 }
 
+/** P1-EVAL-01 — at least one alias from each group must appear (HORIZON|ORACLE). */
+function scoreMentionAnyOf(haystack: string, groups: string[][] | undefined, prefix: string): EvalCheckResult[] {
+  if (!groups?.length) return [];
+  return groups.map((group, i) => {
+    const hit = group.find((needle) => includesCI(haystack, needle));
+    const label = group.join("|");
+    return {
+      id: `${prefix}-any:${i}:${label}`,
+      passed: Boolean(hit),
+      detail: hit ? `Found alias "${hit}" (accepted: ${label})` : `Missing expected mention of any of [${label}]`
+    };
+  });
+}
+
 async function runCase(golden: GoldenCase): Promise<GoldenCaseResult> {
   if (golden.agent === "SYNTHESIS") {
     const draft = await runSynthesisAgent({
@@ -141,6 +155,7 @@ async function runCase(golden: GoldenCase): Promise<GoldenCaseResult> {
   const safety = draft.safetyNotes.join("\n");
   const checks = [
     ...scoreMentions(narrative, golden.mustMention, "mention"),
+    ...scoreMentionAnyOf(narrative, golden.mustMentionAnyOf, "mention"),
     ...scoreMentions(safety, golden.safetyMustMention, "safety"),
     {
       id: "confidence",

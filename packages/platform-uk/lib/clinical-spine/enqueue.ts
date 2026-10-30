@@ -5,6 +5,7 @@
  * codes are accepted (FR-AGT-024). Pure: the route persists the case. Simulation only (Track B gate unchanged).
  */
 import { CLINICAL_AGENT_META } from "../agents";
+import { draftPendingLabOrders } from "../lab-order-agent";
 import type { AgentRunSummary, ClinicalAgentId, ReviewCase, ReviewQueueItem } from "../types";
 import { createReviewCaseFromIntake } from "../workflow/review";
 
@@ -121,23 +122,28 @@ export function buildSpineReviewCase(input: {
 /**
  * PATHWAY (FR-AGT-024): once the note and the codes are accepted, draft one referral package per referral the
  * complication checks indicated. Each needs a clinician's confirmation (referral_pathway gate). Pure; idempotent.
+ * P1-LAB-01: also stages a lab_order draft from missingLabs when present (HITL; no live vendor).
  */
 export function draftPendingReferrals(reviewCase: ReviewCase): ReviewCase {
   const items = reviewCase.reviewQueueItems ?? [];
   const pending = reviewCase.agentRun?.pendingReferrals ?? [];
   const accepted = (t: ReviewQueueItem["itemType"]) => items.find((i) => i.itemType === t)?.status === "ACCEPTED";
-  if (!pending.length || !accepted("soap_note") || !accepted("diagnosis_codes")) return reviewCase;
-  const added = pending
-    .filter((p) => !items.some((i) => i.id === `${reviewCase.id}-referral-${p.domain}`))
-    .map<ReviewQueueItem>((p) => ({
-      id: `${reviewCase.id}-referral-${p.domain}`,
-      agentId: "REFERRAL",
-      itemType: "referral_package",
-      status: "DRAFT",
-      title: `Referral draft: ${p.domain.replace(/_/g, " ")}`,
-      summary: `${p.reason}; a clinician confirms before anything is sent`,
-      content: lines("PATHWAY: referral package draft", `Reason: ${p.reason}`, "Evidence:", ...p.evidence.map((e) => `• ${e}`), p.ruleIds.length ? `Rules: ${p.ruleIds.join(", ")}` : null, "Status: DRAFT · referral gate: clinician confirmation required"),
-      metadata: { agent: "PATHWAY", provenance: "ai_draft", domain: p.domain, rules: p.ruleIds },
-    }));
-  return added.length ? { ...reviewCase, reviewQueueItems: [...items, ...added] } : reviewCase;
+  let next = reviewCase;
+  if (pending.length && accepted("soap_note") && accepted("diagnosis_codes")) {
+    const added = pending
+      .filter((p) => !items.some((i) => i.id === `${reviewCase.id}-referral-${p.domain}`))
+      .map<ReviewQueueItem>((p) => ({
+        id: `${reviewCase.id}-referral-${p.domain}`,
+        agentId: "REFERRAL",
+        itemType: "referral_package",
+        status: "DRAFT",
+        title: `Referral draft: ${p.domain.replace(/_/g, " ")}`,
+        summary: `${p.reason}; a clinician confirms before anything is sent`,
+        content: lines("PATHWAY: referral package draft", `Reason: ${p.reason}`, "Evidence:", ...p.evidence.map((e) => `• ${e}`), p.ruleIds.length ? `Rules: ${p.ruleIds.join(", ")}` : null, "Status: DRAFT · referral gate: clinician confirmation required"),
+        metadata: { agent: "PATHWAY", provenance: "ai_draft", domain: p.domain, rules: p.ruleIds },
+      }));
+    if (added.length) next = { ...next, reviewQueueItems: [...(next.reviewQueueItems ?? items), ...added] };
+  }
+  // Lab order draft (HITL) — same note+codes gate; never auto-sends.
+  return draftPendingLabOrders(next);
 }

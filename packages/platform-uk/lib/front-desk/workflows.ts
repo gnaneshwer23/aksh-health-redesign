@@ -5,6 +5,7 @@ import { patients } from "@/lib/mock-data/patients";
 import { bookSlot, findFreeSlots } from "./calendar";
 import { captureHealthData, describeObservations, toFhirObservationDrafts } from "./health-capture";
 import { detectAppointmentType } from "./intents";
+import { handoffBookingToNurse } from "./nurse-handoff";
 import { displayName, getPatient, identifyPatient, phoneContactAllowed } from "./patients";
 import { screenUtterance } from "./safety";
 import { newId } from "./store";
@@ -238,10 +239,13 @@ export function runCampaign(state: FrontDeskState, id: string, now = new Date())
       }
       continue;
     }
-    bookSlot(state, slot.id, p.id, "voice", `${c.id}:${p.id}`);
+    const booked = bookSlot(state, slot.id, p.id, "voice", `${c.id}:${p.id}`);
     t.outcome = "booked";
     t.detail = `${slot.clinicianName}, ${new Date(slot.start).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })}`;
     addWorkItem(state, { kind: "campaign_call", status: "resolved", channel: "voice", direction: "outbound", patientId: p.id, summary: `${displayName(p)} booked via ${c.name}`, priority: "routine", campaignId: c.id, at });
+    if (booked.ok && !booked.idempotent) {
+      handoffBookingToNurse(state, booked.slot, { patientLabel: displayName(p), channel: "voice", at });
+    }
   }
   c.status = "complete";
   return { ok: true as const, campaign: c };
@@ -295,6 +299,13 @@ export function confirmReferralBooking(state: FrontDeskState, referralId: string
   const booked = bookSlot(state, r.proposedSlotId, r.patientId, "staff", `ref:${r.id}`);
   if (!booked.ok) return null;
   r.status = "booked";
+  if (!booked.idempotent) {
+    const patient = getPatient(r.patientId);
+    handoffBookingToNurse(state, booked.slot, {
+      patientLabel: patient ? displayName(patient) : undefined,
+      channel: "staff",
+    });
+  }
   return r;
 }
 

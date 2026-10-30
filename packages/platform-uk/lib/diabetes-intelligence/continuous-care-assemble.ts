@@ -330,9 +330,28 @@ export async function decideStaffEscalation(
     editedNote?: string;
   },
   options?: { scopeKey?: string }
-): Promise<ContinuousCareSnapshot> {
+): Promise<
+  ContinuousCareSnapshot & {
+    shieldAuditWriteFailed?: boolean;
+    shieldAuditWriteReason?: string | null;
+  }
+> {
   await decideEscalation(input, options);
-  return buildContinuousCare(input.patientId, options);
+  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
+  const shield = await persistDiabetesDomainShieldDecision({
+    source: "continuous_care",
+    action: input.action,
+    actor: input.actor,
+    patientId: input.patientId,
+    subjectId: input.escalationId,
+    reason: input.reason,
+  });
+  const snap = await buildContinuousCare(input.patientId, options);
+  return {
+    ...snap,
+    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
+    shieldAuditWriteReason: shield.shieldAuditWriteReason,
+  };
 }
 
 function worklistUrgencyFromItem(kind: ContinuousCareWorklistItem["kind"], priority: FollowUpPriority, dueAt: string | null, now: number): number {

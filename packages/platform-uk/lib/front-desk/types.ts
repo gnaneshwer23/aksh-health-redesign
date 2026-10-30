@@ -113,7 +113,9 @@ export type WorkItemKind =
   | "prescription_request"
   | "hand_off"
   | "safety_escalation"
-  | "campaign_call";
+  | "campaign_call"
+  /** P1-BOOK-01 — nurse observation due after verified booking. */
+  | "nurse_observation";
 
 export type WorkItemStatus = "resolved" | "handed_off" | "awaiting_clinician" | "open";
 

@@ -1,6 +1,6 @@
 # Agent golden-case eval harness
 
-Lightweight, HITL-safe scoring for **SYNTHESIS**, **GUARDIAN**, and **ORACLE**.
+Lightweight, HITL-safe scoring for **SYNTHESIS**, **GUARDIAN**, and **HORIZON** (legacy id **ORACLE**). Deterministic drafts may mention either product or legacy name; the scorer accepts `mustMentionAnyOf` alias groups (P1-EVAL-01).
 
 - Never writes to EMIS / SystmOne / any EHR
 - Runs agent code paths (LLM when configured, else deterministic fallback)

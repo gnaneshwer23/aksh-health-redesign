@@ -1,4 +1,5 @@
 import { deriveReviewQueueItems, CLINICAL_AGENT_META } from "../agents";
+import { applyLabOrderAccept, maybeStageLabOrderPackage } from "../lab-order-agent";
 import { applyReferralAccept, maybeStageReferralPackage } from "../referral-agent";
 import {
   createShieldAuditEvent,
@@ -63,8 +64,15 @@ export function updateQueueItemDecision(
   // Demo cases stage the scripted referral; agent-run cases get PATHWAY drafts from their own evidence (lib/clinical-spine/enqueue.ts).
   if (!nextCase.agentRun) nextCase = maybeStageReferralPackage(nextCase, resolveReviewQueueItems(nextCase));
 
+  // P1-LAB-01: agent-run cases with missingLabs stage a lab_order draft after note+codes Accept.
+  if (nextCase.agentRun) nextCase = maybeStageLabOrderPackage(nextCase, resolveReviewQueueItems(nextCase));
+
   if (target.itemType === "referral_package" && status === "ACCEPTED") {
     nextCase = applyReferralAccept(nextCase);
+  }
+
+  if (target.itemType === "lab_order" && status === "ACCEPTED") {
+    nextCase = applyLabOrderAccept(nextCase);
   }
 
   return nextCase;

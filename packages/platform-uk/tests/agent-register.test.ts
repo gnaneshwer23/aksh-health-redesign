@@ -9,7 +9,14 @@ import path from "node:path";
 
 import { llmAgentEnabled, type LlmAgent } from "../lib/ai/llm-gate";
 import { AGENT_DIRECTORY } from "../lib/agents";
-import { AGENTS, LOOP, PROHIBITED_FOR_ALL, REVIEW_ORDER } from "../lib/agents/register";
+import {
+  AGENTS,
+  LOOP,
+  PROHIBITED_FOR_ALL,
+  REVIEW_ORDER,
+  canonicalAgentId,
+  toOrchestrationAgentId,
+} from "../lib/agents/register";
 import { resolveReviewOrder } from "../lib/clinical-proof/agent-orchestration";
 
 const root = path.join(__dirname, "..");
@@ -54,11 +61,17 @@ for (const g of gateAgents) {
   assert.equal(llmAgentEnabled(g, { AKSH_ENVIRONMENT: "production", [`ENABLE_LLM_${g}`]: "true" }), false, `${g}: never a model call in production`);
 }
 
-// CONDUCTOR's review order is the register's order.
-assert.deepEqual(resolveReviewOrder("Normal", true, true), [...REVIEW_ORDER.normal]);
-assert.deepEqual(resolveReviewOrder("Urgent", true, true), [...REVIEW_ORDER.urgent]);
+// CONDUCTOR's review order is the register's order (canonical HORIZON → ORACLE slot for runtime).
+const mapOrder = (order: readonly string[]) => order.map((id) => toOrchestrationAgentId(id));
+assert.deepEqual(resolveReviewOrder("Normal", true, true), mapOrder(REVIEW_ORDER.normal));
+assert.deepEqual(resolveReviewOrder("Urgent", true, true), mapOrder(REVIEW_ORDER.urgent));
 assert.equal(resolveReviewOrder("Urgent", false, false)[0], "GUARDIAN", "safety first when urgent");
 assert.deepEqual(resolveReviewOrder("Normal", false, false), ["SYNTHESIS", "GUARDIAN", "ORACLE"]);
+assert.equal(REVIEW_ORDER.normal[2], "HORIZON", "P1-ALIAS-01: REVIEW_ORDER uses canonical HORIZON");
+assert.equal(canonicalAgentId("ORACLE"), "HORIZON");
+assert.equal(toOrchestrationAgentId("HORIZON"), "ORACLE");
+assert.equal(canonicalAgentId("REFERRAL"), "PATHWAY");
+assert.equal(toOrchestrationAgentId("PATHWAY"), "REFERRAL");
 
 // The loop runs through the clinician, and staging comes after the decision.
 const steps = LOOP.map((s) => s.actor);

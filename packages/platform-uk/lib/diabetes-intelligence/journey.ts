@@ -290,7 +290,12 @@ export async function decideJourneyCarePlan(
     editedSections?: CarePlanSection[];
   },
   options?: { scopeKey?: string; organisationId?: string | null }
-): Promise<DiabetesJourneySnapshot> {
+): Promise<
+  DiabetesJourneySnapshot & {
+    shieldAuditWriteFailed?: boolean;
+    shieldAuditWriteReason?: string | null;
+  }
+> {
   const scopeKey = options?.scopeKey ?? "shared";
   await decideCarePlan(
     {
@@ -303,7 +308,21 @@ export async function decideJourneyCarePlan(
     },
     { scopeKey, organisationId: options?.organisationId }
   );
-  return buildDiabetesJourney(input.patientId, { scopeKey });
+  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
+  const shield = await persistDiabetesDomainShieldDecision({
+    source: "journey_plan",
+    action: input.action,
+    actor: input.actor,
+    patientId: input.patientId,
+    subjectId: input.planId,
+    reason: input.reason,
+  });
+  const snap = await buildDiabetesJourney(input.patientId, { scopeKey });
+  return {
+    ...snap,
+    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
+    shieldAuditWriteReason: shield.shieldAuditWriteReason,
+  };
 }
 
 export async function advanceFollowUp(

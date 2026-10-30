@@ -17,6 +17,7 @@ import { MARKET_BY_CODE } from "@/lib/synthetic-world/catalog";
 
 import { screenUtterance } from "./safety";
 import { newId } from "./store";
+import { handoffBookingToNurse } from "./nurse-handoff";
 import { addWorkItem, createClinicalDraft } from "./workflows";
 import type {
   AccessChannel,
@@ -355,6 +356,16 @@ export function respond(state: FrontDeskState, session: ConversationSession, utt
       campaignId: session.campaignId ?? undefined,
       at,
     });
+    // P1-BOOK-01 — new bookings (not idempotent re-confirm) open a nurse observation task.
+    const bookedSlot = "to" in result && result.to ? result.to : "slot" in result ? result.slot : chosen;
+    const isIdempotent = "idempotent" in result && result.idempotent;
+    if (!moved && !isIdempotent && bookedSlot) {
+      handoffBookingToNurse(state, bookedSlot, {
+        patientLabel: displayName(p),
+        channel: session.channel,
+        at,
+      });
+    }
     session.stage = "intent";
     session.intent = null;
     session.offeredSlotIds = [];
