@@ -89,14 +89,25 @@ export function nextAppointmentFor(state: FrontDeskState, patientId: string, aft
 
 export type BookResult = { ok: true; slot: Slot; idempotent: boolean } | { ok: false; reason: "slot_taken" | "slot_not_found" };
 
-export function bookSlot(state: FrontDeskState, slotId: string, patientId: string, via: Slot["bookedVia"], bookingKey: string): BookResult {
+export function bookSlot(
+  state: FrontDeskState,
+  slotId: string,
+  patientId: string,
+  via: Slot["bookedVia"],
+  bookingKey: string,
+  careEpisodeId?: string | null
+): BookResult {
   const slot = state.slots.find((s) => s.id === slotId);
   if (!slot) return { ok: false, reason: "slot_not_found" };
-  if (slot.patientId === patientId && slot.bookingKey === bookingKey) return { ok: true, slot, idempotent: true };
+  if (slot.patientId === patientId && slot.bookingKey === bookingKey) {
+    if (careEpisodeId && !slot.careEpisodeId) slot.careEpisodeId = careEpisodeId;
+    return { ok: true, slot, idempotent: true };
+  }
   if (slot.patientId) return { ok: false, reason: "slot_taken" };
   slot.patientId = patientId;
   slot.bookedVia = via;
   slot.bookingKey = bookingKey;
+  if (careEpisodeId) slot.careEpisodeId = careEpisodeId;
   const wait = state.waitlist.find((w) => w.patientId === patientId && w.type === slot.type && w.status !== "booked");
   if (wait) wait.status = "booked";
   return { ok: true, slot, idempotent: false };

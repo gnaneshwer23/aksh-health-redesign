@@ -175,7 +175,8 @@ export {
   AGENT_INTEL_GUARDIAN_MODEL_ID,
   buildAgentIntelligence,
   seedAndBuildAgentIntelligence,
-  runAgentOrchestration,
+  /** Diabetes domain assemble — not CONDUCTOR (`runAgentOrchestration` is clinical-proof only). */
+  runDiabetesAgentIntelAssemble,
   decideAgentIntelligenceDraft,
   buildAgentIntelligenceWorklist,
 } from "./agent-intel-assemble";

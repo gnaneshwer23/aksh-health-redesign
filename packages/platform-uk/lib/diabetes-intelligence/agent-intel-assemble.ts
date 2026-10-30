@@ -113,7 +113,12 @@ export async function buildAgentIntelligence(
   };
 }
 
-export async function runAgentOrchestration(
+/**
+ * Diabetes domain seed / HITL assemble — **not** clinical-spine CONDUCTOR.
+ * Canonical CONDUCTOR lives in `lib/clinical-proof/agent-orchestration.ts`
+ * (`runAgentOrchestration`) and `lib/clinical-spine/orchestrate.ts`.
+ */
+export async function runDiabetesAgentIntelAssemble(
   patientId: string,
   options?: {
     scopeKey?: string;
@@ -121,6 +126,13 @@ export async function runAgentOrchestration(
     now?: number;
     /** Optional injection/probe text for Guardian evaluation (tests / chat). */
     userText?: string;
+    /** Optional care-episode correlation (P0-EPISODE-01). */
+    careEpisodeId?: string;
+    /**
+     * When true (default), Guardian PASS/REVIEW drafts are also mapped into the
+     * primary GP review-case worklist via spine enqueue adapter (P0-UX-01).
+     */
+    enqueueToSpineReview?: boolean;
   }
 ): Promise<AgentIntelSnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
@@ -177,12 +189,13 @@ export async function runAgentOrchestration(
 
   const drafts = draftEnqueueAllowed ? candidateDrafts : [];
 
+  // Honest capability labels — this path does not invoke CONDUCTOR/SYNTHESIS LLM agents.
   const agentsInvoked = [
-    "CONDUCTOR",
-    "SYNTHESIS",
-    "GUARDIAN",
+    "DIABETES_AGENT_INTEL",
+    "CONTEXT_ENGINE",
+    "GUARDIAN_GATEWAY",
     "AKSH_DIABETES",
-  ].filter((id) => id === "AKSH_DIABETES" || AGENTS.some((a) => a.id === id));
+  ].filter((id) => id === "DIABETES_AGENT_INTEL" || id === "CONTEXT_ENGINE" || id === "GUARDIAN_GATEWAY" || AGENTS.some((a) => a.id === id));
 
   const contextPackage = assembled.ok
     ? toAgentIntelContextPackageRef(assembled.package)
@@ -206,11 +219,29 @@ export async function runAgentOrchestration(
     ehrWrite: false,
     llmUsed: false,
     note: draftEnqueueAllowed
-      ? "Hierarchical orchestrator fan-out over Context Engine package; Guardian PASS/REVIEW; deterministic drafts; HITL required before any clinical use of text."
+      ? "Diabetes agent-intel assemble (not CONDUCTOR): Context Engine package → deterministic synthetic drafts; Guardian PASS/REVIEW; HITL required. Canonical CONDUCTOR is lib/clinical-proof/agent-orchestration.ts."
       : `Guardian gateway blocked enqueue (status=${guardianGateway?.output_status ?? "unavailable"}). No drafts entered the HITL worklist.`,
   };
 
   await replacePatientAgentIntelSeed(patientId, { drafts, run }, { scopeKey, actor });
+
+  if (draftEnqueueAllowed && options?.enqueueToSpineReview !== false && drafts.length > 0) {
+    const { enqueueDiabetesDraftsToSpineReview } = await import(
+      "../clinical-spine/diabetes-draft-enqueue"
+    );
+    await enqueueDiabetesDraftsToSpineReview({
+      patientId,
+      patientLabel: label,
+      drafts,
+      guardianOutputStatus: guardianGateway?.output_status,
+      runId: run.id,
+      userId: actor,
+      scopeKey,
+      careEpisodeId: options?.careEpisodeId,
+      nowMs,
+    });
+  }
+
   return buildAgentIntelligence(patientId, { scopeKey });
 }
 
@@ -221,9 +252,11 @@ export async function seedAndBuildAgentIntelligence(
     actor?: string;
     now?: number;
     userText?: string;
+    careEpisodeId?: string;
+    enqueueToSpineReview?: boolean;
   }
 ): Promise<AgentIntelSnapshot> {
-  return runAgentOrchestration(patientId, options);
+  return runDiabetesAgentIntelAssemble(patientId, options);
 }
 
 export async function decideAgentIntelligenceDraft(

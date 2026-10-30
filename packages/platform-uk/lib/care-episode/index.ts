@@ -31,3 +31,11 @@ export {
   resetCareEpisodeStoreForTests,
   transitionCareEpisode,
 } from "./repository";
+
+export {
+  correlateCareEpisodeStage,
+  readCareEpisodeId,
+  type CorrelateJourneyInput,
+  type CorrelateJourneyResult,
+  type JourneyStage,
+} from "./journey";
