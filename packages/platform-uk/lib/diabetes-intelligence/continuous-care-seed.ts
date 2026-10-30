@@ -12,6 +12,7 @@ import type {
   StaffEscalationItem,
   WorkflowDecisionEntry,
 } from "./continuous-care-types";
+import { scopedSyntheticId } from "./org-tenancy";
 
 function outcome(
   metric: string,
@@ -36,7 +37,8 @@ export function buildContinuousCareSeed(
   patientId: string,
   patientLabel: string,
   nowMs: number,
-  actor: string
+  actor: string,
+  scopeKey = "shared"
 ): {
   followUps: FollowUpWorklistItem[];
   appointments: AppointmentCoordination[];
@@ -50,14 +52,15 @@ export function buildContinuousCareSeed(
   const dueLater = new Date(nowMs + 14 * 86400_000).toISOString();
   const overdue = new Date(nowMs - 1 * 86400_000).toISOString();
   const apptAt = new Date(nowMs + 5 * 86400_000).toISOString();
+  const sid = (bare: string) => scopedSyntheticId(scopeKey, bare);
 
-  const fuJourneyId = `ccfu-${patientId}-journey`;
-  const fuMedId = `ccfu-${patientId}-medcare`;
-  const fuNurseId = `ccfu-${patientId}-nurse`;
-  const updId = `ccupd-${patientId}-1`;
-  const escId = `ccesc-${patientId}-1`;
-  const apptId = `ccappt-${patientId}-1`;
-  const progId = `ccprog-${patientId}-1`;
+  const fuJourneyId = sid(`ccfu-${patientId}-journey`);
+  const fuMedId = sid(`ccfu-${patientId}-medcare`);
+  const fuNurseId = sid(`ccfu-${patientId}-nurse`);
+  const updId = sid(`ccupd-${patientId}-1`);
+  const escId = sid(`ccesc-${patientId}-1`);
+  const apptId = sid(`ccappt-${patientId}-1`);
+  const progId = sid(`ccprog-${patientId}-1`);
 
   const followUps: FollowUpWorklistItem[] = [
     {
@@ -66,7 +69,7 @@ export function buildContinuousCareSeed(
       patientLabel,
       title: "Confirm diabetes care-plan follow-up (journey)",
       sourceKind: "journey_follow_up",
-      sourceRefId: `cfu-${patientId}-synthetic`,
+      sourceRefId: sid(`cfu-${patientId}-synthetic`),
       ownerRole: "gp",
       ownerDisplay: "Named GP",
       status: "open",
@@ -88,7 +91,7 @@ export function buildContinuousCareSeed(
       patientLabel,
       title: "Medicines counselling after medcare handoff",
       sourceKind: "medcare_task",
-      sourceRefId: `task-${patientId}-med-recon`,
+      sourceRefId: sid(`task-${patientId}-med-recon`),
       ownerRole: "clinical-pharmacist",
       ownerDisplay: "Practice pharmacist (synthetic)",
       status: "open",
@@ -175,7 +178,7 @@ export function buildContinuousCareSeed(
   ];
 
   const notificationPrefs: NotificationPreferences = {
-    id: `ccpref-${patientId}`,
+    id: sid(`ccpref-${patientId}`),
     patientId,
     ownerRole: "patient",
     ownerDisplay: patientLabel,

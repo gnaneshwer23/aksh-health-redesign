@@ -8,10 +8,13 @@ export function isPostgresConfigured() {
 }
 
 export function getDatabaseUrl() {
-  return (
-    process.env.DATABASE_URL?.trim() ||
-    "postgresql://medplum:medplum_password@localhost:5432/akshhealth"
-  );
+  const configured = process.env.DATABASE_URL?.trim();
+  if (configured) return configured;
+  // USE_POSTGRES without DATABASE_URL must not silently hit localhost (masks prod misconfig as "DB down").
+  if (process.env.USE_POSTGRES === "true") {
+    throw new Error("DATABASE_URL is required when USE_POSTGRES=true");
+  }
+  return "postgresql://medplum:medplum_password@localhost:5432/akshhealth";
 }
 
 function shouldUseSsl(connectionString: string) {

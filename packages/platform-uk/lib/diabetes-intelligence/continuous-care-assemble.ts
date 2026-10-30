@@ -242,7 +242,7 @@ export async function seedAndBuildContinuousCare(
   const actor = options?.actor ?? "synthetic-seed";
   const now = options?.now ?? Date.now();
   const label = patientLabel(patientId);
-  const seed = buildContinuousCareSeed(patientId, label, now, actor);
+  const seed = buildContinuousCareSeed(patientId, label, now, actor, scopeKey);
   await replacePatientContinuousCareSeed(patientId, seed, { scopeKey, actor });
   return buildContinuousCare(patientId, { scopeKey });
 }

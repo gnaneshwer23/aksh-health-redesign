@@ -13,13 +13,13 @@
 | Canonical care-plan writes | **PASS** | Orchestration asserts `CARE_PLAN_CANONICAL_STORE` + facade provenance |
 | Canonical follow-up writes | **PASS** | Follow-up facade / `isOpsProjection` asserts in orchestration suite |
 | Duplicate prevention + compatibility projections | **PASS** | Med-recon / care-plan / follow-up facades + INT-03/04/04a asserts |
-| Cross-user / cross-org isolation | **PASS** (helpers) / **PARTIAL** (RLS) | INT-09 API isolation **PASS**; INT-08 helpers **PASS**; live RLS denied on this role |
+| Cross-user / cross-org isolation | **PASS** | INT-09 API isolation **PASS**; INT-08 helpers + local-dev RLS insert/select proof **PASS**; INT-16 scoped seed PKs |
 | Clinical persona permissions on decisions | **PASS** | INT-10 `connected-diabetes-decision-scope.test.ts` + decision routes |
 | Timeline complete + ordered | **PASS** (prior mitigate) | Doc 16 INT-05; `/timeline` + P360 merge; chrome step |
 
 ## Residual risks
 
-1. **INT-08 RLS** — needs a DB role with INSERT on `aksh.care_plan_records` under `withOrgContext` for full proof on every laptop.  
+1. **INT-08 RLS** — **closed on local-dev** when `DATABASE_URL` points at simulation Neon with `aksh_tenant` SELECT/INSERT/UPDATE grants (cleanup uses owner DELETE). Soft-skips only if role/table/migrations absent.  
 2. **Playwright wall-clock** — prefer CI Neon branch over local long runs when Actions is green.  
 3. **Synthetic-only** — no claim of production clinical readiness (docs 21–22).
 

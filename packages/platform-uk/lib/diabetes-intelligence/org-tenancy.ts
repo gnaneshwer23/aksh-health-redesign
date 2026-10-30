@@ -37,3 +37,16 @@ export function rowVisibleToOrganisation(
   if (rowOrganisationId == null || rowOrganisationId === "") return true;
   return rowOrganisationId === requestedOrganisationId.trim();
 }
+
+/**
+ * INT-16 — namespace deterministic synthetic PKs by scope_key so two users'
+ * seeds cannot collide on global `id` (e.g. `goal-P002-adherence`).
+ * Idempotent when already prefixed with the same scope.
+ */
+export function scopedSyntheticId(scopeKey: string, bareId: string): string {
+  const scope = scopeKey.trim() || "shared";
+  const id = bareId.trim();
+  if (!id) return id;
+  if (id.startsWith(`${scope}:`)) return id;
+  return `${scope}:${id}`;
+}

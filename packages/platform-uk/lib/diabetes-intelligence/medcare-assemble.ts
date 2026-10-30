@@ -42,6 +42,7 @@ import {
   defaultGoalsForPatient,
   safetyFlagsFromInteractions,
 } from "./medcare-seed";
+import { scopedSyntheticId } from "./org-tenancy";
 import type {
   CarePlanTemplateId,
   CareTaskStatus,
@@ -190,10 +191,13 @@ export async function seedAndBuildMedicationPersonalisedCare(
     interactions,
     allergies.map((a) => ({ substance: a.substance, criticality: a.criticality })),
     now
-  );
-  const goals = defaultGoalsForPatient(patientId, now);
+  ).map((f) => ({ ...f, id: scopedSyntheticId(scopeKey, f.id) }));
+  const goals = defaultGoalsForPatient(patientId, now).map((g) => ({
+    ...g,
+    id: scopedSyntheticId(scopeKey, g.id),
+  }));
   const due = new Date(now + 7 * 86400_000).toISOString();
-  const taskId = `task-${patientId}-med-recon`;
+  const taskId = scopedSyntheticId(scopeKey, `task-${patientId}-med-recon`);
   const tasks = [
     {
       id: taskId,
@@ -217,7 +221,7 @@ export async function seedAndBuildMedicationPersonalisedCare(
   ];
   const handoffs = [
     {
-      id: `hand-${patientId}-seed`,
+      id: scopedSyntheticId(scopeKey, `hand-${patientId}-seed`),
       patientId,
       fromRole: "gp",
       toRole: "clinical-pharmacist",
