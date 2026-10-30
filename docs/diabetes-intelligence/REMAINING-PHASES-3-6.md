@@ -1,6 +1,6 @@
-# Remaining work — Phase 6 (+ Phase 3–5 leftovers)
+# Remaining work — after Phase 6 (+ Phase 1–5 leftovers)
 
-After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), Phase 3 (medication & personalised care synthetic), Phase 4 (continuous care synthetic), and Phase 5 (agent intelligence synthetic):
+After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 (glucose intelligence synthetic), Phase 3 (medication & personalised care synthetic), Phase 4 (continuous care synthetic), Phase 5 (agent intelligence synthetic), and Phase 6 (chronic disease domain framework):
 
 ## Phase 4 leftovers (productization)
 
@@ -48,8 +48,16 @@ After Phase 0 (docs + journey slice), Phase 1 (Patient 360 foundation), Phase 2 
 - Leftovers: learning-loop → signal thresholds productization; optional gated LLM; Playwright E2E
 - See [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md)
 
-## Phase 6 — Readiness
+## Phase 6 — Future chronic disease expansion — **shipped (framework)**
+
+- Reusable disease-domain plugin interfaces + registry (`lib/disease-domains/`)
+- Diabetes/metabolic registered as `active_synthetic`; CVD / CKD / obesity scaffolds `planned` (`not_activated`); other chronic = research placeholder
+- Capability `chronic_disease_domain_framework` = `synthetic_demo`; future disease caps remain `planned`
+- See [15-phase6-disease-domains.md](./15-phase6-disease-domains.md)
+
+## Post–Phase 6 readiness (still open)
 
 - Complete CLINICAL_RELEASE checklist
 - Org pilot with synthetic → shadow → live progression
+- Promote CVD/CKD/obesity only after clinical-lead specs + validation gates
 - Update capability register only with evidence; keep LIVE_ORGANISATIONS honest

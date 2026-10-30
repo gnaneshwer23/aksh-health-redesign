@@ -1,7 +1,7 @@
 # Connected Diabetes Intelligence — index
 
-**Date:** 29 October 2026  
-**Scope:** Phase 0 docs + vertical slice; Phase 1 Patient 360; Phase 2 glucose intelligence; Phase 3 medication & personalised care; Phase 4 continuous care; Phase 5 agent intelligence — all in `packages/platform-uk`.  
+**Date:** 30 October 2026  
+**Scope:** Phase 0 docs + vertical slice; Phase 1 Patient 360; Phase 2 glucose intelligence; Phase 3 medication & personalised care; Phase 4 continuous care; Phase 5 agent intelligence; Phase 6 chronic disease domain framework — all in `packages/platform-uk`.  
 **Ground truth:** `packages/platform-uk/lib/status/capabilities.ts`, `lib/agents/register.ts`, `db/migrations/`, live deploy root `packages/platform-uk` (www.akshhealth.com).  
 **LIVE_ORGANISATIONS:** `0` — no production clinical use.
 
@@ -23,7 +23,8 @@
 | 12 | [12-phase3-medication-personalised-care.md](./12-phase3-medication-personalised-care.md) | Phase 3 medication & personalised care |
 | 13 | [13-phase4-continuous-care.md](./13-phase4-continuous-care.md) | Phase 4 continuous care / longitudinal ops |
 | 14 | [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md) | Phase 5 agent intelligence / AI orchestration |
-| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–5 |
+| 15 | [15-phase6-disease-domains.md](./15-phase6-disease-domains.md) | Phase 6 chronic disease domain framework |
+| — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–6 |
 
 ## Vertical slice (synthetic)
 
@@ -78,6 +79,13 @@ Implemented under `packages/platform-uk` (see backlog). Feature flag / honesty: 
 3. UI: `/dashboard/gp/patients/P002/agent-intelligence` and worklist `/dashboard/gp/agent-intelligence`
 4. APIs under `/api/patients/[id]/agent-intelligence` (+ draft decision) and `/api/gp/agent-intelligence/worklist`
 5. Details: [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md).
+
+### How to inspect — Phase 6 disease domain framework
+
+1. No migration — TypeScript registry only (`lib/disease-domains/`).
+2. `npx tsx tests/disease-domain-framework.test.ts`
+3. `listDiseaseDomains()` / `evaluateDomainRisk(...)` — diabetes returns a pointer into existing modules; CVD/CKD/obesity/other return `not_activated`.
+4. Details: [15-phase6-disease-domains.md](./15-phase6-disease-domains.md).
 
 ## Non-negotiables
 

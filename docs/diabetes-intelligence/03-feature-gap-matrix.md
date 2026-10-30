@@ -101,10 +101,16 @@ Statuses below are product reality, not marketing. Capability register remains a
 | PRISM / ATLAS | `planned` | |
 | Continuous learning from Accept/Edit/Reject into thresholds | `incomplete` | learning_events exist; Phase 5 records HITL only |
 
-## Phase 6 — Production readiness & integrations
+## Phase 6 — Future chronic disease expansion (+ readiness leftovers)
 
 | Feature | Status | Evidence / notes |
 |---------|--------|------------------|
+| Disease-domain plugin registry / interfaces | **`synthetic_demo`** | `chronic_disease_domain_framework`; `lib/disease-domains/` |
+| Diabetes/metabolic domain registration | **`active_synthetic`** | Pointer into existing synthetic path |
+| Cardiovascular domain | `planned` scaffold | `not_activated`; cap `cardiovascular_disease_intelligence` |
+| CKD domain | `planned` scaffold | `not_activated`; cap `ckd_disease_intelligence` |
+| Obesity / metabolic domain | `planned` scaffold | `not_activated`; cap `obesity_metabolic_intelligence` |
+| Other chronic diseases | `research` placeholder | Candidate registry; evidence insufficient |
 | Clinical safety case / CSO sign-off | `research/validation` | releaseCriteria on clinical caps |
 | DPIA / regulatory opinion | `research/validation` | |
 | Live EHR write | `planned` / prohibited until gates | `liveEmis: false` |

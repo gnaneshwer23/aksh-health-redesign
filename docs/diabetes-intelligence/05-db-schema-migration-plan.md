@@ -96,7 +96,11 @@ Full migration list: `001`–`028`, `030`–`042` (no `029`), **`043_diabetes_ca
 - `agent_intel_version_pins` — append-only model/prompt registry
 - File fallback for unit tests; apply on simulation / local-dev Neon only — never production main
 
-### Near-term (Phase 6+)
+### Phase 6 note
+
+Phase 6 (chronic disease domain framework) adds **no** migration — TypeScript registry only under `lib/disease-domains/`. Production Neon remains untouched.
+
+### Near-term (post–Phase 6)
 
 | Migration | Intent |
 |-----------|--------|

@@ -3,7 +3,7 @@
 ## Verdict
 
 **Not production-ready for real-patient diabetes care decisions.**  
-`LIVE_ORGANISATIONS = 0`. Clinical intelligence capabilities remain `in_validation` or `synthetic_demo`. This vertical slice is a **synthetic connected demo** with hard honesty flags (`ehrWrite: false`, no autonomous prescribing).
+`LIVE_ORGANISATIONS = 0`. Clinical intelligence capabilities remain `in_validation` or `synthetic_demo`. This vertical slice is a **synthetic connected demo** with hard honesty flags (`ehrWrite: false`, no autonomous prescribing). Phase 6 adds a domain plugin framework only — CVD/CKD/obesity remain `planned` / `not_activated`; do not treat scaffolds as clinical features.
 
 ## What is strong
 
