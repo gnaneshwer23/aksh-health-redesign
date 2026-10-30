@@ -288,9 +288,10 @@ export function createDraftFromPayload(
 
 export function draftAllKindsForPatient(
   patientId: string,
-  options?: { now?: number }
+  options?: { now?: number; context?: SharedPatientContext }
 ): { context: SharedPatientContext; drafts: AgentIntelDraft[] } {
-  const context = buildSharedPatientContext(patientId, { now: options?.now });
+  const context =
+    options?.context ?? buildSharedPatientContext(patientId, { now: options?.now });
   const kinds: AgentIntelDraftKind[] = [
     "history_summary",
     "clinical_documentation",
