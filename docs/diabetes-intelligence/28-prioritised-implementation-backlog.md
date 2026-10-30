@@ -15,8 +15,8 @@
 
 | ID | Item | Why |
 |----|------|-----|
-| B-P1-1 | INT-08 RLS proof role on local-dev Neon | Full cross-org isolation evidence |
-| B-P1-2 | Composite / scoped primary keys (INT-16 residual) | Stop seed PK collisions across users |
+| B-P1-1 | ~~INT-08 RLS proof role on local-dev Neon~~ | **Done** — helpers + RLS insert/select proof on local-dev (owner cleanup; no LIVE_ORGANISATIONS flip) |
+| B-P1-2 | ~~Composite / scoped primary keys (INT-16 residual)~~ | **Done** — `scopedSyntheticId` on medcare + continuous-care seeds |
 | B-P1-3 | Playwright connected-diabetes on every main push (already wired) | Catch UI/API regressions |
 
 ## P2 — Clinical Intelligence 2.0 deepen

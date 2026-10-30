@@ -20,7 +20,14 @@ async function checkDatabaseHealth(): Promise<ServiceHealth> {
   try {
     await getPgPool().query("SELECT 1");
     return { configured: true, connected: true, mode: "live" };
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code ?? "")
+        : "";
+    // Ops-only signal — production JSON stays ok/degraded with no detail.
+    console.error("[health] database probe failed:", code || "unknown", message.split("\n")[0]);
     return { configured: true, connected: false, mode: "live" };
   }
 }

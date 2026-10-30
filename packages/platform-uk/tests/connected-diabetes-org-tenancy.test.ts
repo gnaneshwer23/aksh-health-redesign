@@ -1,9 +1,9 @@
 /**
- * INT-08 — org tenancy helpers + optional RLS proof on local-dev Neon.
- * File-store path always runs; PG RLS skips when DATABASE_URL unset.
+ * INT-08 — org tenancy helpers + RLS proof on local-dev Neon.
+ * File-store path always runs; PG RLS requires DATABASE_URL (local-dev / simulation).
  * Never targets production Neon.
  *
- * Run: npx tsx tests/connected-diabetes-org-tenancy.test.ts
+ * Run: npx tsx --env-file=.env.local tests/connected-diabetes-org-tenancy.test.ts
  */
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -12,8 +12,17 @@ import {
   CONNECTED_DIABETES_SIMULATION_ORG_ID,
   resolveConnectedDiabetesOrganisationId,
   rowVisibleToOrganisation,
+  scopedSyntheticId,
 } from "../lib/diabetes-intelligence/org-tenancy";
-import { closePgPool, isPostgresConfigured, withOrgContext } from "../lib/db/client";
+import { closePgPool, getPgPool, isPostgresConfigured, withOrgContext } from "../lib/db/client";
+
+function isSkippableRlsEnvError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  // Missing role/table/migration on a fresh laptop — helpers still prove the contract.
+  return /relation .* does not exist|role "aksh_tenant" does not exist|function aksh\.ctx_org_ids/i.test(
+    msg
+  );
+}
 
 async function run() {
   assert.equal(resolveConnectedDiabetesOrganisationId(), CONNECTED_DIABETES_SIMULATION_ORG_ID);
@@ -26,7 +35,18 @@ async function run() {
   assert.equal(rowVisibleToOrganisation("org-a", "org-b"), false);
   assert.equal(rowVisibleToOrganisation("org-a", null), true);
 
-  if (!isPostgresConfigured()) {
+  // INT-16 residual — scoped synthetic PKs must not collide across scope_key.
+  assert.equal(scopedSyntheticId("user-a", "goal-P002-adherence"), "user-a:goal-P002-adherence");
+  assert.equal(
+    scopedSyntheticId("user-a", "user-a:goal-P002-adherence"),
+    "user-a:goal-P002-adherence"
+  );
+  assert.notEqual(
+    scopedSyntheticId("user-a", "goal-P002-adherence"),
+    scopedSyntheticId("user-b", "goal-P002-adherence")
+  );
+
+  if (!isPostgresConfigured() || !process.env.DATABASE_URL?.trim()) {
     console.log("connected-diabetes-org-tenancy: helpers PASS; RLS skipped (no DATABASE_URL)");
     return;
   }
@@ -61,18 +81,25 @@ async function run() {
     );
     assert.equal(other.rows[0]?.n, 0, "cross-org must not see stamped row under RLS");
 
-    await withOrgContext(orgA, (c) =>
-      c.query(`DELETE FROM aksh.care_plan_records WHERE id = $1`, [id])
-    );
+    // aksh_tenant is intentionally SELECT/INSERT/UPDATE only (no DELETE) — clean up as owner.
+    await getPgPool().query(`DELETE FROM aksh.care_plan_records WHERE id = $1`, [id]);
 
     console.log("connected-diabetes-org-tenancy: INT-08 helpers + RLS — PASS");
   } catch (err) {
-    // Table/role may be absent on fresh envs — helpers already asserted.
-    console.log(
-      "connected-diabetes-org-tenancy: helpers PASS; RLS skipped (",
-      err instanceof Error ? err.message : err,
-      ")"
-    );
+    // Best-effort cleanup if insert landed before a later assertion failed.
+    await getPgPool()
+      .query(`DELETE FROM aksh.care_plan_records WHERE id = $1`, [id])
+      .catch(() => undefined);
+
+    if (isSkippableRlsEnvError(err)) {
+      console.log(
+        "connected-diabetes-org-tenancy: helpers PASS; RLS skipped (",
+        err instanceof Error ? err.message : err,
+        ")"
+      );
+      return;
+    }
+    throw err;
   } finally {
     await closePgPool().catch(() => undefined);
   }

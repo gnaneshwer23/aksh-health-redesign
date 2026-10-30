@@ -67,6 +67,7 @@ export {
   CONNECTED_DIABETES_SIMULATION_ORG_ID,
   resolveConnectedDiabetesOrganisationId,
   rowVisibleToOrganisation,
+  scopedSyntheticId,
 } from "./org-tenancy";
 export {
   loadUnifiedGlucoseObservations,

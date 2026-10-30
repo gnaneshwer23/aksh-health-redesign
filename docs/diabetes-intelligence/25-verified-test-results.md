@@ -18,7 +18,7 @@
 | `connected-patient-api-access.test.ts` (INT-09) | **PASS** | 9 GET + 9 POST isolation; 18 routes wired |
 | `connected-diabetes-decision-scope.test.ts` (INT-10) | **PASS** | Persona gates |
 | `connected-diabetes-orchestration.test.ts` (INT-01…04a) | **PASS** | Canonical care-plan / follow-up + projections |
-| `connected-diabetes-org-tenancy.test.ts` (INT-08) | **PASS** helpers | RLS insert skipped: `permission denied for table care_plan_records` on this local role — helpers still asserted |
+| `connected-diabetes-org-tenancy.test.ts` (INT-08) | **PASS** helpers + RLS | Cross-org SELECT isolation on local-dev Neon; cleanup as owner (aksh_tenant has no DELETE). INT-16 scopedSyntheticId asserted. |
 | `diabetes-intelligence-journey.test.ts` | **PASS** | Vertical slice |
 | `patient-intelligence-360.test.ts` | **PASS** | With `.env.local` |
 | `diabetes-glucose-intelligence.test.ts` | **PASS** | |
