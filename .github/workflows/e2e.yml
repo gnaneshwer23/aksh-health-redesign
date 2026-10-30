@@ -54,13 +54,48 @@ jobs:
       - name: Run E2E platform unit gates
         run: npm run test:e2e:platform-unit-gates
 
+  # B-P2-3 — Evaluation engine + diabetes agent-intel Context/Guardian wiring as a
+  # required synthetic CI gate (also embedded in platform-unit-gates for fail-fast).
+  ci20-evaluation-gate:
+    name: CI 2.0 evaluation gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CI: true
+      SKIP_EMAIL_SEND: "true"
+      DISABLE_RATE_LIMIT: "true"
+      E2E_TEST_MODE: "true"
+      ENABLE_DIABETES_MODULE: "true"
+      ENABLE_LLM_SYNTHESIS: "false"
+      ENABLE_LLM_GUARDIAN: "false"
+      ENABLE_LLM_ORACLE: "false"
+      ENABLE_LLM_DR_ASSIST: "false"
+      ENABLE_LLM_NEXUS: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: packages/platform-uk/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run CI 2.0 evaluation gate
+        run: npm run test:ci20:evaluation-gate
+
   playwright:
     name: Playwright E2E
     runs-on: ubuntu-latest
     # Full suite + production build + pending CI-branch migrations; Atlantic latency to Neon (eu-west-2).
     # 40m cancelled mid-Playwright after migrations were added — keep headroom for retries.
     timeout-minutes: 60
-    needs: platform-unit-gates
+    needs: [platform-unit-gates, ci20-evaluation-gate]
     env:
       CI: true
       E2E_BASE_URL: http://127.0.0.1:3000

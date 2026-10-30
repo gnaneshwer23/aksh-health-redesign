@@ -23,9 +23,9 @@
 
 | ID | Item | Why |
 |----|------|-----|
-| B-P2-1 | Feed Context Engine package into Phase 5 agent-intel drafts | Single signed context path |
-| B-P2-2 | Run Guardian gateway before agent-intel worklist enqueue | Hard PASS/REVIEW/BLOCK at module boundary |
-| B-P2-3 | Evaluation engine as required CI gate (synthetic) | Stop regressions in model/agent/workflow layers |
+| B-P2-1 | Feed Context Engine package into Phase 5 agent-intel drafts | **Done** — single signed context path into diabetes agent drafts |
+| B-P2-2 | Run Guardian gateway before agent-intel worklist enqueue | **Done** — hard PASS/REVIEW/BLOCK at module boundary |
+| B-P2-3 | Evaluation engine as required CI gate (synthetic) | **Done** — `CI 2.0 evaluation gate` Actions job + `test:ci20:evaluation-gate` |
 | B-P2-4 | Resume Neo4j Aura + seed for live GraphRAG path | Still mock-safe fallback |
 | B-P2-5 | Unify ClinicalIntelligenceWorkspace with connected chrome | Clinician one-pane vision |
 

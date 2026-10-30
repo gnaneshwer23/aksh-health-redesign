@@ -43,9 +43,22 @@ export type SharedPatientContextSource = {
     | "glucose_intelligence"
     | "medication_care"
     | "continuous_care"
-    | "agents_register";
+    | "agents_register"
+    | "context_engine";
   available: boolean;
   note: string;
+};
+
+/** Signed Context Engine package reference attached to shared diabetes agent context. */
+export type AgentIntelContextPackageRef = {
+  contextId: string;
+  schemaVersion: string;
+  purpose: string;
+  missing_information: string[];
+  uncertainties: string[];
+  laboratoryResultCount: number;
+  evidenceCount: number;
+  dataSource: string;
 };
 
 /** Shared context — agents must not invent separate patient silos. */
@@ -61,6 +74,8 @@ export type SharedPatientContext = {
   deteriorationSignals: string[];
   sources: SharedPatientContextSource[];
   authorisedTools: string[];
+  /** Present when drafts were fed from the central Context Engine package. */
+  contextPackage?: AgentIntelContextPackageRef;
   synthetic: true;
   ehrWrite: false;
   builtAt: string;
@@ -171,17 +186,29 @@ export type AgentIntelHistoryEntry = {
   metadata?: Record<string, unknown>;
 };
 
+export type AgentIntelGuardianGateSummary = {
+  output_status: "PASS" | "REVIEW" | "BLOCK";
+  reasons: string[];
+  independentOfAgentModel: true;
+};
+
 export type AgentIntelOrchestrationRun = {
   id: string;
   patientId: string;
   patientLabel: string;
-  status: "completed" | "partial" | "failed";
+  status: "completed" | "partial" | "failed" | "blocked";
   agentsInvoked: string[];
   draftIds: string[];
   sharedContextBuiltAt: string;
   versionPin: AgentIntelVersionPin;
   startedAt: string;
   completedAt: string;
+  /** Context Engine package id used for this fan-out (when assembly succeeded). */
+  contextPackage?: AgentIntelContextPackageRef;
+  /** Guardian gateway result applied before worklist enqueue. */
+  guardianGateway?: AgentIntelGuardianGateSummary;
+  /** False when Guardian BLOCK — drafts must not enter the HITL worklist. */
+  draftEnqueueAllowed: boolean;
   synthetic: true;
   ehrWrite: false;
   llmUsed: false;
@@ -246,6 +273,9 @@ export type AgentIntelSnapshot = {
   drafts: AgentIntelDraft[];
   orchestrationRuns: AgentIntelOrchestrationRun[];
   decisionHistory: AgentIntelHistoryEntry[];
+  /** Latest orchestration Guardian gate (if any). */
+  guardianGateway?: AgentIntelGuardianGateSummary;
+  draftEnqueueAllowed?: boolean;
   evalSuite: {
     cases: AgentIntelEvalCase[];
     lastResults: AgentIntelEvalResult[];

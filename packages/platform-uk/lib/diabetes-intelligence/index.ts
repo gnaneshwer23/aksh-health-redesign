@@ -156,6 +156,8 @@ export {
   AUTHORISED_AGENT_TOOLS,
   buildSharedPatientContext,
   buildSharedPatientContextAsync,
+  enrichSharedContextFromClinicalPackage,
+  toAgentIntelContextPackageRef,
 } from "./agent-intel-context";
 export { SYNTHETIC_EVIDENCE_CORPUS, retrieveEvidenceForContext } from "./agent-intel-retrieval";
 export { validateStructuredDraft } from "./agent-intel-validate";
@@ -170,6 +172,7 @@ export {
   runAgentIntelEvalSuite,
 } from "./agent-intel-eval";
 export {
+  AGENT_INTEL_GUARDIAN_MODEL_ID,
   buildAgentIntelligence,
   seedAndBuildAgentIntelligence,
   runAgentOrchestration,

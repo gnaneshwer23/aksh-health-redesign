@@ -2,12 +2,18 @@
  * Shared patient context for Phase 5 agents.
  * Reuses mock cohort + live module snapshots when scopeKey is provided —
  * no separate patient data silos (INT-01 / INT-07 mitigation path).
+ * Prefer the central Context Engine package when assembling drafts (CI 2.0 B-P2-1).
  */
 
+import type { ClinicalContextPackage } from "../context-engine/types";
 import { AGENTS } from "../agents/register";
 import { getPatientById } from "../mock-data";
 import { listConditions, listAllergies } from "../patient-intelligence/repository";
-import type { SharedPatientContext, SharedPatientContextSource } from "./agent-intel-types";
+import type {
+  AgentIntelContextPackageRef,
+  SharedPatientContext,
+  SharedPatientContextSource,
+} from "./agent-intel-types";
 import { listGlucoseSeries } from "./glucose-repository";
 import { listCarePlans as listMedCarePlans } from "./medcare-repository";
 import { listCarePlans as listJourneyCarePlans } from "./repository";
@@ -21,6 +27,7 @@ export const AUTHORISED_AGENT_TOOLS = [
   "validate_structured_output",
   "enqueue_hitl_review",
   "record_learning_decision_link",
+  "assemble_context_engine_package",
 ] as const;
 
 export type SharedContextLiveSignals = {
@@ -40,6 +47,11 @@ function baseSources(patientAvailable: boolean): SharedPatientContextSource[] {
       note: patientAvailable
         ? "Hand-authored clinical-proof fixture"
         : "Patient id not in mock cohort",
+    },
+    {
+      module: "context_engine",
+      available: false,
+      note: "Central Context Engine package not yet attached — call enrichSharedContextFromClinicalPackage",
     },
     {
       module: "patient_360",
@@ -72,6 +84,74 @@ function baseSources(patientAvailable: boolean): SharedPatientContextSource[] {
       note: `Reuses agents register (${AGENTS.length} contracts); CONDUCTOR + specialists`,
     },
   ];
+}
+
+export function toAgentIntelContextPackageRef(
+  pkg: ClinicalContextPackage
+): AgentIntelContextPackageRef {
+  return {
+    contextId: pkg.contextId,
+    schemaVersion: pkg.schemaVersion,
+    purpose: pkg.purpose,
+    missing_information: [...pkg.missing_information],
+    uncertainties: [...pkg.uncertainties],
+    laboratoryResultCount: pkg.laboratory_results.length,
+    evidenceCount: pkg.evidence.length,
+    dataSource: pkg.dataSource,
+  };
+}
+
+/**
+ * Prefer signed Context Engine facts over siloed mock-only fields when both exist.
+ * Keeps module live-signal enrichment; stamps context_engine source as available.
+ */
+export function enrichSharedContextFromClinicalPackage(
+  base: SharedPatientContext,
+  pkg: ClinicalContextPackage
+): SharedPatientContext {
+  const ref = toAgentIntelContextPackageRef(pkg);
+  const sources = base.sources.map((s) =>
+    s.module === "context_engine"
+      ? {
+          module: "context_engine" as const,
+          available: true,
+          note: `Context Engine ${pkg.schemaVersion} · ${pkg.contextId} · missing=${pkg.missing_information.join(",") || "none"}`,
+        }
+      : s
+  );
+  if (!sources.some((s) => s.module === "context_engine")) {
+    sources.unshift({
+      module: "context_engine",
+      available: true,
+      note: `Context Engine ${pkg.schemaVersion} · ${pkg.contextId}`,
+    });
+  }
+
+  const conditions =
+    pkg.conditions.length > 0 ? [...pkg.conditions] : base.conditions;
+  const medications =
+    pkg.medications.length > 0 ? [...pkg.medications] : base.medications;
+  const allergies = pkg.allergies.length > 0 ? [...pkg.allergies] : base.allergies;
+  const deteriorationSignals =
+    pkg.risk_factors.length > 0 ? [...pkg.risk_factors] : base.deteriorationSignals;
+
+  return {
+    ...base,
+    patientLabel: pkg.patient_context.label?.trim() || base.patientLabel,
+    age: pkg.patient_context.age ?? base.age,
+    gender: pkg.patient_context.gender ?? base.gender,
+    conditions,
+    medications,
+    allergies,
+    lastEncounterDate:
+      pkg.encounter_context.lastEncounterDate ?? base.lastEncounterDate,
+    deteriorationSignals,
+    sources,
+    contextPackage: ref,
+    authorisedTools: Array.from(
+      new Set([...base.authorisedTools, "assemble_context_engine_package"])
+    ),
+  };
 }
 
 function applyLiveSignals(
