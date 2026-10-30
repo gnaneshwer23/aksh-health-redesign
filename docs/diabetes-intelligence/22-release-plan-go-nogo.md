@@ -44,7 +44,9 @@
 - [ ] CSO-signed safety case (GOV-01) — **fail**  
 - [ ] DPIA / regulatory (GOV-02) — **fail**  
 - [ ] Org go-live (GOV-03) — **fail**  
-- [ ] INT-01…03 closed — **fail** (INT-09 patient URL access gate **fixed**; orchestration gaps remain)  
+- [x] INT-01…03 mitigated (orchestration + glucose/care-plan facades; stores not physically collapsed) — INT-09 patient URL access gate **fixed**; follow-up dual store / INT-04/08/10 remain  
+- [ ] INT-01…03 physical store collapse / org tenancy — **fail** (facades only; Neon prod untouched)  
+
 - [ ] Real-patient eval — **fail / not started**  
 
 ## Merge plan for this directive

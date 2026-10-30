@@ -44,6 +44,7 @@ Applied pending additive migrations **046–048** on local-dev only (medcare / c
 | Medcare/continuous seed PK collision across `scope_key` (INT-16) | Mitigated (`ON CONFLICT DO UPDATE`) |
 | INT-01…05, INT-10 | Registered — not fixed in this ship |
 | INT-09 weak patient API access | Fixed later — `denyUnlessConnectedPatientAccess` + `tests/connected-patient-api-access.test.ts` |
+| INT-01…03 orchestration / dual stores | Mitigated later — PR #75 (`e5c90ac`); facades + pipeline; Neon prod untouched |
 
 ## CI note
 
@@ -53,7 +54,16 @@ Recorded locally against local-dev Neon. CI Playwright with DATABASE_URL should 
 
 | Item | Value |
 |------|-------|
-| Merge SHA | `6545c20aadeae4dfba2a2058cb958af4de180f54` |
+| Merge SHA (UX/E2E chrome) | `6545c20aadeae4dfba2a2058cb958af4de180f54` |
 | Vercel deployment | `dpl_1aq2CwpYFt55qNSQSYzqfsTWcVMB` |
 | readyState | **READY** |
 | Aliases | `www.akshhealth.com`, `akshhealth.com` |
+
+### INT-01–03 merge (PR #75)
+
+| Item | Value |
+|------|-------|
+| Merge SHA | `e5c90ac823a90ec6f844489589e27d7dc512a656` |
+| Vercel `aksh-health-redesign` | **Not READY yet** — GitHub status: *Deployment rate limited — retry in 24 hours* |
+| Local `npm run build` | **PASS** before merge |
+| Neon production | **Untouched** (no migrations in PR) |
