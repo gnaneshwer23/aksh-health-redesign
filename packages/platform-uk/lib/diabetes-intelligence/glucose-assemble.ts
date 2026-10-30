@@ -215,24 +215,23 @@ export async function decideGlucoseIntelligenceReview(
     shieldAuditWriteReason?: string | null;
   }
 > {
-  await decideGlucoseReview(input, options);
-  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
-  const shield = await persistDiabetesDomainShieldDecision({
-    source: "glucose_review",
-    action: input.action,
-    actor: input.actor,
-    patientId: input.patientId,
-    subjectId: input.reviewId,
-    reason: input.reason,
-  });
-  const snap = await buildDiabetesGlucoseIntelligence(input.patientId, {
-    scopeKey: options?.scopeKey,
-  });
-  return {
-    ...snap,
-    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
-    shieldAuditWriteReason: shield.shieldAuditWriteReason,
-  };
+  const { withRequiredDiabetesDomainShield } = await import("./shield-decision-audit");
+  return withRequiredDiabetesDomainShield(
+    {
+      source: "glucose_review",
+      action: input.action,
+      actor: input.actor,
+      patientId: input.patientId,
+      subjectId: input.reviewId,
+      reason: input.reason,
+    },
+    async () => {
+      await decideGlucoseReview(input, options);
+      return buildDiabetesGlucoseIntelligence(input.patientId, {
+        scopeKey: options?.scopeKey,
+      });
+    }
+  );
 }
 
 export async function buildGlucoseIntelligenceWorklist(options?: {

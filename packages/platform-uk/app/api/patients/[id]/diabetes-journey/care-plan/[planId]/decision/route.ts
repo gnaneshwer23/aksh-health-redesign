@@ -72,7 +72,26 @@ export async function POST(request: Request, context: RouteContext) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Decision failed";
-    const status = /not found/i.test(message) ? 404 : /requires|only DRAFT/i.test(message) ? 400 : 500;
-    return NextResponse.json({ error: message, ehrWrite: false }, { status });
+    const explicitStatus = (error as { status?: number }).status;
+    const code = (error as { code?: string }).code;
+    const shieldAuditWriteReason = (error as { shieldAuditWriteReason?: string }).shieldAuditWriteReason;
+    const status =
+      explicitStatus ??
+      (/not found/i.test(message) ? 404 : /requires|only DRAFT/i.test(message) ? 400 : 500);
+    return NextResponse.json(
+      {
+        error: message,
+        ehrWrite: false,
+        ...(code ? { code } : {}),
+        ...(status === 503
+          ? {
+              shieldAuditWriteFailed: true,
+              shieldAuditWriteReason: shieldAuditWriteReason ?? message,
+              decisionFinalised: false,
+            }
+          : {}),
+      },
+      { status }
+    );
   }
 }

@@ -297,32 +297,31 @@ export async function decideJourneyCarePlan(
   }
 > {
   const scopeKey = options?.scopeKey ?? "shared";
-  await decideCarePlan(
+  const { withRequiredDiabetesDomainShield } = await import("./shield-decision-audit");
+  return withRequiredDiabetesDomainShield(
     {
-      planId: input.planId,
+      source: "journey_plan",
       action: input.action,
       actor: input.actor,
-      actorPersona: input.actorPersona,
+      patientId: input.patientId,
+      subjectId: input.planId,
       reason: input.reason,
-      editedSections: input.editedSections,
     },
-    { scopeKey, organisationId: options?.organisationId }
+    async () => {
+      await decideCarePlan(
+        {
+          planId: input.planId,
+          action: input.action,
+          actor: input.actor,
+          actorPersona: input.actorPersona,
+          reason: input.reason,
+          editedSections: input.editedSections,
+        },
+        { scopeKey, organisationId: options?.organisationId }
+      );
+      return buildDiabetesJourney(input.patientId, { scopeKey });
+    }
   );
-  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
-  const shield = await persistDiabetesDomainShieldDecision({
-    source: "journey_plan",
-    action: input.action,
-    actor: input.actor,
-    patientId: input.patientId,
-    subjectId: input.planId,
-    reason: input.reason,
-  });
-  const snap = await buildDiabetesJourney(input.patientId, { scopeKey });
-  return {
-    ...snap,
-    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
-    shieldAuditWriteReason: shield.shieldAuditWriteReason,
-  };
 }
 
 export async function advanceFollowUp(

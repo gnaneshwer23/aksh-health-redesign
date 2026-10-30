@@ -270,22 +270,21 @@ export async function decideAgentIntelligenceDraft(
   },
   options?: { scopeKey?: string }
 ): Promise<AgentIntelSnapshot & { shieldAuditWriteFailed?: boolean; shieldAuditWriteReason?: string | null }> {
-  await decideAgentIntelDraft(input, options);
-  const { persistDiabetesDomainShieldDecision } = await import("./shield-decision-audit");
-  const shield = await persistDiabetesDomainShieldDecision({
-    source: "agent_intel",
-    action: input.action,
-    actor: input.actor,
-    patientId: input.patientId,
-    subjectId: input.draftId,
-    reason: input.reason,
-  });
-  const snap = await buildAgentIntelligence(input.patientId, options);
-  return {
-    ...snap,
-    shieldAuditWriteFailed: shield.shieldAuditWriteFailed,
-    shieldAuditWriteReason: shield.shieldAuditWriteReason,
-  };
+  const { withRequiredDiabetesDomainShield } = await import("./shield-decision-audit");
+  return withRequiredDiabetesDomainShield(
+    {
+      source: "agent_intel",
+      action: input.action,
+      actor: input.actor,
+      patientId: input.patientId,
+      subjectId: input.draftId,
+      reason: input.reason,
+    },
+    async () => {
+      await decideAgentIntelDraft(input, options);
+      return buildAgentIntelligence(input.patientId, options);
+    }
+  );
 }
 
 export async function buildAgentIntelligenceWorklist(options?: {
