@@ -12,8 +12,9 @@
 | Mode | Executed in this A5 run? |
 | --- | --- |
 | **API / unit (`tsx`) golden + negatives** | **Yes** — `npm run test:milestone-a5` |
-| **Playwright browser multi-role UI chain** | **No** — not started; no claim of green browser E2E |
-| **Optional Playwright API spec** | **Not run** — `e2e/milestone-a5-golden-api.spec.ts` exists for a live Next server; excluded from `test:milestone-a5` |
+| **Playwright browser multi-account smoke** | **Spec added** — `e2e/milestone-a5-multi-account-browser.spec.ts` (role landings + authz denials; runs in Playwright CI job, not in `test:milestone-a5`) |
+| **Full single-session UI click-path** | **No** — not claimed (patient→FD→nurse→GP bookings in one browser chain) |
+| **Optional Playwright API spec** | **Not run locally** — `e2e/milestone-a5-golden-api.spec.ts` exists for a live Next server; excluded from `test:milestone-a5` |
 
 ---
 
@@ -92,8 +93,8 @@ Flow exercised: patient → reception booking → nurse → GP CONDUCTOR/Guardia
 
 ## What was *not* validated
 
-- Multi-account **browser** click-path across logged-in personas
-- Live Postgres / RLS branch proofs inside `test:milestone-a5` (separate DB tests exist elsewhere)
+- Full multi-account **browser** click-path that books → observes → decides in one UI session
+- Live Postgres / RLS branch proofs inside `test:milestone-a5` (separate DB tests exist elsewhere; Playwright job uses Neon CI branch for browser specs)
 - Live EMIS / NHS lab / EPS prescribing
 - Formal HCP clinical evaluation (Milestone B)
 

@@ -98,15 +98,17 @@ Local unit paths for A1 do not require live Postgres/Neo4j (SHIELD may report `p
 
 ---
 
-## 7. Milestone status snapshot (post-#86–#96 + A1 PR)
+## 7. Milestone status snapshot (post-#86–#96 + A1–A5 review stack)
 
 | Ref | SHA / status | Notes |
 | --- | --- | --- |
 | `origin/main` tip | **`9abf04c`** | Merge PR **#96** intake→booking handoff e2e |
-| Phase A1 branch | **`5f5a4c5`** `feat/milestone-a1-agent-runtime` | **PR [#97](https://github.com/gnaneshwer23/aksh-health-redesign/pull/97) OPEN** (review-only) |
-| A1 CI | Partial | Unit gates + CI 2.0 **SUCCESS**; Playwright job **FAIL** on `npm run verify` typecheck (`agent-runtime-contract` schemaVersion cast; `decision-module` / `diabetes-decision-escalation` fixtures missing `execution`/`agentMetadata`) |
-| Phase A2 | **`feat/milestone-a2-orchestration-persistence`** | Durable `agent_intel_runs` + SHIELD enqueue gate + reliability tests; review-only PR (stacked on A1) |
-| Milestone A complete | **No** | Phases A2–A5 + most DoD §18 items still open |
+| Phase A1 | **`b36c376`** `feat/milestone-a1-agent-runtime` | **PR [#97](https://github.com/gnaneshwer23/aksh-health-redesign/pull/97)** OPEN review-only; CI green |
+| Phase A2 | **`21da829`** `feat/milestone-a2-orchestration-persistence` | **PR [#98](https://github.com/gnaneshwer23/aksh-health-redesign/pull/98)** base=A1 |
+| Phase A3 | **`2280376`** `feat/milestone-a3-stakeholder-integration` | **PR [#99](https://github.com/gnaneshwer23/aksh-health-redesign/pull/99)** base=A2; `SHIELD_UNAVAILABLE` typed |
+| Phase A4 | tip on A3 | **PR [#100](https://github.com/gnaneshwer23/aksh-health-redesign/pull/100)** security + Agent Ops alerts |
+| Phase A5 | tip on A4 | **PR [#101](https://github.com/gnaneshwer23/aksh-health-redesign/pull/101)** API golden + browser smoke |
+| Milestone A complete | **No** | Review-only stack; browser full click-path + Neon A5 gate + HCP eval still open (→ B) |
 
 Merged baseline PRs: **#86** foundation, **#87** agent audit docs, **#88** P0 safety, **#89** P1 agents/review, **#90** P2 care-episode, **#91** P4 PRISM/ATLAS scaffolds, **#92** SHIELD fail-closed diabetes, **#95** unified worklist honesty (supersedes closed #93), **#96** intake→booking + multi-account (supersedes closed #94).
 
@@ -123,10 +125,10 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 | **C** | Clinical context reliability | **Partial** | Context packages + diabetes modules exist; mock/synthetic provenance | Completeness/conflict/outdated discrimination not fully DoD-complete; no invented fills claimed |
 | **D** | Persistent stakeholder workflows | **Partial** | Care episode threaded (#86/#88/#90); intake→booking (#96); nurse worklist (#90); unified GP queue (#88/#95); multi-account acceptance tests | Full delegation/escalation/pharmacy/lab/specialist/patient-approved visibility + closure → **A3** |
 | **E** | DB + SHIELD integrity | **Partial** | `#92` diabetes + A2 CONDUCTOR audit-before-enqueue; migration 053 on `agent_intel_runs` | Broader transactional outbox consumer → **A3+** |
-| **F** | Agent Ops + observability | **Partial** | `app/dashboard/admin/agent-ops/page.tsx` + review ops UI (#89) | Persisted operational metrics / alerting / execution inspection from durable runs → **A4** (needs A2 data) |
-| **G** | Security / privacy | **Partial** | Tenant `scopeKey` guards (A1 contract); RBAC e2e helpers; honesty `liveEmis:false` | Full security review + crit/high fixes + agent abuse surface → **A4**; `productionRbacEnforced` still honest-false (Track B adjacent) |
-| **H** | Performance / reliability | **Missing**→**Partial** | Some golden perf/security specs exist (`e2e/platform-golden-perf-security.spec.ts`) | Measured baselines, SLOs, outage/restart recovery → **A4/A5** |
-| **I** | DB-backed multi-account E2E | **Partial** | Connected diabetes + platform golden journeys; #96 multi-account acceptance unit/e2e coverage | Full §11.2 golden (patient→FD→nurse→GP→CONDUCTOR→lab→pharm→patient→admin) + negative suite in CI → **A5**; PR #97 Playwright gate currently red |
+| **F** | Agent Ops + observability | **Partial**→**Done-ish (A4)** | Durable runs + `ops-alerts` metrics/alerts on Agent Ops (`OBSERVABILITY_AND_OPERATIONS.md`) | No external pager; file-store vs Neon ops still dual-path |
+| **G** | Security / privacy | **Partial**→**Done-ish (A4)** | Authz allow-lists, route gates, PHI-safe refs (`SECURITY_AND_PRIVACY.md`) | `productionRbacEnforced` still honest-false; residual lifestyle-route PHI scrub |
+| **H** | Performance / reliability | **Missing**→**Partial** | Some golden perf/security specs exist (`e2e/platform-golden-perf-security.spec.ts`) | Measured baselines, SLOs still thin |
+| **I** | DB-backed multi-account E2E | **Partial** | A5 API/unit golden + negatives + browser role smoke (`e2e/milestone-a5-multi-account-browser.spec.ts`) | Full single-session UI click-path + Neon-backed A5 gate still open |
 | **J** | Frontend / UX completion | **Partial** | Stakeholder dashboards + worklist honesty (#95); draft-not-advice patterns | Agent transparency for A1 `executionMode` in UI Incomplete; full state matrix → **A3/A5** |
 | **K** | FHIR / BRIDGE readiness | **Partial** | `lib/bridge-staging.ts` staged FHIR, `liveEmis:false` hard | Vendor adapters as contracts only; no live EMIS/TPP — correctly not fabricated |
 | **§14** | PRISM / ATLAS | **Partial** (scoped) | `#91` L2 scaffolds `in_validation`; excluded from routine CONDUCTOR | Full imaging/research **Deferred** beyond scaffold hardening |
@@ -148,14 +150,14 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 | Clinician review + task delegation | **Partial** | Review Accept/Edit/Reject Done-ish; full delegation → A3 |
 | Lab / pharmacy / follow-up in scope | **Partial** | Drafts/scaffolds present; not full multi-role DoD |
 | BRIDGE validated staged FHIR | **Partial** | Staging + provenance; not live sync |
-| Agent Ops reliable operational data | **Missing**/Partial | UI exists; fixture/registry heavy until A2 persistence |
-| Cross-tenant / unauthorised tests pass | **Partial** | A1 CROSS_TENANT sample; broader suite → A4 |
-| DB-backed multi-account browser E2E | **Partial** | #96 + golden specs; full golden §11.2 → A5 |
-| Crit/high security resolved or block | **Missing** | Explicit A4 security pass not done |
-| Recovery from common failures verified | **Missing** | A2/A4 |
-| CI passes on final implementation branch | **Missing** | main tip separate; A1 #97 Playwright/verify **FAIL** |
-| Unresolved dependencies documented | **Partial** | This audit + A1 docs |
-| Technical readiness report complete | **Missing** | A5 deliverable |
+| Agent Ops reliable operational data | **Partial**→**Done-ish** | A4 alerts/metrics from persisted durable runs |
+| Cross-tenant / unauthorised tests pass | **Partial**→**Done-ish** | A4/A5 negatives + browser role denials |
+| DB-backed multi-account browser E2E | **Partial** | API/unit §11.2 + browser role smoke; not full Neon click-path |
+| Crit/high security resolved or block | **Partial**→**Done-ish** | A4 crit/high documented + fixed; residuals listed |
+| Recovery from common failures verified | **Partial** | A2 claim/reclaim + A4 stuck-run alerts |
+| CI passes on final implementation branch | **Partial** | Stack review-only; unit gates green; Playwright re-verify after type fixes |
+| Unresolved dependencies documented | **Partial** | This audit + phase reports |
+| Technical readiness report complete | **Done** (A5) | `TECHNICAL_READINESS_REPORT.md` — conditional HCP-sandbox only |
 
 ---
 
@@ -206,9 +208,9 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 | `BASELINE_AUDIT.md` | **Present** (this file; updated gap matrix 2026-10-30) |
 | `AGENT_RUNTIME_VERIFICATION.md` | **Present** (A1) |
 | `PHASE_A1_REPORT.md` | **Present** (A1) |
-| `ORCHESTRATION_RELIABILITY.md` | **Missing** (A2) |
+| `ORCHESTRATION_RELIABILITY.md` | **Present** (A2) |
 | `STAKEHOLDER_INTEGRATION.md` | **Present** (A3) |
 | `SECURITY_AND_PRIVACY.md` | **Present** (A4) |
 | `OBSERVABILITY_AND_OPERATIONS.md` | **Present** (A4) |
-| `E2E_ACCEPTANCE_RESULTS.md` | **Missing** (A5) |
-| `TECHNICAL_READINESS_REPORT.md` | **Missing** (A5) |
+| `E2E_ACCEPTANCE_RESULTS.md` | **Present** (A5) |
+| `TECHNICAL_READINESS_REPORT.md` | **Present** (A5) |

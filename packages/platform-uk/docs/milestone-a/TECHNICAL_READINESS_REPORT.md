@@ -38,7 +38,7 @@ Not ready for clinical deployment, live EMIS write-back, or production patient c
 | --- | --- | --- |
 | Lab approve / result path | **sim** | `lib/e2e/lab-sim` + draft status tracking; not live pathology |
 | Pharmacist adherence concern | **sim** | `lib/e2e/pharmacy-sim` + care-episode pharmacist task |
-| Browser multi-role golden UI | **not executed** | Playwright optional API spec present; full UI chain not run |
+| Browser multi-role golden UI | **partial** | Role-landing + authz smoke (`milestone-a5-multi-account-browser`); full UI booking chain not run |
 | Live Postgres in A5 CI script | **not used** | Suite clears `DATABASE_URL` for hermetic file-store |
 
 ---
@@ -46,7 +46,7 @@ Not ready for clinical deployment, live EMIS write-back, or production patient c
 ## Residual blockers for Milestone B (HCP eval)
 
 1. **Merge policy** — A1–A5 remain review-only; B should not claim platform readiness until stack lands or is explicitly accepted.
-2. **Browser multi-account E2E** — still missing green evidence for full persona click-path in CI.
+2. **Browser multi-account E2E** — role smoke exists; full persona booking→decide click-path still open.
 3. **DB-backed RLS proofs in the A5 gate** — tenant/RLS DB tests exist but are not part of `test:milestone-a5`; include a Neon branch gate before formal HCP sessions if evaluators use shared DB.
 4. **Lab / pharmacy product HITL** — still simulation-layer for end-to-end continuity; evaluators must see honesty labels.
 5. **HCP protocol** — evaluation plan (`docs/agents/HCP_AGENT_EVALUATION_PLAN.md`) is separate; A5 does not run clinical scoring with HCPs.

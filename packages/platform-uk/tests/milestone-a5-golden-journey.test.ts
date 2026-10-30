@@ -119,7 +119,7 @@ async function main() {
   // --- 3) Reception → nurse ---
   const free = state.slots.find((s) => !s.patientId);
   assert.ok(free);
-  const booked = bookSlot(state, free!.id, patientId, "reception-a5", "a5-book", episodeId);
+  const booked = bookSlot(state, free!.id, patientId, "staff", "a5-book", episodeId);
   assert.equal(booked.ok, true);
   if (!booked.ok) throw new Error("booking failed");
   const nurseTask = handoffBookingToNurse(state, booked.slot, {

@@ -23,7 +23,8 @@
 | Golden journey (API/unit) | `tests/milestone-a5-golden-journey.test.ts` |
 | Negative suite | `tests/milestone-a5-negative-suite.test.ts` |
 | CI script | `npm run test:milestone-a5` |
-| Optional Playwright API spec (not in gate) | `e2e/milestone-a5-golden-api.spec.ts` |
+| Optional Playwright API spec (not in unit gate) | `e2e/milestone-a5-golden-api.spec.ts` |
+| Browser multi-account smoke (Playwright CI) | `e2e/milestone-a5-multi-account-browser.spec.ts` |
 | Results doc | `docs/milestone-a/E2E_ACCEPTANCE_RESULTS.md` |
 | Readiness doc | `docs/milestone-a/TECHNICAL_READINESS_REPORT.md` |
 
@@ -41,10 +42,10 @@ No product API regressions required beyond test harness alignment.
 ## Gate result
 
 `npm run test:milestone-a5` → **PASS** (exit 0), including typecheck.  
-**Playwright browser multi-role E2E:** not executed.
+**Playwright browser multi-account smoke:** spec added for CI; full single-session UI click-path still open.
 
 ---
 
 ## Next
 
-**Milestone B** — formal HCP evaluation protocol on synthetic workspace; browser multi-role evidence; optional Neon-backed A5 gate. No PRISM/ATLAS expansion in A5.
+**Milestone B** — formal HCP evaluation protocol on synthetic workspace; deepen browser click-path evidence; optional Neon-backed A5 unit gate. No PRISM/ATLAS expansion in A5.
