@@ -33,5 +33,5 @@ The five outstanding CI 2.0 capabilities (relative to the 1.0 audit “Missing /
 - ~~Wire Context Engine package into every connected-diabetes draft path~~ — **Done** (`runAgentOrchestration` assembles Context Engine + `enrichSharedContextFromClinicalPackage` before drafting).  
 - Promote GraphRAG from fixtures to live ontology when Aura is resumed — still synthetic clinical claim.  
 - ~~Extend Guardian gateway in front of Phase 5 agent-intel enqueue~~ — **Done** (`evaluateGuardianGateway` + `mayEnqueueAgentDraft`; BLOCK → no worklist drafts).  
-- ~~Evaluation engine as a **CI release gate job**~~ — **Done** (`test:ci20:evaluation-gate` + Actions job `CI 2.0 evaluation gate`; also embedded in platform-unit-gates).  
+- ~~Evaluation engine as a **CI release gate job**~~ — **Done** (`test:ci20:evaluation-gate` + required Actions job `CI 2.0 evaluation gate`; `test:aksh20:eval` remains in platform-unit-gates).  
 - Do **not** flip `LIVE_ORGANISATIONS` or production model approvals without GOV-01…03.

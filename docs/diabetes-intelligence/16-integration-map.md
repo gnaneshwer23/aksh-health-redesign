@@ -19,7 +19,7 @@ Phases 0–6 ship as synthetic modules keyed by mock-cohort `patientId` (canonic
 | 4 Care-plan HITL | Journey + medcare | `…/diabetes-journey` + medcare care-plan decisions | journey + medication-care | Dual approval lifecycles |
 | 5 Continuous care | `continuous-care-*` | `/api/patients/[id]/continuous-care` | patient + GP/nurse worklists | Seed pattern refs only (no FKs) |
 | 6 Longitudinal timeline | Cross-cut | `/api/patients/[id]/timeline` | chart panel + **timeline page** | Merges journey + continuous + precision-health; **omits** glucose/medcare/agent |
-| 7 Agent intelligence | `agent-intel-*` | `/api/patients/[id]/agent-intelligence` | patient + GP worklist | Mock shared context — does not assemble live 360/glucose/medcare |
+| 7 Agent intelligence | `agent-intel-*` | `/api/patients/[id]/agent-intelligence` | patient + GP worklist | Context Engine package feeds drafts; Guardian gates enqueue; live 360/glucose/medcare signals enrich shared context |
 | 8 Domain framework | `lib/disease-domains/` | (none) | (none) | Registry only; CVD/CKD/obesity `not_activated` |
 
 ## Shared context
