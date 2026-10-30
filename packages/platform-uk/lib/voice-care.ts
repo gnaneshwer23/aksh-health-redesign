@@ -1,7 +1,15 @@
 import type { NurseEscalationTask, ReviewCase } from "./types";
 
+/**
+ * P2-VOICE-01 — VOICE CARE ≠ VOICE.
+ * VOICE = CANVAS dictation sub-capability (register). VOICE CARE = synthetic
+ * Day-3 outbound escalation module (not a directory peer; no live telephony).
+ */
+export const VOICE_CARE_PRODUCT_LABEL =
+  "VOICE CARE — Day-3 outbound (synthetic; not VOICE dictation)";
+
 export const VOICE_CARE_DAY3_TRANSCRIPT = [
-  "VOICE CARE (Day 3 outbound: synthetic)",
+  VOICE_CARE_PRODUCT_LABEL,
   "Agent: How are you feeling since your consultation three days ago?",
   "Patient: My calf is more painful and tighter. I also felt short of breath climbing stairs this morning.",
   "Agent: Thank you. I am flagging worsening calf pain and new breathlessness for urgent clinician review.",

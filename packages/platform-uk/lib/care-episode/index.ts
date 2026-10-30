@@ -39,3 +39,12 @@ export {
   type CorrelateJourneyResult,
   type JourneyStage,
 } from "./journey";
+
+export {
+  integrateBookingWithCareEpisode,
+  integrateNurseObservationsStage,
+  integrateOrchestrateStage,
+  integrateClinicalReviewStage,
+  runStakeholderEpisodeJourney,
+  type StakeholderStageResult,
+} from "./stakeholder-integration";

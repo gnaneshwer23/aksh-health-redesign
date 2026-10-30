@@ -194,7 +194,8 @@ async function run() {
   await assertFileIncludes("lib/agents/llm-equity.ts", "isLlmEquityConfigured");
   await assertFileIncludes("components/dashboard/ics/EquityDeepDive.tsx", "/api/agents/equity");
   await assertFileIncludes("app/api/agents/voice-care/route.ts", "synthetic_outbound");
-  await assertFileIncludes("lib/agents/voice-care.ts", "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC)");
+  await assertFileIncludes("lib/agents/voice-care.ts", "VOICE CARE — DAY 3 OUTBOUND (SYNTHETIC; NOT VOICE DICTATION)");
+  await assertFileIncludes("lib/agents/voice-care.ts", "notVoiceDictation");
   await assertFileIncludes("components/dashboard/nurse/VoiceCareEscalationCard.tsx", "/api/agents/voice-care");
   // Legacy /voice-care must land on the public demo catalog, not gated /demo/patel (www dead-end).
   await assertFileIncludes("next.config.mjs", 'source: "/voice-care"');

@@ -6,6 +6,7 @@ import { RoleWorkspaceIntro } from "@/components/dashboard/RoleWorkspaceIntro";
 import { GuardianAlertsPanel } from "@/components/dashboard/nurse/GuardianAlertsPanel";
 import { NurseHeroDemoPath } from "@/components/dashboard/nurse/NurseHeroDemoPath";
 import { NursePatientHeader } from "@/components/dashboard/nurse/NursePatientHeader";
+import { ObservationWorklist } from "@/components/dashboard/nurse/ObservationWorklist";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { patients } from "@/lib/mock-data";
@@ -41,6 +42,7 @@ export default function NurseOverviewPage() {
         }
       />
       <NursePatientHeader />
+      <ObservationWorklist />
 
       <Card className="dashboard-card border-0 shadow-none">
         <CardHeader className="pb-2">

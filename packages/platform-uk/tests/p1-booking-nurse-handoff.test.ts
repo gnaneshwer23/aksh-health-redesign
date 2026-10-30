@@ -25,6 +25,7 @@ assert.ok(task);
 assert.equal(task!.kind, "nurse_observation");
 assert.equal(task!.status, "open");
 assert.equal(task!.patientId, "P002");
+assert.equal(task!.careEpisodeId, episodeId);
 assert.ok(task!.summary.includes(episodeId), "prefers care_episode_id in summary");
 
 const open = listOpenNurseObservationTasks(state);

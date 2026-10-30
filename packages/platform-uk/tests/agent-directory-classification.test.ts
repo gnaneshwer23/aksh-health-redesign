@@ -107,11 +107,34 @@ function testDiabetesSignalBuildersNotAddedAsAgents() {
   console.log("Agent directory classification: diabetes signal builders confirmed absent from AGENT_DIRECTORY.");
 }
 
+/** P2-DIR-01 — directory status/modelFlag align with register honesty. */
+function testDirectoryHonestyFieldsMatchRegister() {
+  for (const agent of AGENT_DIRECTORY) {
+    assert.ok("status" in agent, `${agent.name}: status field required`);
+    assert.ok("modelFlag" in agent, `${agent.name}: modelFlag field required`);
+    if (agent.phase === 1) {
+      assert.equal(agent.status, "in_validation", `${agent.name}: phase-1 must be in_validation (not production go-live)`);
+      assert.equal(agent.live, true, `${agent.name}: live means product surface, not go-live`);
+    }
+    if (agent.phase === 2) {
+      assert.equal(agent.status, "roadmap", `${agent.name}: phase-2 must be roadmap`);
+      assert.equal(agent.live, false, `${agent.name}: phase-2 must not claim live`);
+    }
+  }
+  const byName = Object.fromEntries(AGENT_DIRECTORY.map((a) => [a.name, a]));
+  assert.equal(byName.CANVAS.modelFlag, null, "CANVAS is rules/intake — modelFlag null (not oversold as always-LLM)");
+  assert.equal(byName.SYNTHESIS.modelFlag, "SYNTHESIS");
+  assert.equal(byName.HORIZON.modelFlag, "ORACLE");
+  assert.equal(byName.COMPASS.modelFlag, "EQUITY");
+  console.log("Agent directory classification: P2 honesty status/modelFlag aligned with register.");
+}
+
 function main() {
   testAgentCountAndNamesUnchanged();
   testEveryEntryClassifiedAndKept();
   testKnownKindAssignmentsPerGapAnalysisTable();
   testDiabetesSignalBuildersNotAddedAsAgents();
+  testDirectoryHonestyFieldsMatchRegister();
 }
 
 main();

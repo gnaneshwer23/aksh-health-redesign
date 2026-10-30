@@ -15,6 +15,7 @@ assert.match(page, /\/api\/agents\/readiness/);
 assert.match(page, /loopOutcomes|equity/);
 assert.match(page, /data-testid="agent-ops-honesty"/);
 assert.match(page, /PRISM\/ATLAS/);
+assert.match(page, /CompassBriefPanel/);
 assert.doesNotMatch(page, /patientName|NHS number|dateOfBirth/i);
 assert.match(sidebar, /\/dashboard\/admin\/agent-ops/);
 

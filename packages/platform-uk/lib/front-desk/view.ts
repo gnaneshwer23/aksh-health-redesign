@@ -1,3 +1,4 @@
+import { buildNurseObservationWorklist } from "./nurse-handoff";
 import { displayName, getPatient } from "./patients";
 import { FRONT_DESK_HONESTY, type FrontDeskState } from "./types";
 import { campaignTargets, computeMetrics } from "./workflows";
@@ -26,6 +27,8 @@ export function buildFrontDeskView(state: FrontDeskState, storage: "postgres" | 
     honesty: FRONT_DESK_HONESTY,
     metrics: computeMetrics(state),
     workItems: state.workItems.slice(0, 80).map((w) => ({ ...w, patientName: nameOf(w.patientId) })),
+    /** P2 — open nurse_observation tasks (also exposed on /api/nurse/observation-worklist). */
+    nurseObservationTasks: buildNurseObservationWorklist(state),
     drafts: state.drafts.slice(0, 40),
     campaigns: state.campaigns.map((c) => ({ ...c, targets: c.targets.map((t) => ({ ...t, patientName: nameOf(t.patientId) })) })),
     campaignPreview: {

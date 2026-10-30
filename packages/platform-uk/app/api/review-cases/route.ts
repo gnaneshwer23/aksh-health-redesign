@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
 import { requestFastApiSynthesis } from "@/lib/fastapi-synthesis";
-import { isFastApiSynthesisEnabled } from "@/lib/integration-config";
+import { isConductorFromIntakeEnabled, isFastApiSynthesisEnabled } from "@/lib/integration-config";
+import { maybeConductorFromIntake } from "@/lib/intake/conductor-from-intake";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { createReviewCase, readReviewCases, resetReviewCases } from "@/lib/review-case-repository";
 import type { ConsultationInput } from "@/lib/types";
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
         sourceType?: ConsultationInput["sourceType"];
         careEpisodeId?: string;
         care_episode_id?: string;
+        /** P2-INTAKE-01 — only runs when ENABLE_CONDUCTOR_FROM_INTAKE=true. */
+        orchestrateAfterIntake?: boolean;
         options?: {
           pathwayHint?: "auto" | "respiratory" | "hypertension" | "eczema" | "lipid" | "general";
           confidenceMode?: "auto" | "conservative" | "standard";
@@ -86,6 +89,39 @@ export async function POST(request: Request) {
       return correlated.careEpisodeId;
     }
 
+    async function withConductorOffer(
+      created: { id: string; patientLabel: string; careEpisodeId?: string },
+      careEpisodeId: string | undefined,
+      extra: Record<string, unknown>
+    ) {
+      const conductorFromIntake = await maybeConductorFromIntake({
+        patientId,
+        careEpisodeId: careEpisodeId ?? created.careEpisodeId,
+        caseId: created.id,
+        transcript: body?.rawInput,
+        actor,
+        scopeKey,
+        orchestrateAfterIntake: body?.orchestrateAfterIntake === true,
+      }).catch((err) => ({
+        available: isConductorFromIntakeEnabled(),
+        enabled: isConductorFromIntakeEnabled(),
+        ran: false as const,
+        evaluationOnly: true as const,
+        ehrWrite: false as const,
+        reason: err instanceof Error ? err.message : "CONDUCTOR-from-intake failed",
+      }));
+
+      return NextResponse.json(
+        {
+          reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
+          careEpisodeId,
+          conductorFromIntake,
+          ...extra,
+        },
+        { status: 201 }
+      );
+    }
+
     if (!isFastApiSynthesisEnabled()) {
       const reviewCase = createReviewCaseFromIntake(intakeArgs);
       if (patientId) reviewCase.patientId = patientId;
@@ -94,14 +130,7 @@ export async function POST(request: Request) {
       if (careEpisodeId && created.careEpisodeId !== careEpisodeId) {
         created.careEpisodeId = careEpisodeId;
       }
-      return NextResponse.json(
-        {
-          reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
-          careEpisodeId,
-          synthesisMode: "deterministic_synthetic"
-        },
-        { status: 201 }
-      );
+      return withConductorOffer(created, careEpisodeId, { synthesisMode: "deterministic_synthetic" });
     }
 
     const synthesis = await requestFastApiSynthesis({
@@ -136,14 +165,7 @@ export async function POST(request: Request) {
 
     const created = await createReviewCase(reviewCase, scopeKey, userId, tenant.practiceId);
     const careEpisodeId = await attachEpisode(created.id, created.patientLabel);
-    return NextResponse.json(
-      {
-        reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
-        careEpisodeId,
-        synthesisMode: "fastapi_rehearsal"
-      },
-      { status: 201 }
-    );
+    return withConductorOffer(created, careEpisodeId, { synthesisMode: "fastapi_rehearsal" });
   }
 
   return NextResponse.json({ error: "Unsupported action" }, { status: 400 });

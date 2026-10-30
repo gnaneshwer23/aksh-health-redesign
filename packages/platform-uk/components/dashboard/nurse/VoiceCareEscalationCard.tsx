@@ -15,7 +15,8 @@ import { patients } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 /**
- * Quiet VoiceCare strip for nurse home — collapsed by default; expands for tasks / simulate.
+ * Quiet VOICE CARE strip for nurse home — collapsed by default; expands for tasks / simulate.
+ * P2-VOICE-01: VOICE CARE = synthetic Day-3 outbound escalation (not VOICE dictation / CANVAS).
  */
 export function VoiceCareEscalationCard() {
   const { status } = useSession();
@@ -57,7 +58,7 @@ export function VoiceCareEscalationCard() {
     if (status !== "authenticated") {
       toast({
         title: "Sign in required",
-        description: "Synthetic VOICE CARE escalation logs to SHIELD when signed in.",
+        description: "Synthetic VOICE CARE (not VOICE dictation) logs to SHIELD when signed in.",
       });
       return;
     }
@@ -74,7 +75,7 @@ export function VoiceCareEscalationCard() {
         }),
       });
       if (!response.ok) {
-        toast({ title: "Escalation failed", description: "VOICE CARE API unavailable." });
+        toast({ title: "Escalation failed", description: "VOICE CARE (outbound) API unavailable." });
         return;
       }
       const result = (await response.json()) as VoiceCareEscalationResult & {

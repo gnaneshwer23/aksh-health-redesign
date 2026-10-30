@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { AdminHeroDemoPath } from "@/components/dashboard/admin/AdminHeroDemoPath";
+import { CompassBriefPanel } from "@/components/dashboard/admin/CompassBriefPanel";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
@@ -133,6 +134,8 @@ export default function AdminAgentOpsPage() {
             See docs/agents/HCP_AGENT_EVALUATION_PLAN.md. PRISM/ATLAS remain planned — never shown as live.
           </p>
         </section>
+
+        <CompassBriefPanel />
 
         {loading && <p className="text-sm text-muted">Loading readiness and loop outcomes…</p>}
         {data?.error && (

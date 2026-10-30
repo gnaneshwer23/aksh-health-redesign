@@ -21,6 +21,15 @@ export function isDiabetesModuleEnabled() {
   return process.env.ENABLE_DIABETES_MODULE === "true";
 }
 
+/**
+ * P2-INTAKE-01 — optional CONDUCTOR after classic intake case create.
+ * Default OFF. When true, APIs may offer/run clinical-spine CONDUCTOR with
+ * Guardian gates intact (evaluation-only; never auto-accept; ehrWrite:false).
+ */
+export function isConductorFromIntakeEnabled() {
+  return process.env.ENABLE_CONDUCTOR_FROM_INTAKE === "true";
+}
+
 export function integrationModeLabel(enabled: boolean) {
   return enabled ? "integration enabled" : "integration rehearsal";
 }
