@@ -25,6 +25,24 @@ export {
 } from "./care-plan-facade";
 export type { UnifiedCarePlan, UnifiedCarePlanSourceStore } from "./care-plan-facade";
 export {
+  listUnifiedFollowUps,
+  selectCanonicalJourneyFollowUps,
+  selectContinuousFollowUps,
+  toUnifiedFromJourney as toUnifiedFollowUpFromJourney,
+  toUnifiedFromContinuous,
+} from "./follow-up-facade";
+export type { UnifiedFollowUp, UnifiedFollowUpSourceStore } from "./follow-up-facade";
+export {
+  mirrorJourneyFollowUpToContinuous,
+  FOLLOW_UP_JOURNEY_STORE,
+  FOLLOW_UP_CONTINUOUS_STORE,
+} from "./follow-up-bridge";
+export {
+  CONNECTED_DIABETES_SIMULATION_ORG_ID,
+  resolveConnectedDiabetesOrganisationId,
+  rowVisibleToOrganisation,
+} from "./org-tenancy";
+export {
   loadUnifiedGlucoseObservations,
   recordGlucoseViaBridge,
   glucoseSeriesToObservations,

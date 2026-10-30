@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideMedicationReconciliation } from "@/lib/patient-intelligence";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
@@ -21,6 +22,12 @@ export async function POST(request: Request, context: RouteContext) {
 
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
+
+  const personaDenied = denyUnlessConnectedDiabetesDecisionScope(
+    auth.context.clinicalPersona,
+    "patient360_reconciliation"
+  );
+  if (personaDenied) return personaDenied;
 
   let body: { action?: "complete" | "cancel"; note?: string } = {};
   try {
@@ -50,6 +57,7 @@ export async function POST(request: Request, context: RouteContext) {
       action: body.action,
       ehrWrite: false,
       autonomousPrescribe: false,
+      decidedByPersona: auth.context.clinicalPersona,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Decision failed";

@@ -1,5 +1,5 @@
 /**
- * INT-01 / INT-02 / INT-03 — connected diabetes orchestration + store facades.
+ * INT-01 / INT-02 / INT-03 / follow-up facade — connected diabetes orchestration + store facades.
  * File-store path (no Postgres). ehrWrite must stay false. Neon production untouched.
  */
 import assert from "node:assert/strict";
@@ -26,9 +26,13 @@ async function main() {
     GLUCOSE_CANONICAL_STORE,
   } = await import("../lib/diabetes-intelligence/glucose-bridge");
   const { listUnifiedCarePlans } = await import("../lib/diabetes-intelligence/care-plan-facade");
+  const { listUnifiedFollowUps } = await import("../lib/diabetes-intelligence/follow-up-facade");
   const { listGlucoseSeries } = await import("../lib/diabetes-intelligence/glucose-repository");
   const { buildSharedPatientContextAsync } = await import(
     "../lib/diabetes-intelligence/agent-intel-context"
+  );
+  const { decideJourneyCarePlan, draftJourneyCarePlan, seedSyntheticJourney } = await import(
+    "../lib/diabetes-intelligence/journey"
   );
 
   const scopeKey = `orch_${Date.now()}`;
@@ -99,7 +103,36 @@ async function main() {
   assert.equal(status.ehrWrite, false);
   assert.ok(status.unifiedCarePlans.length >= 1);
 
-  console.log("connected-diabetes-orchestration: INT-01/02/03 — PASS");
+  // Follow-up dual-store facade + bridge (INT-04-adjacent)
+  await seedSyntheticJourney(patientId, { scopeKey, actor: "test@aksh.health" });
+  const draftSnap = await draftJourneyCarePlan(patientId, {
+    scopeKey,
+    createdBy: "test@aksh.health",
+  });
+  const draft = draftSnap.carePlans.find((p) => p.status === "DRAFT");
+  assert.ok(draft, "expected draft care plan for follow-up bridge");
+  await decideJourneyCarePlan(
+    {
+      patientId,
+      planId: draft!.id,
+      action: "accept",
+      actor: "test@aksh.health",
+      actorPersona: "gp",
+    },
+    { scopeKey, organisationId: "practice-demo" }
+  );
+  const followUps = await listUnifiedFollowUps(patientId, { scopeKey });
+  assert.ok(followUps.some((f) => f.sourceStore === "journey_follow_up"));
+  assert.ok(
+    followUps.some((f) => f.sourceStore === "continuous_care_follow_up"),
+    "journey accept should mirror into continuous-care follow-up store"
+  );
+  assert.ok(followUps.every((f) => f.ehrWrite === false && f.unifiedKey.includes(":")));
+
+  const status2 = await buildConnectedDiabetesOrchestration(patientId, { scopeKey });
+  assert.ok(status2.unifiedFollowUps.length >= 1);
+
+  console.log("connected-diabetes-orchestration: INT-01/02/03 + follow-up facade — PASS");
 }
 
 main()

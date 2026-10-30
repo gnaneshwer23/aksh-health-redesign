@@ -3,6 +3,8 @@
  * Synthetic demo path only: ehrWrite always false; care plans require HITL.
  */
 
+import type { ClinicalPersona } from "../user-scope";
+
 export type CarePlanStatus = "DRAFT" | "APPROVED" | "REJECTED" | "SUPERSEDED";
 
 export type CarePlanDecisionAction = "accept" | "edit" | "reject";
@@ -33,9 +35,13 @@ export type CarePlanRecord = {
   createdBy: string;
   createdAt: string;
   decidedBy: string | null;
+  /** INT-10 — clinical persona who signed Accept/Edit/Reject (null if unsigned / legacy). */
+  decidedByPersona?: ClinicalPersona | null;
   decidedAt: string | null;
   decisionReason: string | null;
   version: number;
+  /** INT-08 — practice/org FK when persisted; simulation default practice-demo. */
+  organisationId?: string | null;
   hitlRequired: true;
   ehrWrite: false;
   synthetic: true;
@@ -46,6 +52,8 @@ export type CarePlanDecision = {
   planId: string;
   action: CarePlanDecisionAction;
   actor: string;
+  /** INT-10 — who signed (gp / nurse / clinical-pharmacist). */
+  actorPersona?: ClinicalPersona | null;
   reason: string | null;
   editedSections: CarePlanSection[] | null;
   createdAt: string;
@@ -63,6 +71,7 @@ export type CareFollowUpTask = {
   acknowledgedAt: string | null;
   closedAt: string | null;
   note: string | null;
+  organisationId?: string | null;
   synthetic: true;
 };
 

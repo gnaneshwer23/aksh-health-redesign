@@ -109,7 +109,13 @@ test.describe("Connected diabetes journey (synthetic)", () => {
       { data: { action: "accept" } }
     );
     expect(journeyDecide.ok()).toBeTruthy();
-    expect(((await journeyDecide.json()) as { ehrWrite: boolean }).ehrWrite).toBe(false);
+    const journeyDecideBody = (await journeyDecide.json()) as {
+      ehrWrite: boolean;
+      decidedByPersona?: string | null;
+      followUps?: { id: string }[];
+    };
+    expect(journeyDecideBody.ehrWrite).toBe(false);
+    expect(journeyDecideBody.decidedByPersona).toBe("gp");
 
     // --- Phase 3 medication ---
     const medSeed = await request.post(`/api/patients/${PATIENT}/medication-care`, {
@@ -216,6 +222,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
       liveOrganisations?: number;
       steps?: { stepId: string; status: string }[];
       unifiedCarePlans?: { unifiedKey: string; sourceStore: string; ehrWrite: boolean }[];
+      unifiedFollowUps?: { unifiedKey: string; sourceStore: string; ehrWrite: boolean }[];
     };
     expect(orchBody.ehrWrite).toBe(false);
     expect(orchBody.hitlRequired).toBe(true);
@@ -224,6 +231,13 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect((orchBody.steps?.length ?? 0)).toBeGreaterThanOrEqual(7);
     expect(
       (orchBody.unifiedCarePlans ?? []).every((p) => p.ehrWrite === false && p.unifiedKey.includes(":"))
+    ).toBeTruthy();
+    // INT-04-adjacent: unified follow-up facade after journey accept
+    expect(
+      (orchBody.unifiedFollowUps ?? []).every((f) => f.ehrWrite === false && f.unifiedKey.includes(":"))
+    ).toBeTruthy();
+    expect(
+      (orchBody.unifiedFollowUps ?? []).some((f) => f.sourceStore === "journey_follow_up")
     ).toBeTruthy();
 
     const orchRun = await request.post(`/api/patients/${PATIENT}/connected-diabetes`, {
@@ -308,9 +322,30 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     expect(((await patientCross.json()) as { denied?: boolean }).denied).toBe(true);
     await patientCtx.close();
 
+    // --- INT-10: nurse cannot confirm journey care-plan Accept/Edit/Reject ---
+    const nurseCtx = await browser.newContext();
+    await createOnboardedTestUser(nurseCtx.request, baseURL!, {
+      role: "nurse",
+      label: "cdi-int10-nurse",
+    });
+    const nurseDecide = await nurseCtx.request.post(
+      `/api/patients/${PATIENT}/diabetes-journey/care-plan/not-a-real-plan/decision`,
+      { data: { action: "accept" } }
+    );
+    expect(nurseDecide.status()).toBe(403);
+    const nurseBody = (await nurseDecide.json()) as {
+      denied?: boolean;
+      decidedByPersona?: string | null;
+      ehrWrite?: boolean;
+    };
+    expect(nurseBody.denied).toBe(true);
+    expect(nurseBody.ehrWrite).toBe(false);
+    expect(nurseBody.decidedByPersona).toBe("nurse");
+    await nurseCtx.close();
+
     test.info().annotations.push({
       type: "connected-diabetes",
-      description: `API journey patient=${PATIENT} gp=${gpA.email} ehrWrite=false int09=denied`,
+      description: `API journey patient=${PATIENT} gp=${gpA.email} ehrWrite=false int09=denied int10=nurse-denied`,
     });
   });
 

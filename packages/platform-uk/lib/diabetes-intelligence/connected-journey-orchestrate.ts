@@ -38,9 +38,11 @@ import {
   runAgentOrchestration,
 } from "./agent-intel-assemble";
 import { listUnifiedCarePlans } from "./care-plan-facade";
+import { listUnifiedFollowUps } from "./follow-up-facade";
 import { buildSharedPatientContextAsync } from "./agent-intel-context";
 import type { SharedPatientContext } from "./agent-intel-types";
 import type { UnifiedCarePlan } from "./care-plan-facade";
+import type { UnifiedFollowUp } from "./follow-up-facade";
 
 export type ConnectedPipelineStepStatus = "ready" | "seeded" | "pending_hitl" | "empty" | "error";
 
@@ -66,6 +68,8 @@ export type ConnectedDiabetesOrchestrationSnapshot = {
   disclosure: string;
   sharedContext: SharedPatientContext;
   unifiedCarePlans: UnifiedCarePlan[];
+  /** INT-04-adjacent — journey + continuous-care follow-ups with provenance. */
+  unifiedFollowUps: UnifiedFollowUp[];
   steps: ConnectedPipelineStepResult[];
   pipelineRunAt: string | null;
   note: string;
@@ -257,7 +261,10 @@ export async function buildConnectedDiabetesOrchestration(
 ): Promise<ConnectedDiabetesOrchestrationSnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
   const sharedContext = await buildSharedPatientContextAsync(patientId, { scopeKey });
-  const unifiedCarePlans = await listUnifiedCarePlans(patientId, { scopeKey });
+  const [unifiedCarePlans, unifiedFollowUps] = await Promise.all([
+    listUnifiedCarePlans(patientId, { scopeKey }),
+    listUnifiedFollowUps(patientId, { scopeKey }),
+  ]);
   const steps = await assessSteps(patientId, scopeKey);
 
   return {
@@ -272,6 +279,7 @@ export async function buildConnectedDiabetesOrchestration(
     disclosure: CONNECTED_JOURNEY_DISCLOSURE,
     sharedContext,
     unifiedCarePlans,
+    unifiedFollowUps,
     steps,
     pipelineRunAt: options?.pipelineRunAt ?? null,
     note:

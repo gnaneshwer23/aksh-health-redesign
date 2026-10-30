@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideStaffEscalation } from "@/lib/diabetes-intelligence";
 import type { ContinuousCareDecisionAction } from "@/lib/diabetes-intelligence/continuous-care-types";
@@ -23,6 +24,12 @@ export async function POST(request: Request, context: RouteContext) {
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
 
+  const personaDenied = denyUnlessConnectedDiabetesDecisionScope(
+    auth.context.clinicalPersona,
+    "continuous_escalation"
+  );
+  if (personaDenied) return personaDenied;
+
   let body: {
     action?: ContinuousCareDecisionAction;
     reason?: string;
@@ -43,6 +50,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const actor = auth.context.userEmail ?? auth.context.userId;
+  const decidedByPersona = auth.context.clinicalPersona;
 
   try {
     const snapshot = await decideStaffEscalation(
@@ -61,6 +69,7 @@ export async function POST(request: Request, context: RouteContext) {
       action: body.action,
       ehrWrite: false,
       autonomousClinicalAction: false,
+      decidedByPersona,
     });
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;

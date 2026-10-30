@@ -485,6 +485,71 @@ function pushDecision(
   ];
 }
 
+/** Upsert a single follow-up worklist row (used by journey→continuous bridge). */
+export async function upsertFollowUpWorklistItem(
+  item: FollowUpWorklistItem,
+  options?: { scopeKey?: string; organisationId?: string | null }
+): Promise<FollowUpWorklistItem> {
+  const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId = options?.organisationId?.trim() || null;
+
+  if (usePg()) {
+    const pool = getPgPool();
+    await pool.query(
+      `INSERT INTO aksh.ccare_follow_up_items
+        (id, scope_key, organisation_id, patient_id, patient_label, title, source_kind, source_ref_id,
+         owner_role, owner_display, status, priority, due_at, created_at, updated_at,
+         closed_at, measurable_outcome, note, synthetic, ehr_write, autonomous_clinical_action)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17::jsonb,$18,TRUE,FALSE,FALSE)
+       ON CONFLICT (id) DO UPDATE SET
+         scope_key = EXCLUDED.scope_key,
+         organisation_id = COALESCE(EXCLUDED.organisation_id, aksh.ccare_follow_up_items.organisation_id),
+         patient_id = EXCLUDED.patient_id,
+         patient_label = EXCLUDED.patient_label,
+         title = EXCLUDED.title,
+         source_kind = EXCLUDED.source_kind,
+         source_ref_id = EXCLUDED.source_ref_id,
+         owner_role = EXCLUDED.owner_role,
+         owner_display = EXCLUDED.owner_display,
+         status = EXCLUDED.status,
+         priority = EXCLUDED.priority,
+         due_at = EXCLUDED.due_at,
+         updated_at = EXCLUDED.updated_at,
+         closed_at = EXCLUDED.closed_at,
+         measurable_outcome = EXCLUDED.measurable_outcome,
+         note = EXCLUDED.note`,
+      [
+        item.id,
+        scopeKey,
+        organisationId,
+        item.patientId,
+        item.patientLabel,
+        item.title,
+        item.sourceKind,
+        item.sourceRefId,
+        item.ownerRole,
+        item.ownerDisplay,
+        item.status,
+        item.priority,
+        item.dueAt,
+        item.createdAt,
+        item.updatedAt,
+        item.closedAt,
+        JSON.stringify(item.measurableOutcome),
+        item.note,
+      ]
+    );
+    return item;
+  }
+
+  const store = await readStore(scopeKey);
+  const idx = store.followUps.findIndex((f) => f.id === item.id);
+  if (idx >= 0) store.followUps[idx] = item;
+  else store.followUps.push(item);
+  await writeStore(store, scopeKey);
+  return item;
+}
+
 export async function updateFollowUpItem(
   input: {
     patientId: string;

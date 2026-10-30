@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideMedicationSafetyReview } from "@/lib/diabetes-intelligence";
 import type { MedCareReviewSection } from "@/lib/diabetes-intelligence/medcare-types";
@@ -22,6 +23,12 @@ export async function POST(request: Request, context: RouteContext) {
 
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
+
+  const personaDenied = denyUnlessConnectedDiabetesDecisionScope(
+    auth.context.clinicalPersona,
+    "medcare_safety_review"
+  );
+  if (personaDenied) return personaDenied;
 
   let body: {
     action?: "accept" | "edit" | "reject";
@@ -60,6 +67,7 @@ export async function POST(request: Request, context: RouteContext) {
       ehrWrite: false,
       autonomousPrescribe: false,
       validatedCds: false,
+      decidedByPersona: auth.context.clinicalPersona,
     });
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;

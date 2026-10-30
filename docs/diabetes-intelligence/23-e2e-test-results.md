@@ -42,9 +42,10 @@ Applied pending additive migrations **046–048** on local-dev only (medcare / c
 | INT-06 missing timeline page | Fixed (page + chrome) |
 | Tailwind ESM `require("tailwindcss-animate")` crashed CSS compile | Fixed (ESM import) |
 | Medcare/continuous seed PK collision across `scope_key` (INT-16) | Mitigated (`ON CONFLICT DO UPDATE`) |
-| INT-01…05, INT-10 | Registered — not fixed in this ship |
+| INT-01…05, INT-10 | Partially registered in original ship; INT-01…03/08/10 + follow-up facade mitigated in later PRs |
 | INT-09 weak patient API access | Fixed later — `denyUnlessConnectedPatientAccess` + `tests/connected-patient-api-access.test.ts` |
 | INT-01…03 orchestration / dual stores | Mitigated later — PR #75 (`e5c90ac`); facades + pipeline; Neon prod untouched |
+| INT-08 / INT-10 / follow-up dual store | Mitigated — org stamp + persona gate + follow-up facade/bridge; Playwright asserts nurse deny + `decidedByPersona` + `unifiedFollowUps` |
 
 ## CI note
 
