@@ -197,3 +197,31 @@ export async function enqueueDiabetesDraftsToSpineReview(input: {
     reviewCase: created,
   };
 }
+
+/**
+ * Locate an open (pending_review + DRAFT item) review-case row for a diabetes draft.
+ * Used to route clinicians to the primary HITL surface and to block domain decide APIs.
+ */
+export async function findOpenReviewItemForDiabetesDraft(input: {
+  diabetesDraftId: string;
+  scopeKey: string;
+  practiceId?: string;
+}): Promise<{ caseId: string; itemId: string; decisionHref: string } | null> {
+  const { readReviewCases } = await import("../review-case-repository");
+  const { resolveReviewQueueItems } = await import("../workflow/review-queue");
+  const cases = await readReviewCases(input.scopeKey, input.practiceId);
+  for (const c of cases) {
+    if (c.status !== "pending_review") continue;
+    for (const item of resolveReviewQueueItems(c)) {
+      if (item.status !== "DRAFT") continue;
+      if (item.metadata?.diabetesDraftId === input.diabetesDraftId) {
+        return {
+          caseId: c.id,
+          itemId: item.id,
+          decisionHref: `/review/${encodeURIComponent(c.id)}`,
+        };
+      }
+    }
+  }
+  return null;
+}
