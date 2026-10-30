@@ -1,9 +1,9 @@
 /**
- * INT-04-adjacent — dual-write journey HITL follow-ups into continuous-care ops.
+ * INT-04a collapse — project canonical follow-ups into continuous-care ops.
  *
- * Mirror of glucose-bridge: journey Accept/Edit creates `care_follow_up_tasks`
- * (HITL SoT) and also upserts a linked `ccare_follow_up_items` row so the ops
- * worklist stays consistent. No Neon schema drops; ehrWrite stays false.
+ * Physical SoT is `care_follow_up_tasks` (follow-up-canonical). This bridge
+ * upserts a linked `ccare_follow_up_items` ops projection so worklists stay
+ * consistent. No Neon schema drops; ehrWrite stays false.
  */
 
 import { getPatientById } from "../mock-data";

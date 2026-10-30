@@ -419,6 +419,10 @@ export async function applyCarePlanTemplate(
     { scopeKey }
   );
 
+  // INT-03 collapse — mirror template draft into care_plan_records SoT
+  const { mirrorMedCarePlanToCanonical } = await import("./care-plan-bridge");
+  await mirrorMedCarePlanToCanonical(plan, { scopeKey });
+
   await createTask(
     {
       patientId,
@@ -449,7 +453,12 @@ export async function decideMedCarePlan(
   },
   options?: { scopeKey?: string }
 ): Promise<MedicationPersonalisedCareSnapshot> {
-  await decidePersonalisedCarePlan(input, options);
+  const decided = await decidePersonalisedCarePlan(input, options);
+  // INT-03 collapse — sync Accept/Edit/Reject into care_plan_records SoT
+  const { syncMedCareDecisionToCanonical } = await import("./care-plan-bridge");
+  await syncMedCareDecisionToCanonical(decided, input, {
+    scopeKey: options?.scopeKey,
+  });
   return buildMedicationPersonalisedCare(input.patientId, {
     scopeKey: options?.scopeKey,
   });

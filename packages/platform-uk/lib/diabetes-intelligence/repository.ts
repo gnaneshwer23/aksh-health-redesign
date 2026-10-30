@@ -143,12 +143,15 @@ export async function createCarePlanRecord(
     safetyNotes: string[];
     missingData: MissingDataIndicator[];
     createdBy: string;
+    entrySurface?: import("./types").CarePlanEntrySurface | null;
+    medcarePlanId?: string | null;
   },
   options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<CarePlanRecord> {
   const scopeKey = options?.scopeKey ?? "shared";
   const organisationId = resolveConnectedDiabetesOrganisationId(options);
   const now = new Date().toISOString();
+  const entrySurface = input.entrySurface ?? "journey";
   const plan: CarePlanRecord = {
     id: `cp-${randomUUID()}`,
     patientId: input.patientId,
@@ -165,6 +168,8 @@ export async function createCarePlanRecord(
     decisionReason: null,
     version: 1,
     organisationId,
+    entrySurface,
+    medcarePlanId: input.medcarePlanId ?? null,
     hitlRequired: true,
     ehrWrite: false,
     synthetic: true,
@@ -175,8 +180,8 @@ export async function createCarePlanRecord(
     await pool.query(
       `INSERT INTO aksh.care_plan_records
         (id, scope_key, organisation_id, patient_id, patient_label, status, sections, safety_notes, missing_data,
-         created_by, created_at, version, hitl_required, ehr_write, synthetic)
-       VALUES ($1,$2,$3,$4,$5,'DRAFT',$6::jsonb,$7,$8::jsonb,$9,$10,1,true,false,true)`,
+         created_by, created_at, version, hitl_required, ehr_write, synthetic, entry_surface, medcare_plan_id)
+       VALUES ($1,$2,$3,$4,$5,'DRAFT',$6::jsonb,$7,$8::jsonb,$9,$10,1,true,false,true,$11,$12)`,
       [
         plan.id,
         scopeKey,
@@ -188,6 +193,8 @@ export async function createCarePlanRecord(
         JSON.stringify(plan.missingData),
         plan.createdBy,
         plan.createdAt,
+        entrySurface,
+        plan.medcarePlanId,
       ]
     );
   } else {
@@ -235,37 +242,63 @@ export async function listCarePlans(
       decided_at: Date | null;
       decision_reason: string | null;
       version: number;
+      entry_surface: import("./types").CarePlanEntrySurface | null;
+      medcare_plan_id: string | null;
     }>(
       `SELECT * FROM aksh.care_plan_records
        WHERE scope_key = $1 AND patient_id = $2
        ORDER BY created_at DESC`,
       [scopeKey, patientId]
     );
-    return rows.map((r) => ({
-      id: r.id,
-      patientId: r.patient_id,
-      patientLabel: r.patient_label,
-      status: r.status,
-      sections: r.sections,
-      safetyNotes: r.safety_notes ?? [],
-      missingData: r.missing_data ?? [],
-      createdBy: r.created_by,
-      createdAt: new Date(r.created_at).toISOString(),
-      decidedBy: r.decided_by,
-      decidedByPersona: r.decided_by_persona ?? null,
-      decidedAt: r.decided_at ? new Date(r.decided_at).toISOString() : null,
-      decisionReason: r.decision_reason,
-      version: r.version,
-      organisationId: r.organisation_id,
-      hitlRequired: true as const,
-      ehrWrite: false as const,
-      synthetic: true as const,
-    }));
+    return rows.map((r) => mapCarePlanRow(r));
   }
   const store = await readStore(scopeKey);
   return store.plans
     .filter((p) => p.patientId === patientId)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+function mapCarePlanRow(r: {
+  id: string;
+  organisation_id: string | null;
+  patient_id: string;
+  patient_label: string;
+  status: CarePlanStatus;
+  sections: CarePlanSection[];
+  safety_notes: string[];
+  missing_data: MissingDataIndicator[];
+  created_by: string;
+  created_at: Date;
+  decided_by: string | null;
+  decided_by_persona: ClinicalPersona | null;
+  decided_at: Date | null;
+  decision_reason: string | null;
+  version: number;
+  entry_surface?: import("./types").CarePlanEntrySurface | null;
+  medcare_plan_id?: string | null;
+}): CarePlanRecord {
+  return {
+    id: r.id,
+    patientId: r.patient_id,
+    patientLabel: r.patient_label,
+    status: r.status,
+    sections: r.sections,
+    safetyNotes: r.safety_notes ?? [],
+    missingData: r.missing_data ?? [],
+    createdBy: r.created_by,
+    createdAt: new Date(r.created_at).toISOString(),
+    decidedBy: r.decided_by,
+    decidedByPersona: r.decided_by_persona ?? null,
+    decidedAt: r.decided_at ? new Date(r.decided_at).toISOString() : null,
+    decisionReason: r.decision_reason,
+    version: r.version,
+    organisationId: r.organisation_id,
+    entrySurface: r.entry_surface ?? null,
+    medcarePlanId: r.medcare_plan_id ?? null,
+    hitlRequired: true as const,
+    ehrWrite: false as const,
+    synthetic: true as const,
+  };
 }
 
 export async function getCarePlan(
@@ -275,6 +308,26 @@ export async function getCarePlan(
   const scopeKey = options?.scopeKey ?? "shared";
   const plans = await listCarePlansByScope(scopeKey);
   return plans.find((p) => p.id === planId) ?? null;
+}
+
+export async function getCarePlanByMedcareLink(
+  medcarePlanId: string,
+  options?: { scopeKey?: string }
+): Promise<CarePlanRecord | null> {
+  const scopeKey = options?.scopeKey ?? "shared";
+  if (usePg()) {
+    const pool = getPgPool();
+    const { rows } = await pool.query(
+      `SELECT * FROM aksh.care_plan_records
+       WHERE scope_key = $1 AND medcare_plan_id = $2
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [scopeKey, medcarePlanId]
+    );
+    return rows[0] ? mapCarePlanRow(rows[0]) : null;
+  }
+  const store = await readStore(scopeKey);
+  return store.plans.find((p) => p.medcarePlanId === medcarePlanId) ?? null;
 }
 
 async function listCarePlansByScope(scopeKey: string): Promise<CarePlanRecord[]> {
@@ -299,6 +352,8 @@ export async function decideCarePlan(
     actorPersona?: ClinicalPersona | null;
     reason?: string;
     editedSections?: CarePlanSection[];
+    /** When syncing medcare → canonical, skip journey follow-up create (satellite already decided). */
+    skipFollowUp?: boolean;
   },
   options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<{ plan: CarePlanRecord; decision: CarePlanDecision; followUp: CareFollowUpTask | null }> {
@@ -386,25 +441,6 @@ export async function decideCarePlan(
           decision.createdAt,
         ]
       );
-      if (input.action === "accept" || input.action === "edit") {
-        followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now, organisationId);
-        await client.query(
-          `INSERT INTO aksh.care_follow_up_tasks
-            (id, scope_key, organisation_id, patient_id, plan_id, title, owner, status, due_at, created_at, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,'open',$8,$9,true)`,
-          [
-            followUp.id,
-            scopeKey,
-            organisationId,
-            followUp.patientId,
-            followUp.planId,
-            followUp.title,
-            followUp.owner,
-            followUp.dueAt,
-            followUp.createdAt,
-          ]
-        );
-      }
       await client.query("COMMIT");
     } catch (e) {
       await client.query("ROLLBACK");
@@ -418,10 +454,6 @@ export async function decideCarePlan(
     if (idx < 0) throw new Error("Care plan not found");
     store.plans[idx] = updated;
     store.decisions.push(decision);
-    if (input.action === "accept" || input.action === "edit") {
-      followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now, organisationId);
-      store.followUps.push(followUp);
-    }
     await writeStore(store, scopeKey);
   }
 
@@ -443,53 +475,123 @@ export async function decideCarePlan(
     { scopeKey }
   );
 
-  if (followUp) {
-    await appendJourneyEvent(
+  if (!input.skipFollowUp && (input.action === "accept" || input.action === "edit")) {
+    // INT-04a collapse — canonical follow-up write + ops projection mirror
+    const created = await createCanonicalFollowUpInline(
       {
-        id: `evt-${randomUUID()}`,
         patientId: plan.patientId,
-        kind: "follow_up",
-        title: "Follow-up created",
-        summary: `${followUp.title} · owner=${followUp.owner} · due ${followUp.dueAt}`,
-        occurredAt: now,
-        metadata: { taskId: followUp.id, planId: plan.id },
+        planId: plan.id,
+        owner: input.actor,
+        now,
+        organisationId,
       },
-      { scopeKey }
+      { scopeKey, actor: input.actor }
     );
-    // INT-04-adjacent: dual-write into continuous-care ops worklist
-    await mirrorJourneyFollowUpToContinuous(followUp, {
-      scopeKey,
-      actor: input.actor,
-    });
+    followUp = created;
   }
 
   return { plan: updated, decision, followUp };
 }
 
-function buildFollowUp(
-  patientId: string,
-  planId: string,
-  owner: string,
-  now: string,
-  organisationId?: string | null
-): CareFollowUpTask {
-  const due = new Date(now);
+/** Persist a follow-up into the canonical physical store (care_follow_up_tasks). */
+export async function persistFollowUpTask(
+  task: CareFollowUpTask,
+  options?: { scopeKey?: string; organisationId?: string | null }
+): Promise<CareFollowUpTask> {
+  const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId =
+    options?.organisationId ??
+    task.organisationId ??
+    resolveConnectedDiabetesOrganisationId();
+  const withOrg: CareFollowUpTask = {
+    ...task,
+    organisationId,
+    entrySurface: task.entrySurface ?? "journey",
+  };
+
+  if (usePg()) {
+    const pool = getPgPool();
+    await pool.query(
+      `INSERT INTO aksh.care_follow_up_tasks
+        (id, scope_key, organisation_id, patient_id, plan_id, title, owner, status, due_at, created_at, synthetic, entry_surface)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true,$11)
+       ON CONFLICT (id) DO UPDATE SET
+         status = EXCLUDED.status,
+         note = COALESCE(EXCLUDED.note, aksh.care_follow_up_tasks.note),
+         entry_surface = COALESCE(EXCLUDED.entry_surface, aksh.care_follow_up_tasks.entry_surface)`,
+      [
+        withOrg.id,
+        scopeKey,
+        organisationId,
+        withOrg.patientId,
+        withOrg.planId,
+        withOrg.title,
+        withOrg.owner,
+        withOrg.status,
+        withOrg.dueAt,
+        withOrg.createdAt,
+        withOrg.entrySurface,
+      ]
+    );
+  } else {
+    const store = await readStore(scopeKey);
+    const idx = store.followUps.findIndex((t) => t.id === withOrg.id);
+    if (idx >= 0) store.followUps[idx] = withOrg;
+    else store.followUps.push(withOrg);
+    await writeStore(store, scopeKey);
+  }
+  return withOrg;
+}
+
+async function createCanonicalFollowUpInline(
+  input: {
+    patientId: string;
+    planId: string;
+    owner: string;
+    now: string;
+    organisationId?: string | null;
+  },
+  options: { scopeKey: string; actor: string }
+): Promise<CareFollowUpTask> {
+  const due = new Date(input.now);
   due.setDate(due.getDate() + 14);
-  return {
+  const task: CareFollowUpTask = {
     id: `cfu-${randomUUID()}`,
-    patientId,
-    planId,
+    patientId: input.patientId,
+    planId: input.planId,
     title: "Diabetes care-plan follow-up (clinician-confirmed)",
-    owner,
+    owner: input.owner,
     status: "open",
     dueAt: due.toISOString(),
-    createdAt: now,
+    createdAt: input.now,
     acknowledgedAt: null,
     closedAt: null,
     note: null,
-    organisationId: organisationId ?? null,
+    organisationId: input.organisationId ?? null,
+    entrySurface: "journey",
     synthetic: true,
   };
+  await persistFollowUpTask(task, {
+    scopeKey: options.scopeKey,
+    organisationId: input.organisationId,
+  });
+  await appendJourneyEvent(
+    {
+      id: `evt-${randomUUID()}`,
+      patientId: task.patientId,
+      kind: "follow_up",
+      title: "Follow-up created",
+      summary: `${task.title} · owner=${task.owner} · due ${task.dueAt}`,
+      occurredAt: input.now,
+      metadata: { taskId: task.id, planId: input.planId, physicalStore: "care_follow_up_tasks" },
+    },
+    { scopeKey: options.scopeKey }
+  );
+  await mirrorJourneyFollowUpToContinuous(task, {
+    scopeKey: options.scopeKey,
+    actor: options.actor,
+  });
+  return task;
 }
 
 export async function listFollowUps(
@@ -511,6 +613,8 @@ export async function listFollowUps(
       acknowledged_at: Date | null;
       closed_at: Date | null;
       note: string | null;
+      organisation_id: string | null;
+      entry_surface: import("./types").FollowUpEntrySurface | null;
     }>(
       `SELECT * FROM aksh.care_follow_up_tasks
        WHERE scope_key = $1 AND patient_id = $2
@@ -529,6 +633,8 @@ export async function listFollowUps(
       acknowledgedAt: r.acknowledged_at ? new Date(r.acknowledged_at).toISOString() : null,
       closedAt: r.closed_at ? new Date(r.closed_at).toISOString() : null,
       note: r.note,
+      organisationId: r.organisation_id,
+      entrySurface: r.entry_surface ?? null,
       synthetic: true as const,
     }));
   }
@@ -581,6 +687,8 @@ export async function updateFollowUp(
       acknowledgedAt: r.acknowledged_at ? new Date(r.acknowledged_at).toISOString() : null,
       closedAt: r.closed_at ? new Date(r.closed_at).toISOString() : null,
       note: r.note,
+      organisationId: r.organisation_id ?? null,
+      entrySurface: r.entry_surface ?? null,
       synthetic: true,
     };
     await appendJourneyEvent(

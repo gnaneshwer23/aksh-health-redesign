@@ -1,15 +1,15 @@
 /**
- * INT-03 — unified care-plan read model over dual stores.
+ * INT-03 — unified care-plan read model over canonical SoT + satellite.
  *
- * Journey HITL plans live in `care_plan_records`; medcare template plans in
- * `medcare_care_plans`. This facade projects both into one provenance-tagged
- * list. Connected journey orchestration treats journey plans as the HITL
- * care-plan gate; medcare plans remain the medication personalisation surface.
- * No destructive migration / Neon drops.
+ * Physical SoT: `care_plan_records` (journey + medcare-mirrored drafts).
+ * Satellite: `medcare_care_plans` retained for template metadata; rows with
+ * `canonicalPlanId` are projected from the SoT (deduped here). Legacy unlinked
+ * medcare rows still appear until mirrored. No destructive Neon merge.
  */
 
 import { listCarePlans as listJourneyCarePlans } from "./repository";
 import { listCarePlans as listMedCarePlans } from "./medcare-repository";
+import { CARE_PLAN_CANONICAL_STORE } from "./care-plan-canonical";
 import type { CarePlanRecord, CarePlanSection } from "./types";
 import type { PersonalisedCarePlan, PersonalisedCarePlanSection } from "./medcare-types";
 
@@ -40,6 +40,10 @@ export type UnifiedCarePlan = {
   ehrWrite: false;
   synthetic: true;
   provenance: "journey_hitl" | "medcare_template";
+  /** Physical write store after INT-03 collapse. */
+  physicalStore: typeof CARE_PLAN_CANONICAL_STORE | "medcare_care_plans_legacy";
+  entrySurface?: "journey" | "medcare" | "shared" | null;
+  medcarePlanId?: string | null;
 };
 
 function mapSections(
@@ -54,13 +58,16 @@ function mapSections(
 }
 
 export function toUnifiedFromJourney(plan: CarePlanRecord): UnifiedCarePlan {
+  const fromMedcare = plan.entrySurface === "medcare" || Boolean(plan.medcarePlanId);
   return {
     id: plan.id,
     patientId: plan.patientId,
     patientLabel: plan.patientLabel,
-    sourceStore: "journey_care_plan",
-    unifiedKey: `journey:${plan.id}`,
-    title: `Journey care plan v${plan.version}`,
+    sourceStore: fromMedcare ? "medcare_care_plan" : "journey_care_plan",
+    unifiedKey: fromMedcare ? `medcare-canonical:${plan.id}` : `journey:${plan.id}`,
+    title: fromMedcare
+      ? `Medcare care plan v${plan.version}`
+      : `Journey care plan v${plan.version}`,
     status: plan.status,
     sections: mapSections(plan.sections),
     version: plan.version,
@@ -70,7 +77,10 @@ export function toUnifiedFromJourney(plan: CarePlanRecord): UnifiedCarePlan {
     hitlRequired: true,
     ehrWrite: false,
     synthetic: true,
-    provenance: "journey_hitl",
+    provenance: fromMedcare ? "medcare_template" : "journey_hitl",
+    physicalStore: CARE_PLAN_CANONICAL_STORE,
+    entrySurface: plan.entrySurface ?? (fromMedcare ? "medcare" : "journey"),
+    medcarePlanId: plan.medcarePlanId ?? null,
   };
 }
 
@@ -92,6 +102,9 @@ export function toUnifiedFromMedCare(plan: PersonalisedCarePlan): UnifiedCarePla
     ehrWrite: false,
     synthetic: true,
     provenance: "medcare_template",
+    physicalStore: "medcare_care_plans_legacy",
+    entrySurface: "medcare",
+    medcarePlanId: plan.id,
   };
 }
 
@@ -104,15 +117,24 @@ export async function listUnifiedCarePlans(
     listJourneyCarePlans(patientId, { scopeKey }),
     listMedCarePlans(patientId, { scopeKey }),
   ]);
+  // Collapse: prefer canonical SoT; skip satellite rows already mirrored.
+  const linkedMedcareIds = new Set(
+    journey.map((p) => p.medcarePlanId).filter((id): id is string => Boolean(id))
+  );
+  const unlinkedMedcare = medcare.filter(
+    (p) => !p.canonicalPlanId && !linkedMedcareIds.has(p.id)
+  );
   return [
     ...journey.map(toUnifiedFromJourney),
-    ...medcare.map(toUnifiedFromMedCare),
+    ...unlinkedMedcare.map(toUnifiedFromMedCare),
   ].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-/** Journey store is the connected-pipeline HITL care-plan source of truth. */
+/** Journey-originated plans on the canonical physical store. */
 export function selectCanonicalJourneyPlans(plans: UnifiedCarePlan[]): UnifiedCarePlan[] {
-  return plans.filter((p) => p.sourceStore === "journey_care_plan");
+  return plans.filter(
+    (p) => p.sourceStore === "journey_care_plan" && p.physicalStore === CARE_PLAN_CANONICAL_STORE
+  );
 }
 
 export function selectMedCarePlans(plans: UnifiedCarePlan[]): UnifiedCarePlan[] {

@@ -1,10 +1,9 @@
 /**
- * INT-04-adjacent — unified follow-up read model over dual stores.
+ * INT-04a follow-through — unified follow-up read over canonical SoT + ops projection.
  *
- * Journey HITL follow-ups live in `care_follow_up_tasks`; continuous-care ops
- * worklist in `ccare_follow_up_items`. This facade projects both into one
- * provenance-tagged list. Journey tasks are the connected care-plan HITL SoT;
- * continuous-care items remain the ops worklist surface. No destructive merge.
+ * Physical SoT: `care_follow_up_tasks` (single write path via follow-up-canonical).
+ * Ops projection: `ccare_follow_up_items` (mirrored on create/advance; native ops
+ * items without journey source_ref remain listed). No destructive Neon merge.
  */
 
 import { getPatientById } from "../mock-data";
@@ -33,6 +32,9 @@ export type UnifiedFollowUp = {
   ehrWrite: false;
   synthetic: true;
   provenance: "journey_hitl" | "continuous_care_ops";
+  /** After INT-04a collapse: journey rows are physical SoT; ccare may be projection. */
+  physicalStore: "care_follow_up_tasks" | "ccare_follow_up_items";
+  isOpsProjection?: boolean;
 };
 
 function labelFor(patientId: string, fallback?: string): string {
@@ -57,10 +59,13 @@ export function toUnifiedFromJourney(task: CareFollowUpTask): UnifiedFollowUp {
     ehrWrite: false,
     synthetic: true,
     provenance: "journey_hitl",
+    physicalStore: "care_follow_up_tasks",
+    isOpsProjection: false,
   };
 }
 
 export function toUnifiedFromContinuous(item: FollowUpWorklistItem): UnifiedFollowUp {
+  const isProjection = item.sourceKind === "journey_follow_up";
   return {
     id: item.id,
     patientId: item.patientId,
@@ -78,6 +83,8 @@ export function toUnifiedFromContinuous(item: FollowUpWorklistItem): UnifiedFoll
     ehrWrite: false,
     synthetic: true,
     provenance: "continuous_care_ops",
+    physicalStore: "ccare_follow_up_items",
+    isOpsProjection: isProjection,
   };
 }
 

@@ -1,5 +1,6 @@
 /**
- * INT-01 / INT-02 / INT-03 / INT-04 / follow-up facade — connected diabetes orchestration + store facades.
+ * INT-01 / INT-02 / INT-03 / INT-04 / INT-04a / care-plan+follow-up canonical collapse —
+ * connected diabetes orchestration + store facades.
  * File-store path (no Postgres). ehrWrite must stay false. Neon production untouched.
  */
 import assert from "node:assert/strict";
@@ -27,6 +28,15 @@ async function main() {
   } = await import("../lib/diabetes-intelligence/glucose-bridge");
   const { listUnifiedCarePlans } = await import("../lib/diabetes-intelligence/care-plan-facade");
   const { listUnifiedFollowUps } = await import("../lib/diabetes-intelligence/follow-up-facade");
+  const { CARE_PLAN_CANONICAL_STORE } = await import(
+    "../lib/diabetes-intelligence/care-plan-canonical"
+  );
+  const { FOLLOW_UP_CANONICAL_STORE } = await import(
+    "../lib/diabetes-intelligence/follow-up-canonical"
+  );
+  const { applyCarePlanTemplate, decideMedCarePlan } = await import(
+    "../lib/diabetes-intelligence/medcare-assemble"
+  );
   const { listUnifiedMedRecons, selectOpenMedRecons } = await import(
     "../lib/diabetes-intelligence/med-recon-facade"
   );
@@ -85,12 +95,16 @@ async function main() {
   assert.ok(run.phasesExecuted.some((p) => p.stepId === "agent"));
   assert.ok(run.steps.length >= 7);
 
-  // INT-03: unified care plans include journey draft with provenance
+  // INT-03: unified care plans include journey draft with provenance + canonical store
   const plans = await listUnifiedCarePlans(patientId, { scopeKey });
   assert.ok(plans.length >= 1, "expected at least one care plan after pipeline");
   assert.ok(plans.every((p) => p.ehrWrite === false && p.hitlRequired === true));
   assert.ok(plans.some((p) => p.sourceStore === "journey_care_plan" && p.provenance === "journey_hitl"));
   assert.ok(plans.every((p) => p.unifiedKey.includes(":")));
+  assert.ok(
+    plans.some((p) => p.physicalStore === CARE_PLAN_CANONICAL_STORE),
+    "journey drafts must land in care_plan_records SoT"
+  );
 
   // Shared context reflects live modules
   const ctx = await buildSharedPatientContextAsync(patientId, { scopeKey });
@@ -136,9 +150,58 @@ async function main() {
     "journey accept should mirror into continuous-care follow-up store"
   );
   assert.ok(followUps.every((f) => f.ehrWrite === false && f.unifiedKey.includes(":")));
+  assert.ok(
+    followUps.some(
+      (f) => f.sourceStore === "journey_follow_up" && f.physicalStore === FOLLOW_UP_CANONICAL_STORE
+    ),
+    "HITL follow-ups must use care_follow_up_tasks SoT"
+  );
+  assert.ok(
+    followUps.some((f) => f.sourceStore === "continuous_care_follow_up" && f.isOpsProjection === true),
+    "ccare mirror rows should be tagged as ops projection"
+  );
 
   const status2 = await buildConnectedDiabetesOrchestration(patientId, { scopeKey });
   assert.ok(status2.unifiedFollowUps.length >= 1);
+
+  // INT-03 collapse: medcare template mirrors into care_plan_records (deduped in facade)
+  await applyCarePlanTemplate(patientId, "t2d_foundational", {
+    scopeKey,
+    createdBy: "medcare@aksh.health",
+  });
+  const plansAfterMedcare = await listUnifiedCarePlans(patientId, { scopeKey });
+  const medcareCanonical = plansAfterMedcare.filter(
+    (p) => p.provenance === "medcare_template" && p.physicalStore === CARE_PLAN_CANONICAL_STORE
+  );
+  assert.ok(medcareCanonical.length >= 1, "medcare draft must mirror into canonical SoT");
+  const medDraft = medcareCanonical.find((p) => p.status === "DRAFT");
+  assert.ok(medDraft, "expected DRAFT medcare-mirrored plan");
+  // Decide via medcare surface (uses satellite id when linked)
+  const { listCarePlans: listMedCarePlans } = await import(
+    "../lib/diabetes-intelligence/medcare-repository"
+  );
+  const medcareRows = await listMedCarePlans(patientId, { scopeKey });
+  const satellite = medcareRows.find((p) => p.status === "DRAFT" && p.canonicalPlanId);
+  assert.ok(satellite?.canonicalPlanId, "satellite must link canonical_plan_id");
+  await decideMedCarePlan(
+    {
+      patientId,
+      planId: satellite!.id,
+      action: "accept",
+      actor: "medcare@aksh.health",
+    },
+    { scopeKey }
+  );
+  const plansAfterDecide = await listUnifiedCarePlans(patientId, { scopeKey });
+  assert.ok(
+    plansAfterDecide.some(
+      (p) =>
+        p.physicalStore === CARE_PLAN_CANONICAL_STORE &&
+        p.provenance === "medcare_template" &&
+        p.status === "APPROVED"
+    ),
+    "medcare Accept must sync canonical SoT to APPROVED"
+  );
 
   // INT-04: dual entry surfaces share one physical store + dedupe open runs
   const from360 = await startCanonicalMedReconciliation(patientId, {
@@ -176,7 +239,9 @@ async function main() {
   assert.ok(status3.unifiedMedRecons.length >= 1);
   assert.ok(status3.unifiedMedRecons.every((r) => r.ehrWrite === false));
 
-  console.log("connected-diabetes-orchestration: INT-01/02/03/04 + follow-up facade — PASS");
+  console.log(
+    "connected-diabetes-orchestration: INT-01/02/03/04 + care-plan/follow-up canonical collapse — PASS"
+  );
 }
 
 main()

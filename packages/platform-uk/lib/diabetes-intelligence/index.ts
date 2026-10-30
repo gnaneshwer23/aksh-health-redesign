@@ -25,6 +25,17 @@ export {
 } from "./care-plan-facade";
 export type { UnifiedCarePlan, UnifiedCarePlanSourceStore } from "./care-plan-facade";
 export {
+  CARE_PLAN_CANONICAL_STORE,
+  CARE_PLAN_MEDCARE_SATELLITE_STORE,
+  draftCanonicalCarePlan,
+  decideCanonicalCarePlan,
+  findCanonicalPlanByMedcareId,
+} from "./care-plan-canonical";
+export {
+  mirrorMedCarePlanToCanonical,
+  syncMedCareDecisionToCanonical,
+} from "./care-plan-bridge";
+export {
   listUnifiedFollowUps,
   selectCanonicalJourneyFollowUps,
   selectContinuousFollowUps,
@@ -37,6 +48,13 @@ export {
   FOLLOW_UP_JOURNEY_STORE,
   FOLLOW_UP_CONTINUOUS_STORE,
 } from "./follow-up-bridge";
+export {
+  FOLLOW_UP_CANONICAL_STORE,
+  FOLLOW_UP_OPS_PROJECTION_STORE,
+  createCanonicalFollowUp,
+  advanceCanonicalFollowUp,
+  listCanonicalFollowUps,
+} from "./follow-up-canonical";
 export {
   listUnifiedMedRecons,
   selectOpenMedRecons,

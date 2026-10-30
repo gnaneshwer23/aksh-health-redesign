@@ -12,13 +12,13 @@ import {
 } from "./glucose-bridge";
 import {
   appendJourneyEvent,
-  createCarePlanRecord,
   decideCarePlan,
   listCarePlans,
   listFollowUps,
   listJourneyEvents,
-  updateFollowUp,
 } from "./repository";
+import { draftCanonicalCarePlan } from "./care-plan-canonical";
+import { advanceCanonicalFollowUp } from "./follow-up-canonical";
 import type {
   CarePlanDecisionAction,
   CarePlanSection,
@@ -258,7 +258,7 @@ export async function draftJourneyCarePlan(
     },
   ];
 
-  await createCarePlanRecord(
+  await draftCanonicalCarePlan(
     {
       patientId,
       patientLabel: snap.patientLabel,
@@ -271,6 +271,7 @@ export async function draftJourneyCarePlan(
       ],
       missingData: missing,
       createdBy,
+      entrySurface: "journey",
     },
     { scopeKey }
   );
@@ -315,7 +316,8 @@ export async function advanceFollowUp(
   options?: { scopeKey?: string }
 ): Promise<DiabetesJourneySnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
-  await updateFollowUp(
+  // INT-04a collapse — advance canonical SoT and re-mirror ops projection
+  await advanceCanonicalFollowUp(
     { taskId: input.taskId, action: input.action, note: input.note },
     { scopeKey }
   );
