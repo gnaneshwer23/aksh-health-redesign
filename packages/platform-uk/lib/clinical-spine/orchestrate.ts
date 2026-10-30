@@ -20,6 +20,19 @@ import { runContractedNexus } from "@/lib/agents/contracts/run-nexus";
 import { evaluateGuardianGateway } from "@/lib/guardian-gateway";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
 import { mayEnqueueAgentDraft } from "@/lib/workflow/review-queue";
+import {
+  AgentRuntimeError,
+  classifyAgentError,
+  newCorrelationId,
+  type AgentErrorCode,
+} from "@/lib/agents/execution-metadata";
+import {
+  claimOrRecoverDurableAgentRun,
+  finalizeDurableAgentRun,
+  toDurableRunStatus,
+  type DurableAgentRunRecord,
+} from "@/lib/agents/execution-run-store";
+import { resolveShieldAwareEnqueue } from "@/lib/agents/shield-orchestration-gate";
 
 import { resolveDecision, type DecisionEscalation } from "@/lib/decision";
 
@@ -53,10 +66,16 @@ export type ClinicalSpineOrchestrateResult = {
     output_status: "PASS" | "REVIEW" | "BLOCK";
     reasons: string[];
   };
-  /** False when Guardian BLOCK — drafts must not enter the HITL review queue. */
+  /** False when Guardian BLOCK or SHIELD unavailable (durable required) — drafts must not enter HITL. */
   draftEnqueueAllowed: boolean;
   /** Whether the run's SHIELD record was stored (false without a database or when the write failed). */
   runAuditRecorded: boolean;
+  /** Milestone A2 — SHIELD blocked enqueue even if Guardian allowed (Postgres required, audit failed). */
+  shieldBlockedEnqueue: boolean;
+  /** Milestone A2 — durable agent_intel_runs id when idempotencyKey was supplied. */
+  durableRunId: string | null;
+  /** Milestone A2 — true when this call returned a prior terminal snapshot. */
+  durableRecovered: boolean;
   /** Milestone A1 — care episode / correlation echoed for durable A2 persistence. */
   careEpisodeId: string | null;
   correlationId: string;
@@ -108,7 +127,171 @@ export type ClinicalSpineOrchestrateInput = OrchestrationOptions & {
   caseId?: string;
 };
 
+function isSpineResultSnapshot(value: unknown): value is ClinicalSpineOrchestrateResult {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      (value as ClinicalSpineOrchestrateResult).artifactType === "aksh-clinical-spine-orchestrate" &&
+      (value as ClinicalSpineOrchestrateResult).orchestration
+  );
+}
+
+function isFailureSnapshot(
+  value: unknown
+): value is { artifactType: "aksh-clinical-spine-orchestrate-failure"; error: { code: string; message: string } } {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      (value as { artifactType?: string }).artifactType === "aksh-clinical-spine-orchestrate-failure"
+  );
+}
+
+async function finalizeClaimedRun(
+  claimed: DurableAgentRunRecord,
+  result: ClinicalSpineOrchestrateResult
+): Promise<ClinicalSpineOrchestrateResult> {
+  const completedAt = new Date().toISOString();
+  const status = result.draftEnqueueAllowed
+    ? toDurableRunStatus(result.orchestration.execution.status)
+    : ("blocked" as const);
+  await finalizeDurableAgentRun({
+    ...claimed,
+    status,
+    completedAt,
+    correlationId: result.correlationId,
+    careEpisodeId: result.careEpisodeId,
+    guardianOutcome: result.guardianGateway?.output_status ?? null,
+    reviewStatus: result.orchestration.execution.reviewStatus,
+    draftEnqueueAllowed: result.draftEnqueueAllowed,
+    shieldAuditPersisted: result.runAuditRecorded,
+    agentsInvoked: [
+      "CONDUCTOR",
+      ...result.orchestration.outputSlots.map((s) => (s === "ORACLE" ? "HORIZON" : s)),
+    ],
+    execution: result.orchestration.execution,
+    resultSnapshot: JSON.parse(JSON.stringify(result)) as Record<string, unknown>,
+    note: result.durableRecovered
+      ? "CONDUCTOR orchestration recovered (A2)"
+      : "CONDUCTOR orchestration finalised (A2 durable run)",
+  });
+  return result;
+}
+
+async function finalizeFailedClaim(
+  claimed: DurableAgentRunRecord,
+  error: unknown
+): Promise<never> {
+  const classified = error instanceof AgentRuntimeError ? error.classification : classifyAgentError(error, "CONDUCTOR");
+  const completedAt = new Date().toISOString();
+  const status = toDurableRunStatus(
+    classified.code === "TIMEOUT" || classified.code === "OVERALL_TIMEOUT" ? "timed_out" : "failed"
+  );
+  await finalizeDurableAgentRun({
+    ...claimed,
+    status,
+    completedAt,
+    guardianOutcome: null,
+    reviewStatus: "not_required",
+    draftEnqueueAllowed: false,
+    shieldAuditPersisted: false,
+    agentsInvoked: ["CONDUCTOR"],
+    execution: {
+      ...claimed.execution,
+      status: classified.code === "TIMEOUT" || classified.code === "OVERALL_TIMEOUT" ? "timed_out" : "failed",
+      completedAt,
+      durationMs: Math.max(0, Date.parse(completedAt) - Date.parse(claimed.startedAt)),
+      errorCode: classified.code,
+      errorMessage: classified.message,
+      reviewStatus: "not_required",
+    },
+    resultSnapshot: {
+      artifactType: "aksh-clinical-spine-orchestrate-failure",
+      error: { code: classified.code, message: classified.message, retryable: classified.retryable },
+    },
+    note: `CONDUCTOR orchestration failed (A2): ${classified.code}`,
+  });
+  if (error instanceof AgentRuntimeError) throw error;
+  throw new AgentRuntimeError(classified);
+}
+
 export async function runClinicalSpineOrchestrate(
+  input: ClinicalSpineOrchestrateInput
+): Promise<ClinicalSpineOrchestrateResult> {
+  const scopeKey = input.scopeKey?.trim() || "shared";
+  const correlationId = input.correlationId?.trim() || newCorrelationId("spine");
+  const careEpisodeId = input.careEpisodeId?.trim() || null;
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+  const patient = getPatientById(input.patientId.trim());
+
+  let claimed: DurableAgentRunRecord | null = null;
+  if (idempotencyKey && patient) {
+    const claim = await claimOrRecoverDurableAgentRun({
+      scopeKey,
+      patientId: patient.id,
+      patientLabel: patient.name,
+      correlationId,
+      careEpisodeId,
+      idempotencyKey,
+      source: "clinical_spine",
+    });
+    if (claim.outcome === "recovered") {
+      if (isSpineResultSnapshot(claim.record.resultSnapshot)) {
+        return {
+          ...claim.record.resultSnapshot,
+          durableRunId: claim.record.id,
+          durableRecovered: true,
+          correlationId: claim.record.correlationId || claim.record.resultSnapshot.correlationId,
+          careEpisodeId: claim.record.careEpisodeId ?? claim.record.resultSnapshot.careEpisodeId,
+        };
+      }
+      if (isFailureSnapshot(claim.record.resultSnapshot)) {
+        throw new AgentRuntimeError({
+          code: (claim.record.resultSnapshot.error.code as AgentErrorCode) || "INTERNAL",
+          message: claim.record.resultSnapshot.error.message,
+          retryable: false,
+          agentId: "CONDUCTOR",
+        });
+      }
+      // Terminal without usable snapshot — fall through is unsafe; surface DUPLICATE.
+      throw new AgentRuntimeError({
+        code: "DUPLICATE_RUN",
+        message: `Durable run ${claim.record.id} already terminal for idempotencyKey=${idempotencyKey}`,
+        retryable: false,
+        agentId: "CONDUCTOR",
+      });
+    }
+    claimed = claim.record;
+  }
+
+  try {
+    const result = await runClinicalSpineOrchestrateOnce({
+      ...input,
+      correlationId: claimed?.correlationId || correlationId,
+      careEpisodeId: careEpisodeId ?? undefined,
+      // Process-local guard still applies inside runAgentOrchestration when key set;
+      // durable path already claimed — skip re-entry of process map by omitting key there
+      // only when we own a durable claim (multi-instance). Keep key for non-durable A1 path.
+      idempotencyKey: claimed ? undefined : idempotencyKey ?? undefined,
+      scopeKey,
+    });
+    const withDurable: ClinicalSpineOrchestrateResult = {
+      ...result,
+      durableRunId: claimed?.id ?? null,
+      durableRecovered: false,
+    };
+    if (claimed) {
+      return await finalizeClaimedRun(claimed, withDurable);
+    }
+    return withDurable;
+  } catch (error) {
+    if (claimed) {
+      await finalizeFailedClaim(claimed, error);
+    }
+    throw error;
+  }
+}
+
+async function runClinicalSpineOrchestrateOnce(
   input: ClinicalSpineOrchestrateInput
 ): Promise<ClinicalSpineOrchestrateResult> {
   const includeTwinRanking = input.includeTwinRanking !== false;
@@ -125,6 +308,8 @@ export async function runClinicalSpineOrchestrate(
     scopeKey: input.scopeKey,
     expectedScopeKey: input.expectedScopeKey,
     idempotencyKey: input.idempotencyKey,
+    softFailOptionalAgents: input.softFailOptionalAgents,
+    faultInject: input.faultInject,
   });
 
   // --- B3 Diabetes v1 (docs/PHASED_BUILD_PLAN.md) ---
@@ -220,23 +405,22 @@ export async function runClinicalSpineOrchestrate(
       })
     : undefined;
 
-  const draftEnqueueAllowed = mayEnqueueAgentDraft(guardianGateway?.output_status);
+  const guardianAllowsEnqueue = mayEnqueueAgentDraft(guardianGateway?.output_status);
   const guardianOutcome = guardianGateway?.output_status ?? null;
-  const reviewStatus = draftEnqueueAllowed ? ("pending_hitl" as const) : ("blocked_from_queue" as const);
 
-  // Enrich A1 execution metadata with Guardian gateway outcome (post fan-out).
-  const orchestrationWithGuardian: OrchestrationResult = {
+  // Enrich A1 execution metadata with Guardian gateway outcome (post fan-out) before SHIELD.
+  // Final enqueue decision is applied after audit persistence (A2 audit-before-finalisation).
+  let orchestrationWithGuardian: OrchestrationResult = {
     ...orchestration,
     execution: {
       ...orchestration.execution,
       guardianOutcome,
-      reviewStatus,
-      status: draftEnqueueAllowed ? orchestration.execution.status : "blocked",
+      reviewStatus: guardianAllowsEnqueue ? "pending_hitl" : "blocked_from_queue",
+      status: guardianAllowsEnqueue ? orchestration.execution.status : "blocked",
       agents: orchestration.execution.agents.map((a) => ({
         ...a,
         guardianOutcome,
-        reviewStatus,
-        status: draftEnqueueAllowed || a.agentId === "CONDUCTOR" ? a.status : a.status,
+        reviewStatus: guardianAllowsEnqueue ? a.reviewStatus : "blocked_from_queue",
       })),
     },
   };
@@ -246,6 +430,7 @@ export async function runClinicalSpineOrchestrate(
   // orchestrate audit event (no new audit table/event schema); the payload
   // below simply names the diabetes contribution when one was applied.
   // FR-AGT-011: one SHIELD record per run, awaited so its outcome is reported (not fire-and-forget).
+  // A2: audit before enqueue finalisation (parity with #92 diabetes decide).
   const runAudit = await persistShieldAuditEvent({
     action: "defer",
     actor,
@@ -285,13 +470,36 @@ export async function runClinicalSpineOrchestrate(
       careEpisodeId: orchestrationWithGuardian.execution.careEpisodeId,
       correlationId: orchestrationWithGuardian.execution.correlationId,
       executionSchemaVersion: orchestrationWithGuardian.execution.schemaVersion,
-      draftEnqueueAllowed,
+      guardianAllowsEnqueue,
     }
   });
+
+  const enqueueGate = resolveShieldAwareEnqueue({
+    guardianAllowsEnqueue,
+    shieldPersisted: runAudit.persisted,
+  });
+  const draftEnqueueAllowed = enqueueGate.draftEnqueueAllowed;
+  const reviewStatus = draftEnqueueAllowed ? ("pending_hitl" as const) : ("blocked_from_queue" as const);
+
+  orchestrationWithGuardian = {
+    ...orchestrationWithGuardian,
+    execution: {
+      ...orchestrationWithGuardian.execution,
+      reviewStatus,
+      status: draftEnqueueAllowed
+        ? orchestrationWithGuardian.execution.status === "blocked"
+          ? orchestration.execution.status
+          : orchestrationWithGuardian.execution.status
+        : "blocked",
+    },
+  };
 
   return {
     artifactType: "aksh-clinical-spine-orchestrate",
     runAuditRecorded: runAudit.persisted,
+    shieldBlockedEnqueue: enqueueGate.shieldBlockedEnqueue,
+    durableRunId: null,
+    durableRecovered: false,
     orchestration: orchestrationWithGuardian,
     safetyRoute,
     safetyRouteLabel: SAFETY_ROUTE_LABELS[safetyRoute].title,
@@ -331,6 +539,9 @@ export async function runClinicalSpineOrchestrate(
       "Clinical spine Phase C — drafts only. SYNTHESIS→GUARDIAN→HORIZON→NEXUS. GUARDIAN first when urgent. Twin ranking is synthetic_rules. Model card clinical owner may be UNASSIGNED. Zero autonomous EHR write." +
       (diabetesModuleEnabled
         ? " Diabetes module (B3) enabled — additive HORIZON/GUARDIAN contribution only for diabetes-flagged patients; Glucose Intelligence stays insufficient_data pending OQ-DIAB-1."
+        : "") +
+      (enqueueGate.shieldBlockedEnqueue
+        ? " SHIELD audit required but unavailable — draft enqueue blocked (A2)."
         : "")
   };
 }

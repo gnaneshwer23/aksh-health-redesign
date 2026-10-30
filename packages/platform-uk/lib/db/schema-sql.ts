@@ -366,3 +366,58 @@ CREATE INDEX IF NOT EXISTS idx_care_episode_events_outbox
   ON aksh.care_episode_events (scope_key, kind, processed)
   WHERE kind = 'outbox_enqueued' AND processed = FALSE;
 `;
+
+// Keep in sync with db/migrations/048_diabetes_agent_intelligence.sql + 053_agent_intel_runs_conductor_metadata.sql
+export const AGENT_INTEL_RUNS_SQL = `
+CREATE SCHEMA IF NOT EXISTS aksh;
+
+CREATE TABLE IF NOT EXISTS aksh.agent_intel_runs (
+  id TEXT PRIMARY KEY,
+  scope_key TEXT NOT NULL DEFAULT 'shared',
+  organisation_id TEXT,
+  patient_id TEXT NOT NULL,
+  patient_label TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'completed'
+    CHECK (status IN ('running', 'completed', 'partial', 'failed', 'blocked', 'timed_out')),
+  agents_invoked JSONB NOT NULL DEFAULT '[]'::jsonb,
+  draft_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
+  shared_context_built_at TIMESTAMPTZ NOT NULL,
+  model_id TEXT NOT NULL,
+  model_version TEXT NOT NULL,
+  prompt_id TEXT NOT NULL,
+  prompt_version TEXT NOT NULL,
+  drafting_mode TEXT NOT NULL DEFAULT 'deterministic_synthetic'
+    CHECK (drafting_mode IN ('deterministic_synthetic', 'llm_gated')),
+  started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  completed_at TIMESTAMPTZ,
+  llm_used BOOLEAN NOT NULL DEFAULT FALSE,
+  synthetic BOOLEAN NOT NULL DEFAULT TRUE,
+  ehr_write BOOLEAN NOT NULL DEFAULT FALSE,
+  note TEXT,
+  correlation_id TEXT,
+  care_episode_id TEXT,
+  idempotency_key TEXT,
+  source TEXT NOT NULL DEFAULT 'diabetes_agent_intel',
+  guardian_outcome TEXT,
+  review_status TEXT,
+  draft_enqueue_allowed BOOLEAN NOT NULL DEFAULT TRUE,
+  shield_audit_persisted BOOLEAN NOT NULL DEFAULT FALSE,
+  execution_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  result_snapshot JSONB
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_agent_intel_runs_idempotency
+  ON aksh.agent_intel_runs (scope_key, idempotency_key)
+  WHERE idempotency_key IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_agent_intel_runs_correlation
+  ON aksh.agent_intel_runs (scope_key, correlation_id)
+  WHERE correlation_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_agent_intel_runs_care_episode
+  ON aksh.agent_intel_runs (scope_key, care_episode_id)
+  WHERE care_episode_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_agent_intel_runs_patient
+  ON aksh.agent_intel_runs (scope_key, patient_id, started_at DESC);
+`;
