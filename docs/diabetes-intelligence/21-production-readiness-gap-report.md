@@ -28,18 +28,19 @@ Operational production workflows (e.g. slot-fill, CGM monitoring where status=`p
 
 | Gap | Status |
 |-----|--------|
-| Cross-phase orchestration (INT-01) | Open |
-| Dual glucose / care-plan / follow-up stores (INT-02/03) | Open |
-| Unified timeline including all module decisions (INT-05) | Open |
-| Agent context from live module snapshots (INT-07) | Open |
-| Org/practice tenancy on module tables (INT-08) | Open |
+| Cross-phase orchestration (INT-01) | Mitigated |
+| Dual glucose / care-plan / follow-up stores (INT-02/03 / INT-04a) | Mitigated (facades + bridges; stores retained) |
+| Dual med-recon entry points (INT-04) | Open |
+| Unified timeline including all module decisions (INT-05) | Mitigated on `/timeline`; P360 residual |
+| Agent context from live module snapshots (INT-07) | Mitigated |
+| Org/practice tenancy on module tables (INT-08) | Mitigated (stamp + RLS proof; LIVE_ORGANISATIONS=0) |
 
 ### Security & access
 
 | Gap | Status |
 |-----|--------|
 | `evaluatePatientUrlAccess` on module APIs (INT-09) | Fixed — `denyUnlessConnectedPatientAccess` |
-| Clinical persona / decision scope on module HITL (INT-10) | Open |
+| Clinical persona / decision scope on module HITL (INT-10) | Fixed — `denyUnlessConnectedDiabetesDecisionScope` + `decidedByPersona` |
 
 ### Clinical content quality
 

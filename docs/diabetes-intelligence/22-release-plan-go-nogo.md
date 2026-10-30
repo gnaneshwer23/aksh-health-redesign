@@ -44,8 +44,9 @@
 - [ ] CSO-signed safety case (GOV-01) — **fail**  
 - [ ] DPIA / regulatory (GOV-02) — **fail**  
 - [ ] Org go-live (GOV-03) — **fail**  
-- [x] INT-01…03 mitigated (orchestration + glucose/care-plan facades; stores not physically collapsed) — INT-09 patient URL access gate **fixed**; follow-up dual store / INT-04/08/10 remain  
-- [ ] INT-01…03 physical store collapse / org tenancy — **fail** (facades only; Neon prod untouched)  
+- [x] INT-01…03 mitigated (orchestration + glucose/care-plan facades; stores not physically collapsed)  
+- [x] INT-09 patient URL access + INT-10 clinical persona on module HITL **fixed**; INT-08 org stamp + RLS proof path **mitigated**; follow-up dual store **mitigated** (facade + bridge)  
+- [ ] INT-04 dual med-recon entry + physical store collapse — **fail** (facades only; Neon prod untouched)  
 
 - [ ] Real-patient eval — **fail / not started**  
 

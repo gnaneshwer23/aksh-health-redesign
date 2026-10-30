@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { decideGlucoseIntelligenceReview } from "@/lib/diabetes-intelligence";
 import type { GlucoseReviewSection } from "@/lib/diabetes-intelligence/glucose-types";
@@ -23,6 +24,12 @@ export async function POST(request: Request, context: RouteContext) {
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
 
+  const personaDenied = denyUnlessConnectedDiabetesDecisionScope(
+    auth.context.clinicalPersona,
+    "glucose_review"
+  );
+  if (personaDenied) return personaDenied;
+
   let body: {
     action?: "accept" | "edit" | "reject";
     reason?: string;
@@ -42,6 +49,8 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
+  const decidedByPersona = auth.context.clinicalPersona;
+
   try {
     const snapshot = await decideGlucoseIntelligenceReview(
       {
@@ -54,7 +63,12 @@ export async function POST(request: Request, context: RouteContext) {
       },
       { scopeKey: auth.context.scopeKey }
     );
-    return NextResponse.json({ ...snapshot, action: body.action, ehrWrite: false });
+    return NextResponse.json({
+      ...snapshot,
+      action: body.action,
+      ehrWrite: false,
+      decidedByPersona,
+    });
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;
     const message = err instanceof Error ? err.message : "Decision failed";

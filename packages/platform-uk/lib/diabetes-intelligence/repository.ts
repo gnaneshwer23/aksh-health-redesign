@@ -2,7 +2,10 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 
+import type { ClinicalPersona } from "../user-scope";
 import { getPgPool, isPostgresConfigured } from "../db/client";
+import { mirrorJourneyFollowUpToContinuous } from "./follow-up-bridge";
+import { resolveConnectedDiabetesOrganisationId } from "./org-tenancy";
 import type {
   CareFollowUpStatus,
   CareFollowUpTask,
@@ -141,9 +144,10 @@ export async function createCarePlanRecord(
     missingData: MissingDataIndicator[];
     createdBy: string;
   },
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<CarePlanRecord> {
   const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId = resolveConnectedDiabetesOrganisationId(options);
   const now = new Date().toISOString();
   const plan: CarePlanRecord = {
     id: `cp-${randomUUID()}`,
@@ -156,9 +160,11 @@ export async function createCarePlanRecord(
     createdBy: input.createdBy,
     createdAt: now,
     decidedBy: null,
+    decidedByPersona: null,
     decidedAt: null,
     decisionReason: null,
     version: 1,
+    organisationId,
     hitlRequired: true,
     ehrWrite: false,
     synthetic: true,
@@ -168,12 +174,13 @@ export async function createCarePlanRecord(
     const pool = getPgPool();
     await pool.query(
       `INSERT INTO aksh.care_plan_records
-        (id, scope_key, patient_id, patient_label, status, sections, safety_notes, missing_data,
+        (id, scope_key, organisation_id, patient_id, patient_label, status, sections, safety_notes, missing_data,
          created_by, created_at, version, hitl_required, ehr_write, synthetic)
-       VALUES ($1,$2,$3,$4,'DRAFT',$5::jsonb,$6,$7::jsonb,$8,$9,1,true,false,true)`,
+       VALUES ($1,$2,$3,$4,$5,'DRAFT',$6::jsonb,$7,$8::jsonb,$9,$10,1,true,false,true)`,
       [
         plan.id,
         scopeKey,
+        organisationId,
         plan.patientId,
         plan.patientLabel,
         JSON.stringify(plan.sections),
@@ -207,13 +214,14 @@ export async function createCarePlanRecord(
 
 export async function listCarePlans(
   patientId: string,
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<CarePlanRecord[]> {
   const scopeKey = options?.scopeKey ?? "shared";
   if (usePg()) {
     const pool = getPgPool();
     const { rows } = await pool.query<{
       id: string;
+      organisation_id: string | null;
       patient_id: string;
       patient_label: string;
       status: CarePlanStatus;
@@ -223,6 +231,7 @@ export async function listCarePlans(
       created_by: string;
       created_at: Date;
       decided_by: string | null;
+      decided_by_persona: ClinicalPersona | null;
       decided_at: Date | null;
       decision_reason: string | null;
       version: number;
@@ -243,9 +252,11 @@ export async function listCarePlans(
       createdBy: r.created_by,
       createdAt: new Date(r.created_at).toISOString(),
       decidedBy: r.decided_by,
+      decidedByPersona: r.decided_by_persona ?? null,
       decidedAt: r.decided_at ? new Date(r.decided_at).toISOString() : null,
       decisionReason: r.decision_reason,
       version: r.version,
+      organisationId: r.organisation_id,
       hitlRequired: true as const,
       ehrWrite: false as const,
       synthetic: true as const,
@@ -285,12 +296,16 @@ export async function decideCarePlan(
     planId: string;
     action: CarePlanDecisionAction;
     actor: string;
+    actorPersona?: ClinicalPersona | null;
     reason?: string;
     editedSections?: CarePlanSection[];
   },
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<{ plan: CarePlanRecord; decision: CarePlanDecision; followUp: CareFollowUpTask | null }> {
   const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId = resolveConnectedDiabetesOrganisationId({
+    organisationId: options?.organisationId ?? undefined,
+  });
   const plan = await getCarePlan(input.planId, { scopeKey });
   if (!plan) throw new Error("Care plan not found");
   if (plan.status !== "DRAFT") throw new Error(`Plan is ${plan.status}; only DRAFT can be decided`);
@@ -303,11 +318,13 @@ export async function decideCarePlan(
   }
 
   const now = new Date().toISOString();
+  const actorPersona = input.actorPersona ?? null;
   const decision: CarePlanDecision = {
     id: `cpd-${randomUUID()}`,
     planId: plan.id,
     action: input.action,
     actor: input.actor,
+    actorPersona,
     reason: input.reason?.trim() ?? null,
     editedSections: input.action === "edit" ? input.editedSections ?? null : null,
     createdAt: now,
@@ -322,9 +339,11 @@ export async function decideCarePlan(
     status: nextStatus,
     sections: nextSections,
     decidedBy: input.actor,
+    decidedByPersona: actorPersona,
     decidedAt: now,
     decisionReason: decision.reason,
     version: plan.version + 1,
+    organisationId: plan.organisationId ?? organisationId,
   };
 
   let followUp: CareFollowUpTask | null = null;
@@ -337,8 +356,9 @@ export async function decideCarePlan(
       await client.query(
         `UPDATE aksh.care_plan_records
          SET status = $1, sections = $2::jsonb, decided_by = $3, decided_at = $4,
-             decision_reason = $5, version = $6
-         WHERE id = $7 AND scope_key = $8 AND status = 'DRAFT'`,
+             decision_reason = $5, version = $6, decided_by_persona = $7,
+             organisation_id = COALESCE(organisation_id, $8)
+         WHERE id = $9 AND scope_key = $10 AND status = 'DRAFT'`,
         [
           updated.status,
           JSON.stringify(updated.sections),
@@ -346,32 +366,36 @@ export async function decideCarePlan(
           updated.decidedAt,
           updated.decisionReason,
           updated.version,
+          actorPersona,
+          organisationId,
           plan.id,
           scopeKey,
         ]
       );
       await client.query(
-        `INSERT INTO aksh.care_plan_decisions (id, plan_id, action, actor, reason, edited_sections, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7)`,
+        `INSERT INTO aksh.care_plan_decisions (id, plan_id, action, actor, actor_persona, reason, edited_sections, created_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8)`,
         [
           decision.id,
           decision.planId,
           decision.action,
           decision.actor,
+          actorPersona,
           decision.reason,
           decision.editedSections ? JSON.stringify(decision.editedSections) : null,
           decision.createdAt,
         ]
       );
       if (input.action === "accept" || input.action === "edit") {
-        followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now);
+        followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now, organisationId);
         await client.query(
           `INSERT INTO aksh.care_follow_up_tasks
-            (id, scope_key, patient_id, plan_id, title, owner, status, due_at, created_at, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,'open',$7,$8,true)`,
+            (id, scope_key, organisation_id, patient_id, plan_id, title, owner, status, due_at, created_at, synthetic)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,'open',$8,$9,true)`,
           [
             followUp.id,
             scopeKey,
+            organisationId,
             followUp.patientId,
             followUp.planId,
             followUp.title,
@@ -395,7 +419,7 @@ export async function decideCarePlan(
     store.plans[idx] = updated;
     store.decisions.push(decision);
     if (input.action === "accept" || input.action === "edit") {
-      followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now);
+      followUp = buildFollowUp(plan.patientId, plan.id, input.actor, now, organisationId);
       store.followUps.push(followUp);
     }
     await writeStore(store, scopeKey);
@@ -407,9 +431,14 @@ export async function decideCarePlan(
       patientId: plan.patientId,
       kind: "care_plan_decision",
       title: `Care plan ${input.action}`,
-      summary: `${input.action} by ${input.actor} → ${nextStatus}`,
+      summary: `${input.action} by ${input.actor}${actorPersona ? ` (${actorPersona})` : ""} → ${nextStatus}`,
       occurredAt: now,
-      metadata: { planId: plan.id, action: input.action, status: nextStatus },
+      metadata: {
+        planId: plan.id,
+        action: input.action,
+        status: nextStatus,
+        actorPersona,
+      },
     },
     { scopeKey }
   );
@@ -427,6 +456,11 @@ export async function decideCarePlan(
       },
       { scopeKey }
     );
+    // INT-04-adjacent: dual-write into continuous-care ops worklist
+    await mirrorJourneyFollowUpToContinuous(followUp, {
+      scopeKey,
+      actor: input.actor,
+    });
   }
 
   return { plan: updated, decision, followUp };
@@ -436,7 +470,8 @@ function buildFollowUp(
   patientId: string,
   planId: string,
   owner: string,
-  now: string
+  now: string,
+  organisationId?: string | null
 ): CareFollowUpTask {
   const due = new Date(now);
   due.setDate(due.getDate() + 14);
@@ -452,6 +487,7 @@ function buildFollowUp(
     acknowledgedAt: null,
     closedAt: null,
     note: null,
+    organisationId: organisationId ?? null,
     synthetic: true,
   };
 }

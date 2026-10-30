@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
+import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { decideJourneyCarePlan } from "@/lib/diabetes-intelligence/journey";
 import type { CarePlanDecisionAction, CarePlanSection } from "@/lib/diabetes-intelligence/types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
@@ -23,6 +25,12 @@ export async function POST(request: Request, context: RouteContext) {
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
 
+  const personaDenied = denyUnlessConnectedDiabetesDecisionScope(
+    auth.context.clinicalPersona,
+    "journey_care_plan"
+  );
+  if (personaDenied) return personaDenied;
+
   let body: {
     action?: CarePlanDecisionAction;
     reason?: string;
@@ -39,6 +47,9 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "action must be accept | edit | reject" }, { status: 400 });
   }
 
+  const tenant = resolveTenantContext(request, auth.context);
+  const decidedByPersona = auth.context.clinicalPersona;
+
   try {
     const journey = await decideJourneyCarePlan(
       {
@@ -46,15 +57,17 @@ export async function POST(request: Request, context: RouteContext) {
         planId: plan,
         action: body.action,
         actor: auth.context.userEmail ?? auth.context.userId,
+        actorPersona: decidedByPersona,
         reason: body.reason,
         editedSections: body.editedSections,
       },
-      { scopeKey: auth.context.scopeKey }
+      { scopeKey: auth.context.scopeKey, organisationId: tenant.practiceId }
     );
     return NextResponse.json({
       ...journey,
       ehrWrite: false,
       hitlRequired: true,
+      decidedByPersona,
       note: "Decision persisted; no EHR write.",
     });
   } catch (error) {

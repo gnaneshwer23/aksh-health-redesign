@@ -71,6 +71,31 @@ export async function withPracticeContext<T>(
   }
 }
 
+/**
+ * INT-08 — run as aksh_tenant with `app.org_ids` set so diabetes-module RLS
+ * (`aksh.ctx_org_ids()`) can prove cross-org isolation on local-dev Neon.
+ */
+export async function withOrgContext<T>(
+  orgIds: string | string[],
+  fn: (client: PoolClient) => Promise<T>
+): Promise<T> {
+  const ids = Array.isArray(orgIds) ? orgIds : [orgIds];
+  const client = await getPgPool().connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SET LOCAL ROLE aksh_tenant");
+    await client.query("SELECT set_config('app.org_ids', $1, true)", [ids.filter(Boolean).join(",")]);
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 export async function closePgPool() {
   if (pool) {
     await pool.end();

@@ -28,15 +28,15 @@ Phases 0–6 ship as synthetic modules keyed by mock-cohort `patientId` (canonic
 |-----|---------|
 | `patientId` | URL `[id]` / journey `[patientId]`; mock cohort (`P002`, …) |
 | `scopeKey` | `session.user.id` via `requireAuthenticatedUserScope` |
-| `organisationId` | **Not applied** in app code (optional DB column on 043 unused) |
-| Actor | `userEmail ?? userId` on decisions |
+| `organisationId` | **Stamped** on journey care-plan / follow-up writes (default `practice-demo` / tenant `practiceId`); RLS via `aksh.ctx_org_ids()` when set (INT-08 mitigated) |
+| Actor | `userEmail ?? userId` on decisions + **`decidedByPersona`** clinical persona (INT-10) |
 
 ## Stores (duplication)
 
 | Concern | Store A | Store B | Status |
 |---------|---------|---------|--------|
 | Care plans | `aksh.care_plan_records` (journey) | `aksh.medcare_care_plans` | **Mitigated** — `care-plan-facade` unified read; journey = HITL SoT |
-| Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | Open (separate ops surfaces) |
+| Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | **Mitigated** — `follow-up-facade` + bridge dual-write on journey Accept/Edit |
 | Med recon | Patient 360 runs | medcare start also creates runs | Medium (INT-04) |
 | Glucose | Phase 2 `glucose_*` (canonical) | disease-module ingest (journey) | **Mitigated** — `glucose-bridge` dual-write + series-first read |
 | Timeline | P360 / journey / `/timeline` API | three partial views | **Mitigated** on `/timeline` (glucose/medcare/agent merged) |
@@ -48,8 +48,8 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 
 - All connected APIs use **`requireAuthenticatedUserScope`**.
 - **`denyUnlessConnectedPatientAccess`** (INT-09) gates every patient-scoped module route — wraps `evaluateAppRoleClinicalReadAccess` → `evaluatePatientUrlAccess` (cross-patient / unbound patient / ops-researcher deny). Same posture as `/api/patients/[id]/state`.
-- **`evaluateDecisionScope`** (clinical persona) is **not** on module Accept/Edit/Reject (INT-10).
-- Tenant isolation for module data = **per-user scope**, not org/practice (INT-08).
+- **`denyUnlessConnectedDiabetesDecisionScope`** (INT-10) gates every module Accept/Edit/Reject — GP full; pharmacist med surfaces; nurse continuous-care escalations only; non-clinical denied. Responses expose `decidedByPersona`.
+- Tenant isolation = **per-user `scopeKey`** plus **stamped `organisation_id`** on journey writes (INT-08 mitigated; LIVE_ORGANISATIONS=0).
 
 ## Provenance
 
@@ -68,12 +68,13 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 ## Target integration (remaining)
 
 1. ~~Canonical glucose path~~ — mitigated via `glucose-bridge` (stores retained; dual-write).
-2. ~~Canonical care-plan read model~~ — mitigated via facade; follow-up dual store still open.
-3. ~~Unified timeline projector~~ — mitigated on `/timeline` API; P360 panel still partial (INT-05 residual).
-4. ~~Live shared patient context~~ — mitigated via `buildSharedPatientContextAsync`.
-5. Org/practice tenancy on module stores (INT-08). Patient URL access gate shipped (INT-09).
-6. Shared `ConnectedPatientChrome` + Pipeline orchestrator entry (shipped).
-7. Physical store collapse / additive Neon local-dev migration if product requires single table (not done — avoid prod Neon risk).
+2. ~~Canonical care-plan read model~~ — mitigated via facade.
+3. ~~Follow-up dual store~~ — mitigated via `follow-up-facade` + bridge (stores retained).
+4. ~~Unified timeline projector~~ — mitigated on `/timeline` API; P360 panel still partial (INT-05 residual).
+5. ~~Live shared patient context~~ — mitigated via `buildSharedPatientContextAsync`.
+6. ~~Org/practice tenancy stamp + RLS proof path~~ (INT-08) + patient URL access (INT-09) + clinical persona (INT-10).
+7. Shared `ConnectedPatientChrome` + Pipeline orchestrator entry (shipped).
+8. Physical store collapse / additive Neon local-dev migration if product requires single table (not done — avoid prod Neon risk). Dual med-recon entry (INT-04) still open.
 
 ## Related defects
 

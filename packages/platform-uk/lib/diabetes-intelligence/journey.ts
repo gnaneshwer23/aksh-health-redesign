@@ -284,10 +284,11 @@ export async function decideJourneyCarePlan(
     planId: string;
     action: CarePlanDecisionAction;
     actor: string;
+    actorPersona?: import("../user-scope").ClinicalPersona | null;
     reason?: string;
     editedSections?: CarePlanSection[];
   },
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<DiabetesJourneySnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
   await decideCarePlan(
@@ -295,10 +296,11 @@ export async function decideJourneyCarePlan(
       planId: input.planId,
       action: input.action,
       actor: input.actor,
+      actorPersona: input.actorPersona,
       reason: input.reason,
       editedSections: input.editedSections,
     },
-    { scopeKey }
+    { scopeKey, organisationId: options?.organisationId }
   );
   return buildDiabetesJourney(input.patientId, { scopeKey });
 }
