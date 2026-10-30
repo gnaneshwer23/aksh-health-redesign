@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { MedicationPersonalisedCareWorkspace } from "@/components/dashboard/diabetes-intelligence/MedicationPersonalisedCareWorkspace";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { getPatientById } from "@/lib/mock-data";
 
 export default function MedicationCarePage(props: { params: Promise<{ id: string }> }) {
@@ -20,9 +21,9 @@ export default function MedicationCarePage(props: { params: Promise<{ id: string
       role="gp"
       title={label ? `${label} · Medication & care` : "Medication & personalised care"}
     >
-      <div className="overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <MedicationPersonalisedCareWorkspace patientId={patientId} patientLabel={label} />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }

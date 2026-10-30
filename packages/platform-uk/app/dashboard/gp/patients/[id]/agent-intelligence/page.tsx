@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { AgentIntelligenceWorkspace } from "@/components/dashboard/diabetes-intelligence/AgentIntelligenceWorkspace";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { getPatientById } from "@/lib/mock-data";
 
 export default function AgentIntelligencePage(props: { params: Promise<{ id: string }> }) {
@@ -20,9 +21,9 @@ export default function AgentIntelligencePage(props: { params: Promise<{ id: str
       role="gp"
       title={label ? `${label} · Agent intelligence` : "Agent intelligence"}
     >
-      <div className="overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <AgentIntelligenceWorkspace patientId={patientId} patientLabel={label} />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }

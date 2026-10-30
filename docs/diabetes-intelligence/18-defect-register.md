@@ -20,13 +20,13 @@
 | INT-10 | Medium | Auth | No clinical persona on module decisions | `evaluateDecisionScope` not on Accept/Edit/Reject | **Fixed** — `evaluateConnectedDiabetesDecisionScope` / `denyUnlessConnectedDiabetesDecisionScope` on all module decision routes; responses include `decidedByPersona`; journey persists `actor_persona` / `decided_by_persona`. |
 | INT-11 | Low | UX | Route param inconsistency | `[id]` vs `diabetes-journey/[patientId]` | **Fixed** — GP diabetes-journey page uses `[id]` (aligned with patient APIs / other dashboard routes). |
 | INT-12 | Low | UX | Worklists hard-code P002 | Empty-state demo links only | **Open** (mitigated by chrome + catalog) |
-| INT-13 | Medium | Provenance | Provenance model split | Agent enum vs glucose/journey/medcare | **Open** |
+| INT-13 | Medium | Provenance | Provenance model split | Agent enum vs glucose/journey/medcare | **Mitigated** — `provenance-bridge.ts` + worklist `provenanceSpine`; stores unchanged |
 | INT-14 | Low | UX | Patient 360 nav incomplete | Missing continuous-care / agent links | **Mitigated** — ConnectedPatientChrome |
 | INT-15 | Info | Phase 6 | No API/UI for domain framework | By design (registry) | **Accepted** |
 | UX-01 | Medium | Discovery | Sidebar omits connected diabetes | Orphan routes unless patient-chart deep link | **Mitigated** — synthetic sidebar group |
 | UX-02 | Medium | Demo | No flagship connected journey demo | `/demo` only slot-fill + glucose ops | **Fixed** — `/demo/connected-diabetes` |
 | UX-03 | Low | A11y | Loading states lack `aria-busy` / live regions | Toast-only errors on several workspaces | **Open** (partial chrome loading) |
-| UX-04 | Medium | Visual | Dual style systems | Tailwind tokens (360/journey) vs inline styles (phases 2–5) | **Open** |
+| UX-04 | Medium | Visual | Dual style systems | Tailwind tokens (360/journey) vs inline styles (phases 2–5) | **Mitigated** — `ConnectedDiabetesSurface` + `--cd-*` / `--dj-*` shared tokens + worklist nav; residual inline in medcare/continuous/agent |
 | SAFE-01 | Info | Safety | Unvalidated intelligence labelled | Must stay `synthetic_demo` | **Policy hold** |
 | SAFE-02 | Info | Safety | LIVE_ORGANISATIONS | Remains `0` unless evidence | **Policy hold** |
 | GOV-01 | **Blocker** | Release | No CSO-signed clinical safety case | Blocks live diabetes clinical AI | **Open** — see doc 21/22 |

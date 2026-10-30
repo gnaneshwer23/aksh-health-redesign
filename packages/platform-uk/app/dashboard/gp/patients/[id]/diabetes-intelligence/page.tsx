@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { DiabetesGlucoseIntelligenceWorkspace } from "@/components/dashboard/diabetes-intelligence/DiabetesGlucoseIntelligenceWorkspace";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { getPatientById } from "@/lib/mock-data";
 
 export default function DiabetesIntelligencePage(props: { params: Promise<{ id: string }> }) {
@@ -20,9 +21,9 @@ export default function DiabetesIntelligencePage(props: { params: Promise<{ id: 
       role="gp"
       title={label ? `${label} · Glucose intelligence` : "Glucose intelligence"}
     >
-      <div className="overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <DiabetesGlucoseIntelligenceWorkspace patientId={patientId} patientLabel={label} />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }

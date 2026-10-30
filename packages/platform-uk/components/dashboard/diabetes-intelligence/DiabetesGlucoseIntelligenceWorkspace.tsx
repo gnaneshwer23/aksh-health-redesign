@@ -136,7 +136,14 @@ export function DiabetesGlucoseIntelligenceWorkspace({ patientId, patientLabel }
       />
 
       {loading || !snap ? (
-        <p style={{ color: "#4a6278" }}>Loading glucose intelligence…</p>
+        <p
+          className="text-sm text-[var(--cd-muted,#5b6b7c)]"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          Loading glucose intelligence…
+        </p>
       ) : (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>

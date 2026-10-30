@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { DiabetesJourneyWorkspace } from "@/components/dashboard/diabetes-intelligence/DiabetesJourneyWorkspace";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { getPatientById } from "@/lib/mock-data";
 
 export default function DiabetesJourneyPage(props: {
@@ -20,9 +21,9 @@ export default function DiabetesJourneyPage(props: {
 
   return (
     <DashboardShell role="gp" title={label ? `${label} · Diabetes journey` : "Diabetes journey"}>
-      <div className="overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <DiabetesJourneyWorkspace patientId={patientId} patientLabel={label} />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }

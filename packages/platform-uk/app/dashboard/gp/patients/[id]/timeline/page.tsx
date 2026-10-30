@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { PatientTimelinePanel } from "@/components/dashboard/precision-health/PatientTimelinePanel";
 import { getPatientById } from "@/lib/mock-data";
 
@@ -19,7 +20,7 @@ export default function GpPatientTimelinePage(props: { params: Promise<{ id: str
 
   return (
     <DashboardShell role="gp" title={`${patient.name} · Timeline`}>
-      <div className="space-y-6 overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <ConnectedPatientChrome
           patientId={patient.id}
           patientLabel={patient.name}
@@ -27,7 +28,7 @@ export default function GpPatientTimelinePage(props: { params: Promise<{ id: str
           subtitle="Merged journey + continuous care + precision-health events (synthetic)"
         />
         <PatientTimelinePanel patientId={patient.id} />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }

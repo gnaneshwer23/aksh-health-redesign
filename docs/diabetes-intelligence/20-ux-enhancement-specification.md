@@ -41,11 +41,20 @@ One **Connected Diabetes** patient chrome:
 
 ## Still open (spec backlog)
 
-- Visual token unify (inline styles → P360 tokens) — UX-04  
+- Finish UX-04 residual: migrate medcare / continuous / agent **inner** inline styles onto `--cd-*` (page shells + chrome done)  
 - Shared `WorkspaceLoadingState` / `WorkspaceErrorState` with `aria-live` — UX-03  
 - Nurse chrome role filter  
 - De-dupe investor `GpHeroDemoPath` vs connected journey messaging  
 - Patient companion for approved plans  
+
+## Shipped in post-merge audit (UX-04 / a11y delta)
+
+| Item | Location |
+|------|----------|
+| `connected-diabetes-tokens.ts` | Shared `--cd-*` + `--dj-*` aliases |
+| `ConnectedDiabetesSurface` | Page shell for all connected routes |
+| Worklist nav under chrome | Glucose / continuous / agent worklists |
+| Glucose loading `aria-busy` / live region | `DiabetesGlucoseIntelligenceWorkspace` |
 
 ## A11y / responsive / loading / errors (requirements)
 

@@ -1,0 +1,53 @@
+# 28 — Prioritised implementation backlog (post-merge audit)
+
+**Date:** 30 October 2026  
+**Constraint:** Synthetic-only clinical intelligence · no LIVE_ORGANISATIONS · no unvalidated capability activation
+
+## P0 — Keep green
+
+| ID | Item | Why |
+|----|------|-----|
+| B-P0-1 | Keep INT-09 Handler harness typing green in CI | Prevents verify/build false failures |
+| B-P0-2 | Record passing Actions SHA/URL after every merge | Doc honesty (23/25) |
+
+## P1 — Integration hardening
+
+| ID | Item | Why |
+|----|------|-----|
+| B-P1-1 | INT-08 RLS proof role on local-dev Neon | Full cross-org isolation evidence |
+| B-P1-2 | Composite / scoped primary keys (INT-16 residual) | Stop seed PK collisions across users |
+| B-P1-3 | Playwright connected-diabetes on every main push (already wired) | Catch UI/API regressions |
+
+## P2 — Clinical Intelligence 2.0 deepen
+
+| ID | Item | Why |
+|----|------|-----|
+| B-P2-1 | Feed Context Engine package into Phase 5 agent-intel drafts | Single signed context path |
+| B-P2-2 | Run Guardian gateway before agent-intel worklist enqueue | Hard PASS/REVIEW/BLOCK at module boundary |
+| B-P2-3 | Evaluation engine as required CI gate (synthetic) | Stop regressions in model/agent/workflow layers |
+| B-P2-4 | Resume Neo4j Aura + seed for live GraphRAG path | Still mock-safe fallback |
+| B-P2-5 | Unify ClinicalIntelligenceWorkspace with connected chrome | Clinician one-pane vision |
+
+## P3 — UX / a11y / provenance polish
+
+| ID | Item | Why |
+|----|------|-----|
+| B-P3-1 | Finish UX-04: migrate remaining inline styles in medcare/continuous/agent workspaces to `--cd-*` tokens | Visual consistency |
+| B-P3-2 | UX-03 shared WorkspaceLoadingState / error `aria-live` | A11y |
+| B-P3-3 | Persist `provenanceSpine` on timeline events everywhere | INT-13 completion |
+| B-P3-4 | INT-12 worklist empty-state de-hardcode P002 | Discovery honesty |
+
+## P4 — Governance blockers (release)
+
+| ID | Item | Status |
+|----|------|--------|
+| GOV-01 | CSO-signed clinical safety case | **Blocker** — open |
+| GOV-02 | DPIA / regulatory opinion | **Blocker** — open |
+| GOV-03 | Approved org go-live; LIVE_ORGANISATIONS>0 | **Blocker** — must stay 0 |
+
+## Explicit non-goals (now)
+
+- Production clinical data modification  
+- Activating CVD/CKD/obesity domains  
+- Live EMR / EPS write-back  
+- Claiming clinical validation from synthetic evals  

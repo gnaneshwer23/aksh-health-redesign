@@ -29,6 +29,7 @@ import {
   ACTIVE_AGENT_INTEL_VERSION,
   AGENT_INTEL_VERSION_REGISTRY,
 } from "./agent-intel-versions";
+import { fromAgentProvenance, toSpineProvenance } from "./provenance-bridge";
 
 function patientLabel(patientId: string): string {
   return getPatientById(patientId)?.name?.trim() || patientId;
@@ -161,7 +162,14 @@ export async function buildAgentIntelligenceWorklist(options?: {
 }): Promise<AgentIntelWorklistItem[]> {
   const drafts = await listAllOpenDrafts(options);
   return drafts
-    .map((d) => ({
+    .map((d) => {
+      // INT-13: project agent enum → spine-compatible provenance for shared consumers.
+      const connected = fromAgentProvenance(d.provenance, d.createdAt, {
+        confidence: d.confidence,
+        sourceReference: d.id,
+      });
+      const spine = toSpineProvenance(connected);
+      return {
       id: d.id,
       patientId: d.patientId,
       patientLabel: d.patientLabel,
@@ -172,12 +180,15 @@ export async function buildAgentIntelligenceWorklist(options?: {
       createdAt: d.createdAt,
       confidence: d.confidence,
       provenance: d.provenance,
+      /** Spine-shaped projection (sourceSystem / confidence / recordedAt). */
+      provenanceSpine: spine,
       verifiedClinical: d.verifiedClinical,
       synthetic: true as const,
       ehrWrite: false as const,
       worklistUrgency:
         d.kind === "missing_information" ? 0 : d.kind === "follow_up_draft" ? 1 : 2,
-    }))
+    };
+    })
     .sort(
       (a, b) => a.worklistUrgency - b.worklistUrgency || a.createdAt.localeCompare(b.createdAt)
     );
