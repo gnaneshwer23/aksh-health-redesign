@@ -67,10 +67,6 @@ jobs:
       NEXTAUTH_SECRET: ci-e2e-nextauth-secret
       NEXTAUTH_URL: http://127.0.0.1:3000
       DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
-      # Neon CI branch is provisioned above; review-case + SHIELD audit writes only go
-      # durable when the postgres adapter is selected (DATABASE_URL alone is not enough).
-      USE_POSTGRES: "true"
-      AKSH_STORAGE_ADAPTER: postgres_repository
       E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
       SKIP_EMAIL_SEND: "true"
       DISABLE_RATE_LIMIT: "true"
@@ -81,6 +77,9 @@ jobs:
       ENABLE_LLM_ORACLE: "false"
       ENABLE_LLM_DR_ASSIST: "false"
       ENABLE_LLM_NEXUS: "false"
+      # Do not set USE_POSTGRES at job level: verify/unit gates assert the default
+      # adapter is json_file_repository. Playwright webServer selects postgres via
+      # playwright.config.ts when DATABASE_URL is present (see Run Playwright E2E).
 
     steps:
       - name: Checkout
@@ -129,6 +128,12 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright E2E
+        # Neon CI branch is provisioned above; review-case + SHIELD audit writes only go
+        # durable when the postgres adapter is selected (DATABASE_URL alone is not enough).
+        # Scoped here (not job env) so verify keeps the json_file default adapter contract.
+        env:
+          USE_POSTGRES: "true"
+          AKSH_STORAGE_ADAPTER: postgres_repository
         run: npm run test:e2e
 
       - name: Delete Neon CI branch
