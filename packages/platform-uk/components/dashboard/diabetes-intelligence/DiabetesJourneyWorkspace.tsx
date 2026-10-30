@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 
+import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type { DiabetesJourneySnapshot } from "@/lib/diabetes-intelligence/types";
@@ -142,32 +143,13 @@ export function DiabetesJourneyWorkspace({ patientId, patientLabel }: Props) {
         } as CSSProperties
       }
     >
-      <header
-        className="rounded-lg border p-5"
-        style={{ borderColor: "var(--dj-line)", background: "white", color: "var(--dj-ink)" }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--dj-accent)" }}>
-          Connected diabetes intelligence · synthetic demo
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{label}</h1>
-        <p className="mt-2 max-w-2xl text-sm" style={{ color: "var(--dj-muted)" }}>
-          History → glucose → clinician review → approved care plan → follow-up → timeline. Not clinically
-          validated. ehrWrite=false. LIVE organisations: 0.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}`}>Patient chart</Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/patient-360`}>
-              Patient 360
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/diabetes-intelligence`}>
-              Glucose intelligence
-            </Link>
-          </Button>
+      <ConnectedPatientChrome
+        patientId={patientId}
+        patientLabel={label}
+        activeStep="journey"
+        subtitle="Vertical slice · care-plan HITL · follow-up · timeline events"
+        actions={
+          <>
           <Button
             size="sm"
             disabled={busy || loading}
@@ -187,8 +169,9 @@ export function DiabetesJourneyWorkspace({ patientId, patientLabel }: Props) {
           <Button variant="outline" size="sm" disabled={busy || loading} onClick={() => void load()}>
             Refresh
           </Button>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {loading && !journey ? (
         <p className="text-sm" style={{ color: "var(--dj-muted)" }}>

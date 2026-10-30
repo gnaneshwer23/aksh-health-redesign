@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 
+import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type { Patient360Profile } from "@/lib/patient-intelligence/types";
@@ -109,38 +110,13 @@ export function Patient360Workspace({ patientId, patientLabel }: Props) {
         } as CSSProperties
       }
     >
-      <header
-        className="rounded-lg border p-5"
-        style={{ borderColor: "var(--p360-line)", background: "white", color: "var(--p360-ink)" }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--p360-accent)" }}>
-          Patient 360 · unified intelligence foundation · synthetic
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{label}</h1>
-        <p className="mt-2 max-w-2xl text-sm" style={{ color: "var(--p360-muted)" }}>
-          Structured history, diabetes classification, allergies, meds reconciliation scaffolding, encounters,
-          labs/vitals, care team, consent preferences, provenance and quality. Not clinically validated.
-          ehrWrite=false · autonomousPrescribe=false.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}`}>Patient chart</Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/medication-care`}>
-              Medication & care
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/diabetes-intelligence`}>
-              Glucose intelligence
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/gp/diabetes-journey/${encodeURIComponent(patientId)}`}>
-              Diabetes journey
-            </Link>
-          </Button>
+      <ConnectedPatientChrome
+        patientId={patientId}
+        patientLabel={label}
+        activeStep="patient-360"
+        subtitle="Phase 1 · structured history · provenance · med recon scaffolding"
+        actions={
+          <>
           <Button
             size="sm"
             disabled={busy || loading}
@@ -160,8 +136,9 @@ export function Patient360Workspace({ patientId, patientLabel }: Props) {
           <Button variant="outline" size="sm" disabled={busy || loading} onClick={() => void load()}>
             Refresh
           </Button>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {loading && !profile ? (
         <p className="text-sm" style={{ color: "var(--p360-muted)" }}>

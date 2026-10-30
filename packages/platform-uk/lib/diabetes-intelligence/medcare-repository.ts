@@ -127,12 +127,29 @@ export async function replacePatientMedCareSeed(
         `DELETE FROM aksh.medcare_handoffs WHERE scope_key=$1 AND patient_id=$2`,
         [scopeKey, patientId]
       );
+      const seenFlagIds = new Set<string>();
       for (const f of seed.safetyFlags) {
+        if (seenFlagIds.has(f.id)) continue;
+        seenFlagIds.add(f.id);
         await client.query(
           `INSERT INTO aksh.medcare_safety_flags
             (id, scope_key, patient_id, code, severity, title, detail, related_medications,
              status, created_at, decided_by, decided_at, decision_note, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12,$13,TRUE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12,$13,TRUE)
+           ON CONFLICT (id) DO UPDATE SET
+             scope_key = EXCLUDED.scope_key,
+             patient_id = EXCLUDED.patient_id,
+             code = EXCLUDED.code,
+             severity = EXCLUDED.severity,
+             title = EXCLUDED.title,
+             detail = EXCLUDED.detail,
+             related_medications = EXCLUDED.related_medications,
+             status = EXCLUDED.status,
+             created_at = EXCLUDED.created_at,
+             decided_by = EXCLUDED.decided_by,
+             decided_at = EXCLUDED.decided_at,
+             decision_note = EXCLUDED.decision_note,
+             synthetic = TRUE`,
           [
             f.id,
             scopeKey,
@@ -154,7 +171,18 @@ export async function replacePatientMedCareSeed(
         await client.query(
           `INSERT INTO aksh.medcare_patient_goals
             (id, scope_key, patient_id, title, description, category, status, target_date, created_at, updated_at, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,TRUE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,TRUE)
+           ON CONFLICT (id) DO UPDATE SET
+             scope_key = EXCLUDED.scope_key,
+             patient_id = EXCLUDED.patient_id,
+             title = EXCLUDED.title,
+             description = EXCLUDED.description,
+             category = EXCLUDED.category,
+             status = EXCLUDED.status,
+             target_date = EXCLUDED.target_date,
+             created_at = EXCLUDED.created_at,
+             updated_at = EXCLUDED.updated_at,
+             synthetic = TRUE`,
           [
             g.id,
             scopeKey,
@@ -174,7 +202,23 @@ export async function replacePatientMedCareSeed(
           `INSERT INTO aksh.medcare_assigned_tasks
             (id, scope_key, patient_id, title, description, owner_role, owner_display, status,
              due_at, related_plan_id, related_flag_id, created_at, updated_at, closed_at, note, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,TRUE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,TRUE)
+           ON CONFLICT (id) DO UPDATE SET
+             scope_key = EXCLUDED.scope_key,
+             patient_id = EXCLUDED.patient_id,
+             title = EXCLUDED.title,
+             description = EXCLUDED.description,
+             owner_role = EXCLUDED.owner_role,
+             owner_display = EXCLUDED.owner_display,
+             status = EXCLUDED.status,
+             due_at = EXCLUDED.due_at,
+             related_plan_id = EXCLUDED.related_plan_id,
+             related_flag_id = EXCLUDED.related_flag_id,
+             created_at = EXCLUDED.created_at,
+             updated_at = EXCLUDED.updated_at,
+             closed_at = EXCLUDED.closed_at,
+             note = EXCLUDED.note,
+             synthetic = TRUE`,
           [
             t.id,
             scopeKey,
@@ -199,7 +243,18 @@ export async function replacePatientMedCareSeed(
           `INSERT INTO aksh.medcare_handoffs
             (id, scope_key, patient_id, from_role, to_role, to_member_display, summary,
              related_task_id, created_at, acknowledged_at, synthetic)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,TRUE)`,
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,TRUE)
+           ON CONFLICT (id) DO UPDATE SET
+             scope_key = EXCLUDED.scope_key,
+             patient_id = EXCLUDED.patient_id,
+             from_role = EXCLUDED.from_role,
+             to_role = EXCLUDED.to_role,
+             to_member_display = EXCLUDED.to_member_display,
+             summary = EXCLUDED.summary,
+             related_task_id = EXCLUDED.related_task_id,
+             created_at = EXCLUDED.created_at,
+             acknowledged_at = EXCLUDED.acknowledged_at,
+             synthetic = TRUE`,
           [
             h.id,
             scopeKey,

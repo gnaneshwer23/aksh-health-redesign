@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 
+import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type { DiabetesGlucoseIntelligenceSnapshot } from "@/lib/diabetes-intelligence/glucose-types";
@@ -110,43 +111,29 @@ export function DiabetesGlucoseIntelligenceWorkspace({ patientId, patientLabel }
 
   return (
     <div style={{ display: "grid", gap: 16, maxWidth: 1100 }}>
-      <header style={{ display: "grid", gap: 8 }}>
-        <p style={eyebrow}>
-          Diabetes glucose intelligence · Phase 2 · synthetic · not clinically validated
-        </p>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 650, color: "#0f2744" }}>
-          {patientLabel ?? snap?.patientLabel ?? patientId}
-        </h1>
-        <p style={{ margin: 0, color: "#4a6278", maxWidth: 62 * 8, lineHeight: 1.5 }}>
-          HbA1c trends, CGM/SMBG ingestion contracts, time-in-range when consensus sufficiency
-          permits, missing-data indicators, and clinician sign-off. Deterministic calculations only.
-          ehrWrite stays false.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
-            Seed synthetic CGM / SMBG / HbA1c
-          </Button>
-          <Button
-            variant="outline"
-            disabled={busy || !(snap && (snap.cgm.readings.length || snap.hba1c.series.length))}
-            onClick={() => void postAction({ action: "draft_review" })}
-          >
-            Draft review for sign-off
-          </Button>
-          <Link href={`/dashboard/gp/diabetes-intelligence`}>
-            <Button variant="outline">Worklist</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/patient-360`}>
-            <Button variant="outline">Patient 360</Button>
-          </Link>
-          <Link href={`/dashboard/gp/diabetes-journey/${encodeURIComponent(patientId)}`}>
-            <Button variant="outline">Care journey</Button>
-          </Link>
-          <Link href={`/dashboard/gp/patients/${encodeURIComponent(patientId)}/medication-care`}>
-            <Button variant="outline">Medication & care</Button>
-          </Link>
-        </div>
-      </header>
+      <ConnectedPatientChrome
+        patientId={patientId}
+        patientLabel={patientLabel ?? snap?.patientLabel}
+        activeStep="glucose"
+        subtitle="Phase 2 · HbA1c / CGM / SMBG · deterministic calculations · clinician sign-off"
+        actions={
+          <>
+            <Button disabled={busy} onClick={() => void postAction({ action: "seed_synthetic" })}>
+              Seed synthetic CGM / SMBG / HbA1c
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy || !(snap && (snap.cgm.readings.length || snap.hba1c.series.length))}
+              onClick={() => void postAction({ action: "draft_review" })}
+            >
+              Draft review for sign-off
+            </Button>
+            <Link href="/dashboard/gp/diabetes-intelligence">
+              <Button variant="outline">Worklist</Button>
+            </Link>
+          </>
+        }
+      />
 
       {loading || !snap ? (
         <p style={{ color: "#4a6278" }}>Loading glucose intelligence…</p>

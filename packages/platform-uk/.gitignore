@@ -35,6 +35,11 @@ data/consent-grants.*.json
 data/health-plans.*.json
 data/diabetes-care-journey.json
 data/diabetes-care-journey.*.json
+data/agent-intelligence.*.json
+data/continuous-care.*.json
+data/medication-personalised-care.*.json
+data/diabetes-glucose-intelligence.*.json
+data/patient-intelligence.*.json
 data/modality-samples.*.json
 data/review-cases.phase_a_*.json
 data/review-cases.whole_loop_*.json
