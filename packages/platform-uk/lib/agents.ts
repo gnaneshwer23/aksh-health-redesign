@@ -104,7 +104,7 @@ export type AgentDirectoryStatus = "in_validation" | "roadmap";
  * Canonical 12-agent directory (Agent Naming Reference, July 2026).
  * ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY are label renames only —
  * internal ids, env vars, and API routes keep the legacy names as aliases.
- * PRISM and ATLAS are Phase 2 roadmap agents and are not built.
+ * PRISM and ATLAS are Phase 2 agents with a P4 L2 synthetic eval scaffold (live:false).
  * VOICE and Dr.Assist are intake/coding sub-capabilities — intentionally not
  * listed here as peer Phase-1 agents (see CLINICAL_AGENT_META).
  * VOICE CARE (Day-3 outbound synthetic) is not VOICE and is not a directory peer.
@@ -124,11 +124,11 @@ export const AGENT_DIRECTORY = [
   { name: "BRIDGE", role: "Interoperability Agent", category: "Integration", phase: 1, live: true, status: "in_validation", modelFlag: null, previously: "unnamed (Medplum staging / FHIR mapping)", kind: "data_interop", layer: ["data_interop"], keepStatus: "keep" },
   { name: "NEXUS", role: "Clinical Intelligence Agent", category: "Intelligence", phase: 1, live: true, status: "in_validation", modelFlag: "NEXUS", previously: "new capability", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
   { name: "GUARDIAN", role: "Medication Intelligence Agent", category: "Safety", phase: 1, live: true, status: "in_validation", modelFlag: "GUARDIAN", previously: "GUARDIAN", kind: "safety_governance", layer: ["safety_governance", "intelligence"], keepStatus: "keep" },
-  { name: "PRISM", role: "Imaging Intelligence Agent", category: "Imaging", phase: 2, live: false, status: "roadmap", modelFlag: null, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "PRISM", role: "Imaging Intelligence Agent", category: "Imaging", phase: 2, live: false, status: "in_validation", modelFlag: null, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
   { name: "HORIZON", role: "Predictive Risk Agent", category: "Risk", phase: 1, live: true, status: "in_validation", modelFlag: "ORACLE", previously: "ORACLE", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
   { name: "PATHWAY", role: "Care Coordination Agent", category: "Coordination", phase: 1, live: true, status: "in_validation", modelFlag: null, previously: "REFERRAL", kind: "intervention", layer: ["intervention"], keepStatus: "keep" },
   { name: "COMPASS", role: "Population Health Agent", category: "Population", phase: 1, live: true, status: "in_validation", modelFlag: "EQUITY", previously: "EQUITY", kind: "intelligence_llm", layer: ["decision", "intervention"], keepStatus: "keep" },
-  { name: "ATLAS", role: "Clinical Research Agent", category: "Research", phase: 2, live: false, status: "roadmap", modelFlag: null, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
+  { name: "ATLAS", role: "Clinical Research Agent", category: "Research", phase: 2, live: false, status: "in_validation", modelFlag: null, previously: "new agent (roadmap)", kind: "intelligence_llm", layer: ["intelligence"], keepStatus: "keep" },
   { name: "SHIELD", role: "Regulatory & Audit Agent", category: "Governance", phase: 1, live: true, status: "in_validation", modelFlag: null, previously: "SHIELD", kind: "safety_governance", layer: ["safety_governance"], keepStatus: "keep" },
   { name: "CONDUCTOR", role: "Supervisor Agent", category: "Orchestration", phase: 1, live: true, status: "in_validation", modelFlag: null, previously: "unnamed (clinical-spine orchestrate)", kind: "orchestration", layer: ["intelligence", "decision"], keepStatus: "keep" }
 ] as const satisfies ReadonlyArray<{

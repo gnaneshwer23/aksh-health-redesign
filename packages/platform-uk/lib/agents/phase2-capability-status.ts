@@ -1,28 +1,19 @@
 /**
- * Phase 2 roadmap-agent capability status — E1 (docs/PHASED_BUILD_PLAN_E.md).
+ * Phase 2 / P4 roadmap-agent capability status — honesty source of truth.
  *
- * PRISM (Imaging Intelligence) and ATLAS (Clinical Research) are listed in
- * `AGENT_DIRECTORY` (lib/agents.ts) with `phase: 2, live: false` — they are
- * roadmap entries, not built capabilities. Unlike EMIS (lib/emis-staging.ts)
- * and federated research (lib/precision-health/federated-research.ts), which
- * each have a single authoritative "here is exactly what this is and is not"
- * status object, PRISM/ATLAS honesty previously lived only as scattered copy
- * strings across marketing/onboarding/researcher-dashboard surfaces. This
- * module is that missing single source of truth — read-only, no side
- * effects, no env-driven behaviour (there is no sandbox/flag to flip here;
- * these two agents are simply not built).
+ * PRISM and ATLAS ship an L1–L2 scaffold (typed contracts + synthetic eval
+ * harness + Guardian/HITL hooks). They remain:
+ *   - live: false
+ *   - wiredToConductor: false (do not duplicate / join CONDUCTOR loop)
+ *   - no live imaging deployment / no unapproved clinical enablement
  *
- * Per docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md P3-1: "Build only against a
- * concrete, funded use case — not speculatively." This module does not
- * change that; it only makes the current "not built" state machine-readable.
- *
- * Hard invariant: every status this module returns has `live: false`,
- * `built: false`, `wired: false`. No code path in this file can make either
- * agent appear live, built, or wired — there is no parameter, env var, or
- * flag that flips any of these three fields.
+ * Hard invariant: no code path in this file can flip live, liveImagingDeployment,
+ * clinicalEnablementApproved, or ehrWrite to true.
  */
 
 export type Phase2AgentId = "PRISM" | "ATLAS";
+
+export type Phase2Maturity = "L0_planned" | "L1_honesty" | "L2_scaffold";
 
 export type Phase2CapabilityStatus = {
   agentId: Phase2AgentId;
@@ -30,15 +21,23 @@ export type Phase2CapabilityStatus = {
   category: string;
   phase: 2;
   live: false;
+  /** True when a runnable synthetic/fixture eval path exists (P4 scaffold). */
+  scaffoldBuilt: true;
+  /** Legacy alias: production product build — still false until release criteria. */
   built: false;
+  /** Never auto-run by CONDUCTOR; on-request eval only. */
   wired: false;
+  wiredToConductor: false;
+  ehrWrite: false;
+  maturity: Phase2Maturity;
   description: string;
-  notBuiltReason: string;
+  notProductionReason: string;
   roadmapNote: string;
+  evidencePaths: string[];
 };
 
 const ROADMAP_NOTE =
-  "Phase 2 roadmap only — build only against a concrete, funded use case, not speculatively (docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md P3-1).";
+  "P4 scaffold only — synthetic/controlled evaluation paths. Build production capability only against a concrete, funded use case (docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md P3-1 / AGENT_IMPLEMENTATION_ROADMAP P4).";
 
 export function getPrismCapabilityStatus(): Phase2CapabilityStatus {
   return {
@@ -47,13 +46,22 @@ export function getPrismCapabilityStatus(): Phase2CapabilityStatus {
     category: "Imaging Intelligence Agent",
     phase: 2,
     live: false,
+    scaffoldBuilt: true,
     built: false,
     wired: false,
+    wiredToConductor: false,
+    ehrWrite: false,
+    maturity: "L2_scaffold",
     description:
-      "Roadmap agent for imaging-derived clinical signal (e.g. radiology/report-adjacent intelligence). No imaging ingestion, no DICOM handling, and no image-analysis logic exist in this codebase today.",
-    notBuiltReason:
-      "No concrete, funded imaging use case has been commissioned. Listed in AGENT_DIRECTORY as phase:2, live:false so it is never confused with a Phase-1 (live) agent.",
-    roadmapNote: ROADMAP_NOTE
+      "L2 scaffold: typed PRISM contract, synthetic DICOM-metadata fixture eval, Guardian + human-review hooks. No live PACS, no pixel archive, no imaging deployment claim.",
+    notProductionReason:
+      "Scaffold is evaluation-only. liveImagingDeployment remains false; not wired into CONDUCTOR; no EHR write.",
+    roadmapNote: ROADMAP_NOTE,
+    evidencePaths: [
+      "tests/p4-prism-atlas-scaffold.test.ts",
+      "lib/agents/contracts/run-prism.ts",
+      "lib/agents/prism-eval.ts",
+    ],
   };
 }
 
@@ -64,13 +72,22 @@ export function getAtlasCapabilityStatus(): Phase2CapabilityStatus {
     category: "Clinical Research Agent",
     phase: 2,
     live: false,
+    scaffoldBuilt: true,
     built: false,
     wired: false,
+    wiredToConductor: false,
+    ehrWrite: false,
+    maturity: "L2_scaffold",
     description:
-      "Roadmap agent for clinical-research coordination. Not the same surface as the federated-research ethics-gated stub (lib/precision-health/federated-research.ts), which already exists and is honestly labelled as synthetic-aggregate-only — ATLAS itself (an LLM-backed research agent) has no implementation.",
-    notBuiltReason:
-      "No concrete, funded clinical-research-agent use case has been commissioned. Listed in AGENT_DIRECTORY as phase:2, live:false so it is never confused with a Phase-1 (live) agent.",
-    roadmapNote: ROADMAP_NOTE
+      "L2 scaffold: typed ATLAS contract, controlled protocol/cohort fixture eval, Guardian + human-review hooks. Distinct from federated-research ethics stub. No unapproved clinical enablement or patient-level export.",
+    notProductionReason:
+      "Scaffold is evaluation-only. clinicalEnablementApproved remains false; not wired into CONDUCTOR; no EHR write.",
+    roadmapNote: ROADMAP_NOTE,
+    evidencePaths: [
+      "tests/p4-prism-atlas-scaffold.test.ts",
+      "lib/agents/contracts/run-atlas.ts",
+      "lib/agents/atlas-eval.ts",
+    ],
   };
 }
 
@@ -79,11 +96,20 @@ export function getPhase2AgentCapabilityStatus() {
     artifactType: "aksh-phase2-agent-capability-status",
     generatedAt: new Date().toISOString(),
     agents: [getPrismCapabilityStatus(), getAtlasCapabilityStatus()],
+    invariants: {
+      live: false as const,
+      built: false as const,
+      wiredToConductor: false as const,
+      ehrWrite: false as const,
+      liveImagingDeployment: false as const,
+      clinicalEnablementApproved: false as const,
+    },
     notes: [
       ROADMAP_NOTE,
-      "Neither PRISM nor ATLAS is wired into lib/clinical-spine/orchestrate.ts, AGENT_DIRECTORY's live field stays false for both, and neither performs any AI Gateway call.",
-      "This status is informational only — it does not change AGENT_DIRECTORY, does not enable any code path, and carries no flag that can flip live/built/wired to true."
-    ]
+      "scaffoldBuilt:true means L2 eval harness exists — not production go-live.",
+      "Neither PRISM nor ATLAS appears in CONDUCTOR REVIEW_ORDER / LOOP clinician path as an auto actor.",
+      "This status is informational only — it does not enable live imaging or research recruitment.",
+    ],
   };
 }
 

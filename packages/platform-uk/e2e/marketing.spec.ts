@@ -196,9 +196,10 @@ test.describe("Public site", () => {
     for (const name of ["Aksh Orchestrator", "Aksh Voice", "Aksh Canvas", "Aksh Synthesis", "DrAssist AI", "Aksh Guardian", "Aksh Horizon", "Aksh Nexus", "Aksh Pathway", "Aksh Bridge", "Aksh Shield", "Aksh Compass", "Aksh Prism", "Aksh Trials Agent"]) {
       await expect(page.locator("#agents")).toContainText(name);
     }
-    // Statuses come from the agent register: none is shown as in production; the two Phase 2 agents are planned.
+    // Statuses come from the agent register: none is shown as in production; P4 scaffolds stay in validation (not live).
     await expect(page.locator('#agents [data-agent] .s-status--production')).toHaveCount(0);
-    await expect(page.locator('#agents [data-agent="PRISM"]')).toContainText("Planned");
+    await expect(page.locator('#agents [data-agent="PRISM"]')).toContainText("In validation");
+    await expect(page.locator('#agents [data-agent="ATLAS"]')).toContainText("In validation");
     // The figure: keyboard focus explains a station; the clinician decision changes what moves on.
     const line = page.locator("[data-agent-line]").first();
     await expect(line.locator(".s-line__steps")).toContainText("Clinician decides");

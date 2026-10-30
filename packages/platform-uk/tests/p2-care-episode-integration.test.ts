@@ -99,7 +99,10 @@ async function main() {
   // Honesty: directory status
   for (const a of AGENT_DIRECTORY) {
     if (a.phase === 1) assert.equal(a.status, "in_validation");
-    if (a.phase === 2) assert.equal(a.status, "roadmap");
+    if (a.phase === 2) {
+      assert.equal(a.live, false);
+      assert.equal(a.status, "in_validation");
+    }
   }
 
   // Flag on + no patient → offer but do not run

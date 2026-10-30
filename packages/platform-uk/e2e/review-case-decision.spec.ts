@@ -112,6 +112,9 @@ test.describe("Review case decisions on the server", () => {
     const synthesis = body.agents.find((a) => a.id === "SYNTHESIS")!;
     expect(synthesis.criteria.map((c) => c.name)).toContain("Rejection rate");
     expect(body.agents.every((a) => !a.ready)).toBeTruthy();
-    expect(body.agents.some((a) => a.id === "PRISM" || a.id === "ATLAS")).toBeFalsy();
+    // P4: PRISM/ATLAS appear on the readiness board as scaffolds but remain not ready.
+    const phase2 = body.agents.filter((a) => a.id === "PRISM" || a.id === "ATLAS");
+    expect(phase2).toHaveLength(2);
+    expect(phase2.every((a) => !a.ready)).toBeTruthy();
   });
 });

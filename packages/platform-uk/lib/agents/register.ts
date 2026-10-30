@@ -39,8 +39,8 @@ export type Trigger =
   | "after_note_and_codes_accepted" // PATHWAY: only once the note and codes are accepted (FR-AGT-024)
   | "after_case_accepted" // BRIDGE: only after the case is accepted (FR-AGT-030)
   | "every_event" // SHIELD: every agent run and every decision (FR-AGT-032)
-  | "on_request" // COMPASS: a population lead asks for a brief
-  | "never"; // Phase 2, not built (FR-AGT-033)
+  | "on_request" // COMPASS brief; P4 PRISM/ATLAS synthetic eval harness
+  | "never"; // reserved for truly unbuilt agents (FR-AGT-033)
 
 /** Actions no agent may take (lib/agents/contracts/types.ts PROHIBITED_ACTION_PATTERNS uses the same list). */
 export const PROHIBITED_FOR_ALL = ["prescribe or change a dose", "finalise a diagnosis", "modify a source record", "send a message to a patient", "write to a live clinical record"] as const;
@@ -361,39 +361,55 @@ export const AGENTS: AgentContract[] = [
     id: "PRISM",
     productName: "Aksh Prism",
     legacyIds: [],
-    role: "Imaging intelligence (Phase 2)",
+    role: "Imaging intelligence: synthetic DICOM-metadata eval scaffold (Phase 2 / P4)",
     stage: "imaging",
-    trigger: "never",
-    inputs: [],
-    outputs: [],
-    reviewer: "not applicable",
+    trigger: "on_request",
+    inputs: ["synthetic imaging meta fixture", "optional authorised context package"],
+    outputs: ["imaging-adjacent findings draft", "Guardian escalation", "human-review hook"],
+    reviewer: "the requesting clinician (HITL; not auto-accepted)",
     modelFlag: null,
-    reads: [],
-    prohibited: ["be invoked or described as available (FR-AGT-033)"],
-    onFailure: "Not built.",
+    reads: ["synthetic imaging metadata fixtures only"],
+    prohibited: [
+      "claim live imaging deployment or PACS pixel access",
+      "write to a live clinical record",
+      "run inside CONDUCTOR REVIEW_ORDER / LOOP as an auto actor",
+    ],
+    onFailure: "No imaging draft is offered; Guardian BLOCK fails closed.",
     requirements: ["FR-AGT-033"],
-    evidence: [],
-    status: "planned",
-    environment: "none",
+    evidence: ["tests/p4-prism-atlas-scaffold.test.ts", "tests/phase2-capability-status.test.ts"],
+    status: "in_validation",
+    environment: "simulation",
+    release: {
+      signOffs: [...SIGN_OFFS, "Imaging use-case funding and safety case confirmed"],
+      targetsConfirmedBy: null,
+    },
   },
   {
     id: "ATLAS",
     productName: "Aksh Trials Agent",
     legacyIds: [],
-    role: "Clinical research: protocol parsing, eligibility matching and trial analytics (Phase 2)",
+    role: "Clinical research: protocol eligibility eval on controlled synthetic data (Phase 2 / P4)",
     stage: "research",
-    trigger: "never",
-    inputs: [],
-    outputs: [],
-    reviewer: "not applicable",
+    trigger: "on_request",
+    inputs: ["synthetic protocol fixture", "synthetic cohort aggregate"],
+    outputs: ["eligibility draft", "Guardian escalation", "human-review hook"],
+    reviewer: "the requesting researcher or clinician (HITL; no clinical enablement)",
     modelFlag: null,
-    reads: [],
-    prohibited: ["be invoked or described as available (FR-AGT-033)"],
-    onFailure: "Not built.",
+    reads: ["controlled synthetic research fixtures only"],
+    prohibited: [
+      "approve clinical recruitment or patient-level research export",
+      "write to a live clinical record",
+      "run inside CONDUCTOR REVIEW_ORDER / LOOP as an auto actor",
+    ],
+    onFailure: "No research draft is offered; Guardian BLOCK fails closed.",
     requirements: ["FR-AGT-033"],
-    evidence: [],
-    status: "planned",
-    environment: "none",
+    evidence: ["tests/p4-prism-atlas-scaffold.test.ts", "tests/phase2-capability-status.test.ts"],
+    status: "in_validation",
+    environment: "simulation",
+    release: {
+      signOffs: [...SIGN_OFFS, "Research use-case funding, ethics, and safety case confirmed"],
+      targetsConfirmedBy: null,
+    },
   },
 ];
 

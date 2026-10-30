@@ -41,6 +41,42 @@ const REGISTRY: RegisteredModel[] = [
     approvedAt: "2026-10-05T00:00:00.000Z",
     nextReviewAt: "2027-01-05T00:00:00.000Z",
   },
+  {
+    modelId: "aksh-prism-synthetic-v1",
+    version: "0.1",
+    intendedUse: "P4 PRISM imaging-meta evaluation drafts on synthetic DICOM metadata fixtures",
+    population: "Synthetic imaging meta stubs only; exclusions: live PACS / pixel archive",
+    inputs: ["synthetic_imaging_meta_fixture", "authorised_context_package"],
+    outputs: ["findings", "evidence", "uncertainties", "escalation"],
+    limitations: [
+      "Not clinically validated",
+      "No live imaging deployment",
+      "dicomPresent:false",
+      "HITL required",
+    ],
+    approval: "approved_for_synthetic",
+    approver: "aksh-platform",
+    approvedAt: "2026-10-30T00:00:00.000Z",
+    nextReviewAt: "2027-01-30T00:00:00.000Z",
+  },
+  {
+    modelId: "aksh-atlas-synthetic-v1",
+    version: "0.1",
+    intendedUse: "P4 ATLAS protocol eligibility evaluation on controlled synthetic research fixtures",
+    population: "Synthetic protocol/cohort aggregates; exclusions: live recruitment / patient-level export",
+    inputs: ["synthetic_protocol_fixture", "synthetic_cohort_aggregate"],
+    outputs: ["findings", "evidence", "uncertainties", "escalation", "matches"],
+    limitations: [
+      "Not clinically validated",
+      "No unapproved clinical enablement",
+      "patientLevelExport:false",
+      "HITL required",
+    ],
+    approval: "approved_for_synthetic",
+    approver: "aksh-platform",
+    approvedAt: "2026-10-30T00:00:00.000Z",
+    nextReviewAt: "2027-01-30T00:00:00.000Z",
+  },
 ];
 
 export function listRegisteredModels(): RegisteredModel[] {

@@ -1,17 +1,10 @@
 /**
- * E1 (docs/PHASED_BUILD_PLAN_E.md, implements
- * docs/AKSH_ARCHITECTURE_MIGRATION_PLAN.md P3-1): PRISM/ATLAS honest
- * capability-status module + read-only endpoint.
+ * E1 / P4: PRISM/ATLAS honest capability-status module + read-only endpoint.
  *
  * Covers:
- *  1. Both PRISM and ATLAS report live:false, built:false, wired:false —
- *     the hard invariant this module exists to make machine-readable.
- *  2. GET /api/system/phase2-capability-status requires authentication
- *     (401 for an unauthenticated request).
- *  3. Any authenticated role (this is honesty/status information, not a
- *     governance export — deliberately not restricted to the
- *     clinical_reviewer/operations_lead allow-list E2 applies elsewhere)
- *     succeeds and receives both agents' statuses.
+ *  1. Both report live:false, built:false, wired:false, scaffoldBuilt:true (P4 L2).
+ *  2. GET /api/system/phase2-capability-status requires authentication.
+ *  3. Any authenticated role succeeds and receives both agents' statuses.
  *  4. The response contains no live-imaging or live-research claim.
  */
 
@@ -30,16 +23,20 @@ function testStatusInvariants() {
 
   for (const status of [prism, atlas]) {
     assert.equal(status.live, false, `${status.agentId}: live must be false`);
-    assert.equal(status.built, false, `${status.agentId}: built must be false`);
+    assert.equal(status.built, false, `${status.agentId}: built (production) must be false`);
     assert.equal(status.wired, false, `${status.agentId}: wired must be false`);
+    assert.equal(status.wiredToConductor, false, `${status.agentId}: wiredToConductor must be false`);
+    assert.equal(status.ehrWrite, false, `${status.agentId}: ehrWrite must be false`);
+    assert.equal(status.scaffoldBuilt, true, `${status.agentId}: P4 scaffold must be present`);
+    assert.equal(status.maturity, "L2_scaffold", `${status.agentId}: maturity L2_scaffold`);
     assert.equal(status.phase, 2, `${status.agentId}: phase must be 2`);
-    assert.ok(status.notBuiltReason.length > 0, `${status.agentId}: notBuiltReason must be a non-empty explanation`);
+    assert.ok(status.notProductionReason.length > 0, `${status.agentId}: notProductionReason required`);
   }
 
   assert.equal(prism.agentId, "PRISM");
   assert.equal(atlas.agentId, "ATLAS");
 
-  console.log("Phase 2 capability status: PRISM/ATLAS both report live:false, built:false, wired:false.");
+  console.log("Phase 2 capability status: PRISM/ATLAS scaffoldBuilt with live/built/wired false.");
 }
 
 function testCombinedStatusShape() {
@@ -47,12 +44,14 @@ function testCombinedStatusShape() {
   assert.equal(combined.artifactType, "aksh-phase2-agent-capability-status");
   assert.equal(combined.agents.length, 2);
   assert.ok(combined.agents.every((agent) => agent.live === false && agent.built === false && agent.wired === false));
+  assert.equal(combined.invariants.liveImagingDeployment, false);
+  assert.equal(combined.invariants.clinicalEnablementApproved, false);
   assert.ok(combined.notes.length > 0);
 
   const serialized = JSON.stringify(combined).toLowerCase();
   assert.ok(!serialized.includes('"live":true'), "no field anywhere in the combined status may claim liveness");
 
-  console.log("Phase 2 capability status: combined artifact shape correct, no live:true claim anywhere in the payload.");
+  console.log("Phase 2 capability status: combined artifact shape correct, no live:true claim.");
 }
 
 function buildRequest(headers?: Record<string, string>) {
@@ -82,15 +81,16 @@ async function testRouteAllowsAnyAuthenticatedRole() {
         })
       );
       assert.equal(response.status, 200, `role "${role}" (any authenticated role) must be allowed — this is status info, not a governance export`);
-      const body = (await response.json()) as { agents?: Array<{ live: boolean }> };
+      const body = (await response.json()) as { agents?: Array<{ live: boolean; scaffoldBuilt?: boolean }> };
       assert.equal(body.agents?.length, 2);
       assert.ok(body.agents?.every((agent) => agent.live === false));
+      assert.ok(body.agents?.every((agent) => agent.scaffoldBuilt === true));
     }
   } finally {
     delete process.env.AKSH_TEST_AUTH_HEADER;
   }
 
-  console.log("Phase 2 capability status route: any authenticated role succeeds, no live claim in the response.");
+  console.log("Phase 2 capability status route: any authenticated role succeeds, scaffold honesty intact.");
 }
 
 async function main() {
@@ -98,9 +98,10 @@ async function main() {
   testCombinedStatusShape();
   await testRouteRequiresAuthentication();
   await testRouteAllowsAnyAuthenticatedRole();
+  console.log("phase2-capability-status: PASS");
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((err) => {
+  console.error(err);
   process.exit(1);
 });

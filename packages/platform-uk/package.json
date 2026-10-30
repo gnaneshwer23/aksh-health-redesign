@@ -92,6 +92,7 @@
     "test:p0:safety": "npx tsx tests/p0-orch-rename.test.ts && npx tsx tests/p0-ux-unified-worklist.test.ts && npx tsx tests/p0-episode-correlation.test.ts && npm run test:ci20:agent-intel-wiring && npm run test:phase1:foundation",
     "test:p1:agents": "npx tsx tests/p1-lab-order-draft.test.ts && npx tsx tests/p1-shield-diabetes-decide.test.ts && npx tsx tests/p1-booking-nurse-handoff.test.ts && npx tsx tests/p1-agent-ops-dashboard.test.ts && npx tsx tests/agent-register.test.ts && ENABLE_LLM_SYNTHESIS=false ENABLE_LLM_GUARDIAN=false ENABLE_LLM_ORACLE=false ENABLE_LLM_DR_ASSIST=false ENABLE_LLM_NEXUS=false npm run eval:agents",
     "test:p2:episode": "npx tsx tests/p2-care-episode-integration.test.ts && npx tsx tests/p2-nurse-observation-worklist.test.ts && npx tsx tests/p2-honesty-voice-compass.test.ts && npx tsx tests/agent-directory-classification.test.ts && npx tsx tests/p1-booking-nurse-handoff.test.ts && npx tsx tests/p0-episode-correlation.test.ts",
+    "test:p4:intelligence": "npx tsx tests/p4-prism-atlas-scaffold.test.ts && npx tsx tests/phase2-capability-status.test.ts && npx tsx tests/agent-register.test.ts && npx tsx tests/orchestration-contracts.test.ts && npx tsx tests/agent-directory-classification.test.ts",
     "eval:agents": "npx tsx scripts/eval-agents.ts",
     "evidence:pack": "node scripts/generate-evidence-pack.mjs",
     "start": "next start",

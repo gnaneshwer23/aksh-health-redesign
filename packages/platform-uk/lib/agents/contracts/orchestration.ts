@@ -26,7 +26,10 @@ export type OrchestrationToolId =
   | "schedule_slots_read"
   | "review_queue_enqueue"
   | "shield_audit_append"
-  | "eval_score_append";
+  | "eval_score_append"
+  | "imaging_meta_retrieve"
+  | "protocol_retrieve"
+  | "cohort_aggregate_retrieve";
 
 export type OrchestrationToolContract = {
   id: OrchestrationToolId;
@@ -61,7 +64,13 @@ export const ORCHESTRATION_TOOLS: OrchestrationToolContract[] = [
   {
     id: "guardian_gateway_evaluate",
     description: "Independent PASS/REVIEW/BLOCK gateway over agent output",
-    allowedCapabilities: ["guardian_safety", "medication_safety", "cds"],
+    allowedCapabilities: [
+      "guardian_safety",
+      "medication_safety",
+      "cds",
+      "imaging_intelligence",
+      "clinical_research",
+    ],
     sideEffects: "audit_only",
     requiresAuthorisedContext: true,
   },
@@ -109,8 +118,29 @@ export const ORCHESTRATION_TOOLS: OrchestrationToolContract[] = [
   {
     id: "eval_score_append",
     description: "Record evaluation / quality score (offline / governed)",
-    allowedCapabilities: ["evaluation_quality"],
+    allowedCapabilities: ["evaluation_quality", "imaging_intelligence", "clinical_research"],
     sideEffects: "persist_eval",
+    requiresAuthorisedContext: false,
+  },
+  {
+    id: "imaging_meta_retrieve",
+    description: "Retrieve synthetic DICOM metadata fixtures (never pixels / live PACS)",
+    allowedCapabilities: ["imaging_intelligence"],
+    sideEffects: "none",
+    requiresAuthorisedContext: false,
+  },
+  {
+    id: "protocol_retrieve",
+    description: "Retrieve controlled synthetic research protocol fixtures",
+    allowedCapabilities: ["clinical_research"],
+    sideEffects: "none",
+    requiresAuthorisedContext: false,
+  },
+  {
+    id: "cohort_aggregate_retrieve",
+    description: "Retrieve synthetic cohort aggregates (no patient-level export)",
+    allowedCapabilities: ["clinical_research"],
+    sideEffects: "none",
     requiresAuthorisedContext: false,
   },
 ];
@@ -368,7 +398,7 @@ export const ORCHESTRATION_PROHIBITED = [
 ] as const;
 
 export function resolveOrchestrationStack(capability: PlatformCapabilityId): {
-  stack: "clinical_spine" | "diabetes_agent_intel" | "access_workflow" | "intake" | "eval";
+  stack: "clinical_spine" | "diabetes_agent_intel" | "access_workflow" | "intake" | "eval" | "phase2_scaffold";
   entrypoints: string[];
 } {
   switch (capability) {
@@ -386,6 +416,16 @@ export function resolveOrchestrationStack(capability: PlatformCapabilityId): {
       return {
         stack: "eval",
         entrypoints: ["lib/evaluation-engine/index.ts", "lib/eval/score-agents.ts"],
+      };
+    case "imaging_intelligence":
+      return {
+        stack: "phase2_scaffold",
+        entrypoints: ["lib/agents/prism-eval.ts", "lib/agents/contracts/run-prism.ts", "app/api/agents/prism/route.ts"],
+      };
+    case "clinical_research":
+      return {
+        stack: "phase2_scaffold",
+        entrypoints: ["lib/agents/atlas-eval.ts", "lib/agents/contracts/run-atlas.ts", "app/api/agents/atlas/route.ts"],
       };
     case "care_coordination":
     case "patient_engagement":
