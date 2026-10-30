@@ -37,7 +37,7 @@
 - [x] Production-readiness gap report honest NO-GO for live  
 - [x] E2E connected journey recorded green on local-dev Neon (doc 23)  
 - [x] UX chrome + guided demo shipped  
-- [ ] Vercel deploy READY after merge  
+- [x] Vercel deploy READY after merge (`6545c20` → www.akshhealth.com)  
 
 ### NO-GO (anything beyond R0)
 
