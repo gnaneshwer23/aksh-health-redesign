@@ -1,7 +1,7 @@
 # Phase A2 Report — Orchestration Persistence & Reliability
 
-**PR:** review-only (`feat/milestone-a2-orchestration-persistence`)  
-**Stacked on:** A1 tip `5f5a4c5` / PR #97  
+**PR:** review-only (#98 — `feat/milestone-a2-orchestration-persistence`)  
+**Stacked on:** A1 tip `b36c376` / PR #97 (includes verify typecheck fixture fixes)  
 **Date:** 2026-10-30
 
 ## Implemented
@@ -13,19 +13,17 @@
 5. Docs: `ORCHESTRATION_RELIABILITY.md` + this report.
 6. Contract tests: `tests/orchestration-reliability-a2.test.ts`.
 
-## PR #97 CI note (report-only)
+## Base / CI note
 
-- **E2E platform unit gates:** PASS  
-- **CI 2.0 evaluation gate:** PASS  
-- **Playwright E2E:** FAIL at `verify` typecheck — missing `execution`/`agentMetadata` on decision mocks + wrong `ClinicalContextPackage.schemaVersion` in A1 contract test.  
-- A2 includes those typecheck fixes so stacked CI can green the verify step.
+- Rebased onto A1 tip `b36c376` (after A1 dropped accidental A2 files and fixed verify fixtures).
+- Local `npm run test:milestone-a2` green after rebase (unit + typecheck).
 
 ## Tests run
 
 | Command | Result |
 | --- | --- |
-| `npx tsx tests/orchestration-reliability-a2.test.ts` | *(run in PR prep)* |
-| `npm run test:milestone-a2` | *(includes A1 subset + A2 + typecheck)* |
+| `npx tsx tests/orchestration-reliability-a2.test.ts` | PASS |
+| `npm run test:milestone-a2` | PASS (A1 subset + A2 + typecheck) |
 
 ## Risks
 
