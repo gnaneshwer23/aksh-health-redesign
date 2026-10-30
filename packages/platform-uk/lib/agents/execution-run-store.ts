@@ -310,6 +310,18 @@ export async function listDurableAgentRunsForPatient(
   return fileRuns.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
 }
 
+/** A3 — list recent durable runs for a tenant scope (Agent Ops / GP visibility). */
+export async function listDurableAgentRunsForScope(
+  scopeKey = "shared",
+  limit = 50
+): Promise<DurableAgentRunRecord[]> {
+  const store = await readStore(scopeKey);
+  const capped = Math.min(Math.max(limit, 1), 200);
+  return [...store.runs]
+    .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+    .slice(0, capped);
+}
+
 /**
  * Claim an idempotency key (insert running) or return the terminal prior run for recovery.
  * Process-local duplicate guard remains in execution-metadata; this is multi-instance durable.

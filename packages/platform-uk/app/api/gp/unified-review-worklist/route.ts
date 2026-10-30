@@ -4,8 +4,11 @@
  */
 import { NextResponse } from "next/server";
 
+import { buildOpsRunVisibility } from "@/lib/agents/ops-run-visibility";
+import { trackLabReferralDraftStatuses } from "@/lib/care-episode/stakeholder-handoffs";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { buildAgentIntelligenceWorklist } from "@/lib/diabetes-intelligence";
+import { listReviewQueueAssignments } from "@/lib/gp/review-queue-assignment";
 import { readReviewCases } from "@/lib/review-case-repository";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 import { resolveReviewQueueItems } from "@/lib/workflow/review-queue";
@@ -19,9 +22,14 @@ export async function GET(request: Request) {
   const tenant = resolveTenantContext(request, auth.context);
   const cases = await readReviewCases(auth.context.scopeKey, tenant.practiceId);
   const openCases = cases.filter((c) => c.status === "pending_review");
+  const assignments = await listReviewQueueAssignments(auth.context.scopeKey, {
+    practiceId: tenant.practiceId,
+  });
+  const assignmentByCase = new Map(assignments.map((a) => [a.caseId, a]));
 
   const primaryItems = openCases.flatMap((c) => {
     const drafts = resolveReviewQueueItems(c).filter((i) => i.status === "DRAFT");
+    const assignment = assignmentByCase.get(c.id) ?? null;
     return drafts.map((item) => ({
       surface: "gp_review_queue" as const,
       caseId: c.id,
@@ -37,9 +45,19 @@ export async function GET(request: Request) {
       diabetesDraftId:
         typeof item.metadata?.diabetesDraftId === "string" ? item.metadata.diabetesDraftId : null,
       decisionHref: `/review/${encodeURIComponent(c.id)}`,
+      assigneeUserId: assignment?.assigneeUserId ?? null,
+      assigneeRole: assignment?.assigneeRole ?? null,
+      assignmentPriority: assignment?.priority ?? null,
       ehrWrite: false as const,
       synthetic: true as const,
     }));
+  });
+
+  const labReferralDrafts = openCases.flatMap((c) => trackLabReferralDraftStatuses(c));
+  const opsVisibility = await buildOpsRunVisibility({
+    scopeKey: auth.context.scopeKey,
+    limit: 10,
+    organisationId: tenant.practiceId ?? null,
   });
 
   // Prep-only domain drafts (not yet / also mirrored) — linked, not a second decision surface.
@@ -74,12 +92,21 @@ export async function GET(request: Request) {
     prepOnlyNotInPrimary: prepOnly,
     primaryCount: primaryItems.length,
     prepCount: prepOnly.length,
+    labReferralDraftStatuses: labReferralDrafts,
+    assignmentsOpen: assignments.length,
+    conductorOps: {
+      total: opsVisibility.total,
+      shieldBlockedCount: opsVisibility.shieldBlockedCount,
+      runningCount: opsVisibility.runningCount,
+      note: opsVisibility.note,
+      phiLeakage: false as const,
+    },
     practiceId: tenant.practiceId,
     synthetic: true,
     ehrWrite: false,
     hitlRequired: true,
     authoritativeDecisionSurface: "gp_review_queue",
     note:
-      "Primary GP review is review-cases (spine CONDUCTOR + diabetes drafts enqueued via mayEnqueueAgentDraft). Domain agent-intelligence Accept/Edit/Reject is blocked — decide only on primary worklist items.",
+      "Primary GP review is review-cases (spine CONDUCTOR + diabetes drafts enqueued via mayEnqueueAgentDraft). Domain agent-intelligence Accept/Edit/Reject is blocked — decide only on primary worklist items. A3: assignment + lab/referral draft status + PHI-safe CONDUCTOR ops strip.",
   });
 }
