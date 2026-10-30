@@ -73,6 +73,7 @@ export function queueItemsFromRun(caseId: string, result: ClinicalSpineOrchestra
 export function agentRunSummary(result: ClinicalSpineOrchestrateResult, now = new Date()): AgentRunSummary {
   const complications = result.diabetes?.signals.complications ?? [];
   const o = result.orchestration.outputs;
+  const execution = result.orchestration.execution;
   return {
     source: "clinical_spine",
     ranAt: now.toISOString(),
@@ -86,6 +87,12 @@ export function agentRunSummary(result: ClinicalSpineOrchestrateResult, now = ne
     missingLabs: [...new Set(complications.flatMap((c) => c.missingLabs ?? []))],
     correlations: o.NEXUS?.correlations ?? [],
     modelUsed: [o.SYNTHESIS, o.GUARDIAN, o.ORACLE, o.NEXUS, o.DrASSIST].some((d) => d?.mode === "llm"),
+    correlationId: result.correlationId ?? execution?.correlationId,
+    careEpisodeId: result.careEpisodeId ?? execution?.careEpisodeId ?? null,
+    executionSchemaVersion: execution?.schemaVersion,
+    guardianOutcome: result.guardianGateway?.output_status ?? execution?.guardianOutcome ?? null,
+    reviewStatus: execution?.reviewStatus,
+    agentVersions: execution?.agents?.map((a) => `${a.agentId}@${a.agentVersion}`),
   };
 }
 
