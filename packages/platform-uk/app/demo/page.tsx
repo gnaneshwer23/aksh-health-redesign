@@ -11,7 +11,7 @@ import { capability } from "@/lib/status/capabilities";
 export const metadata: Metadata = {
   title: "Explore a demo",
   description:
-    "Synthetic guided walkthroughs of Aksh production workflows and connected diabetes intelligence. Staff and clinicians always decide.",
+    "Synthetic guided walkthroughs of Aksh production workflows and the flagship connected diabetes intelligence journey. Staff and clinicians always decide.",
 };
 
 export default function DemoCatalogPage() {
@@ -22,14 +22,75 @@ export default function DemoCatalogPage() {
       <PageHero
         title="Explore a demo."
         lede="Walk production workflows and the connected diabetes intelligence journey with synthetic data. You decide every offer and every clinical response."
-      />
+      >
+        {connected ? (
+          <div className="s-actions s-hero2__actions">
+            <Link href={connected.href} className="s-btn s-btn--primary" data-demo-cta="connected-diabetes">
+              Open connected diabetes demo
+            </Link>
+            <Link href="#production" className="s-btn s-btn--ghost">
+              Production workflows
+            </Link>
+          </div>
+        ) : null}
+        <p className="s-small" style={{ margin: 0 }}>
+          Synthetic only · LIVE organisations: 0 · no live EHR write-back
+        </p>
+      </PageHero>
 
-      <section className="s-section s-section--tight">
+      {connected ? (
+        <section className="s-section s-section--tight" id="flagship" style={{ scrollMarginTop: 88 }}>
+          <div className="s-container">
+            <article className="s-flagship" data-demo-card={connected.id}>
+              <div className="s-flagship__copy">
+                <div className="s-row" style={{ justifyContent: "flex-start", gap: 10, marginBottom: 12 }}>
+                  <span className="s-eyebrow">Flagship</span>
+                  <StatusPill s={capability("diabetes_care_journey").status} />
+                  <span className="s-small">{connected.duration}</span>
+                </div>
+                <h2 className="s-h2">{connected.title}</h2>
+                <p className="s-lede" style={{ marginTop: 12 }}>
+                  {connected.description}
+                </p>
+                <p className="s-small" style={{ marginTop: 12 }}>
+                  Status remains synthetic_demo · not clinically validated · ehrWrite stays false.
+                </p>
+                <div className="s-actions" style={{ marginTop: 20 }}>
+                  <Link href={connected.href} className="s-btn s-btn--primary">
+                    Open guided demo
+                  </Link>
+                  <Link href="/agents" className="s-link">
+                    Meet the agents →
+                  </Link>
+                </div>
+              </div>
+              <ol className="s-flagship__beats" aria-label="Journey beats">
+                {[
+                  "Patient 360",
+                  "Glucose intelligence",
+                  "Medication & care",
+                  "Care-plan HITL",
+                  "Continuous care",
+                  "Agent drafts",
+                  "Timeline",
+                ].map((beat, i) => (
+                  <li key={beat}>
+                    <span>{String(i + 1).padStart(2, "0")}</span>
+                    {beat}
+                  </li>
+                ))}
+              </ol>
+            </article>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="s-section s-section--soft" id="production" style={{ scrollMarginTop: 88 }}>
         <div className="s-container">
           <div className="s-head" style={{ marginBottom: 20 }}>
             <span className="s-eyebrow">Production workflows</span>
-            <h2 className="s-h2">Start here</h2>
-            <p className="s-lede">Interactive, synthetic only. No live patient data.</p>
+            <h2 className="s-h2">What clinics can run today</h2>
+            <p className="s-lede">Interactive, synthetic only. No live patient data. Staff always choose.</p>
           </div>
           <div className="wd-catalog">
             {WORKFLOW_DEMOS.map((d) => {
@@ -50,36 +111,14 @@ export default function DemoCatalogPage() {
         </div>
       </section>
 
-      {connected ? (
-        <section className="s-section s-section--soft">
-          <div className="s-container">
-            <div className="s-head" style={{ marginBottom: 20 }}>
-              <span className="s-eyebrow">Synthetic clinical intelligence</span>
-              <h2 className="s-h3" style={{ fontSize: 22 }}>Connected diabetes journey</h2>
-              <p className="s-lede">
-                Flagship Phases 0–5 path. Status remains synthetic_demo · LIVE organisations: 0.
-              </p>
-            </div>
-            <div className="wd-catalog">
-              <Link href={connected.href} className="wd-card" data-demo-card={connected.id}>
-                <div className="s-row" style={{ justifyContent: "flex-start", gap: 10 }}>
-                  <StatusPill s={capability("diabetes_care_journey").status} />
-                  <span className="s-small">{connected.duration}</span>
-                </div>
-                <h3>{connected.title}</h3>
-                <p>{connected.description}</p>
-                <span className="s-link">Open guided demo →</span>
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
       <section className="s-section s-section--tight">
         <div className="s-container">
           <div className="s-head" style={{ marginBottom: 20 }}>
             <span className="s-eyebrow">More walkthroughs</span>
-            <h2 className="s-h3" style={{ fontSize: 22 }}>Clinical spine and role demos</h2>
+            <h2 className="s-h3" style={{ fontSize: 22 }}>
+              Clinical spine and role demos
+            </h2>
+            <p className="s-lede">Some routes stay gated outside simulation. Honesty banners remain on each surface.</p>
           </div>
           <div className="wd-catalog">
             {PUBLIC_DEMOS.filter(

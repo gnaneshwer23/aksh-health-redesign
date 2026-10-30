@@ -34,7 +34,13 @@ const PUBLIC_DEMO_PREFIXES = ["/demo", "/asha", "/gp-dashboard", "/product/demo"
  * Exact paths only — does not open `/demo/patel`, `/demo/script`, or other investor walkthroughs.
  * `/voice-care` is a legacy alias redirected to `/demo` (next.config + page), not a gated surface.
  */
-const REAL_WORKSPACE_PUBLIC_DEMOS = new Set(["/demo", "/demo/slot-fill", "/demo/glucose"]);
+const REAL_WORKSPACE_PUBLIC_DEMOS = new Set([
+  "/demo",
+  "/demo/slot-fill",
+  "/demo/glucose",
+  /** Flagship synthetic connected-diabetes journey (Phases 0–5). Not clinically validated. */
+  "/demo/connected-diabetes",
+]);
 
 const under = (pathname: string, prefixes: string[]) => prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 

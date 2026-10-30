@@ -43,7 +43,7 @@ function pure() {
   for (const r of ["ics-lead", "hospital-executive", "researcher"]) assert.equal(REAL_ROLES.has(r), false, `${r} is not offered yet`);
 
   // Marketing synthetic demos stay public; investor/internal demos stay gated.
-  for (const open of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+  for (const open of ["/demo", "/demo/slot-fill", "/demo/glucose", "/demo/connected-diabetes"]) {
     assert.equal(isPublicDemoPath(open), false, `${open} remains public on production`);
   }
   assert.equal(isPublicDemoPath("/voice-care"), false, "/voice-care is a legacy alias to /demo, not a gated surface");

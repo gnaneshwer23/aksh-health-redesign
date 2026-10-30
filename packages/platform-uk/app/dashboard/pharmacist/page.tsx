@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ClipboardList, Pill, Shield } from "lucide-react";
 
+import { RoleWorkspaceIntro } from "@/components/dashboard/RoleWorkspaceIntro";
 import { PharmacistHeroDemoPath } from "@/components/dashboard/pharmacist/PharmacistHeroDemoPath";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,17 +42,20 @@ export default function PharmacistOverviewPage() {
   return (
     <div className="space-y-6">
       <PharmacistHeroDemoPath />
-      <div>
-        <h2 className="text-lg font-semibold text-accent">Pharmacist workspace</h2>
-        <p className="mt-1 text-sm text-muted">
-          Medication safety for {pharmacyLabel} — interaction checks and BNF reference with
-          human-in-the-loop approval for diabetes / polypharmacy care coordination.
-        </p>
-        <p className="sr-only" data-testid="pharmacist-honesty-banner">
-          Synthetic meds panel · GUARDIAN drafts · HITL Accept/Edit/Reject · SHIELD · liveEmis:false.
-          Mark Reviewed does not write to the EHR. Spine: POST /api/clinical-spine/pharmacist-review.
-        </p>
-      </div>
+      <p className="sr-only" data-testid="pharmacist-honesty-banner">
+        Synthetic meds panel · GUARDIAN drafts · HITL Accept/Edit/Reject · SHIELD · liveEmis:false.
+        Mark Reviewed does not write to the EHR. Spine: POST /api/clinical-spine/pharmacist-review.
+      </p>
+      <RoleWorkspaceIntro
+        eyebrow="Pharmacist workspace"
+        title="Medication safety with a named decision"
+        lede={
+          <>
+            Medication safety for {pharmacyLabel} — interaction checks and BNF reference with
+            human-in-the-loop approval for diabetes / polypharmacy care coordination.
+          </>
+        }
+      />
 
       <div className="space-y-4">
         {sections.map((section) => {

@@ -78,7 +78,7 @@ export const ROLES: RoleDefinition[] = [
     label: "Clinical Pharmacist",
     description: "Review readings and CGM, and help fill medication reviews",
     icon: "pill",
-    color: "#6B46C1",
+    color: "#1e4d52",
     steps: [...CLINICAL_ORG_STEPS],
     dashboardPath: "/dashboard/pharmacist",
     alternateDashboardPaths: ["/dashboard/network", "/dashboard/access", "/dashboard/organisation", "/dashboard/platform", "/dashboard/monitoring", "/dashboard/security"],

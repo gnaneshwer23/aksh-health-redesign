@@ -64,7 +64,7 @@ test("real workspace: investor demos stay gated; marketing workflow demos stay p
   // Legacy /voice-care alias lands on the public demo catalog — never the gated Patel walkthrough.
   await page.goto("/voice-care");
   await expect(page).toHaveURL(/\/demo$/);
-  for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose"]) {
+  for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose", "/demo/connected-diabetes"]) {
     await page.goto(path);
     await expect(page, path).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}$`));
     await expect(page.getByText(/synthetic/i).first()).toBeVisible();
