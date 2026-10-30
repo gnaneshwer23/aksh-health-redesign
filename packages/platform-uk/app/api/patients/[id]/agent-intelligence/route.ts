@@ -57,6 +57,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const actor = auth.context.userEmail ?? auth.context.userId;
+  const ownerUserId = auth.context.userId;
   const scopeKey = auth.context.scopeKey;
   const careEpisodeId = readCareEpisodeId(body);
 
@@ -65,6 +66,7 @@ export async function POST(request: Request, context: RouteContext) {
       const snapshot = await seedAndBuildAgentIntelligence(patientId, {
         scopeKey,
         actor,
+        ownerUserId,
         careEpisodeId,
         enqueueToSpineReview: body.enqueueToSpineReview,
       });
@@ -76,6 +78,7 @@ export async function POST(request: Request, context: RouteContext) {
       const snapshot = await runDiabetesAgentIntelAssemble(patientId, {
         scopeKey,
         actor,
+        ownerUserId,
         careEpisodeId,
         enqueueToSpineReview: body.enqueueToSpineReview,
       });
