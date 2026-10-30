@@ -218,6 +218,13 @@ export type AgentIntelWorklistItem = {
   createdAt: string;
   confidence: number;
   provenance: InformationProvenance;
+  /** INT-13 spine projection of provenance for shared timeline/360 consumers. */
+  provenanceSpine?: {
+    sourceSystem: string;
+    sourceReference?: string;
+    confidence: number;
+    recordedAt: string;
+  };
   verifiedClinical: boolean;
   synthetic: true;
   ehrWrite: false;

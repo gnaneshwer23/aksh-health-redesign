@@ -32,7 +32,23 @@
 | 21 | [21-production-readiness-gap-report.md](./21-production-readiness-gap-report.md) | Production-readiness gap report |
 | 22 | [22-release-plan-go-nogo.md](./22-release-plan-go-nogo.md) | Release plan with go/no-go gates |
 | 23 | [23-e2e-test-results.md](./23-e2e-test-results.md) | E2E automated test results |
+| 24 | [24-ci-root-cause-report.md](./24-ci-root-cause-report.md) | Post-merge CI root cause (run 40996273234) |
+| 25 | [25-verified-test-results.md](./25-verified-test-results.md) | Verified unit / integration results |
+| 26 | [26-integration-regression-report.md](./26-integration-regression-report.md) | Connected diabetes integration regression |
+| 27 | [27-clinical-intelligence-2.0-gap-matrix.md](./27-clinical-intelligence-2.0-gap-matrix.md) | CI 2.0 five-capability gap matrix |
+| 28 | [28-prioritised-implementation-backlog.md](./28-prioritised-implementation-backlog.md) | Prioritised backlog after audit |
 | — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–6 |
+
+### Post-merge quality audit (30 Oct 2026)
+
+| Item | Value |
+|------|-------|
+| Failed Actions | [40996273234](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40996273234) |
+| Fix PR | [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) (squash-merged) |
+| Passing commit SHA | `84fef5b` (`84fef5bbc528c2131ad3819d294c327a22d4004a`) |
+| Passing workflow URL | [41008129457](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41008129457) — 104 Playwright passed / 7 skipped |
+| LIVE_ORGANISATIONS | **0** |
+| Clinical release | **NO-GO** (docs 21–22; GOV-01…03 open) |
 
 ## Vertical slice (synthetic)
 

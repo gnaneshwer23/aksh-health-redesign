@@ -72,8 +72,8 @@ export function ConnectedPatientChrome({
               data-testid={`connected-step-${step.id}`}
               className={
                 current
-                  ? "rounded-md bg-[#0f2744] px-3 py-1.5 text-sm font-medium text-white"
-                  : "rounded-md border border-[#d7e3ef] bg-[#f7fafc] px-3 py-1.5 text-sm text-[#0f2744] hover:border-teal-600"
+                  ? "rounded-md bg-[var(--cd-ink,#0f2744)] px-3 py-1.5 text-sm font-medium text-white"
+                  : "rounded-md border border-[var(--cd-line,#d7e3ef)] bg-[var(--cd-bg,#f7fafc)] px-3 py-1.5 text-sm text-[var(--cd-ink,#0f2744)] hover:border-teal-600"
               }
             >
               <span className="opacity-70">{step.phase} · </span>
@@ -81,6 +81,31 @@ export function ConnectedPatientChrome({
             </Link>
           );
         })}
+      </nav>
+
+      <nav
+        className="mt-3 flex flex-wrap gap-3 text-sm"
+        aria-label="Connected diabetes worklists"
+        data-testid="connected-worklist-nav"
+      >
+        <Link
+          href="/dashboard/gp/diabetes-intelligence"
+          className="text-teal-800 underline-offset-2 hover:underline"
+        >
+          Glucose worklist
+        </Link>
+        <Link
+          href="/dashboard/gp/continuous-care"
+          className="text-teal-800 underline-offset-2 hover:underline"
+        >
+          Continuous care worklist
+        </Link>
+        <Link
+          href="/dashboard/gp/agent-intelligence"
+          className="text-teal-800 underline-offset-2 hover:underline"
+        >
+          Agent worklist
+        </Link>
       </nav>
 
       {actions ? <div className="mt-4 flex flex-wrap gap-2">{actions}</div> : null}

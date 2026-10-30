@@ -5,6 +5,7 @@ import { use } from "react";
 
 import { ConnectedDiabetesOrchestrationWorkspace } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesOrchestrationWorkspace";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { ConnectedDiabetesSurface } from "@/components/dashboard/diabetes-intelligence/ConnectedDiabetesSurface";
 import { getPatientById } from "@/lib/mock-data";
 
 /**
@@ -19,12 +20,12 @@ export default function GpConnectedDiabetesPage(props: { params: Promise<{ id: s
 
   return (
     <DashboardShell role="gp" title={`${patient.name} · Connected diabetes`}>
-      <div className="space-y-6 overflow-y-auto p-4" style={{ background: "#f7fafc" }}>
+      <ConnectedDiabetesSurface>
         <ConnectedDiabetesOrchestrationWorkspace
           patientId={patient.id}
           patientLabel={patient.name}
         />
-      </div>
+      </ConnectedDiabetesSurface>
     </DashboardShell>
   );
 }
