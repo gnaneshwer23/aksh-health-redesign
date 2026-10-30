@@ -30,6 +30,7 @@ export type AgentRunStatus =
   | "pending"
   | "running"
   | "completed"
+  | "partial"
   | "timed_out"
   | "failed"
   | "blocked"

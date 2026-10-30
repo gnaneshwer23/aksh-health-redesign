@@ -26,8 +26,10 @@ import {
   buildRunBundleMetadata,
   classifyAgentError,
   newCorrelationId,
+  type AgentErrorClassification,
   type AgentExecutionMetadata,
   type AgentRunBundleMetadata,
+  type AgentRunStatus,
 } from "../agents/execution-metadata";
 import { getPatientById } from "../mock-data/patients";
 
@@ -101,8 +103,18 @@ export type OrchestrationOptions = {
   scopeKey?: string;
   /** When set with expectedScopeKey, CROSS_TENANT is raised on mismatch. */
   expectedScopeKey?: string;
-  /** Process-local idempotency key (durable dedupe is Milestone A2). */
+  /** Process-local + durable (A2) idempotency key. */
   idempotencyKey?: string;
+  /**
+   * Soft-fail optional slots (NEXUS / DrASSIST) instead of aborting the run.
+   * Default true (A2). Required slots SYNTHESIS / GUARDIAN / ORACLE still fail closed.
+   */
+  softFailOptionalAgents?: boolean;
+  /**
+   * Reliability drill — only honoured when AKSH_ORCH_FAULT_INJECTION=true.
+   * Injects failures for named slots without calling the agent.
+   */
+  faultInject?: Partial<Record<OrchestrationAgentId, "timeout" | "throw">>;
 };
 
 class AgentTimeoutError extends Error {
@@ -110,6 +122,10 @@ class AgentTimeoutError extends Error {
     super(`${agent} timed out after ${ms}ms`);
     this.name = "AgentTimeoutError";
   }
+}
+
+function faultInjectionEnabled(): boolean {
+  return process.env.AKSH_ORCH_FAULT_INJECTION?.trim().toLowerCase() === "true";
 }
 
 async function withTimeout<T>(
@@ -281,72 +297,124 @@ export async function runAgentOrchestration(
 
     const overallStarted = Date.now();
     const perAgentMs: Partial<Record<OrchestrationAgentId, number>> = {};
+    const softFailOptional = options.softFailOptionalAgents !== false;
+    const failedOptional: Partial<Record<OrchestrationAgentId, AgentErrorClassification>> = {};
+    const faultInject = faultInjectionEnabled() ? options.faultInject ?? {} : {};
+
+    async function runSlot<T>(
+      slot: OrchestrationAgentId,
+      run: () => Promise<T>
+    ): Promise<{ value: T; elapsedMs: number }> {
+      const inject = faultInject[slot];
+      if (inject === "timeout") {
+        throw new AgentTimeoutError(slot, agentTimeoutMs);
+      }
+      if (inject === "throw") {
+        throw new Error(`${slot} fault-injected failure`);
+      }
+      return withTimeout(slot, run(), agentTimeoutMs);
+    }
 
     const runAll = async (): Promise<OrchestrationOutputs> => {
       // Parallel generation — each result lands in its own slot (no shared mutable draft)
-      const [synthesisTimed, guardianTimed, oracleTimed, nexusTimed] = await Promise.all([
-        withTimeout(
-          "SYNTHESIS",
+      const [synthesisSettled, guardianSettled, oracleSettled, nexusSettled] = await Promise.all([
+        runSlot("SYNTHESIS", () =>
           runSynthesisAgent({
             transcript,
             patientLabel: `${patient.name} (${patientId})`,
-          }),
-          agentTimeoutMs
+          })
+        ).then(
+          (v) => ({ ok: true as const, ...v }),
+          (error: unknown) => ({ ok: false as const, error, elapsedMs: agentTimeoutMs })
         ),
-        withTimeout(
-          "GUARDIAN",
+        runSlot("GUARDIAN", () =>
           runGuardianAgent({
             patientId,
             proposedDrug: proposedDrug ?? undefined,
-          }),
-          agentTimeoutMs
+          })
+        ).then(
+          (v) => ({ ok: true as const, ...v }),
+          (error: unknown) => ({ ok: false as const, error, elapsedMs: agentTimeoutMs })
         ),
-        withTimeout("ORACLE", runOracleAgent({ patientId }), agentTimeoutMs),
+        runSlot("ORACLE", () => runOracleAgent({ patientId })).then(
+          (v) => ({ ok: true as const, ...v }),
+          (error: unknown) => ({ ok: false as const, error, elapsedMs: agentTimeoutMs })
+        ),
         includeNexus
-          ? withTimeout("NEXUS", runNexusAgent({ patientId }), agentTimeoutMs)
-          : Promise.resolve(null as { value: NexusDraft; elapsedMs: number } | null),
+          ? runSlot("NEXUS", () => runNexusAgent({ patientId })).then(
+              (v) => ({ ok: true as const, ...v }),
+              (error: unknown) => ({ ok: false as const, error, elapsedMs: agentTimeoutMs })
+            )
+          : Promise.resolve(null),
       ]);
 
-      perAgentMs.SYNTHESIS = synthesisTimed.elapsedMs;
-      perAgentMs.GUARDIAN = guardianTimed.elapsedMs;
-      perAgentMs.ORACLE = oracleTimed.elapsedMs;
-      if (nexusTimed) {
-        perAgentMs.NEXUS = nexusTimed.elapsedMs;
+      // Required agents — fail closed (do not soft-fail)
+      if (!synthesisSettled.ok) {
+        throw synthesisSettled.error instanceof Error
+          ? synthesisSettled.error
+          : new Error(String(synthesisSettled.error));
+      }
+      if (!guardianSettled.ok) {
+        throw guardianSettled.error instanceof Error
+          ? guardianSettled.error
+          : new Error(String(guardianSettled.error));
+      }
+      if (!oracleSettled.ok) {
+        throw oracleSettled.error instanceof Error
+          ? oracleSettled.error
+          : new Error(String(oracleSettled.error));
       }
 
-      if (!oracleTimed.value) {
+      perAgentMs.SYNTHESIS = synthesisSettled.elapsedMs;
+      perAgentMs.GUARDIAN = guardianSettled.elapsedMs;
+      perAgentMs.ORACLE = oracleSettled.elapsedMs;
+
+      if (!oracleSettled.value) {
         throw new Error(`ORACLE returned null for ${patientId}`);
-      }
-      if (includeNexus) {
-        if (!nexusTimed?.value) {
-          throw new Error(`NEXUS returned null for ${patientId}`);
-        }
-        if (nexusTimed.value.status !== "draft") {
-          throw new Error("NEXUS must return status: draft — refusing non-draft output");
-        }
       }
 
       const outputs: OrchestrationOutputs = {
-        SYNTHESIS: synthesisTimed.value,
-        GUARDIAN: guardianTimed.value,
-        ORACLE: oracleTimed.value,
+        SYNTHESIS: synthesisSettled.value,
+        GUARDIAN: guardianSettled.value,
+        ORACLE: oracleSettled.value,
       };
 
-      if (includeNexus && nexusTimed?.value) {
-        outputs.NEXUS = nexusTimed.value;
+      if (includeNexus && nexusSettled) {
+        if (nexusSettled.ok) {
+          perAgentMs.NEXUS = nexusSettled.elapsedMs;
+          if (!nexusSettled.value) {
+            throw new Error(`NEXUS returned null for ${patientId}`);
+          }
+          if (nexusSettled.value.status !== "draft") {
+            throw new Error("NEXUS must return status: draft — refusing non-draft output");
+          }
+          outputs.NEXUS = nexusSettled.value;
+        } else if (softFailOptional) {
+          failedOptional.NEXUS = classifyAgentError(nexusSettled.error, "NEXUS");
+          perAgentMs.NEXUS = nexusSettled.elapsedMs;
+        } else {
+          throw nexusSettled.error instanceof Error
+            ? nexusSettled.error
+            : new Error(String(nexusSettled.error));
+        }
       }
 
       if (includeDrAssist) {
-        const drAssistTimed = await withTimeout(
-          "DrASSIST",
-          runDrAssistAgent({ patientId }),
-          agentTimeoutMs
-        );
-        perAgentMs.DrASSIST = drAssistTimed.elapsedMs;
-        if (!drAssistTimed.value) {
-          throw new Error(`DrASSIST returned null for ${patientId}`);
+        try {
+          const drAssistTimed = await runSlot("DrASSIST", () => runDrAssistAgent({ patientId }));
+          perAgentMs.DrASSIST = drAssistTimed.elapsedMs;
+          if (!drAssistTimed.value) {
+            throw new Error(`DrASSIST returned null for ${patientId}`);
+          }
+          outputs.DrASSIST = drAssistTimed.value;
+        } catch (error) {
+          if (softFailOptional) {
+            failedOptional.DrASSIST = classifyAgentError(error, "DrASSIST");
+            perAgentMs.DrASSIST = agentTimeoutMs;
+          } else {
+            throw error;
+          }
         }
-        outputs.DrASSIST = drAssistTimed.value;
       }
 
       return outputs;
@@ -412,6 +480,8 @@ export async function runAgentOrchestration(
     const completedAt = new Date().toISOString();
     const agentMetadata: Partial<Record<OrchestrationAgentId, AgentExecutionMetadata>> = {};
     const agentMetaList: AgentExecutionMetadata[] = [];
+    const optionalFailures = Object.keys(failedOptional) as OrchestrationAgentId[];
+    const bundleStatus: AgentRunStatus = optionalFailures.length > 0 ? "partial" : "completed";
 
     for (const slot of outputSlots) {
       const draft = outputs[slot];
@@ -435,17 +505,48 @@ export async function runAgentOrchestration(
       agentMetaList.push(meta);
     }
 
+    for (const slot of optionalFailures) {
+      const err = failedOptional[slot]!;
+      const meta = buildAgentExecutionMetadata({
+        agentId: toRegisterAgentId(slot),
+        status: err.code === "TIMEOUT" || err.code === "OVERALL_TIMEOUT" ? "timed_out" : "failed",
+        startedAt,
+        completedAt,
+        durationMs: perAgentMs[slot] ?? null,
+        careEpisodeId,
+        correlationId,
+        evidenceRefs: [],
+        reviewStatus: "not_required",
+        error: err,
+        maxRetries: 0,
+      });
+      agentMetadata[slot] = meta;
+      agentMetaList.push(meta);
+    }
+
     const conductorMeta = buildAgentExecutionMetadata({
       agentId: "CONDUCTOR",
       executionMode: "orchestrator",
-      status: "completed",
+      status: bundleStatus,
       startedAt,
       completedAt,
       durationMs: Date.now() - overallStarted,
       careEpisodeId,
       correlationId,
-      evidenceRefs: evidence.map((e) => `${e.agent}:${e.evidenced ? "ok" : "weak"}`),
+      evidenceRefs: [
+        ...evidence.map((e) => `${e.agent}:${e.evidenced ? "ok" : "weak"}`),
+        ...optionalFailures.map((s) => `${s}:soft_failed:${failedOptional[s]?.code ?? "INTERNAL"}`),
+      ],
       reviewStatus: "pending_hitl",
+      error:
+        optionalFailures.length > 0
+          ? {
+              code: "UPSTREAM",
+              message: `Partial orchestration: soft-failed ${optionalFailures.join(", ")}`,
+              retryable: false,
+              agentId: "CONDUCTOR",
+            }
+          : null,
       maxRetries: 0,
     });
     agentMetaList.unshift(conductorMeta);
@@ -456,10 +557,19 @@ export async function runAgentOrchestration(
       scopeKey: options.scopeKey ?? null,
       startedAt,
       completedAt,
-      status: "completed",
+      status: bundleStatus,
       agents: agentMetaList,
       reviewStatus: "pending_hitl",
       evidenceRefs: evidence.map((e) => `${e.agent}:${e.detail}`),
+      error:
+        optionalFailures.length > 0
+          ? {
+              code: "UPSTREAM",
+              message: `Partial orchestration: soft-failed ${optionalFailures.join(", ")}`,
+              retryable: false,
+              agentId: "CONDUCTOR",
+            }
+          : null,
     });
 
     return {
