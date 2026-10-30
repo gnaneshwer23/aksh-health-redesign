@@ -94,7 +94,8 @@ API path only: `POST /api/patients/P002/diabetes-intelligence` `seed_synthetic` 
 | `npx tsx tests/connected-patient-api-access.test.ts` | PASS (9 GET + 9 POST) |
 | Local connected-diabetes Playwright (2 specs, after migrate) | PASS |
 | Local glucose seed bench (bulk insert) | ~9s / 1521 CGM rows |
-| Follow-up Actions run (PR #80) | See doc 25 / README for passing SHA + URL |
+| Passing Actions (PR #80, pre-merge) | [41008129457](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41008129457) — 104 passed / 7 skipped |
+| Merged to `main` | `84fef5bbc528c2131ad3819d294c327a22d4004a` (squash of #80) |
 
 ## What we did not do
 

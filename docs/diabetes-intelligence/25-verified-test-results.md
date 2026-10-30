@@ -34,8 +34,9 @@
 | Item | Value |
 |------|-------|
 | Failed baseline | [run 40996273234](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40996273234) @ `033d16a` |
-| Fix PR | [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) |
-| Passing commit / workflow URL | **Fill after merge** — see README index |
+| Fix PR | [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) (squash-merged → `84fef5b`) |
+| Passing commit | `84fef5bbc528c2131ad3819d294c327a22d4004a` on `main` |
+| Passing workflow | [41008129457](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41008129457) — unit gates + Playwright E2E **PASS** (104 passed / 7 skipped) |
 
 ## Safety honesty
 

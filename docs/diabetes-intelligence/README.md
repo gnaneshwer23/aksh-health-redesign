@@ -44,9 +44,9 @@
 | Item | Value |
 |------|-------|
 | Failed Actions | [40996273234](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40996273234) |
-| Fix PR | [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) |
-| Passing commit SHA | _pending merge — update when Actions green_ |
-| Passing workflow URL | _pending merge_ |
+| Fix PR | [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) (squash-merged) |
+| Passing commit SHA | `84fef5b` (`84fef5bbc528c2131ad3819d294c327a22d4004a`) |
+| Passing workflow URL | [41008129457](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41008129457) — 104 Playwright passed / 7 skipped |
 | LIVE_ORGANISATIONS | **0** |
 | Clinical release | **NO-GO** (docs 21–22; GOV-01…03 open) |
 
