@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
 import { requestFastApiSynthesis } from "@/lib/fastapi-synthesis";
 import { isFastApiSynthesisEnabled } from "@/lib/integration-config";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
@@ -28,8 +29,11 @@ export async function POST(request: Request) {
     | {
         action?: string;
         patientLabel?: string;
+        patientId?: string;
         rawInput?: string;
         sourceType?: ConsultationInput["sourceType"];
+        careEpisodeId?: string;
+        care_episode_id?: string;
         options?: {
           pathwayHint?: "auto" | "respiratory" | "hypertension" | "eczema" | "lipid" | "general";
           confidenceMode?: "auto" | "conservative" | "standard";
@@ -63,12 +67,37 @@ export async function POST(request: Request) {
       options: body.options
     };
 
+    const actor = auth.context.userEmail ?? userId;
+    const patientId = body.patientId?.trim();
+
+    async function attachEpisode(reviewCaseId: string, patientLabel: string) {
+      if (!patientId) return undefined;
+      const correlated = await correlateCareEpisodeStage({
+        patientId,
+        patientLabel,
+        actor,
+        scopeKey,
+        careEpisodeId: readCareEpisodeId(body ?? {}),
+        stage: "intake",
+        linkId: reviewCaseId,
+        linkLabel: "Intake review case",
+        practiceId: tenant.practiceId,
+      });
+      return correlated.careEpisodeId;
+    }
+
     if (!isFastApiSynthesisEnabled()) {
       const reviewCase = createReviewCaseFromIntake(intakeArgs);
+      if (patientId) reviewCase.patientId = patientId;
       const created = await createReviewCase(reviewCase, scopeKey, userId, tenant.practiceId);
+      const careEpisodeId = await attachEpisode(created.id, created.patientLabel);
+      if (careEpisodeId && created.careEpisodeId !== careEpisodeId) {
+        created.careEpisodeId = careEpisodeId;
+      }
       return NextResponse.json(
         {
-          reviewCase: created,
+          reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
+          careEpisodeId,
           synthesisMode: "deterministic_synthetic"
         },
         { status: 201 }
@@ -91,6 +120,7 @@ export async function POST(request: Request) {
     }
 
     const reviewCase = createReviewCaseFromIntake(intakeArgs);
+    if (patientId) reviewCase.patientId = patientId;
 
     if (synthesis.data.fhir_draft) {
       reviewCase.draft = synthesis.data.fhir_draft;
@@ -105,9 +135,11 @@ export async function POST(request: Request) {
     }
 
     const created = await createReviewCase(reviewCase, scopeKey, userId, tenant.practiceId);
+    const careEpisodeId = await attachEpisode(created.id, created.patientLabel);
     return NextResponse.json(
       {
-        reviewCase: created,
+        reviewCase: { ...created, careEpisodeId: careEpisodeId ?? created.careEpisodeId },
+        careEpisodeId,
         synthesisMode: "fastapi_rehearsal"
       },
       { status: 201 }

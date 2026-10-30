@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
 import {
   getClinicalSpineOrchestrateCapabilities,
   runClinicalSpineOrchestrate
@@ -18,6 +19,7 @@ export async function GET() {
 /**
  * POST /api/agents/orchestrate — SYNTHESIS → GUARDIAN → ORACLE → NEXUS (+ twin ranking).
  * Drafts only; ehrWrite:false; HITL required; physiologicalTwin:false; liveEmis:false.
+ * Optional careEpisodeId correlates CONDUCTOR run to the care-episode spine.
  */
 export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
@@ -31,6 +33,8 @@ export async function POST(request: Request) {
     includeNexus?: boolean;
     includeTwinRanking?: boolean;
     caseId?: string;
+    careEpisodeId?: string;
+    care_episode_id?: string;
   };
   try {
     body = await request.json();
@@ -43,6 +47,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "patientId is required." }, { status: 400 });
   }
 
+  const actor = auth.context.userEmail ?? auth.context.userId;
+
   try {
     const result = await runClinicalSpineOrchestrate({
       patientId,
@@ -52,7 +58,7 @@ export async function POST(request: Request) {
       includeNexus: body.includeNexus !== false,
       includeTwinRanking: body.includeTwinRanking !== false,
       caseId: body.caseId,
-      actor: auth.context.userEmail ?? auth.context.userId
+      actor
     });
 
     if (
@@ -67,7 +73,21 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json(result);
+    const correlated = await correlateCareEpisodeStage({
+      patientId,
+      actor,
+      scopeKey: auth.context.scopeKey,
+      careEpisodeId: readCareEpisodeId(body),
+      stage: "orchestrate",
+      linkId: body.caseId ?? `orch-${patientId}-${Date.now()}`,
+      linkLabel: "CONDUCTOR orchestrate",
+    });
+
+    return NextResponse.json({
+      ...result,
+      careEpisodeId: correlated.careEpisodeId,
+      orchestratorContract: "clinical_spine_conductor",
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Orchestration failed";
     return NextResponse.json({ error: message, ehrWrite: false }, { status: 500 });

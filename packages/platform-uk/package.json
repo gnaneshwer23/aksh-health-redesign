@@ -89,6 +89,7 @@
     "test:ci20:agent-intel-wiring": "npx tsx tests/diabetes-agent-intel-ci20-wiring.test.ts",
     "test:ci20:evaluation-gate": "npm run test:aksh20:eval && npm run test:ci20:agent-intel-wiring && npm run test:diabetes-agent-intel",
     "test:phase1:foundation": "npx tsx tests/orchestration-contracts.test.ts && npx tsx tests/care-episode.test.ts",
+    "test:p0:safety": "npx tsx tests/p0-orch-rename.test.ts && npx tsx tests/p0-ux-unified-worklist.test.ts && npx tsx tests/p0-episode-correlation.test.ts && npm run test:ci20:agent-intel-wiring && npm run test:phase1:foundation",
     "eval:agents": "npx tsx scripts/eval-agents.ts",
     "evidence:pack": "node scripts/generate-evidence-pack.mjs",
     "start": "next start",

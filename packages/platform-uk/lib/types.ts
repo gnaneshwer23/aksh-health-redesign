@@ -472,7 +472,8 @@ export type FhirExportBundle = {
 };
 
 export type AgentRunSummary = {
-  source: "clinical_spine";
+  /** clinical_spine = CONDUCTOR; diabetes_agent_intel = domain assemble adapted into GP review. */
+  source: "clinical_spine" | "diabetes_agent_intel";
   ranAt: string;
   queuePriority: "Urgent" | "High" | "Normal";
   reviewOrder: string[];
@@ -501,6 +502,11 @@ export type ReviewCase = {
    * `patientLabel` remains the display field used everywhere today.
    */
   patientId?: string;
+  /**
+   * P0-EPISODE-01 — optional correlation into the canonical Care Episode spine.
+   * Additive; existing fixtures need not set this field.
+   */
+  careEpisodeId?: string;
   patientLabel: string;
   /**
    * Set when the case came from an agent run on a care-network patient (lib/clinical-spine/enqueue.ts): what CONDUCTOR

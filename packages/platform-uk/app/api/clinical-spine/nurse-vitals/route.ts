@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
 import { recordNurseVitalsOnSpine } from "@/lib/clinical-spine/role-events";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -8,7 +9,7 @@ export const maxDuration = 30;
 /**
  * POST /api/clinical-spine/nurse-vitals
  * Nurse observations → shared modality store → timeline (+ Neo4j MEASURED when live).
- * Never claims live EMIS / EHR write.
+ * Never claims live EMIS / EHR write. Optional careEpisodeId for journey correlation.
  */
 export async function POST(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
@@ -19,6 +20,8 @@ export async function POST(request: Request) {
     patientLabel?: string;
     vitals?: Record<string, string>;
     updateKg?: boolean;
+    careEpisodeId?: string;
+    care_episode_id?: string;
   };
   try {
     body = await request.json();
@@ -52,7 +55,25 @@ export async function POST(request: Request) {
       }
     );
 
-    return NextResponse.json(result, { status: result.accepted ? 200 : 403 });
+    let careEpisodeId = readCareEpisodeId(body);
+    if (result.accepted) {
+      const correlated = await correlateCareEpisodeStage({
+        patientId: body.patientId.trim(),
+        patientLabel: body.patientLabel,
+        actor: auth.context.userEmail ?? auth.context.userId,
+        scopeKey: auth.context.scopeKey,
+        careEpisodeId,
+        stage: "nurse_observations",
+        linkId: result.sample?.id,
+        linkLabel: "Nurse vitals observation",
+      });
+      careEpisodeId = correlated.careEpisodeId;
+    }
+
+    return NextResponse.json(
+      { ...result, careEpisodeId },
+      { status: result.accepted ? 200 : 403 }
+    );
   } catch (error) {
     return NextResponse.json(
       {

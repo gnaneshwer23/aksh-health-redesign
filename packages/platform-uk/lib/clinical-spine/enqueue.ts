@@ -89,7 +89,15 @@ export function agentRunSummary(result: ClinicalSpineOrchestrateResult, now = ne
 }
 
 /** A review case for one agent run: the patient's drafts, in review order, owned by the requesting clinician. */
-export function buildSpineReviewCase(input: { patientId: string; patientLabel: string; result: ClinicalSpineOrchestrateResult; userId: string; now?: Date }): ReviewCase {
+export function buildSpineReviewCase(input: {
+  patientId: string;
+  patientLabel: string;
+  result: ClinicalSpineOrchestrateResult;
+  userId: string;
+  now?: Date;
+  /** P0-EPISODE-01 — optional care-episode correlation. */
+  careEpisodeId?: string;
+}): ReviewCase {
   const s = input.result.orchestration.outputs.SYNTHESIS;
   const base = createReviewCaseFromIntake({
     patientLabel: input.patientLabel,
@@ -103,6 +111,7 @@ export function buildSpineReviewCase(input: { patientId: string; patientLabel: s
     version: 0,
     userId: input.userId,
     patientId: input.patientId,
+    careEpisodeId: input.careEpisodeId,
     summary: `Agent review · ${input.result.orchestration.queuePriority} · ${input.result.safetyRouteLabel}`,
     reviewQueueItems: queueItemsFromRun(id, input.result),
     agentRun: agentRunSummary(input.result, input.now),

@@ -35,7 +35,7 @@ import {
 } from "./continuous-care-assemble";
 import {
   buildAgentIntelligence,
-  runAgentOrchestration,
+  runDiabetesAgentIntelAssemble,
 } from "./agent-intel-assemble";
 import { listUnifiedCarePlans } from "./care-plan-facade";
 import { listUnifiedFollowUps } from "./follow-up-facade";
@@ -462,7 +462,7 @@ export async function runConnectedDiabetesPipeline(
   try {
     const agent = await buildAgentIntelligence(patientId, { scopeKey });
     if (agent.drafts.length === 0 || mode === "seed_all") {
-      await runAgentOrchestration(patientId, { scopeKey, actor });
+      await runDiabetesAgentIntelAssemble(patientId, { scopeKey, actor });
       phasesExecuted.push({
         stepId: "agent",
         action: "run_orchestration",

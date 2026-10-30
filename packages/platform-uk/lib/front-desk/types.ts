@@ -45,6 +45,8 @@ export type Slot = {
   patientId: string | null;
   bookedVia: AccessChannel | "staff" | null;
   bookingKey: string | null;
+  /** P0-EPISODE-01 — optional correlation into Care Episode when booking is linked. */
+  careEpisodeId?: string | null;
 };
 
 export type WaitlistEntry = {

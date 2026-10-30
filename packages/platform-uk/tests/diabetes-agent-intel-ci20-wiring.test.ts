@@ -24,7 +24,7 @@ async function main() {
     enrichSharedContextFromClinicalPackage,
     buildSharedPatientContext,
     draftAllKindsForPatient,
-    runAgentOrchestration,
+    runDiabetesAgentIntelAssemble,
     AGENT_INTEL_GUARDIAN_MODEL_ID,
   } = await import("../lib/diabetes-intelligence");
 
@@ -57,16 +57,24 @@ async function main() {
   });
   assert.equal(mayEnqueueAgentDraft(gate.output_status), gate.output_status !== "BLOCK");
 
-  const snap = await runAgentOrchestration(patientId, {
+  const snap = await runDiabetesAgentIntelAssemble(patientId, {
     scopeKey,
     now,
     actor: "ci20-wiring-test",
+    enqueueToSpineReview: false,
   });
   assert.equal(snap.orchestrationRuns[0]?.draftEnqueueAllowed, true);
   assert.ok(snap.orchestrationRuns[0]?.contextPackage?.contextId);
   assert.equal(snap.drafts.length, 5);
   assert.ok(snap.guardianGateway);
   assert.notEqual(snap.guardianGateway?.output_status, "BLOCK");
+  assert.ok(
+    snap.orchestrationRuns[0]?.agentsInvoked.every(
+      (id) => id !== "CONDUCTOR" && id !== "SYNTHESIS"
+    ),
+    "diabetes assemble must not claim CONDUCTOR/SYNTHESIS"
+  );
+  assert.ok(snap.orchestrationRuns[0]?.note.includes("not CONDUCTOR"));
 
   const evalRun = await runEvaluationEngineV1(patientId);
   assert.equal(evalRun.passed, true, evalRun.layers.map((l) => `${l.layer}:${l.passed}`).join("|"));
