@@ -198,13 +198,23 @@ Propagate client disconnect to agent timeouts. Estimate: S. Careful with fail-cl
 
 ## P4 / DEFER
 
-### P4-PRISM-01 / P4-ATLAS-01
+### P4-PRISM-01 / P4-ATLAS-01 — L2 scaffolds (shipped evaluation path)
 
-Build only with funded imaging/research use case. Keep honesty module.
+**Status (P4):** L2 synthetic scaffolds exist — typed contracts (`PRISM_AGENT_CONTRACT` /
+`ATLAS_AGENT_CONTRACT`), fixture eval runners (`lib/agents/prism-eval.ts`,
+`lib/agents/atlas-eval.ts`), Guardian + human-review hooks, register honesty
+(`in_validation` / `on_request` / not in CONDUCTOR `LOOP` or `REVIEW_ORDER`),
+and `/api/agents/prism` + `/api/agents/atlas` eval routes.
+
+**Still deferred to funded use case:** live imaging deployment, PACS/pixel
+ingestion, unapproved clinical research enablement, patient-level export, and
+any CONDUCTOR auto-wiring. Honesty module remains authoritative
+(`lib/agents/phase2-capability-status.ts`: `live:false`, `built:false`,
+`wiredToConductor:false`, `scaffoldBuilt:true`).
 
 ### P4-DURABLE-01 — Durable workflow engine
 
-Revisit Vercel Workflow DevKit / Temporal **only if** multi-day HITL pause/resume becomes a requirement. Current sync + optimistic review versions + shield-audit-retry are intentional.
+Revisit Vercel Workflow DevKit / Temporal **only if** multi-day HITL pause/resume becomes a requirement. Current sync + optimistic review versions + shield-audit-retry are intentional. **Not required for P4 PRISM/ATLAS scaffolds.**
 
 ---
 

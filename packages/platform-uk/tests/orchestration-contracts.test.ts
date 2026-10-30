@@ -37,11 +37,11 @@ function baseRequest(over: Partial<OrchestrationRequest> = {}): OrchestrationReq
   };
 }
 
-assert.equal(PLATFORM_CAPABILITIES.length, 12, "exactly 12 required capabilities");
-assert.equal(capabilitySummaryTable().length, 12);
+assert.equal(PLATFORM_CAPABILITIES.length, 14, "12 core + P4 imaging/research capabilities");
+assert.equal(capabilitySummaryTable().length, 14);
 
 const ids = new Set(PLATFORM_CAPABILITIES.map((c) => c.id));
-assert.equal(ids.size, 12);
+assert.equal(ids.size, 14);
 
 for (const cap of PLATFORM_CAPABILITIES) {
   assert.equal(cap.access.draftsRequireHitl, true, `${cap.id}: HITL required`);
@@ -102,8 +102,16 @@ const classifications = new Set(PLATFORM_CAPABILITIES.map((c) => c.classificatio
 assert.ok(classifications.has("operational"));
 assert.ok(classifications.has("partially_integrated"));
 assert.ok(classifications.has("simulated_adapter"));
-assert.ok(!classifications.has("missing"), "no capability in the 12 is fully missing");
+assert.ok(!classifications.has("missing"), "no capability is fully missing");
+assert.ok(PLATFORM_CAPABILITIES.length >= 12, "core capabilities remain");
+assert.ok(PLATFORM_CAPABILITIES.some((c) => c.id === "imaging_intelligence"));
+assert.ok(PLATFORM_CAPABILITIES.some((c) => c.id === "clinical_research"));
+
+const prismImaging = validateOrchestrationRequest(
+  baseRequest({ capability: "imaging_intelligence", agents: ["PRISM"] })
+);
+assert.equal(prismImaging.ok, true);
 
 console.log(
-  `orchestration-contracts: 12 capabilities mapped to existing agents, tools/boundaries/eval hooks — PASS`
+  `orchestration-contracts: ${PLATFORM_CAPABILITIES.length} capabilities mapped to existing agents, tools/boundaries/eval hooks — PASS`
 );

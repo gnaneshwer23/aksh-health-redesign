@@ -131,7 +131,7 @@ export default function AdminAgentOpsPage() {
             <li>LLM calls are gated; deterministic fallbacks may be in use. ehrWrite: false.</li>
           </ul>
           <p className="text-[11px] text-muted">
-            See docs/agents/HCP_AGENT_EVALUATION_PLAN.md. PRISM/ATLAS remain planned — never shown as live.
+            See docs/agents/HCP_AGENT_EVALUATION_PLAN.md. PRISM/ATLAS are P4 L2 scaffolds (synthetic eval only) — never shown as live.
           </p>
         </section>
 
@@ -174,7 +174,7 @@ export default function AdminAgentOpsPage() {
             ))}
           </div>
           <p className="text-[11px] text-muted">
-            Planned agents (PRISM, ATLAS) omitted from live strip. Meeting numeric targets does not release an agent.
+            PRISM/ATLAS omitted from live strip (scaffold ≠ live). Meeting numeric targets does not release an agent.
           </p>
         </section>
 

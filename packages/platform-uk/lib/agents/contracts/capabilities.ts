@@ -23,7 +23,9 @@ export type PlatformCapabilityId =
   | "patient_engagement"
   | "guardian_safety"
   | "clinical_evidence_retrieval"
-  | "evaluation_quality";
+  | "evaluation_quality"
+  | "imaging_intelligence"
+  | "clinical_research";
 
 export type CapabilityClassification =
   | "operational"
@@ -247,6 +249,46 @@ export const PLATFORM_CAPABILITIES: PlatformCapability[] = [
       approverRoles: ["practice-manager"],
     },
     notes: "Offline gates/tests; not production release enforcement on all agents.",
+  },
+  {
+    id: "imaging_intelligence",
+    label: "Imaging Intelligence",
+    primaryAgents: ["PRISM"],
+    supportingServices: [
+      "lib/agents/contracts/run-prism.ts",
+      "lib/agents/prism-eval.ts",
+      "lib/precision-health/connectors.ts",
+      "lib/guardian-gateway",
+    ],
+    classification: "simulated_adapter",
+    evidencePaths: ["tests/p4-prism-atlas-scaffold.test.ts", "tests/phase2-capability-status.test.ts"],
+    access: {
+      ...DEFAULT_ACCESS,
+      readerRoles: ["gp", "nurse", "practice-manager"],
+      approverRoles: ["gp"],
+    },
+    notes:
+      "P4 L2 scaffold: synthetic DICOM-metadata fixtures + Guardian/HITL hooks. liveImagingDeployment:false; not in CONDUCTOR loop.",
+  },
+  {
+    id: "clinical_research",
+    label: "Clinical Research Intelligence",
+    primaryAgents: ["ATLAS"],
+    supportingServices: [
+      "lib/agents/contracts/run-atlas.ts",
+      "lib/agents/atlas-eval.ts",
+      "lib/precision-health/federated-research.ts",
+      "lib/guardian-gateway",
+    ],
+    classification: "simulated_adapter",
+    evidencePaths: ["tests/p4-prism-atlas-scaffold.test.ts", "tests/phase2-capability-status.test.ts"],
+    access: {
+      ...DEFAULT_ACCESS,
+      readerRoles: ["researcher", "gp", "practice-manager"],
+      approverRoles: ["researcher", "practice-manager"],
+    },
+    notes:
+      "P4 L2 scaffold: controlled protocol/cohort fixtures + Guardian/HITL hooks. No clinical enablement; not in CONDUCTOR loop. Federated-research stub remains separate.",
   },
 ];
 
