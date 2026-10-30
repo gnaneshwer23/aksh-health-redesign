@@ -46,8 +46,8 @@ All alerts are **PHI-free** (hashed patient refs only). Not forwarded to generic
 - SHIELD fail-closed remains: no draft enqueue without durable audit when required.
 - Alerts are **detection** only in A4 — no auto-remediation / page-out integration.
 
-## Residual / next (A5)
+## Residual / next (A5+)
 
-- Browser golden multi-account journey with negative authz cases in CI.
+- Full browser booking→decide click-path (A5 adds role-landing + authz smoke only).
 - Optional webhook / ops channel for critical alerts (still no PHI payload).
 - Performance baselines / SLOs (Workstream H) measured, not invented.
