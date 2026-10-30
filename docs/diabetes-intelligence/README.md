@@ -24,6 +24,14 @@
 | 13 | [13-phase4-continuous-care.md](./13-phase4-continuous-care.md) | Phase 4 continuous care / longitudinal ops |
 | 14 | [14-phase5-agent-intelligence.md](./14-phase5-agent-intelligence.md) | Phase 5 agent intelligence / AI orchestration |
 | 15 | [15-phase6-disease-domains.md](./15-phase6-disease-domains.md) | Phase 6 chronic disease domain framework |
+| 16 | [16-integration-map.md](./16-integration-map.md) | Post-impl integration map (Phases 0–6) |
+| 17 | [17-feature-capability-inventory.md](./17-feature-capability-inventory.md) | Verified feature / capability inventory |
+| 18 | [18-defect-register.md](./18-defect-register.md) | Prioritised defect register |
+| 19 | [19-clinical-evaluation-scorecard.md](./19-clinical-evaluation-scorecard.md) | Clinical evaluation scorecard (synthetic) |
+| 20 | [20-ux-enhancement-specification.md](./20-ux-enhancement-specification.md) | Unified UX spec (+ shipped chrome/demo) |
+| 21 | [21-production-readiness-gap-report.md](./21-production-readiness-gap-report.md) | Production-readiness gap report |
+| 22 | [22-release-plan-go-nogo.md](./22-release-plan-go-nogo.md) | Release plan with go/no-go gates |
+| 23 | [23-e2e-test-results.md](./23-e2e-test-results.md) | E2E automated test results |
 | — | [REMAINING-PHASES-3-6.md](./REMAINING-PHASES-3-6.md) | What remains after Phase 0–6 |
 
 ## Vertical slice (synthetic)
@@ -86,6 +94,13 @@ Implemented under `packages/platform-uk` (see backlog). Feature flag / honesty: 
 2. `npx tsx tests/disease-domain-framework.test.ts`
 3. `listDiseaseDomains()` / `evaluateDomainRisk(...)` — diabetes returns a pointer into existing modules; CVD/CKD/obesity/other return `not_activated`.
 4. Details: [15-phase6-disease-domains.md](./15-phase6-disease-domains.md).
+
+### Post-implementation validation
+
+1. Integration map + defects: [16](./16-integration-map.md), [18](./18-defect-register.md).
+2. UX: shared `ConnectedPatientChrome` on phase workspaces; timeline page; Sidebar synthetic links; flagship `/demo/connected-diabetes`.
+3. E2E: `npx playwright test e2e/connected-diabetes-journey.spec.ts` (local-dev Neon / simulation only).
+4. Release honesty: [21](./21-production-readiness-gap-report.md), [22](./22-release-plan-go-nogo.md) — **NO-GO for live clinical use**.
 
 ## Non-negotiables
 
