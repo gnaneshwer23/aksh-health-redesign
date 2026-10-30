@@ -67,6 +67,10 @@ jobs:
       NEXTAUTH_SECRET: ci-e2e-nextauth-secret
       NEXTAUTH_URL: http://127.0.0.1:3000
       DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      # Neon CI branch is provisioned above; review-case + SHIELD audit writes only go
+      # durable when the postgres adapter is selected (DATABASE_URL alone is not enough).
+      USE_POSTGRES: "true"
+      AKSH_STORAGE_ADAPTER: postgres_repository
       E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
       SKIP_EMAIL_SEND: "true"
       DISABLE_RATE_LIMIT: "true"
