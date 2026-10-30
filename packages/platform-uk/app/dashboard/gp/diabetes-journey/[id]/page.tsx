@@ -8,10 +8,10 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { getPatientById } from "@/lib/mock-data";
 
 export default function DiabetesJourneyPage(props: {
-  params: Promise<{ patientId: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const params = use(props.params);
-  const patientId = params.patientId?.trim();
+  const patientId = params.id?.trim();
   if (!patientId) notFound();
 
   const patient = getPatientById(patientId);

@@ -35,8 +35,8 @@ Phases 0–6 ship as synthetic modules keyed by mock-cohort `patientId` (canonic
 
 | Concern | Store A | Store B | Status |
 |---------|---------|---------|--------|
-| Care plans | `aksh.care_plan_records` (journey) | `aksh.medcare_care_plans` | **Mitigated** — `care-plan-facade` unified read; journey = HITL SoT |
-| Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | **Mitigated** — `follow-up-facade` + bridge dual-write on journey Accept/Edit |
+| Care plans | `aksh.care_plan_records` (canonical SoT) | `aksh.medcare_care_plans` (satellite) | **Collapsed write path** — `care-plan-canonical` + bridge; medcare mirrors via `canonical_plan_id`; additive 051 |
+| Follow-ups | journey `care_follow_up_tasks` (SoT) | `ccare_follow_up_items` (ops projection) | **Collapsed write path** — `follow-up-canonical` + bridge mirror; additive `entry_surface` (051) |
 | Med recon | Patient 360 entry | medcare entry (same table) | **Mitigated** — `med-recon-facade` + `med-recon-canonical` dedupe; `entry_surface` provenance; one physical store |
 | Glucose | Phase 2 `glucose_*` (canonical) | disease-module ingest (journey) | **Mitigated** — `glucose-bridge` dual-write + series-first read |
 | Timeline | P360 / journey / `/timeline` API | three partial views | **Mitigated** on `/timeline` (glucose/medcare/agent merged) |
@@ -74,7 +74,8 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 5. ~~Live shared patient context~~ — mitigated via `buildSharedPatientContextAsync`.
 6. ~~Org/practice tenancy stamp + RLS proof path~~ (INT-08) + patient URL access (INT-09) + clinical persona (INT-10).
 7. Shared `ConnectedPatientChrome` + Pipeline orchestrator entry (shipped).
-8. ~~Dual med-recon entry (INT-04)~~ — mitigated via canonical write + facade; physical store was already single-table; additive `entry_surface` (050) for local-dev/sim only. Care-plan / follow-up **physical** dual-table collapse still deferred (facades + bridges only; avoid prod Neon risk).
+8. ~~Dual med-recon entry (INT-04)~~ — mitigated via canonical write + facade; physical store was already single-table; additive `entry_surface` (050) for local-dev/sim only.
+9. ~~Care-plan / follow-up physical dual-table collapse~~ — mitigated via `care-plan-canonical` / `follow-up-canonical` + additive 051 link/`entry_surface` columns (local-dev/sim only; satellites retained, no Neon prod drops).
 
 ## Related defects
 

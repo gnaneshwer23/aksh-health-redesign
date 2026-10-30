@@ -1,4 +1,7 @@
 import { getPatientById } from "../mock-data";
+import { listHistory as listAgentHistory } from "../diabetes-intelligence/agent-intel-repository";
+import { listGlucoseReviews, listGlucoseSeries } from "../diabetes-intelligence/glucose-repository";
+import { listApprovalHistory } from "../diabetes-intelligence/medcare-repository";
 import { listJourneyEvents } from "../diabetes-intelligence/repository";
 import { assessPatient360Quality } from "./quality";
 import {
@@ -45,6 +48,11 @@ function buildTimeline(profile: {
   sharing: Patient360Profile["sharingPreferences"];
   quality: Patient360Profile["qualityIndicators"];
   journeyEvents: Awaited<ReturnType<typeof listJourneyEvents>>;
+  /** INT-05 — residual module events also merged on /timeline API. */
+  glucoseSeries?: Awaited<ReturnType<typeof listGlucoseSeries>>;
+  glucoseReviews?: Awaited<ReturnType<typeof listGlucoseReviews>>;
+  medcareHistory?: Awaited<ReturnType<typeof listApprovalHistory>>;
+  agentHistory?: Awaited<ReturnType<typeof listAgentHistory>>;
 }): PatientTimelineEvent[] {
   const events: PatientTimelineEvent[] = [];
 
@@ -181,6 +189,56 @@ function buildTimeline(profile: {
     });
   }
 
+  // INT-05 — align P360 panel with /timeline module merge (capped)
+  for (const r of (profile.glucoseSeries ?? []).slice(-8)) {
+    events.push({
+      id: `tl-glu-series-${r.id}`,
+      patientId: profile.patientId,
+      kind: "glucose_intelligence",
+      title: "Glucose series",
+      summary: `${r.channel} ${r.valueNumeric}${r.unit ? ` ${r.unit}` : ""}`,
+      occurredAt: r.recordedAt,
+      ehrWrite: false,
+      metadata: { source: "glucose_series_readings" },
+    });
+  }
+  for (const r of profile.glucoseReviews ?? []) {
+    events.push({
+      id: `tl-glu-review-${r.id}`,
+      patientId: profile.patientId,
+      kind: "glucose_intelligence",
+      title: "Glucose review",
+      summary: `Status ${r.status}`,
+      occurredAt: r.decidedAt ?? r.createdAt,
+      ehrWrite: false,
+      metadata: { source: "diabetes_glucose_intelligence" },
+    });
+  }
+  for (const h of (profile.medcareHistory ?? []).slice(-12)) {
+    events.push({
+      id: `tl-medcare-${h.id}`,
+      patientId: profile.patientId,
+      kind: "medcare",
+      title: "Medication care",
+      summary: `${h.action} · ${h.subjectKind}`,
+      occurredAt: h.createdAt,
+      ehrWrite: false,
+      metadata: { sourceStore: "medcare" },
+    });
+  }
+  for (const h of (profile.agentHistory ?? []).slice(-12)) {
+    events.push({
+      id: `tl-agent-${h.id}`,
+      patientId: profile.patientId,
+      kind: "agent_intelligence",
+      title: "Agent intelligence",
+      summary: `${h.action} · ${h.subjectKind}`,
+      occurredAt: h.createdAt,
+      ehrWrite: false,
+      metadata: { source: "diabetes_agent_intelligence" },
+    });
+  }
+
   return events.sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
 }
 
@@ -202,6 +260,10 @@ export async function buildPatient360(
     sharingPreferences,
     medicationReconciliations,
     journeyEvents,
+    glucoseSeries,
+    glucoseReviews,
+    medcareHistory,
+    agentHistory,
   ] = await Promise.all([
     listConditions(patientId, { scopeKey }),
     listAllergies(patientId, { scopeKey }),
@@ -213,6 +275,10 @@ export async function buildPatient360(
     listSharingPreferences(patientId, { scopeKey }),
     listMedRecons(patientId, { scopeKey }),
     listJourneyEvents(patientId, { scopeKey }),
+    listGlucoseSeries(patientId, { scopeKey }).catch(() => []),
+    listGlucoseReviews(patientId, { scopeKey }).catch(() => []),
+    listApprovalHistory(patientId, { scopeKey }).catch(() => []),
+    listAgentHistory(patientId, { scopeKey }).catch(() => []),
   ]);
 
   const medications = medicationItemsFromCohort(patientId);
@@ -242,6 +308,10 @@ export async function buildPatient360(
     sharing: sharingPreferences,
     quality: indicators,
     journeyEvents,
+    glucoseSeries,
+    glucoseReviews,
+    medcareHistory,
+    agentHistory,
   });
 
   return {

@@ -24,6 +24,8 @@ export type CarePlanSection = {
   clinical: boolean;
 };
 
+export type CarePlanEntrySurface = "journey" | "medcare" | "shared";
+
 export type CarePlanRecord = {
   id: string;
   patientId: string;
@@ -42,6 +44,10 @@ export type CarePlanRecord = {
   version: number;
   /** INT-08 — practice/org FK when persisted; simulation default practice-demo. */
   organisationId?: string | null;
+  /** INT-03 collapse — which surface drafted into care_plan_records SoT. */
+  entrySurface?: CarePlanEntrySurface | null;
+  /** INT-03 collapse — optional link to medcare_care_plans satellite. */
+  medcarePlanId?: string | null;
   hitlRequired: true;
   ehrWrite: false;
   synthetic: true;
@@ -59,6 +65,8 @@ export type CarePlanDecision = {
   createdAt: string;
 };
 
+export type FollowUpEntrySurface = "journey" | "continuous_care" | "shared";
+
 export type CareFollowUpTask = {
   id: string;
   patientId: string;
@@ -72,6 +80,8 @@ export type CareFollowUpTask = {
   closedAt: string | null;
   note: string | null;
   organisationId?: string | null;
+  /** INT-04a collapse — which surface created the canonical follow-up. */
+  entrySurface?: FollowUpEntrySurface | null;
   synthetic: true;
 };
 

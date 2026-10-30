@@ -97,6 +97,8 @@ export type PersonalisedCarePlan = {
   decidedAt: string | null;
   decisionReason: string | null;
   version: number;
+  /** INT-03 collapse — link to care_plan_records SoT when mirrored. */
+  canonicalPlanId?: string | null;
   hitlRequired: true;
   ehrWrite: false;
   autonomousPrescribe: false;

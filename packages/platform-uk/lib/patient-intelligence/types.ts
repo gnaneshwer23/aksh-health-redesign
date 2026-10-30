@@ -200,7 +200,10 @@ export type TimelineEventKind =
   | "consent"
   | "care_team"
   | "quality"
-  | "journey";
+  | "journey"
+  | "glucose_intelligence"
+  | "medcare"
+  | "agent_intelligence";
 
 export type PatientTimelineEvent = {
   id: string;

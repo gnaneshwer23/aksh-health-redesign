@@ -745,6 +745,7 @@ export async function createPersonalisedCarePlan(
     decidedAt: null,
     decisionReason: null,
     version: 1,
+    canonicalPlanId: null,
     hitlRequired: true,
     ehrWrite: false,
     autonomousPrescribe: false,
@@ -756,8 +757,8 @@ export async function createPersonalisedCarePlan(
     await pool.query(
       `INSERT INTO aksh.medcare_care_plans
         (id, scope_key, patient_id, patient_label, template_id, title, status, sections,
-         goals_linked, education_linked, created_by, created_at, version, synthetic)
-       VALUES ($1,$2,$3,$4,$5,$6,'DRAFT',$7::jsonb,$8::jsonb,$9::jsonb,$10,$11,1,TRUE)`,
+         goals_linked, education_linked, created_by, created_at, version, synthetic, canonical_plan_id)
+       VALUES ($1,$2,$3,$4,$5,$6,'DRAFT',$7::jsonb,$8::jsonb,$9::jsonb,$10,$11,1,TRUE,$12)`,
       [
         plan.id,
         scopeKey,
@@ -770,6 +771,7 @@ export async function createPersonalisedCarePlan(
         JSON.stringify(plan.educationLinked),
         plan.createdBy,
         plan.createdAt,
+        plan.canonicalPlanId,
       ]
     );
     await appendHistoryPg(scopeKey, {
@@ -1274,11 +1276,50 @@ function mapPlanRow(r: Record<string, unknown>): PersonalisedCarePlan {
     decidedAt: r.decided_at == null ? null : new Date(String(r.decided_at)).toISOString(),
     decisionReason: r.decision_reason == null ? null : String(r.decision_reason),
     version: Number(r.version ?? 1),
+    canonicalPlanId: r.canonical_plan_id == null ? null : String(r.canonical_plan_id),
     hitlRequired: true,
     ehrWrite: false,
     autonomousPrescribe: false,
     synthetic: true,
   };
+}
+
+/** INT-03 collapse — stamp satellite → canonical SoT link. */
+export async function linkPersonalisedCarePlanToCanonical(
+  medcarePlanId: string,
+  canonicalPlanId: string,
+  options?: { scopeKey?: string }
+): Promise<PersonalisedCarePlan> {
+  const scopeKey = options?.scopeKey ?? "shared";
+  if (usePg()) {
+    const pool = getPgPool();
+    await pool.query(
+      `UPDATE aksh.medcare_care_plans
+       SET canonical_plan_id = $1
+       WHERE id = $2 AND scope_key = $3`,
+      [canonicalPlanId, medcarePlanId, scopeKey]
+    );
+    const { rows } = await pool.query(
+      `SELECT * FROM aksh.medcare_care_plans WHERE id=$1 AND scope_key=$2`,
+      [medcarePlanId, scopeKey]
+    );
+    if (!rows[0]) {
+      const err = new Error("Care plan not found") as Error & { status: number };
+      err.status = 404;
+      throw err;
+    }
+    return mapPlanRow(rows[0]);
+  }
+  const store = await readStore(scopeKey);
+  const plan = store.carePlans.find((p) => p.id === medcarePlanId);
+  if (!plan) {
+    const err = new Error("Care plan not found") as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+  plan.canonicalPlanId = canonicalPlanId;
+  await writeStore(store, scopeKey);
+  return plan;
 }
 
 function mapTaskRow(r: Record<string, unknown>): AssignedCareTask {

@@ -29,9 +29,9 @@ Operational production workflows (e.g. slot-fill, CGM monitoring where status=`p
 | Gap | Status |
 |-----|--------|
 | Cross-phase orchestration (INT-01) | Mitigated |
-| Dual glucose / care-plan / follow-up stores (INT-02/03 / INT-04a) | Mitigated (facades + bridges; stores retained) |
+| Dual glucose / care-plan / follow-up stores (INT-02/03 / INT-04a) | Mitigated (canonical write paths; care-plan/follow-up SoT + satellites/projections; additive 051; no prod drops) |
 | Dual med-recon entry points (INT-04) | Mitigated (canonical write + facade; single physical store; entry_surface additive) |
-| Unified timeline including all module decisions (INT-05) | Mitigated on `/timeline`; P360 residual |
+| Unified timeline including all module decisions (INT-05) | Mitigated on `/timeline` + P360 panel merge |
 | Agent context from live module snapshots (INT-07) | Mitigated |
 | Org/practice tenancy on module tables (INT-08) | Mitigated (stamp + RLS proof; LIVE_ORGANISATIONS=0) |
 
