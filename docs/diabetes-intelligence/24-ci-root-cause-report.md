@@ -4,12 +4,13 @@
 **Baseline:** `main` @ `033d16a`  
 **Fix PR:** [#80](https://github.com/gnaneshwer23/aksh-health-redesign/pull/80) · branch `fix/ci-int09-handler-params`
 
-Two sequential CI failure modes after the Phase 0–6 merge:
+Three sequential CI failure modes after the Phase 0–6 merge:
 
 | Wave | Run | Surface | Fix commit |
 |------|-----|---------|------------|
 | P0 typecheck | [40996273234](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40996273234) | Verify and build (`tsc`) | `a5bb079` |
-| Playwright | [40997321061](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40997321061) | `e2e/connected-diabetes-journey.spec.ts` (2 failed) | `d631a9f` (+ timeout `787a0bc`) |
+| Playwright schema/UI | [40997321061](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/40997321061) | connected-diabetes (2 failed) | `d631a9f` (+ timeout `787a0bc`) |
+| Playwright glucose seed hang | [41004086424](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41004086424) | API path only (103 passed / 1 failed) | `006e18e` + `3033af6` |
 
 ---
 
@@ -67,6 +68,23 @@ Loosen harness context params to `Promise<any>` with an explicit INT-09 comment.
 
 ---
 
+## Wave 3 — Glucose seed hang / request context disposed
+
+### Failure (run 41004086424 · 103 passed / 1 failed · ~40m job wall)
+
+API path only: `POST /api/patients/P002/diabetes-intelligence` `seed_synthetic` → Playwright `Test timeout of 180000ms exceeded` then `apiRequestContext.post: Request context disposed` on retries.
+
+### Root cause
+
+`replacePatientGlucoseSeries` / `appendGlucoseBatch` inserted ~1.5k synthetic CGM rows **one `INSERT` per reading**. On CI (US runner → Neon eu-west-2) that exceeds the 180s test timeout; Playwright then disposes the request fixture mid-flight.
+
+### Fixes
+
+- `006e18e` — chunked multi-row `INSERT` (400 rows/statement) in `glucose-repository.ts`. Local bench after fix: ~9s for 1521 CGM rows on local-dev Neon.
+- `3033af6` — raise connected-diabetes API-path `test.setTimeout` to 360s; per-request `timeout: 120_000` on seed/draft posts; `maxDuration = 120` on diabetes-intelligence route.
+
+---
+
 ## Verification
 
 | Check | Result |
@@ -74,6 +92,8 @@ Loosen harness context params to `Promise<any>` with an explicit INT-09 comment.
 | `npx tsc -p tsconfig.tests.json` | PASS |
 | `npm run verify` (local) | PASS |
 | `npx tsx tests/connected-patient-api-access.test.ts` | PASS (9 GET + 9 POST) |
+| Local connected-diabetes Playwright (2 specs, after migrate) | PASS |
+| Local glucose seed bench (bulk insert) | ~9s / 1521 CGM rows |
 | Follow-up Actions run (PR #80) | See doc 25 / README for passing SHA + URL |
 
 ## What we did not do
