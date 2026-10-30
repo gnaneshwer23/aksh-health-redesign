@@ -117,11 +117,8 @@ function testDirectoryHonestyFieldsMatchRegister() {
       assert.equal(agent.live, true, `${agent.name}: live means product surface, not go-live`);
     }
     if (agent.phase === 2) {
-      // P4: PRISM/ATLAS move to in_validation scaffolds while remaining live:false.
-      assert.ok(
-        agent.status === "roadmap" || agent.status === "in_validation",
-        `${agent.name}: phase-2 status must be roadmap or in_validation scaffold`
-      );
+      // P4: PRISM/ATLAS are in_validation scaffolds while remaining live:false.
+      assert.equal(agent.status, "in_validation", `${agent.name}: phase-2 scaffold must be in_validation`);
       assert.equal(agent.live, false, `${agent.name}: phase-2 must not claim live`);
     }
   }

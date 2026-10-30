@@ -101,7 +101,7 @@ async function main() {
     if (a.phase === 1) assert.equal(a.status, "in_validation");
     if (a.phase === 2) {
       assert.equal(a.live, false);
-      assert.ok(a.status === "roadmap" || a.status === "in_validation");
+      assert.equal(a.status, "in_validation");
     }
   }
 
