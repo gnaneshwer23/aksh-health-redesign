@@ -13,7 +13,9 @@ const result = runVoiceCareEscalation({ caseId: "honesty-1", patientLabel: "Synt
 assert.equal(result.notVoiceDictation, true);
 assert.ok(result.label.includes("NOT VOICE DICTATION"));
 assert.ok(VOICE_CARE_PRODUCT_LABEL.includes("not VOICE dictation"));
-assert.ok(!AGENT_DIRECTORY.some((a) => a.name === "VOICE" || a.name === "VOICE CARE"));
+const directoryNames = AGENT_DIRECTORY.map((a) => String(a.name));
+assert.ok(!directoryNames.includes("VOICE"));
+assert.ok(!directoryNames.includes("VOICE CARE"));
 
 const root = process.cwd();
 const adminOps = readFileSync(path.join(root, "app/dashboard/admin/agent-ops/page.tsx"), "utf8");

@@ -55,10 +55,22 @@ export function buildNurseEscalationTask(reviewCase: ReviewCase, escalation: Voi
   };
 }
 
+type BrowserLocalStorage = {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+};
+
+/** DOM-free localStorage access so tsconfig.tests (lib: es2020) can compile this module. */
+function browserLocalStorage(): BrowserLocalStorage | null {
+  const maybeWindow = (globalThis as { window?: { localStorage?: BrowserLocalStorage } }).window;
+  return maybeWindow?.localStorage ?? null;
+}
+
 export function readVoiceCareEscalation(): VoiceCareEscalationState | null {
-  if (typeof window === "undefined") return null;
+  const storage = browserLocalStorage();
+  if (!storage) return null;
   try {
-    const raw = window.localStorage.getItem(VOICE_CARE_ESCALATION_KEY);
+    const raw = storage.getItem(VOICE_CARE_ESCALATION_KEY);
     return raw ? (JSON.parse(raw) as VoiceCareEscalationState) : null;
   } catch {
     return null;
@@ -66,14 +78,16 @@ export function readVoiceCareEscalation(): VoiceCareEscalationState | null {
 }
 
 export function writeVoiceCareEscalation(state: VoiceCareEscalationState) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(VOICE_CARE_ESCALATION_KEY, JSON.stringify(state));
+  const storage = browserLocalStorage();
+  if (!storage) return;
+  storage.setItem(VOICE_CARE_ESCALATION_KEY, JSON.stringify(state));
 }
 
 export function readNurseEscalationTasks(): NurseEscalationTask[] {
-  if (typeof window === "undefined") return [];
+  const storage = browserLocalStorage();
+  if (!storage) return [];
   try {
-    const raw = window.localStorage.getItem(`${VOICE_CARE_ESCALATION_KEY}-nurse-tasks`);
+    const raw = storage.getItem(`${VOICE_CARE_ESCALATION_KEY}-nurse-tasks`);
     return raw ? (JSON.parse(raw) as NurseEscalationTask[]) : [];
   } catch {
     return [];
@@ -81,8 +95,9 @@ export function readNurseEscalationTasks(): NurseEscalationTask[] {
 }
 
 export function writeNurseEscalationTasks(tasks: NurseEscalationTask[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(`${VOICE_CARE_ESCALATION_KEY}-nurse-tasks`, JSON.stringify(tasks));
+  const storage = browserLocalStorage();
+  if (!storage) return;
+  storage.setItem(`${VOICE_CARE_ESCALATION_KEY}-nurse-tasks`, JSON.stringify(tasks));
 }
 
 export function appendNurseEscalationTask(task: NurseEscalationTask) {
