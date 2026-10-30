@@ -69,9 +69,15 @@ function patientBoundHeaders() {
   return authHeaders("patient", { "x-bound-patient-id": BOUND });
 }
 
+/**
+ * Loose params typing: App Router handlers declare specific param shapes
+ * (`{ id }`, `{ id; planId }`, …). A single harness type must accept all of
+ * them under contravariant checking — `Promise<any>` is intentional here.
+ */
 type Handler = (
   request: Request,
-  context: { params: Promise<Record<string, string>> }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous route params
+  context: { params: Promise<any> }
 ) => Promise<Response>;
 
 async function callGet(handler: Handler, patientId: string, headers: Record<string, string>) {
