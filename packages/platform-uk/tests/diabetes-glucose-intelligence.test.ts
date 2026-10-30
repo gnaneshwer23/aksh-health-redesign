@@ -32,10 +32,16 @@ async function main() {
   const now = Date.parse("2026-10-29T12:00:00.000Z");
 
   // Unit contracts
-  const mmol = normalizeIngestPoint({ value: 180, unit: "mg/dL" }, "cgm");
+  const mmol = normalizeIngestPoint(
+    { value: 180, unit: "mg/dL", recordedAt: "2026-10-29T12:00:00.000Z" },
+    "cgm"
+  );
   assert.ok(mmol.valueMmolL != null);
   assert.ok(Math.abs(mmol.valueMmolL! - 10) < 0.05);
-  const hba = normalizeIngestPoint({ value: 7.0, unit: "%" }, "lab_hba1c");
+  const hba = normalizeIngestPoint(
+    { value: 7.0, unit: "%", recordedAt: "2026-10-29T12:00:00.000Z" },
+    "lab_hba1c"
+  );
   assert.ok(hba.valueMmolMol != null);
 
   const emptyTir = computeTirAnalytics([]);

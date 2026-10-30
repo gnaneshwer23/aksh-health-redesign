@@ -36,6 +36,14 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       DATABASE_URL: process.env.DATABASE_URL ?? "",
+      // Durable item/case decisions (auditDurable) require the postgres review-case
+      // adapter. CI always provisions a Neon branch; locally honour .env.local when set.
+      USE_POSTGRES:
+        process.env.USE_POSTGRES ??
+        (process.env.DATABASE_URL?.trim() ? "true" : "false"),
+      AKSH_STORAGE_ADAPTER:
+        process.env.AKSH_STORAGE_ADAPTER ??
+        (process.env.DATABASE_URL?.trim() ? "postgres_repository" : "json_file_repository"),
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ?? "local-e2e-nextauth-secret",
       NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? baseURL,
       SKIP_EMAIL_SEND: "true",

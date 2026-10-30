@@ -23,8 +23,13 @@ function pure() {
   const enc = encryptSecret("SECRET");
   assert.notEqual(enc, "SECRET");
   assert.equal(decryptSecret(enc), "SECRET");
-  const tampered = enc.slice(0, -2) + (enc.endsWith("A") ? "B" : "A") + enc.slice(-1);
-  assert.throws(() => decryptSecret(tampered), "tampering is detected");
+  // Flip the second-to-last character relative to itself (not the last char). The previous
+  // endsWith("A")? "B":"A" logic was a no-op whenever that character was already the chosen
+  // replacement, so AES-GCM integrity did not always fire in CI.
+  const flip = enc.at(-2) === "A" ? "B" : "A";
+  const tampered = enc.slice(0, -2) + flip + enc.slice(-1);
+  assert.notEqual(tampered, enc);
+  assert.throws(() => decryptSecret(tampered), /Unsupported state|unable to authenticate|auth/i);
 }
 
 async function run() {
