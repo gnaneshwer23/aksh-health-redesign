@@ -172,6 +172,28 @@ export function ConnectedDiabetesOrchestrationWorkspace({ patientId, patientLabe
           </section>
 
           <section className="rounded-lg border border-[#d7e3ef] bg-white p-5 text-[#0f2744]">
+            <h2 className="text-lg font-semibold">Unified medication reconciliation</h2>
+            <p className="mt-1 text-sm text-[#5b6b7c]">
+              Patient 360 + medication-care entry surfaces over one physical store (INT-04).
+            </p>
+            {(snap.unifiedMedRecons?.length ?? 0) === 0 ? (
+              <p className="mt-3 text-sm text-[#5b6b7c]">No med-recon runs yet — seed Patient 360 or medication care.</p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {snap.unifiedMedRecons.map((run) => (
+                  <li key={run.unifiedKey} className="text-sm" data-testid="unified-med-recon">
+                    <span className="font-medium">{run.id}</span>
+                    <span className="text-[#5b6b7c]">
+                      {" "}
+                      · {run.status} · {run.provenance} · {run.entrySurface}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="rounded-lg border border-[#d7e3ef] bg-white p-5 text-[#0f2744]">
             <h2 className="text-lg font-semibold">Shared patient context sources</h2>
             <ul className="mt-3 space-y-1 text-sm">
               {snap.sharedContext.sources.map((s) => (

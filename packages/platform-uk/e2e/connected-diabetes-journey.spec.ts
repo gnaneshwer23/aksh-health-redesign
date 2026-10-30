@@ -223,6 +223,12 @@ test.describe("Connected diabetes journey (synthetic)", () => {
       steps?: { stepId: string; status: string }[];
       unifiedCarePlans?: { unifiedKey: string; sourceStore: string; ehrWrite: boolean }[];
       unifiedFollowUps?: { unifiedKey: string; sourceStore: string; ehrWrite: boolean }[];
+      unifiedMedRecons?: {
+        unifiedKey: string;
+        sourceStore: string;
+        entrySurface: string;
+        ehrWrite: boolean;
+      }[];
     };
     expect(orchBody.ehrWrite).toBe(false);
     expect(orchBody.hitlRequired).toBe(true);
@@ -238,6 +244,15 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     ).toBeTruthy();
     expect(
       (orchBody.unifiedFollowUps ?? []).some((f) => f.sourceStore === "journey_follow_up")
+    ).toBeTruthy();
+    // INT-04: dual med-recon entry surfaces over one physical store
+    expect(
+      (orchBody.unifiedMedRecons ?? []).every(
+        (r) =>
+          r.ehrWrite === false &&
+          r.sourceStore === "medication_reconciliation_runs" &&
+          r.unifiedKey.includes("medrecon:")
+      )
     ).toBeTruthy();
 
     const orchRun = await request.post(`/api/patients/${PATIENT}/connected-diabetes`, {

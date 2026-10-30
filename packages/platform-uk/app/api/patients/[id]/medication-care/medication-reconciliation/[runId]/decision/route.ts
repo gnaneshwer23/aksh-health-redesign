@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
-import { decideMedCareReconciliation } from "@/lib/diabetes-intelligence";
+import { buildMedicationPersonalisedCare } from "@/lib/diabetes-intelligence";
+import { toUnifiedMedRecon } from "@/lib/diabetes-intelligence/med-recon-facade";
+import { decideCanonicalMedReconciliation } from "@/lib/patient-intelligence/med-recon-canonical";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
@@ -42,26 +44,33 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const snapshot = await decideMedCareReconciliation(
+    const actor = auth.context.userEmail ?? auth.context.userId;
+    const scopeKey = auth.context.scopeKey;
+    // INT-04 — both entry surfaces decide via the same physical-store helper.
+    const decided = await decideCanonicalMedReconciliation(
       {
-        patientId,
         runId: rid,
         action: body.action,
-        actor: auth.context.userEmail ?? auth.context.userId,
+        actor,
         note: body.note,
       },
-      { scopeKey: auth.context.scopeKey }
+      { scopeKey }
     );
+    const snapshot = await buildMedicationPersonalisedCare(patientId, { scopeKey });
     return NextResponse.json({
       ...snapshot,
       action: body.action,
       ehrWrite: false,
       autonomousPrescribe: false,
       decidedByPersona: auth.context.clinicalPersona,
+      unifiedMedRecon: toUnifiedMedRecon(decided.run),
+      physicalStore: decided.physicalStore,
     });
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;
     const message = err instanceof Error ? err.message : "Decision failed";
-    return NextResponse.json({ error: message, ehrWrite: false }, { status });
+    const resolved =
+      /not found/i.test(message) ? 404 : /already/i.test(message) ? 409 : status;
+    return NextResponse.json({ error: message, ehrWrite: false }, { status: resolved });
   }
 }

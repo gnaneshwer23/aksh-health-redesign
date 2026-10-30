@@ -37,7 +37,7 @@ Phases 0–6 ship as synthetic modules keyed by mock-cohort `patientId` (canonic
 |---------|---------|---------|--------|
 | Care plans | `aksh.care_plan_records` (journey) | `aksh.medcare_care_plans` | **Mitigated** — `care-plan-facade` unified read; journey = HITL SoT |
 | Follow-ups | journey `care_follow_up_tasks` | `ccare_follow_up_items` | **Mitigated** — `follow-up-facade` + bridge dual-write on journey Accept/Edit |
-| Med recon | Patient 360 runs | medcare start also creates runs | Medium (INT-04) |
+| Med recon | Patient 360 entry | medcare entry (same table) | **Mitigated** — `med-recon-facade` + `med-recon-canonical` dedupe; `entry_surface` provenance; one physical store |
 | Glucose | Phase 2 `glucose_*` (canonical) | disease-module ingest (journey) | **Mitigated** — `glucose-bridge` dual-write + series-first read |
 | Timeline | P360 / journey / `/timeline` API | three partial views | **Mitigated** on `/timeline` (glucose/medcare/agent merged) |
 | Agent context | mock cohort | live module snapshots | **Mitigated** — `buildSharedPatientContextAsync` |
@@ -74,7 +74,7 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 5. ~~Live shared patient context~~ — mitigated via `buildSharedPatientContextAsync`.
 6. ~~Org/practice tenancy stamp + RLS proof path~~ (INT-08) + patient URL access (INT-09) + clinical persona (INT-10).
 7. Shared `ConnectedPatientChrome` + Pipeline orchestrator entry (shipped).
-8. Physical store collapse / additive Neon local-dev migration if product requires single table (not done — avoid prod Neon risk). Dual med-recon entry (INT-04) still open.
+8. ~~Dual med-recon entry (INT-04)~~ — mitigated via canonical write + facade; physical store was already single-table; additive `entry_surface` (050) for local-dev/sim only. Care-plan / follow-up **physical** dual-table collapse still deferred (facades + bridges only; avoid prod Neon risk).
 
 ## Related defects
 

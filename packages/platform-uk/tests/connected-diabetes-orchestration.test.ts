@@ -1,5 +1,5 @@
 /**
- * INT-01 / INT-02 / INT-03 / follow-up facade — connected diabetes orchestration + store facades.
+ * INT-01 / INT-02 / INT-03 / INT-04 / follow-up facade — connected diabetes orchestration + store facades.
  * File-store path (no Postgres). ehrWrite must stay false. Neon production untouched.
  */
 import assert from "node:assert/strict";
@@ -27,6 +27,9 @@ async function main() {
   } = await import("../lib/diabetes-intelligence/glucose-bridge");
   const { listUnifiedCarePlans } = await import("../lib/diabetes-intelligence/care-plan-facade");
   const { listUnifiedFollowUps } = await import("../lib/diabetes-intelligence/follow-up-facade");
+  const { listUnifiedMedRecons, selectOpenMedRecons } = await import(
+    "../lib/diabetes-intelligence/med-recon-facade"
+  );
   const { listGlucoseSeries } = await import("../lib/diabetes-intelligence/glucose-repository");
   const { buildSharedPatientContextAsync } = await import(
     "../lib/diabetes-intelligence/agent-intel-context"
@@ -34,6 +37,11 @@ async function main() {
   const { decideJourneyCarePlan, draftJourneyCarePlan, seedSyntheticJourney } = await import(
     "../lib/diabetes-intelligence/journey"
   );
+  const { startCanonicalMedReconciliation, MED_RECON_PHYSICAL_STORE } = await import(
+    "../lib/patient-intelligence/med-recon-canonical"
+  );
+  const { startMedicationReconciliation } = await import("../lib/patient-intelligence");
+  const { startMedCareReconciliation } = await import("../lib/diabetes-intelligence/medcare-assemble");
 
   const scopeKey = `orch_${Date.now()}`;
   const patientId = "P002";
@@ -132,7 +140,43 @@ async function main() {
   const status2 = await buildConnectedDiabetesOrchestration(patientId, { scopeKey });
   assert.ok(status2.unifiedFollowUps.length >= 1);
 
-  console.log("connected-diabetes-orchestration: INT-01/02/03 + follow-up facade — PASS");
+  // INT-04: dual entry surfaces share one physical store + dedupe open runs
+  const from360 = await startCanonicalMedReconciliation(patientId, {
+    scopeKey,
+    createdBy: "p360@aksh.health",
+    entrySurface: "patient360",
+  });
+  assert.equal(from360.physicalStore, MED_RECON_PHYSICAL_STORE);
+  assert.equal(from360.ehrWrite, false);
+  assert.equal(from360.autonomousPrescribe, false);
+  const firstId = from360.run.id;
+  const fromMedcare = await startCanonicalMedReconciliation(patientId, {
+    scopeKey,
+    createdBy: "medcare@aksh.health",
+    entrySurface: "medcare",
+  });
+  assert.equal(fromMedcare.reused, true);
+  assert.equal(fromMedcare.run.id, firstId, "second entry must reuse open run");
+  // Surface wrappers also dedupe
+  await startMedicationReconciliation(patientId, {
+    scopeKey,
+    createdBy: "p360-wrap@aksh.health",
+  });
+  await startMedCareReconciliation(patientId, {
+    scopeKey,
+    createdBy: "medcare-wrap@aksh.health",
+  });
+  const unifiedMed = await listUnifiedMedRecons(patientId, { scopeKey });
+  assert.ok(unifiedMed.length >= 1);
+  assert.ok(unifiedMed.every((r) => r.ehrWrite === false && r.unifiedKey.includes("medrecon:")));
+  assert.ok(unifiedMed.every((r) => r.sourceStore === "medication_reconciliation_runs"));
+  const openUnified = selectOpenMedRecons(unifiedMed);
+  assert.equal(openUnified.length, 1, "exactly one open med-recon across dual entry points");
+  const status3 = await buildConnectedDiabetesOrchestration(patientId, { scopeKey });
+  assert.ok(status3.unifiedMedRecons.length >= 1);
+  assert.ok(status3.unifiedMedRecons.every((r) => r.ehrWrite === false));
+
+  console.log("connected-diabetes-orchestration: INT-01/02/03/04 + follow-up facade — PASS");
 }
 
 main()

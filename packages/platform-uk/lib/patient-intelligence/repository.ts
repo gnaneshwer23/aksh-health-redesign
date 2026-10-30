@@ -14,11 +14,13 @@ import type {
   MedicationListItem,
   MedicationReconciliationRun,
   MedReconDiscrepancy,
+  MedReconEntrySurface,
   ObservationItem,
   Provenance,
   QualityFlag,
   SharingPreference,
 } from "./types";
+import { inferMedReconEntrySurface } from "./types";
 
 type Store = {
   conditions: ConditionRecord[];
@@ -491,6 +493,20 @@ export async function listSharingPreferences(patientId: string, options?: { scop
   return [...latest.values()];
 }
 
+function normalizeMedRecon(row: MedicationReconciliationRun): MedicationReconciliationRun {
+  const entrySurface =
+    row.entrySurface ??
+    (row.note ? inferMedReconEntrySurface(row.note) : null);
+  return {
+    ...row,
+    entrySurface,
+    hitlRequired: true,
+    ehrWrite: false,
+    autonomousPrescribe: false,
+    synthetic: true,
+  };
+}
+
 export async function listMedRecons(patientId: string, options?: { scopeKey?: string }) {
   const scopeKey = options?.scopeKey ?? "shared";
   if (usePg()) {
@@ -501,7 +517,9 @@ export async function listMedRecons(patientId: string, options?: { scopeKey?: st
     );
     return rows.map(mapMedReconRow);
   }
-  return (await readStore(scopeKey)).medRecons.filter((m) => m.patientId === patientId);
+  return (await readStore(scopeKey)).medRecons
+    .filter((m) => m.patientId === patientId)
+    .map(normalizeMedRecon);
 }
 
 export async function createMedRecon(
@@ -512,10 +530,12 @@ export async function createMedRecon(
     discrepancies?: MedReconDiscrepancy[];
     createdBy: string;
     note?: string;
+    entrySurface?: MedReconEntrySurface | null;
   },
   options?: { scopeKey?: string }
 ): Promise<MedicationReconciliationRun> {
   const scopeKey = options?.scopeKey ?? "shared";
+  const entrySurface = input.entrySurface ?? null;
   const row: MedicationReconciliationRun = {
     id: `mrecon-${randomUUID()}`,
     patientId: input.patientId,
@@ -528,6 +548,7 @@ export async function createMedRecon(
     decidedBy: null,
     decidedAt: null,
     note: input.note ?? null,
+    entrySurface,
     hitlRequired: true,
     ehrWrite: false,
     autonomousPrescribe: false,
@@ -536,24 +557,49 @@ export async function createMedRecon(
 
   if (usePg()) {
     const pool = getPgPool();
-    await pool.query(
-      `INSERT INTO aksh.medication_reconciliation_runs
-        (id, scope_key, patient_id, status, source_list, reconciled_list, discrepancies,
-         created_by, created_at, note, hitl_required, ehr_write, autonomous_prescribe, synthetic)
-       VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7::jsonb,$8,$9,$10,true,false,false,true)`,
-      [
-        row.id,
-        scopeKey,
-        row.patientId,
-        row.status,
-        JSON.stringify(row.sourceList),
-        JSON.stringify(row.reconciledList),
-        JSON.stringify(row.discrepancies),
-        row.createdBy,
-        row.createdAt,
-        row.note,
-      ]
-    );
+    // entry_surface is additive (migration 050, local-dev/sim). Fall back if column absent.
+    try {
+      await pool.query(
+        `INSERT INTO aksh.medication_reconciliation_runs
+          (id, scope_key, patient_id, status, source_list, reconciled_list, discrepancies,
+           created_by, created_at, note, entry_surface, hitl_required, ehr_write, autonomous_prescribe, synthetic)
+         VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7::jsonb,$8,$9,$10,$11,true,false,false,true)`,
+        [
+          row.id,
+          scopeKey,
+          row.patientId,
+          row.status,
+          JSON.stringify(row.sourceList),
+          JSON.stringify(row.reconciledList),
+          JSON.stringify(row.discrepancies),
+          row.createdBy,
+          row.createdAt,
+          row.note,
+          entrySurface,
+        ]
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!/entry_surface/i.test(msg)) throw err;
+      await pool.query(
+        `INSERT INTO aksh.medication_reconciliation_runs
+          (id, scope_key, patient_id, status, source_list, reconciled_list, discrepancies,
+           created_by, created_at, note, hitl_required, ehr_write, autonomous_prescribe, synthetic)
+         VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7::jsonb,$8,$9,$10,true,false,false,true)`,
+        [
+          row.id,
+          scopeKey,
+          row.patientId,
+          row.status,
+          JSON.stringify(row.sourceList),
+          JSON.stringify(row.reconciledList),
+          JSON.stringify(row.discrepancies),
+          row.createdBy,
+          row.createdAt,
+          row.note,
+        ]
+      );
+    }
     return row;
   }
 
@@ -823,6 +869,12 @@ function mapSharingRow(r: Record<string, unknown>): SharingPreference {
 }
 
 function mapMedReconRow(r: Record<string, unknown>): MedicationReconciliationRun {
+  const note = r.note == null ? null : String(r.note);
+  const rawSurface = r.entry_surface == null ? null : String(r.entry_surface);
+  const entrySurface: MedReconEntrySurface | null =
+    rawSurface === "patient360" || rawSurface === "medcare" || rawSurface === "shared"
+      ? rawSurface
+      : null;
   return {
     id: String(r.id),
     patientId: String(r.patient_id),
@@ -834,7 +886,8 @@ function mapMedReconRow(r: Record<string, unknown>): MedicationReconciliationRun
     createdAt: new Date(String(r.created_at)).toISOString(),
     decidedBy: r.decided_by == null ? null : String(r.decided_by),
     decidedAt: r.decided_at == null ? null : new Date(String(r.decided_at)).toISOString(),
-    note: r.note == null ? null : String(r.note),
+    note,
+    entrySurface: entrySurface ?? (note ? inferMedReconEntrySurface(note) : null),
     hitlRequired: true,
     ehrWrite: false,
     autonomousPrescribe: false,

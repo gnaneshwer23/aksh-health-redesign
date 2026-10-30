@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
-import { decideMedicationReconciliation } from "@/lib/patient-intelligence";
+import { toUnifiedMedRecon } from "@/lib/diabetes-intelligence/med-recon-facade";
+import { buildPatient360 } from "@/lib/patient-intelligence";
+import { decideCanonicalMedReconciliation } from "@/lib/patient-intelligence/med-recon-canonical";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
@@ -42,26 +44,31 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const profile = await decideMedicationReconciliation(
+    const actor = auth.context.userEmail ?? auth.context.userId;
+    const scopeKey = auth.context.scopeKey;
+    // INT-04 — both entry surfaces decide via the same physical-store helper.
+    const decided = await decideCanonicalMedReconciliation(
       {
-        patientId,
         runId,
         action: body.action,
-        actor: auth.context.userEmail ?? auth.context.userId,
+        actor,
         note: body.note,
       },
-      { scopeKey: auth.context.scopeKey }
+      { scopeKey }
     );
+    const profile = await buildPatient360(patientId, { scopeKey });
     return NextResponse.json({
       ...profile,
       action: body.action,
       ehrWrite: false,
       autonomousPrescribe: false,
       decidedByPersona: auth.context.clinicalPersona,
+      unifiedMedRecon: toUnifiedMedRecon(decided.run),
+      physicalStore: decided.physicalStore,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Decision failed";
     const status = /not found/i.test(message) ? 404 : /already/i.test(message) ? 409 : 400;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message, ehrWrite: false }, { status });
   }
 }
