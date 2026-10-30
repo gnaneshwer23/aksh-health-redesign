@@ -38,7 +38,7 @@ Operational production workflows (e.g. slot-fill, CGM monitoring where status=`p
 
 | Gap | Status |
 |-----|--------|
-| `evaluatePatientUrlAccess` on module APIs (INT-09) | Open |
+| `evaluatePatientUrlAccess` on module APIs (INT-09) | Fixed — `denyUnlessConnectedPatientAccess` |
 | Clinical persona / decision scope on module HITL (INT-10) | Open |
 
 ### Clinical content quality

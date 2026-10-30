@@ -47,9 +47,9 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 ## Auth & isolation
 
 - All connected APIs use **`requireAuthenticatedUserScope`**.
-- **`evaluatePatientUrlAccess`** is **not** wired on these routes (unlike check-in).
-- **`evaluateDecisionScope`** (clinical persona) is **not** on module Accept/Edit/Reject.
-- Tenant isolation for module data = **per-user scope**, not org/practice.
+- **`denyUnlessConnectedPatientAccess`** (INT-09) gates every patient-scoped module route — wraps `evaluateAppRoleClinicalReadAccess` → `evaluatePatientUrlAccess` (cross-patient / unbound patient / ops-researcher deny). Same posture as `/api/patients/[id]/state`.
+- **`evaluateDecisionScope`** (clinical persona) is **not** on module Accept/Edit/Reject (INT-10).
+- Tenant isolation for module data = **per-user scope**, not org/practice (INT-08).
 
 ## Provenance
 
@@ -71,7 +71,7 @@ JSON fallbacks under `packages/platform-uk/data/` when Postgres is off (scoped b
 2. Canonical care-plan + follow-up read model.
 3. Unified timeline projector including glucose/medcare/agent decisions.
 4. `buildSharedPatientContext` loads live 360 + glucose + medcare snapshots.
-5. Org/practice tenancy + `evaluatePatientUrlAccess` on all patient module routes.
+5. Org/practice tenancy on module stores (INT-08). Patient URL access gate shipped (INT-09).
 6. Shared `ConnectedPatientChrome` (shipped as UX step toward this).
 
 ## Related defects

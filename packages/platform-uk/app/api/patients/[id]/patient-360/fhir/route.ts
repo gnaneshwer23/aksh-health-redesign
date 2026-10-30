@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { buildPatient360, patient360ToFhirBundle } from "@/lib/patient-intelligence";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -16,6 +17,9 @@ export async function GET(request: Request, context: RouteContext) {
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   const profile = await buildPatient360(patientId, { scopeKey: auth.context.scopeKey });
   const bundle = patient360ToFhirBundle(profile);

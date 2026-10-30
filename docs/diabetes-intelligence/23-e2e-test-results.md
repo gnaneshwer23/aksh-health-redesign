@@ -42,7 +42,8 @@ Applied pending additive migrations **046–048** on local-dev only (medcare / c
 | INT-06 missing timeline page | Fixed (page + chrome) |
 | Tailwind ESM `require("tailwindcss-animate")` crashed CSS compile | Fixed (ESM import) |
 | Medcare/continuous seed PK collision across `scope_key` (INT-16) | Mitigated (`ON CONFLICT DO UPDATE`) |
-| INT-01…05, INT-09…10 | Registered — not fixed in this ship |
+| INT-01…05, INT-10 | Registered — not fixed in this ship |
+| INT-09 weak patient API access | Fixed later — `denyUnlessConnectedPatientAccess` + `tests/connected-patient-api-access.test.ts` |
 
 ## CI note
 

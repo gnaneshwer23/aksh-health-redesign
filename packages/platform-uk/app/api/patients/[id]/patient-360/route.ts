@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import {
   buildPatient360,
   seedAndBuildPatient360,
@@ -21,6 +22,9 @@ export async function GET(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
 
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
+
   const profile = await buildPatient360(patientId, { scopeKey: auth.context.scopeKey });
   return NextResponse.json(profile);
 }
@@ -33,6 +37,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   let body: {
     action?: "seed_synthetic" | "start_med_recon" | "record_sharing_preference";

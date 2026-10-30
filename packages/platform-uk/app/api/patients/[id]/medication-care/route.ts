@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import {
   advanceMedCareTask,
   applyCarePlanTemplate,
@@ -26,6 +27,9 @@ export async function GET(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
 
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
+
   const snapshot = await buildMedicationPersonalisedCare(patientId, {
     scopeKey: auth.context.scopeKey,
   });
@@ -40,6 +44,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
   }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
 
   let body: {
     action?:

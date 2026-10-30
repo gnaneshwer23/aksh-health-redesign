@@ -27,6 +27,7 @@
     "db:migrate:e2e": "node --env-file=.env.local scripts/apply-neon-migration-014.mjs",
     "test:smoke": "npm run smoke:all",
     "test:patient-access": "npx tsx tests/patient-access-diabetes.test.ts",
+    "test:connected-patient-access": "npx tsx tests/connected-patient-api-access.test.ts",
     "test:front-desk": "npx tsx tests/front-desk.test.ts",
     "test:synthetic-world": "npx tsx tests/synthetic-world.test.ts",
     "seed:synthetic-world": "npx tsx --env-file=.env.local scripts/seed-synthetic-world.ts",

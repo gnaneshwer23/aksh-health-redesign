@@ -44,7 +44,7 @@
 - [ ] CSO-signed safety case (GOV-01) — **fail**  
 - [ ] DPIA / regulatory (GOV-02) — **fail**  
 - [ ] Org go-live (GOV-03) — **fail**  
-- [ ] INT-01…03 / INT-09 closed — **fail**  
+- [ ] INT-01…03 closed — **fail** (INT-09 patient URL access gate **fixed**; orchestration gaps remain)  
 - [ ] Real-patient eval — **fail / not started**  
 
 ## Merge plan for this directive
