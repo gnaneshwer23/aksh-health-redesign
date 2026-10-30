@@ -52,6 +52,7 @@ export type AgentErrorCode =
   | "DUPLICATE_RUN"
   | "EVIDENCE_MISSING"
   | "AGENT_NOT_ALLOWED"
+  | "SHIELD_UNAVAILABLE"
   | "INTERNAL";
 
 export type AgentErrorClassification = {
