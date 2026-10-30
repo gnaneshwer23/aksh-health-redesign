@@ -47,3 +47,12 @@ Applied pending additive migrations **046–048** on local-dev only (medcare / c
 ## CI note
 
 Recorded locally against local-dev Neon. CI Playwright with DATABASE_URL should pick up `e2e/connected-diabetes-journey.spec.ts` under the existing `test:e2e` config.
+
+## Production deploy confirmation
+
+| Item | Value |
+|------|-------|
+| Merge SHA | `6545c20aadeae4dfba2a2058cb958af4de180f54` |
+| Vercel deployment | `dpl_1aq2CwpYFt55qNSQSYzqfsTWcVMB` |
+| readyState | **READY** |
+| Aliases | `www.akshhealth.com`, `akshhealth.com` |
