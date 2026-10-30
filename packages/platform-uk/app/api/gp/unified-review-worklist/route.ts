@@ -78,7 +78,8 @@ export async function GET(request: Request) {
     synthetic: true,
     ehrWrite: false,
     hitlRequired: true,
+    authoritativeDecisionSurface: "gp_review_queue",
     note:
-      "Primary GP review is review-cases (spine CONDUCTOR + diabetes drafts enqueued via mayEnqueueAgentDraft). Agent-intelligence page is prep/domain seed only.",
+      "Primary GP review is review-cases (spine CONDUCTOR + diabetes drafts enqueued via mayEnqueueAgentDraft). Domain agent-intelligence Accept/Edit/Reject is blocked — decide only on primary worklist items.",
   });
 }

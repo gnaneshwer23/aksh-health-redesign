@@ -173,6 +173,43 @@ export async function recordSpineQueueDecisions(options: {
     }
   }
 
+  // Mirror diabetes agent-intel draft status when the primary review item is decided.
+  // Accept/reject only — edit requires editedPayload on the domain path and is left to prep UI.
+  for (const delta of deltas) {
+    if (delta.decision !== "accept" && delta.decision !== "reject") continue;
+    const diabetesDraftId =
+      typeof delta.item.metadata?.diabetesDraftId === "string"
+        ? delta.item.metadata.diabetesDraftId
+        : null;
+    if (!diabetesDraftId) continue;
+    try {
+      const { decideAgentIntelDraft } = await import(
+        "../diabetes-intelligence/agent-intel-repository"
+      );
+      const patientIdForDraft =
+        options.next.patientId?.trim() ||
+        resolveSpinePatientId(options.next);
+      await decideAgentIntelDraft(
+        {
+          patientId: patientIdForDraft,
+          draftId: diabetesDraftId,
+          action: delta.decision,
+          actor:
+            options.actor?.trim() ||
+            delta.item.decidedBy?.trim() ||
+            "clinician",
+          reason:
+            delta.decision === "reject"
+              ? delta.item.rejectionReason ?? "Rejected on primary GP review"
+              : `Mirrored from primary review case ${options.next.id}`,
+        },
+        { scopeKey: options.scopeKey }
+      );
+    } catch {
+      // Domain mirror is best-effort; primary review-case decision + SHIELD already committed.
+    }
+  }
+
   const accepted = deltas.some((d) => d.decision === "accept");
   if (options.offerHealthPlan && accepted) {
     const draft = await createHealthPlanDraft(

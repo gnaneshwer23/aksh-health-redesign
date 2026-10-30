@@ -6,11 +6,7 @@ import Link from "next/link";
 import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
-import type {
-  AgentIntelDraft,
-  AgentIntelSnapshot,
-  StructuredDraftPayload,
-} from "@/lib/diabetes-intelligence/agent-intel-types";
+import type { AgentIntelSnapshot } from "@/lib/diabetes-intelligence/agent-intel-types";
 
 type Props = {
   patientId: string;
@@ -64,63 +60,13 @@ export function AgentIntelligenceWorkspace({ patientId, patientLabel }: Props) {
     }
   }
 
-  async function decideDraft(
-    draft: AgentIntelDraft,
-    action: "accept" | "edit" | "reject"
-  ) {
-    setBusy(true);
-    try {
-      const body: Record<string, unknown> = { action };
-      if (action === "reject") {
-        body.reason = "Clinician rejected — draft not appropriate for record";
-      }
-      if (action === "edit") {
-        const editedPayload: StructuredDraftPayload = {
-          ...draft.payload,
-          title: `${draft.payload.title} (clinician-edited)`,
-          sections: [
-            ...draft.payload.sections,
-            {
-              id: "clinician-edit",
-              heading: "Clinician edit",
-              body: "Edited under HITL — still not an EHR write. Synthetic demo only.",
-            },
-          ],
-        };
-        body.editedPayload = editedPayload;
-        body.reason = "Edited AI draft before acceptance";
-      }
-      const res = await fetch(
-        `/api/patients/${encodeURIComponent(patientId)}/agent-intelligence/draft/${encodeURIComponent(draft.id)}/decision`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      );
-      const data = (await res.json()) as AgentIntelSnapshot & { error?: string };
-      if (!res.ok) {
-        toast({ title: "Decision failed", description: data.error ?? "Could not decide." });
-        return;
-      }
-      setSnap(data);
-      toast({
-        title: `Draft ${action}`,
-        description: "No EHR write · AI vs verified distinction preserved.",
-      });
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <div style={{ display: "grid", gap: 16, maxWidth: 1100 }}>
       <ConnectedPatientChrome
         patientId={patientId}
         patientLabel={patientLabel ?? snap?.patientLabel}
         activeStep="agent"
-        subtitle="Phase 5 · governed drafts · version pins · Accept/Edit/Reject"
+        subtitle="Phase 5 · governed drafts · prep only — decide on primary review queue"
         actions={
           <>
             <Button disabled={busy} onClick={() => void postAction({ action: "run_orchestration" })}>
@@ -186,7 +132,7 @@ export function AgentIntelligenceWorkspace({ patientId, patientLabel }: Props) {
             </p>
           </Panel>
 
-          <Panel title="AI drafts (HITL gate)">
+          <Panel title="AI drafts (prep — decide on primary review)">
             {snap.drafts.length === 0 ? (
               <p style={bodyText}>No drafts yet — run orchestration.</p>
             ) : (
@@ -208,25 +154,13 @@ export function AgentIntelligenceWorkspace({ patientId, patientLabel }: Props) {
                       </div>
                       {(d.status === "DRAFT" || d.status === "queued") && (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                          <Button size="sm" disabled={busy} onClick={() => void decideDraft(d, "accept")}>
-                            Accept
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={busy}
-                            onClick={() => void decideDraft(d, "edit")}
+                          <Link
+                            href={`/dashboard/gp/review-queue?patient=${encodeURIComponent(patientId)}`}
+                            className="inline-flex items-center rounded-md bg-[#121715] px-3 py-1.5 text-xs font-semibold text-white"
+                            data-testid="agent-intel-open-primary-review"
                           >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={busy}
-                            onClick={() => void decideDraft(d, "reject")}
-                          >
-                            Reject
-                          </Button>
+                            Open primary review
+                          </Link>
                         </div>
                       )}
                     </div>

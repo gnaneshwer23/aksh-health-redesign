@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { findOpenReviewItemForDiabetesDraft } from "@/lib/clinical-spine/diabetes-draft-enqueue";
 import { denyUnlessConnectedDiabetesDecisionScope } from "@/lib/clinical-proof/connected-diabetes-decision-scope";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
-import { decideAgentIntelligenceDraft } from "@/lib/diabetes-intelligence";
+import { resolveTenantContext } from "@/lib/db/tenant-context";
 import type {
   AgentIntelDecisionAction,
   StructuredDraftPayload,
@@ -13,6 +14,10 @@ export const maxDuration = 30;
 
 type RouteContext = { params: Promise<{ id: string; draftId: string }> };
 
+/**
+ * P1 worklist honesty — agent-intel Accept/Edit/Reject is not a second HITL surface.
+ * Clinicians decide on the primary review-case worklist (`/review/{caseId}`).
+ */
 export async function POST(request: Request, context: RouteContext) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response || !auth.context) return auth.response;
@@ -52,46 +57,40 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  const actor = auth.context.userEmail ?? auth.context.userId;
+  const tenant = resolveTenantContext(request, auth.context);
+  const mirrored = await findOpenReviewItemForDiabetesDraft({
+    diabetesDraftId: draftId,
+    scopeKey: auth.context.scopeKey,
+    practiceId: tenant.practiceId,
+  });
 
-  try {
-    const snapshot = await decideAgentIntelligenceDraft(
-      {
-        patientId,
-        draftId,
-        action: body.action,
-        actor,
-        reason: body.reason,
-        editedPayload: body.editedPayload,
-      },
-      { scopeKey: auth.context.scopeKey }
-    );
-    return NextResponse.json({
-      ...snapshot,
-      action: body.action,
-      ehrWrite: false,
-      autonomousClinicalAction: false,
-      decidedByPersona: auth.context.clinicalPersona,
-    });
-  } catch (err) {
-    const status = (err as { status?: number }).status ?? 500;
-    const message = err instanceof Error ? err.message : "Request failed";
-    const code = (err as { code?: string }).code;
-    const shieldAuditWriteReason = (err as { shieldAuditWriteReason?: string }).shieldAuditWriteReason;
+  if (mirrored) {
     return NextResponse.json(
       {
-        error: message,
+        error:
+          "Agent-intelligence drafts are decided on the primary GP review worklist, not this domain endpoint.",
+        code: "USE_PRIMARY_REVIEW",
+        decisionFinalised: false,
         ehrWrite: false,
-        ...(code ? { code } : {}),
-        ...(status === 503
-          ? {
-              shieldAuditWriteFailed: true,
-              shieldAuditWriteReason: shieldAuditWriteReason ?? message,
-              decisionFinalised: false,
-            }
-          : {}),
+        autonomousClinicalAction: false,
+        caseId: mirrored.caseId,
+        itemId: mirrored.itemId,
+        decisionHref: mirrored.decisionHref,
       },
-      { status }
+      { status: 409 }
     );
   }
+
+  return NextResponse.json(
+    {
+      error:
+        "Domain agent-intelligence is prep only. Run orchestration (Guardian PASS/REVIEW) so the draft is enqueued to the primary review worklist, then Accept/Edit/Reject there.",
+      code: "PREP_ONLY_ENQUEUE_REQUIRED",
+      decisionFinalised: false,
+      ehrWrite: false,
+      autonomousClinicalAction: false,
+      decisionHref: `/dashboard/gp/review-queue?patient=${encodeURIComponent(patientId)}`,
+    },
+    { status: 409 }
+  );
 }

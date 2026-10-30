@@ -86,6 +86,39 @@ async function main() {
   const decidedItem = resolveReviewQueueItems(after!).find((i) => i.id === first.id);
   assert.equal(decidedItem?.status, "ACCEPTED");
 
+  const { findOpenReviewItemForDiabetesDraft } = await import(
+    "../lib/clinical-spine/diabetes-draft-enqueue"
+  );
+  const draftId = first.metadata?.diabetesDraftId as string;
+  assert.ok(draftId);
+  // After accept, item is no longer DRAFT — open lookup should miss.
+  const afterDecide = await findOpenReviewItemForDiabetesDraft({
+    diabetesDraftId: draftId,
+    scopeKey,
+  });
+  assert.equal(afterDecide, null);
+
+  // Fresh enqueue for open-lookup + API honesty proof
+  const again = await enqueueDiabetesDraftsToSpineReview({
+    patientId,
+    patientLabel: ctx.patientLabel,
+    drafts,
+    guardianOutputStatus: "PASS",
+    runId: "airun-pass-lookup",
+    userId: "gp-test",
+    scopeKey: `${scopeKey}_b`,
+    nowMs: now + 1,
+  });
+  assert.equal(again.enqueued, true);
+  if (!again.enqueued) return;
+  const openLookup = await findOpenReviewItemForDiabetesDraft({
+    diabetesDraftId: drafts[0]!.id,
+    scopeKey: `${scopeKey}_b`,
+  });
+  assert.ok(openLookup);
+  assert.equal(openLookup?.caseId, again.caseId);
+  assert.match(openLookup!.decisionHref, /^\/review\//);
+
   console.log("p0-ux-unified-worklist: PASS");
 }
 
