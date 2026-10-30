@@ -44,4 +44,4 @@
 
 ## Next
 
-**Phase A5** — DB-backed multi-account golden E2E + negatives in CI, performance/reliability evidence, `E2E_ACCEPTANCE_RESULTS.md` + `TECHNICAL_READINESS_REPORT.md`. Review-only until merge policy allows.
+**Phase A5** — delivered on `feat/milestone-a5-e2e-readiness`: API/unit golden §11.2 + negatives (`npm run test:milestone-a5`), `E2E_ACCEPTANCE_RESULTS.md` + `TECHNICAL_READINESS_REPORT.md`. Browser multi-role E2E still open. Review-only until merge policy allows.
