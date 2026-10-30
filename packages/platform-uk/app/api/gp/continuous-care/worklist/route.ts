@@ -16,10 +16,13 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     items,
+    surface: "domain_prep",
     synthetic: true,
     ehrWrite: false,
     autonomousClinicalAction: false,
     clinicalValidationClaim: false,
-    note: "Phase 4 continuous care worklist — synthetic demo only.",
+    primaryDecisionHref: "/dashboard/gp/review-queue",
+    note:
+      "Continuous-care domain prep / ops view — not a second Accept/Edit/Reject queue. GP clinical drafts decide on the primary review worklist.",
   });
 }

@@ -123,6 +123,11 @@ export async function runDiabetesAgentIntelAssemble(
   options?: {
     scopeKey?: string;
     actor?: string;
+    /**
+     * Review-case owner id (must match auth userId for GET/decide ownership).
+     * Defaults to actor when omitted — prefer the signed-in `userId`, not email.
+     */
+    ownerUserId?: string;
     now?: number;
     /** Optional injection/probe text for Guardian evaluation (tests / chat). */
     userText?: string;
@@ -137,6 +142,7 @@ export async function runDiabetesAgentIntelAssemble(
 ): Promise<AgentIntelSnapshot> {
   const scopeKey = options?.scopeKey ?? "shared";
   const actor = options?.actor ?? "agent-orchestrator";
+  const ownerUserId = options?.ownerUserId?.trim() || actor;
   const nowMs = options?.now ?? Date.now();
   const now = new Date(nowMs).toISOString();
   const label = patientLabel(patientId);
@@ -235,7 +241,7 @@ export async function runDiabetesAgentIntelAssemble(
       drafts,
       guardianOutputStatus: guardianGateway?.output_status,
       runId: run.id,
-      userId: actor,
+      userId: ownerUserId,
       scopeKey,
       careEpisodeId: options?.careEpisodeId,
       nowMs,
@@ -250,6 +256,7 @@ export async function seedAndBuildAgentIntelligence(
   options?: {
     scopeKey?: string;
     actor?: string;
+    ownerUserId?: string;
     now?: number;
     userText?: string;
     careEpisodeId?: string;
