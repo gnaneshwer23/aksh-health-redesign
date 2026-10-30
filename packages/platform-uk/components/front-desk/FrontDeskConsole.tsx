@@ -372,7 +372,7 @@ export function FrontDeskConsole() {
               </Button>
             </div>
             {view.referrals.slice(0, 4).map((r) => (
-              <div key={r.id} className="rounded-xl border border-border-subtle p-3 text-sm">
+              <div key={r.id} className="rounded-xl border border-border-subtle p-3 text-sm" data-testid="referral-intake-card">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-medium text-foreground">{r.patientName ?? "Patient not matched"}</p>
                   <div className="flex gap-1">
@@ -380,8 +380,14 @@ export function FrontDeskConsole() {
                     <Badge variant={r.status === "booked" ? "success" : r.status === "handed_off" ? "warning" : "outline"}>{r.status.replace("_", " ")}</Badge>
                   </div>
                 </div>
+                {r.verifiedPatient ? (
+                  <p className="mt-1 text-xs text-foreground" data-testid="referral-verified-identity">
+                    Verified identity: {r.verifiedPatient.name} · DOB {r.verifiedPatient.dob} · id {r.verifiedPatient.id}
+                    {r.careEpisodeId ? ` · episode ${r.careEpisodeId}` : ""}
+                  </p>
+                ) : null}
                 <p className="text-xs text-muted">
-                  {r.reason}
+                  {r.intakeSummary || r.reason}
                   {r.referrer ? ` · from ${r.referrer}` : ""}
                 </p>
                 {r.status === "proposed" && r.proposedSlot ? (
@@ -389,7 +395,23 @@ export function FrontDeskConsole() {
                     <p className="text-xs text-foreground">
                       Proposed: {fmt(r.proposedSlot.start)} with {r.proposedSlot.clinicianName}
                     </p>
-                    <Button size="sm" disabled={busy === r.id} onClick={() => act(r.id, () => post("/api/front-desk/referrals", { action: "confirm", id: r.id }), "Booked")}>
+                    <Button
+                      size="sm"
+                      disabled={busy === r.id}
+                      data-testid="referral-confirm-booking"
+                      onClick={() =>
+                        act(
+                          r.id,
+                          () =>
+                            post("/api/front-desk/referrals", {
+                              action: "confirm",
+                              id: r.id,
+                              ...(r.careEpisodeId ? { careEpisodeId: r.careEpisodeId } : {}),
+                            }),
+                          "Booked"
+                        )
+                      }
+                    >
                       Confirm booking
                     </Button>
                   </div>

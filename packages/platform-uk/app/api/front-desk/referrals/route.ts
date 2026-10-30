@@ -31,8 +31,16 @@ async function handlePOST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Paste a referral letter (at least a few words)." }, { status: 400 });
   if (parsed.data.action === "intake") {
     const text = parsed.data.text;
-    const { result } = await mutateState((s) => intakeReferral(s, text));
-    return NextResponse.json({ referral: result });
+    const requestedEpisode = readCareEpisodeId(parsed.data);
+    const { result } = await mutateState((s) =>
+      intakeReferral(s, text, new Date().toISOString(), { careEpisodeId: requestedEpisode })
+    );
+    return NextResponse.json({
+      referral: result,
+      careEpisodeId: result.careEpisodeId ?? null,
+      verifiedPatient: result.verifiedPatient ?? null,
+      intakeSummary: result.intakeSummary ?? null,
+    });
   }
 
   const auth = await getOptionalAuthenticatedUserScope(request);
@@ -41,7 +49,9 @@ async function handlePOST(request: Request) {
   const requestedEpisode = readCareEpisodeId(parsed.data);
 
   const id = parsed.data.id;
-  const { result, state } = await mutateState((s) => confirmReferralBooking(s, id));
+  const { result, state } = await mutateState((s) =>
+    confirmReferralBooking(s, id, { careEpisodeId: requestedEpisode })
+  );
   if (!result) {
     return NextResponse.json(
       { error: "That referral can’t be booked (already booked, urgent, or slot taken)." },
@@ -49,7 +59,7 @@ async function handlePOST(request: Request) {
     );
   }
 
-  let careEpisodeId = requestedEpisode ?? undefined;
+  let careEpisodeId = requestedEpisode ?? result.careEpisodeId ?? undefined;
   if (result.patientId && result.proposedSlotId) {
     const correlated = await correlateCareEpisodeStage({
       patientId: result.patientId,
@@ -79,6 +89,8 @@ async function handlePOST(request: Request) {
   return NextResponse.json({
     referral: result,
     careEpisodeId: careEpisodeId ?? null,
+    verifiedPatient: result.verifiedPatient ?? null,
+    intakeSummary: result.intakeSummary ?? null,
     nurseObservationOpen: listOpenNurseObservationTasks(state).some((w) => w.patientId === result.patientId),
   });
 }
