@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
+import { correlateCareEpisodeStage, handoffNurseToGp, readCareEpisodeId } from "@/lib/care-episode";
 import { recordNurseVitalsOnSpine } from "@/lib/clinical-spine/role-events";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -56,6 +56,7 @@ export async function POST(request: Request) {
     );
 
     let careEpisodeId = readCareEpisodeId(body);
+    let gpHandoffCreated = false;
     if (result.accepted) {
       const correlated = await correlateCareEpisodeStage({
         patientId: body.patientId.trim(),
@@ -68,10 +69,18 @@ export async function POST(request: Request) {
         linkLabel: "Nurse vitals observation",
       });
       careEpisodeId = correlated.careEpisodeId;
+      const handoff = await handoffNurseToGp({
+        patientId: body.patientId.trim(),
+        actor: auth.context.userEmail ?? auth.context.userId,
+        scopeKey: auth.context.scopeKey,
+        careEpisodeId,
+        vitalsSampleId: result.sample?.id ?? `vitals-${body.patientId.trim()}`,
+      });
+      gpHandoffCreated = handoff.created;
     }
 
     return NextResponse.json(
-      { ...result, careEpisodeId },
+      { ...result, careEpisodeId, gpHandoffCreated, autonomous: false },
       { status: result.accepted ? 200 : 403 }
     );
   } catch (error) {

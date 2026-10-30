@@ -72,6 +72,6 @@ Care-episode `outbox_enqueued` events remain available for a future durable cons
 - Clinical retries remain fail-closed (`maxRetries=0`)
 - No silent enqueue when durable SHIELD is required and missing
 
-## Next (A3)
+## Next (A3) — done on `feat/milestone-a3-stakeholder-integration`
 
-Stakeholder / ops surfaces for durable run status, SHIELD blocked enqueue visibility, and care-episode outbox consumer design — still review-only until merge policy allows.
+Stakeholder / ops surfaces for durable run status, SHIELD blocked enqueue visibility, and care-episode outbox consumer design — see `STAKEHOLDER_INTEGRATION.md` / `PHASE_A3_REPORT.md`. Still review-only until merge policy allows.

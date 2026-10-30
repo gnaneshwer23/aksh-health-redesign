@@ -14,9 +14,11 @@ assert.match(page, /not a clinical accuracy score/);
 assert.match(page, /\/api\/agents\/readiness/);
 assert.match(page, /loopOutcomes|equity/);
 assert.match(page, /data-testid="agent-ops-honesty"/);
+assert.match(page, /data-testid="agent-ops-durable-runs"/);
+assert.match(page, /\/api\/agents\/ops-runs/);
 assert.match(page, /PRISM\/ATLAS/);
 assert.match(page, /CompassBriefPanel/);
 assert.doesNotMatch(page, /patientName|NHS number|dateOfBirth/i);
 assert.match(sidebar, /\/dashboard\/admin\/agent-ops/);
 
-console.log("p1-agent-ops-dashboard: honesty copy + readiness wiring + admin nav — PASS");
+console.log("p1-agent-ops-dashboard: honesty copy + readiness wiring + A3 durable runs + admin nav — PASS");

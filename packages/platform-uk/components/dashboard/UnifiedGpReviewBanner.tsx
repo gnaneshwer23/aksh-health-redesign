@@ -6,6 +6,13 @@ import { useEffect, useState } from "react";
 type UnifiedPayload = {
   primaryCount?: number;
   prepCount?: number;
+  assignmentsOpen?: number;
+  labReferralDraftStatuses?: { kind: string; status: string }[];
+  conductorOps?: {
+    total?: number;
+    shieldBlockedCount?: number;
+    runningCount?: number;
+  };
   note?: string;
   error?: string;
 };
@@ -53,6 +60,13 @@ export function UnifiedGpReviewBanner({ patientId }: { patientId?: string | null
           Open drafts on primary queue: {data.primaryCount ?? 0}
           {typeof data.prepCount === "number" && data.prepCount > 0
             ? ` · ${data.prepCount} domain prep draft(s) not yet mirrored`
+            : ""}
+          {typeof data.assignmentsOpen === "number" ? ` · assignments: ${data.assignmentsOpen}` : ""}
+          {data.conductorOps
+            ? ` · CONDUCTOR runs: ${data.conductorOps.total ?? 0} (SHIELD-blocked: ${data.conductorOps.shieldBlockedCount ?? 0})`
+            : ""}
+          {data.labReferralDraftStatuses?.length
+            ? ` · lab/referral drafts: ${data.labReferralDraftStatuses.length}`
             : ""}
         </p>
       )}

@@ -140,3 +140,19 @@ export function selectCanonicalJourneyPlans(plans: UnifiedCarePlan[]): UnifiedCa
 export function selectMedCarePlans(plans: UnifiedCarePlan[]): UnifiedCarePlan[] {
   return plans.filter((p) => p.sourceStore === "medcare_care_plan");
 }
+
+/**
+ * A3 — patient-facing visibility: APPROVED only.
+ * Never returns DRAFT / REJECTED / SUPERSEDED plans to a patient surface.
+ */
+export function selectPatientVisibleApprovedPlans(plans: UnifiedCarePlan[]): UnifiedCarePlan[] {
+  return plans.filter((p) => p.status === "APPROVED");
+}
+
+export async function listPatientVisibleCarePlans(
+  patientId: string,
+  options?: { scopeKey?: string }
+): Promise<UnifiedCarePlan[]> {
+  const all = await listUnifiedCarePlans(patientId, options);
+  return selectPatientVisibleApprovedPlans(all);
+}

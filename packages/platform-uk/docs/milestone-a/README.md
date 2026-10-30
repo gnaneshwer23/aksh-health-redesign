@@ -9,5 +9,7 @@ Phased hardening of the existing 14-agent platform (`packages/platform-uk`). Pre
 | [PHASE_A1_REPORT.md](./PHASE_A1_REPORT.md) | A1 implementation / tests / next |
 | [ORCHESTRATION_RELIABILITY.md](./ORCHESTRATION_RELIABILITY.md) | A2 durable runs + SHIELD enqueue gate |
 | [PHASE_A2_REPORT.md](./PHASE_A2_REPORT.md) | A2 implementation / tests / next |
+| [STAKEHOLDER_INTEGRATION.md](./STAKEHOLDER_INTEGRATION.md) | A3 handoffs, ops visibility, assignment |
+| [PHASE_A3_REPORT.md](./PHASE_A3_REPORT.md) | A3 implementation / tests / next |
 
 Phases: **A1** runtime metadata → **A2** durable runs → **A3** stakeholder → **A4** security/ops → **A5** E2E golden. Formal HCP evaluation = Milestone B.

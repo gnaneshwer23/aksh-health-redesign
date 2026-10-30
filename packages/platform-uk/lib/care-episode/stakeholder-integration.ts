@@ -126,16 +126,33 @@ export async function integrateNurseObservationsStage(input: {
   scopeKey?: string;
   careEpisodeId?: string;
   vitalsSampleId?: string;
-}): Promise<CorrelateJourneyResult> {
-  return correlateCareEpisodeStage({
+  /** A3 — also open GP review task (default true). */
+  handoffToGp?: boolean;
+}): Promise<CorrelateJourneyResult & { gpHandoffCreated?: boolean }> {
+  const scopeKey = input.scopeKey ?? "shared";
+  const correlated = await correlateCareEpisodeStage({
     patientId: input.patientId,
     actor: input.actor,
-    scopeKey: input.scopeKey ?? "shared",
+    scopeKey,
     careEpisodeId: input.careEpisodeId,
     stage: "nurse_observations",
     linkId: input.vitalsSampleId ?? `vitals-${input.patientId}`,
     linkLabel: "Nurse vitals",
   });
+
+  if (input.handoffToGp === false) {
+    return correlated;
+  }
+
+  const { handoffNurseToGp } = await import("./stakeholder-handoffs");
+  const handoff = await handoffNurseToGp({
+    patientId: input.patientId,
+    actor: input.actor,
+    scopeKey,
+    careEpisodeId: correlated.careEpisodeId,
+    vitalsSampleId: input.vitalsSampleId,
+  });
+  return { ...correlated, gpHandoffCreated: handoff.created };
 }
 
 /** Advance episode to CONDUCTOR orchestrate stage. */
@@ -164,16 +181,33 @@ export async function integrateClinicalReviewStage(input: {
   scopeKey?: string;
   careEpisodeId?: string;
   reviewCaseId?: string;
-}): Promise<CorrelateJourneyResult> {
-  return correlateCareEpisodeStage({
+  /** A3 — also open pharmacist med-review task (default true). */
+  handoffToPharmacist?: boolean;
+}): Promise<CorrelateJourneyResult & { pharmacistHandoffCreated?: boolean }> {
+  const scopeKey = input.scopeKey ?? "shared";
+  const correlated = await correlateCareEpisodeStage({
     patientId: input.patientId,
     actor: input.actor,
-    scopeKey: input.scopeKey ?? "shared",
+    scopeKey,
     careEpisodeId: input.careEpisodeId,
     stage: "clinical_review",
     linkId: input.reviewCaseId ?? `review-${input.patientId}`,
     linkLabel: "GP clinical review",
   });
+
+  if (input.handoffToPharmacist === false) {
+    return correlated;
+  }
+
+  const { handoffGpToPharmacist } = await import("./stakeholder-handoffs");
+  const handoff = await handoffGpToPharmacist({
+    patientId: input.patientId,
+    actor: input.actor,
+    scopeKey,
+    careEpisodeId: correlated.careEpisodeId,
+    reviewCaseId: input.reviewCaseId,
+  });
+  return { ...correlated, pharmacistHandoffCreated: handoff.created };
 }
 
 const STAGE_ORDER: JourneyStage[] = [

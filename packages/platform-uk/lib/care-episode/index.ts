@@ -48,3 +48,23 @@ export {
   runStakeholderEpisodeJourney,
   type StakeholderStageResult,
 } from "./stakeholder-integration";
+
+export {
+  handoffNurseToGp,
+  handoffGpToPharmacist,
+  filterPatientVisibleCarePlans,
+  toPatientVisibleCarePlans,
+  assignFollowUpOwnership,
+  trackLabReferralDraftStatuses,
+  applyDraftStatusTransition,
+  type HandoffResult,
+  type PatientVisibleCarePlan,
+  type DraftStatusSnapshot,
+  type DraftTrackKind,
+} from "./stakeholder-handoffs";
+
+export {
+  drainCareEpisodeOutbox,
+  describeOutboxConsumerDesign,
+  type OutboxDrainResult,
+} from "./outbox-consumer";

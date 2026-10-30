@@ -34,6 +34,27 @@ type LoopSummary = {
   suppression: string;
 };
 
+type OpsRunRow = {
+  runId: string;
+  status: string;
+  patientRef: string;
+  shieldBlockedEnqueue: boolean;
+  draftEnqueueAllowed: boolean;
+  guardianOutcome: string | null;
+  correlationId: string;
+  startedAt: string;
+};
+
+type OpsRunsSummary = {
+  total: number;
+  shieldBlockedCount: number;
+  runningCount: number;
+  failedOrTimedOutCount: number;
+  byStatus: Record<string, number>;
+  rows: OpsRunRow[];
+  note?: string;
+};
+
 type OpsPayload = {
   readiness: {
     source: string;
@@ -43,10 +64,12 @@ type OpsPayload = {
     note: string;
   } | null;
   loop: LoopSummary | null;
+  durableRuns: OpsRunsSummary | null;
   honesty: {
     simulationOnly: true;
     acceptanceNotAccuracy: true;
     ehrWrite: false;
+    phiLeakage: false;
   };
   error?: string;
 };
@@ -69,9 +92,10 @@ export default function AdminAgentOpsPage() {
     let cancelled = false;
     (async () => {
       try {
-        const [readyRes, equityRes] = await Promise.all([
+        const [readyRes, equityRes, runsRes] = await Promise.all([
           fetch("/api/agents/readiness", { credentials: "include" }),
           fetch("/api/agents/equity", { credentials: "include" }),
+          fetch("/api/agents/ops-runs?limit=20", { credentials: "include" }),
         ]);
         if (!readyRes.ok) {
           throw new Error(`readiness ${readyRes.status}`);
@@ -82,14 +106,20 @@ export default function AdminAgentOpsPage() {
           const equity = await equityRes.json();
           loop = equity.loopOutcomes ?? equity.loop ?? null;
         }
+        let durableRuns: OpsRunsSummary | null = null;
+        if (runsRes.ok) {
+          durableRuns = (await runsRes.json()) as OpsRunsSummary;
+        }
         if (!cancelled) {
           setData({
             readiness,
             loop,
+            durableRuns,
             honesty: {
               simulationOnly: true,
               acceptanceNotAccuracy: true,
               ehrWrite: false,
+              phiLeakage: false,
             },
           });
         }
@@ -98,7 +128,13 @@ export default function AdminAgentOpsPage() {
           setData({
             readiness: null,
             loop: null,
-            honesty: { simulationOnly: true, acceptanceNotAccuracy: true, ehrWrite: false },
+            durableRuns: null,
+            honesty: {
+              simulationOnly: true,
+              acceptanceNotAccuracy: true,
+              ehrWrite: false,
+              phiLeakage: false,
+            },
             error: error instanceof Error ? error.message : "Failed to load agent ops",
           });
         }
@@ -176,6 +212,53 @@ export default function AdminAgentOpsPage() {
           <p className="text-[11px] text-muted">
             PRISM/ATLAS omitted from live strip (scaffold ≠ live). Meeting numeric targets does not release an agent.
           </p>
+        </section>
+
+        <section className="space-y-3" data-testid="agent-ops-durable-runs">
+          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3)</h2>
+          <p className="text-xs text-muted">
+            Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
+            SHIELD-blocked enqueue: {data?.durableRuns?.shieldBlockedCount ?? "—"} · Failed/timeout:{" "}
+            {data?.durableRuns?.failedOrTimedOutCount ?? "—"}. Patient refs are hashed — no names or NHS
+            numbers.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="text-left text-muted border-b border-border">
+                  <th className="py-1 pr-2">Status</th>
+                  <th className="py-1 pr-2">Patient ref</th>
+                  <th className="py-1 pr-2">SHIELD block</th>
+                  <th className="py-1 pr-2">Guardian</th>
+                  <th className="py-1 pr-2">Correlation</th>
+                  <th className="py-1">Started</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data?.durableRuns?.rows ?? []).slice(0, 12).map((row) => (
+                  <tr key={row.runId} className="border-b border-border/60">
+                    <td className="py-1 pr-2 font-medium">{row.status}</td>
+                    <td className="py-1 pr-2 font-mono">{row.patientRef}</td>
+                    <td className="py-1 pr-2">
+                      {row.shieldBlockedEnqueue ? "blocked" : row.draftEnqueueAllowed ? "ok" : "no"}
+                    </td>
+                    <td className="py-1 pr-2">{row.guardianOutcome ?? "—"}</td>
+                    <td className="py-1 pr-2 font-mono truncate max-w-[10rem]" title={row.correlationId}>
+                      {row.correlationId.slice(0, 12)}
+                    </td>
+                    <td className="py-1">{row.startedAt?.slice(0, 19) ?? "—"}</td>
+                  </tr>
+                ))}
+                {!data?.durableRuns?.rows?.length && !loading && (
+                  <tr>
+                    <td colSpan={6} className="py-3 text-muted">
+                      No durable CONDUCTOR runs in this tenant scope yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section className="space-y-3" data-testid="agent-ops-funnel">
