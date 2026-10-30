@@ -8,7 +8,8 @@
 | ID | Item | Why |
 |----|------|-----|
 | B-P0-1 | Keep INT-09 Handler harness typing green in CI | Prevents verify/build false failures |
-| B-P0-2 | Record passing Actions SHA/URL after every merge | Doc honesty (23/25) |
+| B-P0-2 | Record passing Actions SHA/URL after every merge | **Done** for #80 — `84fef5b` / [41008129457](https://github.com/gnaneshwer23/aksh-health-redesign/actions/runs/41008129457) |
+| B-P0-3 | Keep glucose series writes as bulk INSERT | Prevents CI Atlantic hang on ~1.5k CGM seed |
 
 ## P1 — Integration hardening
 
