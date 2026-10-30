@@ -45,6 +45,29 @@ type OpsRunRow = {
   startedAt: string;
 };
 
+type OpsAlertSignal = {
+  id: string;
+  code: string;
+  severity: "info" | "warning" | "critical";
+  title: string;
+  detail: string;
+  count: number;
+  sampleRefs: string[];
+};
+
+type OpsAlertsSummary = {
+  alerts: OpsAlertSignal[];
+  metrics: {
+    sampleSize: number;
+    failedOrTimedOut: number;
+    shieldBlocked: number;
+    shieldBlockRate: number | null;
+    stuckRunning: number;
+    stuckEpisodeTasks: number;
+  };
+  note?: string;
+};
+
 type OpsRunsSummary = {
   total: number;
   shieldBlockedCount: number;
@@ -53,6 +76,7 @@ type OpsRunsSummary = {
   byStatus: Record<string, number>;
   rows: OpsRunRow[];
   note?: string;
+  alerts?: OpsAlertsSummary | null;
 };
 
 type OpsPayload = {
@@ -95,7 +119,7 @@ export default function AdminAgentOpsPage() {
         const [readyRes, equityRes, runsRes] = await Promise.all([
           fetch("/api/agents/readiness", { credentials: "include" }),
           fetch("/api/agents/equity", { credentials: "include" }),
-          fetch("/api/agents/ops-runs?limit=20", { credentials: "include" }),
+          fetch("/api/agents/ops-runs?limit=20&alerts=1", { credentials: "include" }),
         ]);
         if (!readyRes.ok) {
           throw new Error(`readiness ${readyRes.status}`);
@@ -214,8 +238,47 @@ export default function AdminAgentOpsPage() {
           </p>
         </section>
 
+        <section className="space-y-3" data-testid="agent-ops-alerts">
+          <h2 className="text-sm font-semibold">Durable-run alerts (A4)</h2>
+          <p className="text-xs text-muted">
+            Failed/timeout (window): {data?.durableRuns?.alerts?.metrics.failedOrTimedOut ?? "—"} · SHIELD
+            blocks: {data?.durableRuns?.alerts?.metrics.shieldBlocked ?? "—"}
+            {data?.durableRuns?.alerts?.metrics.shieldBlockRate != null
+              ? ` (${Math.round(data.durableRuns.alerts.metrics.shieldBlockRate * 100)}%)`
+              : ""}{" "}
+            · Stuck running: {data?.durableRuns?.alerts?.metrics.stuckRunning ?? "—"} · Stuck episode tasks:{" "}
+            {data?.durableRuns?.alerts?.metrics.stuckEpisodeTasks ?? "—"}. Aggregates only — no PHI.
+          </p>
+          <ul className="space-y-2 text-xs">
+            {(data?.durableRuns?.alerts?.alerts ?? []).map((alert) => (
+              <li
+                key={alert.id}
+                className={
+                  alert.severity === "critical"
+                    ? "rounded-md border border-red-300/80 bg-red-50/50 px-3 py-2"
+                    : "rounded-md border border-amber-300/80 bg-amber-50/40 px-3 py-2"
+                }
+                data-alert-code={alert.code}
+              >
+                <div className="font-medium">
+                  [{alert.severity}] {alert.title} · n={alert.count}
+                </div>
+                <div className="text-muted mt-0.5">{alert.detail}</div>
+                {alert.sampleRefs.length > 0 && (
+                  <div className="font-mono text-[11px] text-muted mt-1">
+                    refs: {alert.sampleRefs.join(", ")}
+                  </div>
+                )}
+              </li>
+            ))}
+            {!data?.durableRuns?.alerts?.alerts?.length && !loading && (
+              <li className="text-muted">No active durable-run alerts in this tenant scope.</li>
+            )}
+          </ul>
+        </section>
+
         <section className="space-y-3" data-testid="agent-ops-durable-runs">
-          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3)</h2>
+          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4)</h2>
           <p className="text-xs text-muted">
             Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
             SHIELD-blocked enqueue: {data?.durableRuns?.shieldBlockedCount ?? "—"} · Failed/timeout:{" "}

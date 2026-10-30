@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { isLlmOracleConfigured, runOracleAgent } from "@/lib/agents/llm-oracle";
+import { enforceAgentInvokeRateLimit } from "@/lib/agents/rate-limit-guards";
 import { getOracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
-import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { AGENT_INVOKE_ROLES } from "@/lib/security/agent-authz";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
+import { requireAppRole } from "@/lib/user-scope";
 
 export const maxDuration = 30;
 
@@ -22,8 +25,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
+  const auth = await requireAppRole(request, AGENT_INVOKE_ROLES);
   if (auth.response || !auth.context) return auth.response;
+
+  const limited = await enforceAgentInvokeRateLimit(request, auth.context.userId);
+  if (limited) return limited;
 
   let body: { patientId?: string; caseId?: string };
   try {
@@ -50,7 +56,10 @@ export async function POST(request: Request) {
     category: "system",
     caseId: body.caseId,
     agentLabel: "HORIZON",
-    resourceRef: `${draft.patientLabel} (${draft.patientId})`,
+    resourceRef: phiSafeResourceRef(draft.patientId, {
+      caseId: body.caseId,
+      agentLabel: "HORIZON",
+    }),
     payload: {
       mode: draft.mode,
       dataSource: draft.dataSource,

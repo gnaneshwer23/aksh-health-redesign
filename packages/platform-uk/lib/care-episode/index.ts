@@ -28,6 +28,7 @@ export {
   getCareEpisode,
   listCareEpisodeEvents,
   listCareEpisodesForPatient,
+  listCareEpisodesForScope,
   resetCareEpisodeStoreForTests,
   transitionCareEpisode,
 } from "./repository";

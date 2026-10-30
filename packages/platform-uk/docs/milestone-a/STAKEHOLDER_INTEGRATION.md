@@ -59,4 +59,4 @@ Strengthen multi-stakeholder continuity on the **existing** care-episode / Front
 
 ## Next (A4)
 
-Security / privacy pass, broader cross-tenant e2e, observability alerts on SHIELD-blocked / stale `running` reclaim windows — still review-only until merge policy allows.
+See `SECURITY_AND_PRIVACY.md` + `OBSERVABILITY_AND_OPERATIONS.md` (A4 branch) — authz matrix, PHI-safe audit refs, durable-run alerts. Review-only until merge policy allows.

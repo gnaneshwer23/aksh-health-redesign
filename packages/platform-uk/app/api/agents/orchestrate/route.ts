@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { enforceAgentInvokeRateLimit } from "@/lib/agents/rate-limit-guards";
 import { correlateCareEpisodeStage, readCareEpisodeId } from "@/lib/care-episode";
 import {
   getClinicalSpineOrchestrateCapabilities,
   runClinicalSpineOrchestrate
 } from "@/lib/clinical-spine/orchestrate";
-import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { AGENT_INVOKE_ROLES } from "@/lib/security/agent-authz";
+import { requireAppRole } from "@/lib/user-scope";
 
 export const maxDuration = 60;
 
@@ -22,8 +24,11 @@ export async function GET() {
  * Optional careEpisodeId correlates CONDUCTOR run to the care-episode spine.
  */
 export async function POST(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
+  const auth = await requireAppRole(request, AGENT_INVOKE_ROLES);
   if (auth.response || !auth.context) return auth.response;
+
+  const limited = await enforceAgentInvokeRateLimit(request, auth.context.userId);
+  if (limited) return limited;
 
   let body: {
     patientId?: string;

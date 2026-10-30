@@ -12,7 +12,9 @@ import {
   ReviewQueueAssignmentError,
   type ReviewQueueAssignmentAction,
 } from "@/lib/gp/review-queue-assignment";
-import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { enforceReviewAssignRateLimit } from "@/lib/agents/rate-limit-guards";
+import { REVIEW_QUEUE_MUTATE_ROLES } from "@/lib/security/agent-authz";
+import { requireAppRole, requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -44,8 +46,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
+  const auth = await requireAppRole(request, REVIEW_QUEUE_MUTATE_ROLES);
   if (auth.response || !auth.context) return auth.response;
+
+  const limited = await enforceReviewAssignRateLimit(request, auth.context.userId);
+  if (limited) return limited;
 
   const tenant = resolveTenantContext(request, auth.context);
   let body: {
