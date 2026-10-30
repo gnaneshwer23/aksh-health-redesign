@@ -246,6 +246,18 @@ export async function listCareEpisodesForPatient(
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
+/** A4 — list recent care episodes for a tenant scope (Agent Ops stuck-task alerts). */
+export async function listCareEpisodesForScope(
+  scopeKey = "shared",
+  limit = 100
+): Promise<CareEpisode[]> {
+  const store = await readStore(scopeKey);
+  const capped = Math.min(Math.max(limit, 1), 200);
+  return [...store.episodes]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, capped);
+}
+
 export async function listCareEpisodeEvents(
   episodeId: string,
   scopeKey = "shared"
@@ -372,6 +384,8 @@ export async function addCareEpisodeTask(
   episodeId: string,
   task: Omit<CareEpisodeTask, "id" | "episodeId" | "createdAt" | "status"> & {
     status?: CareEpisodeTask["status"];
+    /** Optional override for ops alert fixtures (A4 stuck-task signals). */
+    createdAt?: string;
   },
   actor: string,
   scopeKey = "shared"
@@ -388,7 +402,7 @@ export async function addCareEpisodeTask(
     title: task.title,
     ownerRole: task.ownerRole,
     status: task.status ?? "open",
-    createdAt: nowIso(),
+    createdAt: task.createdAt ?? nowIso(),
     dueAt: task.dueAt,
     relatedLink: task.relatedLink,
   };

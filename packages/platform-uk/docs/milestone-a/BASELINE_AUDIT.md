@@ -208,7 +208,7 @@ Legend: **Done** / **Partial** / **Missing** / **Deferred (B)** — verified aga
 | `PHASE_A1_REPORT.md` | **Present** (A1) |
 | `ORCHESTRATION_RELIABILITY.md` | **Missing** (A2) |
 | `STAKEHOLDER_INTEGRATION.md` | **Present** (A3) |
-| `SECURITY_AND_PRIVACY.md` | **Missing** (A4) |
-| `OBSERVABILITY_AND_OPERATIONS.md` | **Missing** (A4) |
+| `SECURITY_AND_PRIVACY.md` | **Present** (A4) |
+| `OBSERVABILITY_AND_OPERATIONS.md` | **Present** (A4) |
 | `E2E_ACCEPTANCE_RESULTS.md` | **Missing** (A5) |
 | `TECHNICAL_READINESS_REPORT.md` | **Missing** (A5) |

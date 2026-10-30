@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 
 import { isLlmNexusConfigured, runNexusAgent } from "@/lib/agents/llm-nexus";
+import { enforceAgentInvokeRateLimit } from "@/lib/agents/rate-limit-guards";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
-import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { AGENT_INVOKE_ROLES } from "@/lib/security/agent-authz";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
+import { requireAppRole } from "@/lib/user-scope";
 
 export const maxDuration = 30;
 
@@ -25,8 +28,11 @@ export async function GET() {
  * Draft only; SHIELD-audited; ehrWrite:false.
  */
 export async function POST(request: Request) {
-  const auth = await requireAuthenticatedUserScope(request);
+  const auth = await requireAppRole(request, AGENT_INVOKE_ROLES);
   if (auth.response || !auth.context) return auth.response;
+
+  const limited = await enforceAgentInvokeRateLimit(request, auth.context.userId);
+  if (limited) return limited;
 
   let body: { patientId?: string; caseId?: string };
   try {
@@ -53,7 +59,10 @@ export async function POST(request: Request) {
     category: "system",
     caseId: body.caseId,
     agentLabel: "NEXUS",
-    resourceRef: `${draft.patientLabel} (${draft.patientId})`,
+    resourceRef: phiSafeResourceRef(draft.patientId, {
+      caseId: body.caseId,
+      agentLabel: "NEXUS",
+    }),
     payload: {
       mode: draft.mode,
       dataSource: draft.dataSource,

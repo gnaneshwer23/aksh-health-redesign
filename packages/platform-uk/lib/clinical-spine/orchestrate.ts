@@ -33,6 +33,7 @@ import {
   type DurableAgentRunRecord,
 } from "@/lib/agents/execution-run-store";
 import { resolveShieldAwareEnqueue } from "@/lib/agents/shield-orchestration-gate";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
 
 import { resolveDecision, type DecisionEscalation } from "@/lib/decision";
 
@@ -443,7 +444,10 @@ async function runClinicalSpineOrchestrateOnce(
     category: "system",
     caseId: input.caseId,
     agentLabel: "CONDUCTOR",
-    resourceRef: `${orchestrationWithGuardian.sharedContext.patientLabel} (${orchestrationWithGuardian.sharedContext.patientId})`,
+    resourceRef: phiSafeResourceRef(orchestrationWithGuardian.sharedContext.patientId, {
+      caseId: input.caseId,
+      agentLabel: "CONDUCTOR",
+    }),
     payload: {
       queuePriority: orchestrationWithGuardian.queuePriority,
       reviewOrder: orchestrationWithGuardian.reviewOrder,

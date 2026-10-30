@@ -130,6 +130,30 @@ export function getPermissionActions(): PermissionAction[] {
       notes:
         "Diabetes care-coordination chat with bounded chart context. clinical_reviewer allowed; patient scoped to bound id; operations_lead (regional/admin/hospital) and researcher denied named PHI. liveEmis:false · HITL drafts still need Accept.",
       enforcedAt: "2026-08-12"
+    },
+    {
+      id: "agent_invoke",
+      label: "Invoke CONDUCTOR / clinical agent draft APIs",
+      routeOrSurface: "/api/agents/orchestrate, /api/agents/{guardian,nexus,synthesis,oracle}",
+      notes:
+        "Milestone A4: clinical_reviewer only. Patient/researcher/restricted denied. Drafts only; ehrWrite:false; HITL required. Rate-limited.",
+      enforcedAt: "2026-10-30"
+    },
+    {
+      id: "agent_ops_inspect",
+      label: "Inspect Agent Ops durable runs and alerts",
+      routeOrSurface: "/api/agents/ops-runs, /dashboard/admin/agent-ops",
+      notes:
+        "Milestone A4: operations_lead + clinical_reviewer. PHI-minimised hashed patient refs only. Rate-limited.",
+      enforcedAt: "2026-10-30"
+    },
+    {
+      id: "review_queue_mutate",
+      label: "Assign / reassign / escalate GP review-queue items",
+      routeOrSurface: "/api/gp/review-queue/assign",
+      notes:
+        "Milestone A4: clinical_reviewer only. Practice/patient boundary checks remain. Rate-limited.",
+      enforcedAt: "2026-10-30"
     }
   ];
 }
@@ -225,6 +249,24 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
       // FR-PER-006: patient self-only via bound patient id on /api/chat/patient.
       patient: "scoped",
       researcher: "denied"
+    },
+    agent_invoke: {
+      clinical_reviewer: "allowed",
+      operations_lead: "denied",
+      patient: "denied",
+      researcher: "denied"
+    },
+    agent_ops_inspect: {
+      clinical_reviewer: "scoped",
+      operations_lead: "allowed",
+      patient: "denied",
+      researcher: "denied"
+    },
+    review_queue_mutate: {
+      clinical_reviewer: "allowed",
+      operations_lead: "denied",
+      patient: "denied",
+      researcher: "denied"
     }
   };
 
@@ -276,7 +318,8 @@ export function buildRolePermissionMatrix(options?: { generatedAt?: string; gene
       "Current build uses demo auth and scoped JSON stores; this matrix documents intended boundaries rather than production RBAC enforcement.",
       "Future database adapters must preserve ownership checks and audit integrity before production RBAC claims.",
       "No role may unlock live health system integration, real patient data handling, or autonomous clinical decisioning in the synthetic proof build.",
-      "patient/researcher are first-class AppRoles (B1): unrecognized session roles fail closed to \"restricted\" rather than silently becoming clinical_reviewer."
+      "patient/researcher are first-class AppRoles (B1): unrecognized session roles fail closed to \"restricted\" rather than silently becoming clinical_reviewer.",
+      "Milestone A4: agent_invoke / agent_ops_inspect / review_queue_mutate are route-enforced via requireAppRole (productionRbacEnforced remains false for the broader matrix)."
     ]
   };
 }

@@ -4,7 +4,7 @@
  * Surfaces status + SHIELD-blocked enqueue signals without PHI leakage.
  * Patient labels are never returned; patientId is truncated/hashed for ops.
  */
-import { createHash } from "crypto";
+import { phiSafePatientRef } from "../security/phi-safe-ref";
 
 import type { DurableAgentRunRecord, DurableAgentRunStatus } from "./execution-run-store";
 import { listDurableAgentRunsForScope } from "./execution-run-store";
@@ -47,9 +47,7 @@ export type OpsRunVisibilitySummary = {
 };
 
 export function patientRefForOps(patientId: string): string {
-  const id = patientId.trim() || "unknown";
-  const digest = createHash("sha256").update(id).digest("hex").slice(0, 8);
-  return `pt_${digest}`;
+  return phiSafePatientRef(patientId);
 }
 
 export function toOpsRunVisibilityRow(run: DurableAgentRunRecord): OpsRunVisibilityRow {

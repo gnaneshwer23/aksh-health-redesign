@@ -7,7 +7,9 @@ import { shouldSyncAcceptedCaseToMedplum } from "@/lib/integration-config";
 import { pushToMedplum } from "@/lib/medplum-client";
 import { persistItemDecision } from "@/lib/repositories/review-decision-repository";
 import { readReviewCases } from "@/lib/review-case-repository";
-import { requireAuthenticatedUserScope } from "@/lib/user-scope";
+import { enforceReviewDecisionRateLimit } from "@/lib/agents/rate-limit-guards";
+import { REVIEW_DECISION_ROLES } from "@/lib/security/agent-authz";
+import { requireAppRole } from "@/lib/user-scope";
 import { buildEvidencePayload } from "@/lib/workflow";
 import { CaseDecisionError, decideReviewCase, parseCaseDecision } from "@/lib/workflow/decide-review-case";
 
@@ -22,12 +24,11 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
-  const auth = await requireAuthenticatedUserScope(request);
-  if (auth.response) return auth.response;
-  const { scopeKey, userId, userRole } = auth.context;
-  if (userRole !== "clinical_reviewer") {
-    return NextResponse.json({ error: "Only a clinical reviewer may decide a case." }, { status: 403 });
-  }
+  const auth = await requireAppRole(request, REVIEW_DECISION_ROLES);
+  if (auth.response || !auth.context) return auth.response;
+  const { scopeKey, userId } = auth.context;
+  const limited = await enforceReviewDecisionRateLimit(request, userId);
+  if (limited) return limited;
   try {
     const req = parseCaseDecision(await request.json().catch(() => ({})));
     const tenant = resolveTenantContext(request, auth.context);

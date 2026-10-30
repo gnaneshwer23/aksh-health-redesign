@@ -471,7 +471,7 @@ export function assertRuntimeScope(input: {
     throw new AgentRuntimeError({
       code: "CROSS_TENANT",
       message: `scopeKey mismatch: request=${request} expected=${expected}${
-        input.patientId ? ` patientId=${input.patientId}` : ""
+        input.patientId ? " (patient ref omitted from error — PHI minimised)" : ""
       }`,
       retryable: false,
     });
