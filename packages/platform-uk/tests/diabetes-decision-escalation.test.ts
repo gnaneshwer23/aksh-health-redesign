@@ -46,7 +46,26 @@ function minimalOrchestration(): OrchestrationResult {
     hitlRequired: true,
     timedOut: false,
     elapsedMs: 1,
-    perAgentMs: {}
+    perAgentMs: {},
+    execution: {
+      schemaVersion: "agent-execution-metadata-v1",
+      correlationId: "mock-corr",
+      careEpisodeId: null,
+      scopeKey: null,
+      startedAt: new Date(0).toISOString(),
+      completedAt: new Date(0).toISOString(),
+      durationMs: 1,
+      status: "completed",
+      guardianOutcome: null,
+      reviewStatus: "pending_hitl",
+      agents: [],
+      evidenceRefs: [],
+      errorCode: null,
+      errorMessage: null,
+      ehrWrite: false,
+      hitlRequired: true,
+    },
+    agentMetadata: {},
   };
 }
 

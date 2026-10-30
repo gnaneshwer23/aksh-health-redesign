@@ -148,7 +148,7 @@ async function run() {
   // --- Guardian BLOCK → never enqueue ---
   {
     const ctx = {
-      schemaVersion: "context-engine-v1",
+      schemaVersion: "aksh-context-1.0",
       contextId: "ctx-block",
       assembledAt: new Date().toISOString(),
       purpose: "clinical_decision_support",
@@ -163,7 +163,15 @@ async function run() {
       laboratory_results: [],
       procedures: [],
       relevant_guidelines: [],
-      evidence: [{ id: "e1", title: "fixture", source: "mock" }],
+      evidence: [
+        {
+          id: "e1",
+          title: "fixture",
+          kind: "fact",
+          citation: "mock",
+          provenance: "test",
+        },
+      ],
       risk_factors: [],
       missing_information: [],
       uncertainties: [],
