@@ -30,6 +30,9 @@ const KIND_LABELS: Record<TimelineEventKind, string> = {
   risk_state: "Risk state",
   care_journey: "Care journey",
   continuous_care: "Continuous care",
+  glucose_intelligence: "Glucose",
+  medication_care: "Medication care",
+  agent_intelligence: "Agent intel",
 };
 
 function biomarkersFromEvent(event: PatientTimelineEvent): BiomarkerLite | undefined {

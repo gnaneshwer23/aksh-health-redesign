@@ -6,7 +6,7 @@ import {
   draftJourneyCarePlan,
   seedSyntheticJourney,
 } from "@/lib/diabetes-intelligence/journey";
-import { recordDiabetesGlucoseReading } from "@/lib/disease-modules/diabetes/ingest";
+import { recordGlucoseViaBridge } from "@/lib/diabetes-intelligence/glucose-bridge";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
@@ -72,7 +72,7 @@ export async function POST(request: Request, context: RouteContext) {
     if (typeof body.glucoseMgDl !== "number") {
       return NextResponse.json({ error: "glucoseMgDl required" }, { status: 400 });
     }
-    await recordDiabetesGlucoseReading(
+    await recordGlucoseViaBridge(
       {
         patientId,
         reading: {
@@ -81,7 +81,7 @@ export async function POST(request: Request, context: RouteContext) {
           context: body.context,
         },
       },
-      { scopeKey }
+      { scopeKey, sourceSystem: "diabetes_journey_api" }
     );
     const journey = await buildDiabetesJourney(patientId, { scopeKey });
     return NextResponse.json({ ...journey, action: body.action });

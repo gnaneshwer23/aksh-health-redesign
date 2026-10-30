@@ -206,9 +206,47 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     const verified = agentAfter.drafts.find((d) => d.id === agentDraft!.id);
     expect(verified?.provenance).toBe("clinician_verified");
 
-    // --- Timeline ---
+    // --- INT-01: connected pipeline orchestration ---
+    const orchStatus = await request.get(`/api/patients/${PATIENT}/connected-diabetes`);
+    expect(orchStatus.ok()).toBeTruthy();
+    const orchBody = (await orchStatus.json()) as {
+      ehrWrite?: boolean;
+      hitlRequired?: boolean;
+      autonomousPrescribe?: boolean;
+      liveOrganisations?: number;
+      steps?: { stepId: string; status: string }[];
+      unifiedCarePlans?: { unifiedKey: string; sourceStore: string; ehrWrite: boolean }[];
+    };
+    expect(orchBody.ehrWrite).toBe(false);
+    expect(orchBody.hitlRequired).toBe(true);
+    expect(orchBody.autonomousPrescribe).toBe(false);
+    expect(orchBody.liveOrganisations).toBe(0);
+    expect((orchBody.steps?.length ?? 0)).toBeGreaterThanOrEqual(7);
+    expect(
+      (orchBody.unifiedCarePlans ?? []).every((p) => p.ehrWrite === false && p.unifiedKey.includes(":"))
+    ).toBeTruthy();
+
+    const orchRun = await request.post(`/api/patients/${PATIENT}/connected-diabetes`, {
+      data: { action: "run_pipeline" },
+    });
+    expect(orchRun.ok()).toBeTruthy();
+    const orchRunBody = (await orchRun.json()) as {
+      ehrWrite?: boolean;
+      phasesExecuted?: { stepId: string; ok: boolean }[];
+    };
+    expect(orchRunBody.ehrWrite).toBe(false);
+    expect((orchRunBody.phasesExecuted ?? []).length).toBeGreaterThan(0);
+
+    // --- Timeline (includes glucose/medcare/agent merge counts) ---
     const timeline = await request.get(`/api/patients/${PATIENT}/timeline`);
     expect(timeline.ok()).toBeTruthy();
+    const timelineBody = (await timeline.json()) as {
+      ehrWrite?: boolean;
+      glucoseEventsMerged?: number;
+      medcareEventsMerged?: number;
+      agentEventsMerged?: number;
+    };
+    expect(timelineBody.ehrWrite).toBe(false);
 
     // --- Persistence: re-GET still has seeded glucose ---
     const glucoseAgain = await request.get(`/api/patients/${PATIENT}/diabetes-intelligence`);
@@ -250,6 +288,7 @@ test.describe("Connected diabetes journey (synthetic)", () => {
       `/api/patients/${PATIENT}/agent-intelligence`,
       `/api/patients/${PATIENT}/diabetes-journey`,
       `/api/patients/${PATIENT}/timeline`,
+      `/api/patients/${PATIENT}/connected-diabetes`,
     ]) {
       const denied = await researcherCtx.request.get(path);
       expect(denied.status(), `researcher GET ${path}`).toBe(403);
@@ -296,5 +335,10 @@ test.describe("Connected diabetes journey (synthetic)", () => {
     await page.goto(`/dashboard/gp/patients/${PATIENT}/patient-360`);
     await expect(page.getByTestId("connected-patient-chrome")).toBeVisible({ timeout: 60_000 });
     await expect(page.getByTestId("connected-journey-stepper")).toBeVisible();
+
+    await page.goto(`/dashboard/gp/patients/${PATIENT}/connected-diabetes`);
+    await expect(page.getByTestId("connected-patient-chrome")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId("connected-step-orchestrate")).toHaveAttribute("aria-current", "step");
+    await expect(page.getByTestId("run-connected-pipeline")).toBeVisible();
   });
 });

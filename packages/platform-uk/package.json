@@ -28,6 +28,7 @@
     "test:smoke": "npm run smoke:all",
     "test:patient-access": "npx tsx tests/patient-access-diabetes.test.ts",
     "test:connected-patient-access": "npx tsx tests/connected-patient-api-access.test.ts",
+    "test:connected-orchestration": "npx tsx tests/connected-diabetes-orchestration.test.ts && npx tsx tests/connected-journey-steps.test.ts",
     "test:front-desk": "npx tsx tests/front-desk.test.ts",
     "test:synthetic-world": "npx tsx tests/synthetic-world.test.ts",
     "seed:synthetic-world": "npx tsx --env-file=.env.local scripts/seed-synthetic-world.ts",

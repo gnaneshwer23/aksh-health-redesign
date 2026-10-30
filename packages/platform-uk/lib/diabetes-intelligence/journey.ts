@@ -2,14 +2,14 @@ import { randomUUID } from "crypto";
 
 import { getPatientById } from "../mock-data";
 import {
-  loadIngestedDiabetesReadings,
-  recordDiabetesGlucoseReading,
-} from "../disease-modules/diabetes/ingest";
-import {
   listAllergies,
   listConditions,
 } from "../patient-intelligence/repository";
 import { assessGlucoseMissing, assessHistoryMissing } from "./missing-data";
+import {
+  loadUnifiedGlucoseObservations,
+  recordGlucoseViaBridge,
+} from "./glucose-bridge";
 import {
   appendJourneyEvent,
   createCarePlanRecord,
@@ -80,19 +80,18 @@ export async function buildClinicalHistoryAsync(
 export async function loadGlucosePanel(
   patientId: string,
   options?: { scopeKey?: string }
-): Promise<{ observations: GlucoseObservation[]; fromIngest: boolean }> {
-  const { glucoseReadings } = await loadIngestedDiabetesReadings(patientId, options);
-  if (glucoseReadings.length > 0) {
-    return {
-      fromIngest: true,
-      observations: glucoseReadings.map((r) => ({
-        recordedAt: r.recordedAt,
-        glucoseMgDl: r.glucoseMgDl,
-        context: r.context,
-      })),
-    };
-  }
-  return { fromIngest: false, observations: [] };
+): Promise<{
+  observations: GlucoseObservation[];
+  fromIngest: boolean;
+  fromCanonicalSeries: boolean;
+}> {
+  // INT-02: prefer canonical glucose series; fall back to patient-state ingest.
+  const unified = await loadUnifiedGlucoseObservations(patientId, options);
+  return {
+    observations: unified.observations,
+    fromIngest: unified.fromLegacyIngest || unified.fromCanonicalSeries,
+    fromCanonicalSeries: unified.fromCanonicalSeries,
+  };
 }
 
 export async function buildDiabetesJourney(
@@ -195,12 +194,13 @@ export async function seedSyntheticJourney(
 
   for (const r of readings) {
     const at = new Date(base.getTime() + r.offsetH * 3600_000).toISOString();
-    await recordDiabetesGlucoseReading(
+    // INT-02: dual-write patient-state ingest + canonical glucose series.
+    await recordGlucoseViaBridge(
       {
         patientId,
         reading: { recordedAt: at, glucoseMgDl: r.glucoseMgDl, context: r.context },
       },
-      { scopeKey }
+      { scopeKey, sourceSystem: "diabetes_journey_seed" }
     );
   }
 

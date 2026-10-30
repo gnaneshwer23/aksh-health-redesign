@@ -13,7 +13,10 @@ export type TimelineEventKind =
   | "coaching_draft"
   | "risk_state"
   | "care_journey"
-  | "continuous_care";
+  | "continuous_care"
+  | "glucose_intelligence"
+  | "medication_care"
+  | "agent_intelligence";
 
 export type PatientTimelineEvent = {
   id: string;

@@ -1,0 +1,121 @@
+/**
+ * INT-01 / INT-02 / INT-03 — connected diabetes orchestration + store facades.
+ * File-store path (no Postgres). ehrWrite must stay false. Neon production untouched.
+ */
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
+const tmp = mkdtempSync(path.join(tmpdir(), "cdi-orch-"));
+const prevCwd = process.cwd();
+const prevDbUrl = process.env.DATABASE_URL;
+const prevUsePg = process.env.USE_POSTGRES;
+delete process.env.DATABASE_URL;
+delete process.env.USE_POSTGRES;
+process.chdir(tmp);
+
+async function main() {
+  const {
+    runConnectedDiabetesPipeline,
+    buildConnectedDiabetesOrchestration,
+  } = await import("../lib/diabetes-intelligence/connected-journey-orchestrate");
+  const {
+    loadUnifiedGlucoseObservations,
+    recordGlucoseViaBridge,
+    GLUCOSE_CANONICAL_STORE,
+  } = await import("../lib/diabetes-intelligence/glucose-bridge");
+  const { listUnifiedCarePlans } = await import("../lib/diabetes-intelligence/care-plan-facade");
+  const { listGlucoseSeries } = await import("../lib/diabetes-intelligence/glucose-repository");
+  const { buildSharedPatientContextAsync } = await import(
+    "../lib/diabetes-intelligence/agent-intel-context"
+  );
+
+  const scopeKey = `orch_${Date.now()}`;
+  const patientId = "P002";
+
+  // INT-02: bridge write lands in canonical series
+  const bridged = await recordGlucoseViaBridge(
+    {
+      patientId,
+      reading: {
+        recordedAt: "2026-10-28T08:00:00.000Z",
+        glucoseMgDl: 155,
+        context: "fasting",
+      },
+    },
+    { scopeKey, sourceSystem: "test_bridge" }
+  );
+  assert.equal(bridged.ehrWrite, false);
+  assert.equal(bridged.canonicalStore, GLUCOSE_CANONICAL_STORE);
+  const series = await listGlucoseSeries(patientId, { scopeKey });
+  assert.ok(series.some((r) => r.channel === "smbg" && r.valueNumeric === 155));
+  const unifiedGlu = await loadUnifiedGlucoseObservations(patientId, { scopeKey });
+  assert.ok(unifiedGlu.fromCanonicalSeries);
+  assert.ok(unifiedGlu.observations.some((o) => o.glucoseMgDl === 155));
+
+  // INT-01: full pipeline
+  const run = await runConnectedDiabetesPipeline(patientId, {
+    scopeKey,
+    actor: "test@aksh.health",
+    mode: "run_pipeline",
+  });
+  assert.equal(run.synthetic, true);
+  assert.equal(run.ehrWrite, false);
+  assert.equal(run.hitlRequired, true);
+  assert.equal(run.autonomousPrescribe, false);
+  assert.equal(run.liveOrganisations, 0);
+  assert.equal(run.capabilityStatus, "synthetic_demo");
+  assert.ok(run.phasesExecuted.every((p) => p.ok), JSON.stringify(run.phasesExecuted));
+  assert.ok(run.phasesExecuted.some((p) => p.stepId === "patient-360"));
+  assert.ok(run.phasesExecuted.some((p) => p.stepId === "glucose"));
+  assert.ok(run.phasesExecuted.some((p) => p.stepId === "journey" && p.action === "draft_care_plan"));
+  assert.ok(run.phasesExecuted.some((p) => p.stepId === "agent"));
+  assert.ok(run.steps.length >= 7);
+
+  // INT-03: unified care plans include journey draft with provenance
+  const plans = await listUnifiedCarePlans(patientId, { scopeKey });
+  assert.ok(plans.length >= 1, "expected at least one care plan after pipeline");
+  assert.ok(plans.every((p) => p.ehrWrite === false && p.hitlRequired === true));
+  assert.ok(plans.some((p) => p.sourceStore === "journey_care_plan" && p.provenance === "journey_hitl"));
+  assert.ok(plans.every((p) => p.unifiedKey.includes(":")));
+
+  // Shared context reflects live modules
+  const ctx = await buildSharedPatientContextAsync(patientId, { scopeKey });
+  assert.equal(ctx.ehrWrite, false);
+  assert.ok(ctx.sources.some((s) => s.module === "glucose_intelligence" && s.available));
+  assert.ok(ctx.sources.some((s) => s.module === "diabetes_journey" && s.available));
+
+  // Idempotent reuse path
+  const again = await runConnectedDiabetesPipeline(patientId, {
+    scopeKey,
+    actor: "test@aksh.health",
+    mode: "run_pipeline",
+  });
+  assert.equal(again.ehrWrite, false);
+  assert.ok(again.phasesExecuted.some((p) => p.action === "reuse"));
+
+  const status = await buildConnectedDiabetesOrchestration(patientId, { scopeKey });
+  assert.equal(status.ehrWrite, false);
+  assert.ok(status.unifiedCarePlans.length >= 1);
+
+  console.log("connected-diabetes-orchestration: INT-01/02/03 — PASS");
+}
+
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  })
+  .finally(() => {
+    process.chdir(prevCwd);
+    if (prevDbUrl !== undefined) process.env.DATABASE_URL = prevDbUrl;
+    else delete process.env.DATABASE_URL;
+    if (prevUsePg !== undefined) process.env.USE_POSTGRES = prevUsePg;
+    else delete process.env.USE_POSTGRES;
+    try {
+      rmSync(tmp, { recursive: true, force: true });
+    } catch {
+      /* ignore */
+    }
+  });

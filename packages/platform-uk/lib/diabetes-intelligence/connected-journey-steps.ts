@@ -4,6 +4,7 @@
  */
 
 export type ConnectedJourneyStepId =
+  | "orchestrate"
   | "patient-360"
   | "glucose"
   | "medication"
@@ -26,6 +27,13 @@ export const CONNECTED_JOURNEY_DISCLOSURE =
 export const CONNECTED_DEMO_PATIENT_ID = "P002";
 
 export const CONNECTED_JOURNEY_STEPS: ConnectedJourneyStep[] = [
+  {
+    id: "orchestrate",
+    phase: "★",
+    label: "Connected pipeline",
+    shortLabel: "Pipeline",
+    href: (id) => `/dashboard/gp/patients/${encodeURIComponent(id)}/connected-diabetes`,
+  },
   {
     id: "patient-360",
     phase: "1",
