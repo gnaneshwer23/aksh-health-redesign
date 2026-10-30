@@ -121,6 +121,12 @@ jobs:
             exit 1
           fi
 
+      # Ephemeral Neon CI branch may lag parent schema. Apply pending additive
+      # migrations so connected-diabetes tables (044+) exist. Never targets prod main.
+      - name: Apply pending migrations on CI branch
+        working-directory: packages/platform-uk
+        run: npx tsx scripts/db-migrate.ts --apply
+
       - name: Verify and build
         run: npm run verify && npm run build
 

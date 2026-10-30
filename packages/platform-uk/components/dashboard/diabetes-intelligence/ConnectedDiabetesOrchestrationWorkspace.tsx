@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ConnectedPatientChrome } from "@/components/dashboard/diabetes-intelligence/ConnectedPatientChrome";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/toaster";
 import type { ConnectedDiabetesOrchestrationSnapshot } from "@/lib/diabetes-intelligence/connected-journey-orchestrate";
 
 type Props = {
@@ -14,7 +14,6 @@ type Props = {
 };
 
 export function ConnectedDiabetesOrchestrationWorkspace({ patientId, patientLabel }: Props) {
-  const { toast } = useToast();
   const [snap, setSnap] = useState<ConnectedDiabetesOrchestrationSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
