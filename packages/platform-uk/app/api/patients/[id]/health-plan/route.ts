@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import { getPatientById } from "@/lib/mock-data";
 import {
   createHealthPlanDraft,
@@ -18,6 +19,23 @@ export async function GET(request: Request, context: RouteContext) {
   const patientId = (await context.params).id?.trim();
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
+  }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
+
+  // Precision-health plans are DRAFT-only by schema — never expose to patient surface.
+  // Patients use `/api/patients/[id]/care-plans` (APPROVED care_plan_records only).
+  if (auth.context.userRole === "patient") {
+    return NextResponse.json({
+      patientId,
+      plans: [],
+      patientVisibleOnly: true,
+      draftsHidden: true,
+      hitlRequired: true,
+      ehrWrite: false,
+      note: "Patient surface does not list DRAFT health plans — use /care-plans for APPROVED only."
+    });
   }
 
   const plans = await listHealthPlans({
@@ -41,6 +59,16 @@ export async function POST(request: Request, context: RouteContext) {
   const patientId = (await context.params).id?.trim();
   if (!patientId) {
     return NextResponse.json({ error: "patient id required" }, { status: 400 });
+  }
+
+  const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
+  if (denied) return denied;
+
+  if (auth.context.userRole === "patient") {
+    return NextResponse.json(
+      { error: "Patients cannot create health-plan drafts.", denied: true },
+      { status: 403 }
+    );
   }
 
   let body: {

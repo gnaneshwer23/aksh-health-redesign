@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
+import { filterPatientVisibleCarePlans } from "@/lib/care-episode/stakeholder-handoffs";
 import {
   buildDiabetesJourney,
   draftJourneyCarePlan,
@@ -29,9 +30,19 @@ export async function GET(request: Request, context: RouteContext) {
     scopeKey: auth.context.scopeKey,
   });
 
+  const patientFacing = auth.context.userRole === "patient";
+  const carePlans = patientFacing
+    ? filterPatientVisibleCarePlans(journey.carePlans)
+    : journey.carePlans;
+
   return NextResponse.json({
     ...journey,
-    note: "Connected diabetes journey — synthetic demo; ehrWrite=false; not clinically validated.",
+    carePlans,
+    patientVisibleOnly: patientFacing,
+    draftsHidden: patientFacing,
+    note: patientFacing
+      ? "Connected diabetes journey (patient) — APPROVED care plans only; drafts hidden; ehrWrite=false."
+      : "Connected diabetes journey — synthetic demo; ehrWrite=false; not clinically validated.",
   });
 }
 
@@ -88,6 +99,12 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   if (body.action === "draft_care_plan") {
+    if (auth.context.userRole === "patient") {
+      return NextResponse.json(
+        { error: "Patients cannot draft care plans; clinician HITL required.", denied: true },
+        { status: 403 }
+      );
+    }
     const journey = await draftJourneyCarePlan(patientId, { scopeKey, createdBy: actor });
     return NextResponse.json({ ...journey, action: body.action });
   }

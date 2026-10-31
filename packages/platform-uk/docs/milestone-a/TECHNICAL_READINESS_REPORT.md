@@ -1,7 +1,7 @@
 # Milestone A5 — Technical Readiness Report
 
-**Date:** 2026-10-30 (post-merge tip)  
-**Main tip:** `c186893` (Milestone A #97–#101 merged) + follow-up P0 browser/Neon gate  
+**Date:** 2026-10-31 (post-P0 `#102` + RLS / care-plan visibility)  
+**Main tip:** `68fb041` (P0) + follow-up enforced care-plan RLS (054) / patient APPROVED-only  
 **Scope:** Technical readiness for a **controlled HCP evaluation** — **not** clinical deployment / unsupervised care.
 
 ---
@@ -22,10 +22,11 @@ Not ready for clinical deployment, live EMIS write-back, or production patient c
 | Guardian BLOCK never enqueues drafts | A5 negatives + multi-account + A1 | High |
 | SHIELD fail-closed when Postgres configured | A5 negatives + `p1-shield-diabetes-decide` | High (unit); optional Neon A5 gate when configured |
 | Care-episode continuity intake→booking→nurse→GP→pharmacist | A5 golden + A3 handoffs | High (file-store); Neon optional via `test:milestone-a5:neon` |
-| Care-plan APPROVED-only patient visibility | A5 golden | High |
+| Care-plan APPROVED-only patient visibility | A5 golden + multi-account + `/care-plans` patient filter | High |
 | Duplicate decision rejection (care plan + agent intel) | A5 negatives | High |
 | Role / authz denials (patient/researcher/ops) | A5 negatives + RBAC suite + A4 | High (API/unit) |
-| Cross-tenant scope isolation + practice filter | A5 negatives + tenant-isolation | High (unit); DB RLS separate |
+| Cross-tenant scope isolation + practice filter | A5 negatives + tenant-isolation + multi-account org list | High |
+| Shared-DB care-plan RLS (cross-org deny, fail-closed) | Migration 054 + `care-plan-rls-db` / org-tenancy (Neon-gated) | High when Neon gate runs; hermetic app-layer covered |
 | PHI-safe Agent Ops run visibility | A5 golden + A3/A4 | High |
 | Durable run claim/finalize + SHIELD enqueue gate | A2/A4 lineage exercised in A5 ops step | High (file-store) |
 
@@ -44,8 +45,8 @@ Not ready for clinical deployment, live EMIS write-back, or production patient c
 
 ## Residual blockers for Milestone B (HCP eval)
 
-1. **HCP protocol** — evaluation plan (`docs/agents/HCP_AGENT_EVALUATION_PLAN.md`) is separate; A5 does not run clinical scoring with HCPs.
-2. **DB RLS depth** — optional Neon A5 gate exercises postgres-backed stores; dedicated RLS DB suites remain separate — run them before shared-DB HCP sessions.
+1. **HCP protocol** — evaluation plan (`docs/agents/HCP_AGENT_EVALUATION_PLAN.md`) is separate; A5 does not run clinical scoring with HCPs. **Kickoff after this PR:** schedule controlled synthetic sessions with written protocol.
+2. **DB RLS depth** — care-plan / review_cases RLS suites exist; **run `test:milestone-a5:neon` (or `test:care-plan-rls`) on throwaway Neon before shared-DB HCP sessions**. Hermetic multi-account now marks `cross_org_deny` covered at app-layer.
 3. **Lab / pharmacy product HITL** — still simulation-layer; honesty labels are visible; do not present as live pathology/EPS.
 4. **No PRISM/ATLAS expansion** — scaffolds only; do not present as CONDUCTOR actors in eval.
 5. **Live integrations off** — `ehrWrite:false`, `liveEmis:false`; BRIDGE not production-enabled.

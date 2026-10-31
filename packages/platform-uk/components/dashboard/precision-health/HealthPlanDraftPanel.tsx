@@ -8,10 +8,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
 import type { HealthPlanDraft } from "@/lib/precision-health/health-plan";
 
+type PanelPlan = {
+  id: string;
+  patientId: string;
+  patientLabel: string;
+  status: string;
+  createdAt: string;
+  createdBy: string;
+  trigger?: string;
+  sections: HealthPlanDraft["sections"];
+  safetyNotes: string[];
+};
+
 type PlansResponse = {
-  plans?: HealthPlanDraft[];
+  plans?: Array<Partial<PanelPlan> & { id: string; patientId: string; sections: HealthPlanDraft["sections"]; title?: string; decidedAt?: string | null }>;
   note?: string;
   ehrWrite?: boolean;
+  patientVisibleOnly?: boolean;
+  draftsHidden?: boolean;
   error?: string;
 };
 
@@ -22,8 +36,24 @@ type DraftResponse = {
   error?: string;
 };
 
-function planNote(plan: HealthPlanDraft) {
+function planNote(plan: PanelPlan) {
   return plan.sections.map((s) => `${s.title}: ${s.items.join("; ")}`).join("\n");
+}
+
+function toPanelPlan(
+  p: NonNullable<PlansResponse["plans"]>[number]
+): PanelPlan {
+  return {
+    id: p.id,
+    patientId: p.patientId,
+    patientLabel: p.patientLabel ?? p.title ?? p.patientId,
+    status: p.status ?? "DRAFT",
+    createdAt: p.createdAt ?? p.decidedAt ?? new Date().toISOString(),
+    createdBy: p.createdBy ?? "care-team",
+    trigger: p.trigger,
+    sections: p.sections,
+    safetyNotes: p.safetyNotes ?? [],
+  };
 }
 
 export function HealthPlanDraftPanel({
@@ -33,11 +63,11 @@ export function HealthPlanDraftPanel({
 }: {
   patientId: string;
   patientLabel?: string;
-  /** Patient companion: read-only view of the same health-plan API (no draft request / HITL). */
+  /** Patient companion: APPROVED care plans only (canonical SoT); no draft request / HITL. */
   mode?: "clinician" | "patient";
 }) {
-  const [plans, setPlans] = useState<HealthPlanDraft[]>([]);
-  const [active, setActive] = useState<HealthPlanDraft | null>(null);
+  const [plans, setPlans] = useState<PanelPlan[]>([]);
+  const [active, setActive] = useState<PanelPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -48,10 +78,10 @@ export function HealthPlanDraftPanel({
   );
   const [rejectReason, setRejectReason] = useState<string | null>(null);
 
-  const selectPlan = useCallback((plan: HealthPlanDraft) => {
+  const selectPlan = useCallback((plan: PanelPlan) => {
     setActive(plan);
     setNote(planNote(plan));
-    setHitlStatus("Pending");
+    setHitlStatus(plan.status === "APPROVED" ? "Accepted" : "Pending");
     setEdited(false);
     setRejectReason(null);
     setEditing(false);
@@ -60,33 +90,40 @@ export function HealthPlanDraftPanel({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/patients/${encodeURIComponent(patientId)}/health-plan`, {
-        credentials: "include",
-      });
+      // Patient companion: APPROVED care_plan_records only (never DRAFT health-plan store).
+      const path =
+        mode === "patient"
+          ? `/api/patients/${encodeURIComponent(patientId)}/care-plans?visibility=patient`
+          : `/api/patients/${encodeURIComponent(patientId)}/health-plan`;
+      const response = await fetch(path, { credentials: "include" });
       const data = (await response.json()) as PlansResponse;
       if (!response.ok) {
         toast({
-          title: "Health plans unavailable",
-          description: data.error ?? "Could not list plan drafts.",
+          title: mode === "patient" ? "Care plans unavailable" : "Health plans unavailable",
+          description: data.error ?? "Could not list plans.",
         });
         return;
       }
-      const list = data.plans ?? [];
+      const list = (data.plans ?? []).map(toPanelPlan);
       setPlans(list);
       setActive((current) => {
         if (current) return current;
         if (list[0]) {
           setNote(planNote(list[0]));
+          setHitlStatus(list[0].status === "APPROVED" ? "Accepted" : "Pending");
           return list[0];
         }
         return null;
       });
     } catch {
-      toast({ title: "Health plans unavailable", description: "Network error." });
+      toast({
+        title: mode === "patient" ? "Care plans unavailable" : "Health plans unavailable",
+        description: "Network error.",
+      });
     } finally {
       setLoading(false);
     }
-  }, [patientId]);
+  }, [patientId, mode]);
 
   useEffect(() => {
     void load();
@@ -120,8 +157,9 @@ export function HealthPlanDraftPanel({
         });
         return;
       }
-      selectPlan(data.draft);
-      setPlans((prev) => [data.draft!, ...prev]);
+      const panel = toPanelPlan(data.draft);
+      selectPlan(panel);
+      setPlans((prev) => [panel, ...prev]);
       toast({
         title: "Health plan DRAFT ready",
         description: "HITL Accept/Edit/Reject required · never auto-writes EHR",
@@ -157,11 +195,11 @@ export function HealthPlanDraftPanel({
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 p-4 pb-2">
         <div>
           <CardTitle className="text-sm">
-            {mode === "patient" ? "Your health plan (DRAFT)" : "Personalised health plan (DRAFT)"}
+            {mode === "patient" ? "Your care plan" : "Personalised health plan (DRAFT)"}
           </CardTitle>
           <p className="text-xs text-muted">
             {mode === "patient"
-              ? "Same health-plan API as your GP · read-only · not clinical advice · ehrWrite: false"
+              ? "APPROVED plans from your care team only · drafts never shown · ehrWrite: false"
               : "Clinician-requested draft only — HITL required · ehrWrite: false · not a physiological twin"}
           </p>
         </div>
@@ -173,7 +211,7 @@ export function HealthPlanDraftPanel({
       </CardHeader>
       <CardContent className="space-y-3 p-4 pt-2">
         {loading && !active ? (
-          <p className="text-sm text-muted">Loading drafts…</p>
+          <p className="text-sm text-muted">Loading…</p>
         ) : !active ? (
           <p
             role="status"
@@ -181,16 +219,22 @@ export function HealthPlanDraftPanel({
             className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted"
           >
             {mode === "patient"
-              ? "No health plan drafts from your care team yet. Plans appear here from the same registry your GP uses."
+              ? "No approved care plan yet. Your care team publishes plans here after clinical review — drafts stay private."
               : "No health plan drafts yet. Request a DRAFT for clinician review — nothing writes to the EHR."}
           </p>
         ) : (
           <div className="space-y-3" data-testid="health-plan-draft">
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
-              <span className="rounded bg-warning/15 px-1.5 py-0.5 font-semibold uppercase text-warning">
+              <span
+                className={
+                  active.status === "APPROVED"
+                    ? "rounded bg-accent/15 px-1.5 py-0.5 font-semibold uppercase text-accent"
+                    : "rounded bg-warning/15 px-1.5 py-0.5 font-semibold uppercase text-warning"
+                }
+              >
                 {active.status}
               </span>
-              <span>Trigger: {active.trigger}</span>
+              {active.trigger ? <span>Trigger: {active.trigger}</span> : null}
               <span>· {new Date(active.createdAt).toLocaleString("en-GB")}</span>
             </div>
 
@@ -238,7 +282,7 @@ export function HealthPlanDraftPanel({
 
             {mode === "patient" ? (
               <p className="text-xs text-muted" data-testid="health-plan-patient-view">
-                Patient view of clinician DRAFT · not medical advice · changes only via your care team HITL
+                Approved care plan · not medical advice · changes only via your care team HITL · draftsHidden
               </p>
             ) : hitlStatus === "Accepted" ? (
               <p className="text-xs font-medium text-accent">
@@ -268,7 +312,9 @@ export function HealthPlanDraftPanel({
 
         {plans.length > 1 ? (
           <div className="border-t border-border-subtle pt-2">
-            <p className="mb-1 text-[11px] font-semibold text-muted">Earlier drafts</p>
+            <p className="mb-1 text-[11px] font-semibold text-muted">
+              {mode === "patient" ? "Earlier approved plans" : "Earlier drafts"}
+            </p>
             <ul className="space-y-1 text-[11px] text-muted">
               {plans.slice(1, 4).map((p) => (
                 <li key={p.id}>

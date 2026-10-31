@@ -110,11 +110,12 @@ export function toUnifiedFromMedCare(plan: PersonalisedCarePlan): UnifiedCarePla
 
 export async function listUnifiedCarePlans(
   patientId: string,
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<UnifiedCarePlan[]> {
   const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId = options?.organisationId;
   const [journey, medcare] = await Promise.all([
-    listJourneyCarePlans(patientId, { scopeKey }),
+    listJourneyCarePlans(patientId, { scopeKey, organisationId }),
     listMedCarePlans(patientId, { scopeKey }),
   ]);
   // Collapse: prefer canonical SoT; skip satellite rows already mirrored.
@@ -151,7 +152,7 @@ export function selectPatientVisibleApprovedPlans(plans: UnifiedCarePlan[]): Uni
 
 export async function listPatientVisibleCarePlans(
   patientId: string,
-  options?: { scopeKey?: string }
+  options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<UnifiedCarePlan[]> {
   const all = await listUnifiedCarePlans(patientId, options);
   return selectPatientVisibleApprovedPlans(all);

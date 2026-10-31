@@ -46,7 +46,7 @@ Documented in `lib/permission-matrix.ts`; allow-lists in `lib/security/agent-aut
 
 1. **`productionRbacEnforced: false`** — full matrix not claimed as production RBAC.
 2. **Demo / test auth headers** — local E2E helpers can still inject roles; production must keep NextAuth as source of truth.
-3. **File-backed stores** — scope isolation depends on correct `scopeKey` plumbing; Neon RLS promotion remains Track B / later.
+3. **File-backed stores** — scope isolation depends on correct `scopeKey` plumbing; care-plan / follow-up Neon RLS is **enforced** (migration **054**, fail-closed org match) when using `withOrgContext` / `aksh_tenant`. Owner-role pool still bypasses RLS — pass `organisationId` on list/create for tenant-bound reads.
 4. **Incomplete PHI scrub on non-critical agent routes** (sleep/nutrition/exercise/referral/voice-care, client `resourceRef` posts).
 5. **Rate limits disabled** when `DISABLE_RATE_LIMIT=true` or `CI=true` (intentional for gates).
 6. **No dependency CVE scan artifact** in this PR — run `npm audit` / SCA in A5 readiness pack.
