@@ -81,10 +81,18 @@ async function run() {
     );
     assert.equal(other.rows[0]?.n, 0, "cross-org must not see stamped row under RLS");
 
+    // 054 fail-closed: empty org context must not see stamped rows (soft NULL policy removed).
+    const empty = await withOrgContext("", (c) =>
+      c.query<{ n: number }>(`SELECT count(*)::int AS n FROM aksh.care_plan_records WHERE id = $1`, [
+        id,
+      ])
+    );
+    assert.equal(empty.rows[0]?.n, 0, "empty org context is fail-closed under enforced RLS");
+
     // aksh_tenant is intentionally SELECT/INSERT/UPDATE only (no DELETE) — clean up as owner.
     await getPgPool().query(`DELETE FROM aksh.care_plan_records WHERE id = $1`, [id]);
 
-    console.log("connected-diabetes-org-tenancy: INT-08 helpers + RLS — PASS");
+    console.log("connected-diabetes-org-tenancy: INT-08 helpers + enforced RLS — PASS");
   } catch (err) {
     // Best-effort cleanup if insert landed before a later assertion failed.
     await getPgPool()

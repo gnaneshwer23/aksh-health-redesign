@@ -14,7 +14,7 @@ Strengthen multi-stakeholder continuity on the **existing** care-episode / Front
 | --- | --- | --- |
 | Nurse observations → GP | Visibility via timeline; weak queue task | `handoffNurseToGp` opens GP care-episode task; nurse-vitals API wires it |
 | GP review → Pharmacist | Pharmacist spine review exists; no episode task | `handoffGpToPharmacist` opens pharmacist med-review task (HITL only) |
-| Care-plan → Patient | Unified plans returned all statuses | `listPatientVisibleCarePlans` / `filterPatientVisibleCarePlans` → **APPROVED only** |
+| Care-plan → Patient | Unified plans returned all statuses | `listPatientVisibleCarePlans` / `filterPatientVisibleCarePlans` → **APPROVED only**; patient journey GET + `/api/patients/[id]/care-plans` + companion panel wired; drafts never leak |
 | Follow-up ownership | Owner string on journey tasks | `assignFollowUpOwnership` with org boundary + audit stamp |
 | Lab / referral drafts | Staged as DRAFT items | `trackLabReferralDraftStatuses` + unified worklist strip |
 | Team assignment | Unified worklist only | `mutateReviewQueueAssignment` assign / reassign / escalate + audit API |

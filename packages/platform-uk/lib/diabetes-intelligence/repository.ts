@@ -3,7 +3,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 import type { ClinicalPersona } from "../user-scope";
-import { getPgPool, isPostgresConfigured } from "../db/client";
+import { getPgPool, isPostgresConfigured, withOrgContext } from "../db/client";
 import { mirrorJourneyFollowUpToContinuous } from "./follow-up-bridge";
 import { resolveConnectedDiabetesOrganisationId } from "./org-tenancy";
 import type {
@@ -224,9 +224,9 @@ export async function listCarePlans(
   options?: { scopeKey?: string; organisationId?: string | null }
 ): Promise<CarePlanRecord[]> {
   const scopeKey = options?.scopeKey ?? "shared";
+  const organisationId = options?.organisationId?.trim() || null;
   if (usePg()) {
-    const pool = getPgPool();
-    const { rows } = await pool.query<{
+    type CarePlanRow = {
       id: string;
       organisation_id: string | null;
       patient_id: string;
@@ -244,17 +244,27 @@ export async function listCarePlans(
       version: number;
       entry_surface: import("./types").CarePlanEntrySurface | null;
       medcare_plan_id: string | null;
-    }>(
-      `SELECT * FROM aksh.care_plan_records
+    };
+    const sql = `SELECT * FROM aksh.care_plan_records
        WHERE scope_key = $1 AND patient_id = $2
-       ORDER BY created_at DESC`,
-      [scopeKey, patientId]
-    );
+       ORDER BY created_at DESC`;
+    // When organisationId is provided, run as aksh_tenant so DB RLS (054) enforces
+    // cross-org deny — owner-role pool bypasses RLS and must not be the sole gate.
+    if (organisationId) {
+      const { rows } = await withOrgContext(organisationId, (c) =>
+        c.query<CarePlanRow>(sql, [scopeKey, patientId])
+      );
+      return rows.map((r) => mapCarePlanRow(r));
+    }
+    const pool = getPgPool();
+    const { rows } = await pool.query<CarePlanRow>(sql, [scopeKey, patientId]);
     return rows.map((r) => mapCarePlanRow(r));
   }
   const store = await readStore(scopeKey);
   return store.plans
     .filter((p) => p.patientId === patientId)
+    // Match migration 054: when org is requested, only stamped matching rows (no NULL leak).
+    .filter((p) => !organisationId || p.organisationId === organisationId)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 

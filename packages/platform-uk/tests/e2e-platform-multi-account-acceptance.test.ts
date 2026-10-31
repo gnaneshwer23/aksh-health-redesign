@@ -123,17 +123,118 @@ async function main() {
   delete process.env.DATABASE_URL;
   coverage.shield_fail_closed = "covered";
 
-  // 6) Cross-org deny — tenancy modules present (full RLS proofs live in dedicated DB tests)
-  const tenancy = await import("../lib/diabetes-intelligence/org-tenancy");
-  const isolation = await import("../lib/clinical-proof/tenant-isolation");
-  assert.ok(tenancy);
-  assert.ok(isolation);
-  coverage.cross_org_deny = "partial";
+  // 6) Cross-org deny — app-layer + practice isolation (Neon RLS: care-plan-rls-db / review-cases-rls-db)
+  const { rowVisibleToOrganisation } = await import("../lib/diabetes-intelligence/org-tenancy");
+  const {
+    assertPracticeCannotSeeOtherPractice,
+    filterRecordsForPractice,
+  } = await import("../lib/clinical-proof/tenant-isolation");
+  const { createCarePlanRecord, listCarePlans } = await import(
+    "../lib/diabetes-intelligence/repository"
+  );
+  assert.equal(rowVisibleToOrganisation("org-a", "org-b"), false);
+  assertPracticeCannotSeeOtherPractice("practice-a", [{ id: "x", practiceId: "practice-b" }]);
+  assert.equal(
+    filterRecordsForPractice(
+      [
+        { id: "a", practiceId: "practice-a" },
+        { id: "b", practiceId: "practice-b" },
+      ],
+      "practice-a"
+    ).length,
+    1
+  );
+  const orgScope = `multi_org_${Date.now().toString(36)}`;
+  const planOrgA = await createCarePlanRecord(
+    {
+      patientId: "P002",
+      patientLabel: verified!.name,
+      sections: [{ id: "g", title: "Goals", items: ["org-a only"], clinical: false }],
+      safetyNotes: [],
+      missingData: [],
+      createdBy: "gp-a",
+    },
+    { scopeKey: orgScope, organisationId: "org-multi-a" }
+  );
+  const crossList = await listCarePlans("P002", {
+    scopeKey: orgScope,
+    organisationId: "org-multi-b",
+  });
+  assert.equal(crossList.length, 0, "org-multi-b must not see org-multi-a care plan");
+  const ownList = await listCarePlans("P002", {
+    scopeKey: orgScope,
+    organisationId: "org-multi-a",
+  });
+  assert.ok(ownList.some((p) => p.id === planOrgA.id));
+  coverage.cross_org_deny = "covered";
 
-  // 7) Care plan patient visibility — assert patient access is fail-closed for other orgs
-  const access = await import("../lib/clinical-proof/connected-patient-access");
-  assert.ok(access.denyUnlessConnectedPatientAccess);
-  coverage.care_plan_patient_visibility = "partial";
+  // 7) Care plan patient visibility — APPROVED only; drafts never leak; access fail-closed
+  const { decideCarePlan } = await import("../lib/diabetes-intelligence/repository");
+  const {
+    filterPatientVisibleCarePlans,
+    toPatientVisibleCarePlans,
+  } = await import("../lib/care-episode/stakeholder-handoffs");
+  const { listPatientVisibleCarePlans } = await import(
+    "../lib/diabetes-intelligence/care-plan-facade"
+  );
+  const { denyUnlessConnectedPatientAccess } = await import(
+    "../lib/clinical-proof/connected-patient-access"
+  );
+  const visScope = `multi_vis_${Date.now().toString(36)}`;
+  const draftPlan = await createCarePlanRecord(
+    {
+      patientId: "P002",
+      patientLabel: verified!.name,
+      sections: [{ id: "g", title: "Goals", items: ["draft secret"], clinical: true }],
+      safetyNotes: [],
+      missingData: [],
+      createdBy: "gp-vis",
+    },
+    { scopeKey: visScope, organisationId: "org-vis" }
+  );
+  const approvedPlan = await decideCarePlan(
+    {
+      planId: draftPlan.id,
+      action: "accept",
+      actor: "gp-vis",
+      actorPersona: "gp",
+      reason: "multi-acct visibility",
+    },
+    { scopeKey: visScope, organisationId: "org-vis" }
+  );
+  const stillDraft = await createCarePlanRecord(
+    {
+      patientId: "P002",
+      patientLabel: verified!.name,
+      sections: [{ id: "g", title: "Goals", items: ["unapproved"], clinical: false }],
+      safetyNotes: [],
+      missingData: [],
+      createdBy: "gp-vis",
+    },
+    { scopeKey: visScope, organisationId: "org-vis" }
+  );
+  const allPlans = await listCarePlans("P002", {
+    scopeKey: visScope,
+    organisationId: "org-vis",
+  });
+  const visible = filterPatientVisibleCarePlans(allPlans);
+  assert.equal(visible.length, 1);
+  assert.equal(visible[0]!.id, approvedPlan.plan.id);
+  assert.ok(!visible.some((p) => p.id === stillDraft.id));
+  const facing = toPatientVisibleCarePlans(allPlans);
+  assert.equal(facing.length, 1);
+  assert.equal(facing[0]!.draftsHidden, true);
+  const facade = await listPatientVisibleCarePlans("P002", {
+    scopeKey: visScope,
+    organisationId: "org-vis",
+  });
+  assert.ok(facade.every((p) => p.status === "APPROVED"));
+  assert.ok(denyUnlessConnectedPatientAccess({ userRole: "patient", boundPatientId: "P999" }, "P002"));
+  assert.equal(
+    denyUnlessConnectedPatientAccess({ userRole: "patient", boundPatientId: "P002" }, "P002"),
+    null
+  );
+  coverage.care_plan_patient_visibility = "covered";
 
   // Queue items mapping proof (CONDUCTOR path shape)
   if (allowed.enqueued) {
@@ -144,7 +245,7 @@ async function main() {
   console.log(
     "e2e-platform-multi-account-acceptance:",
     JSON.stringify(coverage),
-    "— PASS (API/unit; Playwright multi-role chain still partial)"
+    "— PASS (API/unit; Neon RLS suites gated separately when DATABASE_URL present)"
   );
 }
 

@@ -1,9 +1,9 @@
 # Milestone A5 — E2E Acceptance Results
 
-**Date:** 2026-10-30 (post-merge tip + P0 browser/Neon follow-up)  
-**Baseline merge:** `c186893` (Milestone A stack #97–#101 on `main`)  
+**Date:** 2026-10-31 (post-P0 `#102` + RLS / care-plan visibility follow-up)  
+**Baseline merge:** `68fb041` (P0 browser/Neon) on Milestone A tip  
 **App:** `packages/platform-uk`  
-**Orgs/patients:** synthetic only (`P002`, `org-synth-a5`)
+**Orgs/patients:** synthetic only (`P002`, `org-synth-a5` / multi-acct orgs)
 
 ---
 
@@ -12,7 +12,9 @@
 | Mode | Status |
 | --- | --- |
 | **API / unit (`tsx`) golden + negatives** | **Yes** — `npm run test:milestone-a5` (hermetic file-store default) |
-| **Neon-backed A5 gate** | **Optional** — `MILESTONE_A5_USE_NEON=1` + `DATABASE_URL` → `npm run test:milestone-a5:neon` (CI job when Neon integration configured). Does **not** clear `DATABASE_URL`. |
+| **Cross-org deny (`cross_org_deny`)** | **Covered** (hermetic app-layer + practice filter + org-scoped care-plan list). Neon RLS proofs: `test:care-plan-rls` + `test:connected-org-tenancy` when `DATABASE_URL` present (migration **054**). |
+| **Care-plan patient visibility** | **Covered** — APPROVED-only via `listPatientVisibleCarePlans` / journey GET patient filter / `/api/patients/[id]/care-plans`; drafts never returned to patient role |
+| **Neon-backed A5 gate** | **Optional** — `MILESTONE_A5_USE_NEON=1` + `DATABASE_URL` → `npm run test:milestone-a5:neon` (includes care-plan RLS). Does **not** clear `DATABASE_URL`. |
 | **Playwright browser role smoke** | **Yes** — `e2e/milestone-a5-multi-account-browser.spec.ts` role landings + authz denials |
 | **Full multi-account UI click-path** | **Yes** — same file: Front Desk booking → nurse observe → GP CONDUCTOR + review Accept (synthetic Patel) |
 | **Optional Playwright API spec** | Exists — `e2e/milestone-a5-golden-api.spec.ts`; excluded from `test:milestone-a5` |
@@ -41,7 +43,7 @@ MILESTONE_A5_USE_NEON=1 USE_POSTGRES=true npm run test:milestone-a5:neon
 
 When `MILESTONE_A5_USE_NEON=1` **and** `DATABASE_URL` is present, suites **keep** `DATABASE_URL` (do not clear). Without the flag, hermetic remains default even if `.env.local` has a URL (tsx does not load `.env.local` unless `--env-file`).
 
-CI: job **Milestone A5 Neon gate** runs only when `vars.NEON_PROJECT_ID` is set; creates a throwaway Neon branch, migrates, runs `:neon`, deletes branch.
+CI: job **Milestone A5 Neon gate** runs only when `vars.NEON_PROJECT_ID` is set; creates a throwaway Neon branch, migrates (incl. **054**), runs `:neon`, deletes branch.
 
 ### Browser click-path (Playwright job)
 
@@ -72,6 +74,22 @@ npx playwright test e2e/milestone-a5-multi-account-browser.spec.ts
 }
 ```
 
+### Multi-account acceptance coverage
+
+```json
+{
+  "intake_to_reception": "covered",
+  "reception_to_nurse": "covered",
+  "guardian_block": "covered",
+  "gp_conductor_enqueue": "covered",
+  "lab_approve": "sim",
+  "pharmacist_concern": "sim",
+  "shield_fail_closed": "covered",
+  "cross_org_deny": "covered",
+  "care_plan_patient_visibility": "covered"
+}
+```
+
 ### Browser click-path coverage
 
 | Step | Evidence |
@@ -86,6 +104,6 @@ npx playwright test e2e/milestone-a5-multi-account-browser.spec.ts
 ## What was *not* validated
 
 - Live EMIS / NHS lab / EPS prescribing
-- Formal HCP clinical evaluation (Milestone B)
+- Formal HCP clinical evaluation (Milestone B) — **ready to kick off after this lands**
 - `productionRbacEnforced` flip (separate workstream)
 - Full PRISM/ATLAS product paths (scaffolds only)
