@@ -31,7 +31,10 @@
 
 ---
 
-## 3. Agent Ops dashboard (design — not implemented)
+## 3. Agent Ops dashboard (implemented — P1-OPS-01 + Milestone B)
+
+**Surface:** `/dashboard/admin/agent-ops`  
+**Milestone B additions:** eval harness panel (`agent-ops-eval-harness`), lab/pharmacy sim honesty, `GET /api/agents/loop-outcomes`, HCP case pack + feedback APIs. See `docs/milestone-b/EVAL_ENVIRONMENT.md`.
 
 ### 3.1 Purpose
 

@@ -45,9 +45,9 @@ Not ready for clinical deployment, live EMIS write-back, or production patient c
 
 ## Residual blockers for Milestone B (HCP eval)
 
-1. **HCP protocol** — evaluation plan (`docs/agents/HCP_AGENT_EVALUATION_PLAN.md`) is separate; A5 does not run clinical scoring with HCPs. **Kickoff after this PR:** schedule controlled synthetic sessions with written protocol.
+1. **HCP protocol / harness** — engineering kickoff: `docs/milestone-b/` + `npm run test:milestone-b` (case pack, feedback capture, Agent Ops eval panel). **Human calendar** for live HCP sessions remains outside software gates.
 2. **DB RLS depth** — care-plan / review_cases RLS suites exist; **run `test:milestone-a5:neon` (or `test:care-plan-rls`) on throwaway Neon before shared-DB HCP sessions**. Hermetic multi-account now marks `cross_org_deny` covered at app-layer.
-3. **Lab / pharmacy product HITL** — still simulation-layer; honesty labels are visible; do not present as live pathology/EPS.
+3. **Lab / pharmacy product HITL** — still simulation-layer; honesty labels are visible on Agent Ops (`lab-pharmacy-sim-honesty`); do not present as live pathology/EPS.
 4. **No PRISM/ATLAS expansion** — scaffolds only; do not present as CONDUCTOR actors in eval.
 5. **Live integrations off** — `ehrWrite:false`, `liveEmis:false`; BRIDGE not production-enabled.
 6. **`productionRbacEnforced`** — governed separate workstream; not flipped here.
