@@ -11,6 +11,8 @@ Review-only documentation from branch `docs/agent-functionality-audit`. **Do not
 | [AGENT_ORCHESTRATION_ARCHITECTURE.md](./AGENT_ORCHESTRATION_ARCHITECTURE.md) | Canonical CONDUCTOR architecture |
 | [MULTI_STAKEHOLDER_WORKFLOW_AUDIT.md](./MULTI_STAKEHOLDER_WORKFLOW_AUDIT.md) | Journey transitions working/partial/disconnected |
 | [AGENT_IMPLEMENTATION_ROADMAP.md](./AGENT_IMPLEMENTATION_ROADMAP.md) | P0–P4 work items (not implemented here) |
-| [HCP_AGENT_EVALUATION_PLAN.md](./HCP_AGENT_EVALUATION_PLAN.md) | HCP rubrics + Agent Ops design |
+| [HCP_AGENT_EVALUATION_PLAN.md](./HCP_AGENT_EVALUATION_PLAN.md) | HCP rubrics + Agent Ops (ops surface live; Milestone B harness) |
+| [../milestone-b/EVAL_ENVIRONMENT.md](../milestone-b/EVAL_ENVIRONMENT.md) | Milestone B synthetic HCP eval environment |
+| [../milestone-b/SESSION_PROTOCOL.md](../milestone-b/SESSION_PROTOCOL.md) | Facilitator ops protocol (calendar still human) |
 
 Read-only diag: `npx tsx scripts/agent-functionality-audit-diag.ts` from `packages/platform-uk`.

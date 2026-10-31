@@ -12,15 +12,19 @@ const sidebar = readFileSync(path.join(root, "components/dashboard/Sidebar.tsx")
 assert.match(page, /Simulation \/ synthetic validation/);
 assert.match(page, /not a clinical accuracy score/);
 assert.match(page, /\/api\/agents\/readiness/);
-assert.match(page, /loopOutcomes|equity/);
+assert.match(page, /\/api\/agents\/loop-outcomes/);
 assert.match(page, /data-testid="agent-ops-honesty"/);
 assert.match(page, /data-testid="agent-ops-durable-runs"/);
 assert.match(page, /data-testid="agent-ops-alerts"/);
+assert.match(page, /data-testid="agent-ops-eval-harness"/);
+assert.match(page, /data-testid="lab-pharmacy-sim-honesty"/);
 assert.match(page, /\/api\/agents\/ops-runs/);
+assert.match(page, /\/api\/eval\/hcp-feedback/);
+assert.match(page, /\/api\/eval\/hcp-case-pack/);
 assert.match(page, /alerts=1/);
 assert.match(page, /PRISM\/ATLAS/);
 assert.match(page, /CompassBriefPanel/);
 assert.doesNotMatch(page, /patientName|NHS number|dateOfBirth/i);
 assert.match(sidebar, /\/dashboard\/admin\/agent-ops/);
 
-console.log("p1-agent-ops-dashboard: honesty copy + readiness wiring + A3 durable runs + admin nav — PASS");
+console.log("p1-agent-ops-dashboard: honesty + readiness + loop-outcomes + HCP eval harness + admin nav — PASS");
