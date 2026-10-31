@@ -2,6 +2,10 @@
  * Milestone A5 — CI-friendly negative suite (synthetic orgs).
  * Covers: cross-tenant, role bypass, Guardian BLOCK, SHIELD fail-closed,
  * duplicate approval.
+ *
+ * Store honesty: hermetic file-store by default; optional Neon when
+ * MILESTONE_A5_USE_NEON=1 and DATABASE_URL is set. SHIELD fail-closed still
+ * injects an invalid DATABASE_URL briefly regardless of store mode.
  */
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -9,15 +13,20 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 
+import {
+  applyMilestoneA5StoreMode,
+  restoreMilestoneA5StoreMode,
+  type MilestoneA5StoreSnapshot,
+} from "./helpers/milestone-a5-store-mode";
+
 const tmp = mkdtempSync(path.join(tmpdir(), "a5-neg-"));
 const prevCwd = process.cwd();
-const prevDb = process.env.DATABASE_URL;
-const prevUse = process.env.USE_POSTGRES;
-delete process.env.DATABASE_URL;
-delete process.env.USE_POSTGRES;
+let storeSnap: MilestoneA5StoreSnapshot | null = null;
 process.chdir(tmp);
 
 async function main() {
+  storeSnap = applyMilestoneA5StoreMode();
+
   process.env.ENABLE_LLM_SYNTHESIS = "false";
   process.env.ENABLE_LLM_GUARDIAN = "false";
   process.env.ENABLE_LLM_ORACLE = "false";
@@ -164,26 +173,31 @@ async function main() {
 
   // --- 4) SHIELD fail-closed ---
   {
+    const dbBeforeShield = process.env.DATABASE_URL;
     process.env.DATABASE_URL = "postgresql://a5-shield-neg.invalid/db";
-    assert.throws(
-      () =>
-        assertDurableShieldOrThrow({
-          shieldAuditPersisted: false,
-          shieldAuditWriteFailed: true,
-          shieldAuditWriteReason: "a5-simulated",
-        }),
-      (e: unknown) => e instanceof ShieldAuditIntegrityError
-    );
-    const shieldGate = resolveShieldAwareEnqueue({
-      guardianAllowsEnqueue: true,
-      shieldPersisted: false,
-      durableRequired: true,
-    });
-    assert.equal(shieldGate.draftEnqueueAllowed, false);
-    assert.equal(shieldGate.shieldBlockedEnqueue, true);
-    assert.equal(shieldGate.reason, "shield_unavailable");
-    delete process.env.DATABASE_URL;
-    results.shield_fail_closed = "PASS";
+    try {
+      assert.throws(
+        () =>
+          assertDurableShieldOrThrow({
+            shieldAuditPersisted: false,
+            shieldAuditWriteFailed: true,
+            shieldAuditWriteReason: "a5-simulated",
+          }),
+        (e: unknown) => e instanceof ShieldAuditIntegrityError
+      );
+      const shieldGate = resolveShieldAwareEnqueue({
+        guardianAllowsEnqueue: true,
+        shieldPersisted: false,
+        durableRequired: true,
+      });
+      assert.equal(shieldGate.draftEnqueueAllowed, false);
+      assert.equal(shieldGate.shieldBlockedEnqueue, true);
+      assert.equal(shieldGate.reason, "shield_unavailable");
+      results.shield_fail_closed = "PASS";
+    } finally {
+      if (dbBeforeShield === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = dbBeforeShield;
+    }
   }
 
   // --- 5) Duplicate approval ---
@@ -256,7 +270,7 @@ async function main() {
 
   console.log(
     "milestone-a5-negative-suite:",
-    JSON.stringify(results),
+    JSON.stringify({ ...results, storeMode: storeSnap?.mode ?? "file_store" }),
     "— PASS (API/unit negatives; not browser E2E)"
   );
 }
@@ -268,9 +282,6 @@ main()
   })
   .finally(() => {
     process.chdir(prevCwd);
-    if (prevDb === undefined) delete process.env.DATABASE_URL;
-    else process.env.DATABASE_URL = prevDb;
-    if (prevUse === undefined) delete process.env.USE_POSTGRES;
-    else process.env.USE_POSTGRES = prevUse;
+    if (storeSnap) restoreMilestoneA5StoreMode(storeSnap);
     rmSync(tmp, { recursive: true, force: true });
   });

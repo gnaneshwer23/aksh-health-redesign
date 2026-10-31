@@ -7,6 +7,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 async function main() {
+  // Isolate from ambient Neon/CI DATABASE_URL so the local fail-visible path is hermetic;
+  // Postgres fail-closed is exercised below with an intentional invalid URL.
+  const prevDb = process.env.DATABASE_URL;
+  const prevUse = process.env.USE_POSTGRES;
+  delete process.env.DATABASE_URL;
+  delete process.env.USE_POSTGRES;
+
   const {
     persistDiabetesDomainShieldDecision,
     withRequiredDiabetesDomainShield,
@@ -15,6 +22,7 @@ async function main() {
   } = await import("../lib/diabetes-intelligence/shield-decision-audit");
   const root = path.join(__dirname, "..");
 
+  try {
   // Without Postgres, persistShieldAuditEvent returns persisted:false — must surface fail-visible flags.
   const result = await persistDiabetesDomainShieldDecision({
     source: "agent_intel",
@@ -66,8 +74,6 @@ async function main() {
   assert.equal(local.status, "APPROVED");
 
   // Fail-closed gate: when Postgres is configured, unaudited finalisation is blocked.
-  const prevDb = process.env.DATABASE_URL;
-  const prevUse = process.env.USE_POSTGRES;
   process.env.DATABASE_URL = "postgresql://shield-integrity-test.invalid/db";
   delete process.env.USE_POSTGRES;
 
@@ -102,12 +108,9 @@ async function main() {
     })
   );
 
-  if (prevDb === undefined) delete process.env.DATABASE_URL;
-  else process.env.DATABASE_URL = prevDb;
-  if (prevUse === undefined) delete process.env.USE_POSTGRES;
-  else process.env.USE_POSTGRES = prevUse;
-
-  // After clearing Postgres env, failed shield must not throw (local honesty path).
+  // Back to hermetic local mode (ignore ambient Neon) for the non-throwing honesty path.
+  delete process.env.DATABASE_URL;
+  delete process.env.USE_POSTGRES;
   assert.doesNotThrow(() => assertDurableShieldOrThrow(failedShield));
 
   // Assemble decide paths must use fail-closed wrapper (wiring proof).
@@ -126,6 +129,12 @@ async function main() {
   console.log(
     "p1-shield-diabetes-decide: fail-closed SHIELD (Postgres) + honest local non-durable — PASS"
   );
+  } finally {
+    if (prevDb === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = prevDb;
+    if (prevUse === undefined) delete process.env.USE_POSTGRES;
+    else process.env.USE_POSTGRES = prevUse;
+  }
 }
 
 main().catch((err) => {

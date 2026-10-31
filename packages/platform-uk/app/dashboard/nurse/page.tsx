@@ -20,11 +20,12 @@ export default function NurseOverviewPage() {
   return (
     <div className="space-y-4">
       <NurseHeroDemoPath />
-      <p className="sr-only" data-testid="nurse-honesty-banner">
-        Synthetic patient panel · HITL required · liveEmis:false. Observations and handovers can
-        append to the durable SHIELD audit when signed in; they do not write to EMIS/SystmOne from
-        this proof build. Spine:{" "}
-        <code className="text-[10px]">POST /api/clinical-spine/nurse-vitals</code>.
+      <p
+        className="rounded-xl border border-border/60 bg-card/80 px-3 py-2 text-xs text-muted"
+        data-testid="nurse-honesty-banner"
+      >
+        Nurse HITL · synthetic panel · liveEmis:false · ehrWrite:false. Observations append to the
+        clinical spine / SHIELD when signed in — not EMIS/SystmOne from this proof build.
       </p>
       <RoleWorkspaceIntro
         eyebrow="Nurse workspace"

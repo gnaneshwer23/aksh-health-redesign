@@ -89,13 +89,121 @@ jobs:
       - name: Run CI 2.0 evaluation gate
         run: npm run test:ci20:evaluation-gate
 
+  # Milestone A5 hermetic gate (file-store). Always clears DATABASE_URL inside suites
+  # unless MILESTONE_A5_USE_NEON=1 — see packages/platform-uk/tests/helpers/milestone-a5-store-mode.ts.
+  milestone-a5-gate:
+    name: Milestone A5 hermetic gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: true
+      SKIP_EMAIL_SEND: "true"
+      DISABLE_RATE_LIMIT: "true"
+      E2E_TEST_MODE: "true"
+      ENABLE_DIABETES_MODULE: "true"
+      ENABLE_LLM_SYNTHESIS: "false"
+      ENABLE_LLM_GUARDIAN: "false"
+      ENABLE_LLM_ORACLE: "false"
+      ENABLE_LLM_DR_ASSIST: "false"
+      ENABLE_LLM_NEXUS: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: packages/platform-uk/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Milestone A5 hermetic gate
+        run: npm run test:milestone-a5
+
+  # Optional Neon-backed A5 gate — runs only when Neon GitHub integration is configured.
+  # Does not clear DATABASE_URL (MILESTONE_A5_USE_NEON=1). Throwaway branch; never prod.
+  milestone-a5-neon-gate:
+    name: Milestone A5 Neon gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ vars.NEON_PROJECT_ID != '' }}
+    env:
+      CI: true
+      SKIP_EMAIL_SEND: "true"
+      DISABLE_RATE_LIMIT: "true"
+      E2E_TEST_MODE: "true"
+      ENABLE_DIABETES_MODULE: "true"
+      ENABLE_LLM_SYNTHESIS: "false"
+      ENABLE_LLM_GUARDIAN: "false"
+      ENABLE_LLM_ORACLE: "false"
+      ENABLE_LLM_DR_ASSIST: "false"
+      ENABLE_LLM_NEXUS: "false"
+      DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: packages/platform-uk/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Neon CI branch
+        id: neon
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          branch_name: ci/a5-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Use Neon CI branch for this run
+        if: ${{ steps.neon.outputs.db_url_pooled != '' }}
+        run: |
+          echo "::add-mask::${{ steps.neon.outputs.db_url_pooled }}"
+          echo "DATABASE_URL=${{ steps.neon.outputs.db_url_pooled }}" >> "$GITHUB_ENV"
+
+      - name: Validate A5 Neon database
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::No DATABASE_URL for Milestone A5 Neon gate."
+            exit 1
+          fi
+
+      - name: Apply pending migrations on CI branch
+        working-directory: packages/platform-uk
+        run: npx tsx scripts/db-migrate.ts --apply
+
+      - name: Run Milestone A5 Neon gate
+        env:
+          MILESTONE_A5_USE_NEON: "1"
+          USE_POSTGRES: "true"
+        run: npm run test:milestone-a5:neon
+
+      - name: Delete Neon CI branch
+        if: ${{ always() && steps.neon.outputs.branch_id != '' }}
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: ${{ steps.neon.outputs.branch_id }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
   playwright:
     name: Playwright E2E
     runs-on: ubuntu-latest
     # Full suite + production build + pending CI-branch migrations; Atlantic latency to Neon (eu-west-2).
     # 40m cancelled mid-Playwright after migrations were added — keep headroom for retries.
     timeout-minutes: 60
-    needs: [platform-unit-gates, ci20-evaluation-gate]
+    needs: [platform-unit-gates, ci20-evaluation-gate, milestone-a5-gate]
     env:
       CI: true
       E2E_BASE_URL: http://127.0.0.1:3000

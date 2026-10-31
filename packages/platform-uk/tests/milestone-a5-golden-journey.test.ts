@@ -1,7 +1,10 @@
 /**
  * Milestone A5 — multi-account golden journey (audit §11.2 flow) as far as the
- * auth/API harness allows. Synthetic orgs only. File-store / in-process path —
- * not a live browser multi-role Playwright chain.
+ * auth/API harness allows. Synthetic orgs only.
+ *
+ * Store honesty: hermetic file-store by default; optional Neon when
+ * MILESTONE_A5_USE_NEON=1 and DATABASE_URL is set (see tests/helpers/milestone-a5-store-mode.ts).
+ * Not a live browser multi-role Playwright chain (see e2e/milestone-a5-multi-account-browser.spec.ts).
  *
  * Flow: patient → reception → nurse → GP → Guardian → lab → pharmacist →
  * care plan → patient visibility → ops.
@@ -13,18 +16,22 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 
 import type { ClinicalContextPackage } from "../lib/context-engine/types";
+import {
+  applyMilestoneA5StoreMode,
+  restoreMilestoneA5StoreMode,
+  type MilestoneA5StoreSnapshot,
+} from "./helpers/milestone-a5-store-mode";
 
 const tmp = mkdtempSync(path.join(tmpdir(), "a5-golden-"));
 const prevCwd = process.cwd();
-const prevDb = process.env.DATABASE_URL;
-const prevUse = process.env.USE_POSTGRES;
-delete process.env.DATABASE_URL;
-delete process.env.USE_POSTGRES;
+let storeSnap: MilestoneA5StoreSnapshot | null = null;
 process.chdir(tmp);
 
 type Coverage = "covered" | "partial" | "sim";
 
 async function main() {
+  storeSnap = applyMilestoneA5StoreMode();
+
   process.env.ENABLE_LLM_SYNTHESIS = "false";
   process.env.ENABLE_LLM_GUARDIAN = "false";
   process.env.ENABLE_LLM_ORACLE = "false";
@@ -425,6 +432,7 @@ async function main() {
 
   const summary = {
     mode: "api_unit",
+    storeMode: storeSnap?.mode ?? "file_store",
     browserPlaywright: false,
     careEpisodeId: episodeId,
     coverage,
@@ -432,7 +440,7 @@ async function main() {
   console.log(
     "milestone-a5-golden-journey:",
     JSON.stringify(summary),
-    "— PASS (API/unit; Playwright multi-role browser chain NOT executed)"
+    `— PASS (API/unit; store=${summary.storeMode}; Playwright multi-role browser chain is a separate e2e)`
   );
 }
 
@@ -443,9 +451,6 @@ main()
   })
   .finally(() => {
     process.chdir(prevCwd);
-    if (prevDb === undefined) delete process.env.DATABASE_URL;
-    else process.env.DATABASE_URL = prevDb;
-    if (prevUse === undefined) delete process.env.USE_POSTGRES;
-    else process.env.USE_POSTGRES = prevUse;
+    if (storeSnap) restoreMilestoneA5StoreMode(storeSnap);
     rmSync(tmp, { recursive: true, force: true });
   });

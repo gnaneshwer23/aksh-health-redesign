@@ -540,9 +540,13 @@ export default function E2EAdminDashboardPage() {
             <CardTitle className="text-base">Lab / pharmacy simulations</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <p className="text-xs text-muted-foreground">
-              liveNhsLab:{String(sims?.liveNhsLab ?? false)} · livePrescribing:
-              {String(sims?.livePrescribing ?? false)} · ehrWrite:false
+            <p
+              className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+              data-testid="lab-pharmacy-sim-honesty"
+            >
+              Lab / pharmacy HITL · <strong>simulation only</strong> until live NHS lab / EPS paths
+              exist · liveNhsLab:{String(sims?.liveNhsLab ?? false)} · livePrescribing:
+              {String(sims?.livePrescribing ?? false)} · ehrWrite:false · no invented AI success
             </p>
             {sims?.error ? (
               <p className="text-xs text-amber-700 dark:text-amber-300">{sims.error}</p>
