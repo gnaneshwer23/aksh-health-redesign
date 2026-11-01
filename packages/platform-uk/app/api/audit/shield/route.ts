@@ -7,6 +7,7 @@ import {
 import { composePanelEvent } from "@/lib/audit/panel-events";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { readReviewCases } from "@/lib/review-case-repository";
+import { normaliseAuditResourceRef } from "@/lib/security/phi-safe-ref";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 /**
@@ -74,6 +75,12 @@ export async function POST(request: Request) {
     }
   }
 
+  // C4 — never persist label-shaped client resourceRef (names / "Label (id)").
+  const resourceRef = normaliseAuditResourceRef(cap(body.resourceRef, 200), {
+    caseId,
+    agentLabel: composed.agent,
+  });
+
   const result = await persistShieldAuditEvent({
     action: composed.action,
     actor: auth.context.userEmail ?? auth.context.userId,
@@ -82,7 +89,7 @@ export async function POST(request: Request) {
     detail: cap(body.note, 1000),
     category: composed.category,
     agentLabel: composed.agent,
-    resourceRef: cap(body.resourceRef, 200),
+    resourceRef,
     caseId,
     practiceId: tenant.practiceId,
     payload: { origin: "dashboard_panel", event: composed.event, subject: composed.subject }

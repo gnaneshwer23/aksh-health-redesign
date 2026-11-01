@@ -86,7 +86,8 @@ export function CoachingDraftPanel({
         action: "defer",
         agent: draft.agentId,
         note: draft.summary.slice(0, 200),
-        resourceRef: `${patientLabel ?? patientId} (${patientId})`,
+        // C4 — opaque id only; /api/audit/shield normalises to pt_* (no labels).
+        resourceRef: patientId,
       },
       { authenticated: reviewer.authenticated }
     );

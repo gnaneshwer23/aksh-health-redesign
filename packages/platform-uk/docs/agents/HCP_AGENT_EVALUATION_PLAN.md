@@ -39,6 +39,8 @@
 **Milestone C2:** review honesty strip on GP review queue / CONDUCTOR briefs / pharmacist reviews — `executionMode`, LLM-week visibility, lab/pharmacy sim labels. See `docs/milestone-c/REVIEW_HONESTY.md`.  
 **Milestone C3:** multi-role lab/pharmacy product HITL (GP stage → lab/pharmacy Accept/Edit/Reject) — still sim-labelled; no live vendors. See `docs/milestone-c/LAB_PHARMACY_HITL.md`.
 
+**Milestone C4:** residual lifestyle PHI scrub (`resourceRef`) + optional no-PHI Agent Ops alert webhook (default off). See `docs/milestone-c/PHI_OPS_ALERT.md`.
+
 ### 3.1 Purpose
 
 Single authenticated surface for **ops + clinical safety** during HCP evaluation weeks: what ran, what failed, what humans decided, what the gateway blocked — without implying production clinical certification.

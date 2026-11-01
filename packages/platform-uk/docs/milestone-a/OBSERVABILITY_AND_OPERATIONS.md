@@ -49,5 +49,6 @@ All alerts are **PHI-free** (hashed patient refs only). Not forwarded to generic
 ## Residual / next (A5+)
 
 - Full browser booking→decide click-path (A5 adds role-landing + authz smoke only).
-- Optional webhook / ops channel for critical alerts (still no PHI payload).
+- Optional webhook / ops channel for critical alerts (still no PHI payload) — **Milestone C4** (`docs/milestone-c/PHI_OPS_ALERT.md`, `AKSH_OPS_ALERT_CHANNEL_ENABLED`, default off).
 - Performance baselines / SLOs (Workstream H) measured, not invented.
+- File↔Neon dual-path for durable runs / SHIELD remains a residual (documented in C4).
