@@ -3,6 +3,7 @@
 import { useCallback, useState, type ReactNode } from "react";
 
 import { HitlActions } from "@/components/dashboard/SOAPEditor";
+import { ReviewHonestyStrip } from "@/components/dashboard/review/ReviewHonestyStrip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/toaster";
@@ -13,6 +14,7 @@ import type { DiabetesRiskContribution } from "@/lib/disease-modules/diabetes";
 import type { OracleModelCard } from "@/lib/precision-health/oracle-model-card";
 import type { TwinSimulationResult } from "@/lib/precision-health/twin-simulation";
 import { formatHbA1c } from "@/lib/diabetes-units";
+import { summarizeExecutionModesFromAgents } from "@/lib/review/honesty-strip-client";
 
 /** B4: HORIZON/GUARDIAN items sourced from the Diabetes module are prefixed "[Diabetes] " by
  * lib/clinical-spine/orchestrate.ts (applyDiabetesContributionAdditively) — strip the prefix for
@@ -79,6 +81,14 @@ type OrchestrateResponse = {
     ehrWrite: false;
     hitlRequired: true;
     elapsedMs: number;
+    /** A1 run bundle — drives Milestone C2 honesty strip executionMode chips. */
+    execution?: {
+      correlationId?: string;
+      evidenceRefs?: string[];
+      guardianOutcome?: string | null;
+      agents?: Array<{ agentId: string; executionMode: string }>;
+    };
+    agentMetadata?: Partial<Record<string, { agentId: string; executionMode: string }>>;
   };
   safetyRoute?: SafetyRoute;
   safetyRouteLabel?: string;
@@ -193,6 +203,13 @@ export function ClinicalOrchestratePanel({
 
   const orch = result?.orchestration;
   const order = orch?.reviewOrder ?? [];
+  const runHonesty = orch?.execution?.agents?.length
+    ? summarizeExecutionModesFromAgents(orch.execution.agents, {
+        evidenceRefCount: orch.execution.evidenceRefs?.length ?? 0,
+        correlationId: orch.execution.correlationId ?? null,
+        guardianOutcome: orch.execution.guardianOutcome ?? null,
+      })
+    : null;
 
   return (
     <Card className="shadow-sm" data-testid="clinical-orchestrate-panel">
@@ -212,6 +229,13 @@ export function ClinicalOrchestratePanel({
         </Button>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-2">
+        <ReviewHonestyStrip
+          surface="CONDUCTOR agent brief"
+          variant="run"
+          runSummary={runHonesty}
+          fetchSessionMode={false}
+          showHcpSessionLink={false}
+        />
         {!orch ? (
           <p role="status" className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted">
             CONDUCTOR runs the shared clinical-proof orchestration on this patient. Urgent cases surface

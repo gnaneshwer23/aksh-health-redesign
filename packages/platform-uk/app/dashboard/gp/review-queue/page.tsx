@@ -8,6 +8,7 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { GpHeroDemoPath } from "@/components/dashboard/GpHeroDemoPath";
 import { ClinicalIntelligenceWorkspace } from "@/components/dashboard/ClinicalIntelligenceWorkspace";
 import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-health/ClinicalOrchestratePanel";
+import { ReviewHonestyStrip } from "@/components/dashboard/review/ReviewHonestyStrip";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { UnifiedGpReviewBanner } from "@/components/dashboard/UnifiedGpReviewBanner";
 import { getPatientById } from "@/lib/mock-data";
@@ -32,6 +33,7 @@ function GpReviewQueueContent() {
         {/* Keep hero available for U4/smoke; dismissible + Demo menu */}
         <GpHeroDemoPath />
         <ConsentBanner />
+        <ReviewHonestyStrip surface="GP review queue" showHcpSessionLink />
         <UnifiedGpReviewBanner patientId={patientId} />
         {patient && (
           <>
