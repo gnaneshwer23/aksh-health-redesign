@@ -38,7 +38,7 @@ This surface replaces curl/JSON-only friction for case-pack load + Accept/Edit/R
 ## What C1 is not
 
 - **Not** clinical validation or device certification.
-- **Not** Milestone C4–C5 (PHI scrub, COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md). C3 lab/pharmacy product HITL — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md).
+- **Not** Milestone C5 (COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md). C3 lab/pharmacy product HITL — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md). C4 residual PHI scrub + optional ops alert channel — see [PHI_OPS_ALERT.md](./PHI_OPS_ALERT.md).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS connectors.
 - **Not** expanding PRISM/ATLAS product scope.
@@ -54,7 +54,7 @@ From `packages/platform-uk`:
 
 ```bash
 npm run test:milestone-c
-# includes: milestone-b gate + C1 UI + C2 honesty + C3 lab/pharmacy HITL + typecheck
+# includes: milestone-b gate + C1 UI + C2 honesty + C3 lab/pharmacy HITL + C4 phi-ops + typecheck
 ```
 
 Standalone C1 harness:

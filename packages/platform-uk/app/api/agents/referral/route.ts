@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
 import type { ReviewQueueItem, ServiceRequestResource } from "@/lib/types";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -112,7 +113,7 @@ export async function POST(request: Request) {
     category: "system",
     caseId,
     agentLabel: "PATHWAY",
-    resourceRef: `${patientLabel} (${patientId})`,
+    resourceRef: phiSafeResourceRef(patientId, { caseId, agentLabel: "PATHWAY" }),
     payload: {
       mode: draft.mode,
       priority: serviceRequest.priority,

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getMockPatientResponse } from "@/lib/neo4j/mock-fallback";
 import { buildNutritionCoachingDraft } from "@/lib/precision-health/coaching";
 import { persistShieldAuditEvent } from "@/lib/repositories/shield-audit-repository";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
 export const maxDuration = 30;
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     detail: draft.summary.slice(0, 200),
     category: "system",
     agentLabel: "NUTRITION",
-    resourceRef: `${patientLabel} (${patientId})`,
+    resourceRef: phiSafeResourceRef(patientId, { agentLabel: "NUTRITION" }),
     payload: {
       mode: draft.mode,
       isClinicalAdvice: false,

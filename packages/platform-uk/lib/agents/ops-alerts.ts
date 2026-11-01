@@ -1,8 +1,10 @@
 /**
  * Milestone A4 — actionable Agent Ops alert signals from persisted durable runs
  * (+ optional care-episode open-task age). No PHI; no second monitoring product.
+ * Milestone C4 — optional webhook channel via `dispatchOpsAlertChannel` (default off).
  */
 import type { CareEpisode } from "../care-episode/types";
+import { dispatchOpsAlertChannel } from "./ops-alert-channel";
 import type { DurableAgentRunRecord } from "./execution-run-store";
 import { listDurableAgentRunsForScope } from "./execution-run-store";
 import { patientRefForOps, toOpsRunVisibilityRow } from "./ops-run-visibility";
@@ -218,12 +220,21 @@ export async function buildOpsAlerts(input: {
   limit?: number;
   episodes?: CareEpisode[];
   now?: Date;
+  /** When true (default), attempt optional C4 webhook if env-enabled. */
+  dispatchChannel?: boolean;
 }): Promise<OpsAlertsSummary> {
   const limit = Math.min(Math.max(input.limit ?? 100, 1), 200);
+  // Dual-path residual: listDurableAgentRunsForScope still merges file mirror vs Neon.
   const runs = await listDurableAgentRunsForScope(input.scopeKey, limit);
   const summary = evaluateDurableRunAlerts(runs, {
     now: input.now,
     episodes: input.episodes,
   });
-  return { ...summary, scopeKey: input.scopeKey };
+  const withScope = { ...summary, scopeKey: input.scopeKey };
+  if (input.dispatchChannel !== false) {
+    void dispatchOpsAlertChannel(withScope).catch(() => {
+      /* never surface channel faults to Agent Ops readers */
+    });
+  }
+  return withScope;
 }

@@ -5,6 +5,7 @@ import {
   listShieldAuditEvents,
   persistShieldAuditEvent
 } from "@/lib/repositories/shield-audit-repository";
+import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 import type { NurseEscalationTask } from "@/lib/types";
 
@@ -22,9 +23,12 @@ function tasksFromShieldEvents(
       continue;
     }
     if (event.label.toLowerCase().includes("voice care")) {
+      // C4: resourceRef is opaque (pt_*); never treat it as a display name.
+      const payloadLabel =
+        typeof payload.patientLabel === "string" ? payload.patientLabel : undefined;
       tasks.push({
         id: `shield-${event.id}`,
-        patientLabel: event.resourceRef ?? "Synthetic patient",
+        patientLabel: payloadLabel ?? "Synthetic patient",
         caseId: event.caseId ?? "unknown",
         priority: "urgent",
         summary: event.detail ?? event.label,
@@ -78,19 +82,21 @@ export async function POST(request: Request) {
     oracleScore: body.oracleScore
   });
 
+  const caseId = result.escalation.caseId;
   const shieldResult = await persistShieldAuditEvent({
     action: "defer",
     actor: auth.context.userEmail ?? auth.context.userId,
     label: "SHIELD: VOICE CARE synthetic outbound escalation",
     detail: `${result.label} · ${result.nurseTask.summary}`,
     category: "system",
-    caseId: result.escalation.caseId,
+    caseId,
     agentLabel: "VOICE",
-    resourceRef: result.escalation.patientLabel,
+    resourceRef: phiSafeResourceRef(caseId, { caseId, agentLabel: "VOICE" }),
     payload: {
       channel: result.channel,
       telephony: false,
       label: result.label,
+      patientLabel: result.escalation.patientLabel,
       escalation: result.escalation,
       nurseTask: result.nurseTask,
       transcriptPreview: result.transcript.slice(0, 280)
