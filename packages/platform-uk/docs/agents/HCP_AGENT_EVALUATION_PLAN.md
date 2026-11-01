@@ -37,7 +37,8 @@
 **Milestone B additions:** eval harness panel (`agent-ops-eval-harness`), lab/pharmacy sim honesty, `GET /api/agents/loop-outcomes`, HCP case pack + feedback APIs. See `docs/milestone-b/EVAL_ENVIRONMENT.md`.  
 **Milestone C1:** in-app facilitator session UI (`/dashboard/gp/hcp-eval-session`, admin mirror) — case-pack picker + rubric form wired to those APIs. See `docs/milestone-c/FACILITATOR_SESSION.md`.  
 **Milestone C2:** review honesty strip on GP review queue / CONDUCTOR briefs / pharmacist reviews — `executionMode`, LLM-week visibility, lab/pharmacy sim labels. See `docs/milestone-c/REVIEW_HONESTY.md`.  
-**Milestone C3:** multi-role lab/pharmacy product HITL (GP stage → lab/pharmacy Accept/Edit/Reject) — still sim-labelled; no live vendors. See `docs/milestone-c/LAB_PHARMACY_HITL.md`.
+**Milestone C3:** multi-role lab/pharmacy product HITL (GP stage → lab/pharmacy Accept/Edit/Reject) — still sim-labelled; no live vendors. See `docs/milestone-c/LAB_PHARMACY_HITL.md`.  
+**Milestone C5:** COMPASS / alias / directory honesty for Week 2 edges — decision-support sandbox labels; VOICE ≠ VOICE CARE; live-path / scaffold / sim alignment. See `docs/milestone-c/COMPASS_HONESTY.md`.
 
 **Milestone C4:** residual lifestyle PHI scrub (`resourceRef`) + optional no-PHI Agent Ops alert webhook (default off). See `docs/milestone-c/PHI_OPS_ALERT.md`.
 
@@ -168,9 +169,9 @@ Reuse/extend: `lib/eval/golden-cases.ts`, clinical-proof hazard-trace fixtures.
 | --- | --- |
 | 1 | Gateway BLOCK cases; timeout drill (short agentTimeoutMs in sim) |
 | 2 | Connected-diabetes path vs spine path comparison (document confusion) |
-| 3 | COMPASS aggregate brief (ICS) |
-| 4 | Outcomes capture (T11) — optional completeness |
-| 5 | Readiness review with CSO; update proposed targets if needed |
+| 3 | COMPASS aggregate brief (ICS) — **C5**: decision-support / sandbox honesty on Agent Ops + ICS Equity; not certified ICS routing (`docs/milestone-c/COMPASS_HONESTY.md`) |
+| 4 | Outcomes capture (T11) — optional completeness; confirm VOICE ≠ VOICE CARE + alias map on Agent Ops |
+| 5 | Readiness review with CSO; directory ↔ register path kinds (live-path / scaffold / sim); update proposed targets if needed — never silent “production ready” |
 
 ### Exit criteria for “evaluation complete” (not go-live)
 

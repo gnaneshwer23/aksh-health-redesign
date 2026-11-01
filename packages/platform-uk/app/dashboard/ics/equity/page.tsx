@@ -16,9 +16,10 @@ export default function IcsEquityPage() {
       <IcsHeroDemoPath />
       <div>
         <h2 className="text-lg font-semibold text-foreground">Equity Metrics</h2>
-        <p className="text-sm text-muted">
-          COMPASS agent flags and recommended interventions for {icsName} — aggregate equity story ·
-          liveEmis:false · not individual notes.
+        <p className="text-sm text-muted" data-testid="ics-equity-honesty">
+          COMPASS decision-support flags and recommended interventions for {icsName} — aggregate equity
+          sandbox · liveEmis:false · not certified ICS routing · not individual notes · not clinical
+          validation.
         </p>
       </div>
       <EquityDeepDive />

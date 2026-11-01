@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
+import { CompassHonestyStrip } from "@/components/dashboard/admin/CompassHonestyStrip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -65,10 +66,12 @@ export function EquityDeepDive() {
       <CardHeader>
         <CardTitle className="text-sm">COMPASS Deep-Dive</CardTitle>
         <p className="text-xs text-muted">
-          Recommend stage (COMPASS) — the platform&apos;s most-built Population Intelligence stage today.
+          Recommend-stage population brief (COMPASS) — decision-support sandbox for aggregate equity
+          flags. Not certified ICS routing · not clinical validation. EQUITY remains the legacy API alias.
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
+        <CompassHonestyStrip surface="ICS · COMPASS equity deep-dive" />
         {loading && !liveData ? (
           <ChartSkeleton height="h-40" />
         ) : (
@@ -110,7 +113,8 @@ export function EquityDeepDive() {
             </Button>
             {planLogged ? (
               <p className="mt-2 text-xs text-accent">
-                COMPASS draft staged via `/api/agents/equity` · SHIELD audit · HITL only · no EHR write
+                COMPASS draft staged via `/api/agents/equity` (COMPASS alias) · SHIELD audit · HITL only ·
+                sandbox decision-support · not certified ICS routing · no EHR write
                 {source ? ` · source=${source}` : ""}
               </p>
             ) : null}

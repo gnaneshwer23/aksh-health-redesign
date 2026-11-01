@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 
+import {
+  COMPASS_CAPABILITIES,
+  COMPASS_HONESTY_LINES,
+  COMPASS_NON_CLAIMS,
+  buildCompassHonestyModel,
+} from "@/lib/agents/compass-honesty";
 import { isLlmEquityConfigured, runEquityAgent } from "@/lib/agents/llm-equity";
 import { summariseLoopOutcomes } from "@/lib/clinical-spine/loop-outcomes";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
@@ -10,11 +16,22 @@ import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 export const maxDuration = 30;
 
 export async function GET() {
+  const honesty = buildCompassHonestyModel("GET /api/agents/equity (COMPASS alias)");
   return NextResponse.json({
     available: true,
     llmConfigured: isLlmEquityConfigured(),
     mode: isLlmEquityConfigured() ? "llm_with_deterministic_fallback" : "deterministic_only",
-    note: "COMPASS (formerly EQUITY) drafts are aggregate/synthetic only. HITL required. No EHR write."
+    productLabel: COMPASS_CAPABILITIES.productLabel,
+    legacyAlias: COMPASS_CAPABILITIES.legacyAlias,
+    capabilities: COMPASS_CAPABILITIES,
+    honestyLines: COMPASS_HONESTY_LINES,
+    nonClaims: COMPASS_NON_CLAIMS,
+    clinicalValidationClaim: false,
+    certifiedIcsRouting: false,
+    ehrWrite: false,
+    hitlRequired: true,
+    honesty,
+    note: "COMPASS (formerly EQUITY) drafts are aggregate/synthetic decision-support only. Sandbox — not certified ICS routing. HITL required. No EHR write."
   });
 }
 
@@ -61,6 +78,12 @@ export async function POST(request: Request) {
     loopOutcomes,
     hitlRequired: true,
     ehrWrite: false,
+    clinicalValidationClaim: false,
+    certifiedIcsRouting: false,
+    decisionSupportOnly: true,
+    sandbox: true,
+    productLabel: "COMPASS",
+    legacyAlias: "EQUITY",
     shieldLogged: shield.persisted
   });
 }

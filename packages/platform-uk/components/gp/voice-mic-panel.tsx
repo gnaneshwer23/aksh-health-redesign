@@ -37,10 +37,13 @@ export function VoiceMicPanel({
       <div className="gp-panel__header" style={{ marginBottom: "0.5rem" }}>
         <h3>VOICE · sub-capability</h3>
         <span className="pill">feeds CANVAS</span>
+        <span className="pill" data-testid="voice-not-voice-care">
+          ≠ VOICE CARE
+        </span>
       </div>
       <p className="meta">
-        Microphone dictation feeds CANVAS intake (not a peer directory agent); SYNTHESIS then drafts SOAP notes for
-        clinician review.
+        Microphone dictation feeds CANVAS intake (not a peer directory agent; not VOICE CARE outbound).
+        SYNTHESIS then drafts SOAP notes for clinician review.
       </p>
       <div className="actions" style={{ flexWrap: "wrap" }}>
         <button className="button primary" onClick={injectStubTranscript} type="button">

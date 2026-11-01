@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { AdminHeroDemoPath } from "@/components/dashboard/admin/AdminHeroDemoPath";
+import { AliasHonestyPanel } from "@/components/dashboard/admin/AliasHonestyPanel";
 import { CompassBriefPanel } from "@/components/dashboard/admin/CompassBriefPanel";
+import { DirectoryHonestyPanel } from "@/components/dashboard/admin/DirectoryHonestyPanel";
 import { ConsentBanner } from "@/components/dashboard/ConsentBanner";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
@@ -245,12 +247,15 @@ export default function AdminAgentOpsPage() {
             </li>
           </ul>
           <p className="text-[11px] text-muted">
-            Milestone B HCP prep · docs/milestone-b/ · HCP_AGENT_EVALUATION_PLAN.md. PRISM/ATLAS are P4 L2 scaffolds
-            (synthetic eval only) — never shown as live.
+            Milestone B/C HCP prep · docs/milestone-b/ · docs/milestone-c/COMPASS_HONESTY.md ·
+            HCP_AGENT_EVALUATION_PLAN.md. PRISM/ATLAS are P4 L2 scaffolds (synthetic eval only) — never shown as live.
+            VOICE ≠ VOICE CARE.
           </p>
         </section>
 
         <CompassBriefPanel />
+        <AliasHonestyPanel />
+        <DirectoryHonestyPanel />
 
         {loading && <p className="text-sm text-muted">Loading readiness and loop outcomes…</p>}
         {data?.error && (
@@ -263,7 +268,8 @@ export default function AdminAgentOpsPage() {
           <h2 className="text-sm font-semibold">Agent registry (readiness)</h2>
           <p className="text-xs text-muted">
             {data?.readiness?.measuredOn ?? "Synthetic validation"} · source{" "}
-            {data?.readiness?.source ?? "—"}. {data?.readiness?.note}
+            {data?.readiness?.source ?? "—"}. {data?.readiness?.note} Status values are{" "}
+            <strong>in_validation</strong> — not production ready.
           </p>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {liveish.map((a) => (
@@ -277,7 +283,8 @@ export default function AdminAgentOpsPage() {
                   <span className="text-muted">{a.id}</span>
                 </div>
                 <div className="text-muted">
-                  status: {a.status} · {a.ready ? "criteria met (still human release)" : "not ready"}
+                  status: {a.status} ·{" "}
+                  {a.ready ? "criteria met (still human release · not production ready)" : "not ready"}
                 </div>
                 {!a.ready && a.outstanding[0] && (
                   <div className="text-amber-800/90 truncate" title={a.outstanding.join("; ")}>
@@ -290,6 +297,7 @@ export default function AdminAgentOpsPage() {
           </div>
           <p className="text-[11px] text-muted">
             PRISM/ATLAS omitted from live strip (scaffold ≠ live). Meeting numeric targets does not release an agent.
+            Aligns with directory honesty panel (live-path / scaffold / sim).
           </p>
         </section>
 

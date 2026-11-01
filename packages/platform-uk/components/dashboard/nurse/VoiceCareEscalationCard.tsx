@@ -110,8 +110,12 @@ export function VoiceCareEscalationCard() {
     >
       <div className="flex flex-wrap items-center gap-2">
         <Phone className="h-3.5 w-3.5 text-secondary" aria-hidden />
-        <p className="text-xs font-medium text-secondary">Voice Care</p>
-        <span className="text-[10px] text-muted">synthetic outbound · no telephony</span>
+        <p className="text-xs font-medium text-secondary" data-testid="voice-care-product-label">
+          VOICE CARE
+        </p>
+        <span className="text-[10px] text-muted" data-testid="voice-care-not-voice">
+          ≠ VOICE dictation · synthetic outbound · no telephony
+        </span>
         {taskCount > 0 ? (
           <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive">
             {taskCount} task{taskCount === 1 ? "" : "s"}
@@ -149,8 +153,9 @@ export function VoiceCareEscalationCard() {
       {expanded ? (
         <div className="mt-2 space-y-2 border-t border-border-subtle/60 pt-2">
           <p className="text-[11px] text-muted">
-            Channel: <strong>synthetic outbound</strong> only. No live telephony, no auto-dialler, and no
-            EHR write-back. Escalations create a nurse-facing task and attempt a durable SHIELD audit row.
+            <strong>VOICE CARE</strong> is not <strong>VOICE</strong> (CANVAS dictation). Channel:{" "}
+            <strong>synthetic outbound</strong> only. No live telephony, no auto-dialler, and no EHR
+            write-back. Escalations create a nurse-facing task and attempt a durable SHIELD audit row.
           </p>
           {escalationTasks.length > 0 ? (
             escalationTasks.map((task) => (

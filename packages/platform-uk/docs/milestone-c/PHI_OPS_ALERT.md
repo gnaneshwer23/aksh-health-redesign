@@ -75,7 +75,7 @@ C4 documents this residual; it does **not** unify stores. Shared-sandbox Neon au
 ## What C4 is not
 
 - **Not** clinical validation or device / pager certification.
-- **Not** Milestone C5 COMPASS expansion, calendar booking, or live connectors.
+- **Not** Milestone C5 COMPASS product expansion / calendar booking / live connectors (C5 honesty polish — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md)).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** scrubbing every dashboard panel `resourceRef` outside lifestyle + audit normaliser (other clinical UI posts may still send labels; audit route coerces them).
 - **Not** autonomous Rx / live EHR / EPS / PACS.
@@ -97,7 +97,7 @@ npm run test:milestone-c
 
 ## Gaps for C5+
 
-- COMPASS product expansion / calendar booking (out of scope here).
+- COMPASS **product** expansion / calendar booking (C5 landed honesty labels only — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md)).
 - Unify durable-run + SHIELD file↔Neon dual-path.
 - Broader client-panel PHI scrub beyond lifestyle + audit normaliser.
 - Neon shared-sandbox automation; CSO exit-note workflow; live integrations.
