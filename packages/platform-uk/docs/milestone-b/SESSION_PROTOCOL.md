@@ -23,6 +23,7 @@ This document is an **ops checklist**. Completing software gates here does **not
 | Action | How |
 | --- | --- |
 | **Facilitator session UI (Milestone C1)** | `/dashboard/gp/hcp-eval-session` or `/dashboard/admin/hcp-eval-session` · [FACILITATOR_SESSION.md](../milestone-c/FACILITATOR_SESSION.md) |
+| **Review honesty strip (Milestone C2)** | GP review queue / CONDUCTOR briefs / pharmacist reviews · [REVIEW_HONESTY.md](../milestone-c/REVIEW_HONESTY.md) |
 | Load session cases | In-app case-pack picker, or `GET /api/eval/hcp-case-pack` (Agent Ops eval panel for counts/version) |
 | Run CONDUCTOR / review on synthetic patients | Existing GP worklist / orchestrate → Accept/Edit/Reject |
 | Capture structured scores | In-app feedback form, or `POST /api/eval/hcp-feedback` with `casePackCaseId`, `agentLabel`, `decision`, `rubrics[]` |

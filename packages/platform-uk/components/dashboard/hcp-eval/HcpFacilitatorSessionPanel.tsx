@@ -263,6 +263,7 @@ export function HcpFacilitatorSessionPanel() {
         </Link>
         <Link href={reviewQueueHref} className="underline text-primary" data-testid="hcp-session-link-review-queue">
           GP review queue{selectedCase ? ` (${selectedCase.syntheticPatientId})` : ""}
+          {" · honesty strip (C2)"}
         </Link>
         <button
           type="button"

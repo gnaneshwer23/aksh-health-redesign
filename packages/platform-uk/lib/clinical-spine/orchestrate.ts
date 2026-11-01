@@ -36,6 +36,7 @@ import { resolveShieldAwareEnqueue } from "@/lib/agents/shield-orchestration-gat
 import { phiSafeResourceRef } from "@/lib/security/phi-safe-ref";
 
 import { resolveDecision, type DecisionEscalation } from "@/lib/decision";
+import { llmSessionModeCapabilities } from "@/lib/review/honesty-strip";
 
 import { SAFETY_ROUTE_LABELS, type SafetyRoute } from "./safety-route";
 
@@ -552,14 +553,14 @@ async function runClinicalSpineOrchestrateOnce(
 
 export function getClinicalSpineOrchestrateCapabilities() {
   const modelCard = getOracleModelCard();
+  // Milestone C2 — thin LLM-week / session-mode visibility for review honesty strip (not a policy admin UI).
+  const llmSession = llmSessionModeCapabilities();
   return {
     available: true,
     agents: ["SYNTHESIS", "GUARDIAN", "ORACLE", "NEXUS"] as const,
     twinRanking: true,
     simulationMode: "synthetic_rules" as const,
     physiologicalTwin: false as const,
-    ehrWrite: false as const,
-    hitlRequired: true as const,
     autoRetrain: false as const,
     liveEmis: false as const,
     modelCard,
@@ -569,6 +570,10 @@ export function getClinicalSpineOrchestrateCapabilities() {
       defaultEnabled: false as const,
       glucoseIntelligence: "insufficient_data_pending_OQ-DIAB-1" as const
     },
+    ...llmSession,
+    // Keep honesty invariants last so session payload cannot loosen them.
+    ehrWrite: false as const,
+    hitlRequired: true as const,
     note: "One-click SYNTHESIS→GUARDIAN→HORIZON→NEXUS (api ids ORACLE/NEXUS) on clinical spine. Urgent prioritises GUARDIAN. All drafts require HITL."
   };
 }

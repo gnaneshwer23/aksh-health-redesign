@@ -27,7 +27,7 @@ This surface replaces curl/JSON-only friction for case-pack load + Accept/Edit/R
    - Or Agent Ops → Eval harness → “Admin / GP HCP eval session”
 3. Read the honesty banner (synthetic / not certification / acceptance ≠ accuracy).
 4. Pick a case from the pack grid (e.g. `hcp-core-synthesis-patel`).
-5. Optionally open **GP review queue** for that synthetic patient to run CONDUCTOR / drafts.
+5. Optionally open **GP review queue** for that synthetic patient to run CONDUCTOR / drafts — Milestone **C2** mounts the review honesty strip there (executionMode / LLM-week / sim adapters). See [REVIEW_HONESTY.md](./REVIEW_HONESTY.md).
 6. Review related golden harness fixture text when shown.
 7. Choose agent label + Accept/Edit/Reject; score rubrics (justify any ≤3); save.
 8. View PHI-safe aggregates on **Agent Ops** (`GET /api/eval/hcp-feedback`).
@@ -37,7 +37,7 @@ This surface replaces curl/JSON-only friction for case-pack load + Accept/Edit/R
 ## What C1 is not
 
 - **Not** clinical validation or device certification.
-- **Not** Milestone C2–C5 (calendar booking, LLM week policy UI, Neon shared-sandbox automation, CSO exit note workflow, live integrations).
+- **Not** Milestone C3–C5 (lab/pharmacy product HITL, PHI scrub, COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty is separate — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS connectors.
 - **Not** expanding PRISM/ATLAS product scope.
