@@ -138,7 +138,7 @@ async function main() {
   assert.equal(body.agentLabel, "SYNTHESIS");
   assert.equal(body.rubrics[0]?.justification, "Asked if live care.");
   assert.equal(body.decision, "reject");
-  assert.equal(body.clinicalValidationClaim, undefined);
+  assert.equal("clinicalValidationClaim" in body, false);
 
   // Repo honesty: do not flip production RBAC in C1 surfaces
   assert.doesNotMatch(panel, /productionRbacEnforced\s*[:=]\s*true/);
