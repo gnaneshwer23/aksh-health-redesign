@@ -20,6 +20,13 @@ const sections = [
     count: patients.filter((p) => p.activeMedications.length >= 2).length,
   },
   {
+    href: "/dashboard/pharmacist/pharmacy-queue",
+    title: "Pharmacy HITL queue (C3)",
+    description: "Accept / Edit / Reject GP-staged pharmacy drafts — simulation · no live EPS.",
+    icon: Pill,
+    count: null,
+  },
+  {
     href: "/dashboard/pharmacist/interactions",
     title: "Interaction Checker",
     description: "Drug interaction search with HITL edit-and-stage workflow.",

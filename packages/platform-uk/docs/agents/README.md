@@ -16,5 +16,6 @@ Review-only documentation from branch `docs/agent-functionality-audit`. **Do not
 | [../milestone-b/SESSION_PROTOCOL.md](../milestone-b/SESSION_PROTOCOL.md) | Facilitator ops protocol (calendar still human) |
 | [../milestone-c/FACILITATOR_SESSION.md](../milestone-c/FACILITATOR_SESSION.md) | Milestone C1 in-app facilitator session UI |
 | [../milestone-c/REVIEW_HONESTY.md](../milestone-c/REVIEW_HONESTY.md) | Milestone C2 review honesty strip (executionMode / LLM week) |
+| [../milestone-c/LAB_PHARMACY_HITL.md](../milestone-c/LAB_PHARMACY_HITL.md) | Milestone C3 lab/pharmacy product HITL (multi-role, sim-labelled) |
 
 Read-only diag: `npx tsx scripts/agent-functionality-audit-diag.ts` from `packages/platform-uk`.

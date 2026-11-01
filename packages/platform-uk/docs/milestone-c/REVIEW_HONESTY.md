@@ -40,7 +40,7 @@ This surface makes trust-relevant labels visible on the **review path**. Complet
 
 - **Not** clinical validation or device certification.
 - **Not** a full LLM policy admin product (no toggling flags from the UI; facilitator documents opt-in LLM week separately).
-- **Not** Milestone C3 lab/pharmacy product HITL, C4 PHI scrub, or C5 COMPASS expansion.
+- **Not** Milestone C4 PHI scrub or C5 COMPASS expansion. Lab/pharmacy product HITL is **C3** — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS connectors.
 - **Not** expanding PRISM/ATLAS product scope.

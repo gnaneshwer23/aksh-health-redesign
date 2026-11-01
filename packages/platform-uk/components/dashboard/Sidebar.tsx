@@ -44,6 +44,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/gp/patients", label: "My Patients", icon: Users },
     { href: "/dashboard/gp/review-queue", label: "Review Queue", icon: ClipboardList },
     { href: "/dashboard/gp/hcp-eval-session", label: "HCP eval session", icon: FlaskConical },
+    { href: "/dashboard/gp/lab-pharmacy", label: "Lab / pharmacy HITL", icon: FlaskConical },
     { href: "/dashboard/front-desk", label: "Front Desk", icon: PhoneCall },
     { href: "/dashboard/access", label: "Fill slots", icon: CalendarClock },
     { href: "/dashboard/network", label: "Care network", icon: Network },
@@ -74,6 +75,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
   pharmacist: [
     { href: "/dashboard/pharmacist", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/pharmacist/reviews", label: "Med Review", icon: Pill },
+    { href: "/dashboard/pharmacist/pharmacy-queue", label: "Pharmacy HITL", icon: FlaskConical },
     { href: "/dashboard/pharmacist/interactions", label: "Interactions", icon: Shield },
     { href: "/dashboard/pharmacist/bnf", label: "Formulary Reference", icon: ClipboardList },
     { href: "/dashboard/network", label: "Care network", icon: Network },
@@ -94,6 +96,7 @@ const NAV: Record<DashboardRole, NavItem[]> = {
     { href: "/dashboard/admin/audit", label: "Audit Log", icon: ClipboardList },
     { href: "/dashboard/admin/agent-ops", label: "Agent Ops", icon: Activity },
     { href: "/dashboard/admin/hcp-eval-session", label: "HCP eval session", icon: FlaskConical },
+    { href: "/dashboard/admin/lab-queue", label: "Lab HITL queue", icon: FlaskConical },
     { href: "/dashboard/admin/learning", label: "Learning events", icon: BookOpen },
     { href: "/dashboard/admin/organisation-enquiries", label: "Organisation Enquiries", icon: FileText },
     { href: "/dashboard/admin/billing", label: "Billing", icon: Building2 },
