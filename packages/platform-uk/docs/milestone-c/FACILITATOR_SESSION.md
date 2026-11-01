@@ -32,13 +32,22 @@ This surface replaces curl/JSON-only friction for case-pack load + Accept/Edit/R
 7. Review related golden harness fixture text when shown.
 8. Choose agent label + Accept/Edit/Reject; score rubrics (justify any ≤3); save.
 9. View PHI-safe aggregates on **Agent Ops** (`GET /api/eval/hcp-feedback`).
+10. **Week 2 edges (C5)** — COMPASS ICS brief honesty, VOICE ≠ VOICE CARE, directory ↔ register path kinds. See [COMPASS_HONESTY.md](./COMPASS_HONESTY.md).
+
+### Week 2 facilitator edges (C5)
+
+| Day focus | Surface | What to verify |
+| --- | --- | --- |
+| COMPASS aggregate brief (ICS) | Agent Ops COMPASS panel · ICS Equity | Decision-support / sandbox strip; not certified ICS routing |
+| Alias clarity | Alias honesty panel · nurse VOICE CARE · GP VOICE mic | VOICE ≠ VOICE CARE; ORACLE→HORIZON etc. |
+| Directory vs register | Directory honesty panel · Agent Ops registry | live-path / scaffold / sim; no “production ready” |
 
 ---
 
 ## What C1 is not
 
 - **Not** clinical validation or device certification.
-- **Not** Milestone C5 (COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md). C3 lab/pharmacy product HITL — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md). C4 residual PHI scrub + optional ops alert channel — see [PHI_OPS_ALERT.md](./PHI_OPS_ALERT.md).
+- **Not** calendar booking, Neon shared-sandbox automation, CSO exit note workflow, or live integrations (remain post-C human/ops). C2 review honesty — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md). C3 lab/pharmacy product HITL — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md). C4 residual PHI scrub + optional ops alert channel — see [PHI_OPS_ALERT.md](./PHI_OPS_ALERT.md). C5 COMPASS / alias / directory honesty — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md) (honesty only — not COMPASS product expansion).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS connectors.
 - **Not** expanding PRISM/ATLAS product scope.
@@ -54,7 +63,7 @@ From `packages/platform-uk`:
 
 ```bash
 npm run test:milestone-c
-# includes: milestone-b gate + C1 UI + C2 honesty + C3 lab/pharmacy HITL + C4 phi-ops + typecheck
+# includes: milestone-b gate + C1 UI + C2 honesty + C3 lab/pharmacy HITL + C4 phi-ops + C5 compass-honesty + typecheck
 ```
 
 Standalone C1 harness:
@@ -72,3 +81,6 @@ npm run test:milestone-c:ui
 - HCP rubric scores are facilitator feedback for product rehearsal — not clinical validation.
 - Lab / pharmacy remain simulation-labelled unless live connectors are explicitly enabled.
 - PRISM/ATLAS are scaffolds — never present as live CONDUCTOR actors.
+- COMPASS ICS briefs are decision-support sandbox — not certified ICS routing.
+- VOICE (dictation) ≠ VOICE CARE (synthetic outbound); ORACLE→HORIZON, EQUITY→COMPASS, REFERRAL→PATHWAY are aliases only.
+- Directory / register / Agent Ops agree on live-path · scaffold · sim — never “production ready”.

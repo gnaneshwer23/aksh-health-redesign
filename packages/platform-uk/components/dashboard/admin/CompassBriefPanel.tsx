@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
+import { CompassHonestyStrip } from "@/components/dashboard/admin/CompassHonestyStrip";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
 import type { EquityDraft } from "@/lib/agents/llm-equity";
 import { POPULATION_SUPPRESSION_DISCLOSURE } from "@/lib/precision-health/population-suppression";
 
 /**
- * P2-COMPASS-01 — thin ICS/admin UX over COMPASS (equity) API.
- * Aggregate / small-cell honesty only; HITL; no EHR write. Does not rebuild population health.
+ * P2-COMPASS-01 / C5 — thin ICS/admin UX over COMPASS (equity) API.
+ * Decision-support sandbox honesty; aggregate / small-cell only; HITL; no EHR write.
+ * Does not rebuild population health or claim certified ICS routing.
  */
 export function CompassBriefPanel() {
   const { status } = useSession();
@@ -43,12 +45,14 @@ export function CompassBriefPanel() {
         shieldLogged?: boolean;
         hitlRequired?: boolean;
         ehrWrite?: boolean;
+        clinicalValidationClaim?: false;
+        certifiedIcsRouting?: false;
       };
       setDraft(payload.draft);
       setShieldLogged(payload.shieldLogged ?? null);
       toast({
-        title: "COMPASS brief ready",
-        description: `${payload.draft.mode}/${payload.draft.dataSource} · HITL · ehrWrite:false · small cells suppressed`,
+        title: "COMPASS decision-support brief ready",
+        description: `${payload.draft.mode}/${payload.draft.dataSource} · sandbox · HITL · ehrWrite:false · not certified ICS routing`,
       });
     } catch {
       toast({ title: "COMPASS request failed", description: "Try again when signed in." });
@@ -65,11 +69,18 @@ export function CompassBriefPanel() {
       <div className="space-y-1">
         <h2 className="text-sm font-semibold tracking-tight">COMPASS population brief</h2>
         <p className="text-xs text-muted">
-          On-request aggregate brief via /api/agents/compass (EQUITY alias). Not patient-level.{" "}
-          {POPULATION_SUPPRESSION_DISCLOSURE}
+          On-request aggregate decision-support brief via /api/agents/compass (EQUITY alias). Sandbox —
+          not certified ICS routing · not patient-level. {POPULATION_SUPPRESSION_DISCLOSURE}
         </p>
       </div>
-      <Button type="button" size="sm" disabled={busy} onClick={() => void generate()}>
+      <CompassHonestyStrip surface="Agent Ops · COMPASS brief" />
+      <Button
+        type="button"
+        size="sm"
+        disabled={busy}
+        onClick={() => void generate()}
+        data-testid="admin-compass-generate"
+      >
         {busy ? "Generating…" : "Generate COMPASS brief"}
       </Button>
       {draft ? (
@@ -92,6 +103,7 @@ export function CompassBriefPanel() {
               <li key={n}>{n}</li>
             ))}
             <li>HITL Accept/Edit/Reject required before operational staging · ehrWrite:false</li>
+            <li>Decision-support sandbox only · not certified ICS routing · not clinical validation</li>
           </ul>
         </div>
       ) : null}

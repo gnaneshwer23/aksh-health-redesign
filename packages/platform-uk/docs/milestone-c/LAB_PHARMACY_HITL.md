@@ -53,7 +53,7 @@ This surface deepens **discoverable product HITL** beyond admin-sim-only buttons
 ## What C3 is not
 
 - **Not** clinical validation or device certification.
-- **Not** Milestone C5 COMPASS expansion. C4 residual PHI scrub + ops alert channel — see [PHI_OPS_ALERT.md](./PHI_OPS_ALERT.md).
+- **Not** Milestone C5 COMPASS product expansion (honesty polish only — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md)). C4 residual PHI scrub + ops alert channel — see [PHI_OPS_ALERT.md](./PHI_OPS_ALERT.md).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS / regional pathology connectors.
 - **Not** expanding PRISM/ATLAS product scope.
