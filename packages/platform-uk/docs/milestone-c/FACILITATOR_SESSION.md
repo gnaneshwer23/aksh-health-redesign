@@ -28,16 +28,17 @@ This surface replaces curl/JSON-only friction for case-pack load + Accept/Edit/R
 3. Read the honesty banner (synthetic / not certification / acceptance ≠ accuracy).
 4. Pick a case from the pack grid (e.g. `hcp-core-synthesis-patel`).
 5. Optionally open **GP review queue** for that synthetic patient to run CONDUCTOR / drafts — Milestone **C2** mounts the review honesty strip there (executionMode / LLM-week / sim adapters). See [REVIEW_HONESTY.md](./REVIEW_HONESTY.md).
-6. Review related golden harness fixture text when shown.
-7. Choose agent label + Accept/Edit/Reject; score rubrics (justify any ≤3); save.
-8. View PHI-safe aggregates on **Agent Ops** (`GET /api/eval/hcp-feedback`).
+6. Optionally exercise multi-role **lab / pharmacy HITL (C3)** — stage from GP, review on lab/pharmacy queues. See [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md).
+7. Review related golden harness fixture text when shown.
+8. Choose agent label + Accept/Edit/Reject; score rubrics (justify any ≤3); save.
+9. View PHI-safe aggregates on **Agent Ops** (`GET /api/eval/hcp-feedback`).
 
 ---
 
 ## What C1 is not
 
 - **Not** clinical validation or device certification.
-- **Not** Milestone C3–C5 (lab/pharmacy product HITL, PHI scrub, COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty is separate — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md).
+- **Not** Milestone C4–C5 (PHI scrub, COMPASS expansion, calendar booking, Neon shared-sandbox automation, CSO exit note workflow, live integrations). C2 review honesty — see [REVIEW_HONESTY.md](./REVIEW_HONESTY.md). C3 lab/pharmacy product HITL — see [LAB_PHARMACY_HITL.md](./LAB_PHARMACY_HITL.md).
 - **Not** flipping `productionRbacEnforced`.
 - **Not** live EPS / EHR / PACS connectors.
 - **Not** expanding PRISM/ATLAS product scope.
@@ -53,7 +54,7 @@ From `packages/platform-uk`:
 
 ```bash
 npm run test:milestone-c
-# includes: milestone-b gate + C1 UI/wiring harness + typecheck
+# includes: milestone-b gate + C1 UI + C2 honesty + C3 lab/pharmacy HITL + typecheck
 ```
 
 Standalone C1 harness:

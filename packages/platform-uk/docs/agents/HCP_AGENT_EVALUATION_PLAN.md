@@ -36,7 +36,8 @@
 **Surface:** `/dashboard/admin/agent-ops`  
 **Milestone B additions:** eval harness panel (`agent-ops-eval-harness`), lab/pharmacy sim honesty, `GET /api/agents/loop-outcomes`, HCP case pack + feedback APIs. See `docs/milestone-b/EVAL_ENVIRONMENT.md`.  
 **Milestone C1:** in-app facilitator session UI (`/dashboard/gp/hcp-eval-session`, admin mirror) — case-pack picker + rubric form wired to those APIs. See `docs/milestone-c/FACILITATOR_SESSION.md`.  
-**Milestone C2:** review honesty strip on GP review queue / CONDUCTOR briefs / pharmacist reviews — `executionMode`, LLM-week visibility, lab/pharmacy sim labels. See `docs/milestone-c/REVIEW_HONESTY.md`.
+**Milestone C2:** review honesty strip on GP review queue / CONDUCTOR briefs / pharmacist reviews — `executionMode`, LLM-week visibility, lab/pharmacy sim labels. See `docs/milestone-c/REVIEW_HONESTY.md`.  
+**Milestone C3:** multi-role lab/pharmacy product HITL (GP stage → lab/pharmacy Accept/Edit/Reject) — still sim-labelled; no live vendors. See `docs/milestone-c/LAB_PHARMACY_HITL.md`.
 
 ### 3.1 Purpose
 

@@ -265,6 +265,27 @@ export function HcpFacilitatorSessionPanel() {
           GP review queue{selectedCase ? ` (${selectedCase.syntheticPatientId})` : ""}
           {" · honesty strip (C2)"}
         </Link>
+        <Link
+          href={
+            selectedCase
+              ? `/dashboard/gp/lab-pharmacy?patientId=${encodeURIComponent(selectedCase.syntheticPatientId)}`
+              : "/dashboard/gp/lab-pharmacy"
+          }
+          className="underline text-primary"
+          data-testid="hcp-session-link-lab-pharmacy"
+        >
+          Lab / pharmacy HITL (C3)
+        </Link>
+        <Link href="/dashboard/admin/lab-queue" className="underline text-primary" data-testid="hcp-session-link-lab-queue">
+          Lab queue
+        </Link>
+        <Link
+          href="/dashboard/pharmacist/pharmacy-queue"
+          className="underline text-primary"
+          data-testid="hcp-session-link-pharmacy-queue"
+        >
+          Pharmacy queue
+        </Link>
         <button
           type="button"
           className="underline text-primary"

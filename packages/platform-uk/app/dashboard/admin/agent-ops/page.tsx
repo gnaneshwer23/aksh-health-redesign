@@ -432,7 +432,20 @@ export default function AdminAgentOpsPage() {
                   GP HCP eval session
                 </Link>
                 . APIs remain POST /api/eval/hcp-feedback and GET /api/eval/hcp-case-pack. Protocol:
-                docs/milestone-c/FACILITATOR_SESSION.md · docs/milestone-b/SESSION_PROTOCOL.md.
+                docs/milestone-c/FACILITATOR_SESSION.md · docs/milestone-b/SESSION_PROTOCOL.md. Multi-role
+                lab/pharmacy HITL (C3):{" "}
+                <Link href="/dashboard/gp/lab-pharmacy" className="underline text-primary" data-testid="agent-ops-lph-link">
+                  GP stage
+                </Link>{" "}
+                ·{" "}
+                <Link href="/dashboard/admin/lab-queue" className="underline text-primary">
+                  Lab queue
+                </Link>{" "}
+                ·{" "}
+                <Link href="/dashboard/pharmacist/pharmacy-queue" className="underline text-primary">
+                  Pharmacy queue
+                </Link>{" "}
+                · docs/milestone-c/LAB_PHARMACY_HITL.md.
               </p>
               <p className="text-[11px] text-muted">
                 {data?.hcpFeedback?.note ??
