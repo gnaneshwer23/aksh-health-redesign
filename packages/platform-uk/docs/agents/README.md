@@ -14,5 +14,6 @@ Review-only documentation from branch `docs/agent-functionality-audit`. **Do not
 | [HCP_AGENT_EVALUATION_PLAN.md](./HCP_AGENT_EVALUATION_PLAN.md) | HCP rubrics + Agent Ops (ops surface live; Milestone B harness) |
 | [../milestone-b/EVAL_ENVIRONMENT.md](../milestone-b/EVAL_ENVIRONMENT.md) | Milestone B synthetic HCP eval environment |
 | [../milestone-b/SESSION_PROTOCOL.md](../milestone-b/SESSION_PROTOCOL.md) | Facilitator ops protocol (calendar still human) |
+| [../milestone-c/FACILITATOR_SESSION.md](../milestone-c/FACILITATOR_SESSION.md) | Milestone C1 in-app facilitator session UI |
 
 Read-only diag: `npx tsx scripts/agent-functionality-audit-diag.ts` from `packages/platform-uk`.
