@@ -419,8 +419,20 @@ export default function AdminAgentOpsPage() {
             <div className="rounded-md border border-border px-3 py-2 space-y-1">
               <div className="font-medium">How facilitators capture scores</div>
               <p className="text-muted">
-                POST /api/eval/hcp-feedback with Accept/Edit/Reject + rubric scores (1–5). Case pack: GET
-                /api/eval/hcp-case-pack. Protocol: docs/milestone-b/SESSION_PROTOCOL.md.
+                Use the in-app facilitator session (Milestone C1) — no curl required:{" "}
+                <Link
+                  href="/dashboard/admin/hcp-eval-session"
+                  className="underline text-primary"
+                  data-testid="agent-ops-hcp-session-link"
+                >
+                  Admin HCP eval session
+                </Link>{" "}
+                ·{" "}
+                <Link href="/dashboard/gp/hcp-eval-session" className="underline text-primary">
+                  GP HCP eval session
+                </Link>
+                . APIs remain POST /api/eval/hcp-feedback and GET /api/eval/hcp-case-pack. Protocol:
+                docs/milestone-c/FACILITATOR_SESSION.md · docs/milestone-b/SESSION_PROTOCOL.md.
               </p>
               <p className="text-[11px] text-muted">
                 {data?.hcpFeedback?.note ??

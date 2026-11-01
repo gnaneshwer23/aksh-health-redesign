@@ -27,6 +27,7 @@
 | Admin aggregates | `GET /api/eval/hcp-feedback` | Counts / means / hashed `pt_*` refs — no facilitator free-text |
 | Golden agent eval | `npm run eval:agents` · `GET\|POST /api/eval/agents` | Deterministic CI path with `ENABLE_LLM_*=false` |
 | Agent Ops | `/dashboard/admin/agent-ops` | Honesty + registry + durable runs + **eval harness panel** + loop funnel |
+| Facilitator session UI (C1) | `/dashboard/gp/hcp-eval-session` · `/dashboard/admin/hcp-eval-session` | Case-pack picker + Accept/Edit/Reject + rubrics — see `docs/milestone-c/FACILITATOR_SESSION.md` |
 | Loop funnel | `GET /api/agents/loop-outcomes` | Aggregates only (no COMPASS draft side-effect) |
 
 Persistence for HCP feedback: `data/hcp-eval-feedback.json` or `data/hcp-eval-feedback.{scopeKey}.json` (append-only).

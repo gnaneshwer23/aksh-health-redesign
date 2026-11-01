@@ -21,10 +21,13 @@ assert.match(page, /data-testid="lab-pharmacy-sim-honesty"/);
 assert.match(page, /\/api\/agents\/ops-runs/);
 assert.match(page, /\/api\/eval\/hcp-feedback/);
 assert.match(page, /\/api\/eval\/hcp-case-pack/);
+assert.match(page, /data-testid="agent-ops-hcp-session-link"/);
+assert.match(page, /\/dashboard\/admin\/hcp-eval-session/);
 assert.match(page, /alerts=1/);
 assert.match(page, /PRISM\/ATLAS/);
 assert.match(page, /CompassBriefPanel/);
 assert.doesNotMatch(page, /patientName|NHS number|dateOfBirth/i);
 assert.match(sidebar, /\/dashboard\/admin\/agent-ops/);
+assert.match(sidebar, /\/dashboard\/admin\/hcp-eval-session/);
 
 console.log("p1-agent-ops-dashboard: honesty + readiness + loop-outcomes + HCP eval harness + admin nav — PASS");

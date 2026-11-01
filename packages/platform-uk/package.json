@@ -108,6 +108,8 @@
     "test:milestone-b:golden": "ENABLE_LLM_SYNTHESIS=false ENABLE_LLM_GUARDIAN=false ENABLE_LLM_ORACLE=false ENABLE_LLM_DR_ASSIST=false ENABLE_LLM_NEXUS=false npm run eval:agents",
     "test:milestone-b": "npm run seed:hcp-eval-case-pack && npm run test:milestone-b:harness && npm run test:milestone-b:ops && npm run test:milestone-b:golden && npm run typecheck",
     "test:milestone-b:neon": "MILESTONE_A5_USE_NEON=1 USE_POSTGRES=true npm run test:milestone-a5:neon && npm run test:milestone-b",
+    "test:milestone-c:ui": "ENABLE_LLM_SYNTHESIS=false ENABLE_LLM_GUARDIAN=false ENABLE_LLM_ORACLE=false ENABLE_LLM_DR_ASSIST=false ENABLE_LLM_NEXUS=false npx tsx tests/milestone-c1-facilitator-session.test.ts",
+    "test:milestone-c": "npm run test:milestone-b && npm run test:milestone-c:ui",
     "eval:agents": "npx tsx scripts/eval-agents.ts",
     "evidence:pack": "node scripts/generate-evidence-pack.mjs",
     "start": "next start",
