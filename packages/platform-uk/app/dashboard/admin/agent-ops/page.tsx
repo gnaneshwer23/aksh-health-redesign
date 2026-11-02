@@ -57,6 +57,8 @@ type OpsAlertSignal = {
   sampleRefs: string[];
 };
 
+type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
+
 type OpsAlertsSummary = {
   alerts: OpsAlertSignal[];
   metrics: {
@@ -67,6 +69,7 @@ type OpsAlertsSummary = {
     stuckRunning: number;
     stuckEpisodeTasks: number;
   };
+  storeMode?: DurableRunStoreMode;
   note?: string;
 };
 
@@ -77,8 +80,10 @@ type OpsRunsSummary = {
   failedOrTimedOutCount: number;
   byStatus: Record<string, number>;
   rows: OpsRunRow[];
+  storeMode?: DurableRunStoreMode;
   note?: string;
   alerts?: OpsAlertsSummary | null;
+  productionRbacEnforced?: false;
 };
 
 type EvalFixturesPayload = {
@@ -341,12 +346,17 @@ export default function AdminAgentOpsPage() {
         </section>
 
         <section className="space-y-3" data-testid="agent-ops-durable-runs">
-          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4)</h2>
-          <p className="text-xs text-muted">
-            Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
+          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4 · D1 store unify)</h2>
+          <p className="text-xs text-muted" data-testid="agent-ops-durable-store-mode">
+            storeMode:{" "}
+            <span className="font-mono font-medium" data-store-mode={data?.durableRuns?.storeMode ?? "unknown"}>
+              {data?.durableRuns?.storeMode ?? "—"}
+            </span>{" "}
+            · Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
             SHIELD-blocked enqueue: {data?.durableRuns?.shieldBlockedCount ?? "—"} · Failed/timeout:{" "}
             {data?.durableRuns?.failedOrTimedOutCount ?? "—"}. Patient refs are hashed — no names or NHS
-            numbers.
+            numbers. Neon preferred when DATABASE_URL set; file is hermetic / fallback only. SHIELD audit is
+            Neon-only. productionRbacEnforced: false.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">

@@ -1,8 +1,9 @@
 /**
  * Milestone A2 — durable CONDUCTOR / clinical-spine execution metadata.
+ * Milestone D1 — Postgres-preferred ops reads when DATABASE_URL set; file is
+ * hermetic / fallback. Claim/finalize still mirrors to file for local debug.
  *
- * Extends existing `aksh.agent_intel_runs` (migration 048 + 053) and mirrors
- * care-episode file fallback when Postgres is not configured. Not a second
+ * Extends existing `aksh.agent_intel_runs` (migration 048 + 053). Not a second
  * orchestrator — stores A1 execution bundles for idempotent recovery.
  */
 
@@ -26,6 +27,19 @@ export type DurableAgentRunStatus =
   | "failed"
   | "blocked"
   | "timed_out";
+
+/**
+ * Milestone D1 — where Agent Ops / list APIs sourced durable runs.
+ * - postgres: Neon list succeeded (shared-sandbox source of truth)
+ * - file: Postgres not configured (hermetic)
+ * - file_fallback: Postgres configured but list failed
+ */
+export type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
+
+export type DurableAgentRunListResult = {
+  runs: DurableAgentRunRecord[];
+  storeMode: DurableRunStoreMode;
+};
 
 export type DurableAgentRunRecord = {
   id: string;
@@ -58,6 +72,74 @@ export type DurableAgentRunRecord = {
   ehrWrite: false;
   note: string;
 };
+
+type AgentIntelRunRow = {
+  id: string;
+  scope_key: string;
+  organisation_id: string | null;
+  patient_id: string;
+  patient_label: string;
+  status: DurableAgentRunStatus;
+  source: DurableAgentRunSource;
+  correlation_id: string | null;
+  care_episode_id: string | null;
+  idempotency_key: string | null;
+  guardian_outcome: string | null;
+  review_status: string | null;
+  draft_enqueue_allowed: boolean;
+  shield_audit_persisted: boolean;
+  agents_invoked: unknown;
+  execution_metadata: AgentRunBundleMetadata | null;
+  result_snapshot: Record<string, unknown> | null;
+  model_id: string;
+  model_version: string;
+  prompt_id: string;
+  prompt_version: string;
+  drafting_mode: "deterministic_synthetic" | "llm_gated";
+  started_at: Date;
+  completed_at: Date | null;
+  llm_used: boolean;
+  note: string | null;
+};
+
+const AGENT_INTEL_RUN_SELECT = `id, scope_key, organisation_id, patient_id, patient_label, status, source,
+              correlation_id, care_episode_id, idempotency_key, guardian_outcome, review_status,
+              draft_enqueue_allowed, shield_audit_persisted, agents_invoked, execution_metadata,
+              result_snapshot, model_id, model_version, prompt_id, prompt_version, drafting_mode,
+              started_at, completed_at, llm_used, note`;
+
+function mapPgRowToRecord(row: AgentIntelRunRow): DurableAgentRunRecord {
+  return {
+    id: row.id,
+    scopeKey: row.scope_key,
+    organisationId: row.organisation_id,
+    patientId: row.patient_id,
+    patientLabel: row.patient_label,
+    status: row.status,
+    source: row.source ?? "clinical_spine",
+    correlationId: row.correlation_id ?? "",
+    careEpisodeId: row.care_episode_id,
+    idempotencyKey: row.idempotency_key,
+    guardianOutcome: row.guardian_outcome,
+    reviewStatus: row.review_status,
+    draftEnqueueAllowed: row.draft_enqueue_allowed,
+    shieldAuditPersisted: row.shield_audit_persisted,
+    agentsInvoked: Array.isArray(row.agents_invoked) ? (row.agents_invoked as string[]) : [],
+    execution: (row.execution_metadata ?? {}) as AgentRunBundleMetadata,
+    resultSnapshot: row.result_snapshot,
+    modelId: row.model_id,
+    modelVersion: row.model_version,
+    promptId: row.prompt_id,
+    promptVersion: row.prompt_version,
+    draftingMode: row.drafting_mode,
+    startedAt: row.started_at.toISOString(),
+    completedAt: row.completed_at?.toISOString() ?? null,
+    llmUsed: row.llm_used,
+    synthetic: true,
+    ehrWrite: false,
+    note: row.note ?? "",
+  };
+}
 
 type Store = { runs: DurableAgentRunRecord[] };
 
@@ -128,39 +210,8 @@ async function findInPostgres(scopeKey: string, idempotencyKey: string): Promise
   if (!isPostgresConfigured()) return null;
   try {
     await ensureAgentIntelRunsSchema();
-    const result = await getPgPool().query<{
-      id: string;
-      scope_key: string;
-      organisation_id: string | null;
-      patient_id: string;
-      patient_label: string;
-      status: DurableAgentRunStatus;
-      source: DurableAgentRunSource;
-      correlation_id: string | null;
-      care_episode_id: string | null;
-      idempotency_key: string | null;
-      guardian_outcome: string | null;
-      review_status: string | null;
-      draft_enqueue_allowed: boolean;
-      shield_audit_persisted: boolean;
-      agents_invoked: unknown;
-      execution_metadata: AgentRunBundleMetadata | null;
-      result_snapshot: Record<string, unknown> | null;
-      model_id: string;
-      model_version: string;
-      prompt_id: string;
-      prompt_version: string;
-      drafting_mode: "deterministic_synthetic" | "llm_gated";
-      started_at: Date;
-      completed_at: Date | null;
-      llm_used: boolean;
-      note: string | null;
-    }>(
-      `SELECT id, scope_key, organisation_id, patient_id, patient_label, status, source,
-              correlation_id, care_episode_id, idempotency_key, guardian_outcome, review_status,
-              draft_enqueue_allowed, shield_audit_persisted, agents_invoked, execution_metadata,
-              result_snapshot, model_id, model_version, prompt_id, prompt_version, drafting_mode,
-              started_at, completed_at, llm_used, note
+    const result = await getPgPool().query<AgentIntelRunRow>(
+      `SELECT ${AGENT_INTEL_RUN_SELECT}
        FROM aksh.agent_intel_runs
        WHERE scope_key = $1 AND idempotency_key = $2
        LIMIT 1`,
@@ -168,40 +219,61 @@ async function findInPostgres(scopeKey: string, idempotencyKey: string): Promise
     );
     const row = result.rows[0];
     if (!row) return null;
-    return {
-      id: row.id,
-      scopeKey: row.scope_key,
-      organisationId: row.organisation_id,
-      patientId: row.patient_id,
-      patientLabel: row.patient_label,
-      status: row.status,
-      source: row.source ?? "clinical_spine",
-      correlationId: row.correlation_id ?? "",
-      careEpisodeId: row.care_episode_id,
-      idempotencyKey: row.idempotency_key,
-      guardianOutcome: row.guardian_outcome,
-      reviewStatus: row.review_status,
-      draftEnqueueAllowed: row.draft_enqueue_allowed,
-      shieldAuditPersisted: row.shield_audit_persisted,
-      agentsInvoked: Array.isArray(row.agents_invoked) ? (row.agents_invoked as string[]) : [],
-      execution: (row.execution_metadata ?? {}) as AgentRunBundleMetadata,
-      resultSnapshot: row.result_snapshot,
-      modelId: row.model_id,
-      modelVersion: row.model_version,
-      promptId: row.prompt_id,
-      promptVersion: row.prompt_version,
-      draftingMode: row.drafting_mode,
-      startedAt: row.started_at.toISOString(),
-      completedAt: row.completed_at?.toISOString() ?? null,
-      llmUsed: row.llm_used,
-      synthetic: true,
-      ehrWrite: false,
-      note: row.note ?? "",
-    };
+    return mapPgRowToRecord(row);
   } catch (error) {
     console.error("[execution-run-store] findInPostgres failed", error);
     return null;
   }
+}
+
+/** Milestone D1 — list from Neon; null means query failed (caller may file-fallback). */
+async function listPostgresForScope(
+  scopeKey: string,
+  limit: number
+): Promise<DurableAgentRunRecord[] | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureAgentIntelRunsSchema();
+    const result = await getPgPool().query<AgentIntelRunRow>(
+      `SELECT ${AGENT_INTEL_RUN_SELECT}
+       FROM aksh.agent_intel_runs
+       WHERE scope_key = $1
+       ORDER BY started_at DESC
+       LIMIT $2`,
+      [scopeKey, limit]
+    );
+    return result.rows.map(mapPgRowToRecord);
+  } catch (error) {
+    console.error("[execution-run-store] listPostgresForScope failed", error);
+    return null;
+  }
+}
+
+async function listPostgresForPatient(
+  scopeKey: string,
+  patientId: string,
+  limit: number
+): Promise<DurableAgentRunRecord[] | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureAgentIntelRunsSchema();
+    const result = await getPgPool().query<AgentIntelRunRow>(
+      `SELECT ${AGENT_INTEL_RUN_SELECT}
+       FROM aksh.agent_intel_runs
+       WHERE scope_key = $1 AND patient_id = $2
+       ORDER BY started_at DESC
+       LIMIT $3`,
+      [scopeKey, patientId, limit]
+    );
+    return result.rows.map(mapPgRowToRecord);
+  } catch (error) {
+    console.error("[execution-run-store] listPostgresForPatient failed", error);
+    return null;
+  }
+}
+
+function sortRunsByStartedDesc(runs: DurableAgentRunRecord[]): DurableAgentRunRecord[] {
+  return [...runs].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
 }
 
 async function upsertPostgres(record: DurableAgentRunRecord): Promise<boolean> {
@@ -286,40 +358,65 @@ export async function listDurableAgentRunsForPatient(
   patientId: string,
   scopeKey = "shared"
 ): Promise<DurableAgentRunRecord[]> {
-  const store = await readStore(scopeKey);
-  const fileRuns = store.runs.filter((r) => r.patientId === patientId);
-
-  if (!isPostgresConfigured()) {
-    return fileRuns.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
-  }
-
-  try {
-    await ensureAgentIntelRunsSchema();
-    const result = await getPgPool().query<{ id: string }>(
-      `SELECT id FROM aksh.agent_intel_runs WHERE scope_key = $1 AND patient_id = $2 ORDER BY started_at DESC LIMIT 50`,
-      [scopeKey, patientId]
-    );
-    // Prefer file store for unit tests; merge ids only when PG has rows not in file.
-    const fileIds = new Set(fileRuns.map((r) => r.id));
-    if (result.rows.every((r) => fileIds.has(r.id))) {
-      return fileRuns.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
-    }
-  } catch {
-    /* fall through to file */
-  }
-  return fileRuns.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  const { runs } = await listDurableAgentRunsForPatientWithMode(patientId, scopeKey);
+  return runs;
 }
 
-/** A3 — list recent durable runs for a tenant scope (Agent Ops / GP visibility). */
+/** Milestone D1 — patient list with storeMode (Postgres-preferred when configured). */
+export async function listDurableAgentRunsForPatientWithMode(
+  patientId: string,
+  scopeKey = "shared",
+  limit = 50
+): Promise<DurableAgentRunListResult> {
+  const capped = Math.min(Math.max(limit, 1), 200);
+  if (isPostgresConfigured()) {
+    const pg = await listPostgresForPatient(scopeKey, patientId, capped);
+    if (pg) {
+      return { runs: sortRunsByStartedDesc(pg).slice(0, capped), storeMode: "postgres" };
+    }
+    const store = await readStore(scopeKey);
+    const fileRuns = store.runs.filter((r) => r.patientId === patientId);
+    return {
+      runs: sortRunsByStartedDesc(fileRuns).slice(0, capped),
+      storeMode: "file_fallback",
+    };
+  }
+  const store = await readStore(scopeKey);
+  const fileRuns = store.runs.filter((r) => r.patientId === patientId);
+  return { runs: sortRunsByStartedDesc(fileRuns).slice(0, capped), storeMode: "file" };
+}
+
+/**
+ * A3 — list recent durable runs for a tenant scope (Agent Ops / GP visibility).
+ * Milestone D1 — prefers Neon when configured; file is hermetic / fallback only.
+ */
 export async function listDurableAgentRunsForScope(
   scopeKey = "shared",
   limit = 50
 ): Promise<DurableAgentRunRecord[]> {
-  const store = await readStore(scopeKey);
+  const { runs } = await listDurableAgentRunsForScopeWithMode(scopeKey, limit);
+  return runs;
+}
+
+/** Milestone D1 — scope list with honest storeMode for Agent Ops / alerts. */
+export async function listDurableAgentRunsForScopeWithMode(
+  scopeKey = "shared",
+  limit = 50
+): Promise<DurableAgentRunListResult> {
   const capped = Math.min(Math.max(limit, 1), 200);
-  return [...store.runs]
-    .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
-    .slice(0, capped);
+  if (isPostgresConfigured()) {
+    const pg = await listPostgresForScope(scopeKey, capped);
+    if (pg) {
+      return { runs: sortRunsByStartedDesc(pg).slice(0, capped), storeMode: "postgres" };
+    }
+    const store = await readStore(scopeKey);
+    return {
+      runs: sortRunsByStartedDesc(store.runs).slice(0, capped),
+      storeMode: "file_fallback",
+    };
+  }
+  const store = await readStore(scopeKey);
+  return { runs: sortRunsByStartedDesc(store.runs).slice(0, capped), storeMode: "file" };
 }
 
 /**

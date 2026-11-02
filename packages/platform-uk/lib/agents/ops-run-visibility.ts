@@ -1,13 +1,18 @@
 /**
  * Milestone A3 — stakeholder / ops visibility for durable CONDUCTOR runs.
+ * Milestone D1 — Postgres-preferred list + storeMode honesty for shared Neon.
  *
  * Surfaces status + SHIELD-blocked enqueue signals without PHI leakage.
  * Patient labels are never returned; patientId is truncated/hashed for ops.
  */
 import { phiSafePatientRef } from "../security/phi-safe-ref";
 
-import type { DurableAgentRunRecord, DurableAgentRunStatus } from "./execution-run-store";
-import { listDurableAgentRunsForScope } from "./execution-run-store";
+import type {
+  DurableAgentRunRecord,
+  DurableAgentRunStatus,
+  DurableRunStoreMode,
+} from "./execution-run-store";
+import { listDurableAgentRunsForScopeWithMode } from "./execution-run-store";
 
 export type OpsRunVisibilityRow = {
   runId: string;
@@ -40,10 +45,13 @@ export type OpsRunVisibilitySummary = {
   runningCount: number;
   failedOrTimedOutCount: number;
   rows: OpsRunVisibilityRow[];
+  /** Milestone D1 — where durable-run rows were sourced. */
+  storeMode: DurableRunStoreMode;
   note: string;
   synthetic: true;
   ehrWrite: false;
   phiLeakage: false;
+  productionRbacEnforced: false;
 };
 
 export function patientRefForOps(patientId: string): string {
@@ -88,13 +96,20 @@ export function toOpsRunVisibilityRow(run: DurableAgentRunRecord): OpsRunVisibil
 
 export function summariseOpsRuns(
   runs: DurableAgentRunRecord[],
-  scopeKey: string
+  scopeKey: string,
+  storeMode: DurableRunStoreMode = "file"
 ): OpsRunVisibilitySummary {
   const rows = runs.map(toOpsRunVisibilityRow);
   const byStatus: Record<string, number> = {};
   for (const r of rows) {
     byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
   }
+  const storeNote =
+    storeMode === "postgres"
+      ? "Durable-run list sourced from Neon (shared-sandbox source of truth)."
+      : storeMode === "file_fallback"
+        ? "Postgres list failed — file fallback in use (investigate DATABASE_URL / agent_intel_runs)."
+        : "Hermetic file-store (Postgres not configured).";
   return {
     scopeKey,
     total: rows.length,
@@ -103,11 +118,12 @@ export function summariseOpsRuns(
     runningCount: rows.filter((r) => r.status === "running").length,
     failedOrTimedOutCount: rows.filter((r) => r.status === "failed" || r.status === "timed_out").length,
     rows,
-    note:
-      "Aggregates only — no patient names, NHS numbers, or clinical content. SHIELD-blocked enqueue is fail-closed ops signal.",
+    storeMode,
+    note: `Aggregates only — no patient names, NHS numbers, or clinical content. SHIELD-blocked enqueue is fail-closed ops signal. ${storeNote}`,
     synthetic: true,
     ehrWrite: false,
     phiLeakage: false,
+    productionRbacEnforced: false,
   };
 }
 
@@ -117,11 +133,12 @@ export async function buildOpsRunVisibility(input: {
   organisationId?: string | null;
 }): Promise<OpsRunVisibilitySummary> {
   const limit = Math.min(Math.max(input.limit ?? 40, 1), 100);
-  let runs = await listDurableAgentRunsForScope(input.scopeKey, limit * 2);
+  const listed = await listDurableAgentRunsForScopeWithMode(input.scopeKey, limit * 2);
+  let runs = listed.runs;
   if (input.organisationId) {
     runs = runs.filter(
       (r) => !r.organisationId || r.organisationId === input.organisationId
     );
   }
-  return summariseOpsRuns(runs.slice(0, limit), input.scopeKey);
+  return summariseOpsRuns(runs.slice(0, limit), input.scopeKey, listed.storeMode);
 }
