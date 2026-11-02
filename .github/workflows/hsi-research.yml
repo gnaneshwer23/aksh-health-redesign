@@ -1,0 +1,26 @@
+name: HSI research consumer
+on: [push, pull_request]
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: packages/platform-uk
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.11'
+      - run: npm ci --no-audit --no-fund
+      - run: bun tests/hsi-research-contract.test.ts
+      - run: bun tests/hsi-research-import.test.ts
+      - run: bun tests/capability-status.test.ts
+      - run: bun tests/database-target.test.ts
+      - run: ./node_modules/.bin/tsc --noEmit --incremental false
+      - run: npm run build

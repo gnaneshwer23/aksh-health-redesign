@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import { Pool as PgPool } from "pg";
+import { akshDatabaseConnectionOptions } from "./connection-options";
 
 let pool: Pool | null = null;
 
@@ -17,25 +18,15 @@ export function getDatabaseUrl() {
   return "postgresql://medplum:medplum_password@localhost:5432/akshhealth";
 }
 
-function shouldUseSsl(connectionString: string) {
-  if (process.env.PGSSLMODE === "disable") return false;
-  if (/sslmode=disable/i.test(connectionString)) return false;
-  if (/sslmode=(require|verify-full|verify-ca|prefer)/i.test(connectionString)) return true;
-  return /neon\.tech|supabase\.co|amazonaws\.com|rds\.amazonaws\.com/i.test(connectionString);
-}
-
 export function getPgPool(): Pool {
   if (!pool) {
     const connectionString = getDatabaseUrl();
     pool = new PgPool({
-      connectionString,
+      ...akshDatabaseConnectionOptions(connectionString),
       max: 5,
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 10_000,
       keepAlive: true,
-      ...(shouldUseSsl(connectionString)
-        ? { ssl: { rejectUnauthorized: process.env.PGSSL_REJECT_UNAUTHORIZED === "true" } }
-        : {})
     });
     // A dropped idle connection (e.g. server-side timeout) must not crash the process; the pool replaces it.
     pool.on("error", (error) => {

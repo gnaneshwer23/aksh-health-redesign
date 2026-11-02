@@ -10769,3 +10769,9 @@ input:focus, textarea:focus {
 .marketing-site.auth-canvas .auth-canvas__card {
   background: #ffffff !important;
 }
+/* Integrity-pinned, self-hosted fonts: no external build-time font request. */
+:root {
+  --font-aksh-body: "Hanken Grotesk Variable";
+  --font-aksh-display: "Bricolage Grotesque Variable";
+  --font-aksh-mono: "IBM Plex Mono";
+}

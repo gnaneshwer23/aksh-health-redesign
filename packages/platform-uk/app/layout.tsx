@@ -3,7 +3,10 @@ import { isProofEnvironment } from "@/lib/env/proof";
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import "@fontsource-variable/hanken-grotesk/index.css";
+import "@fontsource-variable/bricolage-grotesque/index.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-500.css";
 import type { ReactNode } from "react";
 
 import AuthProvider from "@/components/auth-provider";
@@ -12,27 +15,6 @@ import { WorkspaceModeProvider } from "@/components/workspace/WorkspaceMode";
 import { isRealWorkspace } from "@/lib/env/workspace";
 import { SEO_DEFAULTS } from "@/lib/compliance-labels";
 
-// Body: Hanken Grotesk — warm, precise, highly legible clinical UI face.
-const hankenGrotesk = Hanken_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-aksh-body",
-  display: "swap",
-});
-
-// Display: Bricolage Grotesque — expressive editorial grotesque for brand + headlines.
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-aksh-display",
-  display: "swap",
-});
-
-// Mono: clinical identifiers only (LOINC, SNOMED, NHS numbers). Never for labels or prose.
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-aksh-mono",
-  display: "swap",
-});
 
 const SITE_URL = "https://www.akshhealth.com";
 
@@ -64,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${plexMono.variable}`}>
+    <html lang="en">
       <body>
         <AuthProvider>
           <WorkspaceModeProvider real={isRealWorkspace()} proof={isProofEnvironment()}>
