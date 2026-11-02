@@ -1,5 +1,6 @@
 /**
  * Milestone C4 — optional ops alert channel (pager-lite / webhook).
+ * Milestone D1 — dualPathResidual updated after durable-run ops list unify.
  *
  * Default OFF. When enabled, posts PHI-free alert summaries (codes, counts,
  * opaque sampleRefs, status) for Agent Ops loop failures. Not a certified
@@ -16,7 +17,16 @@ import { createHash } from "crypto";
 
 import { getDeploymentEnvironment } from "@/lib/env/deployment";
 
+import type { DurableRunStoreMode } from "./execution-run-store";
 import type { OpsAlertSeverity, OpsAlertSignal, OpsAlertsSummary } from "./ops-alerts";
+
+/**
+ * Durable-run Agent Ops lists are Postgres-preferred (D1). Remaining dual-path
+ * stores (care-episode file, lab/pharmacy HITL file) are named explicitly.
+ */
+export type OpsAlertDualPathResidual =
+  | "durable_run_ops_unified"
+  | "file_vs_neon_ops";
 
 export type OpsAlertChannelPayload = {
   source: "aksh-agent-ops";
@@ -25,6 +35,7 @@ export type OpsAlertChannelPayload = {
   phiLeakage: false;
   ehrWrite: false;
   certificationClaim: false;
+  productionRbacEnforced: false;
   environment: string;
   /** Hashed scope key — never raw tenant labels. */
   scopeKeyHash: string;
@@ -39,7 +50,10 @@ export type OpsAlertChannelPayload = {
     threshold: number;
   }>;
   metrics: OpsAlertsSummary["metrics"];
-  dualPathResidual: "file_vs_neon_ops";
+  storeMode: DurableRunStoreMode;
+  /** Milestone D1 — durable-run ops unified; residual names other dual-path stores. */
+  dualPathResidual: OpsAlertDualPathResidual;
+  residualDualPathStores: readonly ["care_episode", "lab_pharmacy_hitl"];
   note: string;
 };
 
@@ -124,14 +138,17 @@ export function buildOpsAlertChannelPayload(summary: OpsAlertsSummary): OpsAlert
     phiLeakage: false,
     ehrWrite: false,
     certificationClaim: false,
+    productionRbacEnforced: false,
     environment: getDeploymentEnvironment(),
     scopeKeyHash: scopeKeyHash(summary.scopeKey),
     generatedAt: summary.generatedAt,
     alertCount: alerts.length,
     alerts,
     metrics: summary.metrics,
-    dualPathResidual: "file_vs_neon_ops",
-    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Not an external certification claim.",
+    storeMode: summary.storeMode ?? "file",
+    dualPathResidual: "durable_run_ops_unified",
+    residualDualPathStores: ["care_episode", "lab_pharmacy_hitl"],
+    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Durable-run ops lists prefer Neon when configured (Milestone D1). Not an external certification claim.",
   };
 }
 

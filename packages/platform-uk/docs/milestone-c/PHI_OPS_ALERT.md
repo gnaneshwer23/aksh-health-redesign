@@ -60,15 +60,15 @@ Webhook receivers should treat the body as operational telemetry only. Existing 
 
 ## What is still dual-path (file vs Neon)
 
-| Store | Dual-path residual |
+| Store | Dual-path residual (post–Milestone D1) |
 | --- | --- |
-| Durable CONDUCTOR runs (`execution-run-store`) | File mirror + optional Neon `aksh.agent_intel_runs` — list/merge still prefers file in test/local paths |
-| SHIELD audit | File + Postgres dual-write when configured |
+| Durable CONDUCTOR runs (`execution-run-store`) | **D1 unified for ops reads** — Postgres-preferred list when `DATABASE_URL` set; file = hermetic / fallback. Claim/finalize may still mirror to file. See [DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md). |
+| SHIELD audit | **Neon-only** (no file mirror); fail-closed when Postgres required |
 | Care-episode open tasks | File-scoped episode store unless Neon episode path is used |
-| Ops alert **evaluation** | Reads the same dual-path durable-run list — channel does not invent a third store |
+| Ops alert **evaluation** | Same Postgres-preferred durable-run list as Agent Ops (`storeMode` on summary) |
 | Lab/pharmacy HITL (C3) | Practice-scoped file + SHIELD dual-write |
 
-C4 documents this residual; it does **not** unify stores. Shared-sandbox Neon automation remains a later gap (C5+).
+C4 documented the residual; **Milestone D1** unifies durable-run **ops reads**. Care-episode + lab/pharmacy HITL file primaries remain deferred.
 
 ---
 
@@ -95,9 +95,9 @@ npm run test:milestone-c
 
 ---
 
-## Gaps for C5+
+## Gaps for D+
 
 - COMPASS **product** expansion / calendar booking (C5 landed honesty labels only — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md)).
-- Unify durable-run + SHIELD file↔Neon dual-path.
+- Durable-run ops list unify — **shipped in Milestone D1** ([DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md)); care-episode + lab/pharmacy HITL file stores still residual.
 - Broader client-panel PHI scrub beyond lifestyle + audit normaliser.
 - Neon shared-sandbox automation; CSO exit-note workflow; live integrations.

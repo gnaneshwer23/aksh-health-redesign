@@ -83,4 +83,5 @@ npm run test:milestone-c:compass-honesty
 | Track | Residual |
 | --- | --- |
 | Human / ops | Shared Neon sandbox calendar; CSO written exit note / `targetsConfirmedBy`; facilitator calendar booking |
-| Deferred eng | Live connectors; RBAC production flip; COMPASS product expansion; file↔Neon durable-run unify; broader PHI scrub beyond C4 |
+| Shipped (D1) | Durable-run Agent Ops Postgres-preferred list + `storeMode` — see [DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md) |
+| Deferred eng | Live connectors; RBAC production flip; COMPASS product expansion; care-episode / lab-HITL file↔Neon unify; broader PHI scrub beyond C4 |

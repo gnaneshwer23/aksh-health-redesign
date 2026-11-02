@@ -45,7 +45,7 @@ async function main() {
   assert.match(doc, /productionRbacEnforced/);
   assert.match(doc, /test:milestone-c:phi-ops/);
   assert.match(doc, /clinical validation/i);
-  assert.match(doc, /Gaps for C5/);
+  assert.match(doc, /Gaps for D\+|Milestone D1|DURABLE_OPS_UNIFY/);
   assert.match(doc, /no PHI|PHI-free|opaque/i);
 
   const c1 = read("docs/milestone-c/FACILITATOR_SESSION.md");
@@ -195,7 +195,10 @@ async function main() {
   const payload = buildOpsAlertChannelPayload(summary);
   assert.equal(payload.phiLeakage, false);
   assert.equal(payload.certificationClaim, false);
-  assert.equal(payload.dualPathResidual, "file_vs_neon_ops");
+  // Milestone D1 unified durable-run ops lists; residual names remaining dual-path stores.
+  assert.equal(payload.dualPathResidual, "durable_run_ops_unified");
+  assert.deepEqual(payload.residualDualPathStores, ["care_episode", "lab_pharmacy_hitl"]);
+  assert.ok(payload.storeMode === "file" || payload.storeMode === "postgres" || payload.storeMode === "file_fallback");
   assert.ok(payload.alertCount >= 1);
   const payloadBlob = JSON.stringify(payload);
   assert.doesNotMatch(payloadBlob, /SHOULD_NEVER_APPEAR|Alice-Should-Not-Leak|patientLabel|nhsNumber/i);

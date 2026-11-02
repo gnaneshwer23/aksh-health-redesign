@@ -2,11 +2,12 @@
  * Milestone A4 — actionable Agent Ops alert signals from persisted durable runs
  * (+ optional care-episode open-task age). No PHI; no second monitoring product.
  * Milestone C4 — optional webhook channel via `dispatchOpsAlertChannel` (default off).
+ * Milestone D1 — Postgres-preferred durable-run list + storeMode on summary.
  */
 import type { CareEpisode } from "../care-episode/types";
 import { dispatchOpsAlertChannel } from "./ops-alert-channel";
-import type { DurableAgentRunRecord } from "./execution-run-store";
-import { listDurableAgentRunsForScope } from "./execution-run-store";
+import type { DurableAgentRunRecord, DurableRunStoreMode } from "./execution-run-store";
+import { listDurableAgentRunsForScopeWithMode } from "./execution-run-store";
 import { patientRefForOps, toOpsRunVisibilityRow } from "./ops-run-visibility";
 
 export type OpsAlertSeverity = "info" | "warning" | "critical";
@@ -44,10 +45,13 @@ export type OpsAlertsSummary = {
     stuckRunning: number;
     stuckEpisodeTasks: number;
   };
+  /** Milestone D1 — where durable-run alert samples were sourced. */
+  storeMode: DurableRunStoreMode;
   note: string;
   phiLeakage: false;
   synthetic: true;
   ehrWrite: false;
+  productionRbacEnforced: false;
 };
 
 export const OPS_ALERT_DEFAULTS = {
@@ -77,6 +81,7 @@ export function evaluateDurableRunAlerts(
     stuckRunningMinutes?: number;
     episodes?: CareEpisode[];
     stuckEpisodeTaskHours?: number;
+    storeMode?: DurableRunStoreMode;
   }
 ): OpsAlertsSummary {
   const now = options?.now ?? new Date();
@@ -208,10 +213,12 @@ export function evaluateDurableRunAlerts(
       stuckRunning: stuckRunning.length,
       stuckEpisodeTasks,
     },
+    storeMode: options?.storeMode ?? "file",
     note: "Alert signals from persisted durable runs / care-episode tasks only. No patient names, NHS numbers, or clinical content.",
     phiLeakage: false,
     synthetic: true,
     ehrWrite: false,
+    productionRbacEnforced: false,
   };
 }
 
@@ -224,13 +231,14 @@ export async function buildOpsAlerts(input: {
   dispatchChannel?: boolean;
 }): Promise<OpsAlertsSummary> {
   const limit = Math.min(Math.max(input.limit ?? 100, 1), 200);
-  // Dual-path residual: listDurableAgentRunsForScope still merges file mirror vs Neon.
-  const runs = await listDurableAgentRunsForScope(input.scopeKey, limit);
-  const summary = evaluateDurableRunAlerts(runs, {
+  // Milestone D1 — Postgres-preferred durable-run list (file = hermetic / fallback).
+  const listed = await listDurableAgentRunsForScopeWithMode(input.scopeKey, limit);
+  const summary = evaluateDurableRunAlerts(listed.runs, {
     now: input.now,
     episodes: input.episodes,
+    storeMode: listed.storeMode,
   });
-  const withScope = { ...summary, scopeKey: input.scopeKey };
+  const withScope = { ...summary, scopeKey: input.scopeKey, storeMode: listed.storeMode };
   if (input.dispatchChannel !== false) {
     void dispatchOpsAlertChannel(withScope).catch(() => {
       /* never surface channel faults to Agent Ops readers */
