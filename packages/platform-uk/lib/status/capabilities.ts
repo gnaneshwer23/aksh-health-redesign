@@ -33,6 +33,7 @@ export const STATUS_MEANING: Record<CapabilityStatus, string> = {
 export const LIVE_ORGANISATIONS = 0;
 
 export type CapabilityId =
+  | "hsi_research_context"
   | "slot_fill"
   | "handoffs"
   | "weekly_results"
@@ -84,6 +85,16 @@ const CLINICAL_RELEASE = [
 ];
 
 export const CAPABILITIES: Capability[] = [
+  {
+    id: "hsi_research_context",
+    name: "HSI research context",
+    description: "Read-only import of public HSI seed claims and shared concept mappings; no patient input or clinical advice.",
+    status: "in_validation",
+    environment: "simulation",
+    dependencies: ["Versioned HSI research artifact", "Strict consumer validation"],
+    evidence: ["tests/hsi-research-contract.test.ts"],
+    releaseCriteria: ["Source support and reuse rights reviewed", "Matching HSI/Aksh release deployed and checked", "Research preview kept separate from patient-specific clinical workflows"],
+  },
   {
     id: "slot_fill",
     name: "Cancelled-slot fill",

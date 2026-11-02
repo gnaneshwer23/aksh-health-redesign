@@ -34,6 +34,11 @@ export default function ResourcesPage() {
 
       <section className="s-section s-section--tight">
         <div className="s-container" style={{ display: "grid", gap: 56 }}>
+          <Link href="/hsi" className="s-card s-card--link">
+            <h2 className="s-h3">HSI research context</h2>
+            <p className="s-small">Inspect shared research claims, source limitations and concept mappings. Research preview only; no patient-specific advice.</p>
+            <span className="s-link">Explore HSI research →</span>
+          </Link>
           {GUIDE_GROUPS.map((g) => (
             <div key={g} style={{ display: "grid", gap: 20 }}>
               <div className="s-sectitle"><span className="s-num">{String(GUIDE_GROUPS.indexOf(g) + 1).padStart(2, "0")}</span><h2 className="s-h3" style={{ fontSize: 22 }}>{GROUP_LABEL[g]}</h2></div>
