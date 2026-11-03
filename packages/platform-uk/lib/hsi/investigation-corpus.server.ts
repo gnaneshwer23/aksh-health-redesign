@@ -2,6 +2,7 @@ import "server-only";
 import release from "@/data/hsi/research-bundle.json";
 import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
 import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
+import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
 import { parseHsiResearchBundle } from "./research-contract";
 import { parseResearchBundle, RESEARCH_CONTRACT_VERSION, type ResearchBundle } from "./researchContracts";
 import { InvestigationRequestError, type InvestigationRelease } from "./investigationBackend";
@@ -11,6 +12,17 @@ import {
   raEvidenceReleaseListing,
   RaEvidenceUnavailableError,
 } from "./raEvidenceRelease";
+import {
+  RA_DEMO_RELEASE_ID,
+  buildRaDemoEvidenceBundle,
+  raDemoEvidenceReleaseListing,
+} from "./raDemoEvidenceRelease";
+import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
+import {
+  RA_DEMO_RELEASE_ID,
+  buildRaDemoEvidenceBundle,
+  raDemoEvidenceReleaseListing,
+} from "./raDemoEvidenceRelease";
 
 const snapshotRelease: InvestigationRelease = {
   id: "hsi-research-snapshot",
@@ -28,11 +40,16 @@ const snapshotRelease: InvestigationRelease = {
 };
 
 const raListing = raEvidenceReleaseListing(raReleaseArtifact);
+const raDemoListing = raDemoEvidenceReleaseListing(raDemoReleaseArtifact);
 
-export const akshInvestigationReleases: InvestigationRelease[] = [snapshotRelease, raListing];
+export const akshInvestigationReleases: InvestigationRelease[] = [snapshotRelease, raDemoListing, raListing];
 
 /** Graph pointers stay metadata; a PMID alone does not license a passage or establish claim support. */
 export async function loadAkshInvestigationRelease(id: string, conceptId: string | null): Promise<ResearchBundle> {
+  if (id === RA_DEMO_RELEASE_ID) {
+    // Synthetic SYN-* mirrors only — never patient records, never rights-verified science.
+    return buildRaDemoEvidenceBundle(raDemoReleaseArtifact);
+  }
   if (id === RA_RELEASE_ID) {
     try {
       // Bounded RA working set only — not a second global KG and never patient records.
