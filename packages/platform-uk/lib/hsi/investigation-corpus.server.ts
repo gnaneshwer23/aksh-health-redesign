@@ -17,12 +17,6 @@ import {
   buildRaDemoEvidenceBundle,
   raDemoEvidenceReleaseListing,
 } from "./raDemoEvidenceRelease";
-import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
-import {
-  RA_DEMO_RELEASE_ID,
-  buildRaDemoEvidenceBundle,
-  raDemoEvidenceReleaseListing,
-} from "./raDemoEvidenceRelease";
 
 const snapshotRelease: InvestigationRelease = {
   id: "hsi-research-snapshot",
@@ -47,7 +41,7 @@ export const akshInvestigationReleases: InvestigationRelease[] = [snapshotReleas
 /** Graph pointers stay metadata; a PMID alone does not license a passage or establish claim support. */
 export async function loadAkshInvestigationRelease(id: string, conceptId: string | null): Promise<ResearchBundle> {
   if (id === RA_DEMO_RELEASE_ID) {
-    // Synthetic SYN-* mirrors only — never patient records, never rights-verified science.
+    // Synthetic DEMO-PMID / SYN-* fixture only — not_for_scientific_claim; never patient records.
     return buildRaDemoEvidenceBundle(raDemoReleaseArtifact);
   }
   if (id === RA_RELEASE_ID) {
