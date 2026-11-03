@@ -15,7 +15,7 @@ test("homepage keeps production workflows and validation honesty", () => {
   assert.match(page, /LandingReviewAndStrategy/);
   assert.match(page, /LandingTrustLimits/);
   assert.match(page, /in validation on synthetic patients/i);
-  assert.match(page, /PRISM and ATLAS remain scaffolds/);
+  assert.match(page, /Prism and Trials remain scaffolds/);
   assert.match(page, /not autonomous prescribing or clinical certification/i);
 });
 

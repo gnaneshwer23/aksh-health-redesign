@@ -19,8 +19,8 @@ const TITLE: Record<ProductSurfaceId, string> = {
 
 const NOTE: Record<ProductSurfaceId, string> = {
   review: "honesty strip states sim vs live-path; a named clinician decides every draft",
-  strategy: "personalised draft only · not a prescription · HITL required",
-  handoff: "lab/pharmacy queues are human-gated; no autonomous Rx or silent EHR write",
+  strategy: "personalised draft only · not a prescription · human review required",
+  handoff: "lab/pharmacy queues need a named person; no autonomous Rx or silent EHR write",
   ops: "evaluation honesty · scaffolds labelled · meeting targets does not release an agent",
 };
 
@@ -58,7 +58,7 @@ function SurfaceFrame({
 function ReviewBody() {
   return (
     <>
-      <Tile title="Honesty" aside={<Chip tone="amber">Validation / HITL</Chip>} span="honesty">
+      <Tile title="Honesty" aside={<Chip tone="amber">Validation · human review</Chip>} span="honesty">
         <ul className="c-honesty" aria-label="Review honesty">
           <li>
             <b>Session</b>
@@ -74,7 +74,7 @@ function ReviewBody() {
           </li>
         </ul>
       </Tile>
-      <Tile title="Queue · needs a clinician" aside={<Chip tone="ai">CONDUCTOR brief</Chip>} span="queue">
+      <Tile title="Queue · needs a clinician" aside={<Chip tone="ai">Orchestrator brief</Chip>} span="queue">
         <Worklist
           rows={[
             {
@@ -91,7 +91,7 @@ function ReviewBody() {
             },
             {
               dot: "teal",
-              name: "R. Patel · lab correlation",
+              name: "R. Okonkwo · lab correlation",
               detail: "eGFR 52 · LOINC from feed",
               chip: <Chip tone="teal">Provenance</Chip>,
             },
@@ -165,7 +165,7 @@ function HandoffBody() {
       <Tile title="Care episode" aside={<Chip tone="teal">Shared run id</Chip>} span="episode">
         <Timeline
           steps={[
-            { t: "CONDUCTOR orchestrated", d: "Brief + Guardian order · synthetic eval", state: "done" },
+            { t: "Orchestrator prepared brief", d: "Brief + Guardian order · synthetic eval", state: "done" },
             { t: "Clinician accepted note", d: "Named account · audit chained", state: "done" },
             { t: "Lab queue · human review", d: "eGFR flag for admin/lab role", state: "now" },
             { t: "Pharmacy queue", d: "Held — no Rx without prescriber", state: "next" },
@@ -179,7 +179,7 @@ function HandoffBody() {
               dot: "amber",
               name: "eGFR below 60",
               detail: "Rule kidney.egfr_below_60 · KDIGO cite",
-              chip: <Chip tone="amber">HITL</Chip>,
+              chip: <Chip tone="amber">Human review</Chip>,
             },
             {
               dot: "grey",
@@ -213,7 +213,7 @@ function OpsBody() {
           </li>
           <li>
             <b>Scaffold</b>
-            <span>PRISM / ATLAS · synthetic eval only</span>
+            <span>Prism / Trials · synthetic eval only</span>
           </li>
           <li>
             <b>Sim</b>
@@ -225,12 +225,12 @@ function OpsBody() {
         <Big value="Facilitated" label="synthetic cases · trust scores · safety misses logged" />
         <p className="c-text">Meeting numeric targets does not release an agent. A clinical safety officer signs off.</p>
       </Tile>
-      <Tile title="SHIELD / Guardian" span="shield">
+      <Tile title="Shield / Guardian" span="shield">
         <Worklist
           rows={[
             {
               dot: "teal",
-              name: "SHIELD audit",
+              name: "Shield audit",
               detail: "Hash-chained decisions · tamper-evident",
             },
             {

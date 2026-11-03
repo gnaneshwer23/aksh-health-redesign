@@ -264,7 +264,7 @@ export default function HomePage() {
               <p className="s-lede" style={{ marginTop: 16 }}>
                 Fourteen specialised agents draft notes and codes, check medicines, read laboratory trends, explain risk
                 and prepare referrals — all stopping at a named clinician. In validation on synthetic patients; not used
-                for real patients until each agent meets its release criteria. PRISM and ATLAS remain scaffolds, not
+                for real patients until each agent meets its release criteria. Prism and Trials remain scaffolds, not
                 live-path claims.
               </p>
             </div>

@@ -9,7 +9,7 @@ const LOOP = [
   {
     n: "01",
     title: "Orchestrate the brief",
-    body: "CONDUCTOR gathers the case, orders safety checks (Guardian), and prepares a review brief. Synthetic evaluation by default — not a live EHR write.",
+    body: "Aksh Orchestrator gathers the case, orders safety checks (Aksh Guardian), and prepares a review brief. Synthetic evaluation by default — not a live EHR write.",
   },
   {
     n: "02",
@@ -31,7 +31,7 @@ const ROLES = [
   },
   {
     role: "Pharmacist",
-    body: "Pharmacy HITL queue — interaction flags held for a prescriber, never auto-Rx.",
+    body: "Pharmacy review queue — interaction flags held for a prescriber, never auto-Rx.",
     href: "/agents",
   },
   {
@@ -49,6 +49,7 @@ const ROLES = [
 /**
  * Homepage blocks that explain Milestone A–E surfaces in buyer language:
  * how the loop works, review + strategy visuals, roles, and hard limits.
+ * Public product names only (Aksh Orchestrator / Guardian / Shield) — never internal ALL-CAPS ids.
  */
 export function LandingHowItWorks() {
   return (
@@ -59,7 +60,7 @@ export function LandingHowItWorks() {
           <h2 className="s-h2">Three steps. A person in the middle.</h2>
           <p className="s-lede">
             Production clinics start with slot fill and glucose worklists. The supervised review line —
-            CONDUCTOR, Guardian, SHIELD, lab/pharmacy hand-off — is in validation on synthetic patients.
+            Orchestrator, Guardian, Shield, lab/pharmacy hand-off — is in validation on synthetic patients.
           </p>
         </div>
         <ol className="s-loop3">
@@ -87,9 +88,9 @@ export function LandingReviewAndStrategy() {
             <span className="s-eyebrow">Supervised review</span>
             <h2 className="s-h2">See the draft. See the honesty strip. Decide.</h2>
             <p className="s-body">
-              CONDUCTOR prepares the brief. Guardian holds unsafe paths. The GP review queue shows
-              sim versus live-path labels so nobody confuses a synthetic eval run with a certified clinical
-              claim.
+              Aksh Orchestrator prepares the brief. Aksh Guardian holds unsafe paths. The GP review queue
+              shows sim versus live-path labels so nobody confuses a synthetic eval run with a certified
+              clinical claim.
             </p>
             <ul className="s-check">
               <li>
@@ -98,7 +99,7 @@ export function LandingReviewAndStrategy() {
               </li>
               <li>
                 <Check aria-hidden />
-                Decisions are recorded under the signed-in account (SHIELD audit).
+                Decisions are recorded under the signed-in account (Aksh Shield audit).
               </li>
               <li>
                 <Check aria-hidden />
@@ -137,8 +138,8 @@ export function LandingReviewAndStrategy() {
             <h2 className="s-h2">Hand-offs keep an owner and a shared run id.</h2>
             <p className="s-body">
               After a clinician decides, lab and pharmacy queues continue the same care episode.
-              Queues are human-in-the-loop. There is no autonomous prescribing and no silent write
-              to EMIS or EPS.
+              Queues need a named person. There is no autonomous prescribing and no silent write to
+              EMIS or EPS.
             </p>
             <Link href="/platform#capabilities" className="s-link">
               Capability status register →
