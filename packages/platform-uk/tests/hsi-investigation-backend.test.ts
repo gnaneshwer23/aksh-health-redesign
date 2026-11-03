@@ -61,5 +61,13 @@ try {
   assert.equal(new Set([...firstPage.items,...secondPage.items].map((r: {key:string})=>r.key)).size,25);
   for (let i=0;i<4;i++) assert.equal((await call({ action: "start", releaseId: "hsi-research-snapshot", conceptId: null })).status, 200);
   assert.equal((await call({ action: "start", releaseId: "hsi-research-snapshot", conceptId: null })).status, 429);
+  userId = "usr_hsi_b";
+  let limited = false;
+  for (let attempt=0;attempt<130;attempt++) {
+    const response = await call({ action: "list", cursor: null });
+    if (response.status === 429) { limited = true; break; }
+    assert.equal(response.status,200);
+  }
+  assert.equal(limited,true);
   console.log("PASS: Aksh API grant checks, owner isolation (independent of cookies), PostgreSQL RLS/CAS/audit, quotas and exports; NextAuth boundary stubbed");
 } finally { await closePgPool(); }
