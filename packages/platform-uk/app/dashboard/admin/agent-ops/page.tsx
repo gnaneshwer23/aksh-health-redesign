@@ -81,6 +81,7 @@ type OpsRunsSummary = {
   byStatus: Record<string, number>;
   rows: OpsRunRow[];
   storeMode?: DurableRunStoreMode;
+  careEpisodeStoreMode?: DurableRunStoreMode;
   note?: string;
   alerts?: OpsAlertsSummary | null;
   productionRbacEnforced?: false;
@@ -346,11 +347,19 @@ export default function AdminAgentOpsPage() {
         </section>
 
         <section className="space-y-3" data-testid="agent-ops-durable-runs">
-          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4 · D1 store unify)</h2>
+          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4 · D1/E1 store unify)</h2>
           <p className="text-xs text-muted" data-testid="agent-ops-durable-store-mode">
             storeMode:{" "}
             <span className="font-mono font-medium" data-store-mode={data?.durableRuns?.storeMode ?? "unknown"}>
               {data?.durableRuns?.storeMode ?? "—"}
+            </span>{" "}
+            · careEpisodeStoreMode:{" "}
+            <span
+              className="font-mono font-medium"
+              data-testid="agent-ops-care-episode-store-mode"
+              data-store-mode={data?.durableRuns?.careEpisodeStoreMode ?? "unknown"}
+            >
+              {data?.durableRuns?.careEpisodeStoreMode ?? "—"}
             </span>{" "}
             · Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
             SHIELD-blocked enqueue: {data?.durableRuns?.shieldBlockedCount ?? "—"} · Failed/timeout:{" "}

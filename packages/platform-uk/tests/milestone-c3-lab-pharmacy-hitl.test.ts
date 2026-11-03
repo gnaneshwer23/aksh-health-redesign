@@ -194,12 +194,14 @@ async function main() {
     );
     assert.equal(staged.draft.status, "pending_review");
     assert.equal(staged.source, "file");
+    assert.equal(staged.storeMode, "file");
 
     const listed = await listLabPharmacyDrafts({
       scopeKey: "practice_practice-demo",
       kind: "lab",
       status: "open",
     });
+    assert.equal(listed.storeMode, "file");
     assert.ok(listed.drafts.some((d) => d.id === staged.draft.id));
 
     const openForCrossOrg = await stageAndPersistLabPharmacyDraft(

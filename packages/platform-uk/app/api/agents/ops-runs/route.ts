@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { buildOpsAlerts } from "@/lib/agents/ops-alerts";
 import { buildOpsRunVisibility } from "@/lib/agents/ops-run-visibility";
 import { enforceOpsRunsRateLimit } from "@/lib/agents/rate-limit-guards";
-import { listCareEpisodesForScope } from "@/lib/care-episode";
+import { listCareEpisodesForScopeWithMode } from "@/lib/care-episode";
 import { resolveTenantContext } from "@/lib/db/tenant-context";
 import { AGENT_OPS_ROLES } from "@/lib/security/agent-authz";
 import { requireAppRole } from "@/lib/user-scope";
@@ -32,20 +32,21 @@ export async function GET(request: Request) {
     organisationId: tenant.practiceId ?? null,
   });
 
-  const episodes = includeAlerts
-    ? await listCareEpisodesForScope(auth.context.scopeKey, 100)
-    : [];
+  const episodeList = includeAlerts
+    ? await listCareEpisodesForScopeWithMode(auth.context.scopeKey, 100)
+    : { episodes: [], storeMode: "file" as const };
   const alerts = includeAlerts
     ? await buildOpsAlerts({
         scopeKey: auth.context.scopeKey,
         limit: 100,
-        episodes,
+        episodes: episodeList.episodes,
       })
     : null;
 
   return NextResponse.json({
     ...summary,
     alerts,
+    careEpisodeStoreMode: episodeList.storeMode,
     practiceId: tenant.practiceId,
     // Never echo patient labels from durable store.
     patientLabelsOmitted: true,

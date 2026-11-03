@@ -21,11 +21,13 @@ import type { DurableRunStoreMode } from "./execution-run-store";
 import type { OpsAlertSeverity, OpsAlertSignal, OpsAlertsSummary } from "./ops-alerts";
 
 /**
- * Durable-run Agent Ops lists are Postgres-preferred (D1). Remaining dual-path
- * stores (care-episode file, lab/pharmacy HITL file) are named explicitly.
+ * Durable-run (D1) + care-episode / lab-pharmacy HITL (E1) Agent Ops lists are
+ * Postgres-preferred. residualDualPathStores names any remaining file↔Neon gaps
+ * (e.g. future loop-outcomes) — empty after E1 shared-run correlation.
  */
 export type OpsAlertDualPathResidual =
   | "durable_run_ops_unified"
+  | "shared_run_correlation_unified"
   | "file_vs_neon_ops";
 
 export type OpsAlertChannelPayload = {
@@ -51,9 +53,9 @@ export type OpsAlertChannelPayload = {
   }>;
   metrics: OpsAlertsSummary["metrics"];
   storeMode: DurableRunStoreMode;
-  /** Milestone D1 — durable-run ops unified; residual names other dual-path stores. */
+  /** Milestone E1 — durable runs + care-episode + lab/pharmacy HITL lists unified. */
   dualPathResidual: OpsAlertDualPathResidual;
-  residualDualPathStores: readonly ["care_episode", "lab_pharmacy_hitl"];
+  residualDualPathStores: readonly [];
   note: string;
 };
 
@@ -146,9 +148,9 @@ export function buildOpsAlertChannelPayload(summary: OpsAlertsSummary): OpsAlert
     alerts,
     metrics: summary.metrics,
     storeMode: summary.storeMode ?? "file",
-    dualPathResidual: "durable_run_ops_unified",
-    residualDualPathStores: ["care_episode", "lab_pharmacy_hitl"],
-    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Durable-run ops lists prefer Neon when configured (Milestone D1). Not an external certification claim.",
+    dualPathResidual: "shared_run_correlation_unified",
+    residualDualPathStores: [],
+    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Durable-run, care-episode, and lab/pharmacy HITL lists prefer Neon when configured (Milestones D1/E1). Not an external certification claim.",
   };
 }
 

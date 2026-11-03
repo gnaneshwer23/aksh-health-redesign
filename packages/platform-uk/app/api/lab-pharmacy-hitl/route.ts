@@ -55,7 +55,7 @@ export async function GET(request: Request) {
   // Practice-scoped store so GP → lab → pharmacy multi-role sessions share one queue
   // (per-user scopeKey would isolate roles from each other).
   const storeKey = `practice_${tenant.practiceId}`.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64);
-  const { drafts, source } = await listLabPharmacyDrafts({
+  const { drafts, storeMode, source } = await listLabPharmacyDrafts({
     scopeKey: storeKey,
     kind,
     status,
@@ -63,16 +63,21 @@ export async function GET(request: Request) {
     limit: Number.isFinite(limit) ? limit : 40,
   });
 
+  const noteByMode =
+    storeMode === "postgres"
+      ? "Drafts listed from Neon (shared-sandbox source of truth). File is local debug mirror."
+      : storeMode === "file_fallback"
+        ? "Postgres list failed — falling back to practice-scoped file store."
+        : "Drafts persisted file-scoped by tenant (hermetic); Neon preferred when DATABASE_URL is set.";
+
   return NextResponse.json({
     ...LAB_PHARMACY_HITL_HONESTY,
+    storeMode,
     source,
     count: drafts.length,
     drafts,
     honestyLines: LAB_PHARMACY_HITL_HONESTY_LINES,
-    note:
-      source === "file"
-        ? "Drafts persisted file-scoped by tenant; SHIELD dual-write when Postgres is configured."
-        : "Draft list source unavailable.",
+    note: noteByMode,
   });
 }
 
@@ -136,6 +141,7 @@ export async function POST(request: Request) {
       ...LAB_PHARMACY_HITL_HONESTY,
       ok: true,
       draft: result.draft,
+      storeMode: result.storeMode,
       source: result.source,
       shieldLogged: result.shieldLogged,
     });
