@@ -253,6 +253,10 @@ export default function AdminAgentOpsPage() {
             <li data-testid="lab-pharmacy-sim-honesty">
               Lab approve / pharmacy adherence paths remain <strong>simulation</strong> — not live NHS pathology or EPS.
             </li>
+            <li data-testid="demo-cohort-synthetic-honesty">
+              Stakeholder demo cohort (@demo.akshhealth.com) is synthetic and removable
+              (seed:demo-cohort / purge:demo-cohort). productionRbacEnforced: false · ehrWrite: false.
+            </li>
           </ul>
           <p className="text-[11px] text-muted">
             Milestone B/C HCP prep · docs/milestone-b/ · docs/milestone-c/COMPASS_HONESTY.md ·

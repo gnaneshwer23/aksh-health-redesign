@@ -1,84 +1,135 @@
-# Demo cohort seed (100 patients · 100 users)
+# Demo cohort seed (stakeholder scale · removable)
 
-**Synthetic only · `liveEmis:false` · no real NHS PII**
+**Synthetic only · `syntheticDemo: true` · `removable: true` · `liveEmis: false` · `ehrWrite: false`**  
+**Cohort id:** `demo-cohort-v2-stakeholder`  
+**Email domain:** `@demo.akshhealth.com`
 
-Extends the hand-authored clinical-proof fixtures **P001–P026** with generator patients **P027–P100** (100 total) and seeds **100 role-spread users** into Neon (`aksh.users` / `aksh.profiles`) for dashboard / outcomes demos.
+Extends hand-authored clinical-proof fixtures **P001–P026** with generator patients **P027–P200** (**200** total) and seeds **375** role-spread users into Neon for multi-stakeholder demos (GP, nurse, pharmacy, lab, front desk, admin, ICS, hospital, patient, researcher).
+
+This pack is for **external demo / rehearsal** — not clinical production. Do **not** flip `productionRbacEnforced`. Purge before loading real practice data.
+
+## Counts seeded
+
+| Entity | Count | Notes |
+| --- | ---: | --- |
+| Patients (app mock) | **200** | P001–P026 fixtures + P027–P200 generator |
+| GP | **50** | `gp01`–`gp50@demo.akshhealth.com` |
+| Nurse | **50** | `nurse01`–`nurse50@` |
+| Clinical pharmacist | **50** | `pharmacist01`–`pharmacist50@` |
+| Lab operator | **50** | `lab01`–`lab50@` — `practice-manager` + `subRole: lab_operator` → `/dashboard/admin/lab-queue` |
+| Organisation admin | **30** | `admin01`–`admin30@` — `subRole: organisation_admin` |
+| Front desk / reception | **25** | `frontdesk01`–`frontdesk25@` — `subRole: front_desk` → `/dashboard/front-desk` |
+| ICS / population lead | **25** | `ics01`–`ics25@` |
+| Hospital executive | **25** | `hospital01`–`hospital25@` |
+| Patient accounts | **50** | `patient01`–`patient50@` (bound charts where configured) |
+| Researcher | **20** | `researcher01`–`researcher20@` |
+| **Users total** | **375** | All tagged `demoCohortId` + `@demo.akshhealth.com` |
+| Care episodes (file glue) | **48** | `ce-demo-cohort-*` |
+| Lab HITL drafts | **24** | `lph-lab-demo-cohort-*` pending review |
+| Pharmacy HITL drafts | **24** | `lph-pharmacy-demo-cohort-*` pending review |
+| Review-queue extras | **36** | `RQ-demo-cohort-*` merged into mock queue |
+| Learning event pairs | **40** | `learn-demo-cohort-*` |
+
+**Not seeded as separate UserRole:** MDT reviewer (exists only as AppRole / eval persona, not signup RBAC). Lab and front desk are **personas** on `practice-manager`.
 
 ## Quick start
 
 ```bash
 cd packages/platform-uk
 
-# Always: regenerate seed JSON + refresh file learning store
+# Regenerate JSON artifacts + file stores (care episodes, HITL, learning)
 npm run seed:demo-cohort
 
-# Upsert 100 users + learning events into Neon
+# Upsert 375 users + learning events into simulation Neon
 npm run seed:demo-cohort -- --apply
 
 # Also MERGE patients into Neo4j Aura
 npm run seed:demo-cohort -- --apply --with-neo4j
 
-# Delete @demo.akshhealth.com cohort users then re-seed
+# Delete cohort users then re-seed
 npm run seed:demo-cohort -- --reset --apply
 ```
 
-Patients are available in-app immediately via `lib/mock-data/patients.ts` (no Neon required). Neo4j and Neon need `--apply` / `data:seed:neo4j` when those backends are configured.
+Patients and review-queue extras are available in-app immediately via `lib/mock-data/patients.ts` / `review-queue.ts` (no Neon required). Neon needs `--apply` when auth logins are required.
+
+## Password
+
+Set in `.env.local` (never commit):
+
+- Prefer `DEMO_SEED_PASSWORD`
+- Compat: `DEMO_COHORT_PASSWORD`
+
+If neither is set, seed uses the **local synthetic default** documented as `AkshLocalSyntheticDemo1!` (generator constant `DEMO_SEED_PASSWORD_LOCAL_DEFAULT`) — **local simulation only**, never production.
 
 ## Sample logins
 
 | Role | Email | Password |
 |------|-------|----------|
-| GP | `gp01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| GP | `gp01@demo.akshhealth.com` | `DEMO_SEED_PASSWORD` / `DEMO_COHORT_PASSWORD` |
 | Nurse | `nurse01@demo.akshhealth.com` | same |
-| Pharmacist | `pharmacist01@demo.akshhealth.com` | same |
-| Admin | `admin01@demo.akshhealth.com` | same |
+| Pharmacist | `pharmacist01@demo.akshhealth.com` | same → `/dashboard/pharmacist/pharmacy-queue` |
+| Lab operator | `lab01@demo.akshhealth.com` | same → `/dashboard/admin/lab-queue` |
+| Front desk | `frontdesk01@demo.akshhealth.com` | same → `/dashboard/front-desk` |
+| Admin | `admin01@demo.akshhealth.com` | same → Agent Ops |
 | ICS | `ics01@demo.akshhealth.com` | same |
 | Hospital | `hospital01@demo.akshhealth.com` | same |
 | Patient | `patient01@demo.akshhealth.com` | same |
 | Researcher | `researcher01@demo.akshhealth.com` | same |
 
-Override hash source with `DEMO_COHORT_PASSWORD` in `.env.local` (never commit `.env.local`).
+Full honesty rules: [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md).  
+Launch gates: [`launch/LAUNCH_READINESS.md`](./launch/LAUNCH_READINESS.md).
 
-Full table + honesty rules: [`DEMO_LAUNCH_CREDENTIALS.md`](./DEMO_LAUNCH_CREDENTIALS.md).
+## Purge (removable before launch / real-data swap)
+
+```bash
+# Dry run — counts only
+npm run purge:demo-cohort
+
+# Delete tagged file stores + @demo.akshhealth.com Neon users (simulation DB only)
+npm run purge:demo-cohort -- --apply
+
+# File stores only
+npm run purge:demo-cohort -- --files-only --apply
+```
+
+Purge matches:
+
+- Emails `@demo.akshhealth.com`
+- Ids `ce-demo-cohort-*`, `lph-*-demo-cohort-*`, `learn-demo-cohort-*`, `RQ-demo-cohort-*`, `usr_demo_cohort_*`
+- Metadata / preferences `demoCohortId = demo-cohort-v2-stakeholder`
+
+**Does not** delete hand fixtures P001–P026 / RQ001–RQ010 code, HSI seeds, e2e `@…example` accounts, or non-demo Neon rows.
+
+### Swap to real data later
+
+1. `npm run purge:demo-cohort -- --apply` on the simulation sandbox (or leave demo host separate).  
+2. Point production at a non-simulation DB with real org tenancy.  
+3. Do **not** re-run `seed:demo-cohort -- --apply` against production.  
+4. Complete clinical-production gates in [`launch/LAUNCH_READINESS.md`](./launch/LAUNCH_READINESS.md).
 
 ## Where data lives
 
 | Store | Location |
 |-------|----------|
-| Patients (app / dashboards) | `lib/mock-data/patients.ts` → P001–P100 |
+| Patients | `lib/mock-data/patients.ts` → P001–P200 |
+| Review queue | `lib/mock-data/review-queue.ts` (core + `RQ-demo-cohort-*`) |
 | Generator | `lib/mock-data/demo-cohort-generator.ts` |
 | JSON artifacts | `data/seed/demo-cohort-*.json` |
-| Users / profiles | Neon `aksh.users` + `aksh.profiles` (`%@demo.akshhealth.com`) |
-| Learning / outcomes | `data/learning-events.json` + Neon `aksh.learning_events` (`learn-demo-cohort-*`) |
-| Neo4j graph | Aura via `npm run data:seed:neo4j` (MERGE all 100 patients) |
-
-## Reset
-
-```bash
-# Users only (also matched by cleanup-demo-users)
-npm run auth:cleanup-demo -- --apply
-
-# Cohort-aware reset + reseed
-npm run seed:demo-cohort -- --reset --apply
-```
-
-File learning events with ids `learn-demo-cohort-*` are replaced on each seed run. Shared non-cohort learning rows are retained.
+| Users / profiles | Neon `aksh.users` + `aksh.profiles` |
+| Care episodes (file) | `data/care-episodes.json` (`ce-demo-cohort-*`) |
+| Lab/pharmacy HITL (file) | `data/lab-pharmacy-hitl.json` |
+| Learning / outcomes | `data/learning-events.json` + Neon `aksh.learning_events` |
+| Neo4j graph | Aura via `--with-neo4j` / `data:seed:neo4j` |
 
 ## Tests
 
 ```bash
-npx tsx --test tests/demo-cohort-generator.test.ts
+npm run test:demo-cohort
+# hermetic: min counts, relational glue tags, purge keeps non-demo rows
 ```
 
-## Role mix (100 users)
+## Honesty
 
-| Role | Count | Email prefix |
-|------|------:|--------------|
-| gp | 20 | `gpNN@` |
-| nurse | 15 | `nurseNN@` |
-| clinical-pharmacist | 12 | `pharmacistNN@` |
-| practice-manager | 12 | `adminNN@` |
-| ics-lead | 10 | `icsNN@` |
-| hospital-executive | 10 | `hospitalNN@` |
-| patient | 15 | `patientNN@` |
-| researcher | 6 | `researcherNN@` |
+- Agent Ops shows a synthetic demo-cohort banner (`demo-cohort-synthetic-honesty`).  
+- No autonomous Rx · no live EPS · no live EHR write.  
+- `productionRbacEnforced` stays false.

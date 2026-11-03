@@ -1,8 +1,9 @@
 /**
  * Rotate the shared password for the @demo.akshhealth.com demo cohort.
  *
- *   DEMO_COHORT_PASSWORD=... npx tsx --env-file=.env.local scripts/rotate-demo-password.ts           # dry run
- *   DEMO_COHORT_PASSWORD=... npx tsx --env-file=.env.local scripts/rotate-demo-password.ts --apply   # write
+ *   DEMO_SEED_PASSWORD=... npx tsx --env-file=.env.local scripts/rotate-demo-password.ts           # dry run
+ *   DEMO_COHORT_PASSWORD=... also accepted (compat)
+ *   DEMO_SEED_PASSWORD=... npx tsx --env-file=.env.local scripts/rotate-demo-password.ts --apply   # write
  *
  * Only accounts on the demo domain are touched. The password comes from the environment and is never logged.
  */
@@ -13,8 +14,11 @@ const DEMO_DOMAIN = "demo.akshhealth.com";
 
 async function main() {
   const apply = process.argv.includes("--apply");
-  const password = process.env.DEMO_COHORT_PASSWORD?.trim();
-  if (!password || password.length < 16) throw new Error("Set DEMO_COHORT_PASSWORD (16+ characters).");
+  const password =
+    process.env.DEMO_SEED_PASSWORD?.trim() || process.env.DEMO_COHORT_PASSWORD?.trim();
+  if (!password || password.length < 12) {
+    throw new Error("Set DEMO_SEED_PASSWORD or DEMO_COHORT_PASSWORD (12+ characters).");
+  }
   const url = process.env.DATABASE_URL?.trim();
   if (!url) throw new Error("DATABASE_URL is required.");
 

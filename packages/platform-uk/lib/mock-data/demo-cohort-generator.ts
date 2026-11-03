@@ -1,36 +1,65 @@
 /**
- * Deterministic synthetic demo cohort generator.
- * Produces extended patients (P027–P100) and 100 role-spread users.
+ * Deterministic synthetic demo cohort generator (stakeholder scale).
+ * Patients: P001–P026 hand fixtures + P027–P200 generated (200 total).
+ * Users: role-spread @demo.akshhealth.com accounts with lab / front-desk personas.
  * Never real PII — all names / NHS numbers / ODS codes are synthetic.
- * liveEmis:false always for any seeded learning / outcomes.
+ * liveEmis:false · ehrWrite:false · productionRbacEnforced stays false.
  */
 
-import type { ClinicalProfileId, OracleRisk, Patient } from "./types";
+import type { ClinicalProfileId, OracleRisk, Patient, ReviewQueueItem } from "./types";
 import type { UserRole } from "../onboarding/roles";
 import { getLongitudinalBundle } from "./longitudinal-bundles";
 
-export const DEMO_COHORT_PATIENT_TARGET = 100;
-export const DEMO_COHORT_USER_TARGET = 100;
+/** Stable tag for seed + purge. Never reuse for non-demo rows. */
+export const DEMO_COHORT_ID = "demo-cohort-v2-stakeholder";
+
+export const DEMO_COHORT_META = {
+  syntheticDemo: true as const,
+  removable: true as const,
+  demoCohortId: DEMO_COHORT_ID,
+  liveEmis: false as const,
+  ehrWrite: false as const,
+  productionRbacEnforced: false as const,
+};
+
+export const DEMO_COHORT_PATIENT_TARGET = 200;
 export const DEMO_COHORT_CORE_PATIENT_COUNT = 26; // P001–P026 preserved in patients.ts
 export const DEMO_COHORT_EXTENDED_START = 27;
 export const DEMO_COHORT_EXTENDED_COUNT =
-  DEMO_COHORT_PATIENT_TARGET - DEMO_COHORT_CORE_PATIENT_COUNT;
+  DEMO_COHORT_PATIENT_TARGET - DEMO_COHORT_CORE_PATIENT_COUNT; // 174 → P027–P200
 
 export const DEMO_COHORT_EMAIL_DOMAIN = "demo.akshhealth.com";
 
-/** The demo cohort password is never stored in source: seed/rotate scripts read DEMO_COHORT_PASSWORD. */
+/** Password env keys (never commit values). Prefer DEMO_SEED_PASSWORD; DEMO_COHORT_PASSWORD kept for compat. */
+export const DEMO_SEED_PASSWORD_ENV = "DEMO_SEED_PASSWORD";
+export const DEMO_COHORT_PASSWORD_ENV = "DEMO_COHORT_PASSWORD";
+
+/** Local-only synthetic default when neither env var is set (never use in production). */
+export const DEMO_SEED_PASSWORD_LOCAL_DEFAULT = "AkshLocalSyntheticDemo1!";
+
+export type DemoCohortSubRole =
+  | "lab_operator"
+  | "organisation_admin"
+  | "front_desk"
+  | null;
 
 export type DemoCohortUserSpec = {
   id: string;
   email: string;
   role: UserRole;
+  /** Persona under practice-manager (lab / admin / reception). */
+  subRole: DemoCohortSubRole;
   fullName: string;
   practiceOds: string | null;
   onboardingComplete: true;
   emailVerified: true;
   credentialsHint: string | null;
   syntheticOnly: true;
+  syntheticDemo: true;
+  removable: true;
+  demoCohortId: typeof DEMO_COHORT_ID;
   liveEmis: false;
+  ehrWrite: false;
 };
 
 export type DemoCohortLearningSeed = {
@@ -54,6 +83,61 @@ export type DemoCohortLearningSeed = {
   linkOutcomeSummary: string;
 };
 
+export type DemoCohortCareEpisodeSeed = {
+  id: string;
+  publicId: string;
+  scopeKey: string;
+  organisationId: string;
+  practiceId: string;
+  patientId: string;
+  patientLabel: string;
+  status: "in_review" | "lab_pending" | "med_review" | "follow_up" | "draft";
+  pathway: string | null;
+  createdBy: string;
+  idempotencyKey: string;
+  metadata: {
+    demoCohortId: typeof DEMO_COHORT_ID;
+    syntheticDemo: true;
+    removable: true;
+    ehrWrite: false;
+    liveEmis: false;
+  };
+};
+
+export type DemoCohortHitlDraftSeed = {
+  id: string;
+  kind: "lab" | "pharmacy";
+  status: "pending_review";
+  title: string;
+  summary: string;
+  syntheticPatientId: string;
+  careEpisodeId: string | null;
+  organisationId: string;
+  scopeKey: string;
+  items: string[];
+  stagedBy: string;
+  stagedAt: string;
+  live: false;
+  liveNhsLab: false;
+  livePrescribing: false;
+  liveEps: false;
+  ehrWrite: false;
+  hitlRequired: true;
+  clinicalValidationClaim: false;
+  syntheticOnly: true;
+  auditTrail: {
+    id: string;
+    at: string;
+    actor: string;
+    action: "stage";
+    detail: string;
+    roleHint: string;
+  }[];
+  demoCohortId: typeof DEMO_COHORT_ID;
+  removable: true;
+  syntheticDemo: true;
+};
+
 /** Gender follows the first name so titles never contradict it ("Mr Aisha" was a real defect). */
 const FIRST_NAME_GENDER: Record<string, "Female" | "Male" | "Non-binary"> = {
   Aisha: "Female", Benjamin: "Male", Chloe: "Female", Daniel: "Male", Elena: "Female", Farah: "Female",
@@ -75,7 +159,6 @@ const SURNAMES = [
   "Rahman", "Singh", "Taylor", "Uddin", "Vaughan", "Walsh", "Young", "Zimmerman",
   "Campbell", "Fraser", "MacLeod", "Owens", "Price",
 ];
-
 
 const ICS_REGIONS = [
   "South East London",
@@ -193,16 +276,68 @@ const PROFILE_BUNDLES: {
   },
 ];
 
-const ROLE_TARGETS: { role: UserRole; count: number; prefix: string; title: string }[] = [
-  { role: "gp", count: 20, prefix: "gp", title: "Dr" },
-  { role: "nurse", count: 15, prefix: "nurse", title: "Nurse" },
-  { role: "clinical-pharmacist", count: 12, prefix: "pharmacist", title: "Pharmacist" },
-  { role: "practice-manager", count: 12, prefix: "admin", title: "Admin" },
-  { role: "ics-lead", count: 10, prefix: "ics", title: "Population health lead" },
-  { role: "hospital-executive", count: 10, prefix: "hospital", title: "Exec" },
-  { role: "patient", count: 15, prefix: "patient", title: "Patient" },
-  { role: "researcher", count: 6, prefix: "researcher", title: "Researcher" },
+/**
+ * Stakeholder demo role mix.
+ * Lab operators + front desk are practice-manager accounts with subRole (RBAC has no separate UserRole).
+ * MDT reviewer is not a signup UserRole — not seeded as a distinct login.
+ */
+const ROLE_TARGETS: {
+  role: UserRole;
+  count: number;
+  prefix: string;
+  title: string;
+  subRole: DemoCohortSubRole;
+}[] = [
+  { role: "gp", count: 50, prefix: "gp", title: "Dr", subRole: null },
+  { role: "nurse", count: 50, prefix: "nurse", title: "Nurse", subRole: null },
+  { role: "clinical-pharmacist", count: 50, prefix: "pharmacist", title: "Pharmacist", subRole: null },
+  {
+    role: "practice-manager",
+    count: 50,
+    prefix: "lab",
+    title: "Lab",
+    subRole: "lab_operator",
+  },
+  {
+    role: "practice-manager",
+    count: 30,
+    prefix: "admin",
+    title: "Admin",
+    subRole: "organisation_admin",
+  },
+  {
+    role: "practice-manager",
+    count: 25,
+    prefix: "frontdesk",
+    title: "Reception",
+    subRole: "front_desk",
+  },
+  { role: "ics-lead", count: 25, prefix: "ics", title: "Population health lead", subRole: null },
+  { role: "hospital-executive", count: 25, prefix: "hospital", title: "Exec", subRole: null },
+  { role: "patient", count: 50, prefix: "patient", title: "Patient", subRole: null },
+  { role: "researcher", count: 20, prefix: "researcher", title: "Researcher", subRole: null },
 ];
+
+export const DEMO_COHORT_USER_TARGET = ROLE_TARGETS.reduce((sum, r) => sum + r.count, 0);
+
+/** Documented minimums for harness / launch docs. */
+export const DEMO_COHORT_MIN_COUNTS = {
+  patients: 200,
+  gp: 50,
+  nurse: 50,
+  clinicalPharmacist: 50,
+  labOperator: 50,
+  organisationAdmin: 20,
+  frontDesk: 20,
+  icsLead: 20,
+  hospitalExecutive: 20,
+  patientAccounts: 20,
+  researcher: 20,
+  careEpisodes: 40,
+  labHitlDrafts: 20,
+  pharmacyHitlDrafts: 20,
+  reviewQueueExtras: 30,
+} as const;
 
 const CREDENTIAL_HINTS: Partial<Record<UserRole, (n: number) => string>> = {
   gp: (n) => `professional register ${String(1000000 + n).padStart(7, "0")} (synthetic)`,
@@ -246,7 +381,6 @@ function ageForProfile(profiles: ClinicalProfileId[], salt: number): { age: numb
 }
 
 function firstNameFor(i: number, profiles: ClinicalProfileId[]): string {
-  // Pregnancy profiles take the next female name so name, gender and profile agree.
   for (let step = 0; step < FIRST_NAMES.length; step++) {
     const name = FIRST_NAMES[(i + step) % FIRST_NAMES.length]!;
     if (!profiles.includes("pregnancy") || FIRST_NAME_GENDER[name] === "Female") return name;
@@ -271,7 +405,7 @@ function appointmentSlot(ordinal: number): string {
 }
 
 /**
- * Extended synthetic patients P027–P100. P001–P026 remain hand-authored fixtures.
+ * Extended synthetic patients P027–P200. P001–P026 remain hand-authored fixtures.
  */
 export function generateExtendedDemoPatients(
   options: { startId?: number; count?: number } = {}
@@ -344,7 +478,7 @@ export function generateExtendedDemoPatients(
       imdQuintile: imd,
       icsRegion: ics,
       equityFlag: equity || undefined,
-      qaNotes: `Demo cohort synthetic patient ${padPatientId(idNum)} · liveEmis:false · IMD ${imd} · ${ics}`,
+      qaNotes: `Demo cohort synthetic patient ${padPatientId(idNum)} · ${DEMO_COHORT_ID} · liveEmis:false · IMD ${imd} · ${ics}`,
     };
 
     const long = getLongitudinalBundle(patient.id);
@@ -422,16 +556,21 @@ export function generateDemoCohortUsers(
           : PRACTICE_ODS[seq % PRACTICE_ODS.length]!;
 
       users.push({
-        id: `usr_demo_cohort_${String(seq).padStart(3, "0")}`,
+        id: `usr_demo_cohort_${String(seq).padStart(4, "0")}`,
         email,
         role: bucket.role,
+        subRole: bucket.subRole,
         fullName,
         practiceOds,
         onboardingComplete: true,
         emailVerified: true,
         credentialsHint: CREDENTIAL_HINTS[bucket.role]?.(seq) ?? null,
         syntheticOnly: true,
+        syntheticDemo: true,
+        removable: true,
+        demoCohortId: DEMO_COHORT_ID,
         liveEmis: false,
+        ehrWrite: false,
       });
     }
   }
@@ -440,9 +579,9 @@ export function generateDemoCohortUsers(
 }
 
 /** Modest care-action + linked outcome pairs for outcomes / learning demos. */
-export function generateDemoCohortLearningSeeds(count = 20): DemoCohortLearningSeed[] {
+export function generateDemoCohortLearningSeeds(count = 40): DemoCohortLearningSeed[] {
   const patients = generateExtendedDemoPatients();
-  const actors = ["Dr Morgan", "Nurse Davies", "Pharmacist Lee", "Dr Patel"];
+  const actors = ["Dr Morgan", "Nurse Davies", "Pharmacist Lee", "Dr Patel", "Lab Adeyemi"];
   const agents = ["GUARDIAN", "HORIZON", "SYNTHESIS", "PATHWAY"];
   const seeds: DemoCohortLearningSeed[] = [];
 
@@ -464,30 +603,250 @@ export function generateDemoCohortLearningSeeds(count = 20): DemoCohortLearningS
       linkOutcomeKind: (["care_action_completed", "follow_up_scheduled", "adverse_event_none"] as const)[
         i % 3
       ]!,
-      linkOutcomeSummary: `Eventual synthetic outcome for ${patient.id} · autoRetrain:false · liveEmis:false`,
+      linkOutcomeSummary: `Eventual synthetic outcome for ${patient.id} · autoRetrain:false · liveEmis:false · ${DEMO_COHORT_ID}`,
     });
   }
 
   return seeds;
 }
 
+/** Care episodes linked to a subset of patients for populated worklists. */
+export function generateDemoCohortCareEpisodes(count = 48): DemoCohortCareEpisodeSeed[] {
+  const patients = generateExtendedDemoPatients();
+  const statuses = ["in_review", "lab_pending", "med_review", "follow_up", "draft"] as const;
+  const out: DemoCohortCareEpisodeSeed[] = [];
+  for (let i = 0; i < count; i++) {
+    const patient = patients[i % patients.length]!;
+    const n = String(i + 1).padStart(3, "0");
+    out.push({
+      id: `ce-demo-cohort-${n}`,
+      publicId: `CE-DEMO-${n}`,
+      scopeKey: "shared",
+      organisationId: "practice-demo",
+      practiceId: "practice-demo",
+      patientId: patient.id,
+      patientLabel: patient.name,
+      status: statuses[i % statuses.length]!,
+      pathway: patient.carePathways[0] ?? null,
+      createdBy: "seed:demo-cohort",
+      idempotencyKey: `demo-cohort-ce-${n}`,
+      metadata: {
+        demoCohortId: DEMO_COHORT_ID,
+        syntheticDemo: true,
+        removable: true,
+        ehrWrite: false,
+        liveEmis: false,
+      },
+    });
+  }
+  return out;
+}
+
+/** Lab + pharmacy HITL drafts (pending review) for facilitator role switching. */
+export function generateDemoCohortHitlDrafts(options?: {
+  labCount?: number;
+  pharmacyCount?: number;
+}): DemoCohortHitlDraftSeed[] {
+  const labCount = options?.labCount ?? 24;
+  const pharmacyCount = options?.pharmacyCount ?? 24;
+  const patients = generateExtendedDemoPatients();
+  const episodes = generateDemoCohortCareEpisodes();
+  const at = "2026-07-20T09:15:00.000Z";
+  const out: DemoCohortHitlDraftSeed[] = [];
+
+  for (let i = 0; i < labCount; i++) {
+    const patient = patients[(i * 2) % patients.length]!;
+    const episode = episodes[i % episodes.length]!;
+    const n = String(i + 1).padStart(3, "0");
+    const items = i % 2 === 0 ? ["HbA1c", "U&E"] : ["Full blood count"];
+    out.push({
+      id: `lph-lab-demo-cohort-${n}`,
+      kind: "lab",
+      status: "pending_review",
+      title: `Lab draft · ${items.length} investigation(s)`,
+      summary: `GP-staged lab investigations pending lab-role HITL: ${items.join(", ")}`,
+      syntheticPatientId: patient.id,
+      careEpisodeId: episode.id,
+      organisationId: "practice-demo",
+      scopeKey: "shared",
+      items,
+      stagedBy: "gp01@demo.akshhealth.com",
+      stagedAt: at,
+      live: false,
+      liveNhsLab: false,
+      livePrescribing: false,
+      liveEps: false,
+      ehrWrite: false,
+      hitlRequired: true,
+      clinicalValidationClaim: false,
+      syntheticOnly: true,
+      auditTrail: [
+        {
+          id: `lph-audit-demo-lab-${n}`,
+          at,
+          actor: "gp01@demo.akshhealth.com",
+          action: "stage",
+          detail: `Demo cohort lab draft staged · ${DEMO_COHORT_ID} · ehrWrite:false`,
+          roleHint: "gp",
+        },
+      ],
+      demoCohortId: DEMO_COHORT_ID,
+      removable: true,
+      syntheticDemo: true,
+    });
+  }
+
+  for (let i = 0; i < pharmacyCount; i++) {
+    const patient = patients[(i * 3 + 1) % patients.length]!;
+    const episode = episodes[(i + 5) % episodes.length]!;
+    const n = String(i + 1).padStart(3, "0");
+    const items =
+      i % 2 === 0
+        ? ["Metformin adherence check", "Statin counselling"]
+        : ["Apixaban counselling (synthetic)"];
+    out.push({
+      id: `lph-pharmacy-demo-cohort-${n}`,
+      kind: "pharmacy",
+      status: "pending_review",
+      title: `Pharmacy draft · ${items.length} item(s)`,
+      summary: `GP-staged pharmacy / adherence draft pending pharmacist HITL: ${items.join(", ")}`,
+      syntheticPatientId: patient.id,
+      careEpisodeId: episode.id,
+      organisationId: "practice-demo",
+      scopeKey: "shared",
+      items,
+      stagedBy: "gp02@demo.akshhealth.com",
+      stagedAt: at,
+      live: false,
+      liveNhsLab: false,
+      livePrescribing: false,
+      liveEps: false,
+      ehrWrite: false,
+      hitlRequired: true,
+      clinicalValidationClaim: false,
+      syntheticOnly: true,
+      auditTrail: [
+        {
+          id: `lph-audit-demo-pharm-${n}`,
+          at,
+          actor: "gp02@demo.akshhealth.com",
+          action: "stage",
+          detail: `Demo cohort pharmacy draft staged · ${DEMO_COHORT_ID} · ehrWrite:false`,
+          roleHint: "gp",
+        },
+      ],
+      demoCohortId: DEMO_COHORT_ID,
+      removable: true,
+      syntheticDemo: true,
+    });
+  }
+
+  return out;
+}
+
+/** Extra review-queue rows so GP/nurse worklists are not empty beyond hand fixtures. */
+export function generateDemoCohortReviewQueueItems(count = 36): ReviewQueueItem[] {
+  const patients = generateExtendedDemoPatients().filter(
+    (p) => p.oracleRisk === "High" || p.oracleRisk === "VeryHigh" || p.flags.includes("GUARDIAN")
+  );
+  const agents = ["GUARDIAN", "SYNTHESIS", "ORACLE", "DrASSIST"] as const;
+  const out: ReviewQueueItem[] = [];
+  for (let i = 0; i < count; i++) {
+    const patient = patients[i % Math.max(patients.length, 1)] ?? generateExtendedDemoPatients()[i]!;
+    const n = String(i + 1).padStart(3, "0");
+    const agent = agents[i % agents.length]!;
+    out.push({
+      id: `RQ-demo-cohort-${n}`,
+      patientId: patient.id,
+      patientName: patient.name,
+      patientNhsNumber: patient.nhsNumber,
+      agentType: agent,
+      title: `Synthetic ${agent} draft · ${patient.id}`,
+      content: `Demo cohort (${DEMO_COHORT_ID}) draft for ${patient.name}. liveEmis:false · ehrWrite:false · removable before launch. ${
+        patient.digitalTwinPrediction.deteriorationSignals[0] ?? "Routine synthetic review"
+      }`,
+      confidenceScore: 70 + (i % 25),
+      evidenceSources: [
+        {
+          resourceType: "Patient",
+          resourceId: patient.id,
+          summary: "Synthetic demo cohort chart",
+        },
+      ],
+      createdAt: `2026-07-20T${String(8 + (i % 10)).padStart(2, "0")}:${String((i * 3) % 60).padStart(2, "0")}:00Z`,
+      priority: patient.oracleRisk === "VeryHigh" ? "Urgent" : patient.oracleRisk === "High" ? "High" : "Normal",
+      status: "Pending",
+      editedContent: null,
+      rejectionReason: null,
+      auditEventId: null,
+    });
+  }
+  return out;
+}
+
 export function summarizeDemoCohortUsers(users: DemoCohortUserSpec[]) {
   const byRole: Record<string, number> = {};
+  const bySubRole: Record<string, number> = {};
+  const byEmailPrefix: Record<string, number> = {};
   for (const u of users) {
     byRole[u.role] = (byRole[u.role] ?? 0) + 1;
+    const sub = u.subRole ?? "(none)";
+    bySubRole[sub] = (bySubRole[sub] ?? 0) + 1;
+    const prefix = u.email.split("@")[0]?.replace(/\d+$/, "") ?? "?";
+    byEmailPrefix[prefix] = (byEmailPrefix[prefix] ?? 0) + 1;
   }
   return {
     total: users.length,
     byRole,
+    bySubRole,
+    byEmailPrefix,
     rolesRepresented: Object.keys(byRole).sort(),
     emailDomain: DEMO_COHORT_EMAIL_DOMAIN,
+    ...DEMO_COHORT_META,
   };
+}
+
+/** True when a row id / email / metadata belongs to the removable demo cohort. */
+export function isDemoCohortTagged(value: {
+  id?: string | null;
+  email?: string | null;
+  demoCohortId?: string | null;
+  metadata?: { demoCohortId?: string | null } | null;
+}): boolean {
+  if (value.demoCohortId === DEMO_COHORT_ID) return true;
+  if (value.metadata?.demoCohortId === DEMO_COHORT_ID) return true;
+  if (value.email?.toLowerCase().endsWith(`@${DEMO_COHORT_EMAIL_DOMAIN}`)) return true;
+  const id = value.id ?? "";
+  return (
+    id.startsWith("ce-demo-cohort-") ||
+    id.startsWith("lph-lab-demo-cohort-") ||
+    id.startsWith("lph-pharmacy-demo-cohort-") ||
+    id.startsWith("RQ-demo-cohort-") ||
+    id.startsWith("learn-demo-cohort-") ||
+    id.startsWith("usr_demo_cohort_")
+  );
+}
+
+export function purgeDemoCohortTaggedRows<T extends { id: string }>(rows: T[]): {
+  retained: T[];
+  purged: T[];
+} {
+  const retained: T[] = [];
+  const purged: T[] = [];
+  for (const row of rows) {
+    if (isDemoCohortTagged(row)) purged.push(row);
+    else retained.push(row);
+  }
+  return { retained, purged };
 }
 
 export function assertDemoCohortGeneratorInvariants() {
   const patients = generateExtendedDemoPatients();
   const users = generateDemoCohortUsers();
   const totalPatients = DEMO_COHORT_CORE_PATIENT_COUNT + patients.length;
+  const episodes = generateDemoCohortCareEpisodes();
+  const hitl = generateDemoCohortHitlDrafts();
+  const queue = generateDemoCohortReviewQueueItems();
 
   if (patients.length !== DEMO_COHORT_EXTENDED_COUNT) {
     throw new Error(`Expected ${DEMO_COHORT_EXTENDED_COUNT} extended patients, got ${patients.length}`);
@@ -498,16 +857,50 @@ export function assertDemoCohortGeneratorInvariants() {
   if (users.length !== DEMO_COHORT_USER_TARGET) {
     throw new Error(`Expected ${DEMO_COHORT_USER_TARGET} users, got ${users.length}`);
   }
-  if (patients[0]?.id !== "P027" || patients[patients.length - 1]?.id !== "P100") {
-    throw new Error("Extended patient id range must be P027–P100");
+  if (patients[0]?.id !== "P027" || patients[patients.length - 1]?.id !== "P200") {
+    throw new Error("Extended patient id range must be P027–P200");
   }
   const summary = summarizeDemoCohortUsers(users);
   if (summary.rolesRepresented.length < 8) {
     throw new Error(`Expected all 8 roles, got ${summary.rolesRepresented.join(",")}`);
   }
+  if ((summary.byEmailPrefix.gp ?? 0) < DEMO_COHORT_MIN_COUNTS.gp) {
+    throw new Error(`Expected ≥${DEMO_COHORT_MIN_COUNTS.gp} GPs`);
+  }
+  if ((summary.byEmailPrefix.nurse ?? 0) < DEMO_COHORT_MIN_COUNTS.nurse) {
+    throw new Error(`Expected ≥${DEMO_COHORT_MIN_COUNTS.nurse} nurses`);
+  }
+  if ((summary.byEmailPrefix.pharmacist ?? 0) < DEMO_COHORT_MIN_COUNTS.clinicalPharmacist) {
+    throw new Error(`Expected ≥${DEMO_COHORT_MIN_COUNTS.clinicalPharmacist} pharmacists`);
+  }
+  if ((summary.bySubRole.lab_operator ?? 0) < DEMO_COHORT_MIN_COUNTS.labOperator) {
+    throw new Error(`Expected ≥${DEMO_COHORT_MIN_COUNTS.labOperator} lab operators`);
+  }
+  if (episodes.length < DEMO_COHORT_MIN_COUNTS.careEpisodes) {
+    throw new Error(`Expected ≥${DEMO_COHORT_MIN_COUNTS.careEpisodes} care episodes`);
+  }
+  if (hitl.filter((d) => d.kind === "lab").length < DEMO_COHORT_MIN_COUNTS.labHitlDrafts) {
+    throw new Error("Insufficient lab HITL drafts");
+  }
+  if (hitl.filter((d) => d.kind === "pharmacy").length < DEMO_COHORT_MIN_COUNTS.pharmacyHitlDrafts) {
+    throw new Error("Insufficient pharmacy HITL drafts");
+  }
+  if (queue.length < DEMO_COHORT_MIN_COUNTS.reviewQueueExtras) {
+    throw new Error("Insufficient review-queue extras");
+  }
   const imdSet = new Set(patients.map((p) => p.imdQuintile));
   if (imdSet.size < 5) {
     throw new Error("Expected IMD quintile diversity across Q1–Q5");
   }
-  return { patients: totalPatients, users: users.length, byRole: summary.byRole };
+  return {
+    patients: totalPatients,
+    users: users.length,
+    byRole: summary.byRole,
+    bySubRole: summary.bySubRole,
+    byEmailPrefix: summary.byEmailPrefix,
+    careEpisodes: episodes.length,
+    hitlDrafts: hitl.length,
+    reviewQueueExtras: queue.length,
+    demoCohortId: DEMO_COHORT_ID,
+  };
 }
