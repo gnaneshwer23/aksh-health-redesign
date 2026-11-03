@@ -8,6 +8,7 @@
   "careEpisodeCount": 48,
   "hitlDraftCount": 48,
   "reviewQueueExtraCount": 36,
+  "terminologyNote": "Patients carry codedConditions (SNOMED) + codedMedications (ATC); HITL drafts carry codedItems (LOINC/ATC). Curated subset only — see demo-terminology-curated.json.",
   "episodes": [
     {
       "id": "ce-demo-cohort-001",
@@ -985,6 +986,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1001,7 +1016,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1022,6 +1037,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1038,7 +1061,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1060,6 +1083,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1076,7 +1113,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1097,6 +1134,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1113,7 +1158,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1135,6 +1180,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1151,7 +1210,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1172,6 +1231,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1188,7 +1255,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1210,6 +1277,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1226,7 +1307,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1247,6 +1328,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1263,7 +1352,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1285,6 +1374,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1301,7 +1404,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1322,6 +1425,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1338,7 +1449,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1360,6 +1471,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1376,7 +1501,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1397,6 +1522,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1413,7 +1546,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1435,6 +1568,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1451,7 +1598,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1472,6 +1619,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1488,7 +1643,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1510,6 +1665,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1526,7 +1695,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1547,6 +1716,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1563,7 +1740,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1585,6 +1762,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1601,7 +1792,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1622,6 +1813,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1638,7 +1837,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1660,6 +1859,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1676,7 +1889,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1697,6 +1910,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1713,7 +1934,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1735,6 +1956,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1751,7 +1986,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1772,6 +2007,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1788,7 +2031,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1810,6 +2053,20 @@
         "HbA1c",
         "U&E"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1826,7 +2083,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1847,6 +2104,14 @@
       "items": [
         "Full blood count"
       ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
       "stagedBy": "gp01@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1863,7 +2128,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp01@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
           "roleHint": "gp"
         }
       ],
@@ -1885,6 +2150,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1901,7 +2180,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -1922,6 +2201,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1938,7 +2225,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -1960,6 +2247,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -1976,7 +2277,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -1997,6 +2298,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2013,7 +2322,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2035,6 +2344,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2051,7 +2374,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2072,6 +2395,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2088,7 +2419,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2110,6 +2441,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2126,7 +2471,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2147,6 +2492,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2163,7 +2516,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2185,6 +2538,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2201,7 +2568,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2222,6 +2589,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2238,7 +2613,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2260,6 +2635,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2276,7 +2665,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2297,6 +2686,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2313,7 +2710,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2335,6 +2732,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2351,7 +2762,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2372,6 +2783,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2388,7 +2807,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2410,6 +2829,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2426,7 +2859,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2447,6 +2880,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2463,7 +2904,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2485,6 +2926,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2501,7 +2956,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2522,6 +2977,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2538,7 +3001,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2560,6 +3023,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2576,7 +3053,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2597,6 +3074,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2613,7 +3098,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2635,6 +3120,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2651,7 +3150,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2672,6 +3171,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2688,7 +3195,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2710,6 +3217,20 @@
         "Metformin adherence check",
         "Statin counselling"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2726,7 +3247,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],
@@ -2747,6 +3268,14 @@
       "items": [
         "Apixaban counselling (synthetic)"
       ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
       "stagedBy": "gp02@demo.akshhealth.com",
       "stagedAt": "2026-07-20T09:15:00.000Z",
       "live": false,
@@ -2763,7 +3292,7 @@
           "at": "2026-07-20T09:15:00.000Z",
           "actor": "gp02@demo.akshhealth.com",
           "action": "stage",
-          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
           "roleHint": "gp"
         }
       ],

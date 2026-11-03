@@ -1,5 +1,6 @@
 import type { Patient } from "./types";
 import { generateExtendedDemoPatients } from "./demo-cohort-generator";
+import { attachPatientTerminology } from "./demo-terminology";
 import { riskBandForScore } from "./risk-band";
 
 /** Hand-authored clinical-proof fixtures P001–P026 — do not renumber. */
@@ -898,10 +899,12 @@ const corePatients: Patient[] = [
  * Full synthetic cohort: P001–P026 (hand fixtures) + P027–P200 (demo cohort generator).
  * Total 200 — liveEmis:false · never real patient data · removable via purge:demo-cohort.
  */
-export const patients: Patient[] = [...corePatients, ...generateExtendedDemoPatients()].map((p) => ({
-  ...p,
-  oracleRisk: riskBandForScore(p.oracleScore),
-}));
+export const patients: Patient[] = [...corePatients, ...generateExtendedDemoPatients()].map((p) =>
+  attachPatientTerminology({
+    ...p,
+    oracleRisk: riskBandForScore(p.oracleScore),
+  })
+);
 
 /**
  * Care-network patients made resolvable for the clinical-proof agents (lib/clinical-spine/spine-patient.ts). Filled only
