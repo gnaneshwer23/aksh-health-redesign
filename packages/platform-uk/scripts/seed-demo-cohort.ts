@@ -37,6 +37,7 @@ import {
   summarizeDemoCohortUsers,
   type DemoCohortUserSpec,
 } from "../lib/mock-data/demo-cohort-generator";
+import { buildDemoTerminologyArtifact } from "../lib/mock-data/demo-terminology";
 import { patients } from "../lib/mock-data/patients";
 import {
   LEARNING_GOVERNANCE_NOTE,
@@ -184,9 +185,25 @@ async function writeArtifacts() {
         careEpisodeCount: episodes.length,
         hitlDraftCount: hitl.length,
         reviewQueueExtraCount: queueExtras.length,
+        terminologyNote:
+          "Patients carry codedConditions (SNOMED) + codedMedications (ATC); HITL drafts carry codedItems (LOINC/ATC). Curated subset only — see demo-terminology-curated.json.",
         episodes,
         hitlDrafts: hitl,
         reviewQueueItemIds: queueExtras.map((q) => q.id),
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+
+  const terminologyPath = path.join(seedDir, "demo-terminology-curated.json");
+  await writeFile(
+    terminologyPath,
+    JSON.stringify(
+      {
+        ...DEMO_COHORT_META,
+        ...buildDemoTerminologyArtifact(),
       },
       null,
       2
@@ -201,6 +218,7 @@ async function writeArtifacts() {
   console.log(
     `  ${relationalPath} (${episodes.length} episodes · ${hitl.length} HITL · ${queueExtras.length} queue)`
   );
+  console.log(`  ${terminologyPath} (curated SNOMED/LOINC/ATC subset)`);
 }
 
 async function seedRelationalFileStores() {

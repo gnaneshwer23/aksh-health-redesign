@@ -3,13 +3,26 @@
  * Deterministic, synthetic-only — never real PHI. liveEmis:false.
  */
 
+import { resolveLoincLab } from "./demo-terminology";
+
 export type LongitudinalLab = {
   name: string;
   value: string;
   unit?: string;
   recordedAt: string;
   source: "synthetic_lab";
+  /** Curated LOINC when known — demo subset only. */
+  loinc?: { system: string; code: string; display: string };
 };
+
+function withLoinc(lab: Omit<LongitudinalLab, "loinc">): LongitudinalLab {
+  const coded = resolveLoincLab(lab.name);
+  if (!coded) return lab;
+  return {
+    ...lab,
+    loinc: { system: coded.system, code: coded.code, display: coded.display },
+  };
+}
 
 export type LongitudinalMedication = {
   name: string;
@@ -298,13 +311,20 @@ function syntheticBundleForExtended(patientId: string, salt: number): Longitudin
   };
 }
 
+function enrichBundleLabs(bundle: LongitudinalBundle): LongitudinalBundle {
+  return {
+    ...bundle,
+    labs: bundle.labs.map((lab) => (lab.loinc ? lab : withLoinc(lab))),
+  };
+}
+
 export function getLongitudinalBundle(patientId: string): LongitudinalBundle | null {
-  if (CORE_BUNDLES[patientId]) return CORE_BUNDLES[patientId]!;
+  if (CORE_BUNDLES[patientId]) return enrichBundleLabs(CORE_BUNDLES[patientId]!);
   const match = /^P(\d+)$/.exec(patientId);
   if (!match) return null;
   const n = Number(match[1]);
   if (n >= 27 && n <= 100) {
-    return syntheticBundleForExtended(patientId, n);
+    return enrichBundleLabs(syntheticBundleForExtended(patientId, n));
   }
   return null;
 }

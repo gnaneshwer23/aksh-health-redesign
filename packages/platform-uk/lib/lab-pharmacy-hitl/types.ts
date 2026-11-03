@@ -39,6 +39,16 @@ export type LabPharmacyDraft = {
   scopeKey: string;
   /** Lab investigations or pharmacy medication / barrier text. */
   items: string[];
+  /**
+   * Optional curated codes for demo cohort drafts (LOINC labs · ATC pharmacy).
+   * Display `items` remain authoritative for HITL UI; codes are enrichment only.
+   */
+  codedItems?: {
+    system: string;
+    code: string;
+    display: string;
+    text: string;
+  }[];
   /** Present for lab drafts after GP stage (P1-LAB ServiceRequest stubs). */
   serviceRequestDrafts?: ServiceRequestResource[];
   stagedBy: string;

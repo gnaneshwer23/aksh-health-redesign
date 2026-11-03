@@ -62,6 +62,16 @@ export type ClinicalProfileId =
   | "conflicting_records"
   | "high_risk_deterioration";
 
+/** Curated demo coding (SNOMED / LOINC / ATC) — not a licensed full distribution. */
+export interface DemoClinicalCoding {
+  system: string;
+  code: string;
+  display: string;
+  text: string;
+  /** ATC rows may cite dm+d without vendoring product ids. */
+  dmdCitationNote?: string;
+}
+
 export interface Patient {
   id: string;
   name: string;
@@ -74,6 +84,16 @@ export interface Patient {
   oracleRisk: OracleRisk;
   activeConditions: string[];
   activeMedications: string[];
+  /**
+   * SNOMED CT codes for activeConditions (curated demo subset).
+   * Illustrative — not clinical validation / not full UK RF2.
+   */
+  codedConditions?: DemoClinicalCoding[];
+  /**
+   * ATC class codes for activeMedications (curated demo subset).
+   * dm+d is citation-only — never live EPS product codes.
+   */
+  codedMedications?: DemoClinicalCoding[];
   allergies: string[];
   lastEncounterDate: string;
   nextAppointmentDate?: string;

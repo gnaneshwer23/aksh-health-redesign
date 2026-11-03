@@ -90,7 +90,7 @@ Optional local file (gitignored): `.env.local` with the same vars plus `DATABASE
 
 ## Related
 
-- [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md) — how to seed / purge the 200-patient · 375-user cohort
+- [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md) — how to seed / purge the 200-patient · 375-user cohort (incl. curated SNOMED/LOINC/ATC licensing limits)
 - [`launch/LAUNCH_READINESS.md`](./launch/LAUNCH_READINESS.md) — demo vs clinical production gates
 - [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)

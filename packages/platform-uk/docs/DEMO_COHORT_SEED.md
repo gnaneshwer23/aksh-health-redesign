@@ -114,18 +114,44 @@ Purge matches:
 | Patients | `lib/mock-data/patients.ts` → P001–P200 |
 | Review queue | `lib/mock-data/review-queue.ts` (core + `RQ-demo-cohort-*`) |
 | Generator | `lib/mock-data/demo-cohort-generator.ts` |
+| Terminology (curated) | `lib/mock-data/demo-terminology.ts` + `data/seed/demo-terminology-curated.json` |
 | JSON artifacts | `data/seed/demo-cohort-*.json` |
 | Users / profiles | Neon `aksh.users` + `aksh.profiles` |
 | Care episodes (file) | `data/care-episodes.json` (`ce-demo-cohort-*`) |
-| Lab/pharmacy HITL (file) | `data/lab-pharmacy-hitl.json` |
+| Lab/pharmacy HITL (file) | `data/lab-pharmacy-hitl.json` (items + `codedItems`) |
 | Learning / outcomes | `data/learning-events.json` + Neon `aksh.learning_events` |
 | Neo4j graph | Aura via `--with-neo4j` / `data:seed:neo4j` |
+
+## Terminology (SNOMED · LOINC · ATC)
+
+The 200-patient cohort carries **curated open codes** for realistic UK-oriented demos:
+
+| Surface | Code system | Attached as |
+| --- | --- | --- |
+| Problems / conditions | SNOMED CT (`http://snomed.info/sct`) | `patient.codedConditions[]` |
+| Lab HITL drafts + longitudinal labs | LOINC (`http://loinc.org`) | HITL `codedItems[]` · lab `loinc` |
+| Medications / pharmacy HITL | ATC (`http://www.whocc.no/atc`) | `patient.codedMedications[]` · pharmacy `codedItems[]` |
+
+**Licensing / honesty (read before claiming “UK coded”):**
+
+- We **do not** vendor full SNOMED CT UK Edition RF2, full LOINC, ATC/DDD dumps, MIMIC, SynPUF, or awesome-healthcare-data bulk ingest.
+- Demo uses a **small curated JSON/TS table** of commonly used concept ids (UK GP–familiar SNOMED concepts where the International id is the usual reference; production UK Edition still needs NHS / SNOMED International registration + a terminology server).
+- **dm+d** AMP/VMP product ids are **citation-only** (`dmdCitationNote`) — not ingested. Map ATC → dm+d in a licensed environment before any clinical prescribing story.
+- Optional future path: fetch-at-seed from allowed public APIs when keys/env exist — not required for this pack; document any env in `.env.local` if added later.
+- **This is not clinical validation.** Codes are illustrative for stakeholder walkthroughs. Do not claim coded EHR parity or MHRA-grade terminology assurance.
+
+Samples (always resolvable in `test:demo-cohort`):
+
+- SNOMED `44054006` — Type 2 diabetes mellitus  
+- LOINC `4548-4` — HbA1c  
+- ATC `A10BA02` — metformin  
 
 ## Tests
 
 ```bash
 npm run test:demo-cohort
-# hermetic: min counts, relational glue tags, purge keeps non-demo rows
+# hermetic: min counts, relational glue tags, purge keeps non-demo rows,
+# sample SNOMED/LOINC/ATC bindings on patients + HITL drafts
 ```
 
 ## Honesty
@@ -133,3 +159,4 @@ npm run test:demo-cohort
 - Agent Ops shows a synthetic demo-cohort banner (`demo-cohort-synthetic-honesty`).  
 - No autonomous Rx · no live EPS · no live EHR write.  
 - `productionRbacEnforced` stays false.
+- Curated terminology ≠ clinical validation / ≠ licensed full distributions.

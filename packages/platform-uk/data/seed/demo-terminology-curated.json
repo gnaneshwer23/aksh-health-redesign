@@ -1,0 +1,565 @@
+{
+  "syntheticDemo": true,
+  "removable": true,
+  "demoCohortId": "demo-cohort-v2-stakeholder",
+  "liveEmis": false,
+  "ehrWrite": false,
+  "productionRbacEnforced": false,
+  "purpose": "synthetic_demo_cohort_only",
+  "clinicalValidation": false,
+  "fullDistributionsVendored": false,
+  "snomedEditionNote": "Illustrative SNOMED CT concept ids commonly used in UK GP narratives. Demo does not redistribute UK Edition RF2. Production UK use requires NHS England / SNOMED International registration and a licensed terminology server.",
+  "loincNote": "Small curated LOINC codes for common UK primary-care labs (HbA1c, eGFR, FBC, U&E constituents). Not a LOINC dump; Regenstrief attribution applies for production LOINC use.",
+  "atcNote": "WHO ATC class codes for demo medication classes. Not a prescribing authority; not EPS/dm+d product codes.",
+  "dmdNote": "NHS dm+d (AMP/VMP) is citation-only — not ingested. Map ATC → dm+d in a licensed environment before clinical use.",
+  "sources": [
+    "SNOMED CT International concept ids (publicly documented clinical concepts; UK edition registration required for production)",
+    "LOINC (Regenstrief Institute) — curated subset only",
+    "WHO Collaborating Centre for Drug Statistics Methodology — ATC/DDD",
+    "Aksh Health synthetic demo cohort (demo-cohort-v2-stakeholder)"
+  ],
+  "systems": {
+    "snomed": "http://snomed.info/sct",
+    "loinc": "http://loinc.org",
+    "atc": "http://www.whocc.no/atc"
+  },
+  "conditions": [
+    {
+      "text": "Type 2 diabetes mellitus",
+      "system": "http://snomed.info/sct",
+      "code": "44054006",
+      "display": "Type 2 diabetes mellitus"
+    },
+    {
+      "text": "Type 2 diabetes mellitus: well controlled",
+      "system": "http://snomed.info/sct",
+      "code": "44054006",
+      "display": "Type 2 diabetes mellitus"
+    },
+    {
+      "text": "Type 1 diabetes mellitus",
+      "system": "http://snomed.info/sct",
+      "code": "46635009",
+      "display": "Diabetes mellitus type 1"
+    },
+    {
+      "text": "Essential hypertension",
+      "system": "http://snomed.info/sct",
+      "code": "59621000",
+      "display": "Essential hypertension"
+    },
+    {
+      "text": "Hypertension",
+      "system": "http://snomed.info/sct",
+      "code": "38341003",
+      "display": "Hypertensive disorder"
+    },
+    {
+      "text": "Heart failure with reduced ejection fraction",
+      "system": "http://snomed.info/sct",
+      "code": "703272007",
+      "display": "Heart failure with reduced ejection fraction"
+    },
+    {
+      "text": "Heart failure",
+      "system": "http://snomed.info/sct",
+      "code": "84114007",
+      "display": "Heart failure"
+    },
+    {
+      "text": "CKD Stage 3",
+      "system": "http://snomed.info/sct",
+      "code": "433144002",
+      "display": "Chronic kidney disease stage 3"
+    },
+    {
+      "text": "CKD Stage 4",
+      "system": "http://snomed.info/sct",
+      "code": "431857002",
+      "display": "Chronic kidney disease stage 4"
+    },
+    {
+      "text": "COPD",
+      "system": "http://snomed.info/sct",
+      "code": "13645005",
+      "display": "Chronic obstructive lung disease"
+    },
+    {
+      "text": "Frailty syndrome",
+      "system": "http://snomed.info/sct",
+      "code": "443694000",
+      "display": "Frailty"
+    },
+    {
+      "text": "Osteoarthritis",
+      "system": "http://snomed.info/sct",
+      "code": "396275006",
+      "display": "Osteoarthritis"
+    },
+    {
+      "text": "Gout",
+      "system": "http://snomed.info/sct",
+      "code": "90560007",
+      "display": "Gout"
+    },
+    {
+      "text": "Deep vein thrombosis risk",
+      "system": "http://snomed.info/sct",
+      "code": "128053003",
+      "display": "Deep venous thrombosis"
+    },
+    {
+      "text": "Deep vein thrombosis",
+      "system": "http://snomed.info/sct",
+      "code": "128053003",
+      "display": "Deep venous thrombosis"
+    },
+    {
+      "text": "Deep vein thrombosis: right popliteal",
+      "system": "http://snomed.info/sct",
+      "code": "128053003",
+      "display": "Deep venous thrombosis"
+    },
+    {
+      "text": "Deep vein thrombosis: left calf (prior)",
+      "system": "http://snomed.info/sct",
+      "code": "128053003",
+      "display": "Deep venous thrombosis"
+    },
+    {
+      "text": "Asthma",
+      "system": "http://snomed.info/sct",
+      "code": "195967001",
+      "display": "Asthma"
+    },
+    {
+      "text": "Asthma: well controlled",
+      "system": "http://snomed.info/sct",
+      "code": "195967001",
+      "display": "Asthma"
+    },
+    {
+      "text": "Asthma — paediatric",
+      "system": "http://snomed.info/sct",
+      "code": "195967001",
+      "display": "Asthma"
+    },
+    {
+      "text": "Major depressive disorder",
+      "system": "http://snomed.info/sct",
+      "code": "370143000",
+      "display": "Major depressive disorder"
+    },
+    {
+      "text": "Depression",
+      "system": "http://snomed.info/sct",
+      "code": "35489007",
+      "display": "Depressive disorder"
+    },
+    {
+      "text": "Recurrent depressive disorder",
+      "system": "http://snomed.info/sct",
+      "code": "66344007",
+      "display": "Recurrent major depression"
+    },
+    {
+      "text": "Anxiety disorder",
+      "system": "http://snomed.info/sct",
+      "code": "197480006",
+      "display": "Anxiety disorder"
+    },
+    {
+      "text": "Insomnia",
+      "system": "http://snomed.info/sct",
+      "code": "193462001",
+      "display": "Insomnia"
+    },
+    {
+      "text": "Acute suicidal ideation",
+      "system": "http://snomed.info/sct",
+      "code": "6471006",
+      "display": "Suicidal ideation"
+    },
+    {
+      "text": "Breast cancer: adjuvant therapy",
+      "system": "http://snomed.info/sct",
+      "code": "254837009",
+      "display": "Malignant neoplasm of breast"
+    },
+    {
+      "text": "Prostate cancer: active treatment",
+      "system": "http://snomed.info/sct",
+      "code": "399068003",
+      "display": "Malignant tumor of prostate"
+    },
+    {
+      "text": "Colorectal cancer: adjuvant chemotherapy",
+      "system": "http://snomed.info/sct",
+      "code": "363406005",
+      "display": "Malignant neoplasm of colon"
+    },
+    {
+      "text": "NAFLD",
+      "system": "http://snomed.info/sct",
+      "code": "197321007",
+      "display": "Steatosis of liver"
+    },
+    {
+      "text": "Alcohol-related liver disease",
+      "system": "http://snomed.info/sct",
+      "code": "420054005",
+      "display": "Alcoholic cirrhosis"
+    },
+    {
+      "text": "Thrombocytopenia",
+      "system": "http://snomed.info/sct",
+      "code": "302215000",
+      "display": "Thrombocytopenic disorder"
+    },
+    {
+      "text": "Pregnancy — second trimester",
+      "system": "http://snomed.info/sct",
+      "code": "77386006",
+      "display": "Pregnancy"
+    },
+    {
+      "text": "Antenatal care: 28 weeks gestation",
+      "system": "http://snomed.info/sct",
+      "code": "77386006",
+      "display": "Pregnancy"
+    },
+    {
+      "text": "Gestational diabetes screening",
+      "system": "http://snomed.info/sct",
+      "code": "11687002",
+      "display": "Gestational diabetes mellitus"
+    },
+    {
+      "text": "Chronic pain",
+      "system": "http://snomed.info/sct",
+      "code": "82423001",
+      "display": "Chronic pain"
+    }
+  ],
+  "labs": [
+    {
+      "text": "HbA1c",
+      "system": "http://loinc.org",
+      "code": "4548-4",
+      "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+    },
+    {
+      "text": "eGFR",
+      "system": "http://loinc.org",
+      "code": "33914-3",
+      "display": "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)"
+    },
+    {
+      "text": "LDL",
+      "system": "http://loinc.org",
+      "code": "2089-1",
+      "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma"
+    },
+    {
+      "text": "Full blood count",
+      "system": "http://loinc.org",
+      "code": "58410-2",
+      "display": "Complete blood count (hemogram) panel - Blood by Automated count"
+    },
+    {
+      "text": "FBC",
+      "system": "http://loinc.org",
+      "code": "58410-2",
+      "display": "Complete blood count (hemogram) panel - Blood by Automated count"
+    },
+    {
+      "text": "U&E",
+      "system": "http://loinc.org",
+      "code": "24321-2",
+      "display": "Basic metabolic 1998 panel - Serum or Plasma"
+    },
+    {
+      "text": "Urea",
+      "system": "http://loinc.org",
+      "code": "3091-6",
+      "display": "Urea nitrogen [Mass/volume] in Serum or Plasma"
+    },
+    {
+      "text": "Creatinine",
+      "system": "http://loinc.org",
+      "code": "2160-0",
+      "display": "Creatinine [Mass/volume] in Serum or Plasma"
+    },
+    {
+      "text": "Sodium",
+      "system": "http://loinc.org",
+      "code": "2951-2",
+      "display": "Sodium [Moles/volume] in Serum or Plasma"
+    },
+    {
+      "text": "Potassium",
+      "system": "http://loinc.org",
+      "code": "2823-3",
+      "display": "Potassium [Moles/volume] in Serum or Plasma"
+    },
+    {
+      "text": "Glucose",
+      "system": "http://loinc.org",
+      "code": "2345-7",
+      "display": "Glucose [Mass/volume] in Serum or Plasma"
+    }
+  ],
+  "medications": [
+    {
+      "match": "/metformin/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A10BA02",
+      "display": "metformin",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/ramipril/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C09AA05",
+      "display": "ramipril",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/lisinopril/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C09AA03",
+      "display": "lisinopril",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/atorvastatin/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C10AA05",
+      "display": "atorvastatin",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/furosemide/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C03CA01",
+      "display": "furosemide",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/bisoprolol/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C07AB07",
+      "display": "bisoprolol",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/salbutamol/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "R03AC02",
+      "display": "salbutamol",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/tiotropium/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "R03BB04",
+      "display": "tiotropium bromide",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/prednisolone/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "H02AB06",
+      "display": "prednisolone",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/allopurinol/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "M04AA01",
+      "display": "allopurinol",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/paracetamol/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "N02BE01",
+      "display": "paracetamol",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/omeprazole/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A02BC01",
+      "display": "omeprazole",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/amlodipine/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C08CA01",
+      "display": "amlodipine",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/colecalciferol|vitamin d/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A11CC05",
+      "display": "colecalciferol",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/apixaban/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "B01AF02",
+      "display": "apixaban",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/rivaroxaban/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "B01AF01",
+      "display": "rivaroxaban",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/sertraline/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "N06AB06",
+      "display": "sertraline",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/zopiclone/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "N05CF01",
+      "display": "zopiclone",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/mirtazapine/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "N06AX11",
+      "display": "mirtazapine",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/letrozole/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "L02BG04",
+      "display": "letrozole",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/ondansetron/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A04AA01",
+      "display": "ondansetron",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/folic acid/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "B03BB01",
+      "display": "folic acid",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/\\baspirin\\b/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "B01AC06",
+      "display": "acetylsalicylic acid",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/clenil|beclometasone|beclomethasone/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "R03BA01",
+      "display": "beclometasone",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/spironolactone/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C03DA01",
+      "display": "spironolactone",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/lactulose/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A06AD11",
+      "display": "lactulose",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/indapamide/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "C03BA11",
+      "display": "indapamide",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/insulin glargine/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A10AE04",
+      "display": "insulin glargine",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/insulin aspart/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A10AB05",
+      "display": "insulin aspart",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/bicalutamide/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "L02BB03",
+      "display": "bicalutamide",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/ferrous/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "B03AA07",
+      "display": "ferrous sulfate",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/capecitabine/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "L01BC06",
+      "display": "capecitabine",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    },
+    {
+      "match": "/loperamide/i",
+      "system": "http://www.whocc.no/atc",
+      "code": "A07DA03",
+      "display": "loperamide",
+      "dmdCitationNote": "Map to NHS dm+d VMP/AMP in licensed env — not vendored here"
+    }
+  ],
+  "pharmacyHitl": [
+    {
+      "text": "Metformin adherence check",
+      "system": "http://www.whocc.no/atc",
+      "code": "A10BA02",
+      "display": "metformin"
+    },
+    {
+      "text": "Statin counselling",
+      "system": "http://www.whocc.no/atc",
+      "code": "C10AA",
+      "display": "HMG CoA reductase inhibitors"
+    },
+    {
+      "text": "Apixaban counselling (synthetic)",
+      "system": "http://www.whocc.no/atc",
+      "code": "B01AF02",
+      "display": "apixaban"
+    }
+  ]
+}

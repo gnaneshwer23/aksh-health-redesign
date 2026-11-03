@@ -17,6 +17,7 @@ Software / product honesty for a stakeholder walkthrough (GP / nurse / pharmacy 
 | Synthetic demo cohort seeded (`npm run seed:demo-cohort -- --apply`) | Populated worklists across roles — empty accounts kill demos |
 | Documented logins + `DEMO_SEED_PASSWORD` / `DEMO_COHORT_PASSWORD` (never in git) | Facilitators can switch personas |
 | Honesty banners: `liveEmis:false` · `ehrWrite:false` · lab/pharmacy sim · Agent Ops demo-cohort note | Buyers must not hear “live NHS write” |
+| Facilitator note: curated SNOMED/LOINC/ATC on charts ≠ clinical validation / ≠ full UK RF2 | See `DEMO_COHORT_SEED.md` § Terminology |
 | `productionRbacEnforced` remains **false** (do not flip for demos) | Avoid claiming production RBAC |
 | Marketing / landing honesty (no live EMR claim; no overstated cohort on homepage) | Trust |
 | Demo script path (`/demo/script` or facilitator session C1) practiced once | Room time |

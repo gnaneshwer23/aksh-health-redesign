@@ -9,6 +9,13 @@
 import type { ClinicalProfileId, OracleRisk, Patient, ReviewQueueItem } from "./types";
 import type { UserRole } from "../onboarding/roles";
 import { getLongitudinalBundle } from "./longitudinal-bundles";
+import {
+  assertDemoTerminologyInvariants,
+  attachPatientTerminology,
+  codeLabItems,
+  codePharmacyHitlItems,
+  type DemoCodedConcept,
+} from "./demo-terminology";
 
 /** Stable tag for seed + purge. Never reuse for non-demo rows. */
 export const DEMO_COHORT_ID = "demo-cohort-v2-stakeholder";
@@ -115,6 +122,8 @@ export type DemoCohortHitlDraftSeed = {
   organisationId: string;
   scopeKey: string;
   items: string[];
+  /** LOINC (lab) or ATC (pharmacy) curated demo codes — display items stay strings. */
+  codedItems: DemoCodedConcept[];
   stagedBy: string;
   stagedAt: string;
   live: false;
@@ -432,7 +441,7 @@ export function generateExtendedDemoPatients(
     );
     const equity = imd === "Q1" || imd === "Q2";
 
-    const patient: Patient = {
+    const patient: Patient = attachPatientTerminology({
       id: padPatientId(idNum),
       name: `${title} ${first} ${surname}`,
       nhsNumber: syntheticNhsNumber(idNum),
@@ -479,7 +488,7 @@ export function generateExtendedDemoPatients(
       icsRegion: ics,
       equityFlag: equity || undefined,
       qaNotes: `Demo cohort synthetic patient ${padPatientId(idNum)} · ${DEMO_COHORT_ID} · liveEmis:false · IMD ${imd} · ${ics}`,
-    };
+    });
 
     const long = getLongitudinalBundle(patient.id);
     if (long) {
@@ -670,6 +679,7 @@ export function generateDemoCohortHitlDrafts(options?: {
       organisationId: "practice-demo",
       scopeKey: "shared",
       items,
+      codedItems: codeLabItems(items),
       stagedBy: "gp01@demo.akshhealth.com",
       stagedAt: at,
       live: false,
@@ -686,7 +696,7 @@ export function generateDemoCohortHitlDrafts(options?: {
           at,
           actor: "gp01@demo.akshhealth.com",
           action: "stage",
-          detail: `Demo cohort lab draft staged · ${DEMO_COHORT_ID} · ehrWrite:false`,
+          detail: `Demo cohort lab draft staged · ${DEMO_COHORT_ID} · ehrWrite:false · LOINC curated`,
           roleHint: "gp",
         },
       ],
@@ -715,6 +725,7 @@ export function generateDemoCohortHitlDrafts(options?: {
       organisationId: "practice-demo",
       scopeKey: "shared",
       items,
+      codedItems: codePharmacyHitlItems(items),
       stagedBy: "gp02@demo.akshhealth.com",
       stagedAt: at,
       live: false,
@@ -731,7 +742,7 @@ export function generateDemoCohortHitlDrafts(options?: {
           at,
           actor: "gp02@demo.akshhealth.com",
           action: "stage",
-          detail: `Demo cohort pharmacy draft staged · ${DEMO_COHORT_ID} · ehrWrite:false`,
+          detail: `Demo cohort pharmacy draft staged · ${DEMO_COHORT_ID} · ehrWrite:false · ATC curated`,
           roleHint: "gp",
         },
       ],
@@ -892,6 +903,23 @@ export function assertDemoCohortGeneratorInvariants() {
   if (imdSet.size < 5) {
     throw new Error("Expected IMD quintile diversity across Q1–Q5");
   }
+
+  const terminology = assertDemoTerminologyInvariants();
+  const codedPatients = patients.filter(
+    (p) => (p.codedConditions?.length ?? 0) > 0 || (p.codedMedications?.length ?? 0) > 0
+  );
+  if (codedPatients.length < 100) {
+    throw new Error(`Expected ≥100 patients with SNOMED/ATC coding, got ${codedPatients.length}`);
+  }
+  const labCoded = hitl.filter((d) => d.kind === "lab" && d.codedItems.length > 0);
+  const pharmCoded = hitl.filter((d) => d.kind === "pharmacy" && d.codedItems.length > 0);
+  if (labCoded.length < DEMO_COHORT_MIN_COUNTS.labHitlDrafts) {
+    throw new Error("Lab HITL drafts missing LOINC codedItems");
+  }
+  if (pharmCoded.length < DEMO_COHORT_MIN_COUNTS.pharmacyHitlDrafts) {
+    throw new Error("Pharmacy HITL drafts missing ATC codedItems");
+  }
+
   return {
     patients: totalPatients,
     users: users.length,
@@ -902,5 +930,7 @@ export function assertDemoCohortGeneratorInvariants() {
     hitlDrafts: hitl.length,
     reviewQueueExtras: queue.length,
     demoCohortId: DEMO_COHORT_ID,
+    terminology,
+    patientsWithCoding: codedPatients.length,
   };
 }

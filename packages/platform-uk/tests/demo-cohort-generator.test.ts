@@ -23,6 +23,12 @@ import {
   purgeDemoCohortTaggedRows,
   summarizeDemoCohortUsers,
 } from "../lib/mock-data/demo-cohort-generator";
+import {
+  DEMO_TERMINOLOGY_PROVENANCE,
+  DEMO_TERMINOLOGY_SYSTEMS,
+  assertDemoTerminologyInvariants,
+} from "../lib/mock-data/demo-terminology";
+import { getLongitudinalBundle } from "../lib/mock-data/longitudinal-bundles";
 import { patients } from "../lib/mock-data/patients";
 import { reviewQueueItems } from "../lib/mock-data/review-queue";
 
@@ -115,6 +121,56 @@ describe("demo cohort generator (stakeholder scale)", () => {
     assert.ok(reviewQueueItems.some((q) => q.id.startsWith("RQ-demo-cohort-")));
   });
 
+  it("attaches curated SNOMED / LOINC / ATC codes (not full distributions)", () => {
+    const terminology = assertDemoTerminologyInvariants();
+    assert.equal(terminology.snomedSample.code, "44054006");
+    assert.equal(terminology.loincSample.code, "4548-4");
+    assert.equal(terminology.atcSample.code, "A10BA02");
+    assert.equal(DEMO_TERMINOLOGY_PROVENANCE.clinicalValidation, false);
+    assert.equal(DEMO_TERMINOLOGY_PROVENANCE.fullDistributionsVendored, false);
+
+    const p002 = patients.find((p) => p.id === "P002");
+    assert.ok(p002);
+    assert.ok(
+      p002!.codedConditions?.some(
+        (c) => c.system === DEMO_TERMINOLOGY_SYSTEMS.snomed && c.code === "44054006"
+      ),
+      "P002 should carry SNOMED T2D"
+    );
+    assert.ok(
+      p002!.codedMedications?.some(
+        (c) => c.system === DEMO_TERMINOLOGY_SYSTEMS.atc && c.code === "A10BA02"
+      ),
+      "P002 should carry ATC metformin"
+    );
+
+    const t2dExtended = generateExtendedDemoPatients().find((p) =>
+      p.clinicalProfiles?.includes("t2d")
+    );
+    assert.ok(t2dExtended?.codedConditions?.length);
+    assert.ok(t2dExtended?.codedMedications?.length);
+
+    const hitl = generateDemoCohortHitlDrafts();
+    const lab = hitl.find((d) => d.kind === "lab" && d.items.includes("HbA1c"));
+    assert.ok(
+      lab?.codedItems.some(
+        (c) => c.system === DEMO_TERMINOLOGY_SYSTEMS.loinc && c.code === "4548-4"
+      ),
+      "Lab HITL HbA1c should carry LOINC 4548-4"
+    );
+    const pharmacy = hitl.find((d) => d.kind === "pharmacy");
+    assert.ok(
+      pharmacy?.codedItems.every((c) => c.system === DEMO_TERMINOLOGY_SYSTEMS.atc),
+      "Pharmacy HITL codedItems should be ATC"
+    );
+    assert.ok((pharmacy?.codedItems.length ?? 0) > 0);
+
+    const long = getLongitudinalBundle("P002");
+    const hba1cLab = long?.labs.find((l) => l.name === "HbA1c");
+    assert.equal(hba1cLab?.loinc?.code, "4548-4");
+    assert.equal(hba1cLab?.loinc?.system, DEMO_TERMINOLOGY_SYSTEMS.loinc);
+  });
+
   it("learning seeds link care actions without auto-retrain claims", () => {
     const seeds = generateDemoCohortLearningSeeds(20);
     assert.equal(seeds.length, 20);
@@ -161,10 +217,14 @@ describe("demo cohort generator (stakeholder scale)", () => {
     assert.match(seedDoc, /purge:demo-cohort/);
     assert.match(seedDoc, /P027–P200|\*\*200\*\*|200 patients|≥200/);
     assert.match(seedDoc, /lab01@/);
+    assert.match(seedDoc, /SNOMED|LOINC|ATC/);
+    assert.match(seedDoc, /not clinical validation/i);
+    assert.match(seedDoc, /do not.*vendor full SNOMED|full SNOMED CT UK/i);
     assert.match(launch, /Must-have before any \*\*external demo\*\*/);
     assert.match(launch, /Must-have before \*\*clinical production\*\*/);
     assert.match(launch, /productionRbacEnforced/);
     assert.match(launch, /Not clinical production ready/);
+    assert.match(launch, /SNOMED\/LOINC\/ATC|curated SNOMED/);
     assert.doesNotMatch(launch, /Ready for clinical production\?\s*\|\s*\*\*Yes/i);
   });
 
