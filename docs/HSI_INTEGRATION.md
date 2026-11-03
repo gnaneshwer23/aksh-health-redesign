@@ -1,5 +1,21 @@
 # HSI research integration
 
+## Shared executable technology
+
+Aksh's existing dashboard `sortReviewQueueItems` delegates to HSI's canonical
+human-review prioritisation algorithm. It preserves urgent GUARDIAN → priority →
+recency ordering. The module executes inside Aksh; records and object references
+remain in the app's own process. It makes no clinical or approval decision.
+
+The exact source and HSI Git/SHA-256 provenance live under
+`packages/platform-uk/lib/hsi/sharedTechnology*`. The consumer test verifies source
+integrity and unchanged ordering/record ownership, and runs in the HSI consumer
+CI workflow. Edit the canonical HSI source and regenerate the snapshot; a future
+versioned private package can replace this transitional distribution method.
+
+This executable reuse is separate from the pre-existing read-only research
+snapshot below. No database, credential, patient record or EHR action is shared.
+
 The active UK app now consumes a versioned, public, read-only HSI research snapshot at `packages/platform-uk/app/hsi/page.tsx`. The entry point is linked from `/resources`; no patient identifiers, observation values, clinical decisions or database connections cross this boundary.
 
 Producer: `gnaneshwer23/hsi-core`, `src/cli/export-aksh-research.ts`.
