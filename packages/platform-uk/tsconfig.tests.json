@@ -21,6 +21,8 @@
     ".next-dev",
     ".next-build-active",
     ".next-dev-active",
-    "components/review/ops-dashboard-sections 2.tsx"
+    "components/review/ops-dashboard-sections 2.tsx",
+    "tests/hsi-investigation-backend.test.ts",
+    "tests/hsi-investigation-service.test.ts"
   ]
 }
