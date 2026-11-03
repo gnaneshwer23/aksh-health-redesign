@@ -36,7 +36,7 @@ const STEP_BEATS: {
   {
     id: "medication",
     label: "4 · Medication & care",
-    body: "Reconciliation, synthetic interaction stub, safety review, care-plan template. No autonomous adjust.",
+    body: "Reconciliation, interaction check stub, safety review, care-plan template. No autonomous adjust.",
     decisionHint: "Accept / Edit / Reject care-plan draft",
   },
   {
@@ -65,7 +65,7 @@ const STEP_BEATS: {
 ];
 
 /**
- * Flagship guided demo for the full Connected Diabetes journey (synthetic).
+ * Flagship guided demo for the full Connected Diabetes journey.
  */
 export function ConnectedDiabetesDemo() {
   const [beat, setBeat] = useState(0);
@@ -86,16 +86,16 @@ export function ConnectedDiabetesDemo() {
     <div className="wd" data-demo="connected-diabetes" data-step={current.id} data-capture-ready>
       <header className="wd-hero">
         <div className="s-container">
-          <p className="s-eyebrow">Synthetic clinical intelligence</p>
+          <p className="s-eyebrow">Clinical intelligence demo</p>
           <h1 className="s-h1" style={{ fontSize: "clamp(28px, 4vw, 42px)" }}>
             Connected diabetes journey
           </h1>
           <p className="s-lede" style={{ maxWidth: 640 }}>
             Walk Patient 360 → glucose → medication → care-plan HITL → continuous care → agent drafts →
-            timeline on synthetic patient {patientId}. Clinicians always decide.
+            timeline for example case {patientId}. Clinicians always decide.
           </p>
           <div className="wd-meta" aria-label="Demo boundaries">
-            <span className="c-chip c-chip--ink">Synthetic data only</span>
+            <span className="c-chip c-chip--ink">Illustrative</span>
             <span className="c-chip c-chip--teal">{STATUS_LABEL[cap.status]}</span>
             <span className="c-chip">HITL on every draft</span>
             <span className="c-chip">~8 minutes</span>

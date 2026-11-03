@@ -40,10 +40,11 @@ for (const id of [
 }
 
 const root = join(__dirname, "..");
+// Authenticated chrome + demo player must keep disclosure; the thin /demo page wrapper
+// must not restate synthetic-patient marketing copy (honesty lives in ConnectedDiabetesDemo).
 for (const rel of [
   "components/dashboard/diabetes-intelligence/ConnectedPatientChrome.tsx",
   "components/demo/workflow/ConnectedDiabetesDemo.tsx",
-  "app/demo/connected-diabetes/page.tsx",
   "app/dashboard/gp/patients/[id]/timeline/page.tsx",
   "app/dashboard/gp/patients/[id]/connected-diabetes/page.tsx",
   "components/dashboard/diabetes-intelligence/ConnectedDiabetesOrchestrationWorkspace.tsx",
@@ -51,5 +52,13 @@ for (const rel of [
   const text = readFileSync(join(root, rel), "utf8");
   assert.match(text, /[Ss]ynthetic|CONNECTED_JOURNEY_DISCLOSURE/, `${rel} must disclose synthetic`);
 }
+assert.match(
+  readFileSync(join(root, "app/demo/connected-diabetes/page.tsx"), "utf8"),
+  /ConnectedDiabetesDemo/,
+);
+assert.doesNotMatch(
+  readFileSync(join(root, "app/demo/connected-diabetes/page.tsx"), "utf8"),
+  /synthetic patients/i,
+);
 
 console.log("connected-journey-steps: registry + synthetic honesty — PASS");

@@ -438,8 +438,9 @@ async function run() {
   await assertFileIncludes("app/page.tsx", "/demo/glucose");
   await assertFileIncludes("app/page.tsx", "DiabetesHistoryPreview");
   await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "review-prep");
-  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "Synthetic");
+  await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "Example");
   await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", "human gate");
+  await assertFileExcludes("components/site/DiabetesHistoryPreview.tsx", "synthetic patients");
   await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", 's="in_validation"');
   await assertFileIncludes("components/site/DiabetesHistoryPreview.tsx", 'href="/demo"');
   await assertFileExcludes("components/site/DiabetesHistoryPreview.tsx", "Medome");
@@ -448,7 +449,8 @@ async function run() {
   await assertFileIncludes("app/demo/slot-fill/page.tsx", "SlotFillDemo");
   await assertFileIncludes("app/demo/glucose/page.tsx", "GlucoseMonitorDemo");
   await assertFileIncludes("lib/workflow-demos.ts", "Cancelled-slot fill");
-  await assertFileIncludes("components/demo/workflow/WorkflowDemoPlayer.tsx", "Synthetic data only");
+  await assertFileIncludes("components/demo/workflow/WorkflowDemoPlayer.tsx", "Illustrative");
+  await assertFileExcludes("components/demo/workflow/WorkflowDemoPlayer.tsx", "synthetic patients");
   await assertFileExcludes("app/page.tsx", "Start free");
   await assertFileExcludes("app/page.tsx", "Patel");
   await assertFileIncludes("components/onboarding/SandboxPreview.tsx", "What you&apos;ll see next");
@@ -589,7 +591,7 @@ async function run() {
   await assertFileIncludes("components/site/AgentLineFigure.tsx", "s-line__legend");
   await assertFileIncludes("components/site/AgentLineFigure.tsx", "s-line__steps");
   await assertFileIncludes("components/site/AgentLineFigure.tsx", "s-line__zone-chip");
-  await assertFileIncludes("components/site/AgentLineFigure.tsx", "in validation (synthetic patients only)");
+  await assertFileIncludes("components/site/AgentLineFigure.tsx", "in validation (not released for real patients)");
   await assertFileIncludes("components/site/AgentLineFigure.tsx", "Clinician decides");
   await assertFileIncludes("components/site/AgentLineFigure.tsx", "labelNudge");
   await assertFileExcludes("components/site/AgentLineFigure.tsx", "autonomous clinical");

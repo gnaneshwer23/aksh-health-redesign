@@ -2,8 +2,8 @@
 
 /**
  * One product canvas for the whole public site. Every page shows the same Aksh workspace (same frame, rail, header and
- * tiles) focused on a different module, so the site reads as one product rather than separate mock-ups. Illustrative,
- * synthetic data only; the frame states it. The left rail and top segmented control switch modules in-place.
+ * tiles) focused on a different module, so the site reads as one product rather than separate mock-ups. Illustrative
+ * examples only; the frame states it. The left rail and top segmented control switch modules in-place.
  */
 import { Activity, CalendarClock, FlaskConical, LayoutGrid, ShieldCheck, Workflow } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -65,7 +65,7 @@ function Frame({
 }) {
   const activeSeg = segFor(module);
   return (
-    <figure className="c-canvas" data-canvas={module} aria-label={`Aksh workspace, ${TITLE[module]} (illustrative, synthetic data)`}>
+    <figure className="c-canvas" data-canvas={module} aria-label={`Aksh workspace, ${TITLE[module]} (illustrative example)`}>
       <nav className="c-rail" aria-label="Workspace modules">
         <span className="c-rail__mark" aria-hidden>
           A
@@ -110,13 +110,13 @@ function Frame({
                 );
               })}
             </div>
-            <Chip tone="ink">Synthetic data</Chip>
+            <Chip tone="ink">Illustrative</Chip>
           </div>
         </header>
         <div className={`c-grid c-grid--${module}`} key={module}>
           {children}
         </div>
-        <figcaption className="c-caption">Illustrative example · synthetic patients · {note ?? "the real screens work the same way"}</figcaption>
+        <figcaption className="c-caption">Illustrative example · {note ?? "the real screens work the same way"}</figcaption>
       </div>
     </figure>
   );

@@ -38,5 +38,6 @@ test("segmented control stays consistent with module groups", () => {
   assert.match(canvasSrc, /module === "today" \|\| module === "slots"/);
   assert.match(canvasSrc, /module === "glucose" \|\| module === "record"/);
   assert.match(canvasSrc, /moduleForSeg\(key\)/);
-  assert.match(canvasSrc, /Synthetic data/);
+  assert.match(canvasSrc, />Illustrative</);
+  assert.doesNotMatch(canvasSrc, /synthetic patients/i);
 });

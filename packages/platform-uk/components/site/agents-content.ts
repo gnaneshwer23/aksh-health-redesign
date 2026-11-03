@@ -21,7 +21,7 @@ export type PublicAgent = {
   short: string;
   status: CapabilityStatus;
   statusLabel: string;
-  /** May call a language model on synthetic data in validation (never on patient data in production). */
+  /** May call a language model in validation (never on patient data in production). */
   usesModel: boolean;
 };
 

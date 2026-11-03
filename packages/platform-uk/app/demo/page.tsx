@@ -11,7 +11,7 @@ import { capability } from "@/lib/status/capabilities";
 export const metadata: Metadata = {
   title: "Explore a demo",
   description:
-    "Synthetic guided walkthroughs of Aksh production workflows and the flagship connected diabetes intelligence journey. Staff and clinicians always decide.",
+    "Guided demos of Aksh production workflows and the flagship connected diabetes intelligence journey. Staff and clinicians always decide.",
 };
 
 export default function DemoCatalogPage() {
@@ -21,7 +21,7 @@ export default function DemoCatalogPage() {
     <SiteShell>
       <PageHero
         title="Explore a demo."
-        lede="Walk production workflows and the connected diabetes intelligence journey with synthetic data. You decide every offer and every clinical response."
+        lede="Walk production workflows and the connected diabetes intelligence journey. You decide every offer and every clinical response."
       >
         {connected ? (
           <div className="s-actions s-hero2__actions">
@@ -34,7 +34,7 @@ export default function DemoCatalogPage() {
           </div>
         ) : null}
         <p className="s-small" style={{ margin: 0 }}>
-          Synthetic only · LIVE organisations: 0 · no live EHR write-back
+          Guided demos · LIVE organisations: 0 · no live EHR write-back
         </p>
       </PageHero>
 
@@ -90,7 +90,7 @@ export default function DemoCatalogPage() {
           <div className="s-head" style={{ marginBottom: 20 }}>
             <span className="s-eyebrow">Production workflows</span>
             <h2 className="s-h2">What clinics can run today</h2>
-            <p className="s-lede">Interactive, synthetic only. No live patient data. Staff always choose.</p>
+            <p className="s-lede">Interactive demos. No live patient data. Staff always choose.</p>
           </div>
           <div className="wd-catalog">
             {WORKFLOW_DEMOS.map((d) => {

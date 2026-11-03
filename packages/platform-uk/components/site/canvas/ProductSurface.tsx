@@ -2,7 +2,7 @@
  * Focused product “screenshot” frames for marketing sections.
  * Same design language as ProductCanvas, but one surface at a time (no rail),
  * so feature sections read as real workspace shots without competing nav chrome.
- * Illustrative · synthetic data only.
+ * Illustrative product frames for marketing — not live clinical screenshots.
  */
 import type { ReactNode } from "react";
 
@@ -35,21 +35,21 @@ function SurfaceFrame({
     <figure
       className="c-surface"
       data-surface={id}
-      aria-label={`Aksh ${TITLE[id]} (illustrative, synthetic data)`}
+      aria-label={`Aksh ${TITLE[id]} (illustrative example)`}
     >
       <header className="c-surface__bar">
         <span className="c-surface__mark" aria-hidden>
           A
         </span>
         <div>
-          <p className="c-surface__hello">Riverside Diabetes Centre · synthetic</p>
+          <p className="c-surface__hello">Riverside Diabetes Centre</p>
           <h3 className="c-surface__title">{TITLE[id]}</h3>
         </div>
-        <Chip tone="ink">Synthetic data</Chip>
+        <Chip tone="ink">Illustrative</Chip>
       </header>
       <div className={`c-surface__grid c-surface__grid--${id}`}>{children}</div>
       <figcaption className="c-caption">
-        Illustrative example · synthetic patients · {NOTE[id]}
+        Illustrative example · {NOTE[id]}
       </figcaption>
     </figure>
   );
@@ -62,7 +62,7 @@ function ReviewBody() {
         <ul className="c-honesty" aria-label="Review honesty">
           <li>
             <b>Session</b>
-            <span>Rules + optional LLM on synthetic only</span>
+            <span>Rules + optional LLM in validation</span>
           </li>
           <li>
             <b>Adapters</b>
@@ -165,7 +165,7 @@ function HandoffBody() {
       <Tile title="Care episode" aside={<Chip tone="teal">Shared run id</Chip>} span="episode">
         <Timeline
           steps={[
-            { t: "Orchestrator prepared brief", d: "Brief + Guardian order · synthetic eval", state: "done" },
+            { t: "Orchestrator prepared brief", d: "Brief + Guardian order · evaluation", state: "done" },
             { t: "Clinician accepted note", d: "Named account · audit chained", state: "done" },
             { t: "Lab queue · human review", d: "eGFR flag for admin/lab role", state: "now" },
             { t: "Pharmacy queue", d: "Held — no Rx without prescriber", state: "next" },
@@ -205,7 +205,7 @@ function HandoffBody() {
 function OpsBody() {
   return (
     <>
-      <Tile title="Evaluation honesty" aside={<Chip tone="amber">Synthetic eval</Chip>} span="honest">
+      <Tile title="Evaluation honesty" aside={<Chip tone="amber">Eval honesty</Chip>} span="honest">
         <ul className="c-honesty">
           <li>
             <b>Live-path</b>
@@ -213,7 +213,7 @@ function OpsBody() {
           </li>
           <li>
             <b>Scaffold</b>
-            <span>Prism / Trials · synthetic eval only</span>
+            <span>Prism / Trials · evaluation scaffold only</span>
           </li>
           <li>
             <b>Sim</b>
@@ -222,7 +222,7 @@ function OpsBody() {
         </ul>
       </Tile>
       <Tile title="HCP eval session" span="hcp">
-        <Big value="Facilitated" label="synthetic cases · trust scores · safety misses logged" />
+        <Big value="Facilitated" label="facilitated cases · trust scores · safety misses logged" />
         <p className="c-text">Meeting numeric targets does not release an agent. A clinical safety officer signs off.</p>
       </Tile>
       <Tile title="Shield / Guardian" span="shield">

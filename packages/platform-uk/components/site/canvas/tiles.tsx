@@ -1,7 +1,7 @@
 /**
  * The product canvas tile system. Every product visual on the public site is built from these pieces so the pages read
  * as one product: one frame, one rail, one tile radius, one type scale, one accent (lime) over teal data ink.
- * All figures are illustrative and synthetic; the frame says so.
+ * All figures are illustrative examples; the frame says so.
  */
 import type { ReactNode } from "react";
 
@@ -179,7 +179,7 @@ export function Stats({ items }: { items: { value: string; label: string }[] }) 
 }
 
 /** A small group of tiles in the canvas frame colour: used inside page sections so they share the workspace look. */
-export function Cluster({ children, cols = 2, caption = "Illustrative example · synthetic patients" }: { children: ReactNode; cols?: 1 | 2 | 3; caption?: string }) {
+export function Cluster({ children, cols = 2, caption = "Illustrative example · care-team workflows" }: { children: ReactNode; cols?: 1 | 2 | 3; caption?: string }) {
   return (
     <figure className="c-cluster" style={{ ["--c-cols" as string]: cols }}>
       <div className="c-cluster__grid">{children}</div>

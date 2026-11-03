@@ -324,7 +324,7 @@ export function AgentLineFigure() {
             </li>
             <li>
               <i className="s-line__swatch s-line__swatch--validation" aria-hidden />
-              Amber marker — in validation (synthetic patients only)
+              Amber marker — in validation (not released for real patients)
             </li>
             <li>
               <i className="s-line__swatch s-line__swatch--planned" aria-hidden />

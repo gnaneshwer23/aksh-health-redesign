@@ -10,7 +10,7 @@ import { WorkflowDemoPlayer } from "./WorkflowDemoPlayer";
 
 function Frame({ children, title }: { children: React.ReactNode; title: string }) {
   return (
-    <figure className="c-canvas wd-frame" data-canvas="slots" aria-label={`${title} (illustrative, synthetic data)`}>
+    <figure className="c-canvas wd-frame" data-canvas="slots" aria-label={`${title} (illustrative example)`}>
       <div className="c-main" style={{ width: "100%" }}>
         <header className="c-head">
           <div>
@@ -18,13 +18,13 @@ function Frame({ children, title }: { children: React.ReactNode; title: string }
             <h3 className="c-head__title">{title}</h3>
           </div>
           <div className="c-head__right">
-            <Chip tone="ink">Synthetic data</Chip>
+            <Chip tone="ink">Illustrative</Chip>
             <Chip tone="amber">Shadow mode</Chip>
           </div>
         </header>
         <div className="wd-frame__body">{children}</div>
         <figcaption className="c-caption">
-          Illustrative example · synthetic patients · staff choose and contact; Aksh never contacts patients
+          Illustrative example · staff choose and contact; Aksh never contacts patients
         </figcaption>
       </div>
     </figure>
