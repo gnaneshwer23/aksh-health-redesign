@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected-patient-access";
 import {
   createCareEpisode,
-  listCareEpisodesForPatient,
+  listCareEpisodesForPatientWithMode,
 } from "@/lib/care-episode";
 import { requireAuthenticatedUserScope } from "@/lib/user-scope";
 
@@ -23,13 +23,14 @@ export async function GET(request: Request, context: RouteContext) {
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
 
-  const episodes = await listCareEpisodesForPatient(patientId, auth.context.scopeKey);
+  const listed = await listCareEpisodesForPatientWithMode(patientId, auth.context.scopeKey);
   return NextResponse.json({
     patientId,
-    episodes,
+    episodes: listed.episodes,
+    storeMode: listed.storeMode,
     ehrWrite: false,
     synthetic: true,
-    count: episodes.length,
+    count: listed.episodes.length,
   });
 }
 

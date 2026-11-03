@@ -117,6 +117,8 @@
     "test:milestone-d:unify": "ENABLE_LLM_SYNTHESIS=false ENABLE_LLM_GUARDIAN=false ENABLE_LLM_ORACLE=false ENABLE_LLM_DR_ASSIST=false ENABLE_LLM_NEXUS=false npx tsx tests/milestone-d1-durable-ops-unify.test.ts && npm run typecheck",
     "test:milestone-d": "npm run test:milestone-d:unify && npx tsx tests/security-observability-a4.test.ts && npx tsx tests/p1-agent-ops-dashboard.test.ts && npm run test:milestone-c:phi-ops",
     "test:milestone-d:neon": "MILESTONE_A5_USE_NEON=1 USE_POSTGRES=true npm run test:milestone-a5:neon && npm run test:milestone-d",
+    "test:milestone-e:correlate": "ENABLE_LLM_SYNTHESIS=false ENABLE_LLM_GUARDIAN=false ENABLE_LLM_ORACLE=false ENABLE_LLM_DR_ASSIST=false ENABLE_LLM_NEXUS=false npx tsx tests/milestone-e1-shared-run-correlation.test.ts && npm run typecheck",
+    "test:milestone-e": "npm run test:milestone-e:correlate && npm run test:milestone-d:unify && npx tsx tests/milestone-c3-lab-pharmacy-hitl.test.ts && npx tsx tests/p1-agent-ops-dashboard.test.ts",
     "eval:agents": "npx tsx scripts/eval-agents.ts",
     "evidence:pack": "node scripts/generate-evidence-pack.mjs",
     "start": "next start",

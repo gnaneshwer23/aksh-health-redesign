@@ -26,11 +26,17 @@ export {
   createCareEpisode,
   ensureCareEpisodesSchema,
   getCareEpisode,
+  getCareEpisodeWithMode,
   listCareEpisodeEvents,
   listCareEpisodesForPatient,
+  listCareEpisodesForPatientWithMode,
   listCareEpisodesForScope,
+  listCareEpisodesForScopeWithMode,
   resetCareEpisodeStoreForTests,
   transitionCareEpisode,
+  type CareEpisodeGetResult,
+  type CareEpisodeListResult,
+  type CareEpisodeStoreMode,
 } from "./repository";
 
 export {

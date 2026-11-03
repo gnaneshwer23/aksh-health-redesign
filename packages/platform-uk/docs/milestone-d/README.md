@@ -12,7 +12,7 @@ Completing D does **not** certify clinical use, flip `productionRbacEnforced`, e
 
 After Milestone C, Agent Ops still **listed durable CONDUCTOR runs from the file mirror only**, while claim/finalize dual-wrote Neon when `DATABASE_URL` was set. On shared Neon / serverless instances that under-counted failures and SHIELD-block rates — a material honesty gap for facilitator sessions.
 
-**Milestone D** ships a **vertical slice**: Postgres-preferred durable-run **reads** for Agent Ops + alerts, with hermetic file fallback and an explicit `storeMode` badge. SHIELD remains Neon-only (no file mirror). Care-episode and lab/pharmacy HITL file primaries stay deferred.
+**Milestone D** ships a **vertical slice**: Postgres-preferred durable-run **reads** for Agent Ops + alerts, with hermetic file fallback and an explicit `storeMode` badge. SHIELD remains Neon-only (no file mirror). Care-episode and lab/pharmacy HITL file primaries were deferred to **Milestone E1** ([SHARED_RUN_CORRELATION.md](../milestone-e/SHARED_RUN_CORRELATION.md)).
 
 See [DURABLE_OPS_UNIFY.md](./DURABLE_OPS_UNIFY.md) for scope, non-goals, and definition of done.
 

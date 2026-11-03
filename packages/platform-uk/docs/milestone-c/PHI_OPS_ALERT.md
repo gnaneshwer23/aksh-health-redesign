@@ -60,15 +60,15 @@ Webhook receivers should treat the body as operational telemetry only. Existing 
 
 ## What is still dual-path (file vs Neon)
 
-| Store | Dual-path residual (post–Milestone D1) |
+| Store | Dual-path residual (post–Milestone E1) |
 | --- | --- |
 | Durable CONDUCTOR runs (`execution-run-store`) | **D1 unified for ops reads** — Postgres-preferred list when `DATABASE_URL` set; file = hermetic / fallback. Claim/finalize may still mirror to file. See [DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md). |
 | SHIELD audit | **Neon-only** (no file mirror); fail-closed when Postgres required |
-| Care-episode open tasks | File-scoped episode store unless Neon episode path is used |
+| Care-episode open tasks | **E1 unified for reads** — Postgres-preferred with `storeMode` honesty. See [SHARED_RUN_CORRELATION.md](../milestone-e/SHARED_RUN_CORRELATION.md). |
 | Ops alert **evaluation** | Same Postgres-preferred durable-run list as Agent Ops (`storeMode` on summary) |
-| Lab/pharmacy HITL (C3) | Practice-scoped file + SHIELD dual-write |
+| Lab/pharmacy HITL (C3) | **E1 unified for reads** — dual-write + Postgres-preferred list (`storeMode`) |
 
-C4 documented the residual; **Milestone D1** unifies durable-run **ops reads**. Care-episode + lab/pharmacy HITL file primaries remain deferred.
+C4 documented the residual; **Milestone D1** unifies durable-run **ops reads**; **Milestone E1** unifies care-episode + lab/pharmacy HITL reads.
 
 ---
 
@@ -98,6 +98,6 @@ npm run test:milestone-c
 ## Gaps for D+
 
 - COMPASS **product** expansion / calendar booking (C5 landed honesty labels only — see [COMPASS_HONESTY.md](./COMPASS_HONESTY.md)).
-- Durable-run ops list unify — **shipped in Milestone D1** ([DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md)); care-episode + lab/pharmacy HITL file stores still residual.
+- Durable-run ops list unify — **shipped in Milestone D1** ([DURABLE_OPS_UNIFY.md](../milestone-d/DURABLE_OPS_UNIFY.md)); care-episode + lab/pharmacy HITL unify — **shipped in Milestone E1** ([SHARED_RUN_CORRELATION.md](../milestone-e/SHARED_RUN_CORRELATION.md)).
 - Broader client-panel PHI scrub beyond lifestyle + audit normaliser.
 - Neon shared-sandbox automation; CSO exit-note workflow; live integrations.

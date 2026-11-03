@@ -16,6 +16,7 @@ assert.match(page, /\/api\/agents\/loop-outcomes/);
 assert.match(page, /data-testid="agent-ops-honesty"/);
 assert.match(page, /data-testid="agent-ops-durable-runs"/);
 assert.match(page, /data-testid="agent-ops-durable-store-mode"/);
+assert.match(page, /data-testid="agent-ops-care-episode-store-mode"/);
 assert.match(page, /storeMode/);
 assert.match(page, /productionRbacEnforced:\s*false/);
 assert.match(page, /data-testid="agent-ops-alerts"/);
