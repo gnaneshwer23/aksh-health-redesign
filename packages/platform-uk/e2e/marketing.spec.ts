@@ -43,6 +43,11 @@ test.describe("Public site", () => {
     await expect(page.locator("#review-prep")).toContainText("human gate");
     await expect(page.locator("#review-prep").getByRole("link", { name: "Explore a demo" })).toHaveAttribute("href", "/demo");
     await expect(page.locator("#diabetes")).toContainText("In validation");
+    // Milestone A–E landing surfaces: how-it-works, review/strategy, trust limits (honest HITL copy).
+    await expect(page.locator('[data-landing="how-it-works"]')).toContainText("Three steps");
+    await expect(page.locator('[data-landing="review-line"]')).toContainText("honesty strip");
+    await expect(page.locator('[data-landing="trust"]')).toContainText("do not claim clinical certification");
+    await expect(page.locator('[data-surface="strategy"]')).toBeVisible();
     const nav = page.locator("[data-site-nav]");
     for (const label of ["How it works", "Available now", "Demo", "Security", "Resources", "Contact"]) {
       await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
