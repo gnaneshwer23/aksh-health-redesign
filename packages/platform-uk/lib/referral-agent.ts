@@ -1,4 +1,5 @@
 import { CLINICAL_AGENT_META } from "./agents";
+import { extractOrchestrationRunLineage, lineageMetadata } from "./agents/run-lineage";
 import type { ReviewCase, ReviewQueueItem, ServiceRequestResource } from "./types";
 
 export const PATEL_REFERRAL_TRANSCRIPT =
@@ -20,6 +21,7 @@ export function buildReferralQueueItem(reviewCase: ReviewCase): ReviewQueueItem 
   const side = limbSide(reviewCase);
   const limb = side ? `${side} lower limb` : "lower limb, side to confirm";
   const calf = side ? `${side} calf` : "calf (side to confirm)";
+  const lineage = extractOrchestrationRunLineage(reviewCase);
   return {
     id: `${reviewCase.id}-queue-referral`,
     agentId: "REFERRAL",
@@ -28,22 +30,29 @@ export function buildReferralQueueItem(reviewCase: ReviewCase): ReviewQueueItem 
     title: "DVT urgent referral package",
     summary: "Duplex ultrasound + D-dimer: urgent pathway (synthetic e-referral draft)",
     content: [
-      "REFERRAL AGENT: coordination draft",
+      "PATHWAY: coordination draft",
       "Priority: URGENT",
       `Requested: Duplex ultrasound (${limb}) + D-dimer`,
       `Clinical indication: Suspected DVT: ${calf} swelling × 5 days, Wells moderate`,
       "Supporting codes: SNOMED CT 128053003, 44054006 (ICD-10 I80.2, E11.9)",
-      "Status: DRAFT | GP Accept required before ServiceRequest write-back"
-    ].join("\n"),
+      lineage.durableRunId ? `Orchestration run: ${lineage.durableRunId}` : null,
+      lineage.careEpisodeId ? `Care episode: ${lineage.careEpisodeId}` : null,
+      "Status: DRAFT | GP Accept required before ServiceRequest write-back · liveEmis:false"
+    ]
+      .filter(Boolean)
+      .join("\n"),
     metadata: {
       priority: "urgent",
       pathway: "vascular_imaging",
-      investigations: ["duplex_ultrasound", "d_dimer"]
+      investigations: ["duplex_ultrasound", "d_dimer"],
+      agent: "PATHWAY",
+      ...lineageMetadata(lineage),
     }
   };
 }
 
 export function buildServiceRequestStub(reviewCase: ReviewCase): ServiceRequestResource {
+  const lineage = extractOrchestrationRunLineage(reviewCase);
   return {
     resourceType: "ServiceRequest",
     id: `servicereq-${reviewCase.id}`,
@@ -51,7 +60,16 @@ export function buildServiceRequestStub(reviewCase: ReviewCase): ServiceRequestR
     status: "draft",
     priority: "urgent",
     reason: "Suspected DVT | urgent imaging per referral package",
-    performerText: "Regional vascular diagnostics (synthetic)"
+    performerText: "Regional vascular diagnostics (synthetic)",
+    // Opaque ops join keys — not live e-RS identifiers.
+    extensionNote: [
+      lineage.durableRunId ? `durableRunId=${lineage.durableRunId}` : null,
+      lineage.correlationId ? `correlationId=${lineage.correlationId}` : null,
+      lineage.careEpisodeId ? `careEpisodeId=${lineage.careEpisodeId}` : null,
+      "liveEmis:false",
+    ]
+      .filter(Boolean)
+      .join("; "),
   };
 }
 

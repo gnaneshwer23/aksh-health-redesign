@@ -198,6 +198,7 @@ async function main() {
   // Milestone E1 unified care-episode + lab/pharmacy HITL with durable-run ops lists.
   assert.ok(
     payload.dualPathResidual === "shared_run_correlation_unified" ||
+      payload.dualPathResidual === "coordination_interop_unified" ||
       payload.dualPathResidual === "durable_run_ops_unified"
   );
   assert.deepEqual(payload.residualDualPathStores, []);

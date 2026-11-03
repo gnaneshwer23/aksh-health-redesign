@@ -13,6 +13,7 @@ assert.match(page, /Simulation \/ synthetic validation/);
 assert.match(page, /not a clinical accuracy score/);
 assert.match(page, /\/api\/agents\/readiness/);
 assert.match(page, /\/api\/agents\/loop-outcomes/);
+assert.match(page, /data-testid="agent-ops-loop-store-mode"/);
 assert.match(page, /data-testid="agent-ops-honesty"/);
 assert.match(page, /data-testid="agent-ops-durable-runs"/);
 assert.match(page, /data-testid="agent-ops-durable-store-mode"/);

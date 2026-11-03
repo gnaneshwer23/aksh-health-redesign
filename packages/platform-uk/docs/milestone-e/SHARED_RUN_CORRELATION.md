@@ -36,9 +36,9 @@ Synthetic / simulation honesty applies. Completing E1 does **not** flip `product
 ## Non-goals
 
 - **Not** flipping `productionRbacEnforced`.
-- **Not** HCP facilitator `care_episode_id` deep-link product work (P1).
-- **Not** loop-outcomes dual-path unify (P1).
-- **Not** PATHWAY/BRIDGE run-id lineage product expansion (P1).
+- **Not** HCP facilitator `care_episode_id` deep-link product work (deferred to P1 — now [COORDINATION_INTEROP.md](./COORDINATION_INTEROP.md)).
+- **Not** loop-outcomes dual-path unify (deferred to P1).
+- **Not** PATHWAY/BRIDGE run-id lineage product expansion (deferred to P1).
 - **Not** live EMIS / EPS / PACS / PRISM / ATLAS expansion.
 - **Not** autonomous Rx or EHR write.
 - **Not** clinical validation or device certification.
@@ -69,11 +69,11 @@ npm run test:milestone-d:unify
 
 ---
 
-## Remaining after E (P1 / P2)
+## Remaining after E1 (P1 / P2)
 
 | Track | Residual |
 | --- | --- |
-| P1 | HCP session deep-link `care_episode_id`; loop-outcomes dual-path unify; PATHWAY/BRIDGE run-id lineage |
+| P1 | **Shipped** — see [COORDINATION_INTEROP.md](./COORDINATION_INTEROP.md) (handoff `careEpisodeId`, loop-outcomes `storeMode`, PATHWAY/BRIDGE lineage) |
 | P2 / ops | Facilitator calendar; CSO exit-note UI; Neon booking helpers; broader PHI scrub; Workstream H SLOs; BRIDGE adapter contract tests (`liveEmis:false`); production RBAC staged flip |
 
 ---

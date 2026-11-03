@@ -27,6 +27,8 @@ export type ServiceRequestResource = {
   priority: "routine" | "urgent";
   reason: string;
   performerText?: string;
+  /** Milestone E P1.3 — opaque PATHWAY/BRIDGE join note (not live e-RS ids). */
+  extensionNote?: string;
 };
 
 export type NurseEscalationTask = {
@@ -491,6 +493,8 @@ export type AgentRunSummary = {
   /** Milestone A1 — correlation / episode / honest execution mode summary. */
   correlationId?: string;
   careEpisodeId?: string | null;
+  /** Milestone E P1.3 — durable agent_intel_runs id for PATHWAY/BRIDGE join. */
+  durableRunId?: string | null;
   executionSchemaVersion?: string;
   guardianOutcome?: "PASS" | "REVIEW" | "BLOCK" | null;
   reviewStatus?: string;

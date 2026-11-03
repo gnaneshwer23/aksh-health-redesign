@@ -14,6 +14,11 @@ import {
 } from "@/lib/clinical-proof/staged-fhir";
 import { queueEmisFhirStaging } from "@/lib/emis-staging";
 import {
+  attachLineageToBundle,
+  extractOrchestrationRunLineage,
+  lineageMetadata,
+} from "@/lib/agents/run-lineage";
+import {
   getBridgeStagingHonesty,
   listBridgeStagingBundles,
   persistBridgeStagingBundle,
@@ -29,6 +34,7 @@ export type BridgeAcceptStageResult = {
   simWriteId: string | null;
   simulatedEhrEntryIds: string[];
   fhirResourceCount: number;
+  runLineage: ReturnType<typeof extractOrchestrationRunLineage>;
   liveEmis: false;
   ehrWriteAttempted: false;
   medplumRequired: false;
@@ -132,6 +138,11 @@ export async function stageAcceptedCaseToBridge(input: {
     reviewCase: input.reviewCase
   });
 
+  const runLineage = extractOrchestrationRunLineage(input.reviewCase, {
+    careEpisodeId: input.reviewCase?.careEpisodeId,
+  });
+  const bundleWithLineage = attachLineageToBundle(resolved.bundle, runLineage);
+
   const bridgeRecord = await persistBridgeStagingBundle({
     caseId: input.caseId,
     practiceId: input.practiceId,
@@ -139,8 +150,13 @@ export async function stageAcceptedCaseToBridge(input: {
     acceptedBy: input.acceptedBy,
     status: "preliminary",
     bundleSummary: resolved.summary,
-    bundle: resolved.bundle,
-    note: `BRIDGE Accept staging (${resolved.source}) · not Medplum · not live EHR · liveEmis:false`
+    bundle: bundleWithLineage,
+    note: `BRIDGE Accept staging (${resolved.source}) · not Medplum · not live EHR · liveEmis:false${
+      runLineage.durableRunId ? ` · durableRunId=${runLineage.durableRunId}` : ""
+    }${runLineage.careEpisodeId ? ` · careEpisodeId=${runLineage.careEpisodeId}` : ""}`,
+    durableRunId: runLineage.durableRunId,
+    correlationId: runLineage.correlationId,
+    careEpisodeId: runLineage.careEpisodeId,
   });
 
   const emisEntry = queueEmisFhirStaging({
@@ -205,7 +221,8 @@ export async function stageAcceptedCaseToBridge(input: {
       medplumRequired: false,
       status: "preliminary",
       storage: bridgeRecord.storage,
-      resourceCount: resolved.resourceCount
+      resourceCount: resolved.resourceCount,
+      runLineage: lineageMetadata(runLineage),
     }
   });
 
@@ -214,7 +231,8 @@ export async function stageAcceptedCaseToBridge(input: {
     emisStagingEntryId: emisEntry.id,
     simWriteId,
     simulatedEhrEntryIds: simulatedEntries.map((e) => e.id),
-    fhirResourceCount: resolved.resourceCount || resourceCountFromBundle(resolved.bundle),
+    fhirResourceCount: resolved.resourceCount || resourceCountFromBundle(bundleWithLineage),
+    runLineage,
     liveEmis: false,
     ehrWriteAttempted: false,
     medplumRequired: false,
@@ -243,6 +261,9 @@ export async function getBridgeStagingStatus(options?: {
       acceptedBy: r.acceptedBy,
       bundleSummary: r.bundleSummary,
       storage: r.storage,
+      durableRunId: r.durableRunId ?? null,
+      correlationId: r.correlationId ?? null,
+      careEpisodeId: r.careEpisodeId ?? null,
       liveEmis: false as const,
       syntheticOnly: true as const
     })),

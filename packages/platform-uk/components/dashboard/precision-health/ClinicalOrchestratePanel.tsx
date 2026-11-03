@@ -113,10 +113,13 @@ type HitlMap = Partial<Record<OrchestrationAgentId | "TWIN", "Pending" | "Accept
 export function ClinicalOrchestratePanel({
   patientId,
   patientLabel,
+  careEpisodeId,
   onComplete,
 }: {
   patientId: string;
   patientLabel?: string;
+  /** Milestone E P1.1 — threaded from review-queue / HCP session deep-link. */
+  careEpisodeId?: string;
   onComplete?: (payload: {
     safetyRoute: SafetyRoute;
     twin: TwinSimulationResult | null;
@@ -136,7 +139,14 @@ export function ClinicalOrchestratePanel({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patientId, includeTwinRanking: true, includeDrAssist: false }),
+        body: JSON.stringify({
+          patientId,
+          includeTwinRanking: true,
+          includeDrAssist: false,
+          ...(careEpisodeId?.trim()
+            ? { careEpisodeId: careEpisodeId.trim(), care_episode_id: careEpisodeId.trim() }
+            : {}),
+        }),
       });
       const data = (await response.json()) as OrchestrateResponse;
       if (!response.ok || !data.orchestration) {
@@ -181,7 +191,7 @@ export function ClinicalOrchestratePanel({
     } finally {
       setLoading(false);
     }
-  }, [patientId, onComplete]);
+  }, [patientId, careEpisodeId, onComplete]);
 
   const stageAccept = async (agent: OrchestrationAgentId | "TWIN", summary: string) => {
     try {

@@ -81,7 +81,7 @@ async function main() {
   assert.match(migration, /lab_pharmacy_hitl_drafts/);
 
   const channelSrc = read("lib/agents/ops-alert-channel.ts");
-  assert.match(channelSrc, /shared_run_correlation_unified/);
+  assert.match(channelSrc, /shared_run_correlation_unified|coordination_interop_unified/);
   assert.match(channelSrc, /residualDualPathStores:\s*\[\]/);
 
   const opsPage = read("app/dashboard/admin/agent-ops/page.tsx");
@@ -226,7 +226,10 @@ async function main() {
 
   const alerts = await buildOpsAlerts({ scopeKey: scope, dispatchChannel: false });
   const payload = buildOpsAlertChannelPayload(alerts);
-  assert.equal(payload.dualPathResidual, "shared_run_correlation_unified");
+  assert.ok(
+    payload.dualPathResidual === "shared_run_correlation_unified" ||
+      payload.dualPathResidual === "coordination_interop_unified"
+  );
   assert.deepEqual(payload.residualDualPathStores, []);
   assert.equal(payload.productionRbacEnforced, false);
   assert.equal(payload.certificationClaim, false);

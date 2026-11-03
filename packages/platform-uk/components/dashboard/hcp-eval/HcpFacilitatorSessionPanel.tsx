@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +15,10 @@ import {
 import type { HcpEvalCase, HcpCaseKind } from "@/lib/eval/hcp-case-pack";
 import type { HcpFeedbackDecision, HcpRubricId } from "@/lib/eval/hcp-feedback";
 import {
+  buildCrossSurfaceHandoffHref,
   buildHcpFeedbackRequestBody,
   HCP_FACILITATOR_HONESTY,
+  readCareEpisodeIdFromSearchParams,
   relatedGoldenFixtures,
   rubricLabel,
   suggestRubricsForCase,
@@ -91,6 +94,21 @@ function emptyRubrics(ids: HcpRubricId[]): RubricDraft[] {
  * Wires existing Milestone B APIs — no curl/JSON required.
  */
 export function HcpFacilitatorSessionPanel() {
+  return (
+    <Suspense
+      fallback={
+        <p className="text-sm text-muted" data-testid="hcp-facilitator-session-loading">
+          Loading HCP facilitator session…
+        </p>
+      }
+    >
+      <HcpFacilitatorSessionPanelInner />
+    </Suspense>
+  );
+}
+
+function HcpFacilitatorSessionPanelInner() {
+  const searchParams = useSearchParams();
   const [pack, setPack] = useState<CasePackPayload | null>(null);
   const [fixtures, setFixtures] = useState<GoldenFixtureRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,6 +122,10 @@ export function HcpFacilitatorSessionPanel() {
   const [recommendation, setRecommendation] = useState<"proceed" | "hold" | "redesign">("hold");
   const [facilitatorNotes, setFacilitatorNotes] = useState("");
   const [sessionId, setSessionId] = useState("");
+  /** Milestone E P1.1 — optional care-episode id threaded into review / lab-pharmacy links. */
+  const [careEpisodeId, setCareEpisodeId] = useState(() =>
+    readCareEpisodeIdFromSearchParams(searchParams)
+  );
   const [safetyMiss, setSafetyMiss] = useState(false);
   const [safetyMissDetail, setSafetyMissDetail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -173,9 +195,14 @@ export function HcpFacilitatorSessionPanel() {
     );
   }, [selectedCase, fixtures]);
 
-  const reviewQueueHref = selectedCase
-    ? `/dashboard/gp/review-queue?patient=${encodeURIComponent(selectedCase.syntheticPatientId)}`
-    : "/dashboard/gp/review-queue";
+  const reviewQueueHref = buildCrossSurfaceHandoffHref("/dashboard/gp/review-queue", {
+    patientId: selectedCase?.syntheticPatientId,
+    careEpisodeId,
+  });
+  const labPharmacyHref = buildCrossSurfaceHandoffHref("/dashboard/gp/lab-pharmacy", {
+    patientId: selectedCase?.syntheticPatientId,
+    careEpisodeId,
+  });
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -263,18 +290,16 @@ export function HcpFacilitatorSessionPanel() {
         </Link>
         <Link href={reviewQueueHref} className="underline text-primary" data-testid="hcp-session-link-review-queue">
           GP review queue{selectedCase ? ` (${selectedCase.syntheticPatientId})` : ""}
+          {careEpisodeId ? ` · episode ${careEpisodeId}` : ""}
           {" · honesty strip (C2)"}
         </Link>
         <Link
-          href={
-            selectedCase
-              ? `/dashboard/gp/lab-pharmacy?patientId=${encodeURIComponent(selectedCase.syntheticPatientId)}`
-              : "/dashboard/gp/lab-pharmacy"
-          }
+          href={labPharmacyHref}
           className="underline text-primary"
           data-testid="hcp-session-link-lab-pharmacy"
         >
           Lab / pharmacy HITL (C3)
+          {careEpisodeId ? ` · episode ${careEpisodeId}` : ""}
         </Link>
         <Link href="/dashboard/admin/lab-queue" className="underline text-primary" data-testid="hcp-session-link-lab-queue">
           Lab queue
@@ -495,7 +520,7 @@ export function HcpFacilitatorSessionPanel() {
               </Select>
             </label>
 
-            <label className="space-y-1 text-xs sm:col-span-2">
+            <label className="space-y-1 text-xs">
               <span className="font-medium">Session id (optional)</span>
               <input
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs"
@@ -503,6 +528,17 @@ export function HcpFacilitatorSessionPanel() {
                 onChange={(e) => setSessionId(e.target.value)}
                 placeholder="e.g. week1-day1-facilitator-a"
                 data-testid="hcp-feedback-session-id"
+              />
+            </label>
+
+            <label className="space-y-1 text-xs">
+              <span className="font-medium">Care episode id (optional · P1.1 handoff)</span>
+              <input
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs font-mono"
+                value={careEpisodeId}
+                onChange={(e) => setCareEpisodeId(e.target.value.trim())}
+                placeholder="ce-… (threads into review queue / lab-pharmacy)"
+                data-testid="hcp-session-care-episode-id"
               />
             </label>
           </div>
