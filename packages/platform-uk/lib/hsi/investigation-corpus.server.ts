@@ -2,7 +2,7 @@ import "server-only";
 import release from "@/data/hsi/research-bundle.json";
 import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
 import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
-import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
+import raResearchReleaseArtifact from "@/data/hsi/ra-anti-tnf-research/release.json";
 import { parseHsiResearchBundle } from "./research-contract";
 import { parseResearchBundle, RESEARCH_CONTRACT_VERSION, type ResearchBundle } from "./researchContracts";
 import { InvestigationRequestError, type InvestigationRelease } from "./investigationBackend";
@@ -13,10 +13,10 @@ import {
   RaEvidenceUnavailableError,
 } from "./raEvidenceRelease";
 import {
-  RA_DEMO_RELEASE_ID,
-  buildRaDemoEvidenceBundle,
-  raDemoEvidenceReleaseListing,
-} from "./raDemoEvidenceRelease";
+  RA_RESEARCH_RELEASE_ID,
+  buildRaResearchEvidenceBundle,
+  raResearchEvidenceReleaseListing,
+} from "./raResearchEvidenceRelease";
 
 const snapshotRelease: InvestigationRelease = {
   id: "hsi-research-snapshot",
@@ -34,15 +34,15 @@ const snapshotRelease: InvestigationRelease = {
 };
 
 const raListing = raEvidenceReleaseListing(raReleaseArtifact);
-const raDemoListing = raDemoEvidenceReleaseListing(raDemoReleaseArtifact);
+const raResearchListing = raResearchEvidenceReleaseListing(raResearchReleaseArtifact);
 
-export const akshInvestigationReleases: InvestigationRelease[] = [snapshotRelease, raDemoListing, raListing];
+export const akshInvestigationReleases: InvestigationRelease[] = [snapshotRelease, raResearchListing, raListing];
 
 /** Graph pointers stay metadata; a PMID alone does not license a passage or establish claim support. */
 export async function loadAkshInvestigationRelease(id: string, conceptId: string | null): Promise<ResearchBundle> {
-  if (id === RA_DEMO_RELEASE_ID) {
-    // Synthetic DEMO-PMID / SYN-* fixture only — not_for_scientific_claim; never patient records.
-    return buildRaDemoEvidenceBundle(raDemoReleaseArtifact);
+  if (id === RA_RESEARCH_RELEASE_ID) {
+    // Synthetic SYN-RA-SRC / SYN-* working set only — notForScientificClaim; never patient records.
+    return buildRaResearchEvidenceBundle(raResearchReleaseArtifact);
   }
   if (id === RA_RELEASE_ID) {
     try {

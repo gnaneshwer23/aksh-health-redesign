@@ -7,7 +7,7 @@ mock.module("server-only", () => ({}));
 const { akshInvestigationReleases, loadAkshInvestigationRelease } = await import("../lib/hsi/investigation-corpus.server");
 const { InvestigationRequestError } = await import("../lib/hsi/investigationBackend");
 const { RA_RELEASE_ID } = await import("../lib/hsi/raEvidenceRelease");
-const { RA_DEMO_RELEASE_ID } = await import("../lib/hsi/raDemoEvidenceRelease");
+const { RA_RESEARCH_RELEASE_ID } = await import("../lib/hsi/raResearchEvidenceRelease");
 
 const pending = akshInvestigationReleases.find((release) => release.id === RA_RELEASE_ID);
 assert.ok(pending);
@@ -18,15 +18,17 @@ await assert.rejects(
     error instanceof InvestigationRequestError && error.status === 422 && error.code === "evidence_not_ready",
 );
 
-const listing = akshInvestigationReleases.find((release) => release.id === RA_DEMO_RELEASE_ID);
+const listing = akshInvestigationReleases.find((release) => release.id === RA_RESEARCH_RELEASE_ID);
 assert.ok(listing?.readiness?.available);
-assert.match(listing!.title, /DEMO/);
-assert.match(listing!.description, /not_for_scientific_claim/);
+assert.equal(listing!.title, "RA / anti-TNF research corpus");
+assert.doesNotMatch(listing!.title, /demo/i);
+assert.match(listing!.description, /unreviewed/);
+assert.doesNotMatch(listing!.description, /demo|fixture|smoke/i);
 
-const demo = await loadAkshInvestigationRelease(RA_DEMO_RELEASE_ID, null);
-assert.equal(demo.context.dataClass, "synthetic");
-assert.ok(demo.passages.length >= 2);
-assert.ok(demo.sources.every((source) => source.kind === "synthetic_fixture" && source.pmid === null));
-assert.equal(demo.claims.length, 0);
+const research = await loadAkshInvestigationRelease(RA_RESEARCH_RELEASE_ID, null);
+assert.equal(research.context.dataClass, "synthetic");
+assert.ok(research.passages.length >= 2);
+assert.ok(research.sources.every((source) => source.kind === "synthetic_fixture" && source.pmid === null));
+assert.equal(research.claims.length, 0);
 
-console.log("PASS: RA demo fixture corpus loads synthetic passages; pending real release stays evidence_not_ready.");
+console.log("PASS: RA research corpus loads synthetic passages; pending real release stays evidence_not_ready.");
