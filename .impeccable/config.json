@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "packages/platform-uk/app/site.css"
+        ],
+        "createdAt": "2026-11-03T09:06:25.165Z",
+        "reason": "Pre-existing clinic design system callouts, map arrow CSS triangles, and pillar top insets; side-tab rule false-positives on established brand CSS"
+      }
+    ]
+  }
+}
