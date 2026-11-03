@@ -11,6 +11,7 @@ import { ClinicalOrchestratePanel } from "@/components/dashboard/precision-healt
 import { ReviewHonestyStrip } from "@/components/dashboard/review/ReviewHonestyStrip";
 import { ReviewQueue } from "@/components/dashboard/ReviewQueue";
 import { UnifiedGpReviewBanner } from "@/components/dashboard/UnifiedGpReviewBanner";
+import { readCareEpisodeIdFromSearchParams } from "@/lib/eval/hcp-facilitator-session";
 import { getPatientById } from "@/lib/mock-data";
 import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { buildReviewQueueLabel } from "@/lib/profile/personalization";
@@ -18,7 +19,8 @@ import { buildReviewQueueLabel } from "@/lib/profile/personalization";
 function GpReviewQueueContent() {
   const searchParams = useSearchParams();
   const { profile } = useUserProfile();
-  const patientId = searchParams.get("patient");
+  const patientId = searchParams.get("patient") ?? searchParams.get("patientId");
+  const careEpisodeId = readCareEpisodeIdFromSearchParams(searchParams);
   const patient = patientId ? getPatientById(patientId) : null;
   const title = patient ? `Review Queue | ${patient.name}` : buildReviewQueueLabel(profile?.fullName);
 
@@ -35,10 +37,19 @@ function GpReviewQueueContent() {
         <ConsentBanner />
         <ReviewHonestyStrip surface="GP review queue" showHcpSessionLink />
         <UnifiedGpReviewBanner patientId={patientId} />
+        {careEpisodeId ? (
+          <p className="text-[11px] text-muted font-mono" data-testid="review-queue-care-episode">
+            careEpisodeId={careEpisodeId} · threaded from HCP session / intake handoff · ehrWrite:false
+          </p>
+        ) : null}
         {patient && (
           <>
             <ClinicalIntelligenceWorkspace patientId={patient.id} patientLabel={patient.name} />
-            <ClinicalOrchestratePanel patientId={patient.id} patientLabel={patient.name} />
+            <ClinicalOrchestratePanel
+              patientId={patient.id}
+              patientLabel={patient.name}
+              careEpisodeId={careEpisodeId || undefined}
+            />
           </>
         )}
         <ReviewQueue

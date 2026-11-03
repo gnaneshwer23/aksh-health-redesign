@@ -10,6 +10,44 @@ import type { GoldenCase } from "./golden-cases";
 export const HCP_FACILITATOR_SESSION_PATH = "/dashboard/gp/hcp-eval-session" as const;
 export const HCP_FACILITATOR_ADMIN_PATH = "/dashboard/admin/hcp-eval-session" as const;
 
+/** Query keys accepted for care-episode deep-links (camel + snake). */
+export const CARE_EPISODE_QUERY_KEYS = ["careEpisodeId", "care_episode_id"] as const;
+
+/**
+ * Milestone E P1.1 — cross-surface handoff URLs keep patientId **and** careEpisodeId
+ * so intake→booking episode spine stays aligned with C3 / review queues.
+ */
+export function buildCrossSurfaceHandoffHref(
+  path: "/dashboard/gp/review-queue" | "/dashboard/gp/lab-pharmacy",
+  options?: { patientId?: string | null; careEpisodeId?: string | null }
+): string {
+  const params = new URLSearchParams();
+  const patientId = options?.patientId?.trim();
+  const careEpisodeId = options?.careEpisodeId?.trim();
+  if (patientId) {
+    // review-queue historically used `patient`; lab-pharmacy accepts patientId|patient.
+    if (path.includes("review-queue")) params.set("patient", patientId);
+    else params.set("patientId", patientId);
+  }
+  if (careEpisodeId) {
+    params.set("careEpisodeId", careEpisodeId);
+    params.set("care_episode_id", careEpisodeId);
+  }
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
+}
+
+export function readCareEpisodeIdFromSearchParams(
+  search: { get(name: string): string | null } | null | undefined
+): string {
+  if (!search) return "";
+  for (const key of CARE_EPISODE_QUERY_KEYS) {
+    const value = search.get(key)?.trim();
+    if (value) return value;
+  }
+  return "";
+}
+
 export const HCP_FACILITATOR_HONESTY = [
   "Simulation / synthetic validation — not a clinical device certification.",
   "Acceptance rate is a workflow metric, not a clinical accuracy score.",

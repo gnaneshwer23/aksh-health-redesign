@@ -70,7 +70,7 @@ MILESTONE_A5_USE_NEON=1 USE_POSTGRES=true npm run test:milestone-d:neon
 | Track | Residual |
 | --- | --- |
 | Human / ops | Facilitator calendar; CSO written exit note / `targetsConfirmedBy` capture UI; Neon sandbox booking helpers |
-| Deferred eng | Care-episode + lab/pharmacy HITL file↔Neon unify; broader PHI scrub; Workstream H SLOs; BRIDGE adapter contract tests (`liveEmis:false`); production RBAC staged flip |
+| Deferred eng | Care-episode + lab/pharmacy HITL file↔Neon unify — **shipped in Milestone E1** ([SHARED_RUN_CORRELATION.md](../milestone-e/SHARED_RUN_CORRELATION.md)); broader PHI scrub; Workstream H SLOs; BRIDGE adapter contract tests (`liveEmis:false`); production RBAC staged flip |
 
 ---
 

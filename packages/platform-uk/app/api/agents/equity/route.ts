@@ -51,8 +51,15 @@ export async function POST(request: Request) {
   // The organisation's own agent-loop results (aggregates only, small counts suppressed): what was drafted and what
   // clinicians did with it. Deterministic; never sent to a model.
   const tenant = resolveTenantContext(request, auth.context);
-  const loop = await listAgentRunCases(tenant.practiceId);
-  const loopOutcomes = { source: loop.source, ...summariseLoopOutcomes(loop.cases) };
+  const loop = await listAgentRunCases({
+    practiceId: tenant.practiceId,
+    scopeKey: auth.context.scopeKey,
+  });
+  const loopOutcomes = {
+    source: loop.source,
+    storeMode: loop.storeMode,
+    ...summariseLoopOutcomes(loop.cases),
+  };
 
   const shield = await persistShieldAuditEvent({
     action: "defer",

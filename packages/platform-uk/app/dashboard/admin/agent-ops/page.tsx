@@ -19,9 +19,13 @@ type ReadinessAgent = {
   criteria: { name: string; target: string; actual: string; met: boolean }[];
 };
 
+type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
+
 type LoopSummary = {
   runs: number | "<5";
   casesAccepted: number | "<5";
+  source?: "postgres" | "file" | "file_fallback" | "unavailable";
+  storeMode?: DurableRunStoreMode;
   agents: {
     agent: string;
     drafts: number | "<5";
@@ -57,8 +61,6 @@ type OpsAlertSignal = {
   sampleRefs: string[];
 };
 
-type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
-
 type OpsAlertsSummary = {
   alerts: OpsAlertSignal[];
   metrics: {
@@ -81,6 +83,7 @@ type OpsRunsSummary = {
   byStatus: Record<string, number>;
   rows: OpsRunRow[];
   storeMode?: DurableRunStoreMode;
+  careEpisodeStoreMode?: DurableRunStoreMode;
   note?: string;
   alerts?: OpsAlertsSummary | null;
   productionRbacEnforced?: false;
@@ -346,11 +349,19 @@ export default function AdminAgentOpsPage() {
         </section>
 
         <section className="space-y-3" data-testid="agent-ops-durable-runs">
-          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4 · D1 store unify)</h2>
+          <h2 className="text-sm font-semibold">Durable CONDUCTOR runs (A3/A4 · D1/E1 store unify)</h2>
           <p className="text-xs text-muted" data-testid="agent-ops-durable-store-mode">
             storeMode:{" "}
             <span className="font-mono font-medium" data-store-mode={data?.durableRuns?.storeMode ?? "unknown"}>
               {data?.durableRuns?.storeMode ?? "—"}
+            </span>{" "}
+            · careEpisodeStoreMode:{" "}
+            <span
+              className="font-mono font-medium"
+              data-testid="agent-ops-care-episode-store-mode"
+              data-store-mode={data?.durableRuns?.careEpisodeStoreMode ?? "unknown"}
+            >
+              {data?.durableRuns?.careEpisodeStoreMode ?? "—"}
             </span>{" "}
             · Total: {data?.durableRuns?.total ?? "—"} · Running: {data?.durableRuns?.runningCount ?? "—"} ·
             SHIELD-blocked enqueue: {data?.durableRuns?.shieldBlockedCount ?? "—"} · Failed/timeout:{" "}
@@ -477,7 +488,15 @@ export default function AdminAgentOpsPage() {
           <h2 className="text-sm font-semibold">Decision funnel (aggregates only)</h2>
           <p className="text-xs text-muted">
             Runs: {formatCount(data?.loop?.runs)} · Cases accepted: {formatCount(data?.loop?.casesAccepted)}.{" "}
-            {data?.loop?.suppression ?? "Small cells suppressed; no patient names."}
+            storeMode:{" "}
+            <span
+              className="font-mono"
+              data-testid="agent-ops-loop-store-mode"
+              data-store-mode={data?.loop?.storeMode ?? data?.loop?.source ?? "unknown"}
+            >
+              {data?.loop?.storeMode ?? data?.loop?.source ?? "—"}
+            </span>
+            . {data?.loop?.suppression ?? "Small cells suppressed; no patient names."}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
@@ -509,7 +528,10 @@ export default function AdminAgentOpsPage() {
                 {!data?.loop?.agents?.length && !loading && (
                   <tr>
                     <td colSpan={8} className="py-3 text-muted">
-                      No agent-run cases in this tenant yet (or loop-outcomes API unavailable).
+                      No agent-run cases in this tenant yet
+                      {data?.loop?.storeMode
+                        ? ` (loop storeMode: ${data.loop.storeMode})`
+                        : " (loop-outcomes API unavailable)"}.
                     </td>
                   </tr>
                 )}

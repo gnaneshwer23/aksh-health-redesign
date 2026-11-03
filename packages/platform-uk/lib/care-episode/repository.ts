@@ -1,5 +1,6 @@
 /**
- * Care Episode persistence — Postgres when configured, else JSON under data/.
+ * Care Episode persistence — dual-write file + Postgres when configured.
+ * Milestone E1 — Postgres-preferred reads with storeMode honesty (D1 pattern).
  * Apply migration 052 on local-dev / simulation Neon only.
  */
 
@@ -13,16 +14,135 @@ import type {
   CareEpisode,
   CareEpisodeEvent,
   CareEpisodeLink,
+  CareEpisodeStatus,
   CareEpisodeTask,
   CreateCareEpisodeInput,
   TransitionCareEpisodeInput,
 } from "./types";
 import { validateCareEpisodeTransition } from "./transitions";
 
+/**
+ * Where list/get APIs sourced care episodes (shared Neon honesty).
+ * - postgres: Neon list/get succeeded
+ * - file: Postgres not configured (hermetic)
+ * - file_fallback: Postgres configured but query failed
+ */
+export type CareEpisodeStoreMode = "postgres" | "file" | "file_fallback";
+
+export type CareEpisodeListResult = {
+  episodes: CareEpisode[];
+  storeMode: CareEpisodeStoreMode;
+};
+
+export type CareEpisodeGetResult = {
+  episode: CareEpisode | null;
+  storeMode: CareEpisodeStoreMode;
+};
+
 type Store = {
   episodes: CareEpisode[];
   events: CareEpisodeEvent[];
 };
+
+type CareEpisodeRow = {
+  id: string;
+  public_id: string;
+  scope_key: string;
+  organisation_id: string | null;
+  practice_id: string | null;
+  patient_id: string;
+  patient_label: string | null;
+  status: CareEpisodeStatus;
+  pathway: string | null;
+  links: unknown;
+  tasks: unknown;
+  created_at: Date;
+  updated_at: Date;
+  closed_at: Date | null;
+  created_by: string;
+  version: number;
+  idempotency_key: string | null;
+  metadata: unknown;
+};
+
+type CareEpisodeEventRow = {
+  id: string;
+  episode_id: string;
+  scope_key: string;
+  kind: CareEpisodeEvent["kind"];
+  at: Date;
+  actor: string;
+  from_status: CareEpisodeStatus | null;
+  to_status: CareEpisodeStatus | null;
+  detail: string | null;
+  payload: unknown;
+  idempotency_key: string | null;
+  processed: boolean;
+};
+
+const CARE_EPISODE_SELECT = `id, public_id, scope_key, organisation_id, practice_id, patient_id,
+  patient_label, status, pathway, links, tasks, created_at, updated_at, closed_at,
+  created_by, version, idempotency_key, metadata`;
+
+function asJsonArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      return Array.isArray(parsed) ? (parsed as T[]) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function mapPgEpisode(row: CareEpisodeRow): CareEpisode {
+  return {
+    id: row.id,
+    publicId: row.public_id,
+    scopeKey: row.scope_key,
+    organisationId: row.organisation_id ?? undefined,
+    practiceId: row.practice_id ?? undefined,
+    patientId: row.patient_id,
+    patientLabel: row.patient_label ?? undefined,
+    status: row.status,
+    pathway: row.pathway ?? undefined,
+    links: asJsonArray<CareEpisodeLink>(row.links),
+    tasks: asJsonArray<CareEpisodeTask>(row.tasks),
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
+    closedAt: row.closed_at ? row.closed_at.toISOString() : undefined,
+    createdBy: row.created_by,
+    version: row.version,
+    synthetic: true,
+    ehrWrite: false,
+    idempotencyKey: row.idempotency_key ?? undefined,
+    metadata:
+      row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata)
+        ? (row.metadata as Record<string, unknown>)
+        : undefined,
+  };
+}
+
+function mapPgEvent(row: CareEpisodeEventRow): CareEpisodeEvent {
+  return {
+    id: row.id,
+    episodeId: row.episode_id,
+    kind: row.kind,
+    at: row.at.toISOString(),
+    actor: row.actor,
+    fromStatus: row.from_status ?? undefined,
+    toStatus: row.to_status ?? undefined,
+    detail: row.detail ?? undefined,
+    payload:
+      row.payload && typeof row.payload === "object" && !Array.isArray(row.payload)
+        ? (row.payload as Record<string, unknown>)
+        : undefined,
+    idempotencyKey: row.idempotency_key ?? undefined,
+    processed: row.processed,
+  };
+}
 
 const dataDir = path.join(process.cwd(), "data");
 
@@ -179,11 +299,125 @@ async function persistPostgresEpisode(episode: CareEpisode, event: CareEpisodeEv
   }
 }
 
+async function findPostgresByIdempotency(
+  scopeKey: string,
+  patientId: string,
+  idempotencyKey: string
+): Promise<CareEpisode | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureCareEpisodesSchema();
+    const result = await getPgPool().query<CareEpisodeRow>(
+      `SELECT ${CARE_EPISODE_SELECT}
+       FROM aksh.care_episodes
+       WHERE scope_key = $1 AND patient_id = $2 AND idempotency_key = $3
+       LIMIT 1`,
+      [scopeKey, patientId, idempotencyKey]
+    );
+    const row = result.rows[0];
+    return row ? mapPgEpisode(row) : null;
+  } catch (error) {
+    console.warn("[care-episode] findPostgresByIdempotency failed:", (error as Error).message);
+    return null;
+  }
+}
+
+async function getPostgresEpisode(
+  episodeId: string,
+  scopeKey: string
+): Promise<CareEpisode | null | undefined> {
+  if (!isPostgresConfigured()) return undefined;
+  try {
+    await ensureCareEpisodesSchema();
+    const result = await getPgPool().query<CareEpisodeRow>(
+      `SELECT ${CARE_EPISODE_SELECT}
+       FROM aksh.care_episodes
+       WHERE scope_key = $1 AND id = $2
+       LIMIT 1`,
+      [scopeKey, episodeId]
+    );
+    const row = result.rows[0];
+    return row ? mapPgEpisode(row) : null;
+  } catch (error) {
+    console.warn("[care-episode] getPostgresEpisode failed:", (error as Error).message);
+    return undefined;
+  }
+}
+
+async function listPostgresForPatient(
+  scopeKey: string,
+  patientId: string,
+  limit: number
+): Promise<CareEpisode[] | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureCareEpisodesSchema();
+    const result = await getPgPool().query<CareEpisodeRow>(
+      `SELECT ${CARE_EPISODE_SELECT}
+       FROM aksh.care_episodes
+       WHERE scope_key = $1 AND patient_id = $2
+       ORDER BY updated_at DESC
+       LIMIT $3`,
+      [scopeKey, patientId, limit]
+    );
+    return result.rows.map(mapPgEpisode);
+  } catch (error) {
+    console.warn("[care-episode] listPostgresForPatient failed:", (error as Error).message);
+    return null;
+  }
+}
+
+async function listPostgresForScope(
+  scopeKey: string,
+  limit: number
+): Promise<CareEpisode[] | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureCareEpisodesSchema();
+    const result = await getPgPool().query<CareEpisodeRow>(
+      `SELECT ${CARE_EPISODE_SELECT}
+       FROM aksh.care_episodes
+       WHERE scope_key = $1
+       ORDER BY updated_at DESC
+       LIMIT $2`,
+      [scopeKey, limit]
+    );
+    return result.rows.map(mapPgEpisode);
+  } catch (error) {
+    console.warn("[care-episode] listPostgresForScope failed:", (error as Error).message);
+    return null;
+  }
+}
+
+async function listPostgresEvents(
+  episodeId: string,
+  scopeKey: string
+): Promise<CareEpisodeEvent[] | null> {
+  if (!isPostgresConfigured()) return null;
+  try {
+    await ensureCareEpisodesSchema();
+    const result = await getPgPool().query<CareEpisodeEventRow>(
+      `SELECT id, episode_id, scope_key, kind, at, actor, from_status, to_status,
+              detail, payload, idempotency_key, processed
+       FROM aksh.care_episode_events
+       WHERE scope_key = $1 AND episode_id = $2
+       ORDER BY at ASC`,
+      [scopeKey, episodeId]
+    );
+    return result.rows.map(mapPgEvent);
+  } catch (error) {
+    console.warn("[care-episode] listPostgresEvents failed:", (error as Error).message);
+    return null;
+  }
+}
+
 export async function createCareEpisode(input: CreateCareEpisodeInput): Promise<CareEpisode> {
   const scopeKey = input.scopeKey ?? "shared";
   const store = await readStore(scopeKey);
 
   if (input.idempotencyKey) {
+    const pgExisting = await findPostgresByIdempotency(scopeKey, input.patientId, input.idempotencyKey);
+    if (pgExisting) return pgExisting;
     const existing = store.episodes.find(
       (e) => e.patientId === input.patientId && e.idempotencyKey === input.idempotencyKey
     );
@@ -228,22 +462,102 @@ export async function createCareEpisode(input: CreateCareEpisodeInput): Promise<
   return episode;
 }
 
+/** Milestone E1 — get with storeMode (Postgres-preferred when configured). */
+export async function getCareEpisodeWithMode(
+  episodeId: string,
+  scopeKey = "shared"
+): Promise<CareEpisodeGetResult> {
+  if (isPostgresConfigured()) {
+    const pg = await getPostgresEpisode(episodeId, scopeKey);
+    if (pg !== undefined) {
+      return { episode: pg, storeMode: "postgres" };
+    }
+    const store = await readStore(scopeKey);
+    return {
+      episode: store.episodes.find((e) => e.id === episodeId) ?? null,
+      storeMode: "file_fallback",
+    };
+  }
+  const store = await readStore(scopeKey);
+  return {
+    episode: store.episodes.find((e) => e.id === episodeId) ?? null,
+    storeMode: "file",
+  };
+}
+
 export async function getCareEpisode(
   episodeId: string,
   scopeKey = "shared"
 ): Promise<CareEpisode | null> {
+  const { episode } = await getCareEpisodeWithMode(episodeId, scopeKey);
+  return episode;
+}
+
+/** Milestone E1 — patient list with storeMode. */
+export async function listCareEpisodesForPatientWithMode(
+  patientId: string,
+  scopeKey = "shared",
+  limit = 100
+): Promise<CareEpisodeListResult> {
+  const capped = Math.min(Math.max(limit, 1), 200);
+  if (isPostgresConfigured()) {
+    const pg = await listPostgresForPatient(scopeKey, patientId, capped);
+    if (pg) {
+      return { episodes: pg.slice(0, capped), storeMode: "postgres" };
+    }
+    const store = await readStore(scopeKey);
+    return {
+      episodes: store.episodes
+        .filter((e) => e.patientId === patientId)
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .slice(0, capped),
+      storeMode: "file_fallback",
+    };
+  }
   const store = await readStore(scopeKey);
-  return store.episodes.find((e) => e.id === episodeId) ?? null;
+  return {
+    episodes: store.episodes
+      .filter((e) => e.patientId === patientId)
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .slice(0, capped),
+    storeMode: "file",
+  };
 }
 
 export async function listCareEpisodesForPatient(
   patientId: string,
   scopeKey = "shared"
 ): Promise<CareEpisode[]> {
+  const { episodes } = await listCareEpisodesForPatientWithMode(patientId, scopeKey);
+  return episodes;
+}
+
+/** Milestone E1 — scope list with storeMode (Agent Ops stuck-task alerts). */
+export async function listCareEpisodesForScopeWithMode(
+  scopeKey = "shared",
+  limit = 100
+): Promise<CareEpisodeListResult> {
+  const capped = Math.min(Math.max(limit, 1), 200);
+  if (isPostgresConfigured()) {
+    const pg = await listPostgresForScope(scopeKey, capped);
+    if (pg) {
+      return { episodes: pg.slice(0, capped), storeMode: "postgres" };
+    }
+    const store = await readStore(scopeKey);
+    return {
+      episodes: [...store.episodes]
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .slice(0, capped),
+      storeMode: "file_fallback",
+    };
+  }
   const store = await readStore(scopeKey);
-  return store.episodes
-    .filter((e) => e.patientId === patientId)
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return {
+    episodes: [...store.episodes]
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .slice(0, capped),
+    storeMode: "file",
+  };
 }
 
 /** A4 — list recent care episodes for a tenant scope (Agent Ops stuck-task alerts). */
@@ -251,17 +565,18 @@ export async function listCareEpisodesForScope(
   scopeKey = "shared",
   limit = 100
 ): Promise<CareEpisode[]> {
-  const store = await readStore(scopeKey);
-  const capped = Math.min(Math.max(limit, 1), 200);
-  return [...store.episodes]
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, capped);
+  const { episodes } = await listCareEpisodesForScopeWithMode(scopeKey, limit);
+  return episodes;
 }
 
 export async function listCareEpisodeEvents(
   episodeId: string,
   scopeKey = "shared"
 ): Promise<CareEpisodeEvent[]> {
+  if (isPostgresConfigured()) {
+    const pg = await listPostgresEvents(episodeId, scopeKey);
+    if (pg) return pg;
+  }
   const store = await readStore(scopeKey);
   return store.events
     .filter((e) => e.episodeId === episodeId)
@@ -277,12 +592,28 @@ export class CareEpisodeTransitionError extends Error {
   }
 }
 
+/** Prefer file row; hydrate from Neon when shared sandbox has no local mirror. */
+async function loadEpisodeIntoStore(
+  store: Store,
+  episodeId: string,
+  scopeKey: string
+): Promise<number> {
+  const idx = store.episodes.findIndex((e) => e.id === episodeId);
+  if (idx >= 0) return idx;
+  const pg = await getPostgresEpisode(episodeId, scopeKey);
+  if (pg) {
+    store.episodes.push(pg);
+    return store.episodes.length - 1;
+  }
+  return -1;
+}
+
 export async function transitionCareEpisode(
   input: TransitionCareEpisodeInput
 ): Promise<{ episode: CareEpisode; event: CareEpisodeEvent }> {
   const scopeKey = input.scopeKey ?? "shared";
   const store = await readStore(scopeKey);
-  const idx = store.episodes.findIndex((e) => e.id === input.episodeId);
+  const idx = await loadEpisodeIntoStore(store, input.episodeId, scopeKey);
   if (idx < 0) {
     throw new CareEpisodeTransitionError("NOT_FOUND", `Care episode ${input.episodeId} not found`);
   }
@@ -357,7 +688,7 @@ export async function attachCareEpisodeLink(
   scopeKey = "shared"
 ): Promise<CareEpisode> {
   const store = await readStore(scopeKey);
-  const idx = store.episodes.findIndex((e) => e.id === episodeId);
+  const idx = await loadEpisodeIntoStore(store, episodeId, scopeKey);
   if (idx < 0) {
     throw new CareEpisodeTransitionError("NOT_FOUND", `Care episode ${episodeId} not found`);
   }
@@ -391,7 +722,7 @@ export async function addCareEpisodeTask(
   scopeKey = "shared"
 ): Promise<CareEpisode> {
   const store = await readStore(scopeKey);
-  const idx = store.episodes.findIndex((e) => e.id === episodeId);
+  const idx = await loadEpisodeIntoStore(store, episodeId, scopeKey);
   if (idx < 0) {
     throw new CareEpisodeTransitionError("NOT_FOUND", `Care episode ${episodeId} not found`);
   }

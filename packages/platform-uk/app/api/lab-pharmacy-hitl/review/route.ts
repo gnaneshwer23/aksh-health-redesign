@@ -66,6 +66,7 @@ export async function POST(request: Request) {
       ...LAB_PHARMACY_HITL_HONESTY,
       ok: true,
       draft: result.draft,
+      storeMode: result.storeMode,
       source: result.source,
       shieldLogged: result.shieldLogged,
     });

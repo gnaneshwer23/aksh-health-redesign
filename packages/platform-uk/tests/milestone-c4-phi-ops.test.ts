@@ -195,9 +195,13 @@ async function main() {
   const payload = buildOpsAlertChannelPayload(summary);
   assert.equal(payload.phiLeakage, false);
   assert.equal(payload.certificationClaim, false);
-  // Milestone D1 unified durable-run ops lists; residual names remaining dual-path stores.
-  assert.equal(payload.dualPathResidual, "durable_run_ops_unified");
-  assert.deepEqual(payload.residualDualPathStores, ["care_episode", "lab_pharmacy_hitl"]);
+  // Milestone E1 unified care-episode + lab/pharmacy HITL with durable-run ops lists.
+  assert.ok(
+    payload.dualPathResidual === "shared_run_correlation_unified" ||
+      payload.dualPathResidual === "coordination_interop_unified" ||
+      payload.dualPathResidual === "durable_run_ops_unified"
+  );
+  assert.deepEqual(payload.residualDualPathStores, []);
   assert.ok(payload.storeMode === "file" || payload.storeMode === "postgres" || payload.storeMode === "file_fallback");
   assert.ok(payload.alertCount >= 1);
   const payloadBlob = JSON.stringify(payload);

@@ -27,6 +27,9 @@ type ListResponse = {
   drafts?: LabPharmacyDraft[];
   error?: string;
   honestyLines?: string[];
+  storeMode?: "postgres" | "file" | "file_fallback";
+  source?: string;
+  note?: string;
 };
 
 const DEFAULT_LAB_ITEMS = "HbA1c, eGFR";
@@ -42,6 +45,9 @@ export function LabPharmacyHitlPanel({
     mode === "lab-queue" ? "lab" : mode === "pharmacy-queue" ? "pharmacy" : undefined;
 
   const [drafts, setDrafts] = useState<LabPharmacyDraft[]>([]);
+  const [storeMode, setStoreMode] = useState<"postgres" | "file" | "file_fallback" | "unknown">(
+    "unknown"
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -67,6 +73,7 @@ export function LabPharmacyHitlPanel({
         return;
       }
       setDrafts(json.drafts ?? []);
+      setStoreMode(json.storeMode ?? "unknown");
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Network error");
     }
@@ -171,14 +178,16 @@ export function LabPharmacyHitlPanel({
         data-testid="lab-pharmacy-hitl-honesty"
         role="status"
       >
-        <h2 className="text-sm font-semibold tracking-tight">Lab / pharmacy HITL honesty (C3)</h2>
+        <h2 className="text-sm font-semibold tracking-tight">Lab / pharmacy HITL honesty (C3/E1)</h2>
         <ul className="text-xs text-muted list-disc pl-4 space-y-1">
           {LAB_PHARMACY_HITL_HONESTY_LINES.map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>
-        <p className="text-[11px] text-muted">
-          live: false · ehrWrite: false · clinicalValidationClaim: false · Docs: {LAB_PHARMACY_HITL_DOC}
+        <p className="text-[11px] text-muted" data-testid="lab-pharmacy-hitl-store-mode" data-store-mode={storeMode}>
+          storeMode: <span className="font-mono font-medium">{storeMode}</span> · Neon preferred when
+          DATABASE_URL set · live: false · ehrWrite: false · clinicalValidationClaim: false · Docs:{" "}
+          {LAB_PHARMACY_HITL_DOC}
         </p>
       </section>
 
@@ -196,10 +205,31 @@ export function LabPharmacyHitlPanel({
         >
           Pharmacy review queue
         </Link>
-        <Link href="/dashboard/gp/hcp-eval-session" className="underline text-primary" data-testid="lph-link-hcp">
+        <Link
+          href={
+            careEpisodeId.trim()
+              ? `/dashboard/gp/hcp-eval-session?careEpisodeId=${encodeURIComponent(careEpisodeId.trim())}&care_episode_id=${encodeURIComponent(careEpisodeId.trim())}`
+              : "/dashboard/gp/hcp-eval-session"
+          }
+          className="underline text-primary"
+          data-testid="lph-link-hcp"
+        >
           HCP eval session (C1)
         </Link>
-        <Link href="/dashboard/gp/review-queue" className="underline text-primary" data-testid="lph-link-review">
+        <Link
+          href={
+            patientId.trim() || careEpisodeId.trim()
+              ? `/dashboard/gp/review-queue?${new URLSearchParams({
+                  ...(patientId.trim() ? { patient: patientId.trim() } : {}),
+                  ...(careEpisodeId.trim()
+                    ? { careEpisodeId: careEpisodeId.trim(), care_episode_id: careEpisodeId.trim() }
+                    : {}),
+                }).toString()}`
+              : "/dashboard/gp/review-queue"
+          }
+          className="underline text-primary"
+          data-testid="lph-link-review"
+        >
           GP review · honesty (C2)
         </Link>
         <button type="button" className="underline text-primary" onClick={() => void load()} data-testid="lph-reload">

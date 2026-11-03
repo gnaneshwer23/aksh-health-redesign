@@ -4,6 +4,7 @@ import { denyUnlessConnectedPatientAccess } from "@/lib/clinical-proof/connected
 import {
   CareEpisodeTransitionError,
   getCareEpisode,
+  getCareEpisodeWithMode,
   listCareEpisodeEvents,
   transitionCareEpisode,
 } from "@/lib/care-episode";
@@ -28,13 +29,20 @@ export async function GET(request: Request, context: RouteContext) {
   const denied = denyUnlessConnectedPatientAccess(auth.context, patientId);
   if (denied) return denied;
 
-  const episode = await getCareEpisode(episodeId, auth.context.scopeKey);
+  const got = await getCareEpisodeWithMode(episodeId, auth.context.scopeKey);
+  const episode = got.episode;
   if (!episode || episode.patientId !== patientId) {
     return NextResponse.json({ error: "Care episode not found" }, { status: 404 });
   }
 
   const events = await listCareEpisodeEvents(episodeId, auth.context.scopeKey);
-  return NextResponse.json({ episode, events, ehrWrite: false, synthetic: true });
+  return NextResponse.json({
+    episode,
+    events,
+    storeMode: got.storeMode,
+    ehrWrite: false,
+    synthetic: true,
+  });
 }
 
 export async function POST(request: Request, context: RouteContext) {

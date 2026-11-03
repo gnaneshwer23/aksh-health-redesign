@@ -1,5 +1,6 @@
 /**
  * Milestone B — PHI-safe decision-funnel aggregates for Agent Ops (read-only).
+ * Milestone E P1.2 — Postgres-preferred storeMode honesty (file visible when hermetic).
  * Avoids POST /api/agents/equity (which drafts COMPASS + writes SHIELD).
  */
 import { NextResponse } from "next/server";
@@ -17,14 +18,22 @@ export async function GET(request: Request) {
   if (auth.response || !auth.context) return auth.response;
 
   const tenant = resolveTenantContext(request, auth.context);
-  const loop = await listAgentRunCases(tenant.practiceId);
-  const loopOutcomes = { source: loop.source, ...summariseLoopOutcomes(loop.cases) };
+  const loop = await listAgentRunCases({
+    practiceId: tenant.practiceId,
+    scopeKey: auth.context.scopeKey,
+  });
+  const loopOutcomes = {
+    source: loop.source,
+    storeMode: loop.storeMode,
+    ...summariseLoopOutcomes(loop.cases),
+  };
 
   return NextResponse.json({
     ...loopOutcomes,
     practiceId: tenant.practiceId,
     clinicalValidationClaim: false,
     ehrWrite: false,
-    note: "Aggregates only; small cells suppressed. Acceptance rate ≠ clinical accuracy.",
+    note:
+      "Aggregates only; small cells suppressed. Acceptance rate ≠ clinical accuracy. storeMode is postgres | file | file_fallback (Milestone E P1.2) — file-mode sandboxes are not silently emptied.",
   });
 }
