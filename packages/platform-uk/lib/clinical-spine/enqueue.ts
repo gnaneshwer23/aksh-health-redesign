@@ -5,6 +5,7 @@
  * codes are accepted (FR-AGT-024). Pure: the route persists the case. Simulation only (Track B gate unchanged).
  */
 import { CLINICAL_AGENT_META } from "../agents";
+import { extractOrchestrationRunLineage, lineageMetadata } from "../agents/run-lineage";
 import { draftPendingLabOrders } from "../lab-order-agent";
 import type { AgentRunSummary, ClinicalAgentId, ReviewCase, ReviewQueueItem } from "../types";
 import { createReviewCaseFromIntake } from "../workflow/review";
@@ -89,6 +90,7 @@ export function agentRunSummary(result: ClinicalSpineOrchestrateResult, now = ne
     modelUsed: [o.SYNTHESIS, o.GUARDIAN, o.ORACLE, o.NEXUS, o.DrASSIST].some((d) => d?.mode === "llm"),
     correlationId: result.correlationId ?? execution?.correlationId,
     careEpisodeId: result.careEpisodeId ?? execution?.careEpisodeId ?? null,
+    durableRunId: result.durableRunId ?? null,
     executionSchemaVersion: execution?.schemaVersion,
     guardianOutcome: result.guardianGateway?.output_status ?? execution?.guardianOutcome ?? null,
     reviewStatus: execution?.reviewStatus,
@@ -137,6 +139,7 @@ export function draftPendingReferrals(reviewCase: ReviewCase): ReviewCase {
   const accepted = (t: ReviewQueueItem["itemType"]) => items.find((i) => i.itemType === t)?.status === "ACCEPTED";
   let next = reviewCase;
   if (pending.length && accepted("soap_note") && accepted("diagnosis_codes")) {
+    const lineage = extractOrchestrationRunLineage(reviewCase);
     const added = pending
       .filter((p) => !items.some((i) => i.id === `${reviewCase.id}-referral-${p.domain}`))
       .map<ReviewQueueItem>((p) => ({
@@ -146,8 +149,23 @@ export function draftPendingReferrals(reviewCase: ReviewCase): ReviewCase {
         status: "DRAFT",
         title: `Referral draft: ${p.domain.replace(/_/g, " ")}`,
         summary: `${p.reason}; a clinician confirms before anything is sent`,
-        content: lines("PATHWAY: referral package draft", `Reason: ${p.reason}`, "Evidence:", ...p.evidence.map((e) => `• ${e}`), p.ruleIds.length ? `Rules: ${p.ruleIds.join(", ")}` : null, "Status: DRAFT · referral gate: clinician confirmation required"),
-        metadata: { agent: "PATHWAY", provenance: "ai_draft", domain: p.domain, rules: p.ruleIds },
+        content: lines(
+          "PATHWAY: referral package draft",
+          `Reason: ${p.reason}`,
+          "Evidence:",
+          ...p.evidence.map((e) => `• ${e}`),
+          p.ruleIds.length ? `Rules: ${p.ruleIds.join(", ")}` : null,
+          lineage.durableRunId ? `Orchestration run: ${lineage.durableRunId}` : null,
+          lineage.careEpisodeId ? `Care episode: ${lineage.careEpisodeId}` : null,
+          "Status: DRAFT · referral gate: clinician confirmation required · liveEmis:false"
+        ),
+        metadata: {
+          agent: "PATHWAY",
+          provenance: "ai_draft",
+          domain: p.domain,
+          rules: p.ruleIds,
+          ...lineageMetadata(lineage),
+        },
       }));
     if (added.length) next = { ...next, reviewQueueItems: [...(next.reviewQueueItems ?? items), ...added] };
   }

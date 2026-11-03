@@ -62,7 +62,10 @@ async function main() {
   assert.match(channelSrc, /durable_run_ops_unified/);
   assert.match(channelSrc, /residualDualPathStores/);
   // Milestone E1 unified care-episode + lab/pharmacy HITL; residual list is empty.
-  assert.match(channelSrc, /shared_run_correlation_unified|durable_run_ops_unified/);
+  assert.match(
+    channelSrc,
+    /shared_run_correlation_unified|coordination_interop_unified|durable_run_ops_unified/
+  );
   assert.match(channelSrc, /productionRbacEnforced:\s*false/);
 
   const opsPage = read("app/dashboard/admin/agent-ops/page.tsx");
@@ -135,6 +138,7 @@ async function main() {
   const payload = buildOpsAlertChannelPayload(alerts);
   assert.ok(
     payload.dualPathResidual === "shared_run_correlation_unified" ||
+      payload.dualPathResidual === "coordination_interop_unified" ||
       payload.dualPathResidual === "durable_run_ops_unified"
   );
   assert.deepEqual(payload.residualDualPathStores, []);

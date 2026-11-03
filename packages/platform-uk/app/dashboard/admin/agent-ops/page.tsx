@@ -19,9 +19,13 @@ type ReadinessAgent = {
   criteria: { name: string; target: string; actual: string; met: boolean }[];
 };
 
+type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
+
 type LoopSummary = {
   runs: number | "<5";
   casesAccepted: number | "<5";
+  source?: "postgres" | "file" | "file_fallback" | "unavailable";
+  storeMode?: DurableRunStoreMode;
   agents: {
     agent: string;
     drafts: number | "<5";
@@ -56,8 +60,6 @@ type OpsAlertSignal = {
   count: number;
   sampleRefs: string[];
 };
-
-type DurableRunStoreMode = "postgres" | "file" | "file_fallback";
 
 type OpsAlertsSummary = {
   alerts: OpsAlertSignal[];
@@ -486,7 +488,15 @@ export default function AdminAgentOpsPage() {
           <h2 className="text-sm font-semibold">Decision funnel (aggregates only)</h2>
           <p className="text-xs text-muted">
             Runs: {formatCount(data?.loop?.runs)} · Cases accepted: {formatCount(data?.loop?.casesAccepted)}.{" "}
-            {data?.loop?.suppression ?? "Small cells suppressed; no patient names."}
+            storeMode:{" "}
+            <span
+              className="font-mono"
+              data-testid="agent-ops-loop-store-mode"
+              data-store-mode={data?.loop?.storeMode ?? data?.loop?.source ?? "unknown"}
+            >
+              {data?.loop?.storeMode ?? data?.loop?.source ?? "—"}
+            </span>
+            . {data?.loop?.suppression ?? "Small cells suppressed; no patient names."}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
@@ -518,7 +528,10 @@ export default function AdminAgentOpsPage() {
                 {!data?.loop?.agents?.length && !loading && (
                   <tr>
                     <td colSpan={8} className="py-3 text-muted">
-                      No agent-run cases in this tenant yet (or loop-outcomes API unavailable).
+                      No agent-run cases in this tenant yet
+                      {data?.loop?.storeMode
+                        ? ` (loop storeMode: ${data.loop.storeMode})`
+                        : " (loop-outcomes API unavailable)"}.
                     </td>
                   </tr>
                 )}

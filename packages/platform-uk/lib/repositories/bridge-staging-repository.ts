@@ -27,6 +27,10 @@ export type BridgeStagingRecord = {
   bundle: Record<string, unknown>;
   note: string;
   storage: "neon" | "file";
+  /** Milestone E P1.3 — ops join to orchestrate durable run (not live EMIS). */
+  durableRunId?: string | null;
+  correlationId?: string | null;
+  careEpisodeId?: string | null;
 };
 
 export type BridgeStagingInput = {
@@ -38,6 +42,9 @@ export type BridgeStagingInput = {
   bundleSummary: string;
   bundle: Record<string, unknown>;
   note?: string;
+  durableRunId?: string | null;
+  correlationId?: string | null;
+  careEpisodeId?: string | null;
 };
 
 const BRIDGE_STAGING_NOTE =
@@ -86,7 +93,25 @@ async function writeFileStore(records: BridgeStagingRecord[], scopeKey: string) 
   await writeFile(file, JSON.stringify({ records: records.slice(0, 200) }, null, 2), "utf8");
 }
 
+function lineageFromBundle(bundle: Record<string, unknown>): {
+  durableRunId: string | null;
+  correlationId: string | null;
+  careEpisodeId: string | null;
+} {
+  const raw = bundle.akshRunLineage;
+  if (!raw || typeof raw !== "object") {
+    return { durableRunId: null, correlationId: null, careEpisodeId: null };
+  }
+  const row = raw as Record<string, unknown>;
+  return {
+    durableRunId: typeof row.durableRunId === "string" ? row.durableRunId : null,
+    correlationId: typeof row.correlationId === "string" ? row.correlationId : null,
+    careEpisodeId: typeof row.careEpisodeId === "string" ? row.careEpisodeId : null,
+  };
+}
+
 function toRecord(input: BridgeStagingInput, storage: "neon" | "file"): BridgeStagingRecord {
+  const fromBundle = lineageFromBundle(input.bundle);
   return {
     id: `bridge-stage-${randomUUID()}`,
     stagedAt: new Date().toISOString(),
@@ -101,7 +126,10 @@ function toRecord(input: BridgeStagingInput, storage: "neon" | "file"): BridgeSt
     bundleSummary: input.bundleSummary,
     bundle: input.bundle,
     note: input.note ?? BRIDGE_STAGING_NOTE,
-    storage
+    storage,
+    durableRunId: input.durableRunId ?? fromBundle.durableRunId,
+    correlationId: input.correlationId ?? fromBundle.correlationId,
+    careEpisodeId: input.careEpisodeId ?? fromBundle.careEpisodeId,
   };
 }
 
@@ -148,6 +176,7 @@ function mapNeonRow(row: {
     typeof row.bundle === "string"
       ? (JSON.parse(row.bundle) as Record<string, unknown>)
       : row.bundle;
+  const lineage = lineageFromBundle(bundle);
   return {
     id: row.id,
     stagedAt: typeof row.staged_at === "string" ? row.staged_at : row.staged_at.toISOString(),
@@ -162,7 +191,10 @@ function mapNeonRow(row: {
     bundleSummary: row.bundle_summary,
     bundle,
     note: row.note,
-    storage: "neon"
+    storage: "neon",
+    durableRunId: lineage.durableRunId,
+    correlationId: lineage.correlationId,
+    careEpisodeId: lineage.careEpisodeId,
   };
 }
 

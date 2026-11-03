@@ -16,13 +16,17 @@ export async function GET(request: Request) {
   const auth = await requireAuthenticatedUserScope(request);
   if (auth.response) return auth.response;
   const tenant = resolveTenantContext(request, auth.context);
-  const loop = await listAgentRunCases(tenant.practiceId);
+  const loop = await listAgentRunCases({
+    practiceId: tenant.practiceId,
+    scopeKey: auth.context?.scopeKey,
+  });
   const tally = tallyLoop(loop.cases);
   return NextResponse.json({
     source: loop.source,
+    storeMode: loop.storeMode,
     measuredOn: "synthetic validation (clinical-proof environment)",
     agentReviews: tally.runs,
     agents: evaluateReadiness(tally),
-    note: "Numeric targets are proposed until the clinical safety officer confirms them. Meeting them does not release an agent.",
+    note: "Numeric targets are proposed until the clinical safety officer confirms them. Meeting them does not release an agent. storeMode reflects loop-outcomes dual-path honesty (Milestone E P1.2).",
   });
 }

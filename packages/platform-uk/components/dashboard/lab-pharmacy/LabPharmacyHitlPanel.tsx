@@ -205,10 +205,31 @@ export function LabPharmacyHitlPanel({
         >
           Pharmacy review queue
         </Link>
-        <Link href="/dashboard/gp/hcp-eval-session" className="underline text-primary" data-testid="lph-link-hcp">
+        <Link
+          href={
+            careEpisodeId.trim()
+              ? `/dashboard/gp/hcp-eval-session?careEpisodeId=${encodeURIComponent(careEpisodeId.trim())}&care_episode_id=${encodeURIComponent(careEpisodeId.trim())}`
+              : "/dashboard/gp/hcp-eval-session"
+          }
+          className="underline text-primary"
+          data-testid="lph-link-hcp"
+        >
           HCP eval session (C1)
         </Link>
-        <Link href="/dashboard/gp/review-queue" className="underline text-primary" data-testid="lph-link-review">
+        <Link
+          href={
+            patientId.trim() || careEpisodeId.trim()
+              ? `/dashboard/gp/review-queue?${new URLSearchParams({
+                  ...(patientId.trim() ? { patient: patientId.trim() } : {}),
+                  ...(careEpisodeId.trim()
+                    ? { careEpisodeId: careEpisodeId.trim(), care_episode_id: careEpisodeId.trim() }
+                    : {}),
+                }).toString()}`
+              : "/dashboard/gp/review-queue"
+          }
+          className="underline text-primary"
+          data-testid="lph-link-review"
+        >
           GP review · honesty (C2)
         </Link>
         <button type="button" className="underline text-primary" onClick={() => void load()} data-testid="lph-reload">

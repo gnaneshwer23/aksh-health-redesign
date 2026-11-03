@@ -21,13 +21,14 @@ import type { DurableRunStoreMode } from "./execution-run-store";
 import type { OpsAlertSeverity, OpsAlertSignal, OpsAlertsSummary } from "./ops-alerts";
 
 /**
- * Durable-run (D1) + care-episode / lab-pharmacy HITL (E1) Agent Ops lists are
- * Postgres-preferred. residualDualPathStores names any remaining file↔Neon gaps
- * (e.g. future loop-outcomes) — empty after E1 shared-run correlation.
+ * Durable-run (D1) + care-episode / lab-pharmacy HITL (E1) + loop-outcomes (E P1.2)
+ * Agent Ops lists are Postgres-preferred. residualDualPathStores names any remaining
+ * file↔Neon gaps — empty after E P1 coordination.
  */
 export type OpsAlertDualPathResidual =
   | "durable_run_ops_unified"
   | "shared_run_correlation_unified"
+  | "coordination_interop_unified"
   | "file_vs_neon_ops";
 
 export type OpsAlertChannelPayload = {
@@ -148,9 +149,9 @@ export function buildOpsAlertChannelPayload(summary: OpsAlertsSummary): OpsAlert
     alerts,
     metrics: summary.metrics,
     storeMode: summary.storeMode ?? "file",
-    dualPathResidual: "shared_run_correlation_unified",
+    dualPathResidual: "coordination_interop_unified",
     residualDualPathStores: [],
-    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Durable-run, care-episode, and lab/pharmacy HITL lists prefer Neon when configured (Milestones D1/E1). Not an external certification claim.",
+    note: "Optional Agent Ops alert channel. Opaque refs and counts only — no names, NHS numbers, or clinical free text. Durable-run, care-episode, lab/pharmacy HITL, and loop-outcomes lists prefer Neon when configured (Milestones D1/E1/E-P1). Not an external certification claim.",
   };
 }
 
