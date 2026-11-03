@@ -5,18 +5,15 @@ import { mock } from "bun:test";
 mock.module("server-only", () => ({}));
 
 const { akshInvestigationReleases, loadAkshInvestigationRelease } = await import("../lib/hsi/investigation-corpus.server");
-const { InvestigationRequestError } = await import("../lib/hsi/investigationBackend");
 const { RA_RELEASE_ID } = await import("../lib/hsi/raEvidenceRelease");
 const { RA_RESEARCH_RELEASE_ID } = await import("../lib/hsi/raResearchEvidenceRelease");
 
-const pending = akshInvestigationReleases.find((release) => release.id === RA_RELEASE_ID);
-assert.ok(pending);
-assert.equal(pending.readiness?.available, false);
-await assert.rejects(
-  () => loadAkshInvestigationRelease(RA_RELEASE_ID, null),
-  (error: unknown) =>
-    error instanceof InvestigationRequestError && error.status === 422 && error.code === "evidence_not_ready",
-);
+const evidence = akshInvestigationReleases.find((release) => release.id === RA_RELEASE_ID);
+assert.ok(evidence?.readiness?.available);
+assert.equal(evidence!.readiness?.scientificReview, "unreviewed");
+const evidenceBundle = await loadAkshInvestigationRelease(RA_RELEASE_ID, null);
+assert.equal(evidenceBundle.context.dataClass, "public_real");
+assert.ok(evidenceBundle.passages.length >= 2);
 
 const listing = akshInvestigationReleases.find((release) => release.id === RA_RESEARCH_RELEASE_ID);
 assert.ok(listing?.readiness?.available);
@@ -31,4 +28,4 @@ assert.ok(research.passages.length >= 2);
 assert.ok(research.sources.every((source) => source.kind === "synthetic_fixture" && source.pmid === null));
 assert.equal(research.claims.length, 0);
 
-console.log("PASS: RA research corpus loads synthetic passages; pending real release stays evidence_not_ready.");
+console.log("PASS: RA research corpus loads synthetic passages; rights-verified evidence sits beside it unreviewed.");

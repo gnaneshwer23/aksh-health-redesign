@@ -1,22 +1,20 @@
-/** Corpus-level verification: pending evidence_not_ready + research working set loads. No product Neon required. */
+/** Corpus-level verification: rights-verified evidence + research working set. No product Neon required. */
 // @ts-expect-error Bun is the consumer harness, not a Next.js runtime dependency.
 import { mock } from "bun:test";
 
 mock.module("server-only", () => ({}));
 
 const { akshInvestigationReleases, loadAkshInvestigationRelease } = await import("../lib/hsi/investigation-corpus.server");
-const { InvestigationRequestError } = await import("../lib/hsi/investigationBackend");
 const { RA_RELEASE_ID } = await import("../lib/hsi/raEvidenceRelease");
 const { RA_RESEARCH_RELEASE_ID } = await import("../lib/hsi/raResearchEvidenceRelease");
 
-const pending = akshInvestigationReleases.find((r) => r.id === RA_RELEASE_ID);
-if (!pending || pending.readiness?.available !== false) throw new Error("pending RA must stay unavailable");
-try {
-  await loadAkshInvestigationRelease(RA_RELEASE_ID, null);
-  throw new Error("expected evidence_not_ready");
-} catch (error) {
-  if (!(error instanceof InvestigationRequestError) || error.code !== "evidence_not_ready") throw error;
-}
+const evidenceListing = akshInvestigationReleases.find((r) => r.id === RA_RELEASE_ID);
+if (!evidenceListing?.readiness?.available) throw new Error("rights-verified RA evidence must be available");
+if (evidenceListing.readiness.scientificReview !== "unreviewed") throw new Error("evidence must stay unreviewed");
+const evidence = await loadAkshInvestigationRelease(RA_RELEASE_ID, null);
+if (evidence.context.dataClass !== "public_real" || evidence.passages.length < 2) throw new Error("evidence passages missing");
+if (evidence.claims.length !== 0) throw new Error("evidence must not invent claims");
+if (!evidence.sources.every((s) => s.kind === "publication" && s.pmid)) throw new Error("evidence sources must be real publications");
 
 const researchListing = akshInvestigationReleases.find((r) => r.id === RA_RESEARCH_RELEASE_ID);
 if (!researchListing?.readiness?.available) throw new Error("research corpus must be available");
@@ -31,9 +29,11 @@ console.log(
     {
       ok: true,
       product: "aksh",
-      pending: RA_RELEASE_ID,
+      evidence: RA_RELEASE_ID,
+      evidencePassages: evidence.passages.length,
       research: RA_RESEARCH_RELEASE_ID,
       researchPassages: research.passages.length,
+      scientificReview: "unreviewed",
       note: "Apply db/migrations/056_hsi_investigations.sql with Aksh .env.local, then provision-hsi-research.ts, before live UI verification.",
     },
     null,
