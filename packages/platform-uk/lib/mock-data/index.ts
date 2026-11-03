@@ -11,7 +11,15 @@ export { populationData, metricSparklines } from "./population";
 export {
   generateDemoCohortUsers,
   generateExtendedDemoPatients,
+  generateDemoCohortCareEpisodes,
+  generateDemoCohortHitlDrafts,
+  generateDemoCohortReviewQueueItems,
   DEMO_COHORT_EMAIL_DOMAIN,
+  DEMO_COHORT_ID,
+  DEMO_COHORT_META,
+  DEMO_COHORT_PATIENT_TARGET,
+  DEMO_COHORT_USER_TARGET,
+  DEMO_COHORT_MIN_COUNTS,
 } from "./demo-cohort-generator";
 
 import type { AdminUser, IntegrationService } from "./types";
@@ -55,11 +63,16 @@ const legacyAdminUsers: AdminUser[] = [
   { id: "U012", name: "Dr Chen", role: "GP", email: "chen@valleyview.nhs.uk", status: "Active", lastActive: "2026-07-05 11:00", mfa: true },
 ];
 
-/** 100 synthetic demo-cohort users (profiles also seedable into Neon). */
+/** Synthetic demo-cohort users (profiles also seedable into Neon). Lab/front-desk are practice-manager personas. */
 const demoCohortAdminUsers: AdminUser[] = generateDemoCohortUsers().map((u, idx) => ({
-  id: `DC${String(idx + 1).padStart(3, "0")}`,
+  id: `DC${String(idx + 1).padStart(4, "0")}`,
   name: u.fullName,
-  role: ROLE_LABEL[u.role] ?? u.role,
+  role:
+    u.subRole === "lab_operator"
+      ? "Lab operator"
+      : u.subRole === "front_desk"
+        ? "Front desk"
+        : (ROLE_LABEL[u.role] ?? u.role),
   email: u.email,
   status: "Active" as const,
   lastActive: "2026-07-20 09:00",

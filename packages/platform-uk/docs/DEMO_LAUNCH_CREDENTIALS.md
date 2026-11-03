@@ -17,32 +17,35 @@
 3. Complete onboarding role select if prompted.
 4. Use that account for the walkthrough: `/demo/script` → Capture → Accept → export.
 
-## Demo cohort accounts (100 users · seeded)
+## Demo cohort accounts (375 users · 200 patients · seeded)
 
-Scale / outcomes / multi-role demos use the synthetic cohort:
+Scale / outcomes / multi-role demos use the synthetic cohort (`demo-cohort-v2-stakeholder`):
 
 ```bash
 npm run seed:demo-cohort -- --apply
 # optional graph: --with-neo4j
+# purge before real-data swap: npm run purge:demo-cohort -- --apply
 ```
 
 | Role | Sample email | Password |
 |------|--------------|----------|
-| GP | `gp01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| Nurse | `nurse01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| Pharmacist | `pharmacist01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| Admin | `admin01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| ICS | `ics01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| Hospital | `hospital01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
-| Patient | `patient01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
+| GP | `gp01@demo.akshhealth.com` | `DEMO_SEED_PASSWORD` or `DEMO_COHORT_PASSWORD` (never in the repo) |
+| Nurse | `nurse01@demo.akshhealth.com` | same |
+| Pharmacist | `pharmacist01@demo.akshhealth.com` | same |
+| Lab operator | `lab01@demo.akshhealth.com` | same → `/dashboard/admin/lab-queue` |
+| Front desk | `frontdesk01@demo.akshhealth.com` | same → `/dashboard/front-desk` |
+| Admin | `admin01@demo.akshhealth.com` | same |
+| ICS | `ics01@demo.akshhealth.com` | same |
+| Hospital | `hospital01@demo.akshhealth.com` | same |
+| Patient | `patient01@demo.akshhealth.com` | same |
+| Researcher | `researcher01@demo.akshhealth.com` | same |
 
 **Paired GP↔patient demo:** `patient01` binds to synthetic chart **P002 (Mr James Patel)** — the same id GP selects in the review queue. Ask Aksh / check-in require this `boundPatientId` on the session (`liveEmis:false`).
-| Researcher | `researcher01@demo.akshhealth.com` | the value of `DEMO_COHORT_PASSWORD` (held by the founder, never in the repo) |
 
-- Emails: `{role}{01–NN}@demo.akshhealth.com` (see [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md)).
-- Override: set `DEMO_COHORT_PASSWORD` in `.env.local` before `--apply`.
-- Reset: `npm run seed:demo-cohort -- --reset --apply` or `npm run auth:cleanup-demo -- --apply`.
-- Patients: **P001–P100** in `lib/mock-data/patients.ts` (P001–P012 demos unchanged).
+- Emails: `{prefix}{01–NN}@demo.akshhealth.com` (see [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md) for full counts).
+- Set `DEMO_SEED_PASSWORD` (preferred) or `DEMO_COHORT_PASSWORD` in `.env.local` before `--apply`.
+- Reset: `npm run seed:demo-cohort -- --reset --apply` or `npm run purge:demo-cohort -- --apply`.
+- Patients: **P001–P200** in `lib/mock-data/patients.ts` (P001–P012 demos unchanged).
 
 ## Smoke / CI scripts
 
@@ -52,21 +55,21 @@ Demo cohort accounts (after `npm run seed:demo-cohort -- --apply`) map cleanly:
 ```bash
 export SMOKE_BASE_URL=http://127.0.0.1:3000
 export SMOKE_GP_EMAIL="gp01@demo.akshhealth.com"
-export SMOKE_GP_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_GP_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_NURSE_EMAIL="nurse01@demo.akshhealth.com"
-export SMOKE_NURSE_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_NURSE_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_PHARMACIST_EMAIL="pharmacist01@demo.akshhealth.com"
-export SMOKE_PHARMACIST_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_PHARMACIST_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_ADMIN_EMAIL="admin01@demo.akshhealth.com"
-export SMOKE_ADMIN_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_ADMIN_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_PATIENT_EMAIL="patient01@demo.akshhealth.com"
-export SMOKE_PATIENT_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_PATIENT_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_ICS_EMAIL="ics01@demo.akshhealth.com"
-export SMOKE_ICS_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_ICS_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_HOSPITAL_EMAIL="hospital01@demo.akshhealth.com"
-export SMOKE_HOSPITAL_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_HOSPITAL_PASSWORD="<DEMO_SEED_PASSWORD>"
 export SMOKE_RESEARCHER_EMAIL="researcher01@demo.akshhealth.com"
-export SMOKE_RESEARCHER_PASSWORD="<DEMO_COHORT_PASSWORD>"
+export SMOKE_RESEARCHER_PASSWORD="<DEMO_SEED_PASSWORD>"
 
 npm run smoke:all
 # or: npm run smoke:walkthrough with SMOKE_EMAIL / SMOKE_PASSWORD
@@ -87,7 +90,8 @@ Optional local file (gitignored): `.env.local` with the same vars plus `DATABASE
 
 ## Related
 
-- [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md) — how to run / reset the 100×100 cohort
+- [`DEMO_COHORT_SEED.md`](./DEMO_COHORT_SEED.md) — how to seed / purge the 200-patient · 375-user cohort
+- [`launch/LAUNCH_READINESS.md`](./launch/LAUNCH_READINESS.md) — demo vs clinical production gates
 - [`DEMO_LAUNCH_WITHOUT_IM1.md`](./DEMO_LAUNCH_WITHOUT_IM1.md)
 - [`DEMO_LAUNCH_D1_AUDIT.md`](./DEMO_LAUNCH_D1_AUDIT.md)
 - [`PILOT_PACKAGE.md`](./PILOT_PACKAGE.md)

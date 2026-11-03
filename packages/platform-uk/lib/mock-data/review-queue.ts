@@ -1,6 +1,8 @@
 import type { ReviewQueueItem } from "./types";
+import { generateDemoCohortReviewQueueItems } from "./demo-cohort-generator";
 
-export const reviewQueueItems: ReviewQueueItem[] = [
+/** Hand-authored clinical-proof queue fixtures (RQ001–RQ010). */
+const coreReviewQueueItems: ReviewQueueItem[] = [
   {
     id: "RQ001",
     patientId: "P002",
@@ -222,4 +224,10 @@ P: Urgent community nurse review. Reinforce Furosemide adherence. Consider oral 
     rejectionReason: null,
     auditEventId: null,
   },
+];
+
+/** Core fixtures + removable demo-cohort extras (RQ-demo-cohort-*). */
+export const reviewQueueItems: ReviewQueueItem[] = [
+  ...coreReviewQueueItems,
+  ...generateDemoCohortReviewQueueItems(),
 ];

@@ -895,8 +895,8 @@ const corePatients: Patient[] = [
 ];
 
 /**
- * Full synthetic cohort: P001–P026 (hand fixtures) + P027–P100 (demo cohort generator).
- * Total 100 — liveEmis:false · never real patient data.
+ * Full synthetic cohort: P001–P026 (hand fixtures) + P027–P200 (demo cohort generator).
+ * Total 200 — liveEmis:false · never real patient data · removable via purge:demo-cohort.
  */
 export const patients: Patient[] = [...corePatients, ...generateExtendedDemoPatients()].map((p) => ({
   ...p,
