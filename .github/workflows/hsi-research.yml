@@ -23,5 +23,6 @@ jobs:
       - run: bun tests/capability-status.test.ts
       - run: bun tests/database-target.test.ts
       - run: bun tests/hsi-shared-technology.test.ts
+      - run: bun tests/hsi-investigation-contract.test.ts
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build
