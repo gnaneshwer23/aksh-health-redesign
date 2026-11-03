@@ -1,8 +1,12 @@
 {
-  "syntheticOnly": true,
+  "syntheticDemo": true,
+  "removable": true,
+  "demoCohortId": "demo-cohort-v2-stakeholder",
   "liveEmis": false,
+  "ehrWrite": false,
+  "productionRbacEnforced": false,
   "autoRetrain": false,
-  "count": 20,
+  "count": 40,
   "seeds": [
     {
       "id": "learn-demo-cohort-001",
@@ -17,7 +21,7 @@
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-001-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P027 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P027 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-002",
@@ -32,7 +36,7 @@
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-002-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P028 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P028 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-003",
@@ -47,7 +51,7 @@
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-003-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P029 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P029 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-004",
@@ -62,7 +66,7 @@
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-004-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P030 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P030 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-005",
@@ -71,13 +75,13 @@
       "predictionId": "pred-demo-cohort-005",
       "predictionSummary": "Synthetic GUARDIAN draft for P031",
       "decision": "accept",
-      "decisionActor": "Dr Morgan",
+      "decisionActor": "Lab Adeyemi",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-005-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P031 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P031 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-006",
@@ -86,13 +90,13 @@
       "predictionId": "pred-demo-cohort-006",
       "predictionSummary": "Synthetic HORIZON draft for P032",
       "decision": "edit",
-      "decisionActor": "Nurse Davies",
+      "decisionActor": "Dr Morgan",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-006-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P032 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P032 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-007",
@@ -101,13 +105,13 @@
       "predictionId": "pred-demo-cohort-007",
       "predictionSummary": "Synthetic SYNTHESIS draft for P033",
       "decision": "accept",
-      "decisionActor": "Pharmacist Lee",
+      "decisionActor": "Nurse Davies",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-007-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P033 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P033 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-008",
@@ -116,13 +120,13 @@
       "predictionId": "pred-demo-cohort-008",
       "predictionSummary": "Synthetic PATHWAY draft for P034",
       "decision": "defer",
-      "decisionActor": "Dr Patel",
+      "decisionActor": "Pharmacist Lee",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-008-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P034 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P034 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-009",
@@ -131,13 +135,13 @@
       "predictionId": "pred-demo-cohort-009",
       "predictionSummary": "Synthetic GUARDIAN draft for P035",
       "decision": "accept",
-      "decisionActor": "Dr Morgan",
+      "decisionActor": "Dr Patel",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-009-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P035 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P035 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-010",
@@ -146,13 +150,13 @@
       "predictionId": "pred-demo-cohort-010",
       "predictionSummary": "Synthetic HORIZON draft for P036",
       "decision": "edit",
-      "decisionActor": "Nurse Davies",
+      "decisionActor": "Lab Adeyemi",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-010-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P036 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P036 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-011",
@@ -161,13 +165,13 @@
       "predictionId": "pred-demo-cohort-011",
       "predictionSummary": "Synthetic SYNTHESIS draft for P037",
       "decision": "accept",
-      "decisionActor": "Pharmacist Lee",
+      "decisionActor": "Dr Morgan",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-011-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P037 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P037 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-012",
@@ -176,13 +180,13 @@
       "predictionId": "pred-demo-cohort-012",
       "predictionSummary": "Synthetic PATHWAY draft for P038",
       "decision": "defer",
-      "decisionActor": "Dr Patel",
+      "decisionActor": "Nurse Davies",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-012-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P038 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P038 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-013",
@@ -191,13 +195,13 @@
       "predictionId": "pred-demo-cohort-013",
       "predictionSummary": "Synthetic GUARDIAN draft for P039",
       "decision": "accept",
-      "decisionActor": "Dr Morgan",
+      "decisionActor": "Pharmacist Lee",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-013-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P039 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P039 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-014",
@@ -206,13 +210,13 @@
       "predictionId": "pred-demo-cohort-014",
       "predictionSummary": "Synthetic HORIZON draft for P040",
       "decision": "edit",
-      "decisionActor": "Nurse Davies",
+      "decisionActor": "Dr Patel",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-014-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P040 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P040 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-015",
@@ -221,13 +225,13 @@
       "predictionId": "pred-demo-cohort-015",
       "predictionSummary": "Synthetic SYNTHESIS draft for P041",
       "decision": "accept",
-      "decisionActor": "Pharmacist Lee",
+      "decisionActor": "Lab Adeyemi",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-015-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P041 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P041 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-016",
@@ -236,13 +240,13 @@
       "predictionId": "pred-demo-cohort-016",
       "predictionSummary": "Synthetic PATHWAY draft for P042",
       "decision": "defer",
-      "decisionActor": "Dr Patel",
+      "decisionActor": "Dr Morgan",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-016-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P042 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P042 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-017",
@@ -251,13 +255,13 @@
       "predictionId": "pred-demo-cohort-017",
       "predictionSummary": "Synthetic GUARDIAN draft for P043",
       "decision": "accept",
-      "decisionActor": "Dr Morgan",
+      "decisionActor": "Nurse Davies",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-017-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P043 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P043 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-018",
@@ -266,13 +270,13 @@
       "predictionId": "pred-demo-cohort-018",
       "predictionSummary": "Synthetic HORIZON draft for P044",
       "decision": "edit",
-      "decisionActor": "Nurse Davies",
+      "decisionActor": "Pharmacist Lee",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-018-outcome",
       "linkOutcomeKind": "adverse_event_none",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P044 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P044 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-019",
@@ -281,13 +285,13 @@
       "predictionId": "pred-demo-cohort-019",
       "predictionSummary": "Synthetic SYNTHESIS draft for P045",
       "decision": "accept",
-      "decisionActor": "Pharmacist Lee",
+      "decisionActor": "Dr Patel",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-019-outcome",
       "linkOutcomeKind": "care_action_completed",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P045 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P045 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     },
     {
       "id": "learn-demo-cohort-020",
@@ -296,13 +300,313 @@
       "predictionId": "pred-demo-cohort-020",
       "predictionSummary": "Synthetic PATHWAY draft for P046",
       "decision": "defer",
-      "decisionActor": "Dr Patel",
+      "decisionActor": "Lab Adeyemi",
       "outcomeKind": "unknown",
       "outcomeSummary": "Awaiting eventual outcome (synthetic)",
       "practiceId": "practice-demo",
       "linkOutcomeId": "learn-demo-cohort-020-outcome",
       "linkOutcomeKind": "follow_up_scheduled",
-      "linkOutcomeSummary": "Eventual synthetic outcome for P046 · autoRetrain:false · liveEmis:false"
+      "linkOutcomeSummary": "Eventual synthetic outcome for P046 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-021",
+      "patientId": "P047",
+      "agentLabel": "GUARDIAN",
+      "predictionId": "pred-demo-cohort-021",
+      "predictionSummary": "Synthetic GUARDIAN draft for P047",
+      "decision": "accept",
+      "decisionActor": "Dr Morgan",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-021-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P047 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-022",
+      "patientId": "P048",
+      "agentLabel": "HORIZON",
+      "predictionId": "pred-demo-cohort-022",
+      "predictionSummary": "Synthetic HORIZON draft for P048",
+      "decision": "edit",
+      "decisionActor": "Nurse Davies",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-022-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P048 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-023",
+      "patientId": "P049",
+      "agentLabel": "SYNTHESIS",
+      "predictionId": "pred-demo-cohort-023",
+      "predictionSummary": "Synthetic SYNTHESIS draft for P049",
+      "decision": "accept",
+      "decisionActor": "Pharmacist Lee",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-023-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P049 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-024",
+      "patientId": "P050",
+      "agentLabel": "PATHWAY",
+      "predictionId": "pred-demo-cohort-024",
+      "predictionSummary": "Synthetic PATHWAY draft for P050",
+      "decision": "defer",
+      "decisionActor": "Dr Patel",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-024-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P050 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-025",
+      "patientId": "P051",
+      "agentLabel": "GUARDIAN",
+      "predictionId": "pred-demo-cohort-025",
+      "predictionSummary": "Synthetic GUARDIAN draft for P051",
+      "decision": "accept",
+      "decisionActor": "Lab Adeyemi",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-025-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P051 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-026",
+      "patientId": "P052",
+      "agentLabel": "HORIZON",
+      "predictionId": "pred-demo-cohort-026",
+      "predictionSummary": "Synthetic HORIZON draft for P052",
+      "decision": "edit",
+      "decisionActor": "Dr Morgan",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-026-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P052 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-027",
+      "patientId": "P053",
+      "agentLabel": "SYNTHESIS",
+      "predictionId": "pred-demo-cohort-027",
+      "predictionSummary": "Synthetic SYNTHESIS draft for P053",
+      "decision": "accept",
+      "decisionActor": "Nurse Davies",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-027-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P053 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-028",
+      "patientId": "P054",
+      "agentLabel": "PATHWAY",
+      "predictionId": "pred-demo-cohort-028",
+      "predictionSummary": "Synthetic PATHWAY draft for P054",
+      "decision": "defer",
+      "decisionActor": "Pharmacist Lee",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-028-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P054 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-029",
+      "patientId": "P055",
+      "agentLabel": "GUARDIAN",
+      "predictionId": "pred-demo-cohort-029",
+      "predictionSummary": "Synthetic GUARDIAN draft for P055",
+      "decision": "accept",
+      "decisionActor": "Dr Patel",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-029-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P055 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-030",
+      "patientId": "P056",
+      "agentLabel": "HORIZON",
+      "predictionId": "pred-demo-cohort-030",
+      "predictionSummary": "Synthetic HORIZON draft for P056",
+      "decision": "edit",
+      "decisionActor": "Lab Adeyemi",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-030-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P056 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-031",
+      "patientId": "P057",
+      "agentLabel": "SYNTHESIS",
+      "predictionId": "pred-demo-cohort-031",
+      "predictionSummary": "Synthetic SYNTHESIS draft for P057",
+      "decision": "accept",
+      "decisionActor": "Dr Morgan",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-031-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P057 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-032",
+      "patientId": "P058",
+      "agentLabel": "PATHWAY",
+      "predictionId": "pred-demo-cohort-032",
+      "predictionSummary": "Synthetic PATHWAY draft for P058",
+      "decision": "defer",
+      "decisionActor": "Nurse Davies",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-032-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P058 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-033",
+      "patientId": "P059",
+      "agentLabel": "GUARDIAN",
+      "predictionId": "pred-demo-cohort-033",
+      "predictionSummary": "Synthetic GUARDIAN draft for P059",
+      "decision": "accept",
+      "decisionActor": "Pharmacist Lee",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-033-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P059 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-034",
+      "patientId": "P060",
+      "agentLabel": "HORIZON",
+      "predictionId": "pred-demo-cohort-034",
+      "predictionSummary": "Synthetic HORIZON draft for P060",
+      "decision": "edit",
+      "decisionActor": "Dr Patel",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-034-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P060 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-035",
+      "patientId": "P061",
+      "agentLabel": "SYNTHESIS",
+      "predictionId": "pred-demo-cohort-035",
+      "predictionSummary": "Synthetic SYNTHESIS draft for P061",
+      "decision": "accept",
+      "decisionActor": "Lab Adeyemi",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-035-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P061 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-036",
+      "patientId": "P062",
+      "agentLabel": "PATHWAY",
+      "predictionId": "pred-demo-cohort-036",
+      "predictionSummary": "Synthetic PATHWAY draft for P062",
+      "decision": "defer",
+      "decisionActor": "Dr Morgan",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-036-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P062 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-037",
+      "patientId": "P063",
+      "agentLabel": "GUARDIAN",
+      "predictionId": "pred-demo-cohort-037",
+      "predictionSummary": "Synthetic GUARDIAN draft for P063",
+      "decision": "accept",
+      "decisionActor": "Nurse Davies",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-037-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P063 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-038",
+      "patientId": "P064",
+      "agentLabel": "HORIZON",
+      "predictionId": "pred-demo-cohort-038",
+      "predictionSummary": "Synthetic HORIZON draft for P064",
+      "decision": "edit",
+      "decisionActor": "Pharmacist Lee",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-038-outcome",
+      "linkOutcomeKind": "follow_up_scheduled",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P064 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-039",
+      "patientId": "P065",
+      "agentLabel": "SYNTHESIS",
+      "predictionId": "pred-demo-cohort-039",
+      "predictionSummary": "Synthetic SYNTHESIS draft for P065",
+      "decision": "accept",
+      "decisionActor": "Dr Patel",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-039-outcome",
+      "linkOutcomeKind": "adverse_event_none",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P065 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
+    },
+    {
+      "id": "learn-demo-cohort-040",
+      "patientId": "P066",
+      "agentLabel": "PATHWAY",
+      "predictionId": "pred-demo-cohort-040",
+      "predictionSummary": "Synthetic PATHWAY draft for P066",
+      "decision": "defer",
+      "decisionActor": "Lab Adeyemi",
+      "outcomeKind": "unknown",
+      "outcomeSummary": "Awaiting eventual outcome (synthetic)",
+      "practiceId": "practice-demo",
+      "linkOutcomeId": "learn-demo-cohort-040-outcome",
+      "linkOutcomeKind": "care_action_completed",
+      "linkOutcomeSummary": "Eventual synthetic outcome for P066 · autoRetrain:false · liveEmis:false · demo-cohort-v2-stakeholder"
     }
   ]
 }

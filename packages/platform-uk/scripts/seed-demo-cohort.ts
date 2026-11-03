@@ -1,13 +1,14 @@
 /**
- * Seed 100 synthetic demo patients (app mock + Neo4j) and 100 users/profiles (Neon).
+ * Seed stakeholder-scale synthetic demo cohort (patients · users · relational glue).
  *
  * Usage:
- *   npm run seed:demo-cohort                  # write artifacts + dry-run Neon
- *   npm run seed:demo-cohort -- --apply       # upsert Neon users + learning events
+ *   npm run seed:demo-cohort                  # write artifacts + file stores (dry Neon)
+ *   npm run seed:demo-cohort -- --apply       # upsert Neon users + learning + optional PG glue
  *   npm run seed:demo-cohort -- --apply --with-neo4j
- *   npm run seed:demo-cohort -- --reset --apply   # delete @demo.akshhealth.com cohort then re-seed
+ *   npm run seed:demo-cohort -- --reset --apply   # purge @demo.akshhealth.com then re-seed
  *
- * Honesty: synthetic only · liveEmis:false · never real NHS passwords as secrets.
+ * Honesty: syntheticDemo:true · removable:true · liveEmis:false · ehrWrite:false
+ * Password: DEMO_SEED_PASSWORD or DEMO_COHORT_PASSWORD (local default only when unset).
  */
 
 import { mkdir, writeFile, readFile } from "node:fs/promises";
@@ -19,14 +20,24 @@ import pg from "pg";
 import { resolveBoundPatientIdForSession } from "../lib/auth/demo-patient-binding";
 import {
   DEMO_COHORT_EMAIL_DOMAIN,
+  DEMO_COHORT_ID,
+  DEMO_COHORT_META,
+  DEMO_COHORT_PASSWORD_ENV,
   DEMO_COHORT_PATIENT_TARGET,
   DEMO_COHORT_USER_TARGET,
+  DEMO_SEED_PASSWORD_ENV,
+  DEMO_SEED_PASSWORD_LOCAL_DEFAULT,
   assertDemoCohortGeneratorInvariants,
+  generateDemoCohortCareEpisodes,
+  generateDemoCohortHitlDrafts,
   generateDemoCohortLearningSeeds,
+  generateDemoCohortReviewQueueItems,
   generateDemoCohortUsers,
   generateExtendedDemoPatients,
   summarizeDemoCohortUsers,
+  type DemoCohortUserSpec,
 } from "../lib/mock-data/demo-cohort-generator";
+import { buildDemoTerminologyArtifact } from "../lib/mock-data/demo-terminology";
 import { patients } from "../lib/mock-data/patients";
 import {
   LEARNING_GOVERNANCE_NOTE,
@@ -41,21 +52,20 @@ import { assertNotProductionDatabase } from "../lib/db/deployment-guard";
 const { Pool } = pg;
 const root = process.cwd();
 const seedDir = path.join(root, "data", "seed");
+const dataDir = path.join(root, "data");
 
-function buildDemoPreferences(user: {
-  email: string;
-  role: string;
-  credentialsHint: string | null;
-}) {
+function buildDemoPreferences(user: DemoCohortUserSpec) {
   const boundPatientId = resolveBoundPatientIdForSession({
     role: user.role,
     email: user.email,
   });
   return {
+    ...DEMO_COHORT_META,
     syntheticOnly: true,
-    liveEmis: false,
     demoCohort: true,
+    demoCohortId: DEMO_COHORT_ID,
     credentialsHint: user.credentialsHint,
+    ...(user.subRole ? { subRole: user.subRole } : {}),
     ...(boundPatientId ? { boundPatientId } : {}),
   };
 }
@@ -80,9 +90,16 @@ function getDatabaseUrl() {
 }
 
 function resolvePassword() {
-  const password = process.env.DEMO_COHORT_PASSWORD?.trim();
-  if (!password || password.length < 16) {
-    throw new Error("Set DEMO_COHORT_PASSWORD (16+ characters). It is never stored in the repository.");
+  const fromSeed = process.env[DEMO_SEED_PASSWORD_ENV]?.trim();
+  const fromLegacy = process.env[DEMO_COHORT_PASSWORD_ENV]?.trim();
+  const password = fromSeed || fromLegacy || DEMO_SEED_PASSWORD_LOCAL_DEFAULT;
+  if (!fromSeed && !fromLegacy) {
+    console.warn(
+      `[seed-demo-cohort] Using local synthetic default password (${DEMO_SEED_PASSWORD_ENV} / ${DEMO_COHORT_PASSWORD_ENV} unset). Documented in docs/DEMO_COHORT_SEED.md — never for production.`
+    );
+  }
+  if (password.length < 12) {
+    throw new Error(`Demo seed password must be 12+ characters (${DEMO_SEED_PASSWORD_ENV}).`);
   }
   return password;
 }
@@ -91,19 +108,22 @@ async function writeArtifacts() {
   await mkdir(seedDir, { recursive: true });
   const extended = generateExtendedDemoPatients();
   const users = generateDemoCohortUsers();
-  const learning = generateDemoCohortLearningSeeds(20);
+  const learning = generateDemoCohortLearningSeeds(40);
+  const episodes = generateDemoCohortCareEpisodes();
+  const hitl = generateDemoCohortHitlDrafts();
+  const queueExtras = generateDemoCohortReviewQueueItems();
 
   const patientsPath = path.join(seedDir, "demo-cohort-patients.json");
   const usersPath = path.join(seedDir, "demo-cohort-users.json");
   const learningPath = path.join(seedDir, "demo-cohort-learning-events.json");
+  const relationalPath = path.join(seedDir, "demo-cohort-relational.json");
 
   await writeFile(
     patientsPath,
     JSON.stringify(
       {
-        syntheticOnly: true,
-        liveEmis: false,
-        note: "Extended cohort P027–P100. Core P001–P026 remain in lib/mock-data/patients.ts.",
+        ...DEMO_COHORT_META,
+        note: `Extended cohort P027–P200. Core P001–P026 remain in lib/mock-data/patients.ts.`,
         count: extended.length,
         patients: extended,
       },
@@ -117,20 +137,24 @@ async function writeArtifacts() {
     usersPath,
     JSON.stringify(
       {
-        syntheticOnly: true,
-        liveEmis: false,
+        ...DEMO_COHORT_META,
         emailDomain: DEMO_COHORT_EMAIL_DOMAIN,
-        passwordEnv: "DEMO_COHORT_PASSWORD",
+        passwordEnv: [DEMO_SEED_PASSWORD_ENV, DEMO_COHORT_PASSWORD_ENV],
         count: users.length,
         byRole: summarizeDemoCohortUsers(users).byRole,
-        users: users.map(({ id, email, role, fullName, practiceOds, credentialsHint }) => ({
-          id,
-          email,
-          role,
-          fullName,
-          practiceOds,
-          credentialsHint,
-        })),
+        bySubRole: summarizeDemoCohortUsers(users).bySubRole,
+        byEmailPrefix: summarizeDemoCohortUsers(users).byEmailPrefix,
+        users: users.map(
+          ({ id, email, role, subRole, fullName, practiceOds, credentialsHint }) => ({
+            id,
+            email,
+            role,
+            subRole,
+            fullName,
+            practiceOds,
+            credentialsHint,
+          })
+        ),
       },
       null,
       2
@@ -142,11 +166,44 @@ async function writeArtifacts() {
     learningPath,
     JSON.stringify(
       {
-        syntheticOnly: true,
-        liveEmis: false,
+        ...DEMO_COHORT_META,
         autoRetrain: false,
         count: learning.length,
         seeds: learning,
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+
+  await writeFile(
+    relationalPath,
+    JSON.stringify(
+      {
+        ...DEMO_COHORT_META,
+        careEpisodeCount: episodes.length,
+        hitlDraftCount: hitl.length,
+        reviewQueueExtraCount: queueExtras.length,
+        terminologyNote:
+          "Patients carry codedConditions (SNOMED) + codedMedications (ATC); HITL drafts carry codedItems (LOINC/ATC). Curated subset only — see demo-terminology-curated.json.",
+        episodes,
+        hitlDrafts: hitl,
+        reviewQueueItemIds: queueExtras.map((q) => q.id),
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+
+  const terminologyPath = path.join(seedDir, "demo-terminology-curated.json");
+  await writeFile(
+    terminologyPath,
+    JSON.stringify(
+      {
+        ...DEMO_COHORT_META,
+        ...buildDemoTerminologyArtifact(),
       },
       null,
       2
@@ -158,6 +215,89 @@ async function writeArtifacts() {
   console.log(`  ${patientsPath} (${extended.length} patients)`);
   console.log(`  ${usersPath} (${users.length} users)`);
   console.log(`  ${learningPath} (${learning.length} learning seed pairs)`);
+  console.log(
+    `  ${relationalPath} (${episodes.length} episodes · ${hitl.length} HITL · ${queueExtras.length} queue)`
+  );
+  console.log(`  ${terminologyPath} (curated SNOMED/LOINC/ATC subset)`);
+}
+
+async function seedRelationalFileStores() {
+  const episodes = generateDemoCohortCareEpisodes();
+  const hitl = generateDemoCohortHitlDrafts();
+  await mkdir(dataDir, { recursive: true });
+
+  // Care episodes — retain non-demo rows
+  const cePath = path.join(dataDir, "care-episodes.json");
+  let ceStore: { episodes: unknown[]; events: unknown[] } = { episodes: [], events: [] };
+  try {
+    const raw = await readFile(cePath, "utf8");
+    const parsed = JSON.parse(raw) as { episodes?: unknown[]; events?: unknown[] };
+    ceStore = {
+      episodes: Array.isArray(parsed.episodes) ? parsed.episodes : [],
+      events: Array.isArray(parsed.events) ? parsed.events : [],
+    };
+  } catch {
+    /* fresh */
+  }
+  const retainedEpisodes = (ceStore.episodes as { id?: string }[]).filter(
+    (e) => !String(e.id ?? "").startsWith("ce-demo-cohort-")
+  );
+  const retainedEvents = (ceStore.events as { episode_id?: string; episodeId?: string }[]).filter(
+    (e) => {
+      const eid = e.episodeId ?? e.episode_id ?? "";
+      return !String(eid).startsWith("ce-demo-cohort-");
+    }
+  );
+  const episodeRows = episodes.map((ep) => ({
+    id: ep.id,
+    publicId: ep.publicId,
+    scopeKey: ep.scopeKey,
+    organisationId: ep.organisationId,
+    practiceId: ep.practiceId,
+    patientId: ep.patientId,
+    patientLabel: ep.patientLabel,
+    status: ep.status,
+    pathway: ep.pathway,
+    links: [],
+    tasks: [],
+    createdAt: "2026-07-20T09:00:00.000Z",
+    updatedAt: "2026-07-20T09:00:00.000Z",
+    createdBy: ep.createdBy,
+    version: 1,
+    synthetic: true,
+    ehrWrite: false,
+    idempotencyKey: ep.idempotencyKey,
+    metadata: ep.metadata,
+  }));
+  await writeFile(
+    cePath,
+    JSON.stringify({ episodes: [...retainedEpisodes, ...episodeRows], events: retainedEvents }, null, 2),
+    "utf8"
+  );
+  console.log(`File care-episodes: wrote ${episodeRows.length} demo episodes (${retainedEpisodes.length} retained).`);
+
+  // Lab/pharmacy HITL — retain non-demo drafts
+  const lphPath = path.join(dataDir, "lab-pharmacy-hitl.json");
+  let existingDrafts: { id?: string }[] = [];
+  try {
+    const raw = await readFile(lphPath, "utf8");
+    const parsed = JSON.parse(raw) as { drafts?: { id?: string }[] };
+    existingDrafts = Array.isArray(parsed.drafts) ? parsed.drafts : [];
+  } catch {
+    existingDrafts = [];
+  }
+  const retainedDrafts = existingDrafts.filter(
+    (d) =>
+      !String(d.id ?? "").startsWith("lph-lab-demo-cohort-") &&
+      !String(d.id ?? "").startsWith("lph-pharmacy-demo-cohort-")
+  );
+  const hitlRows = hitl.map(({ demoCohortId: _d, removable: _r, syntheticDemo: _s, ...draft }) => draft);
+  await writeFile(
+    lphPath,
+    JSON.stringify({ kind: "lab_pharmacy_hitl_v1", drafts: [...retainedDrafts, ...hitlRows] }, null, 2),
+    "utf8"
+  );
+  console.log(`File lab-pharmacy-hitl: wrote ${hitlRows.length} demo drafts (${retainedDrafts.length} retained).`);
 }
 
 async function ensureAuthSchema(pool: pg.Pool) {
@@ -167,13 +307,30 @@ async function ensureAuthSchema(pool: pg.Pool) {
 }
 
 async function resetDemoCohortUsers(pool: pg.Pool) {
-  const result = await pool.query(
-    `DELETE FROM aksh.users
-     WHERE email ILIKE $1
-     RETURNING email`,
-    [`%@${DEMO_COHORT_EMAIL_DOMAIN}`]
-  );
-  console.log(`Reset: deleted ${result.rowCount ?? 0} @${DEMO_COHORT_EMAIL_DOMAIN} user(s).`);
+  const marker = await pool
+    .query(`SELECT deployment FROM aksh.deployment_marker WHERE singleton`)
+    .catch(() => ({ rows: [] as { deployment: string }[] }));
+  if (marker.rows[0]?.deployment !== "simulation") {
+    throw new Error("seed-demo-cohort --reset refuses: database is not marked simulation.");
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("SET LOCAL aksh.purge_test_data = 'on'");
+    const result = await client.query(
+      `DELETE FROM aksh.users
+       WHERE email ILIKE $1
+       RETURNING email`,
+      [`%@${DEMO_COHORT_EMAIL_DOMAIN}`]
+    );
+    await client.query("COMMIT");
+    console.log(`Reset: deleted ${result.rowCount ?? 0} @${DEMO_COHORT_EMAIL_DOMAIN} user(s).`);
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function upsertUsers(pool: pg.Pool, password: string) {
@@ -240,7 +397,7 @@ async function upsertUsers(pool: pg.Pool, password: string) {
 }
 
 function buildLearningEventsFromSeeds(): LearningEvent[] {
-  const seeds = generateDemoCohortLearningSeeds(20);
+  const seeds = generateDemoCohortLearningSeeds(40);
   const events: LearningEvent[] = [];
 
   for (const seed of seeds) {
@@ -255,11 +412,10 @@ function buildLearningEventsFromSeeds(): LearningEvent[] {
         decisionActor: seed.decisionActor,
         outcomeKind: seed.outcomeKind,
         outcomeSummary: seed.outcomeSummary,
-        modelVersion: "demo-cohort-seed-v1",
+        modelVersion: "demo-cohort-seed-v2",
       },
       () => seed.id
     );
-    // Freeze recordedAt for idempotent re-seeds
     (base as { recordedAt: string }).recordedAt = `2026-07-20T10:${String(
       (events.length % 50) + 10
     ).padStart(2, "0")}:00.000Z`;
@@ -270,7 +426,7 @@ function buildLearningEventsFromSeeds(): LearningEvent[] {
         outcomeKind: seed.linkOutcomeKind,
         outcomeSummary: seed.linkOutcomeSummary,
         decisionActor: seed.decisionActor,
-        decisionNotes: "Synthetic eventual outcome · autoRetrain:false · liveEmis:false",
+        decisionNotes: `Synthetic eventual outcome · autoRetrain:false · liveEmis:false · ${DEMO_COHORT_ID}`,
       },
       () => seed.linkOutcomeId
     );
@@ -350,6 +506,9 @@ async function seedLearningPostgres(pool: pg.Pool, events: LearningEvent[]) {
           liveEmis: false,
           linksToEventId: event.linksToEventId ?? null,
           demoCohort: true,
+          demoCohortId: DEMO_COHORT_ID,
+          syntheticDemo: true,
+          removable: true,
         }),
       ]
     );
@@ -379,9 +538,15 @@ async function run() {
   const invariants = assertDemoCohortGeneratorInvariants();
 
   console.log("Demo cohort generator OK:");
+  console.log(`  cohortId: ${DEMO_COHORT_ID}`);
   console.log(`  Patients in app mock: ${patients.length} (target ${DEMO_COHORT_PATIENT_TARGET})`);
-  console.log(`  Users: ${invariants.users} · roles: ${JSON.stringify(invariants.byRole)}`);
-  console.log(`  liveEmis: false · syntheticOnly: true`);
+  console.log(
+    `  Users: ${invariants.users} / ${DEMO_COHORT_USER_TARGET} · prefixes: ${JSON.stringify(invariants.byEmailPrefix)}`
+  );
+  console.log(
+    `  Glue: ${invariants.careEpisodes} episodes · ${invariants.hitlDrafts} HITL · ${invariants.reviewQueueExtras} queue`
+  );
+  console.log(`  liveEmis: false · ehrWrite: false · syntheticDemo: true · removable: true`);
 
   if (patients.length !== DEMO_COHORT_PATIENT_TARGET) {
     throw new Error(
@@ -393,14 +558,17 @@ async function run() {
     await writeArtifacts();
   }
 
+  await seedRelationalFileStores();
+
   const learningEvents = buildLearningEventsFromSeeds();
-  // Always refresh file store so local outcomes demos work without Neon.
   await seedLearningFileStore(learningEvents);
 
   if (!args.apply) {
     console.log("\nDry run only — Neon not modified.");
     console.log("Re-run with --apply to upsert users + learning events into Neon.");
     console.log(`Sample login: gp01@${DEMO_COHORT_EMAIL_DOMAIN} / (see DEMO_LAUNCH_CREDENTIALS.md)`);
+    console.log(`Lab operator: lab01@${DEMO_COHORT_EMAIL_DOMAIN} → /dashboard/admin/lab-queue`);
+    console.log(`Front desk: frontdesk01@${DEMO_COHORT_EMAIL_DOMAIN} → /dashboard/front-desk`);
     if (args.withNeo4j) {
       console.log("Note: --with-neo4j ignored without --apply (run npm run data:seed:neo4j separately).");
     }
@@ -409,7 +577,7 @@ async function run() {
 
   const password = resolvePassword();
   const pool = new Pool({ connectionString: getDatabaseUrl(), max: 3 });
-  await assertNotProductionDatabase(pool, "seed-demo-cohort"); // the database itself must say simulation
+  await assertNotProductionDatabase(pool, "seed-demo-cohort");
 
   try {
     await ensureAuthSchema(pool);
@@ -435,13 +603,14 @@ async function run() {
   }
 
   if (args.withNeo4j) {
-    console.log("\nSeeding Neo4j from patients mock (P001–P100)…");
+    console.log(`\nSeeding Neo4j from patients mock (P001–P${DEMO_COHORT_PATIENT_TARGET})…`);
     await runNeo4jSeed();
   }
 
-  console.log("\nDone. Sample: gp01@demo.akshhealth.com · nurse01@demo.akshhealth.com");
-  console.log("Reset users: npm run seed:demo-cohort -- --reset --apply");
-  console.log("Or: npm run auth:cleanup-demo -- --apply");
+  console.log("\nDone. Samples:");
+  console.log(`  gp01@${DEMO_COHORT_EMAIL_DOMAIN} · nurse01@ · pharmacist01@ · lab01@ · frontdesk01@ · admin01@`);
+  console.log("Purge: npm run purge:demo-cohort -- --apply");
+  console.log("Reset+reseed: npm run seed:demo-cohort -- --reset --apply");
 }
 
 run().catch((error) => {

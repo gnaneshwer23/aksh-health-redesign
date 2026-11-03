@@ -1,0 +1,3342 @@
+{
+  "syntheticDemo": true,
+  "removable": true,
+  "demoCohortId": "demo-cohort-v2-stakeholder",
+  "liveEmis": false,
+  "ehrWrite": false,
+  "productionRbacEnforced": false,
+  "careEpisodeCount": 48,
+  "hitlDraftCount": 48,
+  "reviewQueueExtraCount": 36,
+  "terminologyNote": "Patients carry codedConditions (SNOMED) + codedMedications (ATC); HITL drafts carry codedItems (LOINC/ATC). Curated subset only — see demo-terminology-curated.json.",
+  "episodes": [
+    {
+      "id": "ce-demo-cohort-001",
+      "publicId": "CE-DEMO-001",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P027",
+      "patientLabel": "Ms Aisha Ahmed",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-001",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-002",
+      "publicId": "CE-DEMO-002",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P028",
+      "patientLabel": "Mr Benjamin Davies",
+      "status": "lab_pending",
+      "pathway": "CP001",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-002",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-003",
+      "publicId": "CE-DEMO-003",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P029",
+      "patientLabel": "Mrs Chloe Gupta",
+      "status": "med_review",
+      "pathway": "CP002",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-003",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-004",
+      "publicId": "CE-DEMO-004",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P030",
+      "patientLabel": "Mr Daniel Jones",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-004",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-005",
+      "publicId": "CE-DEMO-005",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P031",
+      "patientLabel": "Mrs Elena Murphy",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-005",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-006",
+      "publicId": "CE-DEMO-006",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P032",
+      "patientLabel": "Mrs Farah Patel",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-006",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-007",
+      "publicId": "CE-DEMO-007",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P033",
+      "patientLabel": "Mr George Singh",
+      "status": "lab_pending",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-007",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-008",
+      "publicId": "CE-DEMO-008",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P034",
+      "patientLabel": "Mrs Hannah Vaughan",
+      "status": "med_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-008",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-009",
+      "publicId": "CE-DEMO-009",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P035",
+      "patientLabel": "Mrs Jessica Zimmerman",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-009",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-010",
+      "publicId": "CE-DEMO-010",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P036",
+      "patientLabel": "Miss Jessica MacLeod",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-010",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-011",
+      "publicId": "CE-DEMO-011",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P037",
+      "patientLabel": "Mr Kwame Ahmed",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-011",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-012",
+      "publicId": "CE-DEMO-012",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P038",
+      "patientLabel": "Mrs Layla Davies",
+      "status": "lab_pending",
+      "pathway": "CP001",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-012",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-013",
+      "publicId": "CE-DEMO-013",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P039",
+      "patientLabel": "Mr Marcus Gupta",
+      "status": "med_review",
+      "pathway": "CP002",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-013",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-014",
+      "publicId": "CE-DEMO-014",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P040",
+      "patientLabel": "Mrs Nia Jones",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-014",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-015",
+      "publicId": "CE-DEMO-015",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P041",
+      "patientLabel": "Mr Oliver Murphy",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-015",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-016",
+      "publicId": "CE-DEMO-016",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P042",
+      "patientLabel": "Ms Priya Patel",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-016",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-017",
+      "publicId": "CE-DEMO-017",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P043",
+      "patientLabel": "Mx Quinn Singh",
+      "status": "lab_pending",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-017",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-018",
+      "publicId": "CE-DEMO-018",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P044",
+      "patientLabel": "Mrs Rosa Vaughan",
+      "status": "med_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-018",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-019",
+      "publicId": "CE-DEMO-019",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P045",
+      "patientLabel": "Ms Tanya Zimmerman",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-019",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-020",
+      "publicId": "CE-DEMO-020",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P046",
+      "patientLabel": "Miss Tanya MacLeod",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-020",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-021",
+      "publicId": "CE-DEMO-021",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P047",
+      "patientLabel": "Mr Umar Ahmed",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-021",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-022",
+      "publicId": "CE-DEMO-022",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P048",
+      "patientLabel": "Ms Vera Davies",
+      "status": "lab_pending",
+      "pathway": "CP001",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-022",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-023",
+      "publicId": "CE-DEMO-023",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P049",
+      "patientLabel": "Mr William Gupta",
+      "status": "med_review",
+      "pathway": "CP002",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-023",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-024",
+      "publicId": "CE-DEMO-024",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P050",
+      "patientLabel": "Mrs Yasmin Jones",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-024",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-025",
+      "publicId": "CE-DEMO-025",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P051",
+      "patientLabel": "Ms Zara Murphy",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-025",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-026",
+      "publicId": "CE-DEMO-026",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P052",
+      "patientLabel": "Mrs Amelia Patel",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-026",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-027",
+      "publicId": "CE-DEMO-027",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P053",
+      "patientLabel": "Mr Callum Singh",
+      "status": "lab_pending",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-027",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-028",
+      "publicId": "CE-DEMO-028",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P054",
+      "patientLabel": "Ms Devi Vaughan",
+      "status": "med_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-028",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-029",
+      "publicId": "CE-DEMO-029",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P055",
+      "patientLabel": "Mrs Freya Zimmerman",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-029",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-030",
+      "publicId": "CE-DEMO-030",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P056",
+      "patientLabel": "Miss Freya MacLeod",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-030",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-031",
+      "publicId": "CE-DEMO-031",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P057",
+      "patientLabel": "Ms Gita Ahmed",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-031",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-032",
+      "publicId": "CE-DEMO-032",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P058",
+      "patientLabel": "Mr Harvey Davies",
+      "status": "lab_pending",
+      "pathway": "CP001",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-032",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-033",
+      "publicId": "CE-DEMO-033",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P059",
+      "patientLabel": "Mrs Isla Gupta",
+      "status": "med_review",
+      "pathway": "CP002",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-033",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-034",
+      "publicId": "CE-DEMO-034",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P060",
+      "patientLabel": "Mr Jonah Jones",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-034",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-035",
+      "publicId": "CE-DEMO-035",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P061",
+      "patientLabel": "Mrs Aisha Murphy",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-035",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-036",
+      "publicId": "CE-DEMO-036",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P062",
+      "patientLabel": "Mr Benjamin Patel",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-036",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-037",
+      "publicId": "CE-DEMO-037",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P063",
+      "patientLabel": "Ms Chloe Singh",
+      "status": "lab_pending",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-037",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-038",
+      "publicId": "CE-DEMO-038",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P064",
+      "patientLabel": "Mr Daniel Vaughan",
+      "status": "med_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-038",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-039",
+      "publicId": "CE-DEMO-039",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P065",
+      "patientLabel": "Mrs Elena Zimmerman",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-039",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-040",
+      "publicId": "CE-DEMO-040",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P066",
+      "patientLabel": "Miss Farah MacLeod",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-040",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-041",
+      "publicId": "CE-DEMO-041",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P067",
+      "patientLabel": "Mr George Ahmed",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-041",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-042",
+      "publicId": "CE-DEMO-042",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P068",
+      "patientLabel": "Mrs Hannah Davies",
+      "status": "lab_pending",
+      "pathway": "CP001",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-042",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-043",
+      "publicId": "CE-DEMO-043",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P069",
+      "patientLabel": "Mr Ibrahim Gupta",
+      "status": "med_review",
+      "pathway": "CP002",
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-043",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-044",
+      "publicId": "CE-DEMO-044",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P070",
+      "patientLabel": "Mrs Jessica Jones",
+      "status": "follow_up",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-044",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-045",
+      "publicId": "CE-DEMO-045",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P071",
+      "patientLabel": "Mr Kwame Murphy",
+      "status": "draft",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-045",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-046",
+      "publicId": "CE-DEMO-046",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P072",
+      "patientLabel": "Ms Layla Patel",
+      "status": "in_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-046",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-047",
+      "publicId": "CE-DEMO-047",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P073",
+      "patientLabel": "Mr Marcus Singh",
+      "status": "lab_pending",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-047",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    },
+    {
+      "id": "ce-demo-cohort-048",
+      "publicId": "CE-DEMO-048",
+      "scopeKey": "shared",
+      "organisationId": "practice-demo",
+      "practiceId": "practice-demo",
+      "patientId": "P074",
+      "patientLabel": "Mrs Nia Vaughan",
+      "status": "med_review",
+      "pathway": null,
+      "createdBy": "seed:demo-cohort",
+      "idempotencyKey": "demo-cohort-ce-048",
+      "metadata": {
+        "demoCohortId": "demo-cohort-v2-stakeholder",
+        "syntheticDemo": true,
+        "removable": true,
+        "ehrWrite": false,
+        "liveEmis": false
+      }
+    }
+  ],
+  "hitlDrafts": [
+    {
+      "id": "lph-lab-demo-cohort-001",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P027",
+      "careEpisodeId": "ce-demo-cohort-001",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-001",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-002",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P029",
+      "careEpisodeId": "ce-demo-cohort-002",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-002",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-003",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P031",
+      "careEpisodeId": "ce-demo-cohort-003",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-003",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-004",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P033",
+      "careEpisodeId": "ce-demo-cohort-004",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-004",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-005",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P035",
+      "careEpisodeId": "ce-demo-cohort-005",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-005",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-006",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P037",
+      "careEpisodeId": "ce-demo-cohort-006",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-006",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-007",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P039",
+      "careEpisodeId": "ce-demo-cohort-007",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-007",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-008",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P041",
+      "careEpisodeId": "ce-demo-cohort-008",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-008",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-009",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P043",
+      "careEpisodeId": "ce-demo-cohort-009",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-009",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-010",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P045",
+      "careEpisodeId": "ce-demo-cohort-010",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-010",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-011",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P047",
+      "careEpisodeId": "ce-demo-cohort-011",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-011",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-012",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P049",
+      "careEpisodeId": "ce-demo-cohort-012",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-012",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-013",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P051",
+      "careEpisodeId": "ce-demo-cohort-013",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-013",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-014",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P053",
+      "careEpisodeId": "ce-demo-cohort-014",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-014",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-015",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P055",
+      "careEpisodeId": "ce-demo-cohort-015",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-015",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-016",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P057",
+      "careEpisodeId": "ce-demo-cohort-016",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-016",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-017",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P059",
+      "careEpisodeId": "ce-demo-cohort-017",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-017",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-018",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P061",
+      "careEpisodeId": "ce-demo-cohort-018",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-018",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-019",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P063",
+      "careEpisodeId": "ce-demo-cohort-019",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-019",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-020",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P065",
+      "careEpisodeId": "ce-demo-cohort-020",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-020",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-021",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P067",
+      "careEpisodeId": "ce-demo-cohort-021",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-021",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-022",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P069",
+      "careEpisodeId": "ce-demo-cohort-022",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-022",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-023",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 2 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: HbA1c, U&E",
+      "syntheticPatientId": "P071",
+      "careEpisodeId": "ce-demo-cohort-023",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "HbA1c",
+        "U&E"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "4548-4",
+          "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "text": "HbA1c"
+        },
+        {
+          "system": "http://loinc.org",
+          "code": "24321-2",
+          "display": "Basic metabolic 1998 panel - Serum or Plasma",
+          "text": "U&E"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-023",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-lab-demo-cohort-024",
+      "kind": "lab",
+      "status": "pending_review",
+      "title": "Lab draft · 1 investigation(s)",
+      "summary": "GP-staged lab investigations pending lab-role HITL: Full blood count",
+      "syntheticPatientId": "P073",
+      "careEpisodeId": "ce-demo-cohort-024",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Full blood count"
+      ],
+      "codedItems": [
+        {
+          "system": "http://loinc.org",
+          "code": "58410-2",
+          "display": "Complete blood count (hemogram) panel - Blood by Automated count",
+          "text": "Full blood count"
+        }
+      ],
+      "stagedBy": "gp01@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-lab-024",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp01@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort lab draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · LOINC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-001",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P028",
+      "careEpisodeId": "ce-demo-cohort-006",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-001",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-002",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P031",
+      "careEpisodeId": "ce-demo-cohort-007",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-002",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-003",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P034",
+      "careEpisodeId": "ce-demo-cohort-008",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-003",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-004",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P037",
+      "careEpisodeId": "ce-demo-cohort-009",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-004",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-005",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P040",
+      "careEpisodeId": "ce-demo-cohort-010",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-005",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-006",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P043",
+      "careEpisodeId": "ce-demo-cohort-011",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-006",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-007",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P046",
+      "careEpisodeId": "ce-demo-cohort-012",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-007",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-008",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P049",
+      "careEpisodeId": "ce-demo-cohort-013",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-008",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-009",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P052",
+      "careEpisodeId": "ce-demo-cohort-014",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-009",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-010",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P055",
+      "careEpisodeId": "ce-demo-cohort-015",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-010",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-011",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P058",
+      "careEpisodeId": "ce-demo-cohort-016",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-011",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-012",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P061",
+      "careEpisodeId": "ce-demo-cohort-017",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-012",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-013",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P064",
+      "careEpisodeId": "ce-demo-cohort-018",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-013",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-014",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P067",
+      "careEpisodeId": "ce-demo-cohort-019",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-014",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-015",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P070",
+      "careEpisodeId": "ce-demo-cohort-020",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-015",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-016",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P073",
+      "careEpisodeId": "ce-demo-cohort-021",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-016",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-017",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P076",
+      "careEpisodeId": "ce-demo-cohort-022",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-017",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-018",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P079",
+      "careEpisodeId": "ce-demo-cohort-023",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-018",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-019",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P082",
+      "careEpisodeId": "ce-demo-cohort-024",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-019",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-020",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P085",
+      "careEpisodeId": "ce-demo-cohort-025",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-020",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-021",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P088",
+      "careEpisodeId": "ce-demo-cohort-026",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-021",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-022",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P091",
+      "careEpisodeId": "ce-demo-cohort-027",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-022",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-023",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 2 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Metformin adherence check, Statin counselling",
+      "syntheticPatientId": "P094",
+      "careEpisodeId": "ce-demo-cohort-028",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Metformin adherence check",
+        "Statin counselling"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "A10BA02",
+          "display": "metformin",
+          "text": "Metformin adherence check"
+        },
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "C10AA",
+          "display": "HMG CoA reductase inhibitors",
+          "text": "Statin counselling"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-023",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    },
+    {
+      "id": "lph-pharmacy-demo-cohort-024",
+      "kind": "pharmacy",
+      "status": "pending_review",
+      "title": "Pharmacy draft · 1 item(s)",
+      "summary": "GP-staged pharmacy / adherence draft pending pharmacist HITL: Apixaban counselling (synthetic)",
+      "syntheticPatientId": "P097",
+      "careEpisodeId": "ce-demo-cohort-029",
+      "organisationId": "practice-demo",
+      "scopeKey": "shared",
+      "items": [
+        "Apixaban counselling (synthetic)"
+      ],
+      "codedItems": [
+        {
+          "system": "http://www.whocc.no/atc",
+          "code": "B01AF02",
+          "display": "apixaban",
+          "text": "Apixaban counselling (synthetic)"
+        }
+      ],
+      "stagedBy": "gp02@demo.akshhealth.com",
+      "stagedAt": "2026-07-20T09:15:00.000Z",
+      "live": false,
+      "liveNhsLab": false,
+      "livePrescribing": false,
+      "liveEps": false,
+      "ehrWrite": false,
+      "hitlRequired": true,
+      "clinicalValidationClaim": false,
+      "syntheticOnly": true,
+      "auditTrail": [
+        {
+          "id": "lph-audit-demo-pharm-024",
+          "at": "2026-07-20T09:15:00.000Z",
+          "actor": "gp02@demo.akshhealth.com",
+          "action": "stage",
+          "detail": "Demo cohort pharmacy draft staged · demo-cohort-v2-stakeholder · ehrWrite:false · ATC curated",
+          "roleHint": "gp"
+        }
+      ],
+      "demoCohortId": "demo-cohort-v2-stakeholder",
+      "removable": true,
+      "syntheticDemo": true
+    }
+  ],
+  "reviewQueueItemIds": [
+    "RQ-demo-cohort-001",
+    "RQ-demo-cohort-002",
+    "RQ-demo-cohort-003",
+    "RQ-demo-cohort-004",
+    "RQ-demo-cohort-005",
+    "RQ-demo-cohort-006",
+    "RQ-demo-cohort-007",
+    "RQ-demo-cohort-008",
+    "RQ-demo-cohort-009",
+    "RQ-demo-cohort-010",
+    "RQ-demo-cohort-011",
+    "RQ-demo-cohort-012",
+    "RQ-demo-cohort-013",
+    "RQ-demo-cohort-014",
+    "RQ-demo-cohort-015",
+    "RQ-demo-cohort-016",
+    "RQ-demo-cohort-017",
+    "RQ-demo-cohort-018",
+    "RQ-demo-cohort-019",
+    "RQ-demo-cohort-020",
+    "RQ-demo-cohort-021",
+    "RQ-demo-cohort-022",
+    "RQ-demo-cohort-023",
+    "RQ-demo-cohort-024",
+    "RQ-demo-cohort-025",
+    "RQ-demo-cohort-026",
+    "RQ-demo-cohort-027",
+    "RQ-demo-cohort-028",
+    "RQ-demo-cohort-029",
+    "RQ-demo-cohort-030",
+    "RQ-demo-cohort-031",
+    "RQ-demo-cohort-032",
+    "RQ-demo-cohort-033",
+    "RQ-demo-cohort-034",
+    "RQ-demo-cohort-035",
+    "RQ-demo-cohort-036"
+  ]
+}
