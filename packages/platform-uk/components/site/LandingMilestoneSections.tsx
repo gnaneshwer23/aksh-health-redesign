@@ -9,12 +9,12 @@ const LOOP = [
   {
     n: "01",
     title: "Orchestrate the brief",
-    body: "Aksh Orchestrator gathers the case, orders safety checks (Aksh Guardian), and prepares a review brief. Synthetic evaluation by default — not a live EHR write.",
+    body: "Aksh Orchestrator gathers the case, orders safety checks (Aksh Guardian), and prepares a review brief. Decision support only — not a live EHR write.",
   },
   {
     n: "02",
     title: "A named person reviews",
-    body: "The honesty strip states whether you are in rules-only, synthetic LLM, or scaffold mode. Accept, edit or reject. Nothing moves without that decision.",
+    body: "The honesty strip states whether you are in rules-only, optional LLM, or scaffold mode. Accept, edit or reject. Nothing moves without that decision.",
   },
   {
     n: "03",
@@ -60,7 +60,7 @@ export function LandingHowItWorks() {
           <h2 className="s-h2">Three steps. A person in the middle.</h2>
           <p className="s-lede">
             Production clinics start with slot fill and glucose worklists. The supervised review line —
-            Orchestrator, Guardian, Shield, lab/pharmacy hand-off — is in validation on synthetic patients.
+            Orchestrator, Guardian, Shield, lab/pharmacy hand-off — is in validation.
           </p>
         </div>
         <ol className="s-loop3">
@@ -89,8 +89,8 @@ export function LandingReviewAndStrategy() {
             <h2 className="s-h2">See the draft. See the honesty strip. Decide.</h2>
             <p className="s-body">
               Aksh Orchestrator prepares the brief. Aksh Guardian holds unsafe paths. The GP review queue
-              shows sim versus live-path labels so nobody confuses a synthetic eval run with a certified
-              clinical claim.
+              shows sim versus live-path labels so nobody confuses a simulation or scaffold run with a
+              certified clinical claim.
             </p>
             <ul className="s-check">
               <li>
@@ -122,8 +122,8 @@ export function LandingReviewAndStrategy() {
             <h2 className="s-h2">A draft plan for the consultation — not a prescription.</h2>
             <p className="s-body">
               Structured history and glucose context become talking points a clinician can accept,
-              edit or reject. Medicine decisions always need a prescriber. Evaluation on synthetic
-              patients only until release criteria are met.
+              edit or reject. Medicine decisions always need a prescriber. In validation until release
+              criteria are met.
             </p>
             <Link href="/demo/connected-diabetes" className="s-link">
               Connected diabetes demo →

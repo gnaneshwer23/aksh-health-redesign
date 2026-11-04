@@ -6,7 +6,7 @@ import { AshaConversation } from "@/components/front-desk/AshaConversation";
 export const metadata: Metadata = {
   title: "Talk to Asha | Aksh Health",
   description:
-    "Asha is the practice's automated assistant: book, move or cancel appointments, share readings and symptoms for your care team, or ask a practice question. Synthetic demo, no medical advice.",
+    "Asha is the practice's automated assistant: book, move or cancel appointments, share readings and symptoms for your care team, or ask a practice question. Guided demo, no medical advice.",
 };
 
 export default function AshaPage() {
@@ -14,7 +14,7 @@ export default function AshaPage() {
     <SiteShell>
       <section className="lv-book" aria-labelledby="asha-title">
         <div className="lv-container">
-          <p className="lv-eyebrow">Patient support · synthetic demo</p>
+          <p className="lv-eyebrow">Patient support · guided demo</p>
           <h1 id="asha-title" className="lv-h2 mt-3">
             Talk to Asha.
           </h1>

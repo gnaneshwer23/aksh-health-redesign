@@ -16,7 +16,7 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     id: "slot-fill",
     title: "Cancelled-slot fill",
     description:
-      "Synthetic guided demo: freed slot → ranked worklist with reasons → staff decision → recorded result. Staff always choose; Aksh never contacts patients.",
+      "Guided demo: freed slot → ranked worklist with reasons → staff decision → recorded result. Staff always choose; Aksh never contacts patients.",
     href: "/demo/slot-fill",
     duration: "~3 minutes",
     category: "Production workflow",
@@ -25,7 +25,7 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     id: "glucose",
     title: "Glucose and CGM monitoring",
     description:
-      "Synthetic guided demo: readings → prioritised worklist → explanation → clinician review → recorded result. No autonomous treatment changes.",
+      "Guided demo: readings → prioritised worklist → explanation → clinician review → recorded result. No autonomous treatment changes.",
     href: "/demo/glucose",
     duration: "~3 minutes",
     category: "Production workflow",
@@ -34,10 +34,10 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     id: "connected-diabetes",
     title: "Connected diabetes journey",
     description:
-      "Flagship synthetic walkthrough: Patient 360 → glucose intelligence → medication & care → care-plan HITL → continuous care → agent drafts → timeline. Not clinically validated; ehrWrite stays false.",
+      "Flagship walkthrough: Patient 360 → glucose intelligence → medication & care → care-plan HITL → continuous care → agent drafts → timeline. Not clinically validated; ehrWrite stays false.",
     href: "/demo/connected-diabetes",
     duration: "~8 minutes",
-    category: "Synthetic clinical intelligence",
+    category: "Clinical intelligence demo",
   },
   {
     id: "patel",
@@ -52,7 +52,7 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     id: "ics",
     title: "Regional population demo",
     description:
-      "Public read-only population dashboard with synthetic population metrics and EQUITY deep-dive. Demo banner; no EHR write-back.",
+      "Public read-only population dashboard with aggregate planning metrics and equity deep-dive. Demo banner; no EHR write-back.",
     href: "/dashboard/ics",
     duration: "~5 minutes",
     category: "Population health",
@@ -61,9 +61,9 @@ export const PUBLIC_DEMOS: PublicDemo[] = [
     id: "precision-health-loop",
     title: "Aksh clinical spine replay",
     description:
-      "Synthetic closed-loop replay of the same Aksh spine — consent → ingest → agents → twin ranking → plan → HITL/sim → learning. Not a living twin; liveEmis:false.",
+      "Closed-loop replay of the same Aksh spine — consent → ingest → agents → twin ranking → plan → HITL/sim → learning. Not a living twin; liveEmis:false.",
     href: "/demo/precision-health-loop",
     duration: "~3 minutes",
-    category: "Clinical spine (synthetic)",
+    category: "Clinical spine demo",
   },
 ];

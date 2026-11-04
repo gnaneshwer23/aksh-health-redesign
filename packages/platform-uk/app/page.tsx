@@ -19,7 +19,7 @@ import { capability, type CapabilityId } from "@/lib/status/capabilities";
 export const metadata: Metadata = {
   title: "Aksh Health | Diabetes reviews, better coordinated",
   description:
-    "Aksh helps diabetes care teams fill cancelled appointments and prioritise glucose reviews, with supervised AI drafts under human review. In production for slot fill and CGM worklists; clinical agents in validation on synthetic patients — not autonomous prescribing or clinical certification.",
+    "Aksh helps diabetes care teams fill cancelled appointments and prioritise glucose reviews, with supervised AI drafts under human review. In production for slot fill and CGM worklists; clinical agents in validation — not autonomous prescribing or clinical certification.",
 };
 
 /** The workflows a clinic can use today. Each one: how it works, what staff do, what the clinic measures. */
@@ -89,7 +89,7 @@ export default function HomePage() {
             Diabetes reviews, <span className="s-grad">better coordinated.</span>
           </>
         }
-        lede="Aksh helps your team fill cancelled appointments and see whose glucose needs attention first. Supervised drafts stop at a named clinician. Production workflows today; clinical AI in validation on synthetic patients."
+        lede="Aksh helps your team fill cancelled appointments and see whose glucose needs attention first. Supervised drafts stop at a named clinician. Production workflows today; clinical AI in validation."
         module="today"
       >
         <div className="s-actions s-hero2__actions">
@@ -263,9 +263,8 @@ export default function HomePage() {
               </h2>
               <p className="s-lede" style={{ marginTop: 16 }}>
                 Fourteen specialised agents draft notes and codes, check medicines, read laboratory trends, explain risk
-                and prepare referrals — all stopping at a named clinician. In validation on synthetic patients; not used
-                for real patients until each agent meets its release criteria. Prism and Trials remain scaffolds, not
-                live-path claims.
+                and prepare referrals — all stopping at a named clinician. In validation; not used for real patients
+                until each agent meets its release criteria. Prism and Trials remain scaffolds, not live-path claims.
               </p>
             </div>
             <span style={{ display: "inline-flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
@@ -280,7 +279,7 @@ export default function HomePage() {
           </div>
           <ProductCanvas module="agents" />
           <p className="s-small" style={{ marginTop: 16 }}>
-            Flagship synthetic journey · LIVE organisations: 0 ·{" "}
+            Connected diabetes journey · LIVE organisations: 0 ·{" "}
             <Link href="/platform#capabilities" className="s-link">
               Every capability and its status →
             </Link>

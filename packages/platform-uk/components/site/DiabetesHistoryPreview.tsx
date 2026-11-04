@@ -3,7 +3,7 @@
 /**
  * Homepage preview: structured diabetes history → clinician summary.
  * Inspired by calm dual-path intake storytelling (patient voice → clinician note),
- * but Aksh-specific: diabetes review prep, missing-data honesty, human gate, synthetic only.
+ * but Aksh-specific: diabetes review prep, missing-data honesty, human gate.
  * In validation — not a live clinical product claim.
  */
 import Link from "next/link";
@@ -82,8 +82,7 @@ export function DiabetesHistoryPreview() {
             <p className="s-lede" style={{ marginTop: 16 }}>
               After slot fill and glucose monitoring, the next layer is structured history for the annual or interim
               review: patient answers in plain language, a draft summary for the clinician, and a clear stop before
-              anything is saved. In validation on synthetic patients — not used for real care until release criteria
-              are met.
+              anything is saved. In validation — not used for real care until release criteria are met.
             </p>
           </div>
           <div className="s-hist__aside">
@@ -139,11 +138,11 @@ export function DiabetesHistoryPreview() {
               <p className="s-body">{active.body}</p>
             </div>
 
-            <div className="s-hist__dual" aria-label="Illustrative patient and clinician views, synthetic data">
+            <div className="s-hist__dual" aria-label="Illustrative patient and clinician views">
               <article className={`s-hist__pane s-hist__pane--patient${step === "share" ? " is-focus" : ""}`}>
                 <header className="s-hist__pane-head">
                   <span>Patient · before the visit</span>
-                  <span className="s-pill s-pill--grey">Synthetic</span>
+                  <span className="s-pill s-pill--grey">Example</span>
                 </header>
                 <ol className="s-hist__qa">
                   {PATIENT_LINES.map((line, i) => (
@@ -179,8 +178,8 @@ export function DiabetesHistoryPreview() {
         </div>
 
         <p className="s-hist__footnote s-small">
-          Illustrative example · synthetic patient · structured summary only · a signed-in clinician must accept, edit
-          or reject before anything is stored.{" "}
+          Illustrative example · structured summary only · a signed-in clinician must accept, edit or reject before
+          anything is stored.{" "}
           <Link href="/agents" className="s-link">
             How agents stop at the clinician →
           </Link>

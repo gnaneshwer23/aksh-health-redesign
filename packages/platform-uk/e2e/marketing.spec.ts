@@ -39,8 +39,9 @@ test.describe("Public site", () => {
     expect(order[0]).toBeLessThan(order[1]);
     expect(order[1]).toBeLessThan(order[2]);
     await expect(page.locator("#review-prep")).toContainText("In validation");
-    await expect(page.locator("#review-prep")).toContainText("Synthetic");
+    await expect(page.locator("#review-prep")).toContainText("Example");
     await expect(page.locator("#review-prep")).toContainText("human gate");
+    await expect(page.locator("#review-prep")).not.toContainText(/synthetic patients/i);
     await expect(page.locator("#review-prep").getByRole("link", { name: "Explore a demo" })).toHaveAttribute("href", "/demo");
     await expect(page.locator("#diabetes")).toContainText("In validation");
     // Milestone A–E landing surfaces: how-it-works, review/strategy, trust limits (honest HITL copy).
@@ -84,11 +85,14 @@ test.describe("Public site", () => {
     await expect(page.locator('a[href="/demo/glucose"]')).toBeVisible();
   });
 
-  test("allowlisted marketing demos stay public with synthetic content", async ({ page }) => {
+  test("allowlisted marketing demos stay public with HITL honesty, not synthetic-patient copy", async ({ page }) => {
     for (const path of ["/demo", "/demo/slot-fill", "/demo/glucose", "/demo/connected-diabetes"]) {
       await page.goto(path);
       await expect(page, path).toHaveURL(new RegExp(`${path.replace(/\//g, "\\/")}$`));
-      await expect(page.getByText(/synthetic/i).first()).toBeVisible();
+      await expect(
+        page.getByText(/Illustrative|Staff \/ clinician decide|HITL|not clinically validated|no live EHR|ehrWrite/i).first(),
+      ).toBeVisible();
+      await expect(page.locator("main")).not.toContainText(/synthetic patients/i);
     }
   });
 
@@ -143,7 +147,8 @@ test.describe("Public site", () => {
       await page.goto(path);
       await expect(page.locator(`[data-hero] [data-canvas="${module}"]`), path).toBeVisible();
       await expect(page.locator("[data-hero] [data-canvas]"), path).toHaveCount(1);
-      await expect(page.locator(`[data-hero] [data-canvas="${module}"]`)).toContainText("Synthetic data");
+      await expect(page.locator(`[data-hero] [data-canvas="${module}"]`)).toContainText("Illustrative");
+      await expect(page.locator(`[data-hero] [data-canvas="${module}"]`)).not.toContainText(/synthetic patients/i);
     }
     for (const path of ["/platform", "/resources", "/contact"]) {
       await page.goto(path);
@@ -151,7 +156,7 @@ test.describe("Public site", () => {
     }
   });
 
-  test("product canvas rail switches modules and keeps the synthetic badge", async ({ page }) => {
+  test("product canvas rail switches modules and keeps the illustrative badge", async ({ page }) => {
     await page.goto("/");
     const canvas = page.locator("[data-hero] [data-canvas]").first();
     const rail = canvas.locator(".c-rail");
@@ -172,7 +177,7 @@ test.describe("Public site", () => {
       await expect(canvas).toHaveAttribute("data-canvas", module);
       await expect(canvas.locator(".c-head__title")).toHaveText(title);
       await expect(rail.getByRole("button", { name: label })).toHaveAttribute("aria-current", "page");
-      await expect(canvas).toContainText("Synthetic data");
+      await expect(canvas).toContainText("Illustrative");
     }
 
     await seg.getByRole("button", { name: "Patients" }).click();
@@ -197,7 +202,8 @@ test.describe("Public site", () => {
   test("AI agents page: every agent with its role and status, the review line works by keyboard, release criteria shown", async ({ page }) => {
     await page.goto("/agents");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("A clinician makes every decision.");
-    await expect(page.locator("[data-validation-note]")).toContainText("in validation on synthetic patients");
+    await expect(page.locator("[data-validation-note]")).toContainText("in validation");
+    await expect(page.locator("[data-validation-note]")).not.toContainText(/synthetic patients/i);
     for (const name of ["Aksh Orchestrator", "Aksh Voice", "Aksh Canvas", "Aksh Synthesis", "DrAssist AI", "Aksh Guardian", "Aksh Horizon", "Aksh Nexus", "Aksh Pathway", "Aksh Bridge", "Aksh Shield", "Aksh Compass", "Aksh Prism", "Aksh Trials Agent"]) {
       await expect(page.locator("#agents")).toContainText(name);
     }

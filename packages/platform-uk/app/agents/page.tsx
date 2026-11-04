@@ -12,13 +12,13 @@ import { HUMAN_GATES } from "@/components/site/vision";
 export const metadata: Metadata = {
   title: "Clinical AI agents",
   description:
-    "Fourteen specialised AI agents work as one supervised review line. They draft, check and organise; a named clinician accepts, edits or rejects every output. In validation on synthetic patients.",
+    "Fourteen specialised AI agents work as one supervised review line. They draft, check and organise; a named clinician accepts, edits or rejects every output. In validation — not autonomous prescribing.",
 };
 
 const TECH = [
   {
     title: "Language models, gated per agent",
-    body: "Drafting agents can call a large language model to write notes, briefs and correlations. Each one is switched on individually, only in the validation environment and only on synthetic patients. In production no patient data is sent to any AI model; agents fall back to rules.",
+    body: "Drafting agents can call a large language model to write notes, briefs and correlations. Each one is switched on individually, only in the validation environment. In production no patient data is sent to any AI model; agents fall back to rules.",
   },
   {
     title: "A versioned rule engine",
@@ -54,8 +54,8 @@ export default function AgentsPage() {
         module="agents"
       >
         <p className="s-small" data-validation-note>
-          <StatusPill s="in_validation" /> The agents are in validation on synthetic patients. They are not used for real
-          patients until each one meets its release criteria and your clinical safety officer signs it off.
+          <StatusPill s="in_validation" /> The agents are in validation. They are not used for real patients until each
+          one meets its release criteria and your clinical safety officer signs it off.
         </p>
         <div className="s-figures" aria-label="Key figures">
           <div><b>{AGENT_FACTS.agents}</b><span>specialised agents under one supervisor</span></div>
@@ -99,7 +99,7 @@ export default function AgentsPage() {
                       <span>
                         <p>{a.role}</p>
                         <small>{a.handsOver}</small>
-                        {a.usesModel ? <span className="s-model">Can use a language model in validation, on synthetic data only</span> : null}
+                        {a.usesModel ? <span className="s-model">Can use a language model in validation only</span> : null}
                       </span>
                       <StatusPill s={a.status} />
                     </div>
@@ -159,7 +159,7 @@ export default function AgentsPage() {
         </div>
       </section>
 
-      <PilotCta title="See the agents on your own synthetic cases." body="We will walk your clinical lead through the review line, the gates and the release criteria, then scope a pilot." secondary={{ href: "/platform", label: "How it works" }} />
+      <PilotCta title="See the agents with your clinical lead." body="We will walk your clinical lead through the review line, the gates and the release criteria, then scope a pilot." secondary={{ href: "/platform", label: "How it works" }} />
     </SiteShell>
   );
 }

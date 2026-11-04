@@ -45,11 +45,11 @@ export function WorkflowDemoPlayer({ entry, initialVariantId, capture = false, c
     <div className="wd" data-demo={entry.id} data-step={step}>
       <header className="wd-hero">
         <div className="s-container">
-          <p className="s-eyebrow">Synthetic guided demo</p>
+          <p className="s-eyebrow">Guided demo</p>
           <h1 className="s-h1" style={{ fontSize: "clamp(28px, 4vw, 42px)" }}>{entry.label}</h1>
           <p className="s-lede" style={{ maxWidth: 640 }}>{entry.description}</p>
           <div className="wd-meta" aria-label="Demo boundaries">
-            <span className="c-chip c-chip--ink">Synthetic data only</span>
+            <span className="c-chip c-chip--ink">Illustrative</span>
             <span className="c-chip c-chip--teal">{STATUS_LABEL[cap.status]}</span>
             <span className="c-chip">Staff / clinician decide</span>
             <span className="c-chip">{entry.duration}</span>
