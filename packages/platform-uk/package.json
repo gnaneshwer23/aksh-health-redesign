@@ -142,7 +142,9 @@
     "db:migrate": "npx tsx --env-file=.env.local scripts/db-migrate.ts",
     "db:inventory": "npx tsx --env-file=.env.local scripts/db-inventory.ts",
     "demo:rotate-password": "npx tsx --env-file=.env.local scripts/rotate-demo-password.ts",
-    "test:care-network-db": "npx tsx --env-file-if-exists=.env.local tests/care-network-db.test.ts"
+    "test:care-network-db": "npx tsx --env-file-if-exists=.env.local tests/care-network-db.test.ts",
+    "hsi:verify-artifact": "bun --no-env-file scripts/verify-hsi-artifact-acceptance.ts",
+    "hsi:import-artifact": "bun --no-env-file scripts/import-hsi-corpus-artifact.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "4.0.15",

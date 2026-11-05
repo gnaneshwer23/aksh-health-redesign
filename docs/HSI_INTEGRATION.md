@@ -95,3 +95,12 @@ Invalid artifacts fail validation before replacement; repeat imports are idempot
 The complete producer/consumer architecture, local commands and release gates are documented in the HSI repository at `docs/AKSH_PLATFORM_INTEGRATION.md`. HSI sets `VITE_AKSH_APP_URL` to this app's origin to enable its shared research context link. Do not point that link at a production release until `/hsi` is deployed there.
 
 Local checks need no database credentials. The full production build now passes with integrity-pinned, self-hosted Fontsource fonts; Google font downloads are no longer required. OFL licence copies live under `/legal/fonts/`. Imports reject stale/conflicting snapshots and dirty producer revisions by default, use an exclusive writer lock, and preserve the current snapshot on failure. `--allow-local-changes` is an explicit local-development override, not a release approval. No production deployment or clinical integration is claimed.
+
+
+## Delivery Phase F: product-owned source artifact acceptance
+
+The RA rights-verified server loader now verifies the same `hsi-research-corpus-artifact-1` transfer as the other product, using a separately installed product-owned hash/commit/minimum-sequence policy. It refuses modified, incompatible or stale artifacts, and preserves unrelated local corpora. Source passages and graph anchors remain research context: **scientificReview=unreviewed; zero approved claims**. No HSI role, scientific decision or clinical applicability is transferred.
+
+Run `bun --no-env-file run hsi:verify-artifact` from the application directory for actual-loader parity, source-provenance and unsafe-input checks. An optional `hsi:import-artifact PATH` uses the separately installed policy, an exclusive lock and atomic single-file replacement; it does not update the trust policy from the incoming file. Source/annotation legacy files remain for the existing annotation workflow. The active RA runtime uses `data/hsi/ra-anti-tnf/transfer.json` (under `src/` in ISI).
+
+Current trust mode is **pinned_digest**, not a signed-release claim. Required-signature mode exists in the canonical verifier but needs operator-provisioned Ed25519 public-key policy and an independently signed artifact. No production keys, signatures, database migrations or grants were created. Details and live gates: [HSI Phase F](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/PHASE_F_PRODUCT_ACCEPTANCE.md).

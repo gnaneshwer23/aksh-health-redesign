@@ -1,16 +1,12 @@
+import {loadPinnedRaCorpus,raCorpusArtifactListing} from "./raCorpusArtifact.server";
 import "server-only";
 import release from "@/data/hsi/research-bundle.json";
-import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
-import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
 import raResearchReleaseArtifact from "@/data/hsi/ra-anti-tnf-research/release.json";
 import { parseHsiResearchBundle } from "./research-contract";
 import { parseResearchBundle, RESEARCH_CONTRACT_VERSION, type ResearchBundle } from "./researchContracts";
 import { InvestigationRequestError, type InvestigationRelease } from "./investigationBackend";
 import {
   RA_RELEASE_ID,
-  buildRaEvidenceBundle,
-  raEvidenceReleaseListing,
-  RaEvidenceUnavailableError,
 } from "./raEvidenceRelease";
 import {
   RA_RESEARCH_RELEASE_ID,
@@ -33,7 +29,7 @@ const snapshotRelease: InvestigationRelease = {
   },
 };
 
-const raListing = raEvidenceReleaseListing(raReleaseArtifact);
+const raListing = raCorpusArtifactListing();
 const raResearchListing = raResearchEvidenceReleaseListing(raResearchReleaseArtifact);
 
 export const akshInvestigationReleases: InvestigationRelease[] = [snapshotRelease, raResearchListing, raListing];
@@ -45,16 +41,10 @@ export async function loadAkshInvestigationRelease(id: string, conceptId: string
     return buildRaResearchEvidenceBundle(raResearchReleaseArtifact);
   }
   if (id === RA_RELEASE_ID) {
-    try {
-      // Bounded RA working set only — not a second global KG and never patient records.
-      return buildRaEvidenceBundle(parseResearchBundle(raGraphContext), raReleaseArtifact);
-    } catch (error) {
-      if (error instanceof RaEvidenceUnavailableError) {
-        throw new InvestigationRequestError(422, "evidence_not_ready");
-      }
-      throw error;
-    }
+    try { return loadPinnedRaCorpus(); }
+    catch { throw new InvestigationRequestError(422, "research_artifact_not_ready"); }
   }
+
   if (id !== "hsi-research-snapshot") throw new InvestigationRequestError(400, "unknown_research_release");
   const artifact = parseHsiResearchBundle(release);
   const ids = [...new Set(artifact.cards.map((c) => c.akshNodeId))];

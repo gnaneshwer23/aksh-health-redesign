@@ -42,6 +42,8 @@ jobs:
       - run: bun tests/hsi-shared-technology.test.ts
       - run: bun tests/hsi-investigation-contract.test.ts
       - run: bun tests/hsi-investigation-service.test.ts
+      - run: bun --no-env-file run hsi:verify-artifact
+      - run: bun --no-env-file scripts/verify-hsi-artifact-denial.ts
       - run: bun scripts/setup-investigation-test-db.ts --reset
       - run: bun tests/hsi-investigation-backend.test.ts
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
